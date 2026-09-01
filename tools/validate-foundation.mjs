@@ -33,7 +33,7 @@ if (!failures.length) {
   const clauses = [
     [constitution, 'Strict Direct-Open', 'Constitution must define Strict Direct-Open'],
     [constitution, 'Canonical / derived / presentation boundary', 'Constitution must define authority boundary'],
-    [determinism, 'GeneratorManifestHash', 'Determinism contract must bind generator manifest'],
+    [determinism, 'generatorManifestHash', 'Determinism contract must bind generator manifest'],
     [determinism, 'domain separation', 'Determinism contract must require domain separation'],
     [architecture, 'COLD', 'Architecture must define semantic simulation LOD'],
     [record, 'Certified Functional Payload', 'Record spec must define CFP'],
@@ -64,8 +64,12 @@ if (!failures.length) {
 
   for (const file of docs) {
     const text = fs.readFileSync(file, 'utf8');
+    const relative = path.relative(root, file);
     if (/\bno runtime dependency\b/i.test(text) && !/misrepresent|not.*no runtime dependency/i.test(text)) {
-      failures.push(`Potentially misleading zero-runtime-dependency claim in ${path.relative(root, file)}`);
+      failures.push(`Potentially misleading zero-runtime-dependency claim in ${relative}`);
+    }
+    if (/Math\.random\s*\(/.test(text)) {
+      failures.push(`Canonical foundation documentation must not prescribe Math.random(): ${relative}`);
     }
   }
 
