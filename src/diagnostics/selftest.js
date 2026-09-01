@@ -1,0 +1,16 @@
+(function(root){
+'use strict';const O=root.OFU=root.OFU||{};
+const SEED='000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f';
+function jobs(){return Array.from({length:24},(_,i)=>({id:i,x:String(BigInt(i)-12n),y:String(BigInt(i*i)-50n),z:String(BigInt(i%5)-2n)}));}
+function canonicalRows(seed,list){return list.map(j=>({id:j.id,fact:O.micro.sample(seed,BigInt(j.x),BigInt(j.y),BigInt(j.z))})).sort((a,b)=>a.id-b.id);}
+function corpusDigest(rows){return O.canonical.digestObject(rows);}
+async function run(kernelSources){const results=[];const add=(name,status,detail={})=>results.push({name,status,...detail});let rows,digest;
+try{rows=canonicalRows(SEED,jobs());digest=corpusDigest(rows);add('canonical-corpus','PASS',{digest});}catch(e){add('canonical-corpus','FAIL',{error:e.message});return {results};}
+const reversed=canonicalRows(SEED,[...jobs()].reverse());add('query-order',corpusDigest(reversed)===digest?'PASS':'FAIL');
+try{const one=await O.workerHarness.run(SEED,jobs(),1,kernelSources,O.runtimeManifestHash);const many=await O.workerHarness.run(SEED,jobs(),Math.min(4,navigator.hardwareConcurrency||2),kernelSources,O.runtimeManifestHash);add('workers-1-vs-n',corpusDigest(one.rows)===digest&&corpusDigest(many.rows)===digest?'PASS':'FAIL',{oneTransferBytes:one.transferBytes,manyTransferBytes:many.transferBytes});}catch(e){add('workers-1-vs-n','ENVIRONMENT_LIMITED',{error:e.message});}
+try{const w=await O.wasmExperiment.init(),bench=await O.wasmExperiment.benchmark(50000);add('embedded-wasm',w.add(20,22)===42&&w.deterministicProbe===2147483647&&bench.same?'PASS':'FAIL',{wasmBytes:w.bytes,wasmInitMs:w.initMs,jsAddMs:bench.jsMs,wasmAddMs:bench.wasmMs});}catch(e){add('embedded-wasm','FAIL',{error:e.message});}
+const facts=O.micro.sample(SEED,1n,2n,3n),before=O.canonical.digestObject(facts);let renderer;try{renderer=O.renderer.render(document.getElementById('scene'),facts,'baseline');const after=O.canonical.digestObject(facts);add('renderer-authority-boundary',before===after?'PASS':'FAIL',{backend:renderer.backend});}catch(e){add('renderer-authority-boundary','PARTIAL',{error:e.message});}
+try{const p=O.save.payload({masterSeed256:SEED,manifestHash:O.runtimeManifestHash,events:[{type:'bookmark',data:{address:'demo'}}]}),d0=O.save.stateDigest(p),txt=O.save.exportPortable({masterSeed256:p.universeIdentity.masterSeed256,manifestHash:p.universeIdentity.generatorManifestHash,events:p.events}),p2=O.save.importPortable(txt),d1=O.save.stateDigest(p2);add('save-roundtrip',d0===d1?'PASS':'FAIL',{saveBytes:new TextEncoder().encode(txt).length});let corrupted=txt.replace('bookmark','bookmarx');let rejected=false;try{O.save.importPortable(corrupted);}catch{rejected=true;}add('corrupted-save-fail-closed',rejected?'PASS':'FAIL');}catch(e){add('save-roundtrip','FAIL',{error:e.message});}
+return {results,digest,capabilities:O.renderer.probe(),numeric:O.numericExperiment.run()};}
+O.selftest={SEED,jobs,canonicalRows,corpusDigest,run};
+})(typeof globalThis!=='undefined'?globalThis:this);

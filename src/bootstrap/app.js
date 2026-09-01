@@ -1,0 +1,5 @@
+(function(root){
+'use strict';const O=root.OFU=root.OFU||{};
+async function boot(){const t0=performance.now(),status=document.getElementById('status'),caps=O.renderer.probe();document.getElementById('profile').textContent=location.protocol==='file:'?'Strict Direct-Open candidate':'Enhanced/hosted execution';document.getElementById('caps').textContent=JSON.stringify(caps,null,2);const report=await O.selftest.run(O.EMBEDDED_KERNEL_SOURCES);const elapsed=performance.now()-t0;document.getElementById('digest').textContent=report.digest||'unavailable';document.getElementById('tests').textContent=JSON.stringify(report.results,null,2);document.getElementById('timing').textContent=`Bootstrap + self-test: ${elapsed.toFixed(2)} ms`;status.textContent=report.results.some(r=>r.status==='FAIL')?'FAIL':'READY';root.__OFU_REPORT__={...report,bootstrapMs:elapsed,protocol:location.protocol,manifestHash:O.runtimeManifestHash,componentManifest:O.COMPONENT_MANIFEST};}
+addEventListener('DOMContentLoaded',()=>boot().catch(e=>{document.getElementById('status').textContent='FAIL';root.__OFU_REPORT__={fatal:e.message};}));
+})(typeof globalThis!=='undefined'?globalThis:this);

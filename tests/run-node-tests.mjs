@@ -1,0 +1,10 @@
+import fs from 'node:fs';import vm from 'node:vm';import assert from 'node:assert/strict';
+const root=process.cwd();globalThis.OFU={};for(const f of ['src/kernel/sha256.js','src/kernel/canonical.js','src/generators/micro-universe.js','src/persistence/save.js'])vm.runInThisContext(fs.readFileSync(f,'utf8'),{filename:f});
+const O=globalThis.OFU;O.runtimeManifestHash=O.sha256.hex('p1-generator-manifest-test');
+assert.equal(O.sha256.hex('abc'),'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad');
+const seed='000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f';
+const a=O.canonical.address([{kind:'text',value:'planet'},{kind:'u64',value:9007199254740993n}]);assert.equal(a.length>10,true);assert.throws(()=>O.canonical.address([{kind:'u64',value:2n**64n}]));
+const fact=O.micro.sample(seed,1n,-2n,3n);const d=O.canonical.digestObject(fact);assert.match(d,/^[0-9a-f]{64}$/);assert.equal(O.canonical.digestObject(O.micro.sample(seed,1n,-2n,3n)),d);
+const queries=[-9n,-1n,0n,1n,9n].map((x,i)=>({id:i,f:O.micro.sample(seed,x,x*x,-x)}));assert.equal(O.canonical.digestObject(queries),O.canonical.digestObject([...queries].reverse().sort((a,b)=>a.id-b.id)));
+const p={masterSeed256:seed,manifestHash:O.runtimeManifestHash,events:[{type:'bookmark',data:{x:'1'}}]};const save=O.save.exportPortable(p),loaded=O.save.importPortable(save);assert.equal(O.save.stateDigest(loaded),O.save.stateDigest(O.save.payload(p)));assert.throws(()=>O.save.importPortable(save.replace('bookmark','tampered')),/integrity mismatch/);assert.throws(()=>O.save.importPortable(JSON.stringify({format:'OFU-SAVE',schemaVersion:999})),/unsupported save version/);assert.throws(()=>O.save.importPortable('{bad'),/malformed save/);assert.throws(()=>O.canonical.canonicalObject(0.1),/safe integers/);
+console.log('P1 node conformance: PASS');console.log('sampleDigest='+d);
