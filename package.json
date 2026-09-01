@@ -1,0 +1,14 @@
+{
+  "name": "one-file-universe",
+  "version": "0.0.1-foundation",
+  "private": true,
+  "description": "One File Universe source repository and deterministic single-artifact experiment",
+  "type": "module",
+  "scripts": {
+    "validate": "node tools/validate-foundation.mjs",
+    "test": "node tools/validate-foundation.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
