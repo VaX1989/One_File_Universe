@@ -1,14 +1,13 @@
 {
   "name": "one-file-universe",
-  "version": "0.0.1-foundation",
+  "version": "0.1.0-p1",
   "private": true,
-  "description": "One File Universe source repository and deterministic single-artifact experiment",
+  "description": "One File Universe constitutional prototype",
   "type": "module",
   "scripts": {
-    "validate": "node tools/validate-foundation.mjs",
-    "test": "node tools/validate-foundation.mjs"
+    "validate": "node tools/validate-foundation.mjs && node tests/run-node-tests.mjs",
+    "build": "node tools/build-p1.mjs",
+    "test": "node tools/validate-foundation.mjs && node tests/run-node-tests.mjs && node tools/build-p1.mjs && node tests/build/reproducible-build.mjs"
   },
-  "engines": {
-    "node": ">=20"
-  }
+  "engines": { "node": ">=20" }
 }
