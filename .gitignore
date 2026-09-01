@@ -1,0 +1,27 @@
+# Dependencies and package manager caches
+node_modules/
+.npm/
+
+# Generated artifacts
+dist/
+build/
+artifacts/
+reports/local/
+
+# Local environment
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+
+# Editor / IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
