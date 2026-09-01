@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "seed": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+  "manifestHash": "ed862a1a0295e5beaa695e0672bd19b982e322f3e8ba945f8f249442cce8a066",
+  "address": [
+    {"kind":"text","value":"golden"},
+    {"kind":"i64","value":"-2"},
+    {"kind":"u64","value":"9007199254740993"}
+  ],
+  "addressHex": "010003020006676f6c64656e03fffffffffffffffe010020000000000001",
+  "domainTag": "p1-golden",
+  "propertyTag": "value",
+  "derive32Hex": "f12c49b8e9d4d15af6513a1696be8dc188f396b2ce1ea3a17c4e21273670c986",
+  "sampleAddress": ["1","-2","3"],
+  "sampleDigest": "215fab4cdcfb0bbce2abea550aa04c63fad37ac16a9580df9d925228c4de9133"
+}

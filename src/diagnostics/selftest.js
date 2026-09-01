@@ -1,11 +1,11 @@
 (function(root){
-'use strict';const O=root.OFU=root.OFU||{};
-const SEED='000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f';
+'use strict';const O=root.OFU=root.OFU||{};const SEED='000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f';
 function jobs(){return Array.from({length:24},(_,i)=>({id:i,x:String(BigInt(i)-12n),y:String(BigInt(i*i)-50n),z:String(BigInt(i%5)-2n)}));}
 function canonicalRows(seed,list){return list.map(j=>({id:j.id,fact:O.micro.sample(seed,BigInt(j.x),BigInt(j.y),BigInt(j.z))})).sort((a,b)=>a.id-b.id);}
-function corpusDigest(rows){return O.canonical.digestObject(rows);}
-async function run(kernelSources){const results=[];const add=(name,status,detail={})=>results.push({name,status,...detail});let rows,digest;
-try{rows=canonicalRows(SEED,jobs());digest=corpusDigest(rows);add('canonical-corpus','PASS',{digest});}catch(e){add('canonical-corpus','FAIL',{error:e.message});return {results};}
+function corpusDigest(rows){return O.canonical.digestObject(rows);}function hex(b){return Array.from(b,x=>x.toString(16).padStart(2,'0')).join('');}
+async function run(kernelSources){const results=[];const add=(name,status,detail={})=>results.push({name,status,...detail});
+try{const v=O.GOLDEN_VECTORS,a=v.address.map(s=>({kind:s.kind,value:s.kind==='text'?s.value:BigInt(s.value)})),ab=O.canonical.address(a),dh=O.sha256.hex(O.canonical.derive32({masterSeed256:v.seed,manifestHash:v.manifestHash,domainTag:v.domainTag,addressBytes:ab,propertyTag:v.propertyTag})),sd=O.canonical.digestObject(O.micro.sample(v.seed,...v.sampleAddress.map(BigInt)));add('golden-vectors',hex(ab)===v.addressHex&&dh===v.derive32Hex&&sd===v.sampleDigest?'PASS':'FAIL',{addressHex:hex(ab),derive32Hex:dh,sampleDigest:sd});}catch(e){add('golden-vectors','FAIL',{error:e.message});}
+let rows,digest;try{rows=canonicalRows(SEED,jobs());digest=corpusDigest(rows);add('canonical-corpus','PASS',{digest});}catch(e){add('canonical-corpus','FAIL',{error:e.message});return {results};}
 const reversed=canonicalRows(SEED,[...jobs()].reverse());add('query-order',corpusDigest(reversed)===digest?'PASS':'FAIL');
 try{const one=await O.workerHarness.run(SEED,jobs(),1,kernelSources,O.runtimeManifestHash),two=await O.workerHarness.run(SEED,jobs(),2,kernelSources,O.runtimeManifestHash),many=await O.workerHarness.run(SEED,jobs(),4,kernelSources,O.runtimeManifestHash),ok=[one,two,many].every(x=>corpusDigest(x.rows)===digest);add('workers-1-2-n',ok?'PASS':'FAIL',{workerCounts:[1,2,4],transferBytes:[one.transferBytes,two.transferBytes,many.transferBytes]});}catch(e){add('workers-1-2-n','ENVIRONMENT_LIMITED',{error:e.message});}
 try{const w=await O.wasmExperiment.init(),bench=await O.wasmExperiment.benchmark(50000);add('embedded-wasm',w.add(20,22)===42&&w.deterministicProbe===2147483647&&bench.same?'PASS':'FAIL',{wasmBytes:w.bytes,wasmInitMs:w.initMs,jsAddMs:bench.jsMs,wasmAddMs:bench.wasmMs});}catch(e){add('embedded-wasm','FAIL',{error:e.message});}

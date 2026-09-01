@@ -28,7 +28,7 @@ jobs:
       - uses: actions/setup-node@v4
         with: {node-version: '20'}
       - run: node tools/build-p1.mjs
-      - run: npm install --no-save playwright@1.55.0
+      - run: npm install --no-save playwright@1.62.1
       - run: npx playwright install --with-deps ${{ matrix.browser }}
       - run: node tests/browser/direct-open.mjs
         env:
@@ -36,5 +36,30 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: p1-browser-${{ matrix.browser }}
+          name: p1-browser-linux-${{ matrix.browser }}
+          path: dist/evidence/
+  platform-direct-open:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            browser: chromium
+          - os: macos-latest
+            browser: webkit
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '20'}
+      - run: node tools/build-p1.mjs
+      - run: npm install --no-save playwright@1.62.1
+      - run: npx playwright install ${{ matrix.browser }}
+      - run: node tests/browser/direct-open.mjs
+        env:
+          BROWSER: ${{ matrix.browser }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: p1-browser-${{ matrix.os }}-${{ matrix.browser }}
           path: dist/evidence/
