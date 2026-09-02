@@ -1,64 +1,93 @@
 name: P2 Conformance
+
 on:
   push:
-    branches: ['feature/p2-deterministic-kernel']
+    branches:
+      - feature/p2-deterministic-kernel
   pull_request:
+
 permissions:
   contents: read
+
 jobs:
   oracle-and-build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: {node-version: '24.20.0'}
-      - run: python3 --version && node --version
+        with:
+          node-version: '24.20.0'
+      - run: python3 --version
+      - run: node --version
       - run: npm test
       - uses: actions/upload-artifact@v4
-        with: {name: p2-build, path: dist/}
+        with:
+          name: p2-build
+          path: dist/
+
   browser:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix: {browser: [chromium, firefox, webkit]}
+      matrix:
+        browser:
+          - chromium
+          - firefox
+          - webkit
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: {node-version: '24.20.0'}
+        with:
+          node-version: '24.20.0'
       - run: node tools/build-p1.mjs
       - run: npm install --no-save playwright@1.62.1
       - run: npx playwright install --with-deps ${{ matrix.browser }}
       - run: node tests/p2/browser-p2.mjs
-        env: {BROWSER: '${{ matrix.browser }}'}
+        env:
+          BROWSER: ${{ matrix.browser }}
       - uses: actions/upload-artifact@v4
-        with: {name: p2-linux-${{ matrix.browser }}, path: dist/evidence/}
+        with:
+          name: p2-linux-${{ matrix.browser }}
+          path: dist/evidence/
+
   platform:
     strategy:
       fail-fast: false
       matrix:
         include:
-          - {os: windows-latest, browser: chromium}
-          - {os: macos-latest, browser: webkit}
+          - os: windows-latest
+            browser: chromium
+          - os: macos-latest
+            browser: webkit
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: {node-version: '24.20.0'}
+        with:
+          node-version: '24.20.0'
       - run: node tools/build-p1.mjs
       - run: npm install --no-save playwright@1.62.1
       - run: npx playwright install ${{ matrix.browser }}
       - run: node tests/p2/browser-p2.mjs
-        env: {BROWSER: '${{ matrix.browser }}'}
+        env:
+          BROWSER: ${{ matrix.browser }}
       - uses: actions/upload-artifact@v4
-        with: {name: p2-${{ matrix.os }}-${{ matrix.browser }}, path: dist/evidence/}
+        with:
+          name: p2-${{ matrix.os }}-${{ matrix.browser }}
+          path: dist/evidence/
+
   aggregate:
     if: ${{ always() }}
-    needs: [oracle-and-build, browser, platform]
+    needs:
+      - oracle-and-build
+      - browser
+      - platform
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: {node-version: '24.20.0'}
+        with:
+          node-version: '24.20.0'
       - name: Require upstream success
         shell: bash
         run: |
@@ -66,8 +95,12 @@ jobs:
           test '${{ needs.browser.result }}' = success
           test '${{ needs.platform.result }}' = success
       - uses: actions/download-artifact@v4
-        with: {pattern: 'p2-*', path: collected}
+        with:
+          pattern: p2-*
+          path: collected
       - run: node tools/aggregate-p2-evidence.mjs collected
       - uses: actions/upload-artifact@v4
         if: always()
-        with: {name: p2-aggregate, path: dist/p2-aggregate.json}
+        with:
+          name: p2-aggregate
+          path: dist/p2-aggregate.json
