@@ -1,0 +1,26 @@
+import assert from 'node:assert/strict';
+import {loadP5Runtime,canonicalContext,findPlanet} from '../p5/p5-test-helpers.mjs';
+
+const O=loadP5Runtime(),P=O.p2,A=O.p3Astronomy,P5=O.p5Planetology,ctx=canonicalContext(A);
+const {snapshot}=findPlanet(A,ctx);
+assert.equal(snapshot.contractId,'ofu-p3-p5-planetary-input-v1');
+assert.equal(snapshot.p3SchemaVersion,1n);
+assert.equal(snapshot.baselineEpoch,'P4_T0');
+const adapted=P5.adaptP3PlanetaryInputSnapshot(snapshot);
+assert.equal(adapted.sourceContractId,snapshot.contractId);
+assert.equal(adapted.sourceSchemaVersion,1n);
+assert.equal(adapted.baselineEpoch,'P4_T0');
+assert(P5.assertP3BaselinePreserved(snapshot,adapted));
+assert.equal(P.hex(adapted.planetId),P.hex(snapshot.planetId));
+assert.equal(P.hex(adapted.upstreamBaseline.system.systemId),P.hex(snapshot.system.systemId));
+assert.equal(P.hex(adapted.upstreamBaseline.host.starId),P.hex(snapshot.host.starId));
+assert.equal(adapted.upstreamBaseline.orbit.baselineSemiMajorAxisMicroAu,snapshot.orbit.baselineSemiMajorAxisMicroAu);
+assert.equal(adapted.upstreamBaseline.orbit.baselineInsolationPpm,snapshot.orbit.baselineInsolationPpm);
+assert.equal(adapted.upstreamBaseline.formation.baselineMassMilliEarth,snapshot.formation.baselineMassMilliEarth);
+assert.equal(adapted.upstreamBaseline.formation.bulkPriorClass,snapshot.formation.bulkPriorClass);
+assert.equal(typeof adapted.upstreamBaseline.formation.baselineMassMilliEarth,'bigint');
+assert.throws(()=>P5.adaptP3PlanetaryInputSnapshot({contractId:'ofu-p3-p5-planetary-input-snapshot-v0'}),/unsupported P3->P5 contract/);
+const presentation=P5.nonCanonicalNumberView(adapted);
+assert.equal(presentation.authority,'NON_CANONICAL_PRESENTATION_ONLY');
+console.log(JSON.stringify({status:'PASS',contract:snapshot.contractId,p3SchemaVersion:String(snapshot.p3SchemaVersion),baselineEpoch:snapshot.baselineEpoch,planetId:P.hex(snapshot.planetId),baselineMassMilliEarth:String(snapshot.formation.baselineMassMilliEarth),bulkPriorClass:snapshot.formation.bulkPriorClass},null,2));
+await import('./p4-p5-static-binding-tests.mjs');
