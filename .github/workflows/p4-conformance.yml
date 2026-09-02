@@ -1,0 +1,124 @@
+name: P4 Conformance
+
+on:
+  push:
+    branches:
+      - feature/p4-temporal-kernel
+  pull_request:
+
+env:
+  OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+permissions:
+  contents: read
+
+jobs:
+  node-replay:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.20.0'
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - run: node tests/p4/run-p4-tests.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: p4-node
+          path: dist/evidence/p4-node-replay.json
+
+  browser-linux:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.20.0'
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - run: npm install --no-save playwright@1.62.1
+      - run: npx playwright install --with-deps ${{ matrix.browser }}
+      - run: node tests/p4/browser-p4.mjs
+        env:
+          BROWSER: ${{ matrix.browser }}
+          EXPECTED_PLATFORM: linux
+          EXPECTED_ARCH: x64
+      - uses: actions/upload-artifact@v4
+        with:
+          name: p4-linux-x64-${{ matrix.browser }}
+          path: dist/evidence/
+
+  browser-platform:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            browser: chromium
+            platform: win32
+            arch: x64
+          - os: macos-latest
+            browser: webkit
+            platform: darwin
+            arch: arm64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.20.0'
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - run: npm install --no-save playwright@1.62.1
+      - run: npx playwright install ${{ matrix.browser }}
+      - run: node tests/p4/browser-p4.mjs
+        env:
+          BROWSER: ${{ matrix.browser }}
+          EXPECTED_PLATFORM: ${{ matrix.platform }}
+          EXPECTED_ARCH: ${{ matrix.arch }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: p4-${{ matrix.platform }}-${{ matrix.arch }}-${{ matrix.browser }}
+          path: dist/evidence/
+
+  aggregate:
+    if: ${{ always() }}
+    needs: [node-replay, browser-linux, browser-platform]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.20.0'
+      - name: Verify upstream success
+        shell: bash
+        run: |
+          test '${{ needs.node-replay.result }}' = success
+          test '${{ needs.browser-linux.result }}' = success
+          test '${{ needs.browser-platform.result }}' = success
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: p4-*
+          path: collected
+      - run: node tools/aggregate-p4-evidence.mjs collected
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: p4-aggregate
+          path: dist/p4-aggregate.json
