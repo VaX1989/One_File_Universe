@@ -30,6 +30,17 @@ jobs:
       - run: node tests/p4/archive-lineage-tests.mjs
       - run: node tests/p4/checkpoint-authority-tests.mjs
       - run: node tests/integration/p2-p4-contract-tests.mjs
+      - name: Execute real P3 to P4 integration invariants
+        run: node tests/integration/p3-p4-contract-tests.mjs
+      - name: Verify upstream single-file build reproducibility
+        shell: bash
+        run: |
+          node tools/build-p1.mjs >/dev/null
+          cp dist/One_File_Universe.html /tmp/ofu-first.html
+          cp dist/build-manifest.json /tmp/ofu-first-manifest.json
+          node tools/build-p1.mjs >/dev/null
+          cmp /tmp/ofu-first.html dist/One_File_Universe.html
+          cmp /tmp/ofu-first-manifest.json dist/build-manifest.json
       - run: node tools/p4-benchmark.mjs
       - run: node tests/integration/evidence-isolation-generic.mjs
       - uses: actions/upload-artifact@v4
