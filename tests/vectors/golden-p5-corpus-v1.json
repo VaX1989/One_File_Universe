@@ -1,0 +1,24 @@
+{
+  "corpusVersion": "golden-p5-corpus-v1",
+  "contractId": "ofu-p5-planet-physical-v1",
+  "modelVersion": "p5-planet-physical-1",
+  "sourceP3ContractId": "ofu-p3-p5-planetary-input-v1",
+  "baselineEpoch": "P4_T0",
+  "selector": "tests/p5/p5-test-helpers.mjs::findPlanet bounded TERRESTRIAL with canonical seed 00..1f",
+  "planetId": "b033f4982b774dca5a742108d489c568027252e8381055990994691aa39df8b5",
+  "baselineMassMilliEarth": "1204",
+  "coreMassFractionPermille": "242",
+  "meanRadiusM": "6827303",
+  "surfaceGravityMicroMs2": "10295992",
+  "meanDensityKgM3": "5394",
+  "physicalDigest": "402267561fb311c16f68380afdf066df883eba62b8053d6470401d2eebd86d52",
+  "numericOracle": {
+    "rockyGridMaxRelativeErrorUpperBound": 0.000001
+  },
+  "shippedCrossRuntimeVector": {
+    "selector": "tests/p5/browser-p5.mjs fixed P3 search window",
+    "planetId": "9e2041b4c8550e86edc574c42cba1bb31224a2ac7a9e8ffaea232310ce24d98e",
+    "physicalDigest": "7532cf9a6d2258031bc3f29f76c8614ea75973367fbe3aaae7a7652755169bc7",
+    "terrainDigest": "8e96317fa3a1d712b35ef24b9cd9981fb74f0e98145b9472cc823b5d6ffd7b34"
+  }
+}

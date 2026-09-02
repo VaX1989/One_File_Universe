@@ -44,10 +44,15 @@ jobs:
         run: node tests/p4/run-p4-tests.mjs && node tests/p4/semantic-closure-tests.mjs && node tests/p4/archive-lineage-tests.mjs && node tests/p4/checkpoint-authority-tests.mjs
       - name: Frozen upstream integration
         run: node tests/integration/p2-p4-contract-tests.mjs && node tests/integration/p3-p4-contract-tests.mjs
-      - name: P5 conformance
+      - name: P5 conformance and Golden corpus
         run: node tests/p5/run-p5-conformance.mjs
-      - name: Real P3 v1 to P5 integration and P4 static binding
+      - name: Real P3 v1 to P5 integration and repeated P4 compaction binding
         run: node tests/integration/p3-p5-contract-tests.mjs
+      - name: P5 working-set and CPU observation
+        shell: bash
+        run: |
+          mkdir -p dist/evidence/p5
+          node tests/p5/p5-performance-evidence.mjs | tee dist/evidence/p5/node-performance.json
       - name: Evidence isolation
         run: node tests/integration/evidence-isolation-generic.mjs
       - name: Build P5 candidate twice and compare
@@ -65,6 +70,7 @@ jobs:
           path: |
             dist/One_File_Universe.html
             dist/p5-build-manifest.json
+            dist/evidence/p5/node-performance.json
 
   browser-linux:
     runs-on: ubuntu-latest
@@ -85,7 +91,7 @@ jobs:
       - run: node tools/build-ofu-p5.mjs
       - run: npm install --no-save playwright@1.62.1
       - run: npx playwright install --with-deps ${{ matrix.browser }}
-      - name: Exercise shipped P5 candidate from file URL
+      - name: Exercise shipped P5 candidate from file URL and Golden shipped vector
         run: node tests/p5/browser-p5.mjs
         env:
           BROWSER: ${{ matrix.browser }}
@@ -118,7 +124,7 @@ jobs:
       - run: node tools/build-ofu-p5.mjs
       - run: npm install --no-save playwright@1.62.1
       - run: npx playwright install ${{ matrix.browser }}
-      - name: Exercise shipped P5 candidate from file URL
+      - name: Exercise shipped P5 candidate from file URL and Golden shipped vector
         run: node tests/p5/browser-p5.mjs
         env:
           BROWSER: ${{ matrix.browser }}
@@ -150,7 +156,9 @@ jobs:
           count=$(find evidence -name 'browser-*.json' -type f | wc -l)
           test "$count" -eq 5
           test "$(jq -r '.status' evidence/browser-*.json | sort -u)" = PASS
+          test "$(jq -r '.goldenCorpusVersion' evidence/browser-*.json | sort -u)" = golden-p5-corpus-v1
           test "$(jq -r '.physicalDigest' evidence/browser-*.json | sort -u | wc -l)" -eq 1
           test "$(jq -r '.terrainDigest' evidence/browser-*.json | sort -u | wc -l)" -eq 1
           test "$(jq -r '.artifactSha256' evidence/browser-*.json | sort -u | wc -l)" -eq 1
+          test "$(jq -r 'select(.platform=="darwin") | .arch' evidence/browser-*.json)" = arm64
           echo 'P5 controlled promotion exact-head cross-runtime seal PASS'
