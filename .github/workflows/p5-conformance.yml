@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - feature/p5-controlled-promotion
+      - main
   pull_request:
 
 concurrency:

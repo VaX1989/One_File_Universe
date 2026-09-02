@@ -129,26 +129,38 @@ Baseline + events → current state is deterministic; checkpointed and full repl
 
 ## P5 — Planetology, Terrain & Climate
 
-**P5 — RESEARCH — PROMOTION ARCHITECTURE READY**  
-P5 remains deliberately non-canonical. Research may consume the frozen P3/P4 baseline but does not override P3 astronomical facts or P4 temporal authority.
+**P5 v1 CANONICAL CORE — COMPLETE AFTER MERGE + EXACT-MAIN P5 SEAL**  
+The controlled v1 promotion deliberately closes only the smallest scientifically honest planetary authority that can be frozen without pretending research is settled. The reference P1–P4 release `v0.4.0-preview.1` remains unchanged.
 
-### Objective
-Generate planets as causal systems rather than colored noise spheres.
+### Canonical v1 scope
+- strict consumption of the real P3 `ofu-p3-p5-planetary-input-v1` producer at P3 schema v1 / `P4_T0`;
+- exact preservation of P3-owned planet/system/star identity, orbit, insolation, baseline mass, bulk prior and solid-budget facts as canonical bytes / `BigInt` values;
+- P2 Canonical Address and addressed derivation for promoted procedural semantics;
+- bounded `TERRESTRIAL` realization for 1–8 Mearth only;
+- deterministic integer/fixed-point composition refinement, radius, surface gravity and mean density;
+- explicit evidence/fidelity classification and explicit `UNSUPPORTED` behavior outside the promoted model family;
+- exact P2-addressed cube-sphere terrain topology with shared vertex identity, seams, refinement, `PROJECT` and `RECONCILE` invariants;
+- sparse/direct-random-access terrain generation with bounded operation working set and no global planet heightmap;
+- compact `ofu-p5-p6-environment-v1` downstream boundary exposing only promoted environmental constraints;
+- P4-owned replay/checkpoint/compaction binding for static P5 genesis facts.
 
-### Candidate mechanisms
-- composition and bulk properties;
-- orbital/stellar energy inputs;
-- stylized-causal geodynamics;
-- atmosphere/hydrosphere;
-- climate energy balance;
-- terrain and erosion approximations;
-- planetary/surface LOD;
-- mesh generation pipeline.
+### Scientific disposition
+The canonical v1 rocky mass-radius realization is an **EMPIRICALLY_CONSTRAINED / APPROXIMATE** bounded model. The deterministic terrestrial composition refinement is **HYPOTHETICAL / STYLIZED** and is not presented as inferred mineralogy. Gravity/density relationships are **ESTABLISHED / APPROXIMATE** under quantized inputs. Cube-sphere topology is **ESTABLISHED / FORMAL**. The current terrain elevation signal is **FICTIONAL / STYLIZED**, dimensionless and never represented as physical metres.
 
-Specific algorithms (Voronoi plates, dual contouring, etc.) remain evidence-driven choices.
+### Explicitly deferred research
+The following are not silently approximated into canonical truth and remain future P5 research/versioned-extension work:
+- water-rich / high-pressure EOS;
+- sub-Neptune, ice-giant and gas-giant radius/evolution families;
+- volatile partition calibration;
+- atmosphere inventory evolution, XUV history/efficiency and calibrated escape;
+- greenhouse coefficients and Tier-2 climate transport calibration;
+- detailed geodynamics/rheology;
+- physical terrain elevation scaling, oceans, plates, craters and erosion.
+
+P5 v1 promotes no mutable physical transition contract because no defensible mutable P5 field is in the v1 scope. P4 remains the only canonical time, event ordering, replay, checkpoint, compaction, lineage and archive authority. A future mutable P5 model must introduce a versioned P5 reducer consumed by P4 and independently pass replay/checkpoint/repeated-compaction equivalence before promotion.
 
 ### Exit gate
-Bounded-cost planets show coherent causal consequences, stable canonical facts, and meaningful diversity under domain metrics.
+The controlled v1 phase closes only when the actual candidate SHA passes all frozen upstream gates, real P3→P5 preservation, P4 repeated-compaction binding, Golden P5 conformance, evidence isolation, reproducible single-file build and the executed cross-runtime matrix; after merge the same P5 workflow must pass on exact `main`. Unsupported research families do not block v1 closure because they are outside the accepted canonical scope.
 
 ---
 
