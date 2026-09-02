@@ -4,23 +4,12 @@ import {performance} from 'node:perf_hooks';
 
 globalThis.OFU={};
 for(const f of ['src/kernel/sha256.js','src/kernel/p2-unicode.js','src/kernel/p2-canonical.js','src/temporal/p4-temporal.js'])vm.runInThisContext(fs.readFileSync(f,'utf8'),{filename:f});
-const P=OFU.p2,T=OFU.p4;
-const universe=Uint8Array.from({length:32},(_,i)=>255-i),lineage=T.lineageId(universe,null,'benchmark'),entity=P.entityIdentity(universe,'synthetic',{id:'benchmark'});
+const P=OFU.p2,T=OFU.p4;const universe=Uint8Array.from({length:32},(_,i)=>255-i),lineage=T.lineageId(universe,null,'benchmark'),entity=P.entityIdentity(universe,'synthetic',{id:'benchmark'});
 function event(i){return T.canonicalEvent({universeIdentity:universe,lineageId:lineage,time:{seconds:BigInt(i),micros:0n},type:'core.counter.add',version:1n,operationKey:'bench-'+i,targets:[entity],payload:{counter:'n',delta:1n},causes:[],preconditionStateDigest:null})}
+function command(i){const e=event(i);return{universeIdentity:e.descriptor.universeIdentity,lineageId:e.descriptor.lineageId,time:e.descriptor.time,type:e.descriptor.type,version:e.descriptor.version,operationKey:e.descriptor.operationKey,targets:e.descriptor.targets,payload:e.descriptor.payload,causes:e.descriptor.causes,preconditionStateDigest:null}}
 function timed(fn){const a=performance.now(),value=fn(),b=performance.now();return{ms:b-a,value}}
 const cases=[];
-for(const size of [100,500,1000,2500]){
-  const events=Array.from({length:size},(_,i)=>event(i));
-  const replay=timed(()=>T.replay({universeIdentity:universe,lineage,events}));
-  const prefix=Math.max(0,size-100),cpBuild=timed(()=>T.checkpoint({universeIdentity:universe,lineage,events:events.slice(0,prefix)}));
-  const cpReplay=timed(()=>T.replayFromCheckpoint({checkpoint:cpBuild.value,events:events.slice(prefix)}));
-  if(P.hex(replay.value.digest)!==P.hex(cpReplay.value.digest))throw new Error('benchmark checkpoint mismatch');
-  const compaction=timed(()=>T.compact({universeIdentity:universe,lineage,events,keepTail:100}));
-  const query=timed(()=>replay.value.state.entities[P.hex(entity)].counters.n);
-  let archiveExport=null,archiveImport=null,archiveBytes=null;
-  if(size<=1000){archiveExport=timed(()=>T.exportArchive({universeIdentity:universe,lineage,events}));archiveBytes=archiveExport.value.length;archiveImport=timed(()=>T.importArchive(archiveExport.value))}
-  cases.push({events:size,fullReplayMs:replay.ms,checkpointBuildMs:cpBuild.ms,checkpointSuffixReplayMs:cpReplay.ms,compactionMs:compaction.ms,stateQueryMs:query.ms,archiveExportMs:archiveExport?.ms??null,archiveImportMs:archiveImport?.ms??null,archiveBytes,heapUsedBytes:process.memoryUsage().heapUsed});
-}
-const appendBase=Array.from({length:500},(_,i)=>event(i)),append=timed(()=>T.sortEvents([...appendBase,event(501)]));void append.value;
-const evidence={evidenceSchemaVersion:1,phase:'P4',evidenceKind:'p4-performance',producer:'tools/p4-benchmark.mjs',sourceCommit:process.env.OFU_SOURCE_SHA||'LOCAL-UNPINNED',p2FinalCandidate:'9272a36fe2cb6c5b887e2f99d7e6ce671c5a8883',status:'PASS',nodeVersion:process.version,platform:process.platform,arch:process.arch,append501Ms:append.ms,cases};
+for(const size of [100,500,1000,2500]){const events=Array.from({length:size},(_,i)=>event(i));const replay=timed(()=>T.replay({universeIdentity:universe,lineage,events}));const prefix=Math.max(0,size-100),cpBuild=timed(()=>T.checkpoint({universeIdentity:universe,lineage,events:events.slice(0,prefix)}));const cpReplay=timed(()=>T.replayFromCheckpoint({checkpoint:cpBuild.value,events:events.slice(prefix)}));if(P.hex(replay.value.digest)!==P.hex(cpReplay.value.digest))throw new Error('benchmark checkpoint mismatch');const compaction=timed(()=>T.compact({universeIdentity:universe,lineage,events,keepTail:100}));const query=timed(()=>replay.value.state.entities[P.hex(entity)].counters.n);cases.push({events:size,fullReplayMs:replay.ms,checkpointBuildMs:cpBuild.ms,checkpointSuffixReplayMs:cpReplay.ms,compactionMs:compaction.ms,stateQueryMs:query.ms,heapUsedBytes:process.memoryUsage().heapUsed})}
+let world=T.createLiveWorld({universeIdentity:universe,lineage,compactionPolicy:{threshold:128,retainTail:16}}),compactions=0,maxTail=0;const live=timed(()=>{for(let i=1;i<=1000;i++){const r=T.commit({world,command:command(10000+i)});world=r.world;if(r.compacted)compactions++;maxTail=Math.max(maxTail,world.events.length)}return T.replayLiveWorld(world)});const archiveExport=timed(()=>T.exportArchive(world)),archiveImport=timed(()=>T.importArchive(archiveExport.value));if(P.hex(live.value.digest)!==P.hex(T.replayLiveWorld(archiveImport.value).digest))throw new Error('live archive benchmark mismatch');
+const evidence={evidenceSchemaVersion:1,phase:'P4',evidenceKind:'p4-performance',producer:'tools/p4-benchmark.mjs',sourceCommit:process.env.OFU_SOURCE_SHA||'LOCAL-UNPINNED',p2FinalCandidate:'9272a36fe2cb6c5b887e2f99d7e6ce671c5a8883',status:'PASS',nodeVersion:process.version,platform:process.platform,arch:process.arch,cases,live:{commits:1000,totalMs:live.ms,averageCommitMs:live.ms/1000,compactions,maxTail,retainedTail:world.events.length,coveredEventCount:String(world.checkpoint?.descriptor.coveredEventCount||0n),archiveBytes:archiveExport.value.length,archiveExportMs:archiveExport.ms,archiveImportMs:archiveImport.ms,heapUsedBytes:process.memoryUsage().heapUsed}};
 fs.mkdirSync('dist/evidence/p4',{recursive:true});fs.writeFileSync('dist/evidence/p4/p4-performance.json',JSON.stringify(evidence,null,2)+'\n');console.log(JSON.stringify(evidence));
