@@ -1,0 +1,158 @@
+name: P2 Conformance
+
+on:
+  push:
+    branches:
+      - main
+      - feature/p2-deterministic-kernel
+  pull_request:
+
+env:
+  OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+permissions:
+  contents: read
+
+jobs:
+  oracle-and-build:
+    runs-on: ubuntu-latest
+    env:
+      OFU_UNICODE_DATA_PATH: .unicode/UnicodeData.txt
+      OFU_NORMALIZATION_TEST_PATH: .unicode/NormalizationTest.txt
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.20.0'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Fetch official Unicode 15.1 conformance data
+        run: node tools/fetch-p2-unicode-test-data.mjs full
+      - name: Verify frozen Unicode profile and Node normalization
+        run: node tools/p2-unicode-conformance.mjs "$OFU_UNICODE_DATA_PATH" "$OFU_NORMALIZATION_TEST_PATH"
+      - name: Verify independent Python normalization
+        run: python3 tools/p2_unicode_conformance.py "$OFU_UNICODE_DATA_PATH" "$OFU_NORMALIZATION_TEST_PATH"
+      - run: python3 --version
+      - run: node --version
+      - run: npm test
+      - run: node tests/p2/live-wrapper-tests.mjs
+      - run: node tools/p2-benchmark.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: p2-build
+          path: dist/
+
+  browser:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        browser:
+          - chromium
+          - firefox
+          - webkit
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.20.0'
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Fetch official Unicode 15.1 normalization data
+        run: node tools/fetch-p2-unicode-test-data.mjs normalization
+      - run: node tools/build-p1.mjs
+      - run: npm install --no-save playwright@1.62.1
+      - run: npx playwright install --with-deps ${{ matrix.browser }}
+      - run: node tests/p2/browser-p2.mjs
+        env:
+          BROWSER: ${{ matrix.browser }}
+          EXPECTED_PLATFORM: linux
+          EXPECTED_ARCH: x64
+          OFU_NORMALIZATION_TEST_PATH: .unicode/NormalizationTest.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: p2-linux-${{ matrix.browser }}
+          path: dist/evidence/
+
+  platform:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            browser: chromium
+            platform: win32
+            arch: x64
+          - os: macos-latest
+            browser: webkit
+            platform: darwin
+            arch: arm64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.20.0'
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Fetch official Unicode 15.1 normalization data
+        run: node tools/fetch-p2-unicode-test-data.mjs normalization
+      - run: node tools/build-p1.mjs
+      - run: npm install --no-save playwright@1.62.1
+      - run: npx playwright install ${{ matrix.browser }}
+      - run: node tests/p2/browser-p2.mjs
+        env:
+          BROWSER: ${{ matrix.browser }}
+          EXPECTED_PLATFORM: ${{ matrix.platform }}
+          EXPECTED_ARCH: ${{ matrix.arch }}
+          OFU_NORMALIZATION_TEST_PATH: .unicode/NormalizationTest.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: p2-${{ matrix.os }}-${{ matrix.browser }}
+          path: dist/evidence/
+
+  aggregate:
+    if: ${{ always() }}
+    needs:
+      - oracle-and-build
+      - browser
+      - platform
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.20.0'
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Require upstream success
+        shell: bash
+        run: |
+          test '${{ needs.oracle-and-build.result }}' = success
+          test '${{ needs.browser.result }}' = success
+          test '${{ needs.platform.result }}' = success
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: p2-*
+          path: collected
+      - run: node tools/aggregate-p2-evidence.mjs collected
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: p2-aggregate
+          path: dist/p2-aggregate.json

@@ -7,6 +7,7 @@ dist/
 build/
 artifacts/
 reports/local/
+.unicode/
 
 # Local environment
 .env

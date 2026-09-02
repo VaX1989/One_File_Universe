@@ -19,6 +19,7 @@ ADRs capture decisions with durable semantic consequences. `Accepted` means the 
 | [013](ADR-013-rendering-capabilities.md) | Portable baseline + optional acceleration | Accepted principle; backend details experimental |
 | [014](ADR-014-record-verification.md) | Multidimensional record and verification protocol | Accepted |
 | [015](ADR-015-multiscale-identity-query-and-genesis.md) | Multiscale identity, query context and genesis configuration | Accepted |
+| [016](ADR-016-p2-canonical-protocol-v1.md) | P2 canonical value/address/identity/derivation protocol v1 | Accepted for P2 conformance review |
 
 ## ADR policy
 

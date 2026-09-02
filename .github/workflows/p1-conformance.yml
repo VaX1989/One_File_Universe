@@ -1,8 +1,10 @@
 name: P1 Conformance
 on:
   push:
-    branches: ['feature/p1-constitutional-prototype']
+    branches: [main, 'feature/**']
   pull_request:
+env:
+  OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 permissions:
   contents: read
 jobs:
@@ -10,8 +12,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with: {ref: '${{ env.OFU_SOURCE_SHA }}'}
       - uses: actions/setup-node@v4
         with: {node-version: '24.20.0'}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
       - run: npm test
       - uses: actions/upload-artifact@v4
         with:
@@ -25,8 +33,12 @@ jobs:
         browser: [chromium, firefox, webkit]
     steps:
       - uses: actions/checkout@v4
+        with: {ref: '${{ env.OFU_SOURCE_SHA }}'}
       - uses: actions/setup-node@v4
         with: {node-version: '24.20.0'}
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
       - run: node tools/build-p1.mjs
       - run: npm install --no-save playwright@1.62.1
       - run: npx playwright install --with-deps ${{ matrix.browser }}
@@ -50,8 +62,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+        with: {ref: '${{ env.OFU_SOURCE_SHA }}'}
       - uses: actions/setup-node@v4
         with: {node-version: '24.20.0'}
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
       - run: node tools/build-p1.mjs
       - run: npm install --no-save playwright@1.62.1
       - run: npx playwright install ${{ matrix.browser }}
@@ -69,8 +85,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with: {ref: '${{ env.OFU_SOURCE_SHA }}'}
       - uses: actions/setup-node@v4
         with: {node-version: '24.20.0'}
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
       - name: Require upstream success
         shell: bash
         run: |
