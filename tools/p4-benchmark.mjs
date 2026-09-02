@@ -23,4 +23,4 @@ for(const size of [100,500,1000,2500]){
 }
 const appendBase=Array.from({length:500},(_,i)=>event(i)),append=timed(()=>T.sortEvents([...appendBase,event(501)]));void append.value;
 const evidence={evidenceSchemaVersion:1,phase:'P4',evidenceKind:'p4-performance',producer:'tools/p4-benchmark.mjs',sourceCommit:process.env.OFU_SOURCE_SHA||'LOCAL-UNPINNED',p2FinalCandidate:'9272a36fe2cb6c5b887e2f99d7e6ce671c5a8883',status:'PASS',nodeVersion:process.version,platform:process.platform,arch:process.arch,append501Ms:append.ms,cases};
-fs.mkdirSync('dist/evidence',{recursive:true});fs.writeFileSync('dist/evidence/p4-performance.json',JSON.stringify(evidence,null,2)+'\n');console.log(JSON.stringify(evidence));
+fs.mkdirSync('dist/evidence/p4',{recursive:true});fs.writeFileSync('dist/evidence/p4/p4-performance.json',JSON.stringify(evidence,null,2)+'\n');console.log(JSON.stringify(evidence));
