@@ -82,7 +82,7 @@ jobs:
       - name: Verify exact source checkout
         shell: bash
         run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
-      - run: node tools/build-ofu.mjs > /dev/null
+      - run: node tools/build-ofu.mjs
       - run: npm install --no-save playwright@1.62.1
       - run: npx playwright install --with-deps ${{ matrix.browser }}
       - name: Exercise shipped file URL
@@ -115,7 +115,7 @@ jobs:
       - name: Verify exact source checkout
         shell: bash
         run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
-      - run: node tools/build-ofu.mjs > /dev/null
+      - run: node tools/build-ofu.mjs
       - run: npm install --no-save playwright@1.62.1
       - run: npx playwright install ${{ matrix.browser }}
       - name: Exercise shipped file URL
