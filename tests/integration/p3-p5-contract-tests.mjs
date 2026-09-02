@@ -23,3 +23,4 @@ assert.throws(()=>P5.adaptP3PlanetaryInputSnapshot({contractId:'ofu-p3-p5-planet
 const presentation=P5.nonCanonicalNumberView(adapted);
 assert.equal(presentation.authority,'NON_CANONICAL_PRESENTATION_ONLY');
 console.log(JSON.stringify({status:'PASS',contract:snapshot.contractId,p3SchemaVersion:String(snapshot.p3SchemaVersion),baselineEpoch:snapshot.baselineEpoch,planetId:P.hex(snapshot.planetId),baselineMassMilliEarth:String(snapshot.formation.baselineMassMilliEarth),bulkPriorClass:snapshot.formation.bulkPriorClass},null,2));
+await import('./p4-p5-static-binding-tests.mjs');

@@ -1,0 +1,23 @@
+import assert from 'node:assert/strict';
+import {loadP5Runtime,canonicalContext,findPlanet} from '../p5/p5-test-helpers.mjs';
+
+const O=loadP5Runtime(),P=O.p2,A=O.p3Astronomy,T=O.p4,P5=O.p5Planetology,ctx=canonicalContext(A);
+const chosen=findPlanet(A,ctx,s=>s.formation.bulkPriorClass==='TERRESTRIAL'&&s.formation.baselineMassMilliEarth>=1000n&&s.formation.baselineMassMilliEarth<=8000n);
+const planet=P5.realizePhysicalPlanet(ctx,A.planetaryInputSnapshot(ctx,chosen.key));
+assert.equal(planet.status,'SUPPORTED');
+const immutableDigest=P.hex(P5.physicalDigest(planet));
+const universeIdentity=P.universeIdentity(ctx.masterSeed,A.semanticManifestHash()).digest,lineage=T.lineageId(universeIdentity);
+const baseline={p3Epoch:'P4_T0',p5Genesis:planet};
+const events=[];
+for(let i=0n;i<6n;i++)events.push(T.canonicalEvent({universeIdentity,lineageId:lineage,time:{seconds:i+1n,micros:0n},type:'core.counter.add',version:1n,operationKey:'p5-static-test-'+i,targets:[planet.planetId],payload:{counter:'integrationCounter',delta:1n},causes:[],preconditionStateDigest:null}));
+const full=T.replay({universeIdentity,lineage,baseline,events});
+const checkpoint=T.checkpoint({universeIdentity,lineage,baseline,events:events.slice(0,3)}),fromCheckpoint=T.replayFromCheckpoint({checkpoint,events:events.slice(3)});
+assert.equal(P.hex(full.digest),P.hex(fromCheckpoint.digest));
+assert.equal(P.hex(P5.physicalDigest(full.state.baseline.p5Genesis)),immutableDigest);
+const compacted=T.compact({universeIdentity,lineage,baseline,events,keepTail:2}),fromCompaction=T.replayFromCheckpoint({checkpoint:compacted.checkpoint,events:compacted.events});
+assert.equal(P.hex(full.digest),P.hex(fromCompaction.digest));
+assert.equal(P.hex(P5.physicalDigest(fromCompaction.state.baseline.p5Genesis)),immutableDigest);
+assert.equal(planet.temporalBinding.canonicalTimeOwner,'P4');
+assert.equal(planet.temporalBinding.persistentMutableP5StatePromoted,false);
+assert.equal(planet.temporalBinding.transitionContract,null);
+console.log(JSON.stringify({status:'PASS',temporalProtocol:T.VERSION,p5TransitionStatus:'DEFERRED_STATIC_SCOPE',events:events.length,retainedTail:compacted.events.length,fullDigest:P.hex(full.digest),checkpointDigest:P.hex(fromCheckpoint.digest),compactionDigest:P.hex(fromCompaction.digest),p5GenesisDigest:immutableDigest},null,2));
