@@ -53,10 +53,37 @@ Rendering, DOM order, camera state, animation timing, display formatting, presen
 | P3 | `0699390756352ceac65e5d51cc89b910c0ac54e5` | `048c7b4de978d8c4e43b777d2eeb1b10db687506` | COMPLETE |
 | P4 | `4710a385d6dc933cb0c5709d68dcc5f8f7dec6ec` | `607affb5ac4ac031cec63790c83d69f6b51c6d7c` | COMPLETE |
 | P1–P4 one-file baseline | `88ec5856740ca514bced02238b75d32565f23071` | `a63575465a737b4b926e9651a2af91b177c0b35b` | CERTIFIED ON MERGED MAIN |
-| P5 v1 controlled promotion | PR #25 / `golden-p5-corpus-v1` | merge history + exact-main P5 seal are authoritative | COMPLETE ONLY AFTER MERGE + EXACT-MAIN PASS |
+| P5 v1 controlled promotion | PR #26 / candidate `6d1555a6aaf88d047e7246160bf2e536aeead8f9` / `golden-p5-corpus-v1` | `da14edf1b7d991c011ef8ff07580704ba0219ea1` | COMPLETE / CANONICAL / FROZEN |
 | P5 advanced atmosphere/climate/giant/geodynamics research | `research/p5-planetology` and successors | not promoted | RESEARCH / DEFERRED |
 
-The P5 v1 Golden physical digest is `402267561fb311c16f68380afdf066df883eba62b8053d6470401d2eebd86d52`. The shipped cross-runtime vector is physical digest `7532cf9a6d2258031bc3f29f76c8614ea75973367fbe3aaae7a7652755169bc7` and terrain digest `8e96317fa3a1d712b35ef24b9cd9981fb74f0e98145b9472cc823b5d6ffd7b34`. These values are only canonical after the corresponding candidate is merged and exact-main evidence succeeds.
+PR #25 is a historical exact-candidate certification record that was closed unmerged because the draft-to-ready connector path could not be used as the promotion vehicle. PR #26 is the actual controlled-promotion merge vehicle. The certified candidate tree and canonical merge tree are both `a1cae552911011173672478274fd092f56f4dfff`, so the merge introduced no content drift.
+
+### P5 exact-main certification
+
+Canonical P5 promotion merge and exact-main certification target:
+
+- candidate SHA: `6d1555a6aaf88d047e7246160bf2e536aeead8f9`
+- candidate tree: `a1cae552911011173672478274fd092f56f4dfff`
+- canonical merge SHA: `da14edf1b7d991c011ef8ff07580704ba0219ea1`
+- canonical merge tree: `a1cae552911011173672478274fd092f56f4dfff`
+- exact-main certification SHA: `da14edf1b7d991c011ef8ff07580704ba0219ea1`
+- Foundation Integrity: run `33688748804` — SUCCESS
+- P1 Conformance: run `33688748812` — SUCCESS
+- P2 Conformance: run `33688748987` — SUCCESS
+- P1-P4 Canonical Baseline: run `33688748932` — SUCCESS
+- P5 Controlled Promotion: run `33688748922` — SUCCESS
+- exact-main P3 gate: `P3` step inside P5 run `33688748922` — SUCCESS
+- exact-main P4 gate: `P4` step inside P5 run `33688748922` — SUCCESS
+- candidate full P3 Conformance workflow: run `33654626185` on candidate SHA — SUCCESS
+- candidate full P4 Conformance workflow: run `33654626379` on candidate SHA — SUCCESS
+
+The dedicated P3/P4 workflows do not trigger on pushes to `main`; therefore exact-main P3/P4 execution is provided by the pinned `exact-head` job of the P5 promotion workflow. Full dedicated candidate P3/P4 workflows were also successful, and the canonical merge tree is byte-identical to that candidate tree.
+
+P5 run `33688748922` additionally re-established on exact main: the Golden physical vector, real P3 v1 → P5 integration, P4 → static P5 replay/checkpoint/repeated-compaction binding, evidence isolation, reproducible P1–P5 build, bounded working-set evidence, direct `file://` execution, zero required runtime network, and identical shipped-vector results across Linux x64 Chromium, Linux x64 Firefox, Linux x64 Playwright WebKit, Windows x64 Chromium and macOS ARM64 Playwright WebKit. Playwright WebKit is not Safari/iOS certification; real Safari/iOS remains `NOT_VERIFIED`.
+
+The P5 v1 Golden physical digest is `402267561fb311c16f68380afdf066df883eba62b8053d6470401d2eebd86d52`. The shipped cross-runtime vector is physical digest `7532cf9a6d2258031bc3f29f76c8614ea75973367fbe3aaae7a7652755169bc7` and terrain digest `8e96317fa3a1d712b35ef24b9cd9981fb74f0e98145b9472cc823b5d6ffd7b34`.
+
+P5 v1 is therefore **COMPLETE / CANONICAL / FROZEN** with deliberately bounded scope. The P5 → P6 boundary remains **STABLE_SNAPSHOT**, not complete environmental truth. Advanced atmosphere, climate, volatile, giant-planet, geodynamic and physical-terrain models remain **RESEARCH / DEFERRED**.
 
 The P1–P4 reference release `v0.4.0-preview.1` remains unchanged. P5 promotion does not retroactively redefine that release.
 
