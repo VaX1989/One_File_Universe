@@ -50,6 +50,7 @@ jobs:
           node tests/build/reproducible-build.mjs
       - run: node tests/p2/live-wrapper-tests.mjs
       - run: node tools/p2-benchmark.mjs
+      - run: node tests/integration/evidence-isolation-generic.mjs
       - uses: actions/upload-artifact@v4
         with:
           name: p2-build
