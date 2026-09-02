@@ -6,6 +6,10 @@ on:
       - feature/p3-universe-skeleton
   pull_request:
 
+concurrency:
+  group: p3-conformance-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 
