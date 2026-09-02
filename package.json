@@ -9,5 +9,5 @@
     "build": "node tools/build-p1.mjs",
     "test": "node tools/validate-foundation.mjs && node tests/run-node-tests.mjs && node tools/build-p1.mjs && node tests/build/reproducible-build.mjs"
   },
-  "engines": { "node": ">=20" }
+  "engines": { "node": "24.20.x" }
 }

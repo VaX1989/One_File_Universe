@@ -12,5 +12,6 @@
   "propertyTag": "value",
   "derive32Hex": "f12c49b8e9d4d15af6513a1696be8dc188f396b2ce1ea3a17c4e21273670c986",
   "sampleAddress": ["1","-2","3"],
-  "sampleDigest": "215fab4cdcfb0bbce2abea550aa04c63fad37ac16a9580df9d925228c4de9133"
+  "sampleDigest": "215fab4cdcfb0bbce2abea550aa04c63fad37ac16a9580df9d925228c4de9133",
+  "corpusDigest": "4750e06a5820a6cc933a4cce97477e5b8b0ec28a4d021dcef8d32b9e330f1d3e"
 }
