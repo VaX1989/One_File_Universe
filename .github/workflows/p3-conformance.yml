@@ -22,6 +22,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24.20.0'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
       - name: Verify exact source checkout
         shell: bash
         run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
@@ -33,6 +36,8 @@ jobs:
         run: npm run test:p2
       - name: P3 canonical conformance evidence
         run: node tools/p3-evidence.mjs
+      - name: P3 independent spatial oracle
+        run: python3 tools/p3_spatial_oracle.py
       - name: P3 canonical performance and working set
         run: node tests/p3/p3-canonical-performance.mjs
       - name: Generic phase-evidence isolation
