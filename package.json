@@ -5,10 +5,10 @@
   "description": "One File Universe deterministic kernel",
   "type": "module",
   "scripts": {
-    "validate": "node tools/validate-foundation.mjs && node tests/run-node-tests.mjs && node tests/p2/run-p2-tests.mjs",
+    "validate": "node tools/validate-foundation.mjs && node tests/run-node-tests.mjs && node tests/p2/run-p2-tests.mjs && node tests/p2/address-parser-tests.mjs",
     "build": "node tools/build-p1.mjs",
-    "test:p2": "node tests/p2/run-p2-tests.mjs",
-    "test": "node tools/validate-foundation.mjs && node tests/run-node-tests.mjs && node tests/p2/run-p2-tests.mjs && node tools/build-p1.mjs && node tests/build/reproducible-build.mjs"
+    "test:p2": "node tests/p2/run-p2-tests.mjs && node tests/p2/address-parser-tests.mjs",
+    "test": "node tools/validate-foundation.mjs && node tests/run-node-tests.mjs && node tests/p2/run-p2-tests.mjs && node tests/p2/address-parser-tests.mjs && node tools/build-p1.mjs && node tests/build/reproducible-build.mjs"
   },
   "engines": { "node": "24.20.x" }
 }
