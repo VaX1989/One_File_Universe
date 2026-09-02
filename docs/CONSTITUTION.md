@@ -119,3 +119,13 @@ P0 is complete only when:
 - P1 has a falsifiable acceptance plan.
 
 No production procedural universe generator should be treated as stable before this gate.
+
+## 11. Project Language Policy
+
+**English is the normative language of One File Universe.**
+
+English MUST be used for source identifiers, comments, documentation, ADRs, schemas, manifests, tests, CI output, issues/specifications, pull requests, commit and release descriptions, and canonical user-facing terminology.
+
+Future localization MAY provide translations, but translations are non-normative and MUST NOT define canonical identifiers, protocol semantics or authoritative terminology.
+
+Foundation validation MUST enforce stable policy markers and repository conventions conservatively. It MUST NOT use a naive natural-language detector whose false positives could reject valid code, proper names, test vectors or future localization resources.
