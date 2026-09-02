@@ -1,194 +1,124 @@
 # P4 Temporal Kernel Contract
 
-**Status:** P4 implementation candidate  
-**Upstream authority:** P2 final candidate `9272a36fe2cb6c5b887e2f99d7e6ce671c5a8883`  
-**Protocol:** `ofu-p4-temporal-v1`
+**Status:** semantic-closure candidate  
+**Upstream authority:** frozen P2 final candidate `9272a36fe2cb6c5b887e2f99d7e6ce671c5a8883`  
+**Temporal protocol:** `ofu-p4-temporal-v1`  
+**Evidence architecture:** `phase-evidence-architecture-v1`
 
-## Scope
+## Scope and authority
 
-P4 defines the deterministic mutable-world layer above the P2 procedural authority kernel. It does not redefine OFU-CBV-1, Unicode, Universe Identity, Canonical Entity Identity, Canonical Address, derivation or numeric semantics. It contains no astronomy, climate, biosphere, civilization or gameplay domain logic.
+P4 defines deterministic mutable-world time, accepted event ordering, replay, checkpoints, bounded history, lineage and temporal scheduling. It reuses P2 OFU-CBV-1, Unicode, Universe Identity, Canonical Entity Identity, hashing and canonical byte rules. P4 does not own astronomy, climate, biology, civilization or domain transition physics.
 
-The canonical equation is:
+The persistent world equation is:
 
 ```text
-CurrentCanonicalWorld = ProceduralBaseline + OrderedCanonicalEvents
+CurrentCanonicalWorld = ProceduralBaseline + VersionedTransitionContract + AcceptedCanonicalHistory
 ```
 
-A checkpoint is a verified replay accelerator for an event prefix, not an independent source of truth.
+A long-running live representation is:
+
+```text
+VerifiedCheckpoint(discarded prefix) + BoundedCanonicalTail
+```
+
+A checkpoint is an authority-preserving replay accelerator and commitment to the discarded prefix result; it is not a second world truth.
 
 ## Canonical time
 
-The canonical epoch is **Universe Genesis T0**. Time is represented as:
+The canonical epoch is Universe Genesis T0. Canonical time is:
 
 ```text
 { seconds: u64, micros: u64 in [0, 999999] }
 ```
 
-This provides integer microsecond precision without canonical floating point. Negative canonical time is not admitted in v1. Historical systems that need a pre-genesis or domain-relative epoch must define that as domain data rather than smuggling wall-clock semantics into P4.
-
-Wall-clock, browser `Date`, frame time, animation clocks and UI timestamps are presentation metadata and MUST NOT participate in canonical ordering or replay.
+Negative canonical time is not admitted in v1. Browser `Date`, wall-clock arrival time, animation time and Worker scheduling are non-canonical presentation/runtime metadata.
 
 ## Event identity and total order
 
-A canonical event includes:
+A canonical event commits Universe Identity and lineage, canonical time, event type and positive version, `operationKey`, canonical target Entity IDs, payload, bounded `causes` references and optional `preconditionStateDigest`.
 
-- P4 event schema version;
-- P4 protocol version;
-- P2 Universe Identity digest;
-- lineage ID;
-- canonical time;
-- event type and positive schema version;
-- explicit operation key;
-- canonical target Entity IDs;
-- canonical payload;
-- optional causal references;
-- optional accepted-state precondition digest.
+`EventId` is the domain-separated SHA-256 commitment to the OFU-CBV-1 event descriptor. Total order is `(time.seconds, time.micros, EventId bytes)`. Arrival/insertion order, browser scheduling and random UUID ordering never break ties.
 
-`EventId = SHA-256("OFU-P4-EVENT-v1\0" || OFU-CBV-1(eventDescriptor))`.
+## Historical reconstruction versus live admission
 
-Canonical order is the tuple:
+`replay()` / `reconstructHistory()` may receive an already-known bounded historical event set in arbitrary delivery order. They canonical-sort the set, deduplicate exact Event IDs and replay it deterministically. This does not mean that a newly arriving live event may revise accepted history.
 
-```text
-(time.seconds, time.micros, EventId bytes)
-```
+`commit()` operates on a live world and accepts a new event only when its canonical order key **strictly advances** the current accepted frontier. The frontier is the last retained tail event, otherwise the checkpoint frontier. Therefore an event ordered before the frontier is rejected; a same-time event is accepted only if its Event ID sorts after the frontier Event ID; an exact retry of the current frontier Event ID is an idempotent duplicate no-op; an older duplicate is not a history-edit command and is rejected by the same monotonic rule; and compaction cannot change live mutation legality.
 
-Insertion order, arrival time, browser scheduling, Worker completion order and random UUID ordering are forbidden as canonical tie-breakers.
+Retroactive history editing requires a future explicit history-revision/branching operation and is not ordinary P4 v1 commit semantics.
 
-Submitting the same canonical event twice is idempotent because the Event ID is identical. An exact retry of an already accepted Event ID is returned as a duplicate no-op even if its original acceptance precondition is now stale; the mutation is not applied twice. Distinct logical operations at otherwise identical time/payload MUST use distinct semantic `operationKey` values.
+## Frozen v1 meanings
 
-## Command, event and derived effect
+- `causes` are provenance/reference links only. P4 v1 does not infer dependency scheduling, rejection or causal propagation from them.
+- `operationKey` is semantic material inside the Event ID descriptor. It distinguishes otherwise identical logical operations; it is not a separate global idempotency identity.
+- `preconditionStateDigest` is checked only when a **new** live Event ID is admitted. Replay of an already accepted event does not re-adjudicate the historical command precondition.
+- a checkpoint commits the discarded-prefix result, accumulated history root, covered event count and accepted frontier.
 
-A command is an intent supplied to the transactional mutation boundary. For a new Event ID, preconditions are evaluated against the current canonical state before acceptance. An exact retry is recognized as the already accepted event before a stale precondition can turn a safe retry into an error. A canonical event is the accepted mutation. Replay does not re-run command acceptance logic; it re-applies accepted events deterministically.
+## Transition semantic authority
 
-Derived effects, indexes, caches and presentation artifacts are not events unless they have independent world semantics.
+Canonical event bytes are not self-interpreting. Persistent interpretation is bound to a transition contract descriptor containing `transitionContractSchemaVersion`, `contractId`, `semanticVersion`, `compatibility` and `eventFamilies`.
 
-## Typed mutable overlay
+P4 v1 supports exact compatibility only. `semanticVersion` uses SemVer core `MAJOR.MINOR.PATCH` form. A runtime transition implementation must explicitly provide reducers whose keys exactly match the declared event families.
 
-P4 v1 contains a deliberately small core event registry:
+The built-in P4 transition contract is `ofu.p4.core-transition` version `1.0.0`, compatibility `exact`, with families `core.field.set@1`, `core.counter.add@1`, `core.set.add@1`, `core.set.remove@1`, `core.relation.set@1` and `core.tombstone.set@1`.
 
-- `core.field.set@1`;
-- `core.counter.add@1`;
-- `core.set.add@1`;
-- `core.set.remove@1`;
-- `core.relation.set@1`;
-- `core.tombstone.set@1`.
+The transition descriptor is embedded in canonical state and bound by checkpoints, archives and live worlds. Replay/checkpoint/archive operations require a runtime implementation whose descriptor exactly matches the persisted descriptor. Missing, mismatched or unsupported contracts fail closed.
 
-These are typed event families, not a generic JSON Patch protocol. Later domains should register domain-specific reducers rather than encode arbitrary structural patches.
+This mechanism is deliberately not a generic plugin framework. P5/P6/P7 may provide explicit versioned domain transition contracts through the same narrow boundary; they do not modify P4 time/order semantics.
 
-## Replay invariants
+## Checkpoints and extendable history commitment
 
-For one Universe Identity, lineage, baseline and accepted event set:
+Checkpoint schema v2 records Universe Identity and lineage, transition contract descriptor, total covered event count, accumulated event-history root, last covered order key, canonical state and state digest, and protocol/schema versions.
 
-- fresh replay is deterministic;
-- input delivery permutation is irrelevant after canonical sorting;
-- duplicate Event IDs are applied once;
-- query/presentation context is irrelevant;
-- Worker or batch scheduling may change execution strategy but not canonical results.
+The event-history root is an ordered domain-separated accumulator over Event IDs. This permits deterministic extension from a prior checkpoint without restoring discarded Event IDs while producing the same root as the corresponding complete ordered prefix. `advanceCheckpoint()` accepts only suffix events strictly after the prior checkpoint frontier and extends count/root/state deterministically.
 
-Canonical state is committed by `OFU-P4-STATE-v1` digest over OFU-CBV-1 bytes.
+## Bounded live history and deterministic compaction
 
-## Checkpoints
+A live world stores Universe Identity and lineage, baseline, transition descriptor, optional verified checkpoint, bounded event tail and declared compaction policy `{ threshold, retainTail }`. `threshold` is bounded by the P4 tail hard limit and `retainTail < threshold`.
 
-Checkpoint schema v1 records:
+When a successful live commit reaches the threshold, P4 deterministically folds the oldest tail prefix into the checkpoint and retains exactly the declared newest tail count. If a checkpoint already exists, it is advanced rather than reconstructing the discarded prefix.
 
-- Universe Identity;
-- lineage ID;
-- covered event count;
-- deterministic root digest of covered Event IDs;
-- last covered canonical order key;
-- canonical state;
-- canonical state digest;
-- protocol/schema versions.
-
-Checkpoint identity is a domain-separated SHA-256 digest of its canonical descriptor.
-
-The checkpoint state itself MUST declare the same temporal protocol, Universe Identity and lineage as the checkpoint descriptor. A suffix event MUST sort strictly after the checkpoint's last covered order key. A checkpoint with a corrupt state digest, inconsistent state lineage, corrupt identity or unsupported version fails closed.
-
-Required equivalence:
+Required invariant across any number of cycles:
 
 ```text
-Replay(baseline, fullHistory)
+Replay(full accepted history)
 ==
-ReplayFromCheckpoint(Checkpoint(prefix), suffix)
+ReplayLiveWorld(repeatedly compacted checkpoint + tail)
 ```
 
-## Deterministic compaction
+The one-shot historical reconstruction limit does not cap total live-world lifetime. Checkpoint `coveredEventCount` is u64 and can advance beyond the historical collection bound while the retained tail remains bounded.
 
-P4 v1 compaction is intentionally conservative: it replaces a deterministic event prefix with a checkpoint and retains a configurable canonical tail. It does not attempt semantic algebra over arbitrary domain events.
+## Archive v2
 
-For identical sorted history and `keepTail`, compaction produces the same checkpoint and suffix representation. Current-state equivalence is mandatory. Historical detail in the discarded prefix is intentionally no longer represented as individual events; its lineage commitment remains in the checkpoint's covered-event root and count.
+A portable P4 archive is OFU-CBV-1 encoded and contains the live representation: Universe/lineage, transition descriptor, baseline, compaction policy, optional checkpoint and bounded suffix, plus a domain-separated integrity digest.
 
-## Versioning and migration
+Import verifies integrity, schema versions, transition compatibility, checkpoint authority, baseline equality, Universe/lineage equality and suffix ordering before constructing a live world. Browser IndexedDB/localStorage remain caches only.
 
-P4 v1 defines separate event, checkpoint and archive schema versions. Unknown event type/version, checkpoint version or archive version fails closed.
+## Transaction boundary
 
-No hypothetical migration is implemented. A future migration must be explicit, deterministic, auditable and versioned. Silent interpretation of future data is prohibited.
-
-## Lineage and branching hook
-
-A lineage ID is derived from Universe Identity, optional parent checkpoint ID and a canonical branch key. P4 does not implement time-travel gameplay. The hook exists so future timelines cannot alias the canonical lineage accidentally.
-
-## Causality
-
-Events may carry bounded canonical `causes` references. These are provenance/causal references for accepted events and are not used as a hidden global causal scheduler. Command preconditions are represented by an optional state digest and are checked transactionally at acceptance for new Event IDs.
-
-Domain-specific bounded propagation belongs to future domain contracts and may use the Multiscale Reality operations `REFINE`, `PROJECT` and `RECONCILE` without changing P4 ordering semantics.
-
-## Scheduler skeleton
-
-The semantic scheduler accepts `COLD`, `WARM`, `HOT` and `IMMEDIATE` work items. It produces a deterministic work plan ordered by due canonical time, then urgency tier, then stable ID.
-
-The scheduler decides **what work is due**. It does not define physics and MUST NOT alter canonical outcomes merely because an entity is simulated at a different LOD. Approximation that changes semantics must be explicitly owned by a domain/model contract.
-
-## Portable archive
-
-P4 archives are OFU-CBV-1 encoded and contain:
-
-- Universe Identity;
-- lineage ID;
-- procedural baseline descriptor/data supplied to P4;
-- optional checkpoint;
-- canonical event suffix/history;
-- archive/protocol versions;
-- domain-separated integrity digest.
-
-Browser IndexedDB/localStorage are caches only. The portable archive is the authoritative mutable-world representation.
-
-Imports rederive Event IDs and checkpoint identities, verify integrity, and require archive header, checkpoint state, checkpoint descriptor, baseline and suffix events to belong to one coherent Universe/lineage. A suffix embedded beside a checkpoint must sort strictly after that checkpoint.
-
-## Transactional mutation boundary
-
-`commit()` performs:
+For a live mutation:
 
 ```text
-replay current world
+verify live world + transition contract
+-> replay checkpoint + bounded tail
 -> canonicalize candidate event
--> return idempotent no-op if Event ID is already accepted
--> for a new Event ID, verify current-state precondition digest
--> canonical sort candidate history
--> replay candidate history
--> return a new committed world/state
+-> exact current-frontier retry => duplicate no-op
+-> require candidate order > accepted frontier
+-> evaluate new-event precondition
+-> apply transition
+-> append to tail
+-> compact deterministically if threshold reached
+-> return new immutable-by-convention world/state result
 ```
 
-The original world object is not partially mutated when validation fails.
+Validation failure never partially mutates the input world.
 
-## P3 compatibility surface
+## Scheduler
 
-P4 requires only upstream canonical identifiers and baseline facts. Synthetic entities are sufficient for P4 conformance. P4 MUST NOT depend on P3 astronomy generator internals.
+COLD/WARM/HOT/IMMEDIATE remains only a deterministic work-planning abstraction. Simulation LOD cannot alter canonical results unless a later domain/model contract explicitly owns that approximation.
 
-## Downstream Temporal Contract Snapshot
+## Downstream snapshot
 
-Stable downstream concepts exposed by P4 are:
+Stable P4 concepts for later phases are canonical time and total event order; monotonic live frontier; historical reconstruction separate from live admission; versioned transition-contract descriptor; `replay` / `reconstructHistory`; `createLiveWorld` / `commit` / `replayLiveWorld`; checkpoint / `advanceCheckpoint`; deterministic bounded-tail compaction; lineage; portable archive; and scheduler tiers.
 
-- `canonicalTime({seconds, micros})`;
-- `lineageId(universeIdentity, parentCheckpointId, branchKey)`;
-- `canonicalEvent(eventInput)`;
-- canonical event order `(time, EventId)`;
-- `replay(...)`;
-- `checkpoint(...)` / `replayFromCheckpoint(...)`;
-- `compact(...)`;
-- `commit(...)`;
-- portable `exportArchive(...)` / `importArchive(...)`;
-- deterministic scheduler tiers.
-
-Downstream phases must not rely on reducer internals, JavaScript object layout or presentation/cache structures.
+Downstream phases must not depend on JavaScript callback identity, object insertion order, browser storage or internal reducer implementation layout.
