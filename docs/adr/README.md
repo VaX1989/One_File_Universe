@@ -18,9 +18,11 @@ ADRs capture decisions with durable semantic consequences. `Accepted` means the 
 | [012](ADR-012-portable-persistence.md) | Portable persistence is authoritative | Accepted |
 | [013](ADR-013-rendering-capabilities.md) | Portable baseline + optional acceleration | Accepted principle; backend details experimental |
 | [014](ADR-014-record-verification.md) | Multidimensional record and verification protocol | Accepted |
+| [015](ADR-015-multiscale-identity-query-and-genesis.md) | Multiscale identity, query context and genesis configuration | Accepted |
 
 ## ADR policy
 
 - Superseded decisions are never silently rewritten out of history.
 - A breaking semantic change creates a new ADR or explicitly supersedes an old one.
 - Languages, compressors, allocators, exact PRFs and global numeric formats are not frozen merely for architectural neatness; they require P1/P2 evidence.
+- ADR-015 constrains P2 identity/address/query semantics without authorizing production multiscale simulation.
