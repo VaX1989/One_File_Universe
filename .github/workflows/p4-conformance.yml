@@ -26,6 +26,7 @@ jobs:
         shell: bash
         run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
       - run: node tests/p4/run-p4-tests.mjs
+      - run: node tests/p4/semantic-closure-tests.mjs
       - run: node tests/p4/archive-lineage-tests.mjs
       - run: node tests/p4/checkpoint-authority-tests.mjs
       - run: node tests/integration/p2-p4-contract-tests.mjs
