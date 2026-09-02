@@ -54,9 +54,9 @@ const result=await page.evaluate(()=>{
   return {region:digest(region),galaxy:digest(item.g),system:digest(system),planet:digest(planet),moon:digest(moon),manifestHash:hex(ctx.semanticManifestHash),corpusDigest,records:corpus.length,key:serializeKey(key),planetKey:serializeKey(planetKey),moonKey:serializeKey(moonKey)};
 });
 const vector=JSON.parse(fs.readFileSync('tests/vectors/golden-p3-corpus-v1.json','utf8'));
-if(vector.expectedDigest&&result.corpusDigest!==vector.expectedDigest)throw new Error('P3 browser Golden corpus digest drift');
-if(vector.browserRegionDigest&&result.region!==vector.browserRegionDigest)throw new Error('P3 browser Region digest drift');
-if(vector.browserSystemDigest&&result.system!==vector.browserSystemDigest)throw new Error('P3 browser System digest drift');
+const checks=[['expectedDigest','corpusDigest'],['manifestHash','manifestHash'],['browserRegionDigest','region'],['browserGalaxyDigest','galaxy'],['browserSystemDigest','system'],['browserPlanetDigest','planet'],['browserMoonDigest','moon']];
+for(const [expectedKey,resultKey] of checks)if(vector[expectedKey]&&result[resultKey]!==vector[expectedKey])throw new Error(`P3 browser ${resultKey} digest drift`);
+if(vector.records&&result.records!==vector.records)throw new Error('P3 browser corpus record-count drift');
 const evidence={phase:'P3',status:'PASS',sourceSha:process.env.OFU_SOURCE_SHA||null,browser:browserName,platform:process.platform,arch:process.arch,...result};
 fs.mkdirSync('dist/evidence',{recursive:true});fs.writeFileSync(`dist/evidence/p3-browser-${process.platform}-${browserName}.json`,JSON.stringify(evidence,null,2)+'\n');
 console.log(JSON.stringify(evidence,null,2));
