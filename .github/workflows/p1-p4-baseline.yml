@@ -1,0 +1,142 @@
+name: P1-P4 Canonical Baseline
+
+on:
+  push:
+    branches:
+      - integration/p1-p4-one-file-baseline
+      - main
+  pull_request:
+
+concurrency:
+  group: p1-p4-baseline-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+permissions:
+  contents: read
+
+jobs:
+  exact-head:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.20.0'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Foundation
+        run: node tools/validate-foundation.mjs
+      - name: P1
+        run: node tests/run-node-tests.mjs && node tests/p1/portable-save-size.mjs
+      - name: P2
+        run: npm run test:p2
+      - name: P3
+        run: node tools/p3-evidence.mjs && python3 tools/p3_spatial_oracle.py
+      - name: P4
+        run: node tests/p4/run-p4-tests.mjs && node tests/p4/semantic-closure-tests.mjs && node tests/p4/archive-lineage-tests.mjs && node tests/p4/checkpoint-authority-tests.mjs
+      - name: P2 to P4 contract
+        run: node tests/integration/p2-p4-contract-tests.mjs
+      - name: P3 to P4 executable integration
+        run: node tests/integration/p3-p4-contract-tests.mjs
+      - name: Evidence isolation
+        run: node tests/integration/evidence-isolation-generic.mjs
+      - name: Build P1-P4 artifact twice and compare
+        shell: bash
+        run: |
+          node tools/build-ofu.mjs > /tmp/build-first.json
+          cp dist/One_File_Universe.html /tmp/One_File_Universe.first.html
+          cp dist/p1-p4-build-manifest.json /tmp/p1-p4-build-manifest.first.json
+          node tools/build-ofu.mjs > /tmp/build-second.json
+          cmp /tmp/One_File_Universe.first.html dist/One_File_Universe.html
+          cmp /tmp/p1-p4-build-manifest.first.json dist/p1-p4-build-manifest.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: p1-p4-certified-build-${{ env.OFU_SOURCE_SHA }}
+          path: |
+            dist/One_File_Universe.html
+            dist/p1-p4-build-manifest.json
+            dist/evidence/
+
+  browser-linux:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.20.0'
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - run: node tools/build-ofu.mjs > /dev/null
+      - run: npm install --no-save playwright@1.62.1
+      - run: npx playwright install --with-deps ${{ matrix.browser }}
+      - name: Exercise shipped file URL
+        run: node tests/baseline/browser-p1-p4.mjs
+        env:
+          BROWSER: ${{ matrix.browser }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: p1-p4-linux-x64-${{ matrix.browser }}-${{ env.OFU_SOURCE_SHA }}
+          path: dist/evidence/baseline/
+
+  browser-platform:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            browser: chromium
+          - os: macos-latest
+            browser: webkit
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.20.0'
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - run: node tools/build-ofu.mjs > /dev/null
+      - run: npm install --no-save playwright@1.62.1
+      - run: npx playwright install ${{ matrix.browser }}
+      - name: Exercise shipped file URL
+        run: node tests/baseline/browser-p1-p4.mjs
+        env:
+          BROWSER: ${{ matrix.browser }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: p1-p4-${{ runner.os }}-${{ runner.arch }}-${{ matrix.browser }}-${{ env.OFU_SOURCE_SHA }}
+          path: dist/evidence/baseline/
+
+  seal:
+    if: ${{ always() }}
+    needs: [exact-head, browser-linux, browser-platform]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every baseline gate
+        shell: bash
+        run: |
+          test '${{ needs.exact-head.result }}' = success
+          test '${{ needs.browser-linux.result }}' = success
+          test '${{ needs.browser-platform.result }}' = success
+      - run: echo 'P1-P4 canonical baseline exact-head seal PASS'
