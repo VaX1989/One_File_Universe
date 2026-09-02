@@ -3,8 +3,12 @@ name: P2 Conformance
 on:
   push:
     branches:
+      - main
       - feature/p2-deterministic-kernel
   pull_request:
+
+env:
+  OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 
 permissions:
   contents: read
@@ -14,9 +18,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
       - uses: actions/setup-node@v4
         with:
           node-version: '24.20.0'
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
       - run: python3 --version
       - run: node --version
       - run: npm test
@@ -37,15 +46,22 @@ jobs:
           - webkit
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
       - uses: actions/setup-node@v4
         with:
           node-version: '24.20.0'
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
       - run: node tools/build-p1.mjs
       - run: npm install --no-save playwright@1.62.1
       - run: npx playwright install --with-deps ${{ matrix.browser }}
       - run: node tests/p2/browser-p2.mjs
         env:
           BROWSER: ${{ matrix.browser }}
+          EXPECTED_PLATFORM: linux
+          EXPECTED_ARCH: x64
       - uses: actions/upload-artifact@v4
         with:
           name: p2-linux-${{ matrix.browser }}
@@ -58,20 +74,31 @@ jobs:
         include:
           - os: windows-latest
             browser: chromium
+            platform: win32
+            arch: x64
           - os: macos-latest
             browser: webkit
+            platform: darwin
+            arch: arm64
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
       - uses: actions/setup-node@v4
         with:
           node-version: '24.20.0'
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
       - run: node tools/build-p1.mjs
       - run: npm install --no-save playwright@1.62.1
       - run: npx playwright install ${{ matrix.browser }}
       - run: node tests/p2/browser-p2.mjs
         env:
           BROWSER: ${{ matrix.browser }}
+          EXPECTED_PLATFORM: ${{ matrix.platform }}
+          EXPECTED_ARCH: ${{ matrix.arch }}
       - uses: actions/upload-artifact@v4
         with:
           name: p2-${{ matrix.os }}-${{ matrix.browser }}
@@ -86,9 +113,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
       - uses: actions/setup-node@v4
         with:
           node-version: '24.20.0'
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
       - name: Require upstream success
         shell: bash
         run: |

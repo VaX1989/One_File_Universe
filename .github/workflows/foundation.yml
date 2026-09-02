@@ -5,6 +5,9 @@ on:
     branches: [main, 'feature/**']
   pull_request:
 
+env:
+  OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
 permissions:
   contents: read
 
@@ -12,11 +15,16 @@ jobs:
   validate-foundation:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout exact source
         uses: actions/checkout@v4
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24.20.0'
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
       - name: Validate Constitution and ADR foundation
         run: npm test
