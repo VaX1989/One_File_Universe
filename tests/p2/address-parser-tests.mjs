@@ -1,12 +1,1 @@
-import fs from 'node:fs';
-import vm from 'node:vm';
-import assert from 'node:assert/strict';
-globalThis.OFU={};
-for(const f of ['src/kernel/sha256.js','src/kernel/p2-canonical.js','src/kernel/p2-address-parser.js'])vm.runInThisContext(fs.readFileSync(f,'utf8'),{filename:f});
-const P=OFU.p2;
-const a=P.address([{kind:'namespace',value:'local'},{kind:'i64',value:-1n},{kind:'u64',value:18446744073709551615n},{kind:'bytes',value:Uint8Array.of(0,1,255)}]);
-const r=P.parseAddress(a);
-assert.equal(r[0].value,'local');assert.equal(r[1].value,-1n);assert.equal(r[2].value,18446744073709551615n);assert.deepEqual([...r[3].value],[0,1,255]);assert.equal(P.hex(P.address(r)),P.hex(a));
-for(const bad of [Uint8Array.of(),Uint8Array.from(a.slice(0,-1)),Uint8Array.from([...a,0]),Uint8Array.from([79,70,85,65,2,1,1,1,120]),Uint8Array.from([79,70,85,65,1,1,255])])assert.throws(()=>P.parseAddress(bad));
-let unknown=Uint8Array.from(a);unknown[6]=255;assert.throws(()=>P.parseAddress(unknown),/unknown segment tag/);
-console.log('P2 address parser: PASS');
+import fs from 'node:fs';import vm from 'node:vm';import assert from 'node:assert/strict';globalThis.OFU={};for(const f of ['src/kernel/sha256.js','src/kernel/p2-unicode.js','src/kernel/p2-canonical.js','src/kernel/p2-address-parser.js'])vm.runInThisContext(fs.readFileSync(f,'utf8'),{filename:f});const P=OFU.p2;const a=P.address([{kind:'namespace',value:'local'},{kind:'i64',value:-1n},{kind:'u64',value:18446744073709551615n},{kind:'bytes',value:Uint8Array.of(0,1,255)}]),r=P.parseAddress(a);assert.equal(r[0].value,'local');assert.equal(r[1].value,-1n);assert.equal(r[2].value,18446744073709551615n);assert.deepEqual([...r[3].value],[0,1,255]);assert.equal(P.hex(P.address(r)),P.hex(a));for(const bad of [Uint8Array.of(),Uint8Array.from(a.slice(0,-1)),Uint8Array.from([...a,0]),Uint8Array.from([79,70,85,65,2,1,1,1,120]),Uint8Array.from([79,70,85,65,1,1,255])])assert.throws(()=>P.parseAddress(bad));let unknown=Uint8Array.from(a);unknown[6]=255;assert.throws(()=>P.parseAddress(unknown),/unknown address segment tag/);const nfd=P.address([{kind:'namespace',value:'e\u0301'}]);assert.equal(P.parseAddress(nfd)[0].value,'é');assert.throws(()=>P.parseAddress(Uint8Array.from([79,70,85,65,1,1,1,2,0xcd,0xb8])),/outside ofu-unicode/);console.log('P2 address parser: PASS');

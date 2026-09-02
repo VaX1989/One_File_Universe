@@ -2,117 +2,91 @@
 
 ## Purpose
 
-Determinism is part of OFU world identity, not an implementation detail. The same canonical query under the same Universe Identity and conformance version must produce the same canonical serialized result wherever that conformance class is claimed.
+Determinism is part of OFU world identity, not an implementation detail. The same canonical query under the same Universe Identity and semantic protocol must produce the same canonical result wherever that conformance class is claimed.
 
-## Universe Identity
+## P2 Universe Identity
 
 ```text
-UniverseIdentity = {
-  masterSeed256,
-  generatorManifestHash,
-  canonicalProtocolVersion
-}
+SemanticManifestHash
+= SHA-256(OFU-CBV-1(SemanticGeneratorManifestV1))
+
+UniverseIdentity
+= SHA-256("OFU-UNIVERSE-v1\\0" ||
+    OFU-CBV-1({
+      canonicalProtocolVersion,
+      masterSeed,
+      semanticManifestHash
+    }))
 ```
 
-The master seed supplies entropy. Versions are not encoded into entropy bits; versioning remains explicit and independently evolvable.
+The seed supplies entropy. Semantic lineage remains explicit through the strict Semantic Generator Manifest. Implementation/runtime evidence is excluded. The P0-era identifier `generatorManifestHash` is historical generic terminology; P2's frozen normative name is `semanticManifestHash`.
 
-## Canonical addresses
+## Entity Identity
 
-Addresses must use exact representations: fixed-width integers/byte strings or other canonical encodings. JavaScript `Number` MUST NOT represent identifiers requiring integer precision beyond 2^53-1.
-
-An address includes enough domain information to prevent ambiguous interpretation. Human-readable paths are presentation; canonical byte serialization is normative.
-
-## Addressed derivation and domain separation
-
-OFU MUST NOT use one global sequential RNG stream for world meaning.
-
-Conceptually:
+P2 Entity Identity is universe-scoped:
 
 ```text
-PRF(
-  masterSeed,
-  generatorManifestHash,
-  domainTag,
-  canonicalAddress,
-  propertyTag,
-  counter
+EntityIdentity
+= SHA-256("OFU-ENTITY-v1\\0" ||
+    OFU-CBV-1({
+      universeIdentity,
+      namespace,
+      stableKey
+    }))
+```
+
+Location, containment, ownership, QueryContext and ModelRegime do not implicitly rename an entity.
+
+## Canonical addresses and derivation
+
+Canonical Address v1 uses exact tagged representations with bounded segments and total bytes. Human-readable paths are presentation; canonical bytes are normative.
+
+Canonical generation MUST NOT depend on a global sequential RNG stream. P2 freezes:
+
+```text
+HMAC-SHA-256(
+  masterSeed32,
+  OFU-CBV-1([
+    "OFU-DERIVE-v1",
+    semanticManifestHash32,
+    domain,
+    canonicalAddressV1Bytes,
+    property,
+    counterU64
+  ])
 )
 ```
 
-Changing `/civilization/language/name` must not perturb `/planet/orbit` merely because one subsystem consumes a different number of random values.
+Changing an unrelated query must not perturb another fact merely because evaluation order or draw count changed.
 
-The exact PRF/hash primitive is deliberately open until P1/P2 benchmarking and security/portability review.
+## Canonical serialization and Unicode
+
+P2 uses OFU-CBV-1 and frozen Unicode profile `ofu-unicode-15.1.0-v1`. Canonical text is strict UTF-8/NFC over the frozen Unicode 15.1 admitted repertoire. Newly assigned future Unicode code points cannot silently enter the P2 domain.
+
+Canonical arrays and maps are descriptor-bounded data structures; canonical encoding does not execute array accessors or user/ambient array iterators. Hostile/imported values cross the strict canonical-byte boundary.
 
 ## Numeric determinism
 
-Native or accelerated floating-point operations are not presumed bit-exact merely because they are standardized broadly. Canonical subsystems must explicitly choose and test a numeric policy.
-
-Permitted policies include:
-
-- exact integer arithmetic;
-- domain-specific fixed point;
-- deterministic software implementations of required transcendental functions;
-- explicitly rounded/quantized algorithms whose canonical serialized results are stable;
-- other algorithms proven by golden-vector conformance.
-
-A single global fixed-point format is NOT a constitutional requirement.
-
-## Canonical serialization
-
-D3 outputs require one normative byte representation specifying at least:
-
-- field ordering;
-- integer widths and signedness;
-- byte order;
-- text normalization/encoding;
-- absent vs null semantics;
-- collection ordering;
-- numeric rounding/quantization;
-- schema/protocol version.
-
-JSON may be used for human-facing diagnostics, but arbitrary host `JSON.stringify` output is not automatically canonical serialization.
+P2 freezes only checked i64 addition, exact-intermediate/ties-to-even fixed multiplication with checked i64 output, and u64 integer square root. Native transcendental/GPU floating-point results are not presumed canonical. Additional primitives require explicit semantic evolution when a future generator actually needs them.
 
 ## Order and concurrency independence
 
-Canonical results must not depend on:
+Canonical results must not depend on traversal order, worker count, completion order, frame rate, unrelated prior queries or cache state. P2 conformance compares direct execution and multiple reordered worker schedules against the same Golden Universe Corpus digest.
 
-- traversal order;
-- number of workers;
-- message completion order;
-- rendering frame rate;
-- prior unrelated queries;
-- cache hits/misses.
+## Semantic Generator Manifest
 
-Where stateful simulation intentionally depends on event order, ordering semantics must be explicit and canonical.
-
-## Generator Manifest
-
-The manifest versions canonical domains independently. A change that can alter canonical output MUST change the appropriate generator identity and therefore the manifest hash.
-
-Presentation-only changes MUST NOT create a new universe identity.
+A change that can alter canonical output MUST change the appropriate semantic version/profile and therefore the Semantic Manifest hash. Presentation-only, source-layout-only and conformance-evidence-only changes MUST NOT create a new Universe Identity.
 
 ## Golden Universe Corpus
 
-Before complex generators stabilize, OFU will define a versioned corpus of canonical addresses covering edge cases and representative domains.
-
-For every supported conformance target:
-
-```text
-Digest(masterSeed, manifest, corpus) == referenceDigest
-```
-
-P2 exit requires reproducible canonical digests across the declared browser/architecture matrix.
+P2 uses an independently generated Python oracle corpus with explicit edge/rejection vectors and deterministic generated queries. Every claimed runtime must reproduce the same canonical pins on the exact source SHA. Official Unicode 15.1 normalization data independently certifies host NFC behavior.
 
 ## Late materialization
 
-Generated detail must satisfy canonical facts already established at coarser levels.
+Generated detail must satisfy canonical facts already established at coarser levels:
 
 ```text
 Committed facts -> constraints -> detail generation
 ```
 
-Later refinement MUST NOT invalidate earlier canonical history unless an explicit migration/new lineage occurs.
-
-## Determinism versus realism
-
-A more physically accurate algorithm is not automatically preferable if it destroys portability or bounded cost. OFU optimizes for explicit fidelity, stable semantics and meaningful causality. Fidelity upgrades that change canonical facts require versioned lineage.
+Refinement that would invalidate earlier canonical history requires explicit versioned lineage/migration rather than silent reinterpretation.

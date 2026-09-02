@@ -2,114 +2,92 @@
 
 **One file. One universe. Verifiable by construction.**
 
-One File Universe (OFU) is an experiment in software architecture, procedural generation and deterministic simulation whose canonical release artifact is a **single self-contained HTML file**.
-
-The ambition is not merely to generate a huge theoretical seed space or to inflate an HTML file. OFU is being designed to combine:
-
-- a sparse, astronomically large procedural address space;
-- deterministic random access to canonical world facts;
-- causal generation from astronomy through planets, biospheres, civilizations and history;
-- semantic simulation levels of detail with bounded runtime cost;
-- portable, versioned mutable world history;
-- modular source code compiled into one standalone HTML artifact;
-- offline operation without application-owned external runtime resources;
-- cross-runtime conformance, reproducible builds and public verification;
-- a multidimensional, anti-padding record protocol.
+One File Universe (OFU) is an experiment in software architecture, procedural generation and deterministic simulation whose canonical release artifact is a single self-contained HTML file. The repository remains modular and evidence-gated; the one-file artifact is a deterministic build product.
 
 ## Current status
 
-**P0 — Constitution & Foundation**
+- **P0 — Constitution & Foundation:** complete.
+- **P1 — Constitutional Prototype:** complete.
+- **P2 — Deterministic Kernel:** freeze/closure candidate on PR #6. Closure requires exact-head Foundation, P1 and P2 conformance, the declared cross-runtime matrix, reproducible build, review closure, merge and post-merge certification.
+- **P3 — Universe Skeleton:** not started during P2 closure.
 
-No production universe generator is considered stable yet. This is deliberate: the repository first defines the semantic rules that would become extremely expensive to change once worlds, histories and saves exist.
+P2 freezes OFU-CBV-1, `ofu-unicode-15.1.0-v1`, Canonical Address v1, a strict Semantic Generator Manifest, Universe Identity, universe-scoped Entity Identity, HMAC-SHA-256 addressed derivation and a deliberately small deterministic numeric contract. The normative contract is [docs/P2_PROTOCOL.md](docs/P2_PROTOCOL.md).
 
 ## Core model
 
 ```text
+SemanticManifestHash = SHA-256(OFU-CBV-1(SemanticGeneratorManifestV1))
+
 UniverseIdentity
-= MasterSeed256
-+ GeneratorManifestHash
-+ CanonicalProtocolVersion
+= SHA-256(domain || OFU-CBV-1({
+    canonicalProtocolVersion,
+    masterSeed,
+    semanticManifestHash
+  }))
 
-Canonical query
-= UniverseIdentity
-+ CanonicalAddress
-+ DomainTag
-+ PropertyTag
+EntityIdentity
+= SHA-256(domain || OFU-CBV-1({
+    universeIdentity,
+    namespace,
+    stableKey
+  }))
 
-Current world
-= ProceduralBaseline
-+ VersionedEvents
-+ CanonicalCheckpoints
+Canonical derivation
+= HMAC-SHA-256(masterSeed,
+    OFU-CBV-1([
+      derivationVersion,
+      semanticManifestHash,
+      domain,
+      canonicalAddressV1Bytes,
+      property,
+      counter
+    ]))
 ```
 
-The semantic universe may look hierarchical — Universe → Galaxy → System → Planet → Biosphere → Civilization — but it is designed as a **sparse-addressed space**, not a fully materialized tree.
+The semantic universe may look hierarchical, but it is designed as a sparse-addressed multiscale reality graph rather than a fully materialized tree. Mutable location, containment, ownership and query/model context do not silently become permanent Entity Identity.
 
 ## Runtime profiles
 
-### Strict Direct-Open
+**Strict Direct-Open** is the portability baseline: one local HTML, no required runtime network, no required application-owned external resources and no canonical dependence on origin-bound browser storage. **Enhanced** execution may opportunistically use additional capabilities, but it must not change canonical world meaning.
 
-The portability baseline: one local HTML, no required network, no required application-owned external resources and no canonical dependence on origin-bound browser storage.
-
-### Enhanced
-
-The same artifact may opportunistically use capabilities such as WebGPU, stronger browser storage or shared-memory acceleration where the environment permits them. Enhanced execution must not change canonical world meaning.
-
-## Constitutional rules
-
-Among the project's non-negotiable foundations:
+## Core rules
 
 - modular source → deterministic single-artifact build;
-- seed and generator lineage are separate concepts;
-- addressed, domain-separated derivation rather than global sequential RNG semantics;
-- canonical state is separated from derived and presentation state;
-- canonical numeric behavior must be explicitly reproducible;
+- seed and semantic generator lineage are separate concepts;
+- addressed, domain-separated derivation replaces global sequential RNG semantics;
+- canonical, derived and presentation state are distinct;
+- canonical numeric behavior is explicitly reproducible;
 - hardware acceleration cannot silently define universe truth;
-- simulation detail is relevance/LOD driven rather than global;
-- late materialization must satisfy previously committed facts;
-- portable saves are authoritative; browser storage is optional convenience/cache;
-- record claims require evidence and distinguish raw bytes from Certified Functional Payload;
+- late materialization must satisfy committed facts;
+- portable saves are authoritative while browser storage is optional convenience/cache;
+- extraordinary claims require reproducible evidence;
 - irreversible semantic decisions are ADR-governed.
 
-## Foundation documents
+## Key documents
 
 - [Project Constitution](docs/CONSTITUTION.md)
-- [Vision](docs/VISION.md)
 - [Foundational Architecture](docs/ARCHITECTURE.md)
 - [Determinism Contract](docs/DETERMINISM.md)
+- [P2 Protocol](docs/P2_PROTOCOL.md)
+- [P2 Architecture](docs/P2_ARCHITECTURE.md)
+- [P2 Security & Conformance](docs/P2_SECURITY_CONFORMANCE.md)
 - [Record & Certification Specification](docs/RECORD_SPEC.md)
 - [Conformance Model](docs/CONFORMANCE.md)
 - [Development Roadmap](docs/ROADMAP.md)
-- [Risk Register](docs/RISK_REGISTER.md)
 - [Architecture Decision Records](docs/adr/README.md)
 
-## Roadmap
-
-OFU uses evidence gates rather than calendar promises:
-
-`P0 Constitution → P1 Constitutional Prototype → P2 Deterministic Kernel → P3 Universe Skeleton → P4 Temporal Kernel → P5 Planetology → P6 Biosphere → P7 Civilization → P8 History → P9 Gameplay → P10 Product Maturity → P11 Certification → P12 Scale Campaign`
-
-The crucial next phase, P1, is intentionally small. It exists to falsify dangerous assumptions about direct-open execution, deterministic single-file builds, embedded executable payloads, workers, baseline rendering, portable saves and canonical digests **before the first serious procedural universe is built**.
-
 ## Validation
-
-The P0 foundation validator is dependency-free:
 
 ```bash
 npm test
 ```
 
-GitHub Actions runs the same validation on pushes and pull requests.
-
-## Record philosophy
-
-OFU may eventually attempt extraordinary single-file scale, but `largest HTML by bytes` is treated only as one factual dimension. Certified releases will report a Record Vector covering artifact size, Certified Functional Payload, executable extent, functional coverage, canonical conformance, procedural quality, reproducibility, verification coverage and working-set efficiency.
-
-Padding and deliberate duplication may increase raw bytes but do **not** count toward Certified Functional Payload.
+GitHub Actions additionally certifies direct-open browser execution, official Unicode 15.1 normalization conformance, independent Python agreement, worker/order independence, reproducible builds and the exact source SHA.
 
 ## Repository policy
 
-`main` should remain a coherent, reviewable baseline. Substantial phases should proceed through feature branches and evidence-backed pull requests. Generated giant release artifacts are build products; the repository remains the source of truth.
+`main` remains a coherent evidence-backed baseline. Substantial phases proceed through feature branches and review. Generated giant release artifacts are build products; the repository is the source of truth.
 
 ## License
 
-No project license has been selected yet. Until a license is explicitly added, do not assume permission beyond what applicable copyright law grants.
+No project license has been selected yet. Until a license is explicitly added, do not assume permission beyond applicable copyright law.
