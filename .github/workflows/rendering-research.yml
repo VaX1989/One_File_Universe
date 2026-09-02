@@ -1,0 +1,79 @@
+name: Rendering Research
+on:
+  push:
+    branches: [research/rendering-scale-navigation]
+  pull_request:
+permissions:
+  contents: read
+env:
+  OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+jobs:
+  node:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: '${{ env.OFU_SOURCE_SHA }}'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24.20.0'}
+      - run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - run: node tests/rendering-research/non-interference-tests.mjs
+      - run: node tools/build-render-research.mjs > /tmp/a.json && cp dist/render-research/One_File_Universe_Render_Research.html /tmp/a.html && node tools/build-render-research.mjs > /tmp/b.json && cmp /tmp/a.html dist/render-research/One_File_Universe_Render_Research.html
+      - uses: actions/upload-artifact@v4
+        with:
+          name: render-research-build-${{ env.OFU_SOURCE_SHA }}
+          path: dist/render-research/
+  linux:
+    runs-on: ubuntu-latest
+    strategy: {fail-fast: false, matrix: {browser: [chromium, firefox, webkit]}}
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: '${{ env.OFU_SOURCE_SHA }}'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24.20.0'}
+      - run: node tools/build-render-research.mjs
+      - run: npm install --no-save playwright@1.62.1
+      - run: npx playwright install --with-deps ${{ matrix.browser }}
+      - run: node tests/rendering-research/browser-render-research.mjs
+        env: {BROWSER: '${{ matrix.browser }}'}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: render-linux-${{ matrix.browser }}-${{ env.OFU_SOURCE_SHA }}
+          path: dist/evidence/rendering/
+  platform:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {os: windows-latest, browser: chromium}
+          - {os: macos-latest, browser: webkit}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: '${{ env.OFU_SOURCE_SHA }}'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24.20.0'}
+      - run: node tools/build-render-research.mjs
+      - run: npm install --no-save playwright@1.62.1
+      - run: npx playwright install ${{ matrix.browser }}
+      - run: node tests/rendering-research/browser-render-research.mjs
+        env: {BROWSER: '${{ matrix.browser }}'}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: render-${{ runner.os }}-${{ runner.arch }}-${{ matrix.browser }}-${{ env.OFU_SOURCE_SHA }}
+          path: dist/evidence/rendering/
+  canonical-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: '${{ env.OFU_SOURCE_SHA }}'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24.20.0'}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - run: node tools/validate-foundation.mjs
+      - run: node tests/run-node-tests.mjs && npm run test:p2
+      - run: node tools/p3-evidence.mjs && python3 tools/p3_spatial_oracle.py
+      - run: npm run test:p4
+      - run: node tests/integration/p3-p4-contract-tests.mjs
