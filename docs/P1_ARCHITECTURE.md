@@ -1,41 +1,33 @@
 # P1 Constitutional Prototype Architecture
 
-P1 is a falsification substrate, not a production universe generator.
+## Status
 
-## Runtime chain
-
-`MasterSeed256 + GeneratorManifestHash + CanonicalProtocolVersion -> canonical address bytes -> domain/property-separated SHA-256 derivation -> tiny procedural facts -> optional mutable event overlay -> derived/presentation consumers`.
-
-The generated artifact is `dist/One_File_Universe.html`; it is produced from modular source and is intentionally not committed as primary source.
-
-## Canonical kernel
-
-P1 uses a small dependency-free JavaScript reference kernel. Canonical identity/address fields are encoded as explicit bytes; identifiers beyond Number-safe range use BigInt and fixed-width u64 serialization. Canonical object serialization sorts object keys, normalizes text to NFC, rejects non-safe-integer Number values and hashes normative bytes with SHA-256.
-
-This is a P1/P2 candidate, not a frozen final protocol. Any P2 stabilization requires expanded golden vectors and cross-runtime evidence.
-
-## Procedural proof
-
-The micro-generator exercises `galaxy cell -> system -> star -> planet metadata`. It is intentionally tiny and uses only integer-valued properties. It exists to prove sparse addressed derivation, domain separation and order independence.
+P1 is an end-to-end constitutional falsification prototype. It is deliberately not a production universe generator.
 
 ## Authority boundary
 
-Canonical facts are computed before rendering. WebGL2 consumes a fact snapshot and a 2D diagnostic fallback is available. Renderer choice is never fed back to canonical generation or digest calculation.
+Canonical authority is limited to the dependency-free SHA-256 implementation, canonical integer/address/serialization primitives, framed addressed derivation, and the tiny micro-universe conformance substrate. Rendering, WebGPU capability detection, the embedded WASM experiment, timing, heap samples and native transcendental probes are non-authoritative.
 
-## Concurrency
+## One-file runtime
 
-Workers are constructed from embedded source through Blob URLs. Jobs contain explicit canonical addresses, results carry stable IDs, aggregation sorts by ID, and the same corpus is compared for 1 versus N workers. Result payload bytes are returned through a transferable ArrayBuffer path.
+`tools/build-p1.mjs` deterministically embeds source components, CSS, golden vectors, the Generator Manifest and Worker kernel source into `dist/One_File_Universe.html`. Runtime component SHA-256 checks execute before component evaluation. Strict execution uses `file://` and requires no application-owned external runtime resource. The browser harness observes request events, DOM resource references, Resource Timing entries and explicit network APIs. A deliberately injected local `file://` script is a positive control proving the harness detects application-owned local subresources.
 
-SharedArrayBuffer is capability-probed only and never required by Strict.
+Self-generated `blob:` Worker code and `data:`/`about:` resources are the only classified non-document resource schemes admitted by the P1 harness. They are derived from content already embedded in the artifact.
 
-## WASM experiment
+## Portable save contract
 
-A 41-byte WASM module exporting deterministic i32 addition is base64-embedded and instantiated directly from bytes. The self-test measures decode/init and a small JS-versus-WASM call benchmark. This proves embedded WASM viability only; it does not justify a WASM-first architecture.
+P1 portable event data is intentionally narrower than the prototype canonical in-memory serializer. It admits only null, booleans, NFC-normalized well-formed Unicode strings, safe integers, dense arrays and plain/null-prototype records. It rejects BigInt, floats, unsafe integers, undefined/functions/symbols, accessors, symbols, sparse/augmented arrays, cycles, excessive depth/nodes/keys/items/string bytes, invalid UTF-16, normalized-key collisions and prototype-sensitive keys.
 
-## Persistence
+Portable JSON is emitted in deterministic sorted-key form. Import requires exact known fields, exact outer and inner schema versions, exact canonical protocol version, exact Universe Identity shape, contiguous event sequence numbers, canonical normalized payload representation, SHA-256 integrity and optional expected seed/manifest identity. Unsupported future versions fail closed.
 
-P1 saves are versioned JSON containers carrying Universe Identity, canonical protocol version, a bounded event overlay and SHA-256 integrity digest over canonical payload bytes. Import validates format, version, size, structure and integrity before returning state.
+## Concurrency and failure behavior
 
-## Build integrity
+Workers use an embedded complete canonical kernel closure, transferable result buffers, stable ID aggregation and a bounded timeout. Worker absence or hang is `ENVIRONMENT_LIMITED`; it cannot alter the direct canonical corpus digest. Worker counts 1, 2 and 4 are conformance-tested.
 
-The build has a fixed component order, normalizes line endings, embeds no timestamps/absolute paths/random IDs in the HTML and emits external build metadata separately. Runtime component source strings are hashed before execution; the SHA-256 bootstrap verifier is ultimately covered by the external whole-artifact hash.
+## Renderer safety
+
+Capability probes guard Window-only globals and context creation. Missing `document`, `navigator`, canvas, WebGL2 or 2D context reports an unavailable capability/backend instead of causing an accidental `ReferenceError`. Rendering is outside canonical authority.
+
+## P1 pinned semantic baseline
+
+The committed P1 corpus digest is `4750e06a5820a6cc933a4cce97477e5b8b0ec28a4d021dcef8d32b9e330f1d3e`. A semantic change must deliberately evolve the vector/protocol baseline rather than allowing engines to agree on an unintended new result.

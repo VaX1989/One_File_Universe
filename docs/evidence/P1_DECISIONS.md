@@ -1,24 +1,17 @@
-# P1 Decision Experiments
+# P1 Decision Record
 
-## Language / WASM
+P1 evidence supports the following decisions without freezing P2 protocol details.
 
-| Candidate | P1 evidence | Strength | Cost / risk | P1 disposition |
-|---|---|---|---|---|
-| JavaScript reference kernel | Executed in Node; browser matrix defined | Minimal tooling, native browser access, easy direct-open embedding | Must constrain numeric semantics explicitly | Retain as reference candidate |
-| Embedded WASM helper | Real embedded i32 module + init/interop benchmark | Compact deterministic integer execution is viable | JS/WASM call boundary can dominate tiny operations; toolchain not yet justified | Keep experimental |
-| Rust/WASM | Not implemented in P1 | Mature WASM ecosystem | Adds build/toolchain complexity and bytes | NOT_VERIFIED; do not freeze |
-| Zig/WASM | Not implemented in P1 | Potential compact output | Adds build/toolchain complexity and less project evidence | NOT_VERIFIED; do not freeze |
+| Area | P1 decision | Status for P2 |
+|---|---|---|
+| Runtime authority | dependency-free JS canonical reference is viable | candidate, not permanent language lock-in |
+| WASM | embedded WASM executes in Strict direct-open | experiment only; Rust/WASM and Zig/WASM unverified |
+| Numerics | checked integer/BigInt/fixed-point candidates are viable; native sin/log remain non-canonical | P2 must define domain-specific numeric contract |
+| Parallelism | Blob Workers + transferables are viable and order-independent in the executed matrix | retain; SharedArrayBuffer optional only |
+| Rendering | WebGL2/2D diagnostic fallback can consume facts without authority | presentation only |
+| Persistence | portable JSON can be made bounded and fail-closed for P1 | do not confuse with final P2 canonical binary value model |
+| Strict resource proof | one-file proof must observe local as well as network resources | retain as conformance invariant |
+| Corpus | matrix agreement alone is insufficient; expected digest must be committed | retain and strengthen in Golden Universe Corpus v1 |
+| Language | English is normative; localization is non-normative | constitutional policy |
 
-## Numeric classes
-
-- exact u32 operations and `Math.imul`: D3 candidates, subject to golden-vector browser confirmation;
-- BigInt integer identities/fixed-width serialization: D3 candidate;
-- domain-specific integer fixed point: D3 candidate;
-- explicitly quantized floating-point: candidate only after cross-runtime corpus evidence;
-- native transcendental functions (`sin`, `log`): D1 experimental and MUST NOT define canonical state in P1/P2 without a stronger specified algorithm.
-
-No global Q32.32 requirement is adopted.
-
-## Embedding / compression
-
-P1 embeds source text directly plus a tiny base64 WASM payload. This minimizes decoder complexity and makes component integrity auditable. Compression is deferred: at ~30 KB the prototype is too small for compression tradeoffs to be representative of record-scale artifacts. P12 must revisit parse/decode amplification with realistic payloads.
+No accepted P0 ADR was superseded by P1. P2 must separately adjudicate canonical value encoding, exact derivation construction, semantic versus implementation manifests, and multiscale identity/query implications before freezing long-lived bytes.

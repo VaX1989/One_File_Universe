@@ -1,47 +1,59 @@
 # P1 Verification Report
 
-Evidence states are not promoted beyond what actually executed.
+**Evidence date:** 2026-09-02  
+**Certified code head:** `2eff57ea5402243a120c4e10727e0163a974164d`  
+**P1 Conformance run:** `33593422984`  
+**Aggregate state:** `CROSS_RUNTIME_VERIFIED`
 
-## Executed locally before CI
+## Machine-enforced aggregate
 
-- foundation validation: PASS
-- dependency-free Node conformance suite: PASS
-- SHA-256 known answer (`abc`): PASS
-- repeated canonical micro-generation: PASS
-- query-order metamorphic test: PASS
-- >2^53 address identity represented through BigInt/u64: PASS
-- u64 overflow rejection: PASS
-- unsafe floating Number canonical serialization rejection: PASS
-- portable save export/import digest equality: PASS
-- corrupted save integrity rejection: PASS
-- malformed save rejection: PASS
-- unsupported future save version rejection: PASS
-- two-build byte reproducibility: PASS
+- artifact bytes: `41,648`
+- artifact SHA-256: `9e83a6de553030a954ffce538e7e3d374b39d2830476d977e66be4b62360486d`
+- Generator Manifest hash: `ed862a1a0295e5beaa695e0672bd19b982e322f3e8ba945f8f249442cce8a066`
+- Golden Vector hash: `f00e63878645fd03815e6ed402c6535afef532c18f2bf124dc87f8aac4ef8ba0`
+- Component Manifest hash: `31939440fc60b2da9c069d67bd755023c988fbd370b5ec4f7908c0da94a7d93e`
+- canonical corpus digest: `4750e06a5820a6cc933a4cce97477e5b8b0ec28a4d021dcef8d32b9e330f1d3e`
+- aggregate failures: none
 
-Local sample digest: `fcc9c8a641a899ab719f023de9acc2c5227e12c6fc5efbd907d66a36086776b1`.
+## Executed matrix
 
-## Browser evidence gate
+| Platform | Architecture | Engine | Engine version | Node | Playwright |
+|---|---|---|---|---|---|
+| Ubuntu 24 runner | x64 | Chromium | 151.0.7922.34 | 24.20.0 | 1.62.1 |
+| Ubuntu 24 runner | x64 | Firefox | 153.0 | 24.20.0 | 1.62.1 |
+| Ubuntu 24 runner | x64 | WebKit | 26.5 | 24.20.0 | 1.62.1 |
+| Windows Server 2025 runner | x64 | Chromium | 151.0.7922.34 | 24.20.0 | 1.62.1 |
+| macOS 26 runner | arm64 | WebKit | 26.5 | 24.20.0 | 1.62.1 |
 
-The branch defines a Playwright matrix for Chromium, Firefox and WebKit. Each job first builds the single HTML, opens it through an actual `file://` URL, instruments and blocks fetch/XHR/WebSocket plus observes external requests, runs 1-vs-N Blob workers with transferable ArrayBuffer results, instantiates embedded WASM, checks save round-trip and renderer authority separation, then separately serves the identical bytes over localhost as Enhanced and requires Strict/Enhanced canonical digest equality.
+Playwright WebKit is not described as Safari certification.
 
-Browser results remain `TEST_DEFINED / NOT_VERIFIED` until the GitHub Actions run completes. A browser capability absent from the executed runner must be reported `ENVIRONMENT_LIMITED`, not PASS.
+## Exit adjudication
 
-## Initial gate table
-
-| Requirement | Implemented | Test executed | Result | Platforms | Evidence | Remaining risk |
+| Requirement | Implemented | Test executed | Result | Runtime/platforms | Evidence | Remaining risk |
 |---|---|---|---|---|---|---|
-| modular -> one HTML | yes | yes | PASS | Node 22 local | build script + artifact hash | CI Node 20 comparison pending |
-| Strict Direct-Open | yes | no | NOT_VERIFIED | browser CI pending | direct-open harness | file-origin engine differences |
-| zero required network | yes | no | NOT_VERIFIED | browser CI pending | active network blockers | browser request surface |
-| canonical addressed derivation | yes | yes | PASS | Node 22 local | node tests | browser cross-runtime pending |
-| canonical serialization/digest | yes | yes | PASS | Node 22 local | SHA/vector tests | protocol remains P1 candidate |
-| query-order independence | yes | yes | PASS | Node 22 local | metamorphic test | browser pending |
-| worker/scheduling independence | yes | no | NOT_VERIFIED | browser CI pending | 1-vs-N test | Blob Worker file-origin policy |
-| embedded WASM | yes | no | NOT_VERIFIED | browser CI pending | real 41-byte module | direct-open engine policy |
-| WebGL2 baseline | yes | no | NOT_VERIFIED | browser CI pending | renderer probe | headless GPU availability |
-| WebGPU capability behavior | yes | no | NOT_VERIFIED | browser CI pending | capability probe only | runner support varies |
-| portable save round-trip | yes | yes | PASS | Node 22 local | state digest equality | browser replay pending |
-| corrupted-save fail-closed | yes | yes | PASS | Node 22 local | adversarial test | schema is intentionally minimal |
-| performance/memory evidence | partial | partial | PARTIAL | Node 22 local | bytes; browser timers defined | heap API varies by engine |
-| reproducible build | yes | yes | REPRODUCIBLE | Node 22 local | two byte-identical builds | independent CI pending |
-| cross-runtime corpus | yes | no | NOT_VERIFIED | browser CI pending | browser matrix | must not close P1 early |
+| Strict direct-open | yes | yes | PASS | all five targets | `file://` browser harness | real Safari/iOS not executed |
+| One artifact / no local subresources | yes | yes | PASS | all five targets | request + DOM + Resource Timing audit and positive control | browser instrumentation remains test-harness code |
+| No runtime network | yes | yes | PASS | all five targets | request observation plus blocked fetch/XHR/WebSocket/EventSource/WebTransport/beacon | future APIs require harness maintenance |
+| Pinned canonical corpus | yes | yes | PASS | all five targets | committed corpus digest + aggregator | P1 corpus is intentionally small |
+| Worker count/order independence | yes | yes | PASS | all five targets | 1/2/4 Worker test | SharedArrayBuffer not adopted |
+| Worker unavailable/hang safety | yes | yes | PASS | all five targets | unavailable and timeout injections | timeout is a P1 policy, not final P2 scheduler design |
+| Strict/Enhanced semantic equality | yes | yes | PASS | all five targets | aggregate equality gate | Enhanced coverage is diagnostic, not performance certification |
+| Component corruption rejection | yes | yes | PASS | all five targets | injected source corruption | not a signed supply-chain scheme |
+| Portable save round-trip/integrity | yes | yes | PASS | Node + all five browser targets | adversarial save suite | P1 format is not the final P2 canonical value protocol |
+| Bounded portable event domain | yes | yes | PASS | Node + all five browser targets | BigInt/cycle/version/NFC tests | limits may evolve with explicit schema compatibility |
+| Renderer context safety | yes | yes | PASS | Node + browser matrix | no-Window probe plus renderer authority test | rendering portability beyond executed engines not verified |
+| Reproducible local build | yes | yes | PASS | Node 24.20.0 CI | byte-for-byte double build | cross-OS build equality is enforced through browser evidence hashes, not a separate independent compiler |
+| Cross-matrix evidence aggregation | yes | yes | PASS | five targets | `aggregate-evidence` job | target matrix is not universal browser certification |
+| English normative policy | yes | yes | PASS | Foundation Integrity | conservative marker validation | validator intentionally is not a language detector |
+
+## Adversarial findings closed
+
+- Blob Worker originally omitted the SHA-256 bootstrap: confirmed implementation defect, fixed and cross-runtime verified.
+- Signed galaxy coordinates originally risked modulo aliasing: confirmed design defect, fixed with checked signed i64 encoding.
+- Portable save admitted values JSON could not represent: confirmed review defect, fixed by an explicit bounded portable domain.
+- Renderer probe could reference an absent `navigator`: confirmed review defect, fixed with guarded capability access.
+- Initial local-resource positive control depended on engine request events: Firefox falsified that assumption; proof now combines request, DOM and Resource Timing surfaces and passes the full matrix.
+
+## Limitations
+
+Memory metrics are only partially comparable across engines. The 41.6 KB artifact is too small for record-scale compression conclusions. Real distributed Safari/iOS and mobile are `NOT_VERIFIED`. Rust/WASM and Zig/WASM are `NOT_VERIFIED`; only a tiny embedded WASM experiment was executed. P1 does not certify production cosmology or long-lived P2 protocol semantics.
