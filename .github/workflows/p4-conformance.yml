@@ -29,10 +29,11 @@ jobs:
       - run: node tests/p4/archive-lineage-tests.mjs
       - run: node tests/p4/checkpoint-authority-tests.mjs
       - run: node tools/p4-benchmark.mjs
+      - run: node tests/integration/evidence-isolation-tests.mjs
       - uses: actions/upload-artifact@v4
         with:
           name: p4-node
-          path: dist/evidence/
+          path: dist/evidence/p4/
 
   browser-linux:
     runs-on: ubuntu-latest
@@ -60,7 +61,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: p4-linux-x64-${{ matrix.browser }}
-          path: dist/evidence/
+          path: dist/evidence/p4/
 
   browser-platform:
     strategy:
@@ -96,7 +97,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: p4-${{ matrix.platform }}-${{ matrix.arch }}-${{ matrix.browser }}
-          path: dist/evidence/
+          path: dist/evidence/p4/
 
   aggregate:
     if: ${{ always() }}

@@ -40,13 +40,23 @@ jobs:
         run: python3 tools/p2_unicode_conformance.py "$OFU_UNICODE_DATA_PATH" "$OFU_NORMALIZATION_TEST_PATH"
       - run: python3 --version
       - run: node --version
-      - run: npm test
+      - name: Run explicit frozen Foundation/P1/P2 scope
+        run: |
+          node tools/validate-foundation.mjs
+          node tests/run-node-tests.mjs
+          node tests/p1/portable-save-size.mjs
+          npm run test:p2
+          node tools/build-p1.mjs
+          node tests/build/reproducible-build.mjs
       - run: node tests/p2/live-wrapper-tests.mjs
       - run: node tools/p2-benchmark.mjs
       - uses: actions/upload-artifact@v4
         with:
           name: p2-build
-          path: dist/
+          path: |
+            dist/One_File_Universe.html
+            dist/build-manifest.json
+            dist/evidence/p2-*.json
 
   browser:
     runs-on: ubuntu-latest
@@ -81,7 +91,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: p2-linux-${{ matrix.browser }}
-          path: dist/evidence/
+          path: dist/evidence/p2-*.json
 
   platform:
     strategy:
@@ -121,7 +131,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: p2-${{ matrix.os }}-${{ matrix.browser }}
-          path: dist/evidence/
+          path: dist/evidence/p2-*.json
 
   aggregate:
     if: ${{ always() }}
