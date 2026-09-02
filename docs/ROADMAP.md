@@ -81,8 +81,8 @@ The same corpus produces the same normative digest across the declared executed 
 
 ## P3 — Universe Skeleton
 
-**P3 — READY**  
-P3 implementation has not begun during P2 closure.
+**P3 — COMPLETE**  
+Canonical schema v1 / astronomy model `p3-astronomy-1` is merged on `main`. The P1–P4 baseline executes real sparse random-access Region/Galaxy/Sector/System/Star/Planet/Moon queries from the shipped single-file artifact, with exact Entity Identity and query-order invariance covered by executable conformance.
 
 ### Objective
 Prove sparse random access across astronomical scales without materializing the universe.
@@ -105,6 +105,9 @@ Large deterministic address samples satisfy invariants, distribution expectation
 
 ## P4 — Temporal Kernel & Mutable World
 
+**P4 — COMPLETE**  
+Canonical protocol `ofu-p4-temporal-v1` and transition contract `ofu.p4.core-transition@1.0.0` are merged on `main`. Full replay, checkpoints, bounded-tail deterministic compaction, lineage, portable archives and executable P3→P4 invariants are certified in the P1–P4 baseline.
+
 ### Objective
 Define time before civilization/history depend on it.
 
@@ -125,6 +128,9 @@ Baseline + events → current state is deterministic; checkpointed and full repl
 ---
 
 ## P5 — Planetology, Terrain & Climate
+
+**P5 — RESEARCH — PROMOTION ARCHITECTURE READY**  
+P5 remains deliberately non-canonical. Research may consume the frozen P3/P4 baseline but does not override P3 astronomical facts or P4 temporal authority.
 
 ### Objective
 Generate planets as causal systems rather than colored noise spheres.
