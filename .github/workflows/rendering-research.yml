@@ -3,6 +3,9 @@ on:
   push:
     branches: [research/rendering-scale-navigation]
   pull_request:
+concurrency:
+  group: rendering-research-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
 permissions:
   contents: read
 env:
@@ -77,3 +80,15 @@ jobs:
       - run: node tools/p3-evidence.mjs && python3 tools/p3_spatial_oracle.py
       - run: npm run test:p4
       - run: node tests/integration/p3-p4-contract-tests.mjs
+  seal:
+    if: ${{ always() }}
+    needs: [node, linux, platform, canonical-regression]
+    runs-on: ubuntu-latest
+    steps:
+      - shell: bash
+        run: |
+          test '${{ needs.node.result }}' = success
+          test '${{ needs.linux.result }}' = success
+          test '${{ needs.platform.result }}' = success
+          test '${{ needs.canonical-regression.result }}' = success
+          echo 'Rendering research exact-head seal PASS'
