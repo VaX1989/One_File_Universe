@@ -18,28 +18,17 @@ function equalBytes(a,b){return isBytes(a)&&isBytes(b)&&a.length===b.length&&cmp
 function shaDomain(tag,value){return O.sha256.digest(concat(E.encode(tag+'\0'),P.encode(value)))}
 function concat(...parts){let n=0;for(const p of parts)n+=p.length;const out=new Uint8Array(n);let o=0;for(const p of parts){out.set(p,o);o+=p.length}return out}
 function u64(v,name){if(typeof v==='number'){if(!Number.isSafeInteger(v))fail(name+' must be u64');v=BigInt(v)}if(typeof v!=='bigint'||v<0n||v>U64_MAX)fail(name+' must be u64');return v}
+function integer(v,name){if(typeof v==='number'){if(!Number.isSafeInteger(v))fail(name+' must be integer');v=BigInt(v)}if(typeof v!=='bigint')fail(name+' must be integer');P.encode(v);return v}
 function text(v,name){if(typeof v!=='string'||!v.length)fail(name+' must be non-empty text');P.encode(v);return v.normalize('NFC')}
 function exactKeys(o,allowed,name){if(!o||typeof o!=='object'||Array.isArray(o))fail(name+' must be map');const keys=Object.keys(o).sort(),want=[...allowed].sort();if(keys.length!==want.length||keys.some((k,i)=>k!==want[i]))fail(name+' has missing or unknown fields')}
 function bytes32(v,name){if(!isBytes(v,32))fail(name+' must be 32 bytes');return new Uint8Array(v)}
 function canonicalTime(t){exactKeys(t,['seconds','micros'],'time');const seconds=u64(t.seconds,'time.seconds'),micros=u64(t.micros,'time.micros');if(micros>=1000000n)fail('time.micros out of range');return{seconds,micros}}
 function compareTime(a,b){return a.seconds<b.seconds?-1:a.seconds>b.seconds?1:a.micros<b.micros?-1:a.micros>b.micros?1:0}
+function compareOrderKey(a,b){const c=compareTime(a.time,b.time);return c||cmpBytes(a.eventId,b.eventId)}
 function canonicalByteList(list,name,max){if(!Array.isArray(list)||list.length>max)fail(name+' invalid');const out=list.map((v,i)=>bytes32(v,name+'['+i+']'));out.sort(cmpBytes);for(let i=1;i<out.length;i++)if(cmpBytes(out[i-1],out[i])===0)fail(name+' contains duplicate');return out}
 function eventDescriptor(input){
   exactKeys(input,['universeIdentity','lineageId','time','type','version','operationKey','targets','payload','causes','preconditionStateDigest'],'event');
-  const d={
-    eventSchemaVersion:EVENT_SCHEMA,
-    temporalProtocolVersion:VERSION,
-    universeIdentity:bytes32(input.universeIdentity,'universeIdentity'),
-    lineageId:bytes32(input.lineageId,'lineageId'),
-    time:canonicalTime(input.time),
-    type:text(input.type,'event.type'),
-    version:u64(input.version,'event.version'),
-    operationKey:text(input.operationKey,'event.operationKey'),
-    targets:canonicalByteList(input.targets,'event.targets',MAX_TARGETS),
-    payload:input.payload,
-    causes:canonicalByteList(input.causes,'event.causes',MAX_CAUSES),
-    preconditionStateDigest:input.preconditionStateDigest===null?null:bytes32(input.preconditionStateDigest,'preconditionStateDigest')
-  };
+  const d={eventSchemaVersion:EVENT_SCHEMA,temporalProtocolVersion:VERSION,universeIdentity:bytes32(input.universeIdentity,'universeIdentity'),lineageId:bytes32(input.lineageId,'lineageId'),time:canonicalTime(input.time),type:text(input.type,'event.type'),version:u64(input.version,'event.version'),operationKey:text(input.operationKey,'event.operationKey'),targets:canonicalByteList(input.targets,'event.targets',MAX_TARGETS),payload:input.payload,causes:canonicalByteList(input.causes,'event.causes',MAX_CAUSES),preconditionStateDigest:input.preconditionStateDigest===null?null:bytes32(input.preconditionStateDigest,'preconditionStateDigest')};
   if(d.version<1n)fail('event.version must be positive');P.encode(d.payload);return d;
 }
 function canonicalEvent(input){const descriptor=eventDescriptor(input);const id=shaDomain('OFU-P4-EVENT-v1',descriptor);return Object.freeze({id,descriptor})}
@@ -56,7 +45,7 @@ function requirePayloadMap(p,name){if(!p||typeof p!=='object'||Array.isArray(p))
 function builtinRegistry(){
   const r=new Map();
   r.set('core.field.set@1',(s,e)=>{const p=requirePayloadMap(e.descriptor.payload,'field.set');exactKeys(p,['field','value'],'field.set payload');const ent=ensureEntity(s,requireSingleTarget(e));ent.fields[text(p.field,'field')]=cloneValue(p.value)});
-  r.set('core.counter.add@1',(s,e)=>{const p=requirePayloadMap(e.descriptor.payload,'counter.add');exactKeys(p,['counter','delta'],'counter.add payload');const ent=ensureEntity(s,requireSingleTarget(e)),k=text(p.counter,'counter'),d=BigInt(p.delta);ent.counters[k]=(ent.counters[k]||0n)+d;P.encode(ent.counters[k])});
+  r.set('core.counter.add@1',(s,e)=>{const p=requirePayloadMap(e.descriptor.payload,'counter.add');exactKeys(p,['counter','delta'],'counter.add payload');const ent=ensureEntity(s,requireSingleTarget(e)),k=text(p.counter,'counter'),d=integer(p.delta,'counter delta');ent.counters[k]=(ent.counters[k]||0n)+d;P.encode(ent.counters[k])});
   r.set('core.set.add@1',(s,e)=>{const p=requirePayloadMap(e.descriptor.payload,'set.add');exactKeys(p,['set','member'],'set.add payload');const ent=ensureEntity(s,requireSingleTarget(e)),k=text(p.set,'set'),m=hex(bytes32(p.member,'member'));ent.sets[k]=ent.sets[k]||Object.create(null);ent.sets[k][m]=true});
   r.set('core.set.remove@1',(s,e)=>{const p=requirePayloadMap(e.descriptor.payload,'set.remove');exactKeys(p,['set','member'],'set.remove payload');const ent=ensureEntity(s,requireSingleTarget(e)),k=text(p.set,'set'),m=hex(bytes32(p.member,'member'));if(ent.sets[k])delete ent.sets[k][m]});
   r.set('core.relation.set@1',(s,e)=>{const p=requirePayloadMap(e.descriptor.payload,'relation.set');exactKeys(p,['relation','target'],'relation.set payload');const ent=ensureEntity(s,requireSingleTarget(e)),k=text(p.relation,'relation');ent.relations[k]=p.target===null?null:hex(bytes32(p.target,'relation target'))});
@@ -70,7 +59,7 @@ function stateDigest(state){return shaDomain('OFU-P4-STATE-v1',state)}
 function replay({universeIdentity,lineage,baseline={},events=[],registry=builtinRegistry()}){const sorted=sortEvents(events),state=initialState(universeIdentity,lineage,baseline);for(const e of sorted)applyEvent(state,e,registry);return{state,digest:stateDigest(state),events:sorted}}
 function eventRoot(events){return shaDomain('OFU-P4-EVENT-ROOT-v1',sortEvents(events).map(e=>e.id))}
 function checkpoint({universeIdentity,lineage,baseline={},events=[],registry=builtinRegistry()}){const r=replay({universeIdentity,lineage,baseline,events,registry}),last=r.events.length?r.events[r.events.length-1]:null;const descriptor={checkpointSchemaVersion:CHECKPOINT_SCHEMA,temporalProtocolVersion:VERSION,universeIdentity:bytes32(universeIdentity,'universeIdentity'),lineageId:bytes32(lineage,'lineageId'),coveredEventCount:BigInt(r.events.length),coveredEventRoot:eventRoot(r.events),lastOrderKey:last?{time:last.descriptor.time,eventId:last.id}:null,state:r.state,stateDigest:r.digest};const id=shaDomain('OFU-P4-CHECKPOINT-v1',descriptor);return Object.freeze({id,descriptor})}
-function replayFromCheckpoint({checkpoint:cp,events=[],registry=builtinRegistry()}){if(!cp||!cp.descriptor)fail('checkpoint missing');const d=cp.descriptor;if(d.checkpointSchemaVersion!==CHECKPOINT_SCHEMA||d.temporalProtocolVersion!==VERSION)fail('unsupported checkpoint version');if(!equalBytes(stateDigest(d.state),d.stateDigest))fail('checkpoint state digest mismatch');const state=cloneState(d.state),sorted=sortEvents(events);for(const e of sorted){if(!equalBytes(e.descriptor.universeIdentity,d.universeIdentity)||!equalBytes(e.descriptor.lineageId,d.lineageId))fail('checkpoint suffix lineage mismatch');if(d.lastOrderKey&&compareTime(e.descriptor.time,d.lastOrderKey.time)<0)fail('event predates checkpoint');applyEvent(state,e,registry)}return{state,digest:stateDigest(state),events:sorted}}
+function replayFromCheckpoint({checkpoint:cp,events=[],registry=builtinRegistry()}){if(!cp||!cp.descriptor)fail('checkpoint missing');const d=cp.descriptor;if(d.checkpointSchemaVersion!==CHECKPOINT_SCHEMA||d.temporalProtocolVersion!==VERSION)fail('unsupported checkpoint version');if(!equalBytes(stateDigest(d.state),d.stateDigest))fail('checkpoint state digest mismatch');const state=cloneState(d.state),sorted=sortEvents(events);for(const e of sorted){if(!equalBytes(e.descriptor.universeIdentity,d.universeIdentity)||!equalBytes(e.descriptor.lineageId,d.lineageId))fail('checkpoint suffix lineage mismatch');if(d.lastOrderKey&&compareOrderKey({time:e.descriptor.time,eventId:e.id},d.lastOrderKey)<=0)fail('event does not follow checkpoint');applyEvent(state,e,registry)}return{state,digest:stateDigest(state),events:sorted}}
 function compact({universeIdentity,lineage,baseline={},events=[],keepTail=128,registry=builtinRegistry()}){if(!Number.isInteger(keepTail)||keepTail<0)fail('keepTail invalid');const sorted=sortEvents(events),cut=Math.max(0,sorted.length-keepTail),prefix=sorted.slice(0,cut),suffix=sorted.slice(cut);const cp=checkpoint({universeIdentity,lineage,baseline,events:prefix,registry});return{checkpoint:cp,events:suffix,discardedEventCount:BigInt(prefix.length)}}
 function eventRecord(e){return{id:e.id,descriptor:e.descriptor}}
 function archivePayload({universeIdentity,lineage,baseline={},events=[],checkpoint:cp=null}){const sorted=sortEvents(events);return{archiveSchemaVersion:ARCHIVE_SCHEMA,temporalProtocolVersion:VERSION,universeIdentity:bytes32(universeIdentity,'universeIdentity'),lineageId:bytes32(lineage,'lineageId'),baseline:cloneValue(baseline),checkpoint:cp?{id:cp.id,descriptor:cp.descriptor}:null,events:sorted.map(eventRecord)}}
