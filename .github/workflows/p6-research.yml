@@ -1,0 +1,43 @@
+name: P6 Biosphere Research
+
+on:
+  push:
+    branches:
+      - research/p6-biosphere-evolution
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'research/p6/**'
+      - 'tests/p6-research/**'
+      - 'docs/p6-research/**'
+      - '.github/workflows/p6-research.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  research-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.20.0'
+      - name: Canonical upstream regressions
+        run: |
+          npm test
+          node tests/p3/run-p3-conformance.mjs
+          node tests/integration/p3-p4-contract-tests.mjs
+      - name: P6 deterministic and causal research tests
+        run: node tests/p6-research/run-p6-research.mjs
+      - name: P6 bounded working-set research benchmark
+        run: node --expose-gc tests/p6-research/population-benchmark.mjs | tee p6-benchmark.json
+      - name: Preserve benchmark evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: p6-research-benchmark
+          path: p6-benchmark.json
+          if-no-files-found: error
