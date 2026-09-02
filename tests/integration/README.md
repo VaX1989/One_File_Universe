@@ -1,131 +1,147 @@
 # Cross-Phase Integration Tests
 
 **Owner:** Independent Architecture, Contract & Integration Board  
-**Status:** acceptance matrix. Tests that require unmerged phase code are executed on disposable exact-SHA integration branches, not on `main` by pretending those phases are already canonical.
+**Status:** living acceptance/execution matrix. Tests requiring unmerged feature code run on exact phase heads or disposable exact-SHA combinations; `main` never pretends an unmerged phase is canonical.
 
 ## Execution policy
 
 1. Rebaseline live phase heads.
-2. Require each phase's own material blockers to be closed first.
-3. Create a disposable branch such as `integration/p3-p4` from certified `main`.
-4. Combine exact reviewed SHAs without changing feature ownership.
-5. Run frozen-upstream regression plus the tests below.
-6. Record exact source SHAs and results.
-7. Delete or abandon the disposable branch after evidence is captured; it is not canonical authority.
+2. Require material phase blockers closed before claiming phase-to-phase integration readiness.
+3. Pin exact reviewed SHAs.
+4. Combine them only on disposable validation infrastructure when multiple unmerged phases are required.
+5. Run frozen-upstream regression plus the applicable real cross-phase tests.
+6. Record exact sources/results in immutable reports and this living status matrix.
+7. Never promote the disposable branch as a semantic authority.
 
-P3/P4 feature code must not be merged together merely to make these tests convenient.
+## Current Cycle-3 execution pin
+
+- P3: `0699390756352ceac65e5d51cc89b910c0ac54e5`
+- P4: `19f30ad545bb5e31693631bb2575b5bfadd33ed8`
+- disposable combined validation: `integration/p3-p4@e9b6240611a0e8bc1e08de623eeb1a3484eea03b`
+- GitHub Actions: `P3-P4 Disposable Integration` run `33637549852` — **SUCCESS**
 
 ## Phase evidence isolation
 
-| Test | Assertion | Current status |
+| Test | Assertion | Status |
 | --- | --- | --- |
-| EVIDENCE-ISO-001 | Valid downstream P4 evidence cannot enter a P2 artifact merely because P4 tests exist in the tree. | REQUIRED on next P4 head |
-| EVIDENCE-ISO-002 | Injected `phase: P4` evidence inside a P2-owned aggregate input is rejected. | REQUIRED; preserves fail-closed P2 |
-| EVIDENCE-ISO-003 | Extending generic `npm test` does not change phase-specific P2 execution/output scope. | REQUIRED |
-| EVIDENCE-ISO-004 | Exact-source SHA mismatch is rejected by the owning aggregate. | REQUIRED |
+| EVIDENCE-ISO-001 | Downstream evidence cannot enter a P2 artifact merely because downstream tests exist. | **EXECUTABLE / VERIFIED** on main and combined tree. |
+| EVIDENCE-ISO-002 | Injected foreign-phase evidence inside P2-owned aggregate input is rejected. | **EXECUTABLE / VERIFIED** using synthetic `phase:P99`. |
+| EVIDENCE-ISO-003 | Extending repository tests does not change phase-specific P2 execution/output scope. | **EXECUTABLE / VERIFIED**; P2 workflow is explicit, not generic `npm test`. |
+| EVIDENCE-ISO-004 | Exact-source SHA mismatch is rejected by owning evidence aggregation. | Existing fail-closed phase property; retain in phase aggregators. |
 
-## P2 -> P3
+## P2 → P3
 
 ### INT-P2-P3-001 — Universe-scoped astronomy identity
 
-Same P2 Universe Identity + same canonical astronomical stable key must produce the same P3 Entity Identity and canonical facts. Changing Universe Identity must change the Entity Identity.
+Same P2 Universe Identity + same canonical astronomical stable key produces the same P3 Entity Identity/facts; changing the Universe changes identity.
+
+**Status:** **EXECUTABLE / VERIFIED** through P3 canonical conformance at exact head `0699390…`.
 
 ### INT-P2-P3-002 — normalized system-site boundary
 
-Exercise positive and negative Sector boundaries around local site `0`/`511`. The physical System stable key and canonical Address must be based on normalized absolute site coordinates and must not reset/reroll because a computational Sector boundary was crossed.
+Positive and negative Sector boundaries around local site `0/511` preserve physical System stable key/Address under normalized absolute site coordinates.
 
-### INT-P2-P3-003 — unrelated-query invariance
+**Status:** **EXECUTABLE / VERIFIED**; P3 tests include the `[-1,0,511,512]` boundary metamorphic.
 
-Query order, Worker count, renderer/LOD metadata and unrelated domain properties must not change P3 canonical facts.
+### INT-P2-P3-003 — unrelated-query / Worker invariance
 
-## P2 -> P4
+Query order, Worker scheduling/count and unrelated requests must not change P3 canonical facts.
 
-### INT-P2-P4-001 — wrong-universe references fail closed
+**Status:** **EXECUTABLE / VERIFIED** on Node and declared browser/platform matrix.
 
-An event/archive/checkpoint whose universe commitment does not match the target P2 Universe Identity must be rejected before canonical mutation.
+## P2 → P4
+
+### INT-P2-P4-001 — wrong-Universe fail closed
+
+Event/archive/checkpoint Universe commitments must match the target P2 Universe Identity.
+
+**Status:** **EXECUTABLE / VERIFIED** in `tests/integration/p2-p4-contract-tests.mjs`.
 
 ### INT-P2-P4-002 — canonical bytes remain P2 authority
 
-P4 event/checkpoint/archive encodings must round-trip through P2 canonical bytes without a phase-local serialization authority.
+P4 portable archive bytes round-trip through P2 decode/encode and P4 import/export without a private serializer.
 
-## P3 -> P4
+**Status:** **EXECUTABLE / VERIFIED**. Archive v2 persisted-policy Number/BigInt boundary regression was additionally reproduced and fixed on P4 before integration validation.
 
-### INT-P3-P4-001 — astronomy identity is referenced, not redefined
+## P3 → P4
 
-A P3 entity can be the target/reference of P4 history. P4 event acceptance/replay must preserve the exact P3 Entity Identity and must not construct a temporal replacement identity.
+### INT-P3-P4-001 — astronomy identity referenced, not redefined
 
-### INT-P3-P4-002 — P3 baseline + P4 history replay stability
+P4 targets the exact P3 EntityIdentity and overlays mutation without constructing a temporal replacement identity or rewriting the P3 baseline.
 
-Given a P3 canonical baseline and an accepted P4 history, direct replay, Worker replay and checkpoint+tail replay must yield the same canonical mutable-state digest.
+**Status:** **EXECUTABLE / VERIFIED** in disposable `tests/integration/p3-p4-contract-tests.mjs`.
 
-## P3 -> P5
+### INT-P3-P4-002 — baseline + history replay stability
+
+Same P3 baseline + same accepted P4 history yields the same final persistent digest under delivery reordering, checkpoint placement and repeated bounded-tail compaction.
+
+**Status:** **EXECUTABLE / VERIFIED** on disposable combined run `33637549852`. P3 Worker/order invariants execute in the same exact combined tree.
+
+## P3 → P5
 
 ### INT-P3-P5-001 — authoritative input preservation
 
-The P3 -> P5 adapter preserves `planetId`, host/system relations, orbit facts and committed planet mass exactly. P5 must not reroll these fields.
+The adapter must preserve live P3 v1 `planetId`, system/host identity, orbit, P4_T0 baseline stellar values, baseline planet mass, insolation and `bulkPriorClass` without reroll.
+
+**Status:** **PROMOTION-PREP REQUIRED / RESEARCH NON-BLOCKING**. P5 reviewed adapter is still keyed to legacy v0 while live P3 producer is `ofu-p3-p5-planetary-input-v1`.
 
 ### INT-P3-P5-002 — composition refinement compatibility
 
-P5 detailed composition must satisfy the declared mapping from the P3 coarse bulk/formation prior. An incompatible refinement fails closed or requires an explicit model/schema migration.
+Detailed P5 composition must remain a declared refinement of the P3 coarse bulk prior; incompatible persistent interpretation requires explicit versioning/migration.
+
+**Status:** RESEARCH promotion gate.
 
 ### INT-P3-P5-003 — physical-radius ownership
 
-P3 schema v1 must not publish a competing canonical physical radius if P5 owns radius. If P3 deliberately freezes radius instead, the test inverts: P5 output must use the P3 radius as a hard constraint. Exactly one authority is permitted.
+P3 v1 must not publish a competing canonical physical radius while P5 owns radius.
+
+**Status:** **VERIFIED at P3 v1 boundary**; P3 removed canonical planet/moon physical radius authority.
 
 ### INT-P3-P5-004 — incident-energy ownership
 
-P5 consumes P3 canonical insolation. A P3 reference-equilibrium-temperature proxy, if retained, must remain semantically distinct from P5 albedo-dependent energy/climate state.
+P5 consumes P3 baseline/reference insolation and derives current incident energy from current star/orbit state rather than persisting a second independent upstream truth.
 
-## P4 -> P5
+**Status:** research boundary accepted; future P5 transition conformance required before promotion.
+
+## P4 → P5
 
 ### INT-P4-P5-001 — no private planetary clock
 
-A canonical P5 planetary transition receives P4 canonical time/event context. Changing a P5-local diagnostic/query clock must not change persistent world state.
+P5 transitions consume P4 canonical intervals/context; browser Date/frame time/private order must never alter persistent state.
+
+**Status:** research draft explicitly preserves P4 clock/replay authority; promotion test still required.
 
 ### INT-P4-P5-002 — replayed planetary evolution
 
-Same P3 planetary baseline + same P4 canonical history + same versioned P5 transition contract must yield the same P5 persistent state across direct replay, Worker replay and checkpoint+tail replay.
+Same P3 planetary baseline + same P4 history + same versioned P5 transition contract must replay identically across direct/Worker/checkpoint paths.
 
-## P2 -> P3 -> P4
+**Status:** waiting for a promotable P5 transition contract; not a blocker to research.
+
+## P2 → P3 → P4
 
 ### INT-P2-P3-P4-001 — end-to-end canonical digest
 
-Same Universe Identity + canonical P3 baseline + accepted P4 history must produce the same final digest regardless of query order, replay path, Worker scheduling or checkpoint placement.
+Same UniverseIdentity + canonical P3 P4_T0 baseline + accepted P4 history must produce the same final digest regardless of query order, delivery/replay path, Worker scheduling and checkpoint placement.
 
-## P4 compaction metamorphics
+**Status:** **EXECUTABLE / VERIFIED** for the Cycle-3 exact pins. The real combined test consumes P2/P3/P4 implementation code; it is not a mock oracle.
 
-### INT-P4-COMPACT-001 — live frontier legality invariance
+## P4 compaction / transition authority
 
-A live event whose total order is not strictly after the current canonical frontier must be rejected both before and after compaction. Historical reconstruction is a separate API/semantic mode.
-
-### INT-P4-COMPACT-002 — bounded-tail continued mutation
-
-After prefix compaction, commit at least one tail-budget cycle from `verified checkpoint + bounded tail`, recompact, continue committing, and prove equality with a reference full-history reconstruction while the retained live working set stays bounded.
-
-### INT-P4-REDUCER-001 — reducer-contract mismatch fails closed
-
-Replay the same event bytes with a registry whose semantic reducer contract ID/version does not match the world/checkpoint/archive commitment. Canonical replay must reject rather than silently produce a different state.
+| Test | Assertion | Status |
+| --- | --- | --- |
+| INT-P4-COMPACT-001 | Live frontier legality is invariant before/after compaction. | **EXECUTABLE / VERIFIED**. |
+| INT-P4-COMPACT-002 | Repeated checkpoint+bounded-tail mutation/recompaction equals full history while tail stays bounded. | **EXECUTABLE / VERIFIED**, including combined P3 baseline. |
+| INT-P4-REDUCER-001 | Persisted transition-contract mismatch fails closed. | **EXECUTABLE / VERIFIED**. |
 
 ## P5 terrain research properties
 
-These are promotion gates for terrain semantics, not blockers for continued research.
+These remain promotion gates, not blockers to continued research.
 
-### INT-P5-TERRAIN-001 — neighboring-patch seam continuity
+| Test | Research requirement | Current status |
+| --- | --- | --- |
+| INT-P5-TERRAIN-001 | neighboring-patch and cross-face seam continuity | research implementation/tests present |
+| INT-P5-TERRAIN-002 | cube-sphere face/corner topological consistency | research implementation/tests present |
+| INT-P5-TERRAIN-003 | parent→child refinement stability/order independence | research implementation/tests present |
+| INT-P5-TERRAIN-004 | deterministic PROJECT / REFINE / RECONCILE invariants | research implementation/tests present |
 
-Shared boundary samples for adjacent patches must agree within the declared exact/tolerance contract, including cube/spherical face transitions.
-
-### INT-P5-TERRAIN-002 — spherical/topological consistency
-
-Surface addresses must have a defined topology. Equivalent geometric boundary/corner locations must not acquire unrelated canonical terrain solely because they are reached through different patch/face paths.
-
-### INT-P5-TERRAIN-003 — parent -> child refinement stability
-
-Refining a parent must preserve the parent's committed macro constraints and shared coarse components. Child generation order must not affect results.
-
-### INT-P5-TERRAIN-004 — REFINE / PROJECT / RECONCILE
-
-`PROJECT(REFINE(parent,...))` must satisfy the parent's declared ocean/relief/basin statistics within explicit tolerances, and `RECONCILE` must report invariant violations deterministically.
-
-## Gate status for cycle 1
-
-No `integration/p3-p4` executable merge branch is created in cycle 1 because P3 has not yet been promoted onto certified `main` and P4 has material semantic blockers. Creating one now would provide low-value conflict evidence while risking accidental authority coupling. The branch should be created as soon as P3 has a stable canonicalization head and P4 closes the replay/compaction/reducer blockers.
+Research success does not freeze P5 terrain numerics, physical validity domains or persistence semantics.
