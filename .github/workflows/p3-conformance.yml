@@ -1,0 +1,113 @@
+name: P3 Conformance
+
+on:
+  push:
+    branches:
+      - feature/p3-universe-skeleton
+  pull_request:
+
+concurrency:
+  group: p3-conformance-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+permissions:
+  contents: read
+
+jobs:
+  node:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.20.0'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Foundation
+        run: node tools/validate-foundation.mjs
+      - name: P1
+        run: node tests/run-node-tests.mjs && node tests/p1/portable-save-size.mjs
+      - name: P2
+        run: npm run test:p2
+      - name: P3 canonical conformance evidence
+        run: node tools/p3-evidence.mjs
+      - name: P3 independent spatial oracle
+        run: python3 tools/p3_spatial_oracle.py
+      - name: P3 canonical performance and working set
+        run: node tests/p3/p3-canonical-performance.mjs
+      - name: Generic phase-evidence isolation
+        run: node tests/integration/evidence-isolation-generic.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: p3-node-${{ github.sha }}
+          path: dist/evidence/p3-*.json
+
+  browser:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.20.0'
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - run: npm install --no-save playwright@1.62.1
+      - run: npx playwright install --with-deps ${{ matrix.browser }}
+      - name: Execute canonical P3 inside browser runtime
+        run: node tests/p3/browser-p3.mjs
+        env:
+          BROWSER: ${{ matrix.browser }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: p3-linux-${{ matrix.browser }}-${{ github.sha }}
+          path: dist/evidence/p3-*.json
+
+  platform:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            browser: chromium
+          - os: macos-latest
+            browser: webkit
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.20.0'
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - run: npm install --no-save playwright@1.62.1
+      - run: npx playwright install ${{ matrix.browser }}
+      - name: Execute canonical P3 on platform browser runtime
+        run: node tests/p3/browser-p3.mjs
+        env:
+          BROWSER: ${{ matrix.browser }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: p3-${{ matrix.os }}-${{ matrix.browser }}-${{ github.sha }}
+          path: dist/evidence/p3-*.json
