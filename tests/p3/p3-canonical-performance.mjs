@@ -19,19 +19,27 @@ for(let i=0n;i<30000n&&!system;i++){
   const k={...base,siteX:i%512n,siteY:(i/512n)%512n,siteZ:0n};const q=A.resolveSystem(ctx,k);if(q.status==='PRESENT'){system=q;key=k;}
 }
 if(!system)throw new Error('P3 performance: representative system not found');
-const planetKey=system.facts.planetCount>0n?{...key,orbitSlot:0n}:null;
+let planetKey=null;
+if(system.facts.planetCount>0n)planetKey={...key,orbitSlot:0n};
+if(!planetKey){
+  for(let i=0n;i<50000n&&!planetKey;i++){
+    const k={...base,siteX:i%512n,siteY:(i/512n)%512n,siteZ:(i/(512n*512n))%512n};const q=A.resolveSystem(ctx,k);
+    if(q.status==='PRESENT'&&q.facts.planetCount>0n)planetKey={...k,orbitSlot:0n};
+  }
+}
+if(!planetKey)throw new Error('P3 performance: representative planet not found');
 function bench(name,n,fn){const t0=performance.now();for(let i=0;i<n;i++)fn(i);return {name,iterations:n,totalMs:performance.now()-t0};}
 const before=process.memoryUsage().heapUsed;
 const cold=bench('random-galaxy',200,i=>A.resolveGalaxy(ctx,{x:BigInt(i-100),y:BigInt((i*17)%101-50),z:BigInt((i*31)%53-26)}));
 const repeated=bench('repeated-system',500,()=>A.resolveSystem(ctx,key));
-const planet=planetKey?bench('repeated-planet',300,()=>A.resolvePlanet(ctx,planetKey)):null;
+const planet=bench('repeated-planet',300,()=>A.resolvePlanet(ctx,planetKey));
 const after=process.memoryUsage().heapUsed;
 const systemMetrics=A.resolveWithMetrics('system',ctx,key).metrics;
-const planetMetrics=planetKey?A.resolveWithMetrics('planet',ctx,planetKey).metrics:null;
-const result={phase:'P3',status:'PASS',modelVersion:A.VERSION,node:process.version,platform:process.platform,arch:process.arch,
-  timing:{randomGalaxyMsPerQuery:cold.totalMs/cold.iterations,repeatedSystemMsPerQuery:repeated.totalMs/repeated.iterations,repeatedPlanetMsPerQuery:planet?planet.totalMs/planet.iterations:null},
+const planetMetrics=A.resolveWithMetrics('planet',ctx,planetKey).metrics;
+const result={phase:'P3',status:'PASS',sourceSha:process.env.OFU_SOURCE_SHA||null,modelVersion:A.VERSION,node:process.version,platform:process.platform,arch:process.arch,
+  timing:{randomGalaxyMsPerQuery:cold.totalMs/cold.iterations,repeatedSystemMsPerQuery:repeated.totalMs/repeated.iterations,repeatedPlanetMsPerQuery:planet.totalMs/planet.iterations},
   workingSet:{heapBeforeBytes:before,heapAfterBytes:after,heapDeltaBytes:after-before},dependency:{system:systemMetrics,planet:planetMetrics}};
 if(systemMetrics.maxDepth>2||systemMetrics.deriveCalls>60)throw new Error('P3 performance: System dependency budget regression');
-if(planetMetrics&&(planetMetrics.maxDepth>3||planetMetrics.deriveCalls>70))throw new Error('P3 performance: Planet dependency budget regression');
+if(planetMetrics.maxDepth>3||planetMetrics.deriveCalls>70)throw new Error('P3 performance: Planet dependency budget regression');
 fs.mkdirSync('dist/evidence',{recursive:true});fs.writeFileSync('dist/evidence/p3-performance.json',JSON.stringify(result,null,2)+'\n');
 console.log(JSON.stringify(result,null,2));
