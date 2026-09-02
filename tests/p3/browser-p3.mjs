@@ -29,24 +29,35 @@ const result=await page.evaluate(()=>{
   }
   if(!chosen)throw new Error('adjacent-sector representative not found');
   const {item,base}=chosen;
-  let system=null,key=null;
-  for(let i=0n;i<20000n;i++){
-    const k={...base,sectorX:0n,sectorY:0n,sectorZ:0n,siteX:i%512n,siteY:(i/512n)%512n,siteZ:0n};
-    const q=A.resolveSystem(ctx,k);if(q.status==='PRESENT'){system=q;key=k;break;}
+  let system=null,key=null,planet=null,planetKey=null,moon=null,moonKey=null;
+  for(let i=0n;i<80000n;i++){
+    const k={...base,sectorX:0n,sectorY:0n,sectorZ:0n,siteX:i%512n,siteY:(i/512n)%512n,siteZ:(i/(512n*512n))%512n};
+    const q=A.resolveSystem(ctx,k);if(q.status!=='PRESENT')continue;
+    if(!system){system=q;key=k;}
+    if(!planet&&q.facts.planetCount>0n){const pk={...k,orbitSlot:0n};const p=A.resolvePlanet(ctx,pk);if(p.status==='PRESENT'){planet=p;planetKey=pk;}}
+    if(q.facts.planetCount>0n&&!moon){
+      for(let slot=0n;slot<q.facts.planetCount;slot++){
+        const pk={...k,orbitSlot:slot};const p=A.resolvePlanet(ctx,pk);if(p.status!=='PRESENT'||p.facts.moonCount===0n)continue;
+        for(let sat=0n;sat<p.facts.moonCount;sat++){
+          const mk={...pk,satelliteSlot:sat};const m=A.resolveMoon(ctx,mk);if(m.status==='PRESENT'){moon=m;moonKey=mk;if(!planet){planet=p;planetKey=pk;}break;}
+        }
+        if(moon)break;
+      }
+    }
+    if(system&&planet&&moon)break;
   }
-  if(!system)throw new Error('representative system not found');
+  if(!system||!planet||!moon)throw new Error('canonical system/planet/moon sample not found');
   const star=A.resolveStar(ctx,{...key,componentIndex:0n});
-  let planet=null,planetKey=null;
-  if(system.facts.planetCount>0n){planetKey={...key,orbitSlot:0n};planet=A.resolvePlanet(ctx,planetKey);if(planet.status!=='PRESENT')throw new Error('planet count/address contradiction');}
-  const corpus=[region,...galaxies.slice(0,4).map(x=>A.resolveGalaxy(ctx,x.key)),system,star,...(planet?[planet]:[])].map(x=>A.canonicalEnvelope(x));
+  const corpus=[region,...galaxies.slice(0,4).map(x=>A.resolveGalaxy(ctx,x.key)),system,star,planet,moon].map(x=>A.canonicalEnvelope(x));
   const corpusDigest=hex(OFU.sha256.digest(P.encode(corpus)));
-  return {region:digest(region),galaxy:digest(item.g),system:digest(system),planet:planet?digest(planet):null,manifestHash:hex(ctx.semanticManifestHash),corpusDigest,records:corpus.length,key:Object.fromEntries(Object.entries(key).map(([k,v])=>[k,String(v)])),planetKey:planetKey?Object.fromEntries(Object.entries(planetKey).map(([k,v])=>[k,String(v)])):null};
+  const serializeKey=k=>Object.fromEntries(Object.entries(k).map(([n,v])=>[n,String(v)]));
+  return {region:digest(region),galaxy:digest(item.g),system:digest(system),planet:digest(planet),moon:digest(moon),manifestHash:hex(ctx.semanticManifestHash),corpusDigest,records:corpus.length,key:serializeKey(key),planetKey:serializeKey(planetKey),moonKey:serializeKey(moonKey)};
 });
 const vector=JSON.parse(fs.readFileSync('tests/vectors/golden-p3-corpus-v1.json','utf8'));
 if(vector.expectedDigest&&result.corpusDigest!==vector.expectedDigest)throw new Error('P3 browser Golden corpus digest drift');
 if(vector.browserRegionDigest&&result.region!==vector.browserRegionDigest)throw new Error('P3 browser Region digest drift');
 if(vector.browserSystemDigest&&result.system!==vector.browserSystemDigest)throw new Error('P3 browser System digest drift');
-const evidence={phase:'P3',status:'PASS',browser:browserName,platform:process.platform,arch:process.arch,...result};
+const evidence={phase:'P3',status:'PASS',sourceSha:process.env.OFU_SOURCE_SHA||null,browser:browserName,platform:process.platform,arch:process.arch,...result};
 fs.mkdirSync('dist/evidence',{recursive:true});fs.writeFileSync(`dist/evidence/p3-browser-${process.platform}-${browserName}.json`,JSON.stringify(evidence,null,2)+'\n');
 console.log(JSON.stringify(evidence,null,2));
 await browser.close();
