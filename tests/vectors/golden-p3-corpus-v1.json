@@ -1,0 +1,8 @@
+{
+  "phase": "P3",
+  "schemaVersion": 1,
+  "modelVersion": "p3-astronomy-1",
+  "baselineEpoch": "P4_T0",
+  "expectedDigest": null,
+  "note": "The exact digest is intentionally populated from the first exact-head canonical CI run, then frozen before candidate certification."
+}
