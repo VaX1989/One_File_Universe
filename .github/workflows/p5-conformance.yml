@@ -7,7 +7,7 @@ on:
   pull_request:
 
 concurrency:
-  group: p5-controlled-${{ github.event.pull_request.head.ref || github.ref_name }}
+  group: p5-controlled-${{ github.event_name }}-${{ github.event.pull_request.head.ref || github.ref_name }}
   cancel-in-progress: true
 
 env:
@@ -46,7 +46,7 @@ jobs:
         run: node tests/integration/p2-p4-contract-tests.mjs && node tests/integration/p3-p4-contract-tests.mjs
       - name: P5 conformance
         run: node tests/p5/run-p5-conformance.mjs
-      - name: Real P3 v1 to P5 integration
+      - name: Real P3 v1 to P5 integration and P4 static binding
         run: node tests/integration/p3-p5-contract-tests.mjs
       - name: Evidence isolation
         run: node tests/integration/evidence-isolation-generic.mjs
@@ -141,7 +141,7 @@ jobs:
           test '${{ needs.browser-platform.result }}' = success
       - uses: actions/download-artifact@v4
         with:
-          pattern: p5-*-x64-*-${{ env.OFU_SOURCE_SHA }}
+          pattern: p5-*-${{ env.OFU_SOURCE_SHA }}
           path: evidence
           merge-multiple: true
       - name: Require one cross-runtime canonical result
