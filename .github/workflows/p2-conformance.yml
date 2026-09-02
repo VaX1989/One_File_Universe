@@ -20,6 +20,7 @@ jobs:
       - run: python3 --version
       - run: node --version
       - run: npm test
+      - run: node tools/p2-benchmark.mjs
       - uses: actions/upload-artifact@v4
         with:
           name: p2-build
