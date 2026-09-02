@@ -1,0 +1,11 @@
+import fs from 'node:fs';
+import {execFileSync} from 'node:child_process';
+const stdout=execFileSync(process.execPath,['tests/p3/run-p3-conformance.mjs'],{encoding:'utf8'}).trim();
+const start=stdout.lastIndexOf('\n{')>=0?stdout.lastIndexOf('\n{')+1:stdout.indexOf('{');
+if(start<0)throw new Error('P3 evidence: conformance JSON not found');
+const report=JSON.parse(stdout.slice(start));
+report.sourceSha=process.env.OFU_SOURCE_SHA||null;
+report.generatedBy='tools/p3-evidence.mjs';
+fs.mkdirSync('dist/evidence',{recursive:true});
+fs.writeFileSync('dist/evidence/p3-conformance.json',JSON.stringify(report,null,2)+'\n');
+console.log(JSON.stringify(report,null,2));
