@@ -55,6 +55,7 @@ jobs:
           name: p2-build
           path: |
             dist/One_File_Universe.html
+            dist/build-manifest.json
             dist/evidence/p2-*.json
 
   browser:
