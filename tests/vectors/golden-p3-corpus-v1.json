@@ -3,6 +3,22 @@
   "schemaVersion": 1,
   "modelVersion": "p3-astronomy-1",
   "baselineEpoch": "P4_T0",
-  "expectedDigest": null,
-  "note": "The exact digest is intentionally populated from the first exact-head canonical CI run, then frozen before candidate certification."
+  "manifestHash": "a6150302cbb9158014a1bb99592e13404b51973745fb32b4e66e57688ed4a34d",
+  "expectedDigest": "f5406c3940fd443d9f800a2e63a3f13313b619e931b36489c071f6ca683cb4e0",
+  "records": 9,
+  "browserRegionDigest": "33aeb20e65ff9ba8a0d82fce73d9ff9ec7b54d6a2af7d9f11d1cea35f5138d23",
+  "browserGalaxyDigest": "5887ce485b5659fd3bd0d11f32a5301ec6a2e16c738046b1e9c396371ef3ee51",
+  "browserSystemDigest": "0ef186a6052c086b663c88d26312686e219da0d50c9d7096c138bb402b4e820a",
+  "browserPlanetDigest": "c2f6bb2d2ce9c51b3047d0da9db2fd1d72c01c7a8dba37ee7302354ec8bf56ff",
+  "browserMoonDigest": "f50ac0d18cb8cfe5232e928b25bb4d651d9b3cde64f4418cad9b1d63ae647014",
+  "provenance": {
+    "observedSourceSha": "03ef2aff4cc855c89c813a8506e8272e817d89eb",
+    "node": "v24.20.0 linux x64",
+    "crossRuntimeAgreement": [
+      "linux-x64-node",
+      "linux-x64-chromium",
+      "windows-x64-chromium",
+      "macos-arm64-webkit"
+    ]
+  }
 }
