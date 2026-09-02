@@ -54,11 +54,11 @@ Canonical order is the tuple:
 
 Insertion order, arrival time, browser scheduling, Worker completion order and random UUID ordering are forbidden as canonical tie-breakers.
 
-Submitting the same canonical event twice is idempotent because the Event ID is identical. Distinct logical operations at otherwise identical time/payload MUST use distinct semantic `operationKey` values.
+Submitting the same canonical event twice is idempotent because the Event ID is identical. An exact retry of an already accepted Event ID is returned as a duplicate no-op even if its original acceptance precondition is now stale; the mutation is not applied twice. Distinct logical operations at otherwise identical time/payload MUST use distinct semantic `operationKey` values.
 
 ## Command, event and derived effect
 
-A command is an intent supplied to the transactional mutation boundary. Preconditions are evaluated against the current canonical state before acceptance. A canonical event is the accepted mutation. Replay does not re-run command acceptance logic; it re-applies accepted events deterministically.
+A command is an intent supplied to the transactional mutation boundary. For a new Event ID, preconditions are evaluated against the current canonical state before acceptance. An exact retry is recognized as the already accepted event before a stale precondition can turn a safe retry into an error. A canonical event is the accepted mutation. Replay does not re-run command acceptance logic; it re-applies accepted events deterministically.
 
 Derived effects, indexes, caches and presentation artifacts are not events unless they have independent world semantics.
 
@@ -102,7 +102,7 @@ Checkpoint schema v1 records:
 
 Checkpoint identity is a domain-separated SHA-256 digest of its canonical descriptor.
 
-A suffix event MUST sort strictly after the checkpoint's last covered order key. A checkpoint with a corrupt state digest, wrong Universe Identity, wrong lineage or unsupported version fails closed.
+The checkpoint state itself MUST declare the same temporal protocol, Universe Identity and lineage as the checkpoint descriptor. A suffix event MUST sort strictly after the checkpoint's last covered order key. A checkpoint with a corrupt state digest, inconsistent state lineage, corrupt identity or unsupported version fails closed.
 
 Required equivalence:
 
@@ -130,7 +130,7 @@ A lineage ID is derived from Universe Identity, optional parent checkpoint ID an
 
 ## Causality
 
-Events may carry bounded canonical `causes` references. These are provenance/causal references for accepted events and are not used as a hidden global causal scheduler. Command preconditions are represented by an optional state digest and are checked transactionally at acceptance.
+Events may carry bounded canonical `causes` references. These are provenance/causal references for accepted events and are not used as a hidden global causal scheduler. Command preconditions are represented by an optional state digest and are checked transactionally at acceptance for new Event IDs.
 
 Domain-specific bounded propagation belongs to future domain contracts and may use the Multiscale Reality operations `REFINE`, `PROJECT` and `RECONCILE` without changing P4 ordering semantics.
 
@@ -154,7 +154,7 @@ P4 archives are OFU-CBV-1 encoded and contain:
 
 Browser IndexedDB/localStorage are caches only. The portable archive is the authoritative mutable-world representation.
 
-Imports rederive Event IDs and checkpoint identities and verify integrity before data is accepted.
+Imports rederive Event IDs and checkpoint identities, verify integrity, and require archive header, checkpoint state, checkpoint descriptor, baseline and suffix events to belong to one coherent Universe/lineage. A suffix embedded beside a checkpoint must sort strictly after that checkpoint.
 
 ## Transactional mutation boundary
 
@@ -162,10 +162,10 @@ Imports rederive Event IDs and checkpoint identities and verify integrity before
 
 ```text
 replay current world
--> verify precondition digest
--> canonicalize event
--> deduplicate by Event ID
--> canonical sort
+-> canonicalize candidate event
+-> return idempotent no-op if Event ID is already accepted
+-> for a new Event ID, verify current-state precondition digest
+-> canonical sort candidate history
 -> replay candidate history
 -> return a new committed world/state
 ```
