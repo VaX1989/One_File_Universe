@@ -41,7 +41,7 @@ Location, containment, ownership, QueryContext and ModelRegime do not implicitly
 
 Canonical Address v1 uses exact tagged representations with bounded segments and total bytes. Human-readable paths are presentation; canonical bytes are normative.
 
-Canonical generation MUST NOT depend on a global sequential RNG stream. **Domain separation is normative.** P2 freezes:
+Canonical generation MUST NOT depend on a global sequential RNG stream. **domain separation is normative.** P2 freezes:
 
 ```text
 HMAC-SHA-256(
