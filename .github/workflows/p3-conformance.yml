@@ -1,0 +1,57 @@
+name: P3 Conformance
+
+on:
+  push:
+    branches:
+      - feature/p3-universe-skeleton
+  pull_request:
+
+env:
+  OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+permissions:
+  contents: read
+
+jobs:
+  node:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.20.0'
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Foundation
+        run: node tools/validate-foundation.mjs
+      - name: P1
+        run: node tests/run-node-tests.mjs && node tests/p1/portable-save-size.mjs
+      - name: P2
+        run: npm run test:p2
+      - name: P3
+        run: node tests/p3/run-p3-conformance.mjs
+      - name: P3 performance
+        run: node tests/p3/p3-prototype-performance.mjs
+
+  browser:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.20.0'
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - run: npm install --no-save playwright@1.62.1
+      - run: npx playwright install --with-deps ${{ matrix.browser }}
+      - run: node tests/p3/run-p3-conformance.mjs
