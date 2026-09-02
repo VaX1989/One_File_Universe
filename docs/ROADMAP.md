@@ -57,6 +57,8 @@ A P1 artifact and evidence report demonstrating every mandatory item or document
 
 ## P2 — Deterministic Kernel
 
+**P2 — COMPLETE**
+
 ### Objective
 Create the portable authority oracle for all future generators.
 
@@ -78,6 +80,9 @@ The same corpus produces the same normative digest across the declared executed 
 ---
 
 ## P3 — Universe Skeleton
+
+**P3 — READY**  
+P3 implementation has not begun during P2 closure.
 
 ### Objective
 Prove sparse random access across astronomical scales without materializing the universe.

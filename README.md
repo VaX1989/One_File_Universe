@@ -8,8 +8,8 @@ One File Universe (OFU) is an experiment in software architecture, procedural ge
 
 - **P0 — Constitution & Foundation:** complete.
 - **P1 — Constitutional Prototype:** complete.
-- **P2 — Deterministic Kernel:** freeze/closure candidate on PR #6. Closure requires exact-head Foundation, P1 and P2 conformance, the declared cross-runtime matrix, reproducible build, review closure, merge and post-merge certification.
-- **P3 — Universe Skeleton:** not started during P2 closure.
+- **P2 — Deterministic Kernel:** complete.
+- **P3 — Universe Skeleton:** ready; implementation has not begun as part of P2 closure.
 
 P2 freezes OFU-CBV-1, `ofu-unicode-15.1.0-v1`, Canonical Address v1, a strict Semantic Generator Manifest, Universe Identity, universe-scoped Entity Identity, HMAC-SHA-256 addressed derivation and a deliberately small deterministic numeric contract. The normative contract is [docs/P2_PROTOCOL.md](docs/P2_PROTOCOL.md).
 
