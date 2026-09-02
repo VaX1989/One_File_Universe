@@ -9,7 +9,8 @@ const p4Workflow=fs.readFileSync('.github/workflows/p4-conformance.yml','utf8');
 
 assert.doesNotMatch(p2Workflow,/^\s*-\s*run:\s*npm test\s*$/m,'P2 workflow must not inherit downstream tests through generic npm test');
 assert.match(p2Workflow,/npm run test:p2/,'P2 workflow must execute its explicit phase-scoped test command');
-assert.match(p2Workflow,/dist\/evidence\/p2-\*\.json/,'P2 artifacts must include only explicitly P2-owned evidence records');
+assert.match(p2Workflow,/dist\/evidence\/p2-\*\.json/,'P2 artifacts must include explicitly P2-owned evidence records');
+assert.match(p2Workflow,/dist\/build-manifest\.json/,'P2 build artifact must retain the typed p2-build-manifest required by the fail-closed aggregate');
 assert.match(p4Workflow,/dist\/evidence\/p4\//,'P4 artifacts must use a phase-owned evidence root');
 
 for(const file of ['tests/p4/run-p4-tests.mjs','tests/p4/browser-p4.mjs','tools/p4-benchmark.mjs']){
