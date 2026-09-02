@@ -1,0 +1,129 @@
+name: P3-P4 Disposable Integration
+
+on:
+  push:
+    branches:
+      - integration/p3-p4
+
+concurrency:
+  group: p3-p4-disposable-integration
+  cancel-in-progress: true
+
+env:
+  OFU_SOURCE_SHA: ${{ github.sha }}
+
+permissions:
+  contents: read
+
+jobs:
+  node-combined:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.20.0'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Verify exact combined source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Foundation
+        run: node tools/validate-foundation.mjs
+      - name: P1
+        run: node tests/run-node-tests.mjs && node tests/p1/portable-save-size.mjs
+      - name: P2
+        run: npm run test:p2
+      - name: P3 canonical conformance and Worker/order invariants
+        run: node tests/p3/run-p3-conformance.mjs
+      - name: P3 independent spatial oracle
+        run: python3 tools/p3_spatial_oracle.py
+      - name: P3 performance and working set
+        run: node tests/p3/p3-canonical-performance.mjs
+      - name: P4 replay
+        run: node tests/p4/run-p4-tests.mjs
+      - name: P4 semantic closure
+        run: node tests/p4/semantic-closure-tests.mjs
+      - name: P4 archive lineage
+        run: node tests/p4/archive-lineage-tests.mjs
+      - name: P4 checkpoint authority
+        run: node tests/p4/checkpoint-authority-tests.mjs
+      - name: P2 to P4 authority contract
+        run: node tests/integration/p2-p4-contract-tests.mjs
+      - name: P3 to P4 canonical integration contract
+        run: node tests/integration/p3-p4-contract-tests.mjs
+      - name: P4 performance and working set
+        run: node tools/p4-benchmark.mjs
+      - name: Generic phase-evidence isolation
+        run: node tests/integration/evidence-isolation-generic.mjs
+      - name: Reproducible build
+        run: node tools/build-p1.mjs && node tests/build/reproducible-build.mjs
+
+  browser-linux-combined:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.20.0'
+      - name: Verify exact combined source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - run: npm install --no-save playwright@1.62.1
+      - run: npx playwright install --with-deps ${{ matrix.browser }}
+      - name: P3 canonical browser on combined tree
+        run: node tests/p3/browser-p3.mjs
+        env:
+          BROWSER: ${{ matrix.browser }}
+      - name: P4 canonical browser on combined tree
+        run: node tests/p4/browser-p4.mjs
+        env:
+          BROWSER: ${{ matrix.browser }}
+          EXPECTED_PLATFORM: linux
+          EXPECTED_ARCH: x64
+
+  browser-platform-combined:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            browser: chromium
+            platform: win32
+            arch: x64
+          - os: macos-latest
+            browser: webkit
+            platform: darwin
+            arch: arm64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.20.0'
+      - name: Verify exact combined source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - run: npm install --no-save playwright@1.62.1
+      - run: npx playwright install ${{ matrix.browser }}
+      - name: P3 canonical platform browser on combined tree
+        run: node tests/p3/browser-p3.mjs
+        env:
+          BROWSER: ${{ matrix.browser }}
+      - name: P4 canonical platform browser on combined tree
+        run: node tests/p4/browser-p4.mjs
+        env:
+          BROWSER: ${{ matrix.browser }}
+          EXPECTED_PLATFORM: ${{ matrix.platform }}
+          EXPECTED_ARCH: ${{ matrix.arch }}
