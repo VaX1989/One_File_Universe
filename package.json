@@ -1,15 +1,15 @@
 {
   "name": "one-file-universe",
-  "version": "0.4.0-p4",
+  "version": "0.2.0-p2",
   "private": true,
-  "description": "One File Universe deterministic temporal kernel",
+  "description": "One File Universe deterministic kernel",
   "type": "module",
   "scripts": {
-    "validate": "node tools/validate-foundation.mjs && node tests/run-node-tests.mjs && node tests/p1/portable-save-size.mjs && node tests/p2/run-p2-tests.mjs && node tests/p2/address-parser-tests.mjs && node tests/p2/evidence-aggregator-tests.mjs && node tests/p4/run-p4-tests.mjs && node tests/p4/archive-lineage-tests.mjs",
+    "validate": "node tools/validate-foundation.mjs && node tests/run-node-tests.mjs && node tests/p1/portable-save-size.mjs && node tests/p2/run-p2-tests.mjs && node tests/p2/address-parser-tests.mjs && node tests/p2/evidence-aggregator-tests.mjs && node tests/p4/run-p4-tests.mjs && node tests/p4/archive-lineage-tests.mjs && node tests/p4/checkpoint-authority-tests.mjs",
     "build": "node tools/build-p1.mjs",
     "test:p2": "node tests/p2/run-p2-tests.mjs && node tests/p2/address-parser-tests.mjs && node tests/p2/evidence-aggregator-tests.mjs",
-    "test:p4": "node tests/p4/run-p4-tests.mjs && node tests/p4/archive-lineage-tests.mjs",
-    "test": "node tools/validate-foundation.mjs && node tests/run-node-tests.mjs && node tests/p1/portable-save-size.mjs && node tests/p2/run-p2-tests.mjs && node tests/p2/address-parser-tests.mjs && node tests/p2/evidence-aggregator-tests.mjs && node tests/p4/run-p4-tests.mjs && node tests/p4/archive-lineage-tests.mjs && node tools/build-p1.mjs && node tests/build/reproducible-build.mjs"
+    "test:p4": "node tests/p4/run-p4-tests.mjs && node tests/p4/archive-lineage-tests.mjs && node tests/p4/checkpoint-authority-tests.mjs",
+    "test": "node tools/validate-foundation.mjs && node tests/run-node-tests.mjs && node tests/p1/portable-save-size.mjs && node tests/p2/run-p2-tests.mjs && node tests/p2/address-parser-tests.mjs && node tests/p2/evidence-aggregator-tests.mjs && node tests/p4/run-p4-tests.mjs && node tests/p4/archive-lineage-tests.mjs && node tests/p4/checkpoint-authority-tests.mjs && node tools/build-p1.mjs && node tests/build/reproducible-build.mjs"
   },
   "engines": { "node": "24.20.x" }
 }
