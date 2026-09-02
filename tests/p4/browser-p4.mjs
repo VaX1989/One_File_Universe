@@ -34,8 +34,8 @@ try{
     try{return await new Promise((resolve,reject)=>{const w=new Worker(url);w.onmessage=e=>{w.terminate();e.data.ok?resolve(e.data.value):reject(new Error(e.data.error))};w.onerror=e=>{w.terminate();reject(e.error||new Error(e.message))};w.postMessage(null)})}finally{URL.revokeObjectURL(url)}
   },{src:source,scenarioText:scenario.toString()});
   if(JSON.stringify(direct)!==JSON.stringify(worker))throw new Error('direct/Worker temporal mismatch');
-  fs.mkdirSync('dist/evidence',{recursive:true});
+  fs.mkdirSync('dist/evidence/p4',{recursive:true});
   const evidence={evidenceSchemaVersion:1,phase:'P4',evidenceKind:'p4-browser-worker',producer:'tests/p4/browser-p4.mjs',sourceCommit,p2FinalCandidate:'9272a36fe2cb6c5b887e2f99d7e6ce671c5a8883',status:'PASS',browser:browserName,browserVersion:browser.version(),platform:process.platform,arch:process.arch,temporalProtocol:'ofu-p4-temporal-v1',canonical:direct};
-  fs.writeFileSync(path.join('dist/evidence',`p4-${process.platform}-${process.arch}-${browserName}.json`),JSON.stringify(evidence,null,2)+'\n');
+  fs.writeFileSync(path.join('dist/evidence/p4',`p4-${process.platform}-${process.arch}-${browserName}.json`),JSON.stringify(evidence,null,2)+'\n');
   console.log(JSON.stringify(evidence));
 }finally{await browser.close()}
