@@ -13,7 +13,12 @@ def enc(v):
  if v is None:return b'\x00'
  if v is False:return b'\x01'
  if v is True:return b'\x02'
- if isinstance(v,int) and not isinstance(v,bool):return bytes([17])+uleb(v) if v>=0 else bytes([16])+uleb((-v*2)-1)
+ if isinstance(v,int) and not isinstance(v,bool):
+  if v>=0:
+   if v>2**64-1:raise ValueError('unsigned integer range')
+   return bytes([17])+uleb(v)
+  if v<-(2**63):raise ValueError('signed integer range')
+  return bytes([16])+uleb((-v*2)-1)
  if isinstance(v,(bytes,bytearray)):return bytes([32])+uleb(len(v))+bytes(v)
  if isinstance(v,str):
   n=unicodedata.normalize('NFC',v);b=n.encode('utf-8','strict');return bytes([33])+uleb(len(b))+b
