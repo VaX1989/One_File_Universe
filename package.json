@@ -1,13 +1,14 @@
 {
   "name": "one-file-universe",
-  "version": "0.1.0-p1",
+  "version": "0.2.0-p2",
   "private": true,
-  "description": "One File Universe constitutional prototype",
+  "description": "One File Universe deterministic kernel",
   "type": "module",
   "scripts": {
-    "validate": "node tools/validate-foundation.mjs && node tests/run-node-tests.mjs",
+    "validate": "node tools/validate-foundation.mjs && node tests/run-node-tests.mjs && node tests/p2/run-p2-tests.mjs",
     "build": "node tools/build-p1.mjs",
-    "test": "node tools/validate-foundation.mjs && node tests/run-node-tests.mjs && node tools/build-p1.mjs && node tests/build/reproducible-build.mjs"
+    "test:p2": "node tests/p2/run-p2-tests.mjs",
+    "test": "node tools/validate-foundation.mjs && node tests/run-node-tests.mjs && node tests/p2/run-p2-tests.mjs && node tools/build-p1.mjs && node tests/build/reproducible-build.mjs"
   },
   "engines": { "node": "24.20.x" }
 }

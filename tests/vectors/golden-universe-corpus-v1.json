@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "protocol": "ofu-cbv-1",
+  "semanticManifestHash": "ab9292419e609c3a16f6905bfc2d9f7f554ae56000462e64244749d3631f7401",
+  "universeIdentity": "b7fc7adc6f7295a258566670ede65dfd6fe26bc736d778fb67254c198d58b718",
+  "corpusDigest": "5527b9f83304436d1da9c63cc17b4ee060b772d9299cf98218e4ab35a407806f",
+  "kernelDigest": "87793fe4a623905dde205cf5d844e980c8c700f00081241b1fb0e32424a80c70",
+  "generator": "tools/p2_oracle.py:build_corpus",
+  "deterministicGeneratedCases": 256,
+  "fuzzSeed": "0x5eed1234"
+}
