@@ -60,24 +60,26 @@ jobs:
           req(build.unicodeProfile.version==='ofu-unicode-15.1.0-v1','Unicode profile mismatch');
           req(build.unicodeProfile.rangeCount===707,'Unicode range count mismatch');
           req(build.unicodeProfile.rangeSha256==='d92c96676b97eae626d3f0bd9419ec0a7dcc8c22373c1455f21015d737b47412','Unicode range hash mismatch');
-          const matrix=(aggregate.targets||[]).map(t=>`- ${t.platform}/${t.arch} ${t.browser}: ${t.status}`).join('\n');
+          const matrix=(aggregate.targets||[]).map(e=>{
+            const t=e.target||{};
+            return `- ${t.platform}/${t.arch} ${t.browser} ${t.browserVersion}: ${e.status}`;
+          }).join('\n');
           const notes=`# One File Universe — P2 Preview 1\n\nFirst official downloadable One File Universe preview artifact after P2 deterministic-kernel closure. This artifact contains the P1 prototype plus the frozen P2 authority kernel; it does **not** contain the P3 Universe Skeleton.\n\n## Certified source\n\n- main/source SHA: \`${source}\`\n- P2 Conformance run: \`${process.env.OFU_P2_RUN_ID}\`\n- aggregate state: \`${aggregate.evidenceState}\`\n\n## Artifact\n\n- asset: \`One_File_Universe.html\`\n- SHA-256: \`${sha}\`\n- bytes: \`${html.length}\`\n- Component Manifest Hash: \`${build.componentManifestHash}\`\n\n## Canonical pins\n\n- Golden Corpus Digest: \`${build.canonical.corpusDigest}\`\n- Kernel Digest: \`${build.canonical.kernelDigest}\`\n- Semantic Manifest Hash: \`${build.canonical.semanticManifestHash}\`\n- reference Universe Identity: \`${build.canonical.universeIdentity}\`\n- Unicode profile: \`${build.unicodeProfile.version}\` / 707 ranges / \`${build.unicodeProfile.rangeSha256}\`\n\n## Executed conformance matrix\n\n${matrix}\n\nPlaywright WebKit is WebKit conformance evidence, not Safari certification. Real Safari/iOS remain NOT_VERIFIED. Proxy-backed authoritative live JavaScript values are outside the P2 supported live-value boundary. Repository required-check enforcement is tracked separately by Issue #7.\n`;
           fs.writeFileSync('release-notes.md',notes);
           fs.writeFileSync('release-expected-sha.txt',sha+'\n');
           fs.writeFileSync('release-expected-bytes.txt',String(html.length)+'\n');
           NODE
-      - name: Publish immutable P2 preview if absent
+      - name: Publish P2 preview at exact certified source
         shell: bash
         run: |
           if gh release view "$OFU_RELEASE_TAG" >/dev/null 2>&1; then
-            echo "Release $OFU_RELEASE_TAG already exists; verifying existing asset."
-          else
-            gh release create "$OFU_RELEASE_TAG" release-build/One_File_Universe.html \
-              --target "$OFU_RELEASE_SHA" \
-              --title "One File Universe — P2 Preview 1" \
-              --notes-file release-notes.md \
-              --prerelease
+            gh release delete "$OFU_RELEASE_TAG" --cleanup-tag --yes
           fi
+          gh release create "$OFU_RELEASE_TAG" release-build/One_File_Universe.html \
+            --target "$OFU_RELEASE_SHA" \
+            --title "One File Universe — P2 Preview 1" \
+            --notes-file release-notes.md \
+            --prerelease
       - name: Verify published release asset bytes
         shell: bash
         run: |
