@@ -1,0 +1,89 @@
+name: P1 Conformance
+on:
+  push:
+    branches: ['feature/p1-constitutional-prototype']
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  node-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '24.20.0'}
+      - run: npm test
+      - uses: actions/upload-artifact@v4
+        with:
+          name: p1-build
+          path: dist/
+  browser-direct-open:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '24.20.0'}
+      - run: node tools/build-p1.mjs
+      - run: npm install --no-save playwright@1.62.1
+      - run: npx playwright install --with-deps ${{ matrix.browser }}
+      - run: node tests/browser/direct-open.mjs
+        env:
+          BROWSER: ${{ matrix.browser }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: p1-browser-linux-${{ matrix.browser }}
+          path: dist/evidence/
+  platform-direct-open:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            browser: chromium
+          - os: macos-latest
+            browser: webkit
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '24.20.0'}
+      - run: node tools/build-p1.mjs
+      - run: npm install --no-save playwright@1.62.1
+      - run: npx playwright install ${{ matrix.browser }}
+      - run: node tests/browser/direct-open.mjs
+        env:
+          BROWSER: ${{ matrix.browser }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: p1-browser-${{ matrix.os }}-${{ matrix.browser }}
+          path: dist/evidence/
+  aggregate-evidence:
+    if: ${{ always() }}
+    needs: [node-and-build, browser-direct-open, platform-direct-open]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '24.20.0'}
+      - name: Require upstream success
+        shell: bash
+        run: |
+          test '${{ needs.node-and-build.result }}' = 'success'
+          test '${{ needs.browser-direct-open.result }}' = 'success'
+          test '${{ needs.platform-direct-open.result }}' = 'success'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: p1-*
+          path: collected
+      - run: node tools/aggregate-p1-evidence.mjs collected
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: p1-aggregate
+          path: dist/p1-aggregate.json

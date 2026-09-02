@@ -33,3 +33,7 @@ P1/P2 explicitly encourage competing prototypes for languages, WASM strategy, nu
 ## Generated artifacts
 
 Large generated HTML artifacts should not be committed as ordinary source unless a phase-specific policy explicitly requires it. The repository is the source of truth; release artifacts are reproducibly generated products.
+
+## Normative language
+
+English is the normative project language. Use English for source identifiers, comments, documentation, ADRs, schemas, manifests, tests, CI output, issue/specification text, pull requests, commit/release descriptions and canonical user-facing terminology. Future localization may contain translations, but translations are non-normative and must not define canonical identifiers or semantics.
