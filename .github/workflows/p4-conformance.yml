@@ -26,10 +26,11 @@ jobs:
         shell: bash
         run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
       - run: node tests/p4/run-p4-tests.mjs
+      - run: node tools/p4-benchmark.mjs
       - uses: actions/upload-artifact@v4
         with:
           name: p4-node
-          path: dist/evidence/p4-node-replay.json
+          path: dist/evidence/
 
   browser-linux:
     runs-on: ubuntu-latest
@@ -106,6 +107,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24.20.0'
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
       - name: Verify upstream success
         shell: bash
         run: |
