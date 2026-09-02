@@ -1,22 +1,39 @@
 # Contributing to One File Universe
 
+OFU is evidence-gated. Contributions are evaluated not only for whether they work locally, but for whether they preserve canonical semantics, portability and verification.
+
+## Workflow
+
+1. Start from the current `main` baseline.
+2. Use a focused branch (`feature/`, `fix/`, `experiment/`, `docs/`).
+3. Identify affected constitutional contracts/ADRs.
+4. Add or update tests before claiming verification.
+5. Run `npm test`.
+6. Open a pull request describing semantics, risks, evidence and compatibility impact.
+
+## Required PR questions
+
+- Does this change canonical world meaning?
+- Does it alter Universe Identity, Generator Manifest, event or save semantics?
+- Which determinism class applies?
+- Does it change Strict Direct-Open compatibility?
+- Does it increase runtime working-set requirements?
+- Does it introduce a new external runtime dependency? (Strict releases may not.)
+- Which tests/invariants prove the claim?
+- Is a new/superseding ADR required?
+
+## Claim discipline
+
+Use the project evidence taxonomy. Code existence is not verification. A test that has not run is not a PASS. A platform that was not tested is unverified.
+
+## Experiments
+
+P1/P2 explicitly encourage competing prototypes for languages, WASM strategy, numeric representations, PRF primitives, embedding/compression and rendering techniques. Experimental code must be labeled as such and must not silently become normative architecture.
+
+## Generated artifacts
+
+Large generated HTML artifacts should not be committed as ordinary source unless a phase-specific policy explicitly requires it. The repository is the source of truth; release artifacts are reproducibly generated products.
+
 ## Normative language
 
-English is the normative project language. Use English for source identifiers, comments, documentation, ADRs, schemas, manifests, tests, CI output, issue/specification text, pull requests, commit/release descriptions and canonical user-facing terminology.
-
-Localization resources may contain translations when localization is deliberately introduced. Such translations are non-normative and must not define canonical identifiers or semantics.
-
-## Evidence discipline
-
-- Do not describe unexecuted tests as PASS.
-- Preserve the evidence taxonomy used by the repository.
-- Record runtime, platform and toolchain details for conformance or performance claims.
-- Treat green CI as necessary but not sufficient when a known valid review finding remains unresolved.
-
-## Constitutional changes
-
-A change to a constitutional MUST requires an ADR and a compatibility impact statement. Do not silently redefine canonical identity, addressing, serialization, derivation, numeric semantics or persistence compatibility in an implementation-only commit.
-
-## Release artifact
-
-The release product remains one self-contained HTML artifact. Build and test dependencies must not become application-owned runtime dependencies.
+English is the normative project language. Use English for source identifiers, comments, documentation, ADRs, schemas, manifests, tests, CI output, issue/specification text, pull requests, commit/release descriptions and canonical user-facing terminology. Future localization may contain translations, but translations are non-normative and must not define canonical identifiers or semantics.
