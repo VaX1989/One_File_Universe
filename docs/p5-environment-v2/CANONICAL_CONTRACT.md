@@ -1,195 +1,114 @@
 # Advanced P5 Environment v2 — Canonical Contract
 
-Status on this branch: **CANONICAL PROMOTION CANDIDATE**. This document has canonical force only after merge to `main` and exact-main certification.
+Status on this branch: **CANONICAL PROMOTION CANDIDATE**. Canonical/frozen status is acquired only after merge and exact-main certification.
 
-## Frozen compatibility boundary
+## Compatibility and authority
 
-Environment v2 is additive. It does not alter the meaning or bytes of:
+Environment v2 is additive. It does not redefine `ofu-p5-planet-physical-v1`, `p5-planet-physical-1`, `p5-cube-sphere-topology-1` or `ofu-p5-p6-environment-v1`. The successor is:
 
-- `ofu-p5-planet-physical-v1`
-- `p5-planet-physical-1`
-- `p5-cube-sphere-topology-1`
-- `ofu-p5-p6-environment-v1`
+- contract: `ofu-p5-p6-environment-v2`
+- schema: `2`
+- model: `p5-environment-2`
+- atmosphere-state contract: `ofu-p5-atmosphere-state-v2`
+- authority: `P5_CANONICAL`
 
-The successor contract is `ofu-p5-p6-environment-v2`, model `p5-environment-2`, schema version `2`. The v1 projection remains available and preserves its explicit `UNSUPPORTED`/`null` environmental fields.
+The v2 boundary carries explicit authority/provenance and the epistemic vocabulary `KNOWN`, `DERIVED`, `HYPOTHETICAL_MODEL_VALUE`, `UNKNOWN`, `UNSUPPORTED`.
 
-## Semantic Generator Manifest
+## Dedicated Semantic Generator Manifest
 
-Environment v2 owns a dedicated P2-validated Semantic Generator Manifest rather than reusing the P5 v1 physical manifest. It binds:
+Environment v2 uses a P2-validated manifest, not the frozen P5 v1 physical manifest. It binds OFU-CBV-1, Canonical Address v1, Unicode `ofu-unicode-15.1.0-v1`, P2 numeric contract v1, P3 `p3-astronomy-1`, P4 `ofu-p4-temporal-v1`, P5 physical `p5-planet-physical-1`, terrain `p5-cube-sphere-topology-1`, atmosphere/radiative law profiles, evidence policy and explicit genesis/transition policies.
 
-- `ofu-cbv-1`
-- Canonical Address v1
-- `ofu-unicode-15.1.0-v1`
-- P2 numeric contract v1
-- generator suite `p5-environment` version 2
-- P3 `p3-astronomy-1`
-- P4 `ofu-p4-temporal-v1`
-- P5 physical `p5-planet-physical-1`
-- terrain `p5-cube-sphere-topology-1`
-- atmosphere conservation profile `p5-atmosphere-conservation-tg-v1`
-- Tier-0 radiative profile `p5-radiative-equilibrium-s1361-sigma-codata2022-v1`
-- evidence policy `p5-evidence-policy-1`
-- genesis policy `no-canonical-volatile-genesis-v1`
-- transition policy `no-endogenous-atmosphere-loss-v1`
+Manifest hash:
 
-Frozen candidate manifest hash: `f35801f9cc4f2d44633a39013e135553f10c29cd62308d34b4da31c59a473d3f`.
+`f35801f9cc4f2d44633a39013e135553f10c29cd62308d34b4da31c59a473d3f`
 
-Changing generator semantics requires a new manifest/derivation stream under P2 rules.
+Generator semantic changes require a new P2 manifest/derivation lineage.
 
-## Epistemic vocabulary
+## Atmosphere / volatile state
 
-Every v2 boundary field carries explicit authority/provenance and one of the following states (directly or as the state from which it is derived):
-
-- `KNOWN`
-- `DERIVED`
-- `HYPOTHETICAL_MODEL_VALUE`
-- `UNKNOWN`
-- `UNSUPPORTED`
-
-`UNKNOWN` means the quantity is meaningful but no canonical value exists. `UNSUPPORTED` means the current contract does not model the quantity. A research value cannot be submitted as canonical state merely by wrapping it in the v2 contract.
-
-## Volatile / atmosphere state
-
-### Representation
-
-Canonical stored atmosphere quantities use **absolute mass in teragrams** (`1 Tg = 10^9 kg`) represented as non-negative `u64 BigInt` values.
-
-There is no mutable denominator. `ABSOLUTE_MASS_NO_DENOMINATOR` therefore avoids the ambiguity of “ppb of current planet mass”. A guard additionally rejects a total volatile inventory larger than the immutable P3 baseline planetary mass implied by `baselineMassMilliEarth`.
-
-The state identity is:
+Stored canonical quantities use absolute teragrams (`1 Tg = 10^9 kg`) as non-negative `u64 BigInt`, reference `ABSOLUTE_MASS_NO_DENOMINATOR`. Conservation is exact:
 
 `totalVolatileMassTg = atmosphericRetainedMassTg + condensedSurfaceMassTg + subsurfaceInteriorMassTg + lostMassTg`.
 
-This bookkeeping relation is `ESTABLISHED / FORMAL`.
+Bookkeeping evidence/fidelity: `ESTABLISHED / FORMAL`.
 
-### Genesis decision
+### Genesis policy
 
-Environment v2 deliberately chooses **Path B — `NO_CANONICAL_GENESIS`**.
+Environment v2 deliberately promotes **`NO_CANONICAL_GENESIS`**. The research volatile prior is not promoted because terrestrial volatile delivery, magma-ocean partition/degassing, impacts, recycling and escape are history/model dependent; available literature does not justify a universal generated atmospheric inventory for arbitrary canonical 1–8 Mearth terrestrial planets.
 
-The research prior (broad total volatile fraction plus broad atmospheric partition) is not promoted. Terrestrial volatile inventories depend on accretion/delivery, magma-ocean partition and degassing, impacts, recycling and atmospheric escape. Reviews of terrestrial planet formation and magma-ocean evolution describe substantial history dependence and diversity, while atmospheric escape can materially reshape low-mass-planet volatile contents. These sources support the existence and importance of the processes, not a universal narrow prior for arbitrary 1–8 Mearth terrestrial worlds.
+The unpromoted prior remains `HYPOTHETICAL / STYLIZED`. Canonical genesis atmosphere mass and derived pressure therefore remain `UNKNOWN`, not fabricated zero and not a random draw.
 
-Evidence disposition for the unpromoted prior: `HYPOTHETICAL / STYLIZED`.
-
-Primary/review sources used for this adjudication:
-
-- Morbidelli et al. (2012), *Building Terrestrial Planets*, Annual Review of Earth and Planetary Sciences 40:251–275, DOI 10.1146/annurev-earth-042711-105319.
-- Elkins-Tanton (2012), *Magma Oceans in the Inner Solar System*, Annual Review of Earth and Planetary Sciences 40:113–139, DOI 10.1146/annurev-earth-042711-105503.
-- Tian (2015), *Atmospheric Escape from Solar System Terrestrial Planets and Exoplanets*, Annual Review of Earth and Planetary Sciences 43:459–476, DOI 10.1146/annurev-earth-060313-054834.
+Scientific governance references: Morbidelli et al. 2012, *Building Terrestrial Planets*; Elkins-Tanton 2012, *Magma Oceans in the Inner Solar System*; Tian 2015, *Atmospheric Escape from Solar System Terrestrial Planets and Exoplanets*.
 
 ## Global surface column pressure
 
-Canonical semantic name: `GLOBAL_SURFACE_COLUMN_PRESSURE`.
-
-The v2 relation is
+Semantic: `GLOBAL_SURFACE_COLUMN_PRESSURE`.
 
 `p = M_atm * g / (4*pi*R^2)`
 
-where:
+- `M_atm`: retained atmosphere mass, exact Tg→kg conversion;
+- `g`: frozen P5 v1 surface gravity;
+- `R`: frozen P5 v1 mean radius;
+- deterministic area constant: `pi = 355/113` under this approximate spherical law profile;
+- output: integer pascals, nearest ties-to-even exact rational evaluation.
 
-- `M_atm` is retained atmospheric mass in kg, converted exactly from stored Tg;
-- `g` is frozen P5 v1 `surfaceGravityMicroMs2`;
-- `R` is frozen P5 v1 `meanRadiusM`;
-- the spherical area approximation uses frozen rational `pi = 355/113`;
-- output is integer pascals rounded nearest, ties-to-even.
+Evidence/fidelity: `ESTABLISHED / APPROXIMATE`. This is global mean column weight, not local/weather pressure. Zero atmosphere produces exactly zero pressure; at fixed planet state increasing atmosphere mass cannot reduce pressure. Negative/out-of-domain/u64 values reject.
 
-The relation is `ESTABLISHED / APPROXIMATE`: established column-weight mechanics applied to a spherical/global-mean P5 representation. It is not local weather pressure and creates no independent radius/gravity authority.
+## Corrected Tier-0 radiative equilibrium
 
-Numeric contract:
+P3 `baselineInsolationPpm` is Earth-normalized stellar flux: `1_000_000 ppm = 1 S_earth`. Environment v2 freezes:
 
-| Field | Storage | Unit | Range | Rounding / rejection |
-| --- | --- | --- | --- | --- |
-| atmosphere masses | `u64 BigInt` | Tg | `0..2^64-1`, additionally `total <= baseline planet mass` | exact stored integer; negative/overflow reject |
-| global column pressure | `u64 BigInt` | Pa | `0..2^64-1` | exact rational evaluation, nearest ties-to-even; overflow reject |
+- IAU 2015 Resolution B3 nominal solar irradiance: `1361 W m^-2`;
+- NIST/CODATA 2022 Stefan–Boltzmann constant displayed value: `5.670374419...e-8 W m^-2 K^-4`, frozen for this profile as exact rational `5670374419 / 10^17`.
 
-Causal invariants include zero atmosphere → exactly zero pressure and non-decreasing pressure with atmospheric mass at fixed planet state.
+From absorbed stellar power = emitted thermal power under uniform redistribution, unit longwave emissivity, no greenhouse/internal/background heat:
 
-## Tier-0 radiative equilibrium
+`pi R^2 S(1-A) = 4 pi R^2 sigma T_eff^4`
 
-### P3 forcing semantics
+therefore
 
-P3 computes `insolationPpm` from stellar luminosity and orbital semimajor axis as a dimensionless Earth-normalized stellar flux. Therefore `baselineInsolationPpm = 1_000_000` means one nominal Earth solar irradiance, not `1 W/m^2` and not already-absorbed flux.
+`T_eff = [S(1-A)/(4 sigma)]^(1/4)`.
 
-Environment v2 freezes the IAU nominal solar irradiance `S0 = 1361 W m^-2` (IAU 2015 Resolution B3). It freezes the 2022 CODATA Stefan–Boltzmann constant shown by NIST, `sigma = 5.670374419...e-8 W m^-2 K^-4`, as the exact displayed decimal rational `5670374419 / 10^17` for this model profile.
+Evidence/fidelity: `ESTABLISHED / APPROXIMATE` in the declared domain.
 
-### Physical law
+Canonical numeric path is integer/rational only: insolation ppm, Bond-albedo ppm (`0..1_000_000`), output millikelvin, exact integer fourth-root midpoint comparison, nearest ties-to-even. No persistent JavaScript floating-point authority exists.
 
-For global radiative equilibrium with unit longwave emissivity, no greenhouse, no internal heat and uniform redistribution:
+Earth anchor: `S=1_000_000`, `A=300_000` → **`254_578 mK` (254.578 K)**. This corrects the research normalization that returned about 278 K for the same case.
 
-`pi R^2 S (1-A) = 4 pi R^2 sigma T_eff^4`
+Actual Bond albedo is not generated in v2 and remains `UNKNOWN`. The projection may expose the full physical albedo domain `0..1` as a deterministic mathematical envelope; it is not a prior, probability distribution or likely range.
 
-thus
+**Effective radiative temperature is not mean surface temperature.** `surfaceTemperature` and `greenhouseResponse` remain `UNSUPPORTED`.
 
-`T_eff = [ S (1-A) / (4 sigma) ]^(1/4)`.
+## P4 / XUV / transitions
 
-This is a **radiative effective temperature**, not a mean surface temperature. NASA Earth-energy-budget material provides the physical absorbed-vs-emitted framing and shows why atmospheric greenhouse physics is separate from this Tier-0 balance.
+P4 remains sole owner of canonical time, event identity/order, replay, checkpointing, compaction and lineage. Environment v2 has `privateClock=false` and promotes no endogenous atmospheric-loss transition. Stellar XUV history, integrated escape and upper-atmosphere evolution remain `UNSUPPORTED`; an energy-limited formula is not promoted as a universal history law.
 
-Evidence: `ESTABLISHED / APPROXIMATE` for the law under the declared assumptions.
+## Explicitly unsupported
 
-### Deterministic numeric path
+Mean surface temperature; greenhouse climate; regional transport/weather; water-phase/high-pressure EOS; physical ocean area; physical terrain elevation; canonical XUV evolution; endogenous escape history; geology/plate tectonics; geochemical energy/nutrients; gas-giant environment semantics.
 
-- `baselineInsolationPpm`: P3 `u64 BigInt`, domain `0..1_000_000_000_000`.
-- Bond albedo argument: integer ppm, `0..1_000_000`.
-- output: integer millikelvin (`u64 BigInt`).
-- all persistent/canonical arithmetic is integer/rational.
-- the fourth root is obtained with an integer floor search and exact midpoint comparison against `(q + 1/2)^4`; ties round to even.
-- negative inputs, albedo above 1, P3-domain overflow and output overflow reject.
-
-Earth-normalized scientific anchor:
-
-- normalized insolation = `1_000_000 ppm`;
-- Bond albedo = `300_000 ppm`;
-- canonical `T_eff = 254_578 mK` (`254.578 K`).
-
-This corrects the research normalization that incorrectly produced about 278 K at Earth-like albedo.
-
-### Albedo epistemics
-
-Environment v2 does **not** invent a Bond albedo prior. The actual canonical Bond albedo is `UNKNOWN`. The contract exposes the deterministic law and a full physical-domain envelope over albedo `0..1`; this envelope is not a probability distribution and is not an assertion about likely albedo.
-
-NASA educational material defines albedo on the physical `0..1` interval. Formula evidence and albedo epistemic status are recorded separately.
-
-### Explicit non-claims
-
-- `surfaceTemperature`: `UNSUPPORTED`
-- `greenhouseResponse`: `UNSUPPORTED`
-- regional climate/weather/transport: `UNSUPPORTED`
-
-## P4 temporal authority
-
-P4 remains sole owner of canonical time, event identity, ordering, replay, checkpoints, compaction, lineage and archives. Environment v2 promotes no endogenous atmospheric-loss generator and no private P5 clock. Integrated atmospheric loss remains `UNSUPPORTED` until a future version has sufficient stellar/upper-atmosphere state and a P4-bound transition law.
-
-## XUV / escape
-
-Canonical XUV evolution and atmospheric escape history remain `UNSUPPORTED`. Energy-limited escape may be useful as a diagnostic in future research but is not a universal transition law. Tian (2015) emphasizes the importance of detailed upper-atmosphere physics/chemistry and the continuing uncertainty in how escape shapes terrestrial atmospheres.
-
-## Explicitly unsupported in v2
-
-- mean surface temperature
-- greenhouse climate
-- regional atmospheric transport / weather
-- water-phase model / high-pressure EOS
-- actual ocean area fraction
-- physical terrain elevation
-- XUV evolutionary history
-- endogenous atmospheric escape history
-- geology / plate tectonics
-- geochemical energy / nutrient indices
-- gas-giant environment semantics
-
-## Golden and independent verification
+## Golden corpus and independent oracle
 
 Golden corpus: `golden-p5-environment-v2-corpus-v1`.
 
-Frozen candidate corpus digest: `7dfcbd70f307ef92307cf0a286344b57c1b40ea7854974a52ff6173b63824cc2`.
+Corpus digest definition: SHA-256 of the OFU-CBV-1 encoding of the Golden corpus with the self-referential `corpusDigest` member omitted.
 
-The Python oracle independently evaluates pressure and Tier-0 temperature using Python integers plus high-precision `Decimal`, and separately checks the exact rational fourth-root implementation. It includes Earth-like, zero forcing, full reflection, low forcing, high forcing and P3 maximum-insolation vectors.
+Frozen digest:
 
-## Scientific source registry
+`ac33ba776976d1381a841426fb7e0fbb0276877e98565261bfdec2bca598d7a4`
 
-- IAU 2015 Resolution B3, recommended nominal conversion constants; nominal total solar irradiance `1361 W m^-2`.
-- NIST 2022 CODATA fundamental constants table; Stefan–Boltzmann constant `5.670 374 419...e-8 W m^-2 K^-4`.
-- NASA CERES / NASA GISS Earth energy-budget materials; global incoming/absorbed/outgoing radiative balance.
-- NASA albedo educational material; physical albedo domain `0..1`.
-- Morbidelli et al. 2012; Elkins-Tanton 2012; Tian 2015 for volatile-history and escape-governance limitations.
+Frozen shipped cross-runtime Environment v2 output digest:
 
-Retrieval/adjudication date: 2026-09-03.
+`f6ecaea013a78f5f7a16acf2a0f2fa33f7f7ec816474df33be9f8b0fa41de0a2`
+
+The independent Python oracle evaluates pressure and the physical Tier-0 equation with Python integers/high-precision `Decimal`, and independently verifies exact rational fourth-root rounding against Earth-like, zero/full-reflection, low/high forcing and P3 maximum-forcing vectors.
+
+## Source registry
+
+- IAU 2015 Resolution B3 — nominal solar irradiance.
+- NIST 2022 CODATA fundamental constants — Stefan–Boltzmann constant.
+- NASA CERES/GISS Earth energy-budget material — absorbed/emitted global energy-balance framing.
+- NASA albedo material — physical albedo domain `0..1`.
+- Morbidelli et al. 2012; Elkins-Tanton 2012; Tian 2015 — volatile-history/escape governance and limitations.
+
+Scientific retrieval/adjudication date: 2026-09-03.
