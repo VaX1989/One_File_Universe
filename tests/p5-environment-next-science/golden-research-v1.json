@@ -1,0 +1,22 @@
+{
+  "schema": "golden-p5-environment-next-research-v1",
+  "authority": "P5_RESEARCH_DRAFT",
+  "pressureVectors": [
+    {"gravityMicroMs2":"9806650","meanRadiusM":"6371000","atmosphericMassTg":"5148000000","expectedPressurePa":"98977"},
+    {"gravityMicroMs2":"9800000","meanRadiusM":"6371000","atmosphericMassTg":"0","expectedPressurePa":"0"}
+  ],
+  "saturationVectors": [
+    {"temperatureMilliK":"273160","expectedSaturationPressurePa":"612"},
+    {"temperatureMilliK":"300000","expectedSaturationPressurePa":"3537"},
+    {"temperatureMilliK":"373150","expectedSaturationPressurePa":"101418"},
+    {"temperatureMilliK":"500000","expectedSaturationPressurePa":"2638898"},
+    {"temperatureMilliK":"647096","expectedSaturationPressurePa":"22064000"}
+  ],
+  "gasVector": {
+    "gravityMicroMs2":"9800000","meanRadiusM":"6371000","expectedTotalPressurePa":"192",
+    "species":[
+      {"speciesId":"H2O","atmosphereTg":"1000000","molarMassNanoKgPerMol":"18015280","expectedMoleFractionPpm":"147322","expectedPartialPressurePa":"28"},
+      {"speciesId":"N2","atmosphereTg":"9000000","molarMassNanoKgPerMol":"28013400","expectedMoleFractionPpm":"852678","expectedPartialPressurePa":"164"}
+    ]
+  }
+}
