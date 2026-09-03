@@ -29,7 +29,11 @@ Scale: likelihood (L) and impact (I) from 1 low to 5 critical. Score = L×I. Sco
 | R-023 | Portable in-memory values cannot be represented safely in the save format | 2 | 5 | 10 | explicit bounded portable value domain and deterministic serialization | P1/P4 |
 | R-024 | Strict artifact quietly depends on another local file | 1 | 5 | 5 | request/DOM/Resource Timing audit plus local-file positive control | P1+ |
 | R-025 | Engines agree on an unintended semantic change and silently redefine baseline | 2 | 5 | 10 | committed expected corpus digest and versioned vector evolution | P1/P2 |
+| R-026 | A deterministic atmosphere generator fabricates scientific certainty from a weak volatile prior | 2 | 5 | 10 | Environment v2 `NO_CANONICAL_GENESIS`; explicit UNKNOWN state; research priors cannot masquerade as canonical | P5 Environment v2+ |
+| R-027 | Radiative normalization or units silently convert effective temperature into a wrong climate anchor | 2 | 5 | 10 | first-principles energy balance, IAU/NIST constants, Earth anchor, independent Python oracle, Golden vectors | P5 Environment v2+ |
+| R-028 | Mutable fractional atmosphere units acquire an ambiguous denominator after future planet-mass evolution | 1 | 5 | 5 | absolute Tg canonical storage with `ABSOLUTE_MASS_NO_DENOMINATOR` and explicit baseline-mass guard | P5 Environment v2+ |
+| R-029 | Tier-0 effective temperature is consumed downstream as mean surface temperature | 2 | 5 | 10 | separate epistemic fields; `surfaceTemperature` and greenhouse remain explicit `UNSUPPORTED`; P5→P6 conformance | P5/P6 |
 
 ## Risk-management rule
 
-A phase exit report must update risks materially affected by evidence. A mitigation becomes evidence-backed only after its associated test is executed and passes. P1 reduced several runtime risks but did not eliminate P2 protocol, independent-oracle, mobile/Safari or record-scale risks.
+A phase exit report must update risks materially affected by evidence. A mitigation becomes evidence-backed only after its associated test is executed and passes. P1 reduced several runtime risks but did not eliminate P2 protocol, independent-oracle, mobile/Safari or record-scale risks. Environment v2 reduces R-012/R-025 specifically for atmosphere/radiative semantics only after its exact-head and exact-main scientific, oracle and cross-runtime seals pass; future greenhouse/XUV/geology models remain separately exposed risks rather than inherited certification.
