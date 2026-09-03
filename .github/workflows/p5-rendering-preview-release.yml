@@ -32,7 +32,7 @@ jobs:
       RELEASE_ASSET_SHA256: 1fe7f9bbc94f34f7fee189e29e4201359bd3ed3c02d45ad1dc75c39ae90e2e81
       GH_TOKEN: ${{ github.token }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: ${{ env.SOURCE_SHA }}
       - name: Require exact certified live main
