@@ -1,0 +1,26 @@
+name: P5 Environment Research v2
+
+on:
+  push:
+    branches: [research/p5-environment-v2]
+    paths:
+      - 'research/p5-environment-v2/**'
+      - 'tests/p5-environment-research-v2/**'
+      - '.github/workflows/p5-environment-research-v2.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  research-conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Frozen P5 v1 conformance
+        run: node tests/p5/run-p5-conformance.mjs
+      - name: Advanced P5 environment research checks
+        run: node tests/p5-environment-research-v2/run-environment-v2-tests.mjs
