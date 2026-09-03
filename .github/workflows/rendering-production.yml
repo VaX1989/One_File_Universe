@@ -153,6 +153,7 @@ jobs:
           path: dist/evidence/rendering-production/
 
   seal:
+    name: rendering-production-seal
     if: ${{ always() }}
     needs: [exact-head, browser-linux, browser-platform]
     runs-on: ubuntu-latest
