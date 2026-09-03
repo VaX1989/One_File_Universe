@@ -21,8 +21,7 @@ assert.equal(P5.P6_ENV_CONTRACT,'ofu-p5-p6-environment-v1');assert.equal(env.can
 
 for(const c of golden.pressureCases)assert.equal(String(E.globalSurfaceColumnPressurePa(planet,BigInt(c.atmosphericMassTg))),c.pressurePa,c.name);
 for(let i=1;i<golden.pressureCases.length;i++)assert(BigInt(golden.pressureCases[i].pressurePa)>=BigInt(golden.pressureCases[i-1].pressurePa));
-assert.equal(E.globalSurfaceColumnPressurePa(planet,0n),0n);
-assert.throws(()=>E.globalSurfaceColumnPressurePa(planet,-1n),/u64/);assert.throws(()=>E.globalSurfaceColumnPressurePa(planet,E.planetMassTgAtBaseline(planet)+1n),/exceeds/);
+assert.equal(E.globalSurfaceColumnPressurePa(planet,0n),0n);assert.throws(()=>E.globalSurfaceColumnPressurePa(planet,-1n),/u64/);assert.throws(()=>E.globalSurfaceColumnPressurePa(planet,1n<<64n),/u64/);assert.throws(()=>E.globalSurfaceColumnPressurePa(planet,E.planetMassTgAtBaseline(planet)+1n),/exceeds/);
 
 for(const c of golden.radiativeCases)assert.equal(String(E.radiativeEffectiveTemperatureMilliK(BigInt(c.insolationPpm),BigInt(c.bondAlbedoPpm))),c.effectiveTemperatureMilliK,c.name);
 assert.equal(E.radiativeEffectiveTemperatureMilliK(1000000n,300000n),254578n);assert.equal(E.radiativeEffectiveTemperatureMilliK(1000000n,1000000n),0n);assert.equal(E.radiativeEffectiveTemperatureMilliK(0n,300000n),0n);
@@ -37,4 +36,5 @@ assert.throws(()=>E.validateConservedAtmosphereState(planet,{...known,atmospheri
 const first=P.hex(E.environmentDigest(E.environmentV2Projection(planet,topology)));for(let i=0;i<20;i++)assert.equal(P.hex(E.environmentDigest(E.environmentV2Projection(planet,topology))),first);
 const other=findPlanet(A,ctx,(s,p)=>s.formation.bulkPriorClass==='TERRESTRIAL'&&s.formation.baselineMassMilliEarth>=1000n&&s.formation.baselineMassMilliEarth<=8000n&&P.hex(p.id)!==P.hex(planet.planetId));P5.realizePhysicalPlanet(ctx,P5.adaptP3PlanetaryInputSnapshot(other.snapshot));assert.equal(P.hex(E.environmentDigest(E.environmentV2Projection(planet,topology))),first);
 assert.equal(P.hex(E.deriveEnvironmentBytes(ctx,planet.planetId,'lineage-test')),P.hex(E.deriveEnvironmentBytes(ctx,planet.planetId,'lineage-test')));assert.notEqual(P.hex(E.semanticManifestHash()),P.hex(P5.semanticManifestHash()));
-console.log(JSON.stringify({status:'PASS',contract:E.CONTRACT_ID,model:E.VERSION,manifestHash:P.hex(E.semanticManifestHash()),goldenCorpusDigest:corpusDigest,environmentDigest:first,earthAnchorMilliK:'254578',volatileGenesis:E.GENESIS_POLICY,p5PhysicalDigest:p5Before,p5V1ProjectionDigest:v1Before},null,2));
+await import('./worker-environment-v2.mjs');
+console.log(JSON.stringify({status:'PASS',contract:E.CONTRACT_ID,model:E.VERSION,manifestHash:P.hex(E.semanticManifestHash()),goldenCorpusDigest:corpusDigest,environmentDigest:first,earthAnchorMilliK:'254578',volatileGenesis:E.GENESIS_POLICY,p5PhysicalDigest:p5Before,p5V1ProjectionDigest:v1Before,workerScheduling:'PASS'},null,2));
