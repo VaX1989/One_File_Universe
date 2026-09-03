@@ -25,3 +25,5 @@ jobs:
         run: node tests/p5/run-p5-conformance.mjs
       - name: Advanced P5 environment research checks
         run: node tests/p5-environment-research-v2/run-environment-v2-tests.mjs
+      - name: Sparse environment working-set benchmark
+        run: node --expose-gc tests/p5-environment-research-v2/benchmark-environment-v2.mjs
