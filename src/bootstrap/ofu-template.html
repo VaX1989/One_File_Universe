@@ -5,14 +5,29 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; worker-src blob:; base-uri 'none'; form-action 'none'">
-<title>One File Universe — P1–P4 Canonical Baseline</title>
+<title>One File Universe — P1–P5 Planet Preview</title>
 <style>
-:root{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color-scheme:dark;background:#0b0f14;color:#e7edf5}*{box-sizing:border-box}body{margin:0;padding:20px;max-width:1500px;margin-inline:auto;background:radial-gradient(circle at 20% 0,#172231 0,#0b0f14 38%)}h1,h2,h3{font-family:system-ui,sans-serif;margin:.2rem 0 .7rem}h1{font-size:1.55rem}h2{font-size:1.05rem}.lead{color:#aab8c8;margin:.2rem 0 1rem}.bar,.grid{display:grid;gap:12px}.bar{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin-bottom:12px}.grid{grid-template-columns:repeat(auto-fit,minmax(360px,1fr))}.card{border:1px solid #2a394a;border-radius:10px;padding:14px;background:#101720cc;box-shadow:0 8px 28px #0005}.badge{display:inline-block;padding:3px 8px;border:1px solid #425b74;border-radius:999px}.ok{border-color:#4f9b72}.warn{border-color:#a68345}.small{font-size:.8rem;color:#9fb0c3}label{display:block;margin:.4rem 0 .2rem;color:#b8c5d3}input,select,button,textarea{font:inherit;color:inherit;background:#0a1119;border:1px solid #34485c;border-radius:6px;padding:7px}button{cursor:pointer;background:#172536}button:hover{background:#20344b}.row{display:flex;gap:7px;flex-wrap:wrap}.fields{display:grid;grid-template-columns:repeat(3,minmax(80px,1fr));gap:7px}.fields label{margin:0}.fields input{width:100%}pre,textarea{white-space:pre-wrap;word-break:break-word;background:#080d12;border:1px solid #243445;border-radius:6px;padding:10px;max-height:340px;overflow:auto}textarea{width:100%;min-height:120px}.metric{font-size:.8rem;color:#9fb0c3}.metric strong{display:block;color:#f0f5fb;font-size:.9rem;margin-top:2px}.danger-note{border-left:3px solid #a68345;padding-left:9px;color:#c8b58c}@media(max-width:700px){body{padding:10px}.grid{grid-template-columns:1fr}.fields{grid-template-columns:repeat(2,1fr)}}
+:root{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color-scheme:dark;background:#060a10;color:#e7edf5}*{box-sizing:border-box}body{margin:0;padding:18px;max-width:1600px;margin-inline:auto;background:radial-gradient(circle at 20% 0,#17293c 0,#090d13 42%)}h1,h2,h3{font-family:system-ui,sans-serif;margin:.2rem 0 .7rem}h1{font-size:1.55rem}h2{font-size:1.05rem}.lead{color:#aab8c8;margin:.2rem 0 1rem}.bar,.grid{display:grid;gap:12px}.bar{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin-bottom:12px}.grid{grid-template-columns:repeat(auto-fit,minmax(360px,1fr))}.card{border:1px solid #2a394a;border-radius:10px;padding:14px;background:#101720dd;box-shadow:0 8px 28px #0005}.preview{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:12px;margin-bottom:12px}.viewport{padding:0;overflow:hidden;min-height:470px;position:relative}.viewport canvas{display:block;width:100%;height:470px;background:#050811;touch-action:none}.hud{padding:14px}.badge{display:inline-block;padding:3px 8px;border:1px solid #425b74;border-radius:999px}.ok{border-color:#4f9b72}.warn{border-color:#a68345}.small{font-size:.8rem;color:#9fb0c3}label{display:block;margin:.4rem 0 .2rem;color:#b8c5d3}input,select,button,textarea{font:inherit;color:inherit;background:#0a1119;border:1px solid #34485c;border-radius:6px;padding:7px}button{cursor:pointer;background:#172536}button:hover{background:#20344b}.row{display:flex;gap:7px;flex-wrap:wrap}.fields{display:grid;grid-template-columns:repeat(3,minmax(80px,1fr));gap:7px}.fields label{margin:0}.fields input{width:100%}pre,textarea{white-space:pre-wrap;word-break:break-word;background:#080d12;border:1px solid #243445;border-radius:6px;padding:10px;max-height:340px;overflow:auto}textarea{width:100%;min-height:120px}.metric{font-size:.8rem;color:#9fb0c3;margin:.45rem 0}.metric strong{display:block;color:#f0f5fb;font-size:.9rem;margin-top:2px}.danger-note{border-left:3px solid #a68345;padding-left:9px;color:#c8b58c}.render-note{font-size:.78rem;color:#a7b9ca;line-height:1.45}@media(max-width:900px){.preview{grid-template-columns:1fr}.viewport canvas{height:390px}.viewport{min-height:390px}}@media(max-width:700px){body{padding:10px}.grid{grid-template-columns:1fr}.fields{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
-<h1>One File Universe — Canonical Universe Inspector</h1>
-<p class="lead">P1–P4 baseline preview: sparse deterministic astronomy at P4 T0 + canonical mutable history. Presentation is non-authoritative.</p>
+<h1>One File Universe — Planet Approach Preview</h1>
+<p class="lead">Continuous presentation-only navigation over canonical P1–P5 truth. Wheel to change scale, drag to move the surface target. Rendering never owns universe facts.</p>
+<section class="preview">
+ <div class="card viewport"><canvas id="planet-view" width="1200" height="760" aria-label="Procedural planet rendering preview"></canvas></div>
+ <aside class="card hud">
+  <h2>Scale navigation</h2>
+  <div class="row"><button data-render-target="180">System</button><button data-render-target="4">Orbit</button><button data-render-target="1.35">Approach</button><button data-render-target="1.012">Surface</button></div>
+  <div class="metric">Canonical planet<strong id="render-planet">pending</strong></div>
+  <div class="metric">Derived scale regime<strong id="render-scale">pending</strong></div>
+  <div class="metric">Continuous distance<strong id="render-distance">pending</strong></div>
+  <div class="metric">Terrain working set<strong id="render-patches">pending</strong></div>
+  <div class="metric">GPU registry<strong id="render-gpu">pending</strong></div>
+  <div class="metric">Backend<strong id="render-backend">pending</strong></div>
+  <div class="metric">Depth strategy<strong id="render-depth">pending</strong></div>
+  <p class="render-note">P5 elevation remains dimensionless, fictional/stylized input. Any displacement shown here is presentation-only. Tracked GPU bytes are renderer allocations, not driver-reported VRAM.</p>
+ </aside>
+</section>
 <div class="bar">
  <div class="card"><span id="status" class="badge">BOOTING</span><div class="metric">Artifact integrity<strong id="integrity">checking…</strong></div></div>
  <div class="card"><div class="metric">Universe Identity<strong id="universe-id">pending</strong></div></div>
@@ -20,33 +35,10 @@
  <div class="card"><div class="metric">Source SHA<strong id="source-sha">pending</strong></div></div>
 </div>
 <div class="grid">
-<section class="card">
-<h2>Universe / provenance</h2>
-<pre id="provenance">pending</pre>
-</section>
-<section class="card">
-<h2>Sparse astronomical query</h2>
-<div class="row"><label>Entity <select id="entity-type"><option>System</option><option>Planet</option><option>Star</option><option>Moon</option><option>Sector</option><option>Galaxy</option><option>Region</option></select></label></div>
-<div id="query-fields" class="fields"></div>
-<div class="row" style="margin-top:10px"><button id="query">Resolve canonical entity</button><button id="requery">Re-query after unrelated queries</button></div>
-<div class="metric">Entity Identity<strong id="entity-id">not resolved</strong></div>
-<div class="metric">Baseline fact digest<strong id="entity-digest">not resolved</strong></div>
-<pre id="entity-output">Choose a supported entity and resolve it.</pre>
-</section>
-<section class="card">
-<h2>Temporal laboratory</h2>
-<p class="danger-note">Diagnostic P4 mutable overlay only. <strong>core.field.set</strong> is a temporal-kernel test event, not P5 planetary physics.</p>
-<div class="row"><button id="world-create">Create live world</button><button id="event-submit">Submit typed event</button><button id="world-checkpoint">Checkpoint / compact / replay</button></div>
-<div class="metric">Last Event ID<strong id="event-id">none</strong></div>
-<div class="metric">Mutable state digest<strong id="world-digest">none</strong></div>
-<pre id="temporal-output">Resolve a canonical entity first.</pre>
-</section>
-<section class="card">
-<h2>Portable P4 archive</h2>
-<div class="row"><button id="archive-export">Export archive</button><button id="archive-import">Import archive</button></div>
-<label for="archive">OFU-CBV-1 archive (hex)</label><textarea id="archive" spellcheck="false"></textarea>
-<pre id="archive-output">No archive exported.</pre>
-</section>
+<section class="card"><h2>Universe / provenance</h2><pre id="provenance">pending</pre></section>
+<section class="card"><h2>Sparse astronomical query</h2><div class="row"><label>Entity <select id="entity-type"><option>System</option><option>Planet</option><option>Star</option><option>Moon</option><option>Sector</option><option>Galaxy</option><option>Region</option></select></label></div><div id="query-fields" class="fields"></div><div class="row" style="margin-top:10px"><button id="query">Resolve canonical entity</button><button id="requery">Re-query after unrelated queries</button></div><div class="metric">Entity Identity<strong id="entity-id">not resolved</strong></div><div class="metric">Baseline fact digest<strong id="entity-digest">not resolved</strong></div><pre id="entity-output">Choose a supported entity and resolve it.</pre></section>
+<section class="card"><h2>Temporal laboratory</h2><p class="danger-note">Diagnostic P4 mutable overlay only. <strong>core.field.set</strong> is a temporal-kernel test event, not P5 planetary physics.</p><div class="row"><button id="world-create">Create live world</button><button id="event-submit">Submit typed event</button><button id="world-checkpoint">Checkpoint / compact / replay</button></div><div class="metric">Last Event ID<strong id="event-id">none</strong></div><div class="metric">Mutable state digest<strong id="world-digest">none</strong></div><pre id="temporal-output">Resolve a canonical entity first.</pre></section>
+<section class="card"><h2>Portable P4 archive</h2><div class="row"><button id="archive-export">Export archive</button><button id="archive-import">Import archive</button></div><label for="archive">OFU-CBV-1 archive (hex)</label><textarea id="archive" spellcheck="false"></textarea><pre id="archive-output">No archive exported.</pre></section>
 </div>
 <script>__SCRIPT__</script>
 </body>
