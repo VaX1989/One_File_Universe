@@ -1,0 +1,156 @@
+name: Rendering Production
+
+on:
+  push:
+    branches:
+      - feature/rendering-hierarchical-planet-integration
+      - main
+  pull_request:
+
+concurrency:
+  group: rendering-production-${{ github.event_name }}-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+permissions:
+  contents: read
+
+jobs:
+  exact-head:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.20.0'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Frozen Foundation and P1-P5 regression
+        run: |
+          node tools/validate-foundation.mjs
+          node tests/run-node-tests.mjs
+          node tests/p1/portable-save-size.mjs
+          npm run test:p2
+          node tools/p3-evidence.mjs
+          python3 tools/p3_spatial_oracle.py
+          node tests/p4/run-p4-tests.mjs
+          node tests/p4/semantic-closure-tests.mjs
+          node tests/p4/archive-lineage-tests.mjs
+          node tests/p4/checkpoint-authority-tests.mjs
+          node tests/integration/p2-p4-contract-tests.mjs
+          node tests/integration/p3-p4-contract-tests.mjs
+          node tests/p5/run-p5-conformance.mjs
+          node tests/integration/p3-p5-contract-tests.mjs
+          node tests/integration/p4-p5-static-binding-tests.mjs
+      - name: Rendering production node certification
+        shell: bash
+        run: |
+          mkdir -p dist/evidence/rendering-production
+          node tests/rendering/run-production-tests.mjs | tee dist/evidence/rendering-production/node.json
+      - name: Reproducible exact-source single file
+        shell: bash
+        run: |
+          node tools/build-ofu-p5.mjs > /tmp/render-build-1.json
+          cp dist/One_File_Universe.html /tmp/render-first.html
+          cp dist/p5-build-manifest.json /tmp/render-manifest-first.json
+          node tools/build-ofu-p5.mjs > /tmp/render-build-2.json
+          cmp /tmp/render-first.html dist/One_File_Universe.html
+          cmp /tmp/render-manifest-first.json dist/p5-build-manifest.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rendering-production-build-${{ env.OFU_SOURCE_SHA }}
+          path: |
+            dist/One_File_Universe.html
+            dist/p5-build-manifest.json
+            dist/evidence/rendering-production/node.json
+
+  browser-linux:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.20.0'
+      - run: node tools/build-ofu-p5.mjs
+      - run: npm install --no-save playwright@1.62.1
+      - run: npx playwright install --with-deps ${{ matrix.browser }}
+      - name: Direct file navigation, performance and non-interference
+        run: node tests/rendering/browser-production.mjs
+        env:
+          BROWSER: ${{ matrix.browser }}
+          DPR: ${{ matrix.browser == 'chromium' && '2' || '1' }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rendering-production-linux-${{ matrix.browser }}-${{ env.OFU_SOURCE_SHA }}
+          path: dist/evidence/rendering-production/
+
+  browser-platform:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            browser: chromium
+          - os: macos-latest
+            browser: webkit
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.20.0'
+      - run: node tools/build-ofu-p5.mjs
+      - run: npm install --no-save playwright@1.62.1
+      - run: npx playwright install ${{ matrix.browser }}
+      - name: Direct file navigation and non-interference
+        run: node tests/rendering/browser-production.mjs
+        env:
+          BROWSER: ${{ matrix.browser }}
+          DPR: '1'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rendering-production-${{ runner.os }}-${{ runner.arch }}-${{ matrix.browser }}-${{ env.OFU_SOURCE_SHA }}
+          path: dist/evidence/rendering-production/
+
+  seal:
+    if: ${{ always() }}
+    needs: [exact-head, browser-linux, browser-platform]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require all production gates
+        shell: bash
+        run: |
+          test '${{ needs.exact-head.result }}' = success
+          test '${{ needs.browser-linux.result }}' = success
+          test '${{ needs.browser-platform.result }}' = success
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.20.0'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: rendering-production-*-${{ env.OFU_SOURCE_SHA }}
+          path: evidence
+          merge-multiple: true
+      - name: Exact cross-runtime production seal
+        run: node tests/rendering/seal-production-evidence.mjs evidence
