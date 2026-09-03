@@ -5,6 +5,7 @@ import {loadP5Runtime,canonicalContext,findPlanet} from '../p5/p5-test-helpers.m
 
 const O=loadP5Runtime();vm.runInThisContext(fs.readFileSync('src/domains/planetology/p5-environment-v2.js','utf8'),{filename:'src/domains/planetology/p5-environment-v2.js'});
 const P=O.p2,A=O.p3Astronomy,P5=O.p5Planetology,E=O.p5EnvironmentV2,ctx=canonicalContext(A,0),golden=JSON.parse(fs.readFileSync('tests/vectors/golden-p5-environment-v2-corpus.json','utf8'));
+const {corpusDigest,...goldenPayload}=golden;assert.equal(P.hex(O.sha256.digest(P.encode(goldenPayload))),corpusDigest,'Golden Environment v2 CBV digest drift');
 const chosen=findPlanet(A,ctx,s=>s.formation.bulkPriorClass==='TERRESTRIAL'&&s.formation.baselineMassMilliEarth>=1000n&&s.formation.baselineMassMilliEarth<=8000n);
 const adapted=P5.adaptP3PlanetaryInputSnapshot(chosen.snapshot),planet=P5.realizePhysicalPlanet(ctx,adapted),topology=P5.createTerrainTopology(planet);
 assert.equal(P.hex(planet.planetId),golden.canonicalPlanet.planetId);assert.equal(P.hex(P5.physicalDigest(planet)),golden.canonicalPlanet.physicalDigest);
@@ -36,4 +37,4 @@ assert.throws(()=>E.validateConservedAtmosphereState(planet,{...known,atmospheri
 const first=P.hex(E.environmentDigest(E.environmentV2Projection(planet,topology)));for(let i=0;i<20;i++)assert.equal(P.hex(E.environmentDigest(E.environmentV2Projection(planet,topology))),first);
 const other=findPlanet(A,ctx,(s,p)=>s.formation.bulkPriorClass==='TERRESTRIAL'&&s.formation.baselineMassMilliEarth>=1000n&&s.formation.baselineMassMilliEarth<=8000n&&P.hex(p.id)!==P.hex(planet.planetId));P5.realizePhysicalPlanet(ctx,P5.adaptP3PlanetaryInputSnapshot(other.snapshot));assert.equal(P.hex(E.environmentDigest(E.environmentV2Projection(planet,topology))),first);
 assert.equal(P.hex(E.deriveEnvironmentBytes(ctx,planet.planetId,'lineage-test')),P.hex(E.deriveEnvironmentBytes(ctx,planet.planetId,'lineage-test')));assert.notEqual(P.hex(E.semanticManifestHash()),P.hex(P5.semanticManifestHash()));
-console.log(JSON.stringify({status:'PASS',contract:E.CONTRACT_ID,model:E.VERSION,manifestHash:P.hex(E.semanticManifestHash()),environmentDigest:first,earthAnchorMilliK:'254578',volatileGenesis:E.GENESIS_POLICY,p5PhysicalDigest:p5Before,p5V1ProjectionDigest:v1Before},null,2));
+console.log(JSON.stringify({status:'PASS',contract:E.CONTRACT_ID,model:E.VERSION,manifestHash:P.hex(E.semanticManifestHash()),goldenCorpusDigest:corpusDigest,environmentDigest:first,earthAnchorMilliK:'254578',volatileGenesis:E.GENESIS_POLICY,p5PhysicalDigest:p5Before,p5V1ProjectionDigest:v1Before},null,2));
