@@ -4,91 +4,40 @@ on:
   workflow_run:
     workflows: ["P2 Conformance"]
     types: [completed]
+  workflow_dispatch:
 
+# Historical release. Verify only; never delete, recreate, retarget or upload.
 permissions:
-  contents: write
+  contents: read
   actions: read
 
 jobs:
-  publish:
-    if: >-
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.head_branch == 'main' &&
-      contains(github.event.workflow_run.head_commit.message, '[p2-release]')
+  verify-historical-release:
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ github.token }}
-      OFU_RELEASE_TAG: v0.2.0-preview.1
-      OFU_RELEASE_SHA: ${{ github.event.workflow_run.head_sha }}
-      OFU_P2_RUN_ID: ${{ github.event.workflow_run.id }}
+      RELEASE_TAG: v0.2.0-preview.1
+      RELEASE_SOURCE_SHA: 0d802f2af87e7db4ba9553f11cc9914c93a3cebc
+      RELEASE_ASSET_BYTES: '100818'
+      RELEASE_ASSET_SHA256: 91f34fd081e172ae992a160af197d4ea69dbe8dc167be0ac0ae7f81834960a98
     steps:
-      - name: Checkout certified source
-        uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          ref: ${{ env.OFU_RELEASE_SHA }}
-      - name: Verify exact certified source
-        shell: bash
-        run: test "$(git rev-parse HEAD)" = "$OFU_RELEASE_SHA"
-      - name: Download exact P2 build evidence
+          ref: ${{ env.RELEASE_SOURCE_SHA }}
+      - name: Verify historical release metadata and tag
         shell: bash
         run: |
-          gh run download "$OFU_P2_RUN_ID" -n p2-build -D release-build
-          gh run download "$OFU_P2_RUN_ID" -n p2-aggregate -D release-aggregate
-      - name: Verify release inputs and compose evidence seal
+          test "$(git rev-parse HEAD)" = "$RELEASE_SOURCE_SHA"
+          gh release view "$RELEASE_TAG" --json tagName,targetCommitish,isPrerelease,isDraft > /tmp/release.json
+          test "$(jq -r .tagName /tmp/release.json)" = "$RELEASE_TAG"
+          test "$(jq -r .targetCommitish /tmp/release.json)" = "$RELEASE_SOURCE_SHA"
+          test "$(jq -r .isPrerelease /tmp/release.json)" = true
+          test "$(jq -r .isDraft /tmp/release.json)" = false
+          test "$(git ls-remote origin refs/tags/$RELEASE_TAG | cut -f1)" = "$RELEASE_SOURCE_SHA"
+      - name: Verify historical asset bytes
         shell: bash
         run: |
-          node <<'NODE'
-          const fs=require('node:fs');
-          const crypto=require('node:crypto');
-          const build=JSON.parse(fs.readFileSync('release-build/build-manifest.json','utf8'));
-          const aggregate=JSON.parse(fs.readFileSync('release-aggregate/p2-aggregate.json','utf8'));
-          const html=fs.readFileSync('release-build/One_File_Universe.html');
-          const sha=crypto.createHash('sha256').update(html).digest('hex');
-          const source=process.env.OFU_RELEASE_SHA;
-          function req(ok,msg){if(!ok)throw new Error(msg)}
-          req(build.sourceCommit===source,'build source SHA mismatch');
-          req(aggregate.sourceCommit===source,'aggregate source SHA mismatch');
-          req(build.status==='PASS','build status is not PASS');
-          req(aggregate.status==='PASS','aggregate status is not PASS');
-          req(aggregate.evidenceState==='CROSS_RUNTIME_VERIFIED','P2 aggregate not CROSS_RUNTIME_VERIFIED');
-          req(build.artifact==='One_File_Universe.html','unexpected release artifact');
-          req(build.artifactSha256===sha,'HTML SHA mismatch');
-          req(build.artifactBytes===html.length,'HTML byte-count mismatch');
-          for(const k of ['corpusDigest','kernelDigest','semanticManifestHash','universeIdentity']){
-            req(build.canonical[k]===aggregate.canonical[k],`canonical pin mismatch: ${k}`);
-          }
-          req(build.unicodeProfile.version==='ofu-unicode-15.1.0-v1','Unicode profile mismatch');
-          req(build.unicodeProfile.rangeCount===707,'Unicode range count mismatch');
-          req(build.unicodeProfile.rangeSha256==='d92c96676b97eae626d3f0bd9419ec0a7dcc8c22373c1455f21015d737b47412','Unicode range hash mismatch');
-          const matrix=(aggregate.targets||[]).map(e=>{
-            const t=e.target||{};
-            return `- ${t.platform}/${t.arch} ${t.browser} ${t.browserVersion}: ${e.status}`;
-          }).join('\n');
-          const notes=`# One File Universe — P2 Preview 1\n\nFirst official downloadable One File Universe preview artifact after P2 deterministic-kernel closure. This artifact contains the P1 prototype plus the frozen P2 authority kernel; it does **not** contain the P3 Universe Skeleton.\n\n## Certified source\n\n- main/source SHA: \`${source}\`\n- P2 Conformance run: \`${process.env.OFU_P2_RUN_ID}\`\n- aggregate state: \`${aggregate.evidenceState}\`\n\n## Artifact\n\n- asset: \`One_File_Universe.html\`\n- SHA-256: \`${sha}\`\n- bytes: \`${html.length}\`\n- Component Manifest Hash: \`${build.componentManifestHash}\`\n\n## Canonical pins\n\n- Golden Corpus Digest: \`${build.canonical.corpusDigest}\`\n- Kernel Digest: \`${build.canonical.kernelDigest}\`\n- Semantic Manifest Hash: \`${build.canonical.semanticManifestHash}\`\n- reference Universe Identity: \`${build.canonical.universeIdentity}\`\n- Unicode profile: \`${build.unicodeProfile.version}\` / 707 ranges / \`${build.unicodeProfile.rangeSha256}\`\n\n## Executed conformance matrix\n\n${matrix}\n\nPlaywright WebKit is WebKit conformance evidence, not Safari certification. Real Safari/iOS remain NOT_VERIFIED. Proxy-backed authoritative live JavaScript values are outside the P2 supported live-value boundary. Repository required-check enforcement is tracked separately by Issue #7.\n`;
-          fs.writeFileSync('release-notes.md',notes);
-          fs.writeFileSync('release-expected-sha.txt',sha+'\n');
-          fs.writeFileSync('release-expected-bytes.txt',String(html.length)+'\n');
-          NODE
-      - name: Publish P2 preview at exact certified source
-        shell: bash
-        run: |
-          if gh release view "$OFU_RELEASE_TAG" >/dev/null 2>&1; then
-            gh release delete "$OFU_RELEASE_TAG" --cleanup-tag --yes
-          fi
-          gh release create "$OFU_RELEASE_TAG" release-build/One_File_Universe.html \
-            --target "$OFU_RELEASE_SHA" \
-            --title "One File Universe — P2 Preview 1" \
-            --notes-file release-notes.md \
-            --prerelease
-      - name: Verify published release asset bytes
-        shell: bash
-        run: |
-          rm -rf release-verify && mkdir release-verify
-          gh release download "$OFU_RELEASE_TAG" -p One_File_Universe.html -D release-verify --clobber
-          test "$(sha256sum release-verify/One_File_Universe.html | awk '{print $1}')" = "$(tr -d '\n' < release-expected-sha.txt)"
-          test "$(wc -c < release-verify/One_File_Universe.html | tr -d ' ')" = "$(tr -d '\n' < release-expected-bytes.txt)"
-          cmp -s release-build/One_File_Universe.html release-verify/One_File_Universe.html
-          printf '\n## Release asset verification\n\n- status: **PASS**\n- downloaded release asset SHA-256: `%s`\n- downloaded release asset bytes: `%s`\n- byte-identical to certified P2 build artifact: `true`\n' \
-            "$(tr -d '\n' < release-expected-sha.txt)" \
-            "$(tr -d '\n' < release-expected-bytes.txt)" >> release-notes.md
-          gh release edit "$OFU_RELEASE_TAG" --notes-file release-notes.md
+          mkdir -p /tmp/release
+          gh release download "$RELEASE_TAG" -p One_File_Universe.html -D /tmp/release
+          test "$(sha256sum /tmp/release/One_File_Universe.html | cut -d' ' -f1)" = "$RELEASE_ASSET_SHA256"
+          test "$(stat -c%s /tmp/release/One_File_Universe.html)" = "$RELEASE_ASSET_BYTES"
