@@ -197,8 +197,12 @@ P5 v1 closed after its actual candidate and exact main passed all frozen upstrea
 
 ## P6 — Biosphere & Evolution
 
-**P6 v1 — CANONICAL PROMOTION CANDIDATE.** Authority becomes frozen only after the
-focused promotion PR and exact merged `main` pass the complete P1–P6 seal.
+**P6 v1 — COMPLETE / CANONICAL / FROZEN WITHIN DECLARED SCOPE.** PR #34
+promoted candidate `b5d0850d46184700e2764a413db59e314ba6ce83` as signed merge
+`79d1817abc446f01825a66db93a2dc16aa379d7b`; both share tree
+`f41cb6b18e6af2289f05e898c44320833366b2c8`. Exact-main P1–P6 run
+`33762589274` passed the complete five-runtime aggregate seal, and Issue #24 is
+closed.
 
 P6 v1 consumes only frozen `ofu-p5-p6-environment-v2` / schema `2` /
 `p5-environment-2` / `P5_CANONICAL`. A domain-separated eligibility witness binds
@@ -228,10 +232,24 @@ semantics require separately versioned scientific authority and a new promotion.
 
 ### Exit gate
 
-Material blocker count zero; exact candidate and exact merged `main` both pass
+**PASSED.** Material blocker count zero; exact candidate and exact merged `main` both pass
 Foundation, P1–P5, P6 authority/identity/replay, Golden/oracle, deterministic
 single-file build, bounded working-set, Worker-order and five-runtime browser
 certification. Real Safari/iOS remains `NOT_VERIFIED`.
+
+## First P1–P6 production rendering vertical slice
+
+The `v0.5.0-preview.1` integration owns presentation only. It consumes the
+frozen P1–P6 stack, materializes bounded P5 cube-sphere terrain through WebGL2
+with a Canvas2D fallback, and exposes the real P6 result without inventing life:
+`INSUFFICIENT_ENVIRONMENT / canonical biosphere established: NO`.
+
+Its production gate requires outward indexed terrain, same/cross-face and cube
+corner traversal, mixed LOD with presentation-only skirts, exact local-origin
+rebasing, bounded CPU/GPU caches, explicit buffer destruction, context-generation
+recovery, canonical non-interference, deterministic single-file output, direct
+`file://`, offline/zero-required-network execution and five-runtime evidence.
+Timing telemetry is measured evidence, not a byte-deterministic semantic gate.
 
 ---
 

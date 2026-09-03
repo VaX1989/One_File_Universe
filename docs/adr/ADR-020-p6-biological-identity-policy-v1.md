@@ -1,6 +1,6 @@
 # ADR-020 — P6 Biological Identity Policy v1
 
-**Status:** Accepted upon canonical P6 v1 promotion
+**Status:** Accepted
 
 ## Decision
 

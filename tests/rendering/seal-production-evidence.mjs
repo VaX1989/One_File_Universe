@@ -1,0 +1,51 @@
+import fs from 'node:fs';
+import path from 'node:path';
+
+const root=process.argv[2]||'evidence',files=[];
+function walk(directory){
+ for(const entry of fs.readdirSync(directory,{withFileTypes:true})){
+  const file=path.join(directory,entry.name);
+  if(entry.isDirectory())walk(file);
+  else if(entry.name.endsWith('.json'))files.push(file);
+ }
+}
+walk(root);
+const rows=files.map(file=>JSON.parse(fs.readFileSync(file,'utf8'))).filter(value=>value.sourceCommit&&value.browser);
+if(rows.length!==5)throw new Error('expected exactly five browser evidence records, got '+rows.length);
+
+for(const row of rows){
+ if(row.status!=='PASS'||row.unexpectedNetworkRequests!==0||row.pageErrors!==0)throw new Error('invalid browser evidence '+row.browser);
+ if(row.canonicalWitness.p4Current!==row.canonicalWitness.p4Replay)throw new Error('P4 witness mismatch '+row.browser);
+ if(row.canonicalWitness.p6State!=='INSUFFICIENT_ENVIRONMENT'||row.canonicalWitness.p6BiologyEstablished!==false)throw new Error('P6 preview honesty drift '+row.browser);
+ if(row.telemetry?.raf?.measurement!=='MEASURED'||row.telemetry?.cpuTerrainBuild?.measurement!=='MEASURED'||row.telemetry?.startup?.measurement!=='MEASURED'||row.telemetry?.cacheCounts?.measurement!=='MEASURED')throw new Error('required measured telemetry missing '+row.browser);
+ for(const key of ['steadyStateSurface','lodChurn','originRebasing','referenceFrameTransition','contextLossRecovery']){
+  const metric=row.performanceRegimes?.[key];
+  if(metric?.measurement!=='MEASURED'||metric.samples<20||metric.p50>metric.p95||metric.p95>metric.p99)throw new Error('invalid RAF evidence '+row.browser+' '+key);
+ }
+ if(row.backend==='webgl2'){
+  if(!row.gpu||row.gpu.liveMeshes>row.gpu.maxMeshes||row.gpu.liveTrackedBytes>row.gpu.maxBytes)throw new Error('GPU bounds invalid '+row.browser);
+  if(row.gpu.deletedBuffers===0||row.gpu.createdBuffers<=row.gpu.liveBuffers||row.gpu.lifecycleAccountingExact!==true)throw new Error('GPU lifecycle accounting invalid '+row.browser);
+  if(row.telemetry.gpuUpload.measurement!=='MEASURED'||row.telemetry.rendererGpuBytes.measurement!=='DERIVED')throw new Error('GPU telemetry labeling invalid '+row.browser);
+  if(!['PASS','NOT_MEASURABLE'].includes(row.contextRecovery?.status))throw new Error('context-loss evidence invalid '+row.browser);
+ }else if(row.telemetry.gpuUpload.measurement!=='NOT MEASURABLE'||row.telemetry.rendererGpuBytes.measurement!=='NOT MEASURABLE')throw new Error('fallback GPU telemetry must be explicit '+row.browser);
+ if(row.telemetry.physicalDriverVram?.measurement!=='NOT MEASURABLE')throw new Error('physical VRAM telemetry must not be fabricated');
+}
+
+const commits=new Set(rows.map(row=>row.sourceCommit)),artifacts=new Set(rows.map(row=>row.artifactSha256)),manifests=new Set(rows.map(row=>row.componentManifestHash)),witnesses=new Set(rows.map(row=>JSON.stringify(row.canonicalWitness)));
+if(commits.size!==1||artifacts.size!==1||manifests.size!==1||witnesses.size!==1)throw new Error('cross-runtime exact-head/artifact/witness drift');
+if(!rows.some(row=>row.platform==='darwin'&&row.arch==='arm64'&&row.browser==='webkit'))throw new Error('macOS ARM64 WebKit evidence missing');
+if(!rows.some(row=>row.platform==='win32'&&row.browser==='chromium'))throw new Error('Windows Chromium evidence missing');
+if(!rows.some(row=>row.platform==='linux'&&row.browser==='firefox'))throw new Error('Linux Firefox evidence missing');
+if(!rows.some(row=>row.platform==='linux'&&row.browser==='webkit'))throw new Error('Linux WebKit evidence missing');
+const chromium=rows.find(row=>row.platform==='linux'&&row.browser==='chromium');
+if(!chromium||chromium.backend!=='webgl2'||chromium.visual.pixelCheck!=='MEASURED'||chromium.visual.nonBackgroundPixels<8)throw new Error('Linux Chromium WebGL2 visual seal missing');
+
+console.log(JSON.stringify({
+ status:'PASS',
+ sourceCommit:[...commits][0],
+ artifactSha256:[...artifacts][0],
+ componentManifestHash:[...manifests][0],
+ canonicalWitness:rows[0].canonicalWitness,
+ timingPolicy:'MEASURED_EVIDENCE_NOT_CROSS_MACHINE_DETERMINISTIC_GATE',
+ browsers:rows.map(row=>({browser:row.browser,platform:row.platform,arch:row.arch,backend:row.backend,dpr:row.dpr,gpu:row.gpu?{liveMeshes:row.gpu.liveMeshes,liveTrackedBytes:row.gpu.liveTrackedBytes,deletedBuffers:row.gpu.deletedBuffers,invalidatedBuffers:row.gpu.invalidatedBuffers}:null,steadyP50:row.performanceRegimes.steadyStateSurface.p50,steadyP95:row.performanceRegimes.steadyStateSurface.p95,steadyP99:row.performanceRegimes.steadyStateSurface.p99,longFramesOver100:row.performanceRegimes.steadyStateSurface.longFramesOver100}))
+},null,2));

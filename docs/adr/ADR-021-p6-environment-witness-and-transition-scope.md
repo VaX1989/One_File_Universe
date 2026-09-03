@@ -1,6 +1,6 @@
 # ADR-021 — P6 Environment Witness and Transition Scope
 
-**Status:** Accepted upon canonical P6 v1 promotion
+**Status:** Accepted
 
 ## Context
 

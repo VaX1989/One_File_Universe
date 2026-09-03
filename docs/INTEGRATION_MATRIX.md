@@ -30,10 +30,11 @@
 | P5 Environment v2 Semantic Manifest | P5 / P2 validation | P5/P6+ | hash `f35801f9cc4f2d44633a39013e135553f10c29cd62308d34b4da31c59a473d3f` | FROZEN | Dedicated generator lineage for Environment v2; P5 v1 manifest is not reused as Environment authority. |
 | P5 Atmosphere State v2 | P5 | P6+ / future P4-bound reducers | `ofu-p5-atmosphere-state-v2` | FROZEN | Absolute Tg state with exact volatile conservation; genesis policy is `NO_CANONICAL_GENESIS`. |
 | P5 → P6 Environment v2 | P5 | P6+ | schema 2 / `ofu-p5-p6-environment-v2` / `p5-environment-2` | FROZEN | Explicit epistemic authority/provenance, deterministic global column pressure and corrected Tier-0 effective-radiative law. Surface temperature, greenhouse, XUV evolution, geology and other deferred domains remain unsupported. |
-| P6 Eligibility Witness | P6 | P4-bound P6 guard / rendering | schema 1 / `ofu-p6-environment-eligibility-witness-v1` / `p6-eligibility-semantics-1` | FROZEN UPON P6 PROMOTION | Binds exact P5 Environment v2 provenance and digest, planet, epistemic decision, P6 manifest and Model A policy. Current canonical P5 input remains insufficient. |
-| P6 Biological Identity | P6 stable keys / P2 identity | P6+ | `p6-biological-identity-model-a-v1` | FROZEN UPON P6 PROMOTION | Biosphere, lineage and species semantic IDs are P2-verifiable; generator/model revision alone does not redefine identity. No persistent lineage/species lifecycle is promoted in v1. |
-| P6 Biological Transition | P6 reducer / P4 execution | P6+ | `ofu.p6.biological-transition@1.0.0` | FROZEN UPON P6 PROMOTION | Genesis guard verifies the full upstream witness, P4 baseline and P2 ID; current canonical input accepts zero biological events. Speciation/extinction are deferred. |
-| P6 Semantic Manifest | P6 / P2 validation | P6+ / rendering | `2a3593bad3ce921c4f2f9e4282c64dc8fc3906d9c5863a048d14fa8fe541b0c9` | FROZEN UPON P6 PROMOTION | Exact P5/P4 dependencies, eligibility/witness scope, identity, numeric and semantic-LOD policies. Conformance-only construction is excluded from the shipped runtime. |
+| P6 Eligibility Witness | P6 | P4-bound P6 guard / rendering | schema 1 / `ofu-p6-environment-eligibility-witness-v1` / `p6-eligibility-semantics-1` | FROZEN | Binds exact P5 Environment v2 provenance and digest, planet, epistemic decision, P6 manifest and Model A policy. Current canonical P5 input remains insufficient. |
+| P6 Biological Identity | P6 stable keys / P2 identity | P6+ | `p6-biological-identity-model-a-v1` | FROZEN | Biosphere, lineage and species semantic IDs are P2-verifiable; generator/model revision alone does not redefine identity. No persistent lineage/species lifecycle is promoted in v1. |
+| P6 Biological Transition | P6 reducer / P4 execution | P6+ | `ofu.p6.biological-transition@1.0.0` | FROZEN | Genesis guard verifies the full upstream witness, P4 baseline and P2 ID; current canonical input accepts zero biological events. Speciation/extinction are deferred. |
+| P6 Semantic Manifest | P6 / P2 validation | P6+ / rendering | `2a3593bad3ce921c4f2f9e4282c64dc8fc3906d9c5863a048d14fa8fe541b0c9` | FROZEN | Exact P5/P4 dependencies, eligibility/witness scope, identity, numeric and semantic-LOD policies. Conformance-only construction is excluded from the shipped runtime. |
+| Production rendering projection | Rendering | user-visible preview | `rendering-hierarchical-planet-1` / `rendering-webgl2-1` | STABLE_SNAPSHOT | Presentation-only consumer of P1–P6. Camera, LOD, caches, GPU buffers, frame timing and floats never become canonical inputs. |
 
 ## Canonical P1–P6 authority
 
@@ -54,6 +55,9 @@ Current persistent OFU world
 P5 v1 promotes static planetary genesis facts only. Environment v2 adds atmosphere-state schema and deterministic derived laws but promotes no endogenous atmosphere-loss transition and no private clock. P6 v1 adds a causally bound genesis guard and deterministic biological identity/energy/refinement laws, but frozen P5 Environment v2 currently authorizes no biosphere. P4 remains the sole clock/order/replay/checkpoint/compaction/lineage/archive authority.
 
 Rendering, DOM order, camera state, animation timing, display formatting, presentation `Number` views and caches are presentation only and MUST NOT affect canonical results.
+The production projection reports P5 Environment v2 authority and the current
+P6 `INSUFFICIENT_ENVIRONMENT` result; it never substitutes conformance fixtures
+or visual embellishment for established biology.
 
 ## Canonical promotion record
 
@@ -65,8 +69,31 @@ Rendering, DOM order, camera state, animation timing, display formatting, presen
 | P5 v1 controlled promotion | PR #26 / candidate `6d1555a6aaf88d047e7246160bf2e536aeead8f9` / `golden-p5-corpus-v1` | `da14edf1b7d991c011ef8ff07580704ba0219ea1` | COMPLETE / CANONICAL / FROZEN |
 | Advanced P5 Environment v2 | PR #32 / candidate `7688e9ca8719e1b7f42dcc15d7962f08a76e3e55` / `golden-p5-environment-v2-corpus-v1` | `ace38aac27b9098a9c01b390eeaa82933077f4be` | COMPLETE / CANONICAL / FROZEN |
 | P5 Environment v2 governance closure | PR #33 / candidate `931ad5eead225b8d8fbbec0cb3e470e479de4745` | `58d4cbbc3ff8412ddd29a2fa628746b4d8d0557d` / run `33760167600` | COMPLETE / CANONICAL / FROZEN |
-| P6 v1 | exact promotion candidate and PR recorded after final exact-head seal | exact merge recorded after promotion | CANDIDATE; no authority before merge and exact-main PASS |
+| P6 v1 | PR #34 / candidate `b5d0850d46184700e2764a413db59e314ba6ce83` / tree `f41cb6b18e6af2289f05e898c44320833366b2c8` / runs `33761698110`, `33762252812` | signed merge `79d1817abc446f01825a66db93a2dc16aa379d7b` / same tree / exact-main run `33762589274` | COMPLETE / CANONICAL / FROZEN WITHIN DECLARED SCOPE |
 | Future greenhouse / XUV-escape / geology | issues #29 / #30 / #31 | not promoted | RESEARCH / DEFERRED |
+
+### P6 v1 exact-main certification
+
+- contract/schema/model: `ofu-p6-biosphere-v1` / `1` / `p6-biosphere-evolution-1`
+- Semantic Manifest: `2a3593bad3ce921c4f2f9e4282c64dc8fc3906d9c5863a048d14fa8fe541b0c9`
+- Golden corpus/digest: `golden-p6-biosphere-v1` / `1c418401aebcaef62d1ed2ea4f7b6c84440cb6c0e903af35969f7f0794b3e557`
+- identity policy: `p6-biological-identity-model-a-v1`
+- eligibility witness: `ofu-p6-environment-eligibility-witness-v1`
+- exact certified candidate: `b5d0850d46184700e2764a413db59e314ba6ce83`
+- candidate tree: `f41cb6b18e6af2289f05e898c44320833366b2c8`
+- candidate push run: `33761698110` — SUCCESS
+- PR #34 repeated exact-head run: `33762252812` — SUCCESS
+- signed canonical merge: `79d1817abc446f01825a66db93a2dc16aa379d7b`
+- canonical merge tree: `f41cb6b18e6af2289f05e898c44320833366b2c8`
+- exact-main run: `33762589274` — SUCCESS
+- Issue #24: CLOSED after the exact-main seal passed
+
+The candidate and canonical merge trees are byte-identical. Both exact-head
+campaigns and the exact-main campaign passed Foundation, P1–P5 including
+Environment v2, P6 authority/identity/replay, Golden, independent Python oracle,
+save/reopen/replay, Worker order, sparse working set, deterministic build and
+Linux Chromium/Firefox/WebKit, Windows Chromium and macOS ARM64 WebKit. Real
+Safari/iOS remains `NOT_VERIFIED`.
 
 PR #25 is a historical exact-candidate certification record that was closed unmerged because the draft-to-ready connector path could not be used as the promotion vehicle. PR #26 is the actual P5 v1 controlled-promotion merge vehicle. The certified P5 v1 candidate tree and canonical merge tree are both `a1cae552911011173672478274fd092f56f4dfff`, so that merge introduced no content drift.
 

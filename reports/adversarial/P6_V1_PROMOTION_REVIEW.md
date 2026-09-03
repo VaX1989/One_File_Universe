@@ -1,6 +1,6 @@
 # P6 Biosphere & Evolution v1 — Pre-Promotion Adversarial Review
 
-Status: **OPEN until exact-head promotion gates pass**
+Status: **COMPLETE / MATERIAL BLOCKERS OPEN: 0**
 
 Base: frozen P5 Environment v2 governance merge `58d4cbbc3ff8412ddd29a2fa628746b4d8d0557d`.
 
@@ -73,4 +73,9 @@ Create separate research issues for advanced ecology/evolution, richer P5 chemis
 
 ## Promotion gate
 
-Material blocker count may be declared **0 only after the final exact-head Node, P1–P5 upstream, P5 Environment v2, P6 authority/identity/replay, Golden/oracle, persistence, worker-order, shipped single-file browser matrix and sparse-working-set campaign all pass on the exact candidate head**. Canonical/frozen status additionally requires the same workflow on the exact merged `main`.
+The gate passed. Candidate `b5d0850d46184700e2764a413db59e314ba6ce83`
+(tree `f41cb6b18e6af2289f05e898c44320833366b2c8`) passed exact-head
+runs `33761698110` and `33762252812`. PR #34 merged as signed commit
+`79d1817abc446f01825a66db93a2dc16aa379d7b` with the same tree. Exact-main
+run `33762589274` repeated the complete five-runtime P1–P6 campaign successfully;
+Issue #24 is closed.

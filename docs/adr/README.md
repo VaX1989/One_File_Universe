@@ -23,8 +23,9 @@ ADRs capture decisions with durable semantic consequences. `Accepted` means the 
 | [017](ADR-017-p4-temporal-event-replay.md) | P4 canonical time, event ordering and replay | Proposed for P4 ratification |
 | [018](ADR-018-p4-live-frontier-bounded-history.md) | P4 monotonic live frontier, bounded history and transition authority | Proposed for P4 semantic closure |
 | [019](ADR-019-environment-v2-scientific-authority.md) | Environment v2 scientific authority and unknown-first genesis | Accepted |
-| [020](ADR-020-p6-biological-identity-policy-v1.md) | P6 biological identity policy v1 | Accepted upon canonical P6 v1 promotion |
-| [021](ADR-021-p6-environment-witness-and-transition-scope.md) | P6 environment witness and transition scope | Accepted upon canonical P6 v1 promotion |
+| [020](ADR-020-p6-biological-identity-policy-v1.md) | P6 biological identity policy v1 | Accepted |
+| [021](ADR-021-p6-environment-witness-and-transition-scope.md) | P6 environment witness and transition scope | Accepted |
+| [022](ADR-022-production-rendering-authority-and-resource-lifecycle.md) | Production rendering authority and resource lifecycle | Accepted |
 
 ## ADR policy
 
