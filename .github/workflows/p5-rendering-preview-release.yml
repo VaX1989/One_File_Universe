@@ -5,6 +5,10 @@ on:
     workflows: ["Rendering Production"]
     types: [completed]
 
+concurrency:
+  group: p1-p6-rendering-preview-v0.5.0-preview.1
+  cancel-in-progress: false
+
 permissions:
   contents: write
   actions: read
@@ -19,6 +23,9 @@ jobs:
       SOURCE_SHA: ${{ github.event.workflow_run.head_sha }}
       SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
       RELEASE_TAG: v0.5.0-preview.1
+      RELEASE_SOURCE_SHA: b39c3c1db0f32c1f84bc7959cb0fe0d276abcdf2
+      RELEASE_ASSET_BYTES: '246324'
+      RELEASE_ASSET_SHA256: 1fe7f9bbc94f34f7fee189e29e4201359bd3ed3c02d45ad1dc75c39ae90e2e81
       GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
@@ -33,18 +40,39 @@ jobs:
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           LIVE_MAIN="$(git ls-remote origin refs/heads/main | cut -f1)"
           test "$LIVE_MAIN" = "$SOURCE_SHA"
-      - name: Refuse tag or release overwrite
+      - name: Detect sealed release or authorize one-time publication
+        id: release_gate
         shell: bash
         run: |
-          if git ls-remote --tags origin "refs/tags/$RELEASE_TAG" | grep -q .; then
-            echo "Refusing to overwrite existing tag $RELEASE_TAG" >&2
-            exit 1
-          fi
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
-            echo "Refusing to overwrite existing release $RELEASE_TAG" >&2
+            echo "existing=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if git ls-remote --tags origin "refs/tags/$RELEASE_TAG" | grep -q .; then
+            echo "Refusing publication because tag $RELEASE_TAG exists without the expected release" >&2
             exit 1
           fi
+          test "$SOURCE_SHA" = "$RELEASE_SOURCE_SHA"
+          echo "existing=false" >> "$GITHUB_OUTPUT"
+      - name: Verify existing sealed preview release
+        if: steps.release_gate.outputs.existing == 'true'
+        shell: bash
+        run: |
+          gh release view "$RELEASE_TAG" --json tagName,targetCommitish,isPrerelease,isDraft > /tmp/existing-release.json
+          test "$(jq -r .tagName /tmp/existing-release.json)" = "$RELEASE_TAG"
+          test "$(jq -r .targetCommitish /tmp/existing-release.json)" = "$RELEASE_SOURCE_SHA"
+          test "$(jq -r .isPrerelease /tmp/existing-release.json)" = true
+          test "$(jq -r .isDraft /tmp/existing-release.json)" = false
+          mkdir -p /tmp/existing-release-download
+          gh release download "$RELEASE_TAG" -p One_File_Universe.html -D /tmp/existing-release-download
+          DOWNLOADED_SHA="$(sha256sum /tmp/existing-release-download/One_File_Universe.html | cut -d' ' -f1)"
+          DOWNLOADED_BYTES="$(stat -c%s /tmp/existing-release-download/One_File_Universe.html)"
+          test "$DOWNLOADED_SHA" = "$RELEASE_ASSET_SHA256"
+          test "$DOWNLOADED_BYTES" = "$RELEASE_ASSET_BYTES"
+          test "$(git ls-remote origin refs/tags/$RELEASE_TAG | cut -f1)" = "$RELEASE_SOURCE_SHA"
+          printf 'SEALED release=%s bytes=%s sha256=%s target=%s\n' "$RELEASE_TAG" "$DOWNLOADED_BYTES" "$DOWNLOADED_SHA" "$RELEASE_SOURCE_SHA"
       - name: Download exact-main certified artifact
+        if: steps.release_gate.outputs.existing != 'true'
         shell: bash
         run: |
           mkdir -p release-input
@@ -52,6 +80,7 @@ jobs:
           test -s release-input/One_File_Universe.html
           test -s release-input/rendering-build-manifest.json
       - name: Rebuild and byte-compare exact source
+        if: steps.release_gate.outputs.existing != 'true'
         shell: bash
         run: |
           cp release-input/One_File_Universe.html /tmp/certified.html
@@ -60,11 +89,15 @@ jobs:
           cmp /tmp/certified.html dist/One_File_Universe.html
           cmp /tmp/certified-manifest.json dist/rendering-build-manifest.json
           cp /tmp/certified.html release-input/One_File_Universe.html
-      - name: Publish immutable preview release
+      - name: Stage, verify and publish preview release
+        if: steps.release_gate.outputs.existing != 'true'
         shell: bash
         run: |
           ARTIFACT_SHA="$(sha256sum release-input/One_File_Universe.html | cut -d' ' -f1)"
           ARTIFACT_BYTES="$(stat -c%s release-input/One_File_Universe.html)"
+          test "$SOURCE_SHA" = "$RELEASE_SOURCE_SHA"
+          test "$ARTIFACT_SHA" = "$RELEASE_ASSET_SHA256"
+          test "$ARTIFACT_BYTES" = "$RELEASE_ASSET_BYTES"
           cat > /tmp/release-notes.md <<EOF
           # One File Universe — v0.5.0-preview.1
 
@@ -89,14 +122,48 @@ jobs:
 
           Historical preview releases and their assets are preserved unchanged.
           EOF
-          gh release create "$RELEASE_TAG" release-input/One_File_Universe.html --target "$SOURCE_SHA" --title "One File Universe v0.5.0-preview.1" --notes-file /tmp/release-notes.md --prerelease
+
+          cleanup_draft() {
+            if gh release view "$RELEASE_TAG" --json isDraft --jq '.isDraft' 2>/dev/null | grep -qx true; then
+              gh release delete "$RELEASE_TAG" --yes --cleanup-tag || true
+            fi
+          }
+          trap cleanup_draft ERR
+
+          gh release create "$RELEASE_TAG" release-input/One_File_Universe.html \
+            --target "$SOURCE_SHA" \
+            --title "One File Universe v0.5.0-preview.1" \
+            --notes-file /tmp/release-notes.md \
+            --prerelease \
+            --draft
+
+          gh release view "$RELEASE_TAG" --json tagName,targetCommitish,isPrerelease,isDraft > /tmp/draft-release.json
+          test "$(jq -r .tagName /tmp/draft-release.json)" = "$RELEASE_TAG"
+          test "$(jq -r .targetCommitish /tmp/draft-release.json)" = "$SOURCE_SHA"
+          test "$(jq -r .isPrerelease /tmp/draft-release.json)" = true
+          test "$(jq -r .isDraft /tmp/draft-release.json)" = true
+
+          mkdir -p /tmp/draft-release-download
+          gh release download "$RELEASE_TAG" -p One_File_Universe.html -D /tmp/draft-release-download
+          cmp release-input/One_File_Universe.html /tmp/draft-release-download/One_File_Universe.html
+          DRAFT_SHA="$(sha256sum /tmp/draft-release-download/One_File_Universe.html | cut -d' ' -f1)"
+          DRAFT_BYTES="$(stat -c%s /tmp/draft-release-download/One_File_Universe.html)"
+          test "$DRAFT_SHA" = "$ARTIFACT_SHA"
+          test "$DRAFT_BYTES" = "$ARTIFACT_BYTES"
+
+          LIVE_MAIN="$(git ls-remote origin refs/heads/main | cut -f1)"
+          test "$LIVE_MAIN" = "$SOURCE_SHA"
+          gh release edit "$RELEASE_TAG" --draft=false --prerelease
+          trap - ERR
       - name: Verify published release target and asset digest
+        if: steps.release_gate.outputs.existing != 'true'
         shell: bash
         run: |
-          gh release view "$RELEASE_TAG" --json tagName,targetCommitish,isPrerelease > /tmp/release.json
+          gh release view "$RELEASE_TAG" --json tagName,targetCommitish,isPrerelease,isDraft > /tmp/release.json
           test "$(jq -r .tagName /tmp/release.json)" = "$RELEASE_TAG"
           test "$(jq -r .targetCommitish /tmp/release.json)" = "$SOURCE_SHA"
           test "$(jq -r .isPrerelease /tmp/release.json)" = true
+          test "$(jq -r .isDraft /tmp/release.json)" = false
           mkdir -p /tmp/release-download
           gh release download "$RELEASE_TAG" -p One_File_Universe.html -D /tmp/release-download
           cmp release-input/One_File_Universe.html /tmp/release-download/One_File_Universe.html
