@@ -6,7 +6,7 @@
   "atmosphereStateContractId": "ofu-p5-atmosphere-state-v2",
   "semanticManifestHash": "f35801f9cc4f2d44633a39013e135553f10c29cd62308d34b4da31c59a473d3f",
   "genesisPolicy": "NO_CANONICAL_GENESIS",
-  "corpusDigest": "7dfcbd70f307ef92307cf0a286344b57c1b40ea7854974a52ff6173b63824cc2",
+  "corpusDigest": "ac33ba776976d1381a841426fb7e0fbb0276877e98565261bfdec2bca598d7a4",
   "canonicalPlanet": {
     "planetId": "b033f4982b774dca5a742108d489c568027252e8381055990994691aa39df8b5",
     "baselineMassMilliEarth": "1204",
