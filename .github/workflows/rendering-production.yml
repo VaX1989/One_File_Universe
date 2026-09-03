@@ -5,6 +5,7 @@ on:
     branches:
       - feature/rendering-hierarchical-planet-integration
       - feature/rendering-p1-p6-production
+      - feature/rendering-product-v0.6
       - main
   pull_request:
     branches: [main]
@@ -105,7 +106,9 @@ jobs:
       - run: npm install --no-save playwright@1.62.1
       - run: npx playwright install --with-deps ${{ matrix.browser }}
       - name: Direct file navigation, performance and non-interference
-        run: node tests/rendering/browser-production.mjs
+        run: |
+          node tests/rendering/browser-production.mjs
+          node tests/rendering/browser-product-v06.mjs
         env:
           BROWSER: ${{ matrix.browser }}
           DPR: ${{ matrix.browser == 'chromium' && '2' || '1' }}
@@ -136,7 +139,9 @@ jobs:
       - run: npm install --no-save playwright@1.62.1
       - run: npx playwright install ${{ matrix.browser }}
       - name: Direct file navigation and non-interference
-        run: node tests/rendering/browser-production.mjs
+        run: |
+          node tests/rendering/browser-production.mjs
+          node tests/rendering/browser-product-v06.mjs
         env:
           BROWSER: ${{ matrix.browser }}
           DPR: '1'
