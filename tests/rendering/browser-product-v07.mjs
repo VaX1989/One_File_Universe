@@ -82,6 +82,7 @@ try{
  const key=await page.evaluate(()=>Object.fromEntries(Object.entries(__OFU_PLANET_PREVIEW__.chosen.key).map(([k,v])=>[k,v.toString()])));
  const fixture=await page.evaluate(()=>{__OFU_PLANET_PREVIEW__.testOnlyUnsupportedFixture();return __OFU_PLANET_PREVIEW__.snapshot()});
  if(fixture.targetStatus!=='UNSUPPORTED')throw new Error('unsupported fixture failed');
+ await page.waitForFunction(()=>globalThis.__OFU_PLANET_PREVIEW__?.targetStatus==='UNSUPPORTED'&&document.getElementById('viewport-state')?.hidden===false&&document.getElementById('render-target-state')?.textContent==='UNSUPPORTED',{timeout:5000});
  const unsupportedUi=await page.evaluate(()=>({hidden:document.getElementById('viewport-state').hidden,title:document.getElementById('viewport-state-title').textContent,message:document.getElementById('viewport-state-message').textContent}));
  if(unsupportedUi.hidden||!/unavailable/i.test(unsupportedUi.title)||!/fixture|cannot|exists|model/i.test(unsupportedUi.message))throw new Error('unsupported UX failed');
  if(browserName==='chromium')await screen(page,'unsupported');
