@@ -137,18 +137,16 @@ jobs:
           test '${{ needs.exact-head.result }}' = success
           test '${{ needs.browser-linux.result }}' = success
           test '${{ needs.browser-platform.result }}' = success
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.20.0'
       - uses: actions/download-artifact@v4
         with:
           pattern: rendering-wave2-*-${{ env.OFU_SOURCE_SHA }}
           path: evidence
           merge-multiple: true
       - name: Require five browser witnesses and one canonical result
-        shell: bash
-        run: |
-          count=$(find evidence -name 'browser-*.json' -type f | wc -l)
-          test "$count" -eq 5
-          test "$(jq -r '.status' evidence/browser-*.json | sort -u)" = PASS
-          test "$(jq -r '.artifactSha256' evidence/browser-*.json | sort -u | wc -l)" -eq 1
-          test "$(jq -c '.after' evidence/browser-*.json | sort -u | wc -l)" -eq 1
-          test "$(jq -r 'select(.platform=="darwin") | .arch' evidence/browser-*.json)" = arm64
-          echo 'Rendering Wave 2 cross-runtime seal PASS'
+        run: node tests/rendering/seal-evidence.mjs evidence
