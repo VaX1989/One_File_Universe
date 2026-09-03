@@ -26,11 +26,13 @@ jobs:
       - name: P1
         run: node tests/run-node-tests.mjs && node tests/p1/portable-save-size.mjs
       - name: P2
-        run: node tests/p2/run-p2-tests.mjs
+        run: npm run test:p2
       - name: P3
-        run: node tests/p3/run-p3-conformance.mjs
+        run: node tools/p3-evidence.mjs && python3 tools/p3_spatial_oracle.py
       - name: P4
         run: node tests/p4/run-p4-tests.mjs && node tests/p4/semantic-closure-tests.mjs && node tests/p4/archive-lineage-tests.mjs && node tests/p4/checkpoint-authority-tests.mjs
+      - name: Frozen upstream integration
+        run: node tests/integration/p2-p4-contract-tests.mjs && node tests/integration/p3-p4-contract-tests.mjs
       - name: P5
         run: node tests/p5/run-p5-conformance.mjs && node tests/integration/p3-p5-contract-tests.mjs
       - name: P6 canonical v1 exact-head conformance
