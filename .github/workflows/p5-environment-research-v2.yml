@@ -6,6 +6,7 @@ on:
     paths:
       - 'research/p5-environment-v2/**'
       - 'tests/p5-environment-research-v2/**'
+      - 'docs/p5-environment-research-v2/**'
       - '.github/workflows/p5-environment-research-v2.yml'
   workflow_dispatch:
 
