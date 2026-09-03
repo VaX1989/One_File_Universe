@@ -5,16 +5,20 @@ on:
     workflows: ["Rendering Production"]
     types: [completed]
 
+# v0.5.0-preview.1 is already published and independently certified. This
+# workflow is deliberately verify-only from this point forward: it cannot
+# recreate, replace, retarget or upload to the sealed release. A future release
+# line must use a separately certified draft-first staging transaction.
 concurrency:
   group: p1-p6-rendering-preview-v0.5.0-preview.1
   cancel-in-progress: false
 
 permissions:
-  contents: write
+  contents: read
   actions: read
 
 jobs:
-  publish:
+  verify-sealed-release:
     if: >-
       github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.head_branch == 'main'
@@ -31,147 +35,30 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ env.SOURCE_SHA }}
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24.20.0'
-      - name: Require exact certified main
+      - name: Require exact certified live main
         shell: bash
         run: |
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           LIVE_MAIN="$(git ls-remote origin refs/heads/main | cut -f1)"
           test "$LIVE_MAIN" = "$SOURCE_SHA"
-      - name: Detect sealed release or authorize one-time publication
-        id: release_gate
-        shell: bash
-        run: |
-          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
-            echo "existing=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          if git ls-remote --tags origin "refs/tags/$RELEASE_TAG" | grep -q .; then
-            echo "Refusing publication because tag $RELEASE_TAG exists without the expected release" >&2
-            exit 1
-          fi
-          test "$SOURCE_SHA" = "$RELEASE_SOURCE_SHA"
-          echo "existing=false" >> "$GITHUB_OUTPUT"
-      - name: Verify existing sealed preview release
-        if: steps.release_gate.outputs.existing == 'true'
-        shell: bash
-        run: |
-          gh release view "$RELEASE_TAG" --json tagName,targetCommitish,isPrerelease,isDraft > /tmp/existing-release.json
-          test "$(jq -r .tagName /tmp/existing-release.json)" = "$RELEASE_TAG"
-          test "$(jq -r .targetCommitish /tmp/existing-release.json)" = "$RELEASE_SOURCE_SHA"
-          test "$(jq -r .isPrerelease /tmp/existing-release.json)" = true
-          test "$(jq -r .isDraft /tmp/existing-release.json)" = false
-          mkdir -p /tmp/existing-release-download
-          gh release download "$RELEASE_TAG" -p One_File_Universe.html -D /tmp/existing-release-download
-          DOWNLOADED_SHA="$(sha256sum /tmp/existing-release-download/One_File_Universe.html | cut -d' ' -f1)"
-          DOWNLOADED_BYTES="$(stat -c%s /tmp/existing-release-download/One_File_Universe.html)"
-          test "$DOWNLOADED_SHA" = "$RELEASE_ASSET_SHA256"
-          test "$DOWNLOADED_BYTES" = "$RELEASE_ASSET_BYTES"
-          test "$(git ls-remote origin refs/tags/$RELEASE_TAG | cut -f1)" = "$RELEASE_SOURCE_SHA"
-          printf 'SEALED release=%s bytes=%s sha256=%s target=%s\n' "$RELEASE_TAG" "$DOWNLOADED_BYTES" "$DOWNLOADED_SHA" "$RELEASE_SOURCE_SHA"
-      - name: Download exact-main certified artifact
-        if: steps.release_gate.outputs.existing != 'true'
-        shell: bash
-        run: |
-          mkdir -p release-input
-          gh run download "$SOURCE_RUN_ID" -n "rendering-production-build-$SOURCE_SHA" -D release-input
-          test -s release-input/One_File_Universe.html
-          test -s release-input/rendering-build-manifest.json
-      - name: Rebuild and byte-compare exact source
-        if: steps.release_gate.outputs.existing != 'true'
-        shell: bash
-        run: |
-          cp release-input/One_File_Universe.html /tmp/certified.html
-          cp release-input/rendering-build-manifest.json /tmp/certified-manifest.json
-          OFU_SOURCE_SHA="$SOURCE_SHA" node tools/build-ofu-rendering.mjs >/tmp/release-rebuild.json
-          cmp /tmp/certified.html dist/One_File_Universe.html
-          cmp /tmp/certified-manifest.json dist/rendering-build-manifest.json
-          cp /tmp/certified.html release-input/One_File_Universe.html
-      - name: Stage, verify and publish preview release
-        if: steps.release_gate.outputs.existing != 'true'
-        shell: bash
-        run: |
-          ARTIFACT_SHA="$(sha256sum release-input/One_File_Universe.html | cut -d' ' -f1)"
-          ARTIFACT_BYTES="$(stat -c%s release-input/One_File_Universe.html)"
-          test "$SOURCE_SHA" = "$RELEASE_SOURCE_SHA"
-          test "$ARTIFACT_SHA" = "$RELEASE_ASSET_SHA256"
-          test "$ARTIFACT_BYTES" = "$RELEASE_ASSET_BYTES"
-          cat > /tmp/release-notes.md <<EOF
-          # One File Universe — v0.5.0-preview.1
-
-          First exact-main certified integrated P1–P6 production rendering preview.
-
-          - Target SHA: \`$SOURCE_SHA\`
-          - Asset: \`One_File_Universe.html\`
-          - Bytes: \`$ARTIFACT_BYTES\`
-          - SHA-256: \`$ARTIFACT_SHA\`
-          - Runtime: direct \`file://\`, offline, zero required network
-          - Rendering baseline: WebGL2; functional Canvas2D fallback
-          - Certified matrix: Linux Chromium, Linux Firefox, Linux Playwright WebKit, Windows Chromium, macOS ARM64 Playwright WebKit
-          - Canonical P5 Environment authority: \`ofu-p5-p6-environment-v2\` / schema 2 / \`P5_CANONICAL\`
-          - Canonical P6 state on the preview planet: \`INSUFFICIENT_ENVIRONMENT\`
-          - Canonical biosphere established: **NO**
-          - Real Safari/iOS: **NOT_VERIFIED**
-          - WebGPU: optional / not required
-          - P5 terrain elevation: dimensionless stylized presentation input; no realistic geological elevation claim
-          - Tier-0 effective radiative temperature is not surface temperature
-          - No claim of canonical oceans, atmospheric genesis, XUV/escape history, plate tectonics, geochemical energy, or naturally generated biospheres
-          - GPU bytes reported by the renderer: tracked live allocations, **not** physical driver VRAM telemetry
-
-          Historical preview releases and their assets are preserved unchanged.
-          EOF
-
-          cleanup_draft() {
-            if gh release view "$RELEASE_TAG" --json isDraft --jq '.isDraft' 2>/dev/null | grep -qx true; then
-              gh release delete "$RELEASE_TAG" --yes --cleanup-tag || true
-            fi
-          }
-          trap cleanup_draft ERR
-
-          gh release create "$RELEASE_TAG" release-input/One_File_Universe.html \
-            --target "$SOURCE_SHA" \
-            --title "One File Universe v0.5.0-preview.1" \
-            --notes-file /tmp/release-notes.md \
-            --prerelease \
-            --draft
-
-          gh release view "$RELEASE_TAG" --json tagName,targetCommitish,isPrerelease,isDraft > /tmp/draft-release.json
-          test "$(jq -r .tagName /tmp/draft-release.json)" = "$RELEASE_TAG"
-          test "$(jq -r .targetCommitish /tmp/draft-release.json)" = "$SOURCE_SHA"
-          test "$(jq -r .isPrerelease /tmp/draft-release.json)" = true
-          test "$(jq -r .isDraft /tmp/draft-release.json)" = true
-
-          mkdir -p /tmp/draft-release-download
-          gh release download "$RELEASE_TAG" -p One_File_Universe.html -D /tmp/draft-release-download
-          cmp release-input/One_File_Universe.html /tmp/draft-release-download/One_File_Universe.html
-          DRAFT_SHA="$(sha256sum /tmp/draft-release-download/One_File_Universe.html | cut -d' ' -f1)"
-          DRAFT_BYTES="$(stat -c%s /tmp/draft-release-download/One_File_Universe.html)"
-          test "$DRAFT_SHA" = "$ARTIFACT_SHA"
-          test "$DRAFT_BYTES" = "$ARTIFACT_BYTES"
-
-          LIVE_MAIN="$(git ls-remote origin refs/heads/main | cut -f1)"
-          test "$LIVE_MAIN" = "$SOURCE_SHA"
-          gh release edit "$RELEASE_TAG" --draft=false --prerelease
-          trap - ERR
-      - name: Verify published release target and asset digest
-        if: steps.release_gate.outputs.existing != 'true'
+      - name: Require sealed release and exact metadata
         shell: bash
         run: |
           gh release view "$RELEASE_TAG" --json tagName,targetCommitish,isPrerelease,isDraft > /tmp/release.json
           test "$(jq -r .tagName /tmp/release.json)" = "$RELEASE_TAG"
-          test "$(jq -r .targetCommitish /tmp/release.json)" = "$SOURCE_SHA"
+          test "$(jq -r .targetCommitish /tmp/release.json)" = "$RELEASE_SOURCE_SHA"
           test "$(jq -r .isPrerelease /tmp/release.json)" = true
           test "$(jq -r .isDraft /tmp/release.json)" = false
-          mkdir -p /tmp/release-download
-          gh release download "$RELEASE_TAG" -p One_File_Universe.html -D /tmp/release-download
-          cmp release-input/One_File_Universe.html /tmp/release-download/One_File_Universe.html
-          EXPECTED_SHA="$(sha256sum release-input/One_File_Universe.html | cut -d' ' -f1)"
-          DOWNLOADED_SHA="$(sha256sum /tmp/release-download/One_File_Universe.html | cut -d' ' -f1)"
-          EXPECTED_BYTES="$(stat -c%s release-input/One_File_Universe.html)"
-          DOWNLOADED_BYTES="$(stat -c%s /tmp/release-download/One_File_Universe.html)"
-          test "$DOWNLOADED_SHA" = "$EXPECTED_SHA"
-          test "$DOWNLOADED_BYTES" = "$EXPECTED_BYTES"
-          test "$(git ls-remote origin refs/tags/$RELEASE_TAG | cut -f1)" = "$SOURCE_SHA"
-          printf 'VERIFIED asset=%s bytes=%s sha256=%s target=%s run=%s\n' One_File_Universe.html "$DOWNLOADED_BYTES" "$DOWNLOADED_SHA" "$SOURCE_SHA" "$SOURCE_RUN_ID"
+          test "$(git ls-remote origin refs/tags/$RELEASE_TAG | cut -f1)" = "$RELEASE_SOURCE_SHA"
+      - name: Download and verify sealed release asset
+        shell: bash
+        run: |
+          mkdir -p /tmp/sealed-release
+          gh release download "$RELEASE_TAG" -p One_File_Universe.html -D /tmp/sealed-release
+          DOWNLOADED_SHA="$(sha256sum /tmp/sealed-release/One_File_Universe.html | cut -d' ' -f1)"
+          DOWNLOADED_BYTES="$(stat -c%s /tmp/sealed-release/One_File_Universe.html)"
+          test "$DOWNLOADED_SHA" = "$RELEASE_ASSET_SHA256"
+          test "$DOWNLOADED_BYTES" = "$RELEASE_ASSET_BYTES"
+          printf 'SEALED release=%s asset=%s bytes=%s sha256=%s target=%s source_run=%s\n' \
+            "$RELEASE_TAG" One_File_Universe.html "$DOWNLOADED_BYTES" "$DOWNLOADED_SHA" \
+            "$RELEASE_SOURCE_SHA" "$SOURCE_RUN_ID"
