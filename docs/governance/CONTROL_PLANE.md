@@ -44,7 +44,7 @@ For each candidate, the integration owner must:
 2. compare candidate divergence against that exact `main`;
 3. adjudicate cross-lane and authority collisions;
 4. integrate onto the current certified baseline without force-push or history rewrite;
-5. run the relevant exact-head gates, including `Rendering Production / seal` whenever workflow/integration semantics or the shipped vertical slice can be affected;
+5. run the relevant exact-head gates, including the unique `rendering-production-seal` check whenever workflow/integration semantics or the shipped vertical slice can be affected;
 6. adversarially review the exact candidate;
 7. merge only the expected exact PR head SHA;
 8. certify the exact resulting `main`;
@@ -57,7 +57,7 @@ Never evaluate a second independently certified candidate as promotable until th
 The intended GitHub enforcement for `main` is deliberately small:
 
 - require pull-request based changes to `main`;
-- require `Rendering Production / seal` before merge, because that workflow runs on PRs to `main` and covers exact-head Foundation, P1, P2, P3, P4, P5, Environment v2, P6 and Rendering Production evidence;
+- require the unique `rendering-production-seal` check before merge, because `Rendering Production` runs on PRs to `main` and covers exact-head Foundation, P1, P2, P3, P4, P5, Environment v2, P6 and Rendering Production evidence;
 - require the branch to be current before merge / reject stale integration;
 - block force pushes;
 - block branch deletion;
@@ -68,7 +68,9 @@ Repository-side enforcement must be verified live; this document is policy, not 
 
 ## CI supply-chain policy
 
-Third-party GitHub Actions used by canonical workflows are pinned to immutable commit SHAs with the corresponding major version documented in comments. Canonical workflow toolchains use Node `24.20.0`, Python `3.13.15` where Python is required, and Playwright `1.62.1` for browser automation.
+The canonical integration gate and release-control-plane workflows pin third-party GitHub Actions to immutable commit SHAs with the corresponding major version documented in comments. Their toolchain is Node `24.20.0`, Python `3.13.15` where Python is required, and Playwright `1.62.1` for browser automation.
+
+Legacy or phase-specific workflows are not sufficient promotion evidence by themselves. They may be migrated to immutable action pins independently without changing frozen scientific semantics.
 
 Hosted runner images remain GitHub-managed and therefore are not byte-immutable. Exact runner/browser versions observed by certification are evidence and must not be overclaimed as permanent toolchain identity.
 
