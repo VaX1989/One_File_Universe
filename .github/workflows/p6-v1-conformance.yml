@@ -2,121 +2,101 @@ name: P6 v1 Conformance
 
 on:
   push:
-    branches:
-      - research/p6-v1-promotion-prep
-      - feature/p6-biosphere-evolution-v1
+    branches: [research/p6-v1-promotion-prep, feature/p6-biosphere-evolution-v1]
   pull_request:
-    branches:
-      - main
-    paths:
-      - 'src/domains/biosphere/**'
-      - 'tests/p6/**'
-      - 'tools/p6_*'
-      - 'docs/P6_*'
-      - 'docs/adr/ADR-020-*'
-      - '.github/workflows/p6-v1-conformance.yml'
+    branches: [main]
   workflow_dispatch:
-
 permissions:
   contents: read
-
 env:
   OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-
 jobs:
   node:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ env.OFU_SOURCE_SHA }}
+        with: {ref: '${{ env.OFU_SOURCE_SHA }}'}
       - uses: actions/setup-node@v4
-        with:
-          node-version: '24.20.0'
+        with: {node-version: '24.20.0'}
       - name: Verify exact source
         shell: bash
         run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
-      - name: Foundation and frozen P1-P5 regression
-        run: |
-          node tools/validate-foundation.mjs
-          node tests/run-node-tests.mjs
-          node tests/p2/run-p2-tests.mjs
-          node tests/p3/run-p3-conformance.mjs
-          node tests/p4/run-p4-tests.mjs
-          node tests/p5/run-p5-conformance.mjs
-          node tests/integration/p3-p5-contract-tests.mjs
+      - name: Foundation
+        run: node tools/validate-foundation.mjs
+      - name: P1
+        run: node tests/run-node-tests.mjs && node tests/p1/portable-save-size.mjs
+      - name: P2
+        run: node tests/p2/run-p2-tests.mjs
+      - name: P3
+        run: node tests/p3/run-p3-conformance.mjs
+      - name: P4
+        run: node tests/p4/run-p4-tests.mjs && node tests/p4/semantic-closure-tests.mjs && node tests/p4/archive-lineage-tests.mjs && node tests/p4/checkpoint-authority-tests.mjs
+      - name: P5
+        run: node tests/p5/run-p5-conformance.mjs && node tests/integration/p3-p5-contract-tests.mjs
       - name: P6 canonical v1 exact-head conformance
+        if: always()
         run: node tests/p6/run-p6-v1.mjs
       - name: Worker-order independence
+        if: always()
         run: node tests/p6/worker-order.mjs
       - name: Sparse working set
+        if: always()
         run: node --expose-gc tests/p6/working-set.mjs
       - name: Independent Python oracle
+        if: always()
         run: python3 tools/p6_oracle.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: p6-v1-node-${{ env.OFU_SOURCE_SHA }}
           path: dist/evidence/p6/
-
   browser-linux:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix:
-        browser: [chromium, firefox, webkit]
+      matrix: {browser: [chromium, firefox, webkit]}
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ env.OFU_SOURCE_SHA }}
+        with: {ref: '${{ env.OFU_SOURCE_SHA }}'}
       - uses: actions/setup-node@v4
-        with:
-          node-version: '24.20.0'
+        with: {node-version: '24.20.0'}
       - name: Verify exact source
         shell: bash
         run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
       - run: npm install --no-save playwright@1.62.1
       - run: npx playwright install --with-deps ${{ matrix.browser }}
       - run: node tests/p6/browser-p6-v1.mjs
-        env:
-          BROWSER: ${{ matrix.browser }}
+        env: {BROWSER: '${{ matrix.browser }}'}
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: p6-v1-linux-${{ matrix.browser }}-${{ env.OFU_SOURCE_SHA }}
           path: dist/evidence/p6/
-
   browser-platform:
     strategy:
       fail-fast: false
       matrix:
         include:
-          - os: windows-latest
-            browser: chromium
-          - os: macos-latest
-            browser: webkit
+          - {os: windows-latest, browser: chromium}
+          - {os: macos-latest, browser: webkit}
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ env.OFU_SOURCE_SHA }}
+        with: {ref: '${{ env.OFU_SOURCE_SHA }}'}
       - uses: actions/setup-node@v4
-        with:
-          node-version: '24.20.0'
+        with: {node-version: '24.20.0'}
       - name: Verify exact source
         shell: bash
         run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
       - run: npm install --no-save playwright@1.62.1
       - run: npx playwright install ${{ matrix.browser }}
       - run: node tests/p6/browser-p6-v1.mjs
-        env:
-          BROWSER: ${{ matrix.browser }}
+        env: {BROWSER: '${{ matrix.browser }}'}
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: p6-v1-${{ runner.os }}-${{ runner.arch }}-${{ matrix.browser }}-${{ env.OFU_SOURCE_SHA }}
           path: dist/evidence/p6/
-
   seal:
     if: ${{ always() }}
     needs: [node, browser-linux, browser-platform]
