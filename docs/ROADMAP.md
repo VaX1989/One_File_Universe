@@ -167,6 +167,11 @@ Frozen Environment v2 evidence:
 
 Environment v2 does **not** claim mean surface temperature. Actual Bond albedo remains `UNKNOWN`; greenhouse response, surface temperature, water phase/EOS, XUV evolution, endogenous atmospheric escape, geology/geochemical energy, actual ocean area and physical terrain elevation remain `UNSUPPORTED`. P4 remains sole owner of canonical time, events, replay, checkpoints, compaction and lineage. Future greenhouse/XUV/geology research is routed separately in issues #29, #30 and #31.
 
+Governance closure PR #33 merged as signed commit
+`58d4cbbc3ff8412ddd29a2fa628746b4d8d0557d`; exact-main Environment v2 run
+`33760167600` passed its complete five-runtime aggregate seal. Environment v2 uses
+unique ADR-019, repository ADR hygiene is executable, and Issue #28 is closed.
+
 ### Scientific disposition
 The canonical v1 rocky mass-radius realization is an **EMPIRICALLY_CONSTRAINED / APPROXIMATE** bounded model. The deterministic terrestrial composition refinement is **HYPOTHETICAL / STYLIZED** and is not presented as inferred mineralogy. Gravity/density relationships are **ESTABLISHED / APPROXIMATE** under quantized inputs. Cube-sphere topology is **ESTABLISHED / FORMAL**. The current terrain elevation signal is **FICTIONAL / STYLIZED**, dimensionless and never represented as physical metres.
 
@@ -192,19 +197,41 @@ P5 v1 closed after its actual candidate and exact main passed all frozen upstrea
 
 ## P6 — Biosphere & Evolution
 
-### Objective
-Make life constrained by environment and resources rather than assembled independently.
+**P6 v1 — CANONICAL PROMOTION CANDIDATE.** Authority becomes frozen only after the
+focused promotion PR and exact merged `main` pass the complete P1–P6 seal.
 
-### Deliverables
-- productivity/energy budgets;
-- ecological niches and trophic relationships;
-- morphology/genome generative grammar;
-- evolutionary pressures/history abstraction;
-- extinction/speciation event semantics;
-- semantic simulation LOD.
+P6 v1 consumes only frozen `ofu-p5-p6-environment-v2` / schema `2` /
+`p5-environment-2` / `P5_CANONICAL`. A domain-separated eligibility witness binds
+the complete canonical P5 projection, planet identity, P5 environment digest,
+P5 and P6 Semantic Manifests, P6 eligibility semantics and Model A identity
+policy. A bare `BIOSPHERE_SUPPORTED` label has no authority.
+
+The current real P5 Environment v2 path is honestly
+`INSUFFICIENT_ENVIRONMENT / canGenerateBiosphere=false`. Positive
+`P6_CONFORMANCE_ONLY` fixtures exist only under `tests/p6/`; they are excluded
+from the shipped runtime and cannot create canonical entities, events, saves or
+rendering truth.
+
+P6 v1 freezes:
+
+- deterministic integer energy/productivity/biomass/trophic ceilings;
+- PHOTOTROPHIC / CHEMOTROPHIC / MIXED / UNKNOWN source distinctions;
+- Model A P2 identity derivation for biosphere, lineage and species semantic IDs;
+- MACRO → MESO → MICRO refinement invariants without persistent individuals;
+- a P4-owned genesis guard whose current upstream preconditions accept no event;
+- fail-closed replay/checkpoint/compaction/save semantics for the no-biology state.
+
+Persistent lineage/speciation/extinction transitions are deliberately deferred.
+P6 v1 does not freeze an orphanable pseudo-lineage contract merely to preserve a
+pre-promotion candidate shape. Future positive biology and lineage lifecycle
+semantics require separately versioned scientific authority and a new promotion.
 
 ### Exit gate
-Generated biospheres satisfy energy/constraint invariants and diversity tests; late refinement does not contradict committed ecological facts.
+
+Material blocker count zero; exact candidate and exact merged `main` both pass
+Foundation, P1–P5, P6 authority/identity/replay, Golden/oracle, deterministic
+single-file build, bounded working-set, Worker-order and five-runtime browser
+certification. Real Safari/iOS remains `NOT_VERIFIED`.
 
 ---
 

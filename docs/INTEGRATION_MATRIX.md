@@ -30,8 +30,12 @@
 | P5 Environment v2 Semantic Manifest | P5 / P2 validation | P5/P6+ | hash `f35801f9cc4f2d44633a39013e135553f10c29cd62308d34b4da31c59a473d3f` | FROZEN | Dedicated generator lineage for Environment v2; P5 v1 manifest is not reused as Environment authority. |
 | P5 Atmosphere State v2 | P5 | P6+ / future P4-bound reducers | `ofu-p5-atmosphere-state-v2` | FROZEN | Absolute Tg state with exact volatile conservation; genesis policy is `NO_CANONICAL_GENESIS`. |
 | P5 → P6 Environment v2 | P5 | P6+ | schema 2 / `ofu-p5-p6-environment-v2` / `p5-environment-2` | FROZEN | Explicit epistemic authority/provenance, deterministic global column pressure and corrected Tier-0 effective-radiative law. Surface temperature, greenhouse, XUV evolution, geology and other deferred domains remain unsupported. |
+| P6 Eligibility Witness | P6 | P4-bound P6 guard / rendering | schema 1 / `ofu-p6-environment-eligibility-witness-v1` / `p6-eligibility-semantics-1` | FROZEN UPON P6 PROMOTION | Binds exact P5 Environment v2 provenance and digest, planet, epistemic decision, P6 manifest and Model A policy. Current canonical P5 input remains insufficient. |
+| P6 Biological Identity | P6 stable keys / P2 identity | P6+ | `p6-biological-identity-model-a-v1` | FROZEN UPON P6 PROMOTION | Biosphere, lineage and species semantic IDs are P2-verifiable; generator/model revision alone does not redefine identity. No persistent lineage/species lifecycle is promoted in v1. |
+| P6 Biological Transition | P6 reducer / P4 execution | P6+ | `ofu.p6.biological-transition@1.0.0` | FROZEN UPON P6 PROMOTION | Genesis guard verifies the full upstream witness, P4 baseline and P2 ID; current canonical input accepts zero biological events. Speciation/extinction are deferred. |
+| P6 Semantic Manifest | P6 / P2 validation | P6+ / rendering | `2a3593bad3ce921c4f2f9e4282c64dc8fc3906d9c5863a048d14fa8fe541b0c9` | FROZEN UPON P6 PROMOTION | Exact P5/P4 dependencies, eligibility/witness scope, identity, numeric and semantic-LOD policies. Conformance-only construction is excluded from the shipped runtime. |
 
-## Canonical P1–P5 authority
+## Canonical P1–P6 authority
 
 ```text
 P2 deterministic authority
@@ -40,12 +44,14 @@ P3 procedural astronomical baseline at P4 T0
         +
 P4 accepted canonical history
         +
-versioned P5-owned physical/environment realization or future P4-bound transition semantics
+versioned P5-owned physical/environment realization
+        +
+P6 biological semantics where the canonical eligibility witness permits them
         ↓
 Current persistent OFU world
 ```
 
-P5 v1 promotes static planetary genesis facts only. Environment v2 adds atmosphere-state schema and deterministic derived laws but promotes no endogenous atmosphere-loss transition and no private clock. P4 remains the sole clock/order/replay/checkpoint/compaction/lineage/archive authority.
+P5 v1 promotes static planetary genesis facts only. Environment v2 adds atmosphere-state schema and deterministic derived laws but promotes no endogenous atmosphere-loss transition and no private clock. P6 v1 adds a causally bound genesis guard and deterministic biological identity/energy/refinement laws, but frozen P5 Environment v2 currently authorizes no biosphere. P4 remains the sole clock/order/replay/checkpoint/compaction/lineage/archive authority.
 
 Rendering, DOM order, camera state, animation timing, display formatting, presentation `Number` views and caches are presentation only and MUST NOT affect canonical results.
 
@@ -58,6 +64,8 @@ Rendering, DOM order, camera state, animation timing, display formatting, presen
 | P1–P4 one-file baseline | `88ec5856740ca514bced02238b75d32565f23071` | `a63575465a737b4b926e9651a2af91b177c0b35b` | CERTIFIED ON MERGED MAIN |
 | P5 v1 controlled promotion | PR #26 / candidate `6d1555a6aaf88d047e7246160bf2e536aeead8f9` / `golden-p5-corpus-v1` | `da14edf1b7d991c011ef8ff07580704ba0219ea1` | COMPLETE / CANONICAL / FROZEN |
 | Advanced P5 Environment v2 | PR #32 / candidate `7688e9ca8719e1b7f42dcc15d7962f08a76e3e55` / `golden-p5-environment-v2-corpus-v1` | `ace38aac27b9098a9c01b390eeaa82933077f4be` | COMPLETE / CANONICAL / FROZEN |
+| P5 Environment v2 governance closure | PR #33 / candidate `931ad5eead225b8d8fbbec0cb3e470e479de4745` | `58d4cbbc3ff8412ddd29a2fa628746b4d8d0557d` / run `33760167600` | COMPLETE / CANONICAL / FROZEN |
+| P6 v1 | exact promotion candidate and PR recorded after final exact-head seal | exact merge recorded after promotion | CANDIDATE; no authority before merge and exact-main PASS |
 | Future greenhouse / XUV-escape / geology | issues #29 / #30 / #31 | not promoted | RESEARCH / DEFERRED |
 
 PR #25 is a historical exact-candidate certification record that was closed unmerged because the draft-to-ready connector path could not be used as the promotion vehicle. PR #26 is the actual P5 v1 controlled-promotion merge vehicle. The certified P5 v1 candidate tree and canonical merge tree are both `a1cae552911011173672478274fd092f56f4dfff`, so that merge introduced no content drift.
@@ -106,6 +114,15 @@ Environment v2 is an additive successor authority and preserves every frozen P5 
 - shipped Environment digest: `f6ecaea013a78f5f7a16acf2a0f2fa33f7f7ec816474df33be9f8b0fa41de0a2`
 
 Run `33737515944` re-established on exact main Foundation/P1/P2, P3, P4, frozen P5 v1, Environment v2 conformance, Worker scheduling invariance, independent Python oracle, Golden vectors, sparse working-set benchmark, evidence isolation and a reproducible Environment v2 single-file build. The aggregate seal required identical canonical outputs on Linux Chromium, Linux Firefox, Linux Playwright WebKit, Windows Chromium and macOS ARM64 Playwright WebKit. Playwright WebKit is not real Safari/iOS evidence.
+
+Governance PR #33 subsequently resolved the duplicate ADR identifier by preserving
+the established multiscale ADR-015 and assigning Environment v2 the unique
+ADR-019. Candidate `931ad5eead225b8d8fbbec0cb3e470e479de4745` and signed merge
+`58d4cbbc3ff8412ddd29a2fa628746b4d8d0557d` share tree
+`1d74cd3eed82f81e66b7f1131576696574f310a3`. Exact-main run
+`33760167600` repeated Foundation through Environment v2, the independent oracle,
+reproducible build and all five supported runtime profiles successfully. Issue #28
+was then closed; #29, #30 and #31 remain noncanonical research.
 
 Environment v2 chooses `NO_CANONICAL_GENESIS`: the canonical atmosphere schema is real, but arbitrary planets are not assigned fabricated atmospheric mass. The canonical column-pressure law is causal from retained atmosphere mass and frozen P5 v1 gravity/radius. The corrected Tier-0 law produces `254.578 K` for Earth-normalized stellar forcing and Bond albedo 0.3 while explicitly refusing to call that a surface temperature.
 
