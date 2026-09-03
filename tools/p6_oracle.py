@@ -19,8 +19,7 @@ def enc(v):
  if isinstance(v,bytes):return bytes([T['BYTES']])+uleb(len(v))+v
  if isinstance(v,str):
   b=v.encode('utf-8');return bytes([T['TEXT']])+uleb(len(b))+b
- if isinstance(v,(list,tuple)):
-  return bytes([T['ARRAY']])+uleb(len(v))+b''.join(enc(x) for x in v)
+ if isinstance(v,(list,tuple)):return bytes([T['ARRAY']])+uleb(len(v))+b''.join(enc(x) for x in v)
  if isinstance(v,dict):
   pairs=[(enc(str(k)),enc(val)) for k,val in v.items()];pairs.sort(key=lambda p:p[0]);return bytes([T['MAP']])+uleb(len(pairs))+b''.join(k+v for k,v in pairs)
  raise TypeError(type(v))
@@ -31,6 +30,11 @@ manifest_hash=sha(enc(MANIFEST));uid=bytes(255-i for i in range(32));planet=byte
 photo_energy=5_000_000_000;capture=420_000;primary=photo_energy*capture//1_000_000;biomass=primary*800_000//1_000_000
 def trophic(v,e):return v*e//1_000_000
 result={'status':'PASS','oracle':'independent-python-ofu-cbv-subset-v1','manifestHash':manifest_hash.hex(),'biosphereId':biosphere.hex(),'lineageId':lineage.hex(),'speciesId':species.hex(),'primaryProductivityCeilingU':str(primary),'sustainableBiomassCeilingU':str(biomass),'trophic100kLevel1U':str(trophic(primary,100_000)),'numericLaw':'u64 integer; ppm multiplication uses exact floor; overflow is rejection in runtime'}
+with open('tests/p6/golden-p6-biosphere-v1.json',encoding='utf-8') as f:g=json.load(f)
+assert g['authority']=='P6_CONFORMANCE_ONLY'
+assert hashlib.sha256(enc(g['vectors'])).hexdigest()==g['corpusDigest']
+for k in ['manifestHash','biosphereId','lineageId','speciesId','primaryProductivityCeilingU','sustainableBiomassCeilingU','trophic100kLevel1U']:
+ assert result[k]==g['vectors'][k],f'independent oracle mismatch: {k}'
 os.makedirs('dist/evidence/p6',exist_ok=True)
-with open('dist/evidence/p6/p6-python-oracle.json','w',encoding='utf-8') as f:json.dump(result,f,indent=2);f.write('\n')
-print(json.dumps(result,sort_keys=True))
+with open('dist/evidence/p6/p6-python-oracle.json','w',encoding='utf-8') as f:json.dump({**result,'goldenCorpusId':g['corpusId'],'goldenCorpusDigest':g['corpusDigest']},f,indent=2);f.write('\n')
+print(json.dumps({**result,'goldenCorpusId':g['corpusId'],'goldenCorpusDigest':g['corpusDigest']},sort_keys=True))
