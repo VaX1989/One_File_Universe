@@ -1,0 +1,52 @@
+{
+  "corpusVersion": "golden-p5-environment-v2-corpus-v1",
+  "contractId": "ofu-p5-p6-environment-v2",
+  "contractVersion": "2",
+  "modelVersion": "p5-environment-2",
+  "atmosphereStateContractId": "ofu-p5-atmosphere-state-v2",
+  "semanticManifestHash": "f35801f9cc4f2d44633a39013e135553f10c29cd62308d34b4da31c59a473d3f",
+  "genesisPolicy": "NO_CANONICAL_GENESIS",
+  "corpusDigest": "ac33ba776976d1381a841426fb7e0fbb0276877e98565261bfdec2bca598d7a4",
+  "canonicalPlanet": {
+    "planetId": "b033f4982b774dca5a742108d489c568027252e8381055990994691aa39df8b5",
+    "baselineMassMilliEarth": "1204",
+    "baselinePlanetMassTg": "7190528800000000",
+    "meanRadiusM": "6827303",
+    "surfaceGravityMicroMs2": "10295992",
+    "meanDensityKgM3": "5394",
+    "physicalDigest": "402267561fb311c16f68380afdf066df883eba62b8053d6470401d2eebd86d52"
+  },
+  "shippedCrossRuntimeVector": {
+    "selector": "tests/p5-environment-v2/browser-environment-v2.mjs fixed P3 search window",
+    "planetId": "9e2041b4c8550e86edc574c42cba1bb31224a2ac7a9e8ffaea232310ce24d98e",
+    "physicalDigest": "7532cf9a6d2258031bc3f29f76c8614ea75973367fbe3aaae7a7652755169bc7",
+    "environmentDigest": "f6ecaea013a78f5f7a16acf2a0f2fa33f7f7ec816474df33be9f8b0fa41de0a2"
+  },
+  "pressureCases": [
+    {"name":"ZERO_ATMOSPHERE","atmosphericMassTg":"0","pressurePa":"0"},
+    {"name":"ONE_E18_KG","atmosphericMassTg":"1000000000","pressurePa":"17578"},
+    {"name":"FIVE_E18_KG","atmosphericMassTg":"5000000000","pressurePa":"87888"},
+    {"name":"ONE_E19_KG","atmosphericMassTg":"10000000000","pressurePa":"175776"}
+  ],
+  "radiativeCases": [
+    {"name":"EARTH_NORMALIZED_A030","insolationPpm":"1000000","bondAlbedoPpm":"300000","effectiveTemperatureMilliK":"254578"},
+    {"name":"EARTH_NORMALIZED_BLACK","insolationPpm":"1000000","bondAlbedoPpm":"0","effectiveTemperatureMilliK":"278321"},
+    {"name":"FULL_REFLECTION","insolationPpm":"1000000","bondAlbedoPpm":"1000000","effectiveTemperatureMilliK":"0"},
+    {"name":"ZERO_FORCING","insolationPpm":"0","bondAlbedoPpm":"300000","effectiveTemperatureMilliK":"0"},
+    {"name":"ONE_PPM_BLACK","insolationPpm":"1","bondAlbedoPpm":"0","effectiveTemperatureMilliK":"8801"},
+    {"name":"DOUBLE_EARTH_A030","insolationPpm":"2000000","bondAlbedoPpm":"300000","effectiveTemperatureMilliK":"302746"},
+    {"name":"MAX_P3_INSOLATION_BLACK","insolationPpm":"1000000000000","bondAlbedoPpm":"0","effectiveTemperatureMilliK":"8801295"}
+  ],
+  "epistemicExpectations": {
+    "volatileGenesis": "UNKNOWN",
+    "pressureWithUnknownAtmosphere": "UNKNOWN",
+    "bondAlbedo": "UNKNOWN",
+    "effectiveTemperatureWithoutAlbedo": "UNKNOWN",
+    "surfaceTemperature": "UNSUPPORTED",
+    "greenhouseResponse": "UNSUPPORTED",
+    "waterPhase": "UNSUPPORTED",
+    "xuvEvolution": "UNSUPPORTED",
+    "geologicalActivity": "UNSUPPORTED",
+    "oceanAreaFraction": "UNSUPPORTED"
+  }
+}

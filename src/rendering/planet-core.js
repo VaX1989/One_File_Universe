@@ -57,7 +57,11 @@ function createP5Provider(ctx,physical,{presentationElevationScale=120}={}){
  if(topology.version!=='p5-cube-sphere-topology-1')throw new Error('unsupported canonical P5 terrain topology');
  return Object.freeze({version:'ofu-render-p5-consumer-1',authority:'CONSUMER_ONLY',planetId:P2.hex(physical.planetId),topologyVersion:topology.version,heightSemantic:topology.heightSemantic,presentationElevationScale,physical,topology,getPatch:key=>P5.generateTerrainPatch(ctx,topology,key),refine:key=>P5.refinePatchKey(key)});
 }
-const BASE=[];for(let y=0;y<4;y++)for(let x=0;x<4;x++){const a=y*5+x,b=a+1,c=a+5,d=c+1;BASE.push(a,c,b,b,c,d)}
+// Every cube-face parameterization is right-handed in (u,v), so canonical
+// surface triangles must follow u then v. The former reversed order pointed
+// every base triangle inward and was entirely removed by WebGL back-face
+// culling on conforming implementations.
+const BASE=[];for(let y=0;y<4;y++)for(let x=0;x<4;x++){const a=y*5+x,b=a+1,c=a+5,d=c+1;BASE.push(a,b,c,b,d,c)}
 const EDGES=Object.freeze([[0,1,2,3,4],[4,9,14,19,24],[24,23,22,21,20],[20,15,10,5,0]].map(Object.freeze));
 function primitiveNormal(p){return normalize([Number(p.x),Number(p.y),Number(p.z)])}
 function buildIndexedPatchMesh(provider,key,{skirts=true,skirtFraction=0.0015}={}){

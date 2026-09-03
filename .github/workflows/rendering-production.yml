@@ -4,8 +4,10 @@ on:
   push:
     branches:
       - feature/rendering-hierarchical-planet-integration
+      - feature/rendering-p1-p6-production
       - main
   pull_request:
+    branches: [main]
 
 concurrency:
   group: rendering-production-${{ github.event_name }}-${{ github.event.pull_request.head.ref || github.ref_name }}
@@ -33,9 +35,10 @@ jobs:
       - name: Verify exact source checkout
         shell: bash
         run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
-      - name: Frozen Foundation and P1-P5 regression
+      - name: Frozen Foundation and P1-P6 regression
         run: |
           node tools/validate-foundation.mjs
+          node tests/governance/adr-hygiene.mjs
           node tests/run-node-tests.mjs
           node tests/p1/portable-save-size.mjs
           npm run test:p2
@@ -50,6 +53,17 @@ jobs:
           node tests/p5/run-p5-conformance.mjs
           node tests/integration/p3-p5-contract-tests.mjs
           node tests/integration/p4-p5-static-binding-tests.mjs
+          node tests/p5-environment-v2/run-environment-v2-conformance.mjs
+          node tests/p5-environment-v2/worker-environment-v2.mjs
+          python3 tools/p5_environment_v2_oracle.py
+          node tests/p6/environment-state-conformance.mjs
+          node tests/p6/authority-identity-adversarial.mjs
+          node tests/p6/run-p6-v1.mjs
+          node tests/p6/golden-v1.mjs
+          node tests/p6/save-compatibility.mjs
+          node tests/p6/worker-order.mjs
+          node --expose-gc tests/p6/working-set.mjs
+          python3 tools/p6_oracle.py
       - name: Rendering production node certification
         shell: bash
         run: |
@@ -58,18 +72,20 @@ jobs:
       - name: Reproducible exact-source single file
         shell: bash
         run: |
-          node tools/build-ofu-p5.mjs > /tmp/render-build-1.json
+          node tools/build-ofu-rendering.mjs > /tmp/render-build-1.json
           cp dist/One_File_Universe.html /tmp/render-first.html
-          cp dist/p5-build-manifest.json /tmp/render-manifest-first.json
-          node tools/build-ofu-p5.mjs > /tmp/render-build-2.json
+          cp dist/rendering-build-manifest.json /tmp/render-manifest-first.json
+          node tools/build-ofu-rendering.mjs > /tmp/render-build-2.json
           cmp /tmp/render-first.html dist/One_File_Universe.html
-          cmp /tmp/render-manifest-first.json dist/p5-build-manifest.json
+          cmp /tmp/render-manifest-first.json dist/rendering-build-manifest.json
+          test "$(grep -Eoc '(src|href)=[\"'\'']https?://' dist/One_File_Universe.html)" -eq 0
+          grep -q "connect-src 'none'" dist/One_File_Universe.html
       - uses: actions/upload-artifact@v4
         with:
           name: rendering-production-build-${{ env.OFU_SOURCE_SHA }}
           path: |
             dist/One_File_Universe.html
-            dist/p5-build-manifest.json
+            dist/rendering-build-manifest.json
             dist/evidence/rendering-production/node.json
 
   browser-linux:
@@ -85,7 +101,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24.20.0'
-      - run: node tools/build-ofu-p5.mjs
+      - run: node tools/build-ofu-rendering.mjs
       - run: npm install --no-save playwright@1.62.1
       - run: npx playwright install --with-deps ${{ matrix.browser }}
       - name: Direct file navigation, performance and non-interference
@@ -116,7 +132,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24.20.0'
-      - run: node tools/build-ofu-p5.mjs
+      - run: node tools/build-ofu-rendering.mjs
       - run: npm install --no-save playwright@1.62.1
       - run: npx playwright install ${{ matrix.browser }}
       - name: Direct file navigation and non-interference

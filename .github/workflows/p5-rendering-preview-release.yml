@@ -1,4 +1,4 @@
-name: P5 Rendering Preview Release
+name: P1-P6 Rendering Preview Release
 
 on:
   workflow_run:
@@ -50,15 +50,15 @@ jobs:
           mkdir -p release-input
           gh run download "$SOURCE_RUN_ID" -n "rendering-production-build-$SOURCE_SHA" -D release-input
           test -s release-input/One_File_Universe.html
-          test -s release-input/p5-build-manifest.json
+          test -s release-input/rendering-build-manifest.json
       - name: Rebuild and byte-compare exact source
         shell: bash
         run: |
           cp release-input/One_File_Universe.html /tmp/certified.html
-          cp release-input/p5-build-manifest.json /tmp/certified-manifest.json
-          OFU_SOURCE_SHA="$SOURCE_SHA" node tools/build-ofu-p5.mjs >/tmp/release-rebuild.json
+          cp release-input/rendering-build-manifest.json /tmp/certified-manifest.json
+          OFU_SOURCE_SHA="$SOURCE_SHA" node tools/build-ofu-rendering.mjs >/tmp/release-rebuild.json
           cmp /tmp/certified.html dist/One_File_Universe.html
-          cmp /tmp/certified-manifest.json dist/p5-build-manifest.json
+          cmp /tmp/certified-manifest.json dist/rendering-build-manifest.json
           cp /tmp/certified.html release-input/One_File_Universe.html
       - name: Publish immutable preview release
         shell: bash
@@ -68,7 +68,7 @@ jobs:
           cat > /tmp/release-notes.md <<EOF
           # One File Universe — v0.5.0-preview.1
 
-          Exact-main certified P1–P5 + production rendering preview.
+          First exact-main certified integrated P1–P6 production rendering preview.
 
           - Target SHA: \`$SOURCE_SHA\`
           - Asset: \`One_File_Universe.html\`
@@ -77,9 +77,14 @@ jobs:
           - Runtime: direct \`file://\`, offline, zero required network
           - Rendering baseline: WebGL2; functional Canvas2D fallback
           - Certified matrix: Linux Chromium, Linux Firefox, Linux Playwright WebKit, Windows Chromium, macOS ARM64 Playwright WebKit
+          - Canonical P5 Environment authority: \`ofu-p5-p6-environment-v2\` / schema 2 / \`P5_CANONICAL\`
+          - Canonical P6 state on the preview planet: \`INSUFFICIENT_ENVIRONMENT\`
+          - Canonical biosphere established: **NO**
           - Real Safari/iOS: **NOT_VERIFIED**
           - WebGPU: optional / not required
-          - P5 terrain elevation: dimensionless fictional/stylized code; no physical elevation claim
+          - P5 terrain elevation: dimensionless stylized presentation input; no realistic geological elevation claim
+          - Tier-0 effective radiative temperature is not surface temperature
+          - No claim of canonical oceans, atmospheric genesis, XUV/escape history, plate tectonics, geochemical energy, or naturally generated biospheres
           - GPU bytes reported by the renderer: tracked live allocations, **not** physical driver VRAM telemetry
 
           Historical preview releases and their assets are preserved unchanged.
@@ -95,3 +100,11 @@ jobs:
           mkdir -p /tmp/release-download
           gh release download "$RELEASE_TAG" -p One_File_Universe.html -D /tmp/release-download
           cmp release-input/One_File_Universe.html /tmp/release-download/One_File_Universe.html
+          EXPECTED_SHA="$(sha256sum release-input/One_File_Universe.html | cut -d' ' -f1)"
+          DOWNLOADED_SHA="$(sha256sum /tmp/release-download/One_File_Universe.html | cut -d' ' -f1)"
+          EXPECTED_BYTES="$(stat -c%s release-input/One_File_Universe.html)"
+          DOWNLOADED_BYTES="$(stat -c%s /tmp/release-download/One_File_Universe.html)"
+          test "$DOWNLOADED_SHA" = "$EXPECTED_SHA"
+          test "$DOWNLOADED_BYTES" = "$EXPECTED_BYTES"
+          test "$(git ls-remote origin refs/tags/$RELEASE_TAG | cut -f1)" = "$SOURCE_SHA"
+          printf 'VERIFIED asset=%s bytes=%s sha256=%s target=%s run=%s\n' One_File_Universe.html "$DOWNLOADED_BYTES" "$DOWNLOADED_SHA" "$SOURCE_SHA" "$SOURCE_RUN_ID"

@@ -129,7 +129,7 @@ Baseline + events → current state is deterministic; checkpointed and full repl
 
 ## P5 — Planetology, Terrain & Climate
 
-**P5 v1 CANONICAL CORE — COMPLETE AFTER MERGE + EXACT-MAIN P5 SEAL**  
+**P5 v1 CANONICAL CORE — COMPLETE / CANONICAL / FROZEN**  
 The controlled v1 promotion deliberately closes only the smallest scientifically honest planetary authority that can be frozen without pretending research is settled. The reference P1–P4 release `v0.4.0-preview.1` remains unchanged.
 
 ### Canonical v1 scope
@@ -144,41 +144,112 @@ The controlled v1 promotion deliberately closes only the smallest scientifically
 - compact `ofu-p5-p6-environment-v1` downstream boundary exposing only promoted environmental constraints;
 - P4-owned replay/checkpoint/compaction binding for static P5 genesis facts.
 
+### Advanced P5 Environment v2 canonical successor
+
+**Environment v2 — COMPLETE / CANONICAL / FROZEN.** PR #32 promoted the additive successor `ofu-p5-p6-environment-v2` / `p5-environment-2` without modifying frozen P5 v1 physical, terrain or v1 P5→P6 semantics.
+
+Environment v2 canonically adds:
+
+- explicit epistemic authority/provenance (`KNOWN`, `DERIVED`, `HYPOTHETICAL_MODEL_VALUE`, `UNKNOWN`, `UNSUPPORTED`);
+- `ofu-p5-atmosphere-state-v2` with absolute teragram storage and exact volatile mass conservation;
+- explicit `NO_CANONICAL_GENESIS` rather than promotion of the research volatile prior;
+- deterministic `GLOBAL_SURFACE_COLUMN_PRESSURE` derived from governed retained atmosphere mass plus frozen P5 v1 gravity/radius;
+- corrected Tier-0 radiative effective-temperature law `T_eff=[S(1-A)/(4 sigma)]^(1/4)` with integer/rational canonical numerics and Earth anchor `254.578 K` at Earth-normalized forcing and Bond albedo 0.3;
+- a dedicated P2-validated Environment v2 Semantic Generator Manifest;
+- independent Python oracle, versioned Golden corpus, Worker/query-order invariance, sparse working-set evidence, reproducible build and five-runtime canonical seal.
+
+Frozen Environment v2 evidence:
+
+- Semantic Manifest hash `f35801f9cc4f2d44633a39013e135553f10c29cd62308d34b4da31c59a473d3f`;
+- Golden corpus `golden-p5-environment-v2-corpus-v1` digest `ac33ba776976d1381a841426fb7e0fbb0276877e98565261bfdec2bca598d7a4`;
+- promotion merge `ace38aac27b9098a9c01b390eeaa82933077f4be`, tree `838fc20d0028e77e33f8d54ac5c495e6422a5950`;
+- first exact-main Environment v2 seal run `33737515944` — SUCCESS.
+
+Environment v2 does **not** claim mean surface temperature. Actual Bond albedo remains `UNKNOWN`; greenhouse response, surface temperature, water phase/EOS, XUV evolution, endogenous atmospheric escape, geology/geochemical energy, actual ocean area and physical terrain elevation remain `UNSUPPORTED`. P4 remains sole owner of canonical time, events, replay, checkpoints, compaction and lineage. Future greenhouse/XUV/geology research is routed separately in issues #29, #30 and #31.
+
+Governance closure PR #33 merged as signed commit
+`58d4cbbc3ff8412ddd29a2fa628746b4d8d0557d`; exact-main Environment v2 run
+`33760167600` passed its complete five-runtime aggregate seal. Environment v2 uses
+unique ADR-019, repository ADR hygiene is executable, and Issue #28 is closed.
+
 ### Scientific disposition
 The canonical v1 rocky mass-radius realization is an **EMPIRICALLY_CONSTRAINED / APPROXIMATE** bounded model. The deterministic terrestrial composition refinement is **HYPOTHETICAL / STYLIZED** and is not presented as inferred mineralogy. Gravity/density relationships are **ESTABLISHED / APPROXIMATE** under quantized inputs. Cube-sphere topology is **ESTABLISHED / FORMAL**. The current terrain elevation signal is **FICTIONAL / STYLIZED**, dimensionless and never represented as physical metres.
 
+Environment v2 atmosphere conservation is **ESTABLISHED / FORMAL**; global spherical column pressure and the declared Tier-0 radiative law are **ESTABLISHED / APPROXIMATE** under their explicit assumptions. The rejected volatile genesis prior remains **HYPOTHETICAL / STYLIZED** and is not canonical world fact.
+
 ### Explicitly deferred research
-The following are not silently approximated into canonical truth and remain future P5 research/versioned-extension work:
+The following are not silently approximated into canonical truth and remain future versioned research:
 - water-rich / high-pressure EOS;
 - sub-Neptune, ice-giant and gas-giant radius/evolution families;
-- volatile partition calibration;
-- atmosphere inventory evolution, XUV history/efficiency and calibrated escape;
-- greenhouse coefficients and Tier-2 climate transport calibration;
-- detailed geodynamics/rheology;
+- volatile genesis/partition calibration;
+- atmosphere composition and greenhouse response;
+- mean surface temperature and regional climate transport;
+- XUV history/efficiency and calibrated escape evolution;
+- detailed geodynamics/rheology and geochemical energy;
 - physical terrain elevation scaling, oceans, plates, craters and erosion.
 
-P5 v1 promotes no mutable physical transition contract because no defensible mutable P5 field is in the v1 scope. P4 remains the only canonical time, event ordering, replay, checkpoint, compaction, lineage and archive authority. A future mutable P5 model must introduce a versioned P5 reducer consumed by P4 and independently pass replay/checkpoint/repeated-compaction equivalence before promotion.
+P5 v1 promotes no mutable physical transition contract. Environment v2 likewise promotes no endogenous atmospheric-loss transition generator. P4 remains the only canonical time, event ordering, replay, checkpoint, compaction, lineage and archive authority. A future mutable P5 model must introduce a versioned P5 reducer consumed by P4 and independently pass replay/checkpoint/repeated-compaction equivalence before promotion.
 
 ### Exit gate
-The controlled v1 phase closes only when the actual candidate SHA passes all frozen upstream gates, real P3→P5 preservation, P4 repeated-compaction binding, Golden P5 conformance, evidence isolation, reproducible single-file build and the executed cross-runtime matrix; after merge the same P5 workflow must pass on exact `main`. Unsupported research families do not block v1 closure because they are outside the accepted canonical scope.
+P5 v1 closed after its actual candidate and exact main passed all frozen upstream, P3→P5, P4 binding, Golden, evidence, reproducible-build and cross-runtime gates. Environment v2 closed only after the same preservation discipline plus corrected scientific references, dedicated manifest lineage, independent oracle, Golden Environment corpus, Worker scheduling invariance and the five-runtime Environment seal passed on exact main. Unsupported research families do not block closure because they remain explicitly outside frozen scope.
 
 ---
 
 ## P6 — Biosphere & Evolution
 
-### Objective
-Make life constrained by environment and resources rather than assembled independently.
+**P6 v1 — COMPLETE / CANONICAL / FROZEN WITHIN DECLARED SCOPE.** PR #34
+promoted candidate `b5d0850d46184700e2764a413db59e314ba6ce83` as signed merge
+`79d1817abc446f01825a66db93a2dc16aa379d7b`; both share tree
+`f41cb6b18e6af2289f05e898c44320833366b2c8`. Exact-main P1–P6 run
+`33762589274` passed the complete five-runtime aggregate seal, and Issue #24 is
+closed.
 
-### Deliverables
-- productivity/energy budgets;
-- ecological niches and trophic relationships;
-- morphology/genome generative grammar;
-- evolutionary pressures/history abstraction;
-- extinction/speciation event semantics;
-- semantic simulation LOD.
+P6 v1 consumes only frozen `ofu-p5-p6-environment-v2` / schema `2` /
+`p5-environment-2` / `P5_CANONICAL`. A domain-separated eligibility witness binds
+the complete canonical P5 projection, planet identity, P5 environment digest,
+P5 and P6 Semantic Manifests, P6 eligibility semantics and Model A identity
+policy. A bare `BIOSPHERE_SUPPORTED` label has no authority.
+
+The current real P5 Environment v2 path is honestly
+`INSUFFICIENT_ENVIRONMENT / canGenerateBiosphere=false`. Positive
+`P6_CONFORMANCE_ONLY` fixtures exist only under `tests/p6/`; they are excluded
+from the shipped runtime and cannot create canonical entities, events, saves or
+rendering truth.
+
+P6 v1 freezes:
+
+- deterministic integer energy/productivity/biomass/trophic ceilings;
+- PHOTOTROPHIC / CHEMOTROPHIC / MIXED / UNKNOWN source distinctions;
+- Model A P2 identity derivation for biosphere, lineage and species semantic IDs;
+- MACRO → MESO → MICRO refinement invariants without persistent individuals;
+- a P4-owned genesis guard whose current upstream preconditions accept no event;
+- fail-closed replay/checkpoint/compaction/save semantics for the no-biology state.
+
+Persistent lineage/speciation/extinction transitions are deliberately deferred.
+P6 v1 does not freeze an orphanable pseudo-lineage contract merely to preserve a
+pre-promotion candidate shape. Future positive biology and lineage lifecycle
+semantics require separately versioned scientific authority and a new promotion.
 
 ### Exit gate
-Generated biospheres satisfy energy/constraint invariants and diversity tests; late refinement does not contradict committed ecological facts.
+
+**PASSED.** Material blocker count zero; exact candidate and exact merged `main` both pass
+Foundation, P1–P5, P6 authority/identity/replay, Golden/oracle, deterministic
+single-file build, bounded working-set, Worker-order and five-runtime browser
+certification. Real Safari/iOS remains `NOT_VERIFIED`.
+
+## First P1–P6 production rendering vertical slice
+
+The `v0.5.0-preview.1` integration owns presentation only. It consumes the
+frozen P1–P6 stack, materializes bounded P5 cube-sphere terrain through WebGL2
+with a Canvas2D fallback, and exposes the real P6 result without inventing life:
+`INSUFFICIENT_ENVIRONMENT / canonical biosphere established: NO`.
+
+Its production gate requires outward indexed terrain, same/cross-face and cube
+corner traversal, mixed LOD with presentation-only skirts, exact local-origin
+rebasing, bounded CPU/GPU caches, explicit buffer destruction, context-generation
+recovery, canonical non-interference, deterministic single-file output, direct
+`file://`, offline/zero-required-network execution and five-runtime evidence.
+Timing telemetry is measured evidence, not a byte-deterministic semantic gate.
 
 ---
 
