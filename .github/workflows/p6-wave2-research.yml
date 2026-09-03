@@ -65,6 +65,8 @@ jobs:
       - name: Verify exact source
         shell: bash
         run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Build frozen P5 single-file runtime
+        run: node tools/build-ofu-p5.mjs
       - run: npm install --no-save playwright@1.62.1
       - run: npx playwright install --with-deps ${{ matrix.browser }}
       - run: node tests/p6-research/browser-p6-v2.mjs
@@ -96,6 +98,8 @@ jobs:
       - name: Verify exact source
         shell: bash
         run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Build frozen P5 single-file runtime
+        run: node tools/build-ofu-p5.mjs
       - run: npm install --no-save playwright@1.62.1
       - run: npx playwright install ${{ matrix.browser }}
       - run: node tests/p6-research/browser-p6-v2.mjs
@@ -135,5 +139,6 @@ jobs:
           test "$(jq -r '.manifestHash' evidence/browser-*.json | sort -u | wc -l)" -eq 1
           test "$(jq -r '.biosphereId' evidence/browser-*.json | sort -u | wc -l)" -eq 1
           test "$(jq -r '.primaryProductivityU' evidence/browser-*.json | sort -u | wc -l)" -eq 1
+          test "$(jq -r '.sourceCommit' evidence/browser-*.json | sort -u)" = "$OFU_SOURCE_SHA"
           test "$(jq -r 'select(.hostPlatform=="darwin") | .hostArch' evidence/browser-*.json)" = arm64
           echo 'P6 Wave 2 cross-runtime research evidence PASS (non-canonical)'
