@@ -12,6 +12,8 @@ on:
       - 'tools/p5_environment_v2_oracle.py'
       - 'tools/build-ofu-p5-environment-v2.mjs'
       - 'docs/p5-environment-v2/**'
+      - 'docs/adr/**'
+      - 'tests/governance/adr-hygiene.mjs'
       - 'docs/ROADMAP.md'
       - 'docs/INTEGRATION_MATRIX.md'
       - '.github/workflows/p5-environment-v2-canonical.yml'
@@ -42,6 +44,8 @@ jobs:
         run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
       - name: Foundation P1 P2
         run: node tools/validate-foundation.mjs && node tests/run-node-tests.mjs && node tests/p1/portable-save-size.mjs && npm run test:p2
+      - name: ADR governance hygiene
+        run: node tests/governance/adr-hygiene.mjs
       - name: P3
         run: node tools/p3-evidence.mjs && python3 tools/p3_spatial_oracle.py
       - name: P4

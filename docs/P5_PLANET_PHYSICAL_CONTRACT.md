@@ -1,11 +1,11 @@
-# P5 Planet Physical Contract v1 Candidate
+# P5 Planet Physical Contract v1
 
-**Candidate contract:** `ofu-p5-planet-physical-v1`  
+**Canonical contract:** `ofu-p5-planet-physical-v1`  
 **Model:** `p5-planet-physical-1`  
 **Schema:** `1`  
 **Upstream P3 input:** `ofu-p3-p5-planetary-input-v1` / P3 schema `1` / `P4_T0`  
 **Temporal authority:** `ofu-p4-temporal-v1`  
-**Promotion state:** CANDIDATE ONLY until exact-head review and merge.
+**Promotion state:** **CANONICAL / FROZEN**. Environment v2 is an additive successor boundary and does not alter this v1 authority.
 
 ## 1. Authority boundary
 
@@ -17,7 +17,7 @@ P3 remains authoritative for planet/system/star identity and relations, orbit, a
 
 ## 2. Promoted model scope
 
-The v1 candidate intentionally supports only P3 `TERRESTRIAL` planets whose baseline mass is within **1000–8000 milli-Earth masses** (1–8 Mearth).
+The v1 authority intentionally supports only P3 `TERRESTRIAL` planets whose baseline mass is within **1000–8000 milli-Earth masses** (1–8 Mearth).
 
 Other priors (`VOLATILE_RICH`, `ICE_GIANT`, `GAS_GIANT`) and terrestrial planets outside this mass range return explicit `UNSUPPORTED` results. There is no fallback to a weaker physical family.
 
@@ -99,19 +99,19 @@ The current elevation field is a signed 16-bit **dimensionless stylized code** d
 
 ## 6. P4 binding
 
-This candidate promotes **static P5 genesis facts only**. It therefore does not invent a P5 mutable transition merely to satisfy phase completeness.
+P5 v1 promotes **static P5 genesis facts only**. It therefore does not invent a P5 mutable transition merely to satisfy phase completeness.
 
 - canonical time owner: P4;
 - event identity/order owner: P4;
 - replay/checkpoint/compaction/lineage/archive owner: P4;
-- promoted P5 mutable state: none;
-- P5 transition contract: deferred until a defensible time-evolving physical variable is promoted.
+- promoted P5 mutable state in v1: none;
+- P5 v1 transition contract: none.
 
-Future mutable P5 semantics must be a versioned reducer contract consumed by P4 and must pass replay/checkpoint/repeated-compaction equivalence before promotion.
+Future mutable P5 semantics must be a versioned reducer contract consumed by P4 and must pass replay/checkpoint/repeated-compaction equivalence before promotion. Environment v2 preserves this ownership and promotes no endogenous atmosphere-loss transition generator.
 
 ## 7. Deferred research
 
-The following remain non-canonical:
+The following remain outside frozen P5 v1 physical/terrain semantics:
 
 - water-rich/high-pressure EOS;
 - sub-Neptune, ice-giant and gas-giant radius/evolution families;
@@ -123,12 +123,33 @@ The following remain non-canonical:
 
 `UNSUPPORTED` is the required behavior where a deferred family would otherwise be needed.
 
-## 8. P5 -> P6 boundary
+## 8. P5 -> P6 boundary v1
 
-Candidate contract `ofu-p5-p6-environment-v1` exposes only promoted constraints: planet identity, mean radius, gravity, density and terrain topology version. Pressure, temperature envelope, water/volatile regime, radiation/escape diagnostics, ocean constraints and geological activity are explicitly `UNSUPPORTED` until their P5 models are promoted.
+`ofu-p5-p6-environment-v1` exposes only the original promoted constraints: planet identity, mean radius, gravity, density and terrain topology version. Pressure, temperature envelope, water/volatile regime, radiation/escape diagnostics, ocean constraints and geological activity remain explicitly `UNSUPPORTED` in v1.
 
-This boundary is environmental only. It implements no life or P6 semantics.
+**Environment v2 does not backfill or mutate this v1 projection.**
 
-## 9. Promotion evidence
+## 9. P5 v1 promotion evidence
 
-The candidate is not canonical merely because this document exists. Promotion requires exact-head P5 conformance, real P3 v1 integration, all frozen upstream regressions, reproducible P1–P5 single-file build, evidence isolation, and one identical P5 physical/terrain digest across the declared executed browser/platform matrix. Real Safari/iOS must not be claimed from Playwright WebKit evidence.
+P5 v1 was promoted and exact-main certified before Environment v2. Its Golden physical digest remains `402267561fb311c16f68380afdf066df883eba62b8053d6470401d2eebd86d52`. Environment v2 preservation gates require the v1 physical digest, terrain semantics and `ofu-p5-p6-environment-v1` projection to remain unchanged.
+
+Real Safari/iOS must not be claimed from Playwright WebKit evidence.
+
+## 10. Additive Environment v2 successor
+
+PR #32 introduced the separately versioned canonical successor `ofu-p5-p6-environment-v2` / model `p5-environment-2` without modifying `p5-canonical.js` semantics.
+
+The successor adds:
+
+- explicit epistemic status and authority/provenance;
+- canonical atmosphere conservation schema in absolute teragrams;
+- `NO_CANONICAL_GENESIS` rather than a fabricated volatile prior;
+- deterministic global surface column pressure when governed atmospheric mass exists;
+- corrected deterministic Tier-0 radiative effective-temperature law;
+- a dedicated Environment v2 P2 Semantic Generator Manifest.
+
+Environment v2 exact-main promotion merge `ace38aac27b9098a9c01b390eeaa82933077f4be` / tree `838fc20d0028e77e33f8d54ac5c495e6422a5950` passed Environment certification run `33737515944` including frozen P5 v1 witnesses, independent oracle, Golden corpus, reproducible build and five-runtime cross-runtime seal.
+
+The Environment v2 manifest hash is `f35801f9cc4f2d44633a39013e135553f10c29cd62308d34b4da31c59a473d3f`; Golden corpus digest is `ac33ba776976d1381a841426fb7e0fbb0276877e98565261bfdec2bca598d7a4`.
+
+Surface temperature, greenhouse climate, water phase/EOS, canonical XUV evolution, endogenous atmospheric escape history, geology/geochemical energy and ocean area fraction remain `UNSUPPORTED` in Environment v2.

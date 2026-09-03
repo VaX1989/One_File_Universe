@@ -26,7 +26,10 @@
 | P3 → P5 planetary input | P3 facts / P5 realization | P5 | `ofu-p3-p5-planetary-input-v1` / schema v1 / `P4_T0` | FROZEN | P3 byte identities and baseline mass/orbit/insolation/bulk-prior facts are consumed exactly and never rerolled. Historical v0 is superseded. |
 | P5 Planet Physical Contract | P5 | P6+ | schema v1 / `ofu-p5-planet-physical-v1` / `p5-planet-physical-1` | FROZEN | Canonical v1 is intentionally bounded: 1–8 Mearth `TERRESTRIAL` realization only; unsupported families fail explicitly. |
 | P5 Terrain Topology | P5 | rendering / P6+ | `p5-cube-sphere-topology-1` | FROZEN | Exact P2-addressed cube-sphere patch/vertex identity, seams and refinement topology; no global heightmap and no renderer/GPU authority. |
-| P5 → P6 environmental boundary | P5 | P6 | `ofu-p5-p6-environment-v1` | STABLE_SNAPSHOT | Exposes only promoted environmental constraints; unsupported atmosphere/climate/water/geology fields remain explicit rather than invented. |
+| P5 → P6 environmental boundary v1 | P5 | P6 | `ofu-p5-p6-environment-v1` | FROZEN | Historical v1 boundary remains unchanged and explicitly leaves atmosphere/climate/water/geology unsupported. Environment v2 does not backfill it. |
+| P5 Environment v2 Semantic Manifest | P5 / P2 validation | P5/P6+ | hash `f35801f9cc4f2d44633a39013e135553f10c29cd62308d34b4da31c59a473d3f` | FROZEN | Dedicated generator lineage for Environment v2; P5 v1 manifest is not reused as Environment authority. |
+| P5 Atmosphere State v2 | P5 | P6+ / future P4-bound reducers | `ofu-p5-atmosphere-state-v2` | FROZEN | Absolute Tg state with exact volatile conservation; genesis policy is `NO_CANONICAL_GENESIS`. |
+| P5 → P6 Environment v2 | P5 | P6+ | schema 2 / `ofu-p5-p6-environment-v2` / `p5-environment-2` | FROZEN | Explicit epistemic authority/provenance, deterministic global column pressure and corrected Tier-0 effective-radiative law. Surface temperature, greenhouse, XUV evolution, geology and other deferred domains remain unsupported. |
 
 ## Canonical P1–P5 authority
 
@@ -37,12 +40,12 @@ P3 procedural astronomical baseline at P4 T0
         +
 P4 accepted canonical history
         +
-versioned P5-owned physical realization / future transition semantics
+versioned P5-owned physical/environment realization or future P4-bound transition semantics
         ↓
 Current persistent OFU world
 ```
 
-P5 v1 currently promotes static planetary genesis facts only. No mutable P5 transition contract is promoted because no defensible mutable P5 state is part of v1; P4 remains the sole clock/order/replay/checkpoint/compaction/lineage/archive authority.
+P5 v1 promotes static planetary genesis facts only. Environment v2 adds atmosphere-state schema and deterministic derived laws but promotes no endogenous atmosphere-loss transition and no private clock. P4 remains the sole clock/order/replay/checkpoint/compaction/lineage/archive authority.
 
 Rendering, DOM order, camera state, animation timing, display formatting, presentation `Number` views and caches are presentation only and MUST NOT affect canonical results.
 
@@ -54,13 +57,14 @@ Rendering, DOM order, camera state, animation timing, display formatting, presen
 | P4 | `4710a385d6dc933cb0c5709d68dcc5f8f7dec6ec` | `607affb5ac4ac031cec63790c83d69f6b51c6d7c` | COMPLETE |
 | P1–P4 one-file baseline | `88ec5856740ca514bced02238b75d32565f23071` | `a63575465a737b4b926e9651a2af91b177c0b35b` | CERTIFIED ON MERGED MAIN |
 | P5 v1 controlled promotion | PR #26 / candidate `6d1555a6aaf88d047e7246160bf2e536aeead8f9` / `golden-p5-corpus-v1` | `da14edf1b7d991c011ef8ff07580704ba0219ea1` | COMPLETE / CANONICAL / FROZEN |
-| P5 advanced atmosphere/climate/giant/geodynamics research | `research/p5-planetology` and successors | not promoted | RESEARCH / DEFERRED |
+| Advanced P5 Environment v2 | PR #32 / candidate `7688e9ca8719e1b7f42dcc15d7962f08a76e3e55` / `golden-p5-environment-v2-corpus-v1` | `ace38aac27b9098a9c01b390eeaa82933077f4be` | COMPLETE / CANONICAL / FROZEN |
+| Future greenhouse / XUV-escape / geology | issues #29 / #30 / #31 | not promoted | RESEARCH / DEFERRED |
 
-PR #25 is a historical exact-candidate certification record that was closed unmerged because the draft-to-ready connector path could not be used as the promotion vehicle. PR #26 is the actual controlled-promotion merge vehicle. The certified candidate tree and canonical merge tree are both `a1cae552911011173672478274fd092f56f4dfff`, so the merge introduced no content drift.
+PR #25 is a historical exact-candidate certification record that was closed unmerged because the draft-to-ready connector path could not be used as the promotion vehicle. PR #26 is the actual P5 v1 controlled-promotion merge vehicle. The certified P5 v1 candidate tree and canonical merge tree are both `a1cae552911011173672478274fd092f56f4dfff`, so that merge introduced no content drift.
 
-### P5 exact-main certification
+### P5 v1 exact-main certification
 
-Canonical P5 promotion merge and exact-main certification target:
+Canonical P5 v1 promotion merge and exact-main certification target:
 
 - candidate SHA: `6d1555a6aaf88d047e7246160bf2e536aeead8f9`
 - candidate tree: `a1cae552911011173672478274fd092f56f4dfff`
@@ -77,15 +81,37 @@ Canonical P5 promotion merge and exact-main certification target:
 - candidate full P3 Conformance workflow: run `33654626185` on candidate SHA — SUCCESS
 - candidate full P4 Conformance workflow: run `33654626379` on candidate SHA — SUCCESS
 
-The dedicated P3/P4 workflows do not trigger on pushes to `main`; therefore exact-main P3/P4 execution is provided by the pinned `exact-head` job of the P5 promotion workflow. Full dedicated candidate P3/P4 workflows were also successful, and the canonical merge tree is byte-identical to that candidate tree.
+The dedicated P3/P4 workflows do not trigger on pushes to `main`; therefore exact-main P3/P4 execution for P5 v1 was provided by the pinned `exact-head` job of the P5 promotion workflow. Full dedicated candidate P3/P4 workflows were also successful, and the canonical merge tree is byte-identical to that candidate tree.
 
 P5 run `33688748922` additionally re-established on exact main: the Golden physical vector, real P3 v1 → P5 integration, P4 → static P5 replay/checkpoint/repeated-compaction binding, evidence isolation, reproducible P1–P5 build, bounded working-set evidence, direct `file://` execution, zero required runtime network, and identical shipped-vector results across Linux x64 Chromium, Linux x64 Firefox, Linux x64 Playwright WebKit, Windows x64 Chromium and macOS ARM64 Playwright WebKit. Playwright WebKit is not Safari/iOS certification; real Safari/iOS remains `NOT_VERIFIED`.
 
 The P5 v1 Golden physical digest is `402267561fb311c16f68380afdf066df883eba62b8053d6470401d2eebd86d52`. The shipped cross-runtime vector is physical digest `7532cf9a6d2258031bc3f29f76c8614ea75973367fbe3aaae7a7652755169bc7` and terrain digest `8e96317fa3a1d712b35ef24b9cd9981fb74f0e98145b9472cc823b5d6ffd7b34`.
 
-P5 v1 is therefore **COMPLETE / CANONICAL / FROZEN** with deliberately bounded scope. The P5 → P6 boundary remains **STABLE_SNAPSHOT**, not complete environmental truth. Advanced atmosphere, climate, volatile, giant-planet, geodynamic and physical-terrain models remain **RESEARCH / DEFERRED**.
+### Advanced P5 Environment v2 exact-main certification
 
-The P1–P4 reference release `v0.4.0-preview.1` remains unchanged. P5 promotion does not retroactively redefine that release.
+Environment v2 is an additive successor authority and preserves every frozen P5 v1 witness.
+
+- pre-promotion main: `89e32fd90fc4b56594e78cf3648a0708ff2cfe79`
+- exact certified candidate: `7688e9ca8719e1b7f42dcc15d7962f08a76e3e55`
+- candidate tree: `838fc20d0028e77e33f8d54ac5c495e6422a5950`
+- promotion PR: #32
+- canonical merge SHA: `ace38aac27b9098a9c01b390eeaa82933077f4be`
+- canonical merge tree: `838fc20d0028e77e33f8d54ac5c495e6422a5950`
+- first exact-main Environment v2 certification: run `33737515944` — SUCCESS
+- PR-specific repeated Environment v2 certification: run `33737182149` — SUCCESS
+- exact candidate certification: run `33736791875` — SUCCESS
+- Semantic Manifest hash: `f35801f9cc4f2d44633a39013e135553f10c29cd62308d34b4da31c59a473d3f`
+- Golden corpus: `golden-p5-environment-v2-corpus-v1`
+- Golden digest: `ac33ba776976d1381a841426fb7e0fbb0276877e98565261bfdec2bca598d7a4`
+- shipped Environment digest: `f6ecaea013a78f5f7a16acf2a0f2fa33f7f7ec816474df33be9f8b0fa41de0a2`
+
+Run `33737515944` re-established on exact main Foundation/P1/P2, P3, P4, frozen P5 v1, Environment v2 conformance, Worker scheduling invariance, independent Python oracle, Golden vectors, sparse working-set benchmark, evidence isolation and a reproducible Environment v2 single-file build. The aggregate seal required identical canonical outputs on Linux Chromium, Linux Firefox, Linux Playwright WebKit, Windows Chromium and macOS ARM64 Playwright WebKit. Playwright WebKit is not real Safari/iOS evidence.
+
+Environment v2 chooses `NO_CANONICAL_GENESIS`: the canonical atmosphere schema is real, but arbitrary planets are not assigned fabricated atmospheric mass. The canonical column-pressure law is causal from retained atmosphere mass and frozen P5 v1 gravity/radius. The corrected Tier-0 law produces `254.578 K` for Earth-normalized stellar forcing and Bond albedo 0.3 while explicitly refusing to call that a surface temperature.
+
+P5 v1 and Environment v2 are therefore both **COMPLETE / CANONICAL / FROZEN** within their declared scope. Surface temperature, greenhouse climate, water phase/EOS, canonical XUV evolution, endogenous atmospheric escape, geology/geochemical energy, ocean area fraction, physical terrain elevation and gas-giant environment semantics remain `UNSUPPORTED` or separately `RESEARCH / DEFERRED`.
+
+The P1–P4 reference release `v0.4.0-preview.1` remains unchanged. Neither P5 v1 nor Environment v2 retroactively redefines that release.
 
 ## P3 → P4 executable invariant seal
 
@@ -115,7 +141,7 @@ Certified integrated evidence:
 
 P5 promotion conformance invokes the real P3 `planetaryInputSnapshot()` producer and requires `ofu-p3-p5-planetary-input-v1`, `p3SchemaVersion === 1n` and `baselineEpoch === P4_T0`. It rejects historical v0 input and proves exact preservation of P3-owned byte identities and `BigInt` baseline values.
 
-P5 static-genesis integration then embeds the promoted P5 genesis under P4 and proves full replay == checkpoint replay == repeated-compaction replay while P5 genesis digest is unchanged. The test deliberately does not invent a private P5 clock or mutable transition.
+P5 static-genesis integration then embeds the promoted P5 genesis under P4 and proves full replay == checkpoint replay == repeated-compaction replay while P5 genesis digest is unchanged. Environment v2 continues to reject private P5 time and does not introduce endogenous atmospheric-loss ordering.
 
 Terrain conformance proves exact same-face and cross-face seams, eight cube corners, direct random access, refinement-order independence, `PROJECT(REFINE(parent))`, deterministic `RECONCILE`, bounded per-operation materialization and no global planet heightmap.
 
