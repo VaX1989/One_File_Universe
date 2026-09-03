@@ -1,0 +1,104 @@
+name: Browser Performance Research
+
+on:
+  push:
+    branches:
+      - research/browser-performance-certification
+  workflow_dispatch:
+
+concurrency:
+  group: browser-performance-research-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  OFU_SOURCE_SHA: ${{ github.sha }}
+
+permissions:
+  contents: read
+
+jobs:
+  automated-engine-matrix:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            browser: chromium
+            dpr: '2'
+            expected_backend: webgl2
+            runner_class: github-hosted-linux-x64
+          - os: ubuntu-latest
+            browser: firefox
+            dpr: '1'
+            expected_backend: canvas2d
+            runner_class: github-hosted-linux-x64
+          - os: ubuntu-latest
+            browser: webkit
+            dpr: '1'
+            expected_backend: webgl2
+            runner_class: github-hosted-linux-x64
+          - os: windows-latest
+            browser: chromium
+            dpr: '1'
+            expected_backend: webgl2
+            runner_class: github-hosted-windows-x64
+          - os: macos-latest
+            browser: webkit
+            dpr: '1'
+            expected_backend: webgl2
+            runner_class: github-hosted-macos-arm64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.20.0'
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Build exact-source single file
+        run: node tools/build-ofu-rendering.mjs
+      - name: Install pinned Playwright package
+        run: npm install --no-save playwright@1.62.1
+      - name: Install pinned browser engine
+        run: npx playwright install ${{ runner.os == 'Linux' && '--with-deps' || '' }} ${{ matrix.browser }}
+      - name: Backend-explicit capability probe
+        run: node tests/rendering/browser-capability-probe.mjs
+        env:
+          BROWSER: ${{ matrix.browser }}
+          DPR: ${{ matrix.dpr }}
+          EXPECTED_BACKEND: ${{ matrix.expected_backend }}
+          RUNNER_CLASS: ${{ matrix.runner_class }}
+      - name: Repeated performance characterization
+        run: node tests/rendering/performance-certification.mjs
+        env:
+          BROWSER: ${{ matrix.browser }}
+          DPR: ${{ matrix.dpr }}
+          EXPECTED_BACKEND: ${{ matrix.expected_backend }}
+          PERF_REPEATS: '3'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-performance-${{ runner.os }}-${{ runner.arch }}-${{ matrix.browser }}-${{ env.OFU_SOURCE_SHA }}
+          path: |
+            dist/evidence/browser-performance/
+            dist/evidence/rendering-production/
+
+  classification-seal:
+    if: ${{ always() }}
+    needs: [automated-engine-matrix]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require automated engine matrix
+        shell: bash
+        run: test '${{ needs.automated-engine-matrix.result }}' = success
+      - name: Classification notice
+        shell: bash
+        run: |
+          echo 'Automated engine evidence only.'
+          echo 'Playwright WebKit is NOT Safari certification.'
+          echo 'GitHub-hosted runners are NOT real-device certification.'
+          echo 'Linux Firefox Canvas2D is fallback certification, NOT WebGL2 certification.'
+          echo 'Physical driver VRAM remains NOT_MEASURABLE.'
