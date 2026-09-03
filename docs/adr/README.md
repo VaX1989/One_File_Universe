@@ -20,6 +20,11 @@ ADRs capture decisions with durable semantic consequences. `Accepted` means the 
 | [014](ADR-014-record-verification.md) | Multidimensional record and verification protocol | Accepted |
 | [015](ADR-015-multiscale-identity-query-and-genesis.md) | Multiscale identity, query context and genesis configuration | Accepted |
 | [016](ADR-016-p2-canonical-protocol-v1.md) | P2 canonical value/address/identity/derivation protocol v1 | Accepted for P2 conformance review |
+| [017](ADR-017-p4-temporal-event-replay.md) | P4 canonical time, event ordering and replay | Proposed for P4 ratification |
+| [018](ADR-018-p4-live-frontier-bounded-history.md) | P4 monotonic live frontier, bounded history and transition authority | Proposed for P4 semantic closure |
+| [019](ADR-019-environment-v2-scientific-authority.md) | Environment v2 scientific authority and unknown-first genesis | Accepted |
+| [020](ADR-020-p6-biological-identity-policy-v1.md) | P6 biological identity policy v1 | Accepted upon canonical P6 v1 promotion |
+| [021](ADR-021-p6-environment-witness-and-transition-scope.md) | P6 environment witness and transition scope | Accepted upon canonical P6 v1 promotion |
 
 ## ADR policy
 
@@ -27,3 +32,4 @@ ADRs capture decisions with durable semantic consequences. `Accepted` means the 
 - A breaking semantic change creates a new ADR or explicitly supersedes an old one.
 - Languages, compressors, allocators, exact PRFs and global numeric formats are not frozen merely for architectural neatness; they require P1/P2 evidence.
 - ADR-015 constrains P2 identity/address/query semantics without authorizing production multiscale simulation.
+- ADR filenames and headings use a unique three-digit identifier. `tests/governance/adr-hygiene.mjs` enforces identifier uniqueness, index coverage, heading alignment, explicit status and valid index links.

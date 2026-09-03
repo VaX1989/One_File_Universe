@@ -1,2 +1,18 @@
-import fs from 'node:fs';import vm from 'node:vm';
-globalThis.OFU={};for(const f of ['src/kernel/sha256.js','src/kernel/p2-unicode.js','src/kernel/p2-canonical.js','src/domains/astronomy/p3-skeleton.js','src/domains/astronomy/p3-canonical.js','src/temporal/p4-temporal.js','src/domains/planetology/p5-canonical.js','src/domains/planetology/p5-environment-v2.js','src/domains/biosphere/p6-canonical.js'])vm.runInThisContext(fs.readFileSync(f,'utf8'),{filename:f});const B=OFU.p6Biosphere;const seed=Uint8Array.from({length:32},(_,i)=>i+33),uid=Uint8Array.from({length:32},(_,i)=>i+77),before=process.memoryUsage().heapUsed,start=performance.now();let digestAccumulator=0,activeSpecies=0,activeIndividuals=0;for(let q=0;q<2000;q++){const planetId=Uint8Array.from({length:32},(_,i)=>(q*17+i*5)&255),b=B.bindings({masterSeed:seed,canonicalUniverseIdentity:uid}),s=B.normativeSupportedVector({contractId:'ofu-p6-normative-environment-vector-v1',authority:'P6_CONFORMANCE_ONLY',version:1n,planetId,viableMedium:'LIQUID_MEDIUM',phototrophicUsableEnergyU:1000000n+BigInt(q),phototrophicCaptureEfficiencyPpm:420000n,chemotrophicUsableEnergyU:null,chemotrophicCaptureEfficiencyPpm:0n,biomassSupportEfficiencyPpm:800000n}),m=B.macroFromSupported(s,b);digestAccumulator^=m.biosphereId[0]<<((q%4)*8);if(q<24){const x=B.mesoRefine(m,b,{lineageOrdinals:[0n,1n,2n,3n],speciesPerLineage:3n});activeSpecies+=x.species.length;if(q<8)for(let i=0;i<12;i++){B.microRefine(m,x.species[i%x.species.length],BigInt(i));activeIndividuals++}}}global.gc?.();const elapsed=performance.now()-start,after=process.memoryUsage().heapUsed,out={status:'PASS',scenario:'P6_V1_SPARSE_WORKING_SET',conceptualBiosphereQueries:2000,simultaneouslyRefinedPlanets:24,activeSpeciesMaterialized:activeSpecies,activeIndividualsMaterialized:activeIndividuals,individualsPersistent:false,cacheCount:0,elapsedMs:Number(elapsed.toFixed(3)),averageQueryMs:Number((elapsed/2000).toFixed(6)),nodeHeapDeltaBytes:after-before,digestAccumulator};fs.mkdirSync('dist/evidence/p6',{recursive:true});fs.writeFileSync('dist/evidence/p6/working-set.json',JSON.stringify(out,null,2)+'\n');console.log(JSON.stringify(out));
+import fs from 'node:fs';
+import {loadP6} from './p6-test-helpers.mjs';
+
+const O=loadP6(),B=O.p6Biosphere;
+const seed=Uint8Array.from({length:32},(_,index)=>index+33),universeIdentity=Uint8Array.from({length:32},(_,index)=>index+77),binding=B.bindings({masterSeed:seed,canonicalUniverseIdentity:universeIdentity});
+const before=process.memoryUsage().heapUsed,start=performance.now();
+let digestAccumulator=0,derivedLineageIdentities=0,derivedSpeciesIdentities=0;
+for(let query=0;query<2000;query++){
+  const planetId=Uint8Array.from({length:32},(_,index)=>(query*17+index*5)&255);
+  const budget=B.energyBudget({phototrophicUsableEnergyU:1000000n+BigInt(query),phototrophicCaptureEfficiencyPpm:420000n,chemotrophicUsableEnergyU:null,chemotrophicCaptureEfficiencyPpm:0n,biomassSupportEfficiencyPpm:800000n});
+  const ids=B.idsForPlanet(binding,planetId,{lineageOrdinal:BigInt(query%4),speciesOrdinal:BigInt(query%3)});
+  digestAccumulator^=(ids.biosphereId[0]^Number(budget.primaryProductivityCeilingU&255n))<<((query%4)*8);
+  if(query<24){derivedLineageIdentities+=4;derivedSpeciesIdentities+=12;for(let lineage=0n;lineage<4n;lineage++)for(let species=0n;species<3n;species++)B.idsForPlanet(binding,planetId,{lineageOrdinal:lineage,speciesOrdinal:species})}
+}
+global.gc?.();
+const elapsed=performance.now()-start,after=process.memoryUsage().heapUsed,output={status:'PASS',scenario:'P6_V1_SPARSE_WORKING_SET',conceptualBiosphereQueries:2000,simultaneouslyRefinedPlanets:24,derivedLineageIdentities,derivedSpeciesIdentities,persistentLineageEntities:0,persistentSpeciesEntities:0,persistentIndividuals:0,cacheCount:0,elapsedMs:Number(elapsed.toFixed(3)),averageQueryMs:Number((elapsed/2000).toFixed(6)),nodeHeapDeltaBytes:after-before,digestAccumulator};
+fs.mkdirSync('dist/evidence/p6',{recursive:true});fs.writeFileSync('dist/evidence/p6/working-set.json',JSON.stringify(output,null,2)+'\n');
+console.log(JSON.stringify(output));

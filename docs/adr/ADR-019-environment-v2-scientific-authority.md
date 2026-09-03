@@ -1,6 +1,6 @@
-# ADR-015 — Environment v2 Scientific Authority and Unknown-First Genesis
+# ADR-019 — Environment v2 Scientific Authority and Unknown-First Genesis
 
-**Status:** Accepted upon canonical promotion
+**Status:** Accepted
 
 ## Context
 

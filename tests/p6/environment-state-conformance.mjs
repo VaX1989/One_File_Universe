@@ -1,2 +1,24 @@
-import fs from 'node:fs';import vm from 'node:vm';import assert from 'node:assert/strict';
-globalThis.OFU={};for(const f of ['src/kernel/sha256.js','src/kernel/p2-unicode.js','src/kernel/p2-canonical.js','src/domains/astronomy/p3-skeleton.js','src/domains/astronomy/p3-canonical.js','src/temporal/p4-temporal.js','src/domains/planetology/p5-canonical.js','src/domains/planetology/p5-environment-v2.js','src/domains/biosphere/p6-canonical.js'])vm.runInThisContext(fs.readFileSync(f,'utf8'),{filename:f});const B=OFU.p6Biosphere;assert.equal(B.classifyEnvironmentEvidence({unknown:['pressure'],unsupported:['waterPhase'],insolationKnown:true}),B.STATES.INSUFFICIENT_ENVIRONMENT);assert.equal(B.classifyEnvironmentEvidence({unknown:[],unsupported:['waterPhase'],insolationKnown:true}),B.STATES.UNSUPPORTED_ENVIRONMENT);assert.equal(B.classifyEnvironmentEvidence({unknown:[],unsupported:[],insolationKnown:false}),B.STATES.INSUFFICIENT_ENVIRONMENT);assert.equal(B.classifyEnvironmentEvidence({unknown:[],unsupported:[],insolationKnown:true}),B.STATES.NO_BIOSPHERE);const fake=Object.freeze({adapterVersion:'p6-p5-environment-v2-adapter-1',planetId:new Uint8Array(32),state:B.STATES.UNSUPPORTED_ENVIRONMENT,unknown:Object.freeze([]),unsupported:Object.freeze(['waterPhase'])}),decision=B.eligibility(fake);assert.equal(decision.state,B.STATES.UNSUPPORTED_ENVIRONMENT);assert.equal(decision.canGenerateBiosphere,false);console.log('P6 environment epistemic state conformance: PASS');
+import assert from 'node:assert/strict';
+import {findCanonicalTerrestrial,loadP6} from './p6-test-helpers.mjs';
+
+const O=loadP6(),B=O.p6Biosphere,E=O.p5EnvironmentV2;
+assert.equal(B.classifyEnvironmentEvidence({unknown:['pressure'],unsupported:['waterPhase'],insolationKnown:true}),B.STATES.INSUFFICIENT_ENVIRONMENT);
+assert.equal(B.classifyEnvironmentEvidence({unknown:[],unsupported:['waterPhase'],insolationKnown:true}),B.STATES.UNSUPPORTED_ENVIRONMENT);
+assert.equal(B.classifyEnvironmentEvidence({unknown:[],unsupported:[],insolationKnown:false}),B.STATES.INSUFFICIENT_ENVIRONMENT);
+assert.equal(B.classifyEnvironmentEvidence({unknown:[],unsupported:[],insolationKnown:true}),B.STATES.NO_BIOSPHERE);
+
+const real=findCanonicalTerrestrial(O),projection=E.environmentV2Projection(real.planet,real.topology),adapted=B.adaptEnvironment(projection),witness=B.eligibility(adapted);
+assert.equal(adapted.state,B.STATES.INSUFFICIENT_ENVIRONMENT);
+assert.equal(witness.state,B.STATES.INSUFFICIENT_ENVIRONMENT);
+assert.equal(witness.canGenerateBiosphere,false);
+assert.equal(witness.source.contractId,B.P5_ENV_CONTRACT);
+assert.equal(witness.source.schemaVersion,B.P5_ENV_VERSION);
+assert.equal(witness.source.modelVersion,B.P5_ENV_MODEL);
+assert.equal(witness.source.authority,B.P5_ENV_AUTHORITY);
+assert.ok(adapted.unsupported.includes('waterPhase'));
+assert.ok(adapted.unsupported.includes('geochemicalEnergyAvailability'));
+assert.ok(adapted.unknown.includes('atmosphere'));
+assert.ok(adapted.unknown.includes('pressure'));
+assert.ok(adapted.unknown.includes('bondAlbedo'));
+B.validateEligibilityWitness(witness);
+console.log('P6 environment epistemic state conformance: PASS');

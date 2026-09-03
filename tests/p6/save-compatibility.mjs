@@ -1,4 +1,22 @@
-import fs from 'node:fs';import vm from 'node:vm';import assert from 'node:assert/strict';
-globalThis.OFU={};for(const f of ['src/kernel/sha256.js','src/kernel/canonical.js','src/persistence/save.js','src/kernel/p2-unicode.js','src/kernel/p2-canonical.js','src/domains/astronomy/p3-skeleton.js','src/domains/astronomy/p3-canonical.js','src/temporal/p4-temporal.js','src/domains/planetology/p5-canonical.js','src/domains/planetology/p5-environment-v2.js','src/domains/biosphere/p6-canonical.js'])vm.runInThisContext(fs.readFileSync(f,'utf8'),{filename:f});const O=OFU,P=O.p2,B=O.p6Biosphere,T=O.p4,h=P.hex;
-const oldSeed='11'.repeat(32),oldManifest='22'.repeat(32),legacyText=O.save.exportPortable({masterSeed256:oldSeed,manifestHash:oldManifest,events:[{type:'P5_LEGACY_MARKER',data:{phase:'P5',biology:null}}]}),legacy=O.save.importPortable(legacyText,{masterSeed256:oldSeed,manifestHash:oldManifest});assert.equal(legacy.schemaVersion,1);assert.equal(legacy.events[0].data.biology,null);assert.equal(Object.hasOwn(legacy,'p6'),false);assert.equal(B.renderingProjection(null).state,B.STATES.INSUFFICIENT_ENVIRONMENT);assert.equal(B.renderingProjection(null).biologyEstablished,undefined);
-const uid=Uint8Array.from({length:32},(_,i)=>i),seed=Uint8Array.from({length:32},(_,i)=>i+1),planetId=Uint8Array.from({length:32},(_,i)=>(i*7)&255),bindings=B.bindings({masterSeed:seed,canonicalUniverseIdentity:uid}),supported=B.normativeSupportedVector({contractId:'ofu-p6-normative-environment-vector-v1',authority:'P6_CONFORMANCE_ONLY',version:1n,planetId,viableMedium:'LIQUID_MEDIUM',phototrophicUsableEnergyU:1000000n,phototrophicCaptureEfficiencyPpm:500000n,chemotrophicUsableEnergyU:null,chemotrophicCaptureEfficiencyPpm:0n,biomassSupportEfficiencyPpm:800000n}),ids=B.idsForPlanet(bindings,planetId),lineage=T.lineageId(uid,null,'p6-save'),event=T.canonicalEvent({universeIdentity:uid,lineageId:lineage,time:{seconds:1n,micros:0n},type:'p6.biosphere.genesis',version:1n,operationKey:'genesis',targets:[ids.biosphereId],payload:{biosphereId:ids.biosphereId,planetId,environmentState:supported.state,modelVersion:B.VERSION,manifestHash:B.manifestHash(),identityPolicy:B.IDENTITY_POLICY},causes:[],preconditionStateDigest:null}),baseline={phase:'P6',modelVersion:B.VERSION,manifestHash:B.manifestHash(),p5EnvironmentContract:B.P5_ENV_CONTRACT,p5EnvironmentVersion:B.P5_ENV_VERSION,identityPolicy:B.IDENTITY_POLICY},cp=T.checkpoint({universeIdentity:uid,lineage,baseline,events:[event],transition:B.TRANSITION_CONTRACT}),archive=T.exportArchive({universeIdentity:uid,lineage,baseline,checkpoint:cp,events:[],transition:B.TRANSITION_CONTRACT}),imported=T.importArchive(archive,{transition:B.TRANSITION_CONTRACT}),reopened=T.replayLiveWorld(imported,B.TRANSITION_CONTRACT);assert.equal(reopened.state.entities[h(ids.biosphereId)].status,'ACTIVE');assert.equal(reopened.state.baseline.modelVersion,B.VERSION);assert.equal(reopened.state.baseline.identityPolicy,B.IDENTITY_POLICY);assert.equal(h(reopened.state.baseline.manifestHash),h(B.manifestHash()));assert.throws(()=>T.importArchive(archive),/transition contract/);console.log('P6 save compatibility: PASS');
+import assert from 'node:assert/strict';
+import {findCanonicalTerrestrial,loadP6} from './p6-test-helpers.mjs';
+
+const O=loadP6(),P=O.p2,B=O.p6Biosphere,T=O.p4,E=O.p5EnvironmentV2,h=P.hex;
+const oldSeed='11'.repeat(32),oldManifest='22'.repeat(32),legacyText=O.save.exportPortable({masterSeed256:oldSeed,manifestHash:oldManifest,events:[{type:'P5_LEGACY_MARKER',data:{phase:'P5',biology:null}}]}),legacy=O.save.importPortable(legacyText,{masterSeed256:oldSeed,manifestHash:oldManifest});
+assert.equal(legacy.schemaVersion,1);
+assert.equal(legacy.events[0].data.biology,null);
+assert.equal(Object.hasOwn(legacy,'p6'),false);
+assert.equal(B.renderingProjection(null).state,B.STATES.INSUFFICIENT_ENVIRONMENT);
+assert.equal(B.renderingProjection(null).biologyEstablished,false);
+
+const real=findCanonicalTerrestrial(O),projection=E.environmentV2Projection(real.planet,real.topology),baseline=B.canonicalBaseline(projection),lineage=T.lineageId(real.universeIdentity,null,'p6-save-negative');
+const checkpoint=T.checkpoint({universeIdentity:real.universeIdentity,lineage,baseline,events:[],transition:B.TRANSITION_CONTRACT});
+const archive=T.exportArchive({universeIdentity:real.universeIdentity,lineage,baseline,checkpoint,events:[],transition:B.TRANSITION_CONTRACT});
+const imported=T.importArchive(archive,{transition:B.TRANSITION_CONTRACT}),reopened=T.replayLiveWorld(imported,B.TRANSITION_CONTRACT);
+assert.deepEqual(Object.keys(reopened.state.entities),[]);
+assert.equal(reopened.state.baseline.persistentBiologyEstablished,false);
+assert.equal(reopened.state.baseline.persistentLineageTransitions,'DEFERRED');
+assert.equal(h(reopened.state.baseline.manifestHash),h(B.manifestHash()));
+assert.equal(h(reopened.state.baseline.p5EnvironmentDigest),h(E.environmentDigest(projection)));
+assert.throws(()=>T.importArchive(archive),/transition contract/);
+console.log('P6 save compatibility: PASS');

@@ -2,7 +2,7 @@
 
 Status: **OPEN until exact-head promotion gates pass**
 
-Base: live canonical P5 Environment v2 on `main` (`ace38aac27b9098a9c01b390eeaa82933077f4be`).
+Base: frozen P5 Environment v2 governance merge `58d4cbbc3ff8412ddd29a2fa628746b4d8d0557d`.
 
 ## Material blockers found and disposition
 
@@ -11,6 +11,9 @@ Base: live canonical P5 Environment v2 on `main` (`ace38aac27b9098a9c01b390eeaa8
 3. **Source-module browser evidence could diverge from shipped single-file behavior** — RESOLVED. Browser certification now builds and opens the actual single-file artifact offline.
 4. **Golden vectors were not an explicit exact-head gate** — RESOLVED. The immutable `golden-p6-biosphere-v1` corpus is independently checked in JavaScript and Python.
 5. **Legacy save absence semantics needed direct evidence** — RESOLVED. P1–P5 portable saves remain schema v1 and P6 absence remains absence; P6 mutable history uses P4 archives bound to the P6 transition descriptor and baseline law metadata.
+6. **Conformance-only authority leaked into shipped canonical construction** — RESOLVED. Positive fixtures moved under `tests/p6/`; the shipped runtime contains neither the authority label nor a positive MACRO constructor. Canonical event, save and rendering boundaries reject those fixtures.
+7. **Genesis trusted a payload state label and opaque IDs** — RESOLVED. The reducer now recomputes the exact P5 environment digest, eligibility witness, P4 baseline and Model A P2 biosphere ID. A bare label, tampered projection/digest/manifest/planet or forged ID fails closed.
+8. **Speciation referenced unverifiable pseudo-lineages** — RESOLVED BY SCOPE REDUCTION. No lineage/speciation/extinction reducer is promoted in v1. Persistent lineage lifecycle and parentage require a future versioned contract.
 
 ## Identity adversarial review
 
@@ -24,7 +27,7 @@ Base: live canonical P5 Environment v2 on `main` (`ace38aac27b9098a9c01b390eeaa8
 - No P6 canonical path accepts the historical `p6-environment-research-v0.2` authority.
 - No Earth atmosphere, water, temperature, geology, radiation or chemical-energy default is injected.
 - Current real P5 Environment v2 therefore remains eligible for `INSUFFICIENT_ENVIRONMENT` and `canGenerateBiosphere=false`.
-- Supported-life conformance uses an explicitly separate `P6_CONFORMANCE_ONLY` vector and cannot masquerade as a natural P5 planet.
+- Supported-life conformance exists only in test-only source excluded from the build. The shipped artifact is scanned for the authority label and former positive constructor, and rendering rejects handcrafted positive MACRO data.
 - Chemotrophy is unavailable without explicit usable chemical-energy input.
 - Scientific evidence/fidelity labels remain present in promoted structures and documentation.
 
@@ -48,11 +51,11 @@ P6 owns payload validation and reducer semantics only. The canonical ownership d
 - ownsCompaction
 - ownsLineage
 
-Promoted event families are limited to genesis, speciation and extinction. No canonical biological scheduler or event-rate law is introduced.
+The sole declared family is `p6.biosphere.genesis@1`. It is a complete witness/identity guard, but current P5 Environment v2 cannot satisfy its positive precondition, so it accepts zero canonical events. Speciation and extinction are not promoted. No canonical biological scheduler or event-rate law is introduced.
 
 ## Working-set review
 
-The conformance campaign keeps conceptual queries direct/sparse and bounds simultaneously materialized refinements. MICRO individuals are ephemeral and non-persistent. No global biosphere/species/individual enumeration is required.
+The conformance campaign keeps conceptual queries direct/sparse and bounds simultaneously materialized test refinements. MICRO individuals are ephemeral and non-persistent. No global biosphere/species/individual enumeration is required, and canonical persistent lineage/species counts remain zero.
 
 ## Important non-blockers
 
@@ -70,4 +73,4 @@ Create separate research issues for advanced ecology/evolution, richer P5 chemis
 
 ## Promotion gate
 
-Material blocker count may be declared **0 only after the final exact-head Node, P1–P5 upstream, P5 Environment v2, P6, Golden/oracle, persistence, worker-order, shipped single-file browser matrix and sparse-working-set campaign all pass on the exact candidate head**.
+Material blocker count may be declared **0 only after the final exact-head Node, P1–P5 upstream, P5 Environment v2, P6 authority/identity/replay, Golden/oracle, persistence, worker-order, shipped single-file browser matrix and sparse-working-set campaign all pass on the exact candidate head**. Canonical/frozen status additionally requires the same workflow on the exact merged `main`.

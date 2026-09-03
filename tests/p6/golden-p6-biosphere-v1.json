@@ -1,8 +1,8 @@
 {
   "corpusId": "golden-p6-biosphere-v1",
-  "version": 1,
+  "version": 2,
   "authority": "P6_CONFORMANCE_ONLY",
-  "description": "Normative deterministic P6 v1 conformance vector. It is not a naturally generated canonical planet.",
+  "description": "Test-only deterministic P6 v1 mathematics and identity oracle. It is excluded from the shipped runtime and cannot authorize canonical biology.",
   "inputs": {
     "universeIdentityHexPattern": "byte[i]=255-i, i=0..31",
     "planetIdHexPattern": "byte[i]=(i*3)&255, i=0..31",
@@ -13,20 +13,22 @@
     "viableMedium": "LIQUID_MEDIUM"
   },
   "vectors": {
-    "manifestHash": "e1b6daa67c67b144856d44fe6845590196131a019af35a12d501ca13ac5ad46e",
+    "manifestHash": "2a3593bad3ce921c4f2f9e4282c64dc8fc3906d9c5863a048d14fa8fe541b0c9",
     "biosphereId": "60c60e51926e4ea9851458a80bd20070dba6d1ad50256c66fe08e42f9ec338c7",
     "lineageId": "89e64f323c2af22a8bbb200702a671f23e3a8034f29c9f39a14762d76907d125",
     "speciesId": "aca814ea2ceaaeca23fcac250d417c6ebaa9329ef0bd9234389ed8f90dd2b6f8",
     "primaryProductivityCeilingU": "2100000000",
     "sustainableBiomassCeilingU": "1680000000",
     "trophic100kLevel1U": "210000000",
-    "genesisStateDigest": "d7e358cf14c462c768b4789c4fd24e2746e17e42b37ff70cc76ee1ea525376f0",
-    "eligibilitySupported": "BIOSPHERE_SUPPORTED",
-    "energySource": "PHOTOTROPHIC",
+    "eligibilityContract": "ofu-p6-environment-eligibility-witness-v1",
+    "transitionContract": "ofu.p6.biological-transition@1.0.0",
+    "transitionScope": "GENESIS_GUARD_ONLY_NO_ACCEPTED_P5_V2_PATH",
+    "transitionDigest": "a73dd89e12d7815b4eb297b5e37d584e3db5e8121c60f223c91241cff7890af0",
     "identityPolicy": "p6-biological-identity-model-a-v1",
     "numericContract": "p6-fixed-integer-1",
-    "transitionContract": "ofu.p6.biological-transition@1.0.0"
+    "canonicalGenesisAvailable": false,
+    "persistentLineageTransitions": false
   },
-  "corpusDigest": "4a6aeba70a97d05061b2648bb7a91efd7a68d79378c0708ec0b3eb3a6746df98",
+  "corpusDigest": "1c418401aebcaef62d1ed2ea4f7b6c84440cb6c0e903af35969f7f0794b3e557",
   "digestDefinition": "SHA-256(OFU-CBV-1(vectors))"
 }

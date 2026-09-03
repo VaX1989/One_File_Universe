@@ -1,68 +1,44 @@
 # ADR-020 — P6 Biological Identity Policy v1
 
-Status: **PROMOTION CANDIDATE — becomes ACCEPTED only with canonical P6 v1 merge**
+**Status:** Accepted upon canonical P6 v1 promotion
 
 ## Decision
 
 P6 v1 adopts **Model A** under identity policy `p6-biological-identity-model-a-v1`.
 
-Biological semantic identity is separate from generator realization and model version. Canonical P6 Entity IDs are P2 Entity Identities rooted in the canonical Universe Identity and a semantic stable key that includes the explicit identity-policy version. Generator version and P6 Semantic Manifest hash are recorded in realization/replay provenance and drive P2 addressed derivation, but they are intentionally excluded from semantic Entity ID stable keys.
+Biological semantic identity is separate from generator realization and model version. P2 Entity IDs are rooted in the canonical Universe Identity and a semantic stable key containing the explicit identity-policy version. Generator/model version and the P6 Semantic Manifest hash belong to realization/replay provenance and addressed derivation, not to the Entity ID stable key.
 
-Canonical v1 identity scope is limited to:
+V1 freezes these derivation forms:
 
-- biosphere;
-- lineage;
-- species.
+- biosphere: `{ planetId, identityPolicy }`;
+- lineage: `{ biosphereId, lineageOrdinal, identityPolicy }`;
+- species: `{ lineageId, speciesOrdinal, identityPolicy }`.
 
-Individual identity is **not promoted** in v1. MICRO individuals are bounded, ephemeral refinements with `persistent=false` and `individualIdentityPromoted=false`.
+Only the biosphere identity has a promoted persistent boundary, through the guarded `p6.biosphere.genesis@1` reducer. Current P5 Environment v2 cannot satisfy that reducer's positive precondition. Lineage/species IDs are deterministic semantic-LOD identities, but their persistent lifecycle is deferred. Individual identity is not promoted; MICRO individuals remain bounded ephemeral refinements.
+
+## Reducer verification
+
+A persistent reducer never accepts an identifier merely because it is 32 bytes. The genesis reducer recomputes the expected biosphere P2 Entity ID from the P4 state Universe Identity, witness-bound planet ID and frozen stable key. A mismatch is rejected.
+
+No lineage/species reducer is promoted in v1. Consequently an unknown lineage, cross-biosphere lineage, forged species ID, duplicate species or extinction of an unknown/non-extant species cannot enter canonical P6 state.
 
 ## Adversarial comparison
 
 ### Model A — semantic identity survives model revision
 
-Advantages: stable archive references; stable lineage/species references across generator improvements; explicit migrations only when semantics actually change; avoids identity churn caused by implementation/model revisions.
+Stable archive references and explicit migrations are preserved across ordinary model corrections. A future semantic redefinition requires a new identity-policy version and an explicit mapping where meaningful.
 
-Risk: a future model may redefine what a species/lineage means. This is handled by an explicit identity-policy migration, not by silently changing the generator version in the ID input.
+### Model B — model version is part of identity
 
-### Model B — model version is part of semantic identity
+Rejected because harmless generator or numerical corrections would churn every biological identifier and conflate realization with semantic identity.
 
-Advantage: every model revision creates a clean namespace boundary.
+### Model C — realization hash is identity
 
-Material disadvantage: even non-semantic numerical or generator corrections churn biosphere/lineage/species IDs, break historical references, enlarge migrations and conflate realization with identity.
-
-### Model C — realization hash is the identity
-
-Rejected. It makes identity depend on derivation/model outputs and destroys stable semantic references under harmless implementation/model changes.
-
-## Stable keys
-
-- Biosphere: `{ planetId, identityPolicy }`
-- Lineage: `{ biosphereId, lineageOrdinal, identityPolicy }`
-- Species: `{ lineageId, speciesOrdinal, identityPolicy }`
-
-The P6 generator/model version and Semantic Manifest hash MUST NOT be inserted into those stable keys.
-
-## Derivation separation
-
-All canonical P6 stochastic-looking choices use P2 addressed derivation with the actual P6 Semantic Manifest hash. There is no independent biological seed tree and no global RNG.
-
-Therefore:
-
-`semantic identity != realization derivation != model version`.
-
-## Migration and archive behavior
-
-A future generator/model revision that preserves biological semantics reuses the same identity policy and therefore preserves Entity IDs. Its realization records the new model version/manifest hash.
-
-A future semantic redefinition requires a new identity-policy version and an explicit migration mapping old IDs to new IDs where meaningful. No runtime may silently reinterpret old P6 history under a different transition law, manifest or identity policy.
-
-P4 archive baselines bind P6 model version, P6 manifest hash, P5 Environment contract and P6 identity policy. P4 transition-contract descriptors bind reducer semantics. Unsupported future descriptors fail closed.
-
-Legacy P1–P5 saves contain no P6 history; absence MUST remain absence and MUST NOT be interpreted as a generated biosphere.
+Rejected because it makes identity depend on model output and destroys stable references under non-semantic changes.
 
 ## Consequences
 
-- Stable biological references survive ordinary P6 model upgrades.
-- Irreversible semantic identity changes are explicit governance actions.
-- P6 v1 deliberately avoids premature persistent individual identity.
-- This ADR supersedes the research conclusion of ADR-019 when P6 v1 is canonically merged.
+- Fixed test-vector biosphere/lineage/species IDs remain unchanged by the v1 authority hardening even though the P6 manifest and Golden digest changed.
+- Future persistent lineage semantics require a new ADR and a reducer that proves lifecycle, parentage, biosphere membership and P2 identity.
+- P4 archives bind model, manifest, environment witness and transition law without redefining semantic identity.
+- Absence of P6 history in a legacy save remains absence and never implies generated biology.
