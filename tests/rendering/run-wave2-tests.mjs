@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import {loadP5Runtime,canonicalContext,findPlanet} from '../p5/p5-test-helpers.mjs';
 const O=loadP5Runtime();
 vm.runInThisContext(fs.readFileSync('research/rendering/p5-vertical-slice.js','utf8'),{filename:'research/rendering/p5-vertical-slice.js'});
+vm.runInThisContext(fs.readFileSync('research/rendering/wave2-bounds-fix.js','utf8'),{filename:'research/rendering/wave2-bounds-fix.js'});
 const A=O.p3Astronomy,P5=O.p5Planetology,R=O.renderWave2,ctx=canonicalContext(A);
 const chosen=findPlanet(A,ctx,s=>s.formation.bulkPriorClass==='TERRESTRIAL'&&s.formation.baselineMassMilliEarth>=1000n&&s.formation.baselineMassMilliEarth<=8000n);
 const physical=P5.realizePhysicalPlanet(ctx,P5.adaptP3PlanetaryInputSnapshot(chosen.snapshot));
@@ -35,10 +36,11 @@ for(const face of P5.CUBE_FACES){const m=R.buildIndexedMesh(provider,{face,level
 const audit=P5.auditCubeFaceContinuityAtLevel(ctx,provider.topology,3n);assert.equal(audit.status,'PASS');assert.equal(audit.cornerVertices,8n);
 const session=R.createSession(provider,{maxCacheEntries:6,maxActivePatches:4});
 let keys=R.boundedPatchPlan({face:'PZ',level:4,x:4,y:6,maxPatches:4});
+assert.equal(keys.length,4);
 let s=R.activatePlan(session,keys);assert.equal(s.activePatches,4);assert(s.approxGpuBytes>0);assert(s.retainedCacheEntries<=6);
-for(let i=0;i<12;i++){keys=R.boundedPatchPlan({face:'PZ',level:4,x:i%16,y:(i*3)%16,maxPatches:4});R.activatePlan(session,keys)}
+for(let i=0;i<12;i++){keys=R.boundedPatchPlan({face:'PZ',level:4,x:i%16,y:(i*3)%16,maxPatches:4});assert(keys.length<=4);R.activatePlan(session,keys)}
 s=R.stats(session);assert(s.retainedCacheEntries<=6);assert(s.cache.evictions>0);assert(s.activePatches<=4);
-assert.throws(()=>R.activatePlan(session,R.boundedPatchPlan({face:'PZ',level:3,x:2,y:2,maxPatches:5})),/active patch budget exceeded/);
+const overBudget=R.boundedPatchPlan({face:'PZ',level:3,x:2,y:2,maxPatches:5});assert.equal(overBudget.length,5);assert.throws(()=>R.activatePlan(session,overBudget),/active patch budget exceeded/);
 const base=10n**25n,world=base+1234567n;assert.equal(R.exactLocalDelta(world,base),1234567);assert.throws(()=>R.exactLocalDelta(base+BigInt(Number.MAX_SAFE_INTEGER)+2n,base),/safe presentation range/);
 const split=R.splitBoundedFloat(1234567.125);assert(Math.abs((split[0]+split[1])-1234567.125)<1e-9);
 for(const d of [1e9,1e8,1e7,1e6]){const l=R.chooseLevel({radiusM:Number(physical.physical.meanRadiusM),distanceM:d,maxLevel:10});assert(l>=0&&l<=10)}
@@ -48,7 +50,7 @@ const paths=[
  [{face:'PX',level:3,x:2,y:3},{face:'NY',level:4,x:8,y:4}],
  [{face:'NZ',level:5,x:0,y:31},{face:'PY',level:3,x:7,y:7}]
 ];
-for(const path of paths){for(const p of path){const ks=R.boundedPatchPlan({face:p.face,level:p.level,x:p.x,y:p.y,maxPatches:3});R.activatePlan(session,ks)}assert.deepEqual(R.canonicalWitness(ctx,chosen.key),before)}
+for(const path of paths){for(const p of path){const ks=R.boundedPatchPlan({face:p.face,level:p.level,x:p.x,y:p.y,maxPatches:3});assert(ks.length<=3);R.activatePlan(session,ks)}assert.deepEqual(R.canonicalWitness(ctx,chosen.key),before)}
 session.cache.clear();assert.deepEqual(R.canonicalWitness(ctx,chosen.key),before);
 for(const cadence of [16.6,16.7,33.3,12.1,55.0,8.0,16.2])R.recordFrame(session,cadence);const f=R.frameStats(session);assert.equal(f.samples,7);assert(f.p95>=f.p50);assert.equal(f.longFrames,1);
 const after=R.canonicalWitness(ctx,chosen.key);assert.deepEqual(after,before);
