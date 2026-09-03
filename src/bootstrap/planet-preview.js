@@ -2,7 +2,7 @@
 'use strict';
 const O=root.OFU,C=O&&O.planetRenderCore,G=O&&O.planetWebGL2,A=O&&O.p3Astronomy,P5=O&&O.p5Planetology;
 if(!C||!G||!A||!P5||typeof document==='undefined')return;
-function previewSelection(){const spec=O.BASELINE_BUILD?.rendering?.previewPlanetKey;if(!spec)throw new Error('certified preview planet selector missing from build manifest');const key=Object.freeze(Object.fromEntries(Object.entries(spec).map(([k,v])=>[k,BigInt(v)]))),snapshot=A.planetaryInputSnapshot({masterSeed:Uint8Array.from({length:32},(_,i)=>i),semanticManifestHash:A.semanticManifestHash()},key);if(snapshot.status!=='PRESENT')throw new Error('certified preview planet is no longer PRESENT');return{key,snapshot}}
+function previewSelection(){const spec=O.BASELINE_BUILD?.rendering?.previewPlanetKey;if(!spec)throw new Error('certified preview planet selector missing from build manifest');const key=Object.freeze(Object.fromEntries(Object.entries(spec).map(([k,v])=>[k,BigInt(v)]))),snapshot=A.planetaryInputSnapshot({masterSeed:Uint8Array.from({length:32},(_,i)=>i),semanticManifestHash:A.semanticManifestHash()},key);if(snapshot.status==='ABSENT')throw new Error('certified preview planet became ABSENT');return{key,snapshot}}
 function boot(){
  const canvas=document.getElementById('planet-view');if(!canvas)return;
  const masterSeed=Uint8Array.from({length:32},(_,i)=>i),ctx={masterSeed,semanticManifestHash:A.semanticManifestHash()},chosen=previewSelection(),adapted=P5.adaptP3PlanetaryInputSnapshot(chosen.snapshot),physical=P5.realizePhysicalPlanet(ctx,adapted);if(physical.status!=='SUPPORTED')throw new Error('preview P5 realization unsupported');
