@@ -16,6 +16,12 @@
     "meanDensityKgM3": "5394",
     "physicalDigest": "402267561fb311c16f68380afdf066df883eba62b8053d6470401d2eebd86d52"
   },
+  "shippedCrossRuntimeVector": {
+    "selector": "tests/p5-environment-v2/browser-environment-v2.mjs fixed P3 search window",
+    "planetId": "9e2041b4c8550e86edc574c42cba1bb31224a2ac7a9e8ffaea232310ce24d98e",
+    "physicalDigest": "7532cf9a6d2258031bc3f29f76c8614ea75973367fbe3aaae7a7652755169bc7",
+    "environmentDigest": "f6ecaea013a78f5f7a16acf2a0f2fa33f7f7ec816474df33be9f8b0fa41de0a2"
+  },
   "pressureCases": [
     {"name":"ZERO_ATMOSPHERE","atmosphericMassTg":"0","pressurePa":"0"},
     {"name":"ONE_E18_KG","atmosphericMassTg":"1000000000","pressurePa":"17578"},
