@@ -1,0 +1,97 @@
+name: P5 Rendering Preview Release
+
+on:
+  workflow_run:
+    workflows: ["Rendering Production"]
+    types: [completed]
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  publish:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'main'
+    runs-on: ubuntu-latest
+    env:
+      SOURCE_SHA: ${{ github.event.workflow_run.head_sha }}
+      SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
+      RELEASE_TAG: v0.5.0-preview.1
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.20.0'
+      - name: Require exact certified main
+        shell: bash
+        run: |
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          LIVE_MAIN="$(git ls-remote origin refs/heads/main | cut -f1)"
+          test "$LIVE_MAIN" = "$SOURCE_SHA"
+      - name: Refuse tag or release overwrite
+        shell: bash
+        run: |
+          if git ls-remote --tags origin "refs/tags/$RELEASE_TAG" | grep -q .; then
+            echo "Refusing to overwrite existing tag $RELEASE_TAG" >&2
+            exit 1
+          fi
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            echo "Refusing to overwrite existing release $RELEASE_TAG" >&2
+            exit 1
+          fi
+      - name: Download exact-main certified artifact
+        shell: bash
+        run: |
+          mkdir -p release-input
+          gh run download "$SOURCE_RUN_ID" -n "rendering-production-build-$SOURCE_SHA" -D release-input
+          test -s release-input/One_File_Universe.html
+          test -s release-input/p5-build-manifest.json
+      - name: Rebuild and byte-compare exact source
+        shell: bash
+        run: |
+          cp release-input/One_File_Universe.html /tmp/certified.html
+          cp release-input/p5-build-manifest.json /tmp/certified-manifest.json
+          OFU_SOURCE_SHA="$SOURCE_SHA" node tools/build-ofu-p5.mjs >/tmp/release-rebuild.json
+          cmp /tmp/certified.html dist/One_File_Universe.html
+          cmp /tmp/certified-manifest.json dist/p5-build-manifest.json
+          cp /tmp/certified.html release-input/One_File_Universe.html
+      - name: Publish immutable preview release
+        shell: bash
+        run: |
+          ARTIFACT_SHA="$(sha256sum release-input/One_File_Universe.html | cut -d' ' -f1)"
+          ARTIFACT_BYTES="$(stat -c%s release-input/One_File_Universe.html)"
+          cat > /tmp/release-notes.md <<EOF
+          # One File Universe — v0.5.0-preview.1
+
+          Exact-main certified P1–P5 + production rendering preview.
+
+          - Target SHA: \`$SOURCE_SHA\`
+          - Asset: \`One_File_Universe.html\`
+          - Bytes: \`$ARTIFACT_BYTES\`
+          - SHA-256: \`$ARTIFACT_SHA\`
+          - Runtime: direct \`file://\`, offline, zero required network
+          - Rendering baseline: WebGL2; functional Canvas2D fallback
+          - Certified matrix: Linux Chromium, Linux Firefox, Linux Playwright WebKit, Windows Chromium, macOS ARM64 Playwright WebKit
+          - Real Safari/iOS: **NOT_VERIFIED**
+          - WebGPU: optional / not required
+          - P5 terrain elevation: dimensionless fictional/stylized code; no physical elevation claim
+          - GPU bytes reported by the renderer: tracked live allocations, **not** physical driver VRAM telemetry
+
+          Historical preview releases and their assets are preserved unchanged.
+          EOF
+          gh release create "$RELEASE_TAG" release-input/One_File_Universe.html --target "$SOURCE_SHA" --title "One File Universe v0.5.0-preview.1" --notes-file /tmp/release-notes.md --prerelease
+      - name: Verify published release target and asset digest
+        shell: bash
+        run: |
+          gh release view "$RELEASE_TAG" --json tagName,targetCommitish,isPrerelease > /tmp/release.json
+          test "$(jq -r .tagName /tmp/release.json)" = "$RELEASE_TAG"
+          test "$(jq -r .targetCommitish /tmp/release.json)" = "$SOURCE_SHA"
+          test "$(jq -r .isPrerelease /tmp/release.json)" = true
+          mkdir -p /tmp/release-download
+          gh release download "$RELEASE_TAG" -p One_File_Universe.html -D /tmp/release-download
+          cmp release-input/One_File_Universe.html /tmp/release-download/One_File_Universe.html
