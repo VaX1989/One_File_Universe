@@ -8,19 +8,18 @@ p6+='\nglobalThis.P6W2={P6_STATES,P6_IDENTITY_POLICY,semanticManifestHash,canoni
 await page.addScriptTag({content:p6});
 const result=await page.evaluate(()=>{
   const P=OFU.p2,A=OFU.p3Astronomy,P5=OFU.p5Planetology,X=P6W2,seed=Uint8Array.from({length:32},(_,i)=>i),ctx={masterSeed:seed,semanticManifestHash:A.semanticManifestHash()};
+  // Reuse the bounded browser search window already exercised by canonical P5 cross-runtime conformance.
   let chosen=null;
-  outer:for(let gi=0;gi<30000;gi++){
-    const gk={x:BigInt((gi%120)-60),y:BigInt((Math.floor(gi/120)%120)-60),z:BigInt(Math.floor(gi/14400)-1)},g=A.resolveGalaxy(ctx,gk);if(g.status!=='PRESENT')continue;
-    const base={galaxyX:gk.x,galaxyY:gk.y,galaxyZ:gk.z};
-    for(let i=0n;i<100000n;i++){
-      const k={...base,sectorX:0n,sectorY:0n,sectorZ:0n,siteX:i%512n,siteY:(i/512n)%512n,siteZ:(i/(512n*512n))%512n},sys=A.resolveSystem(ctx,k);if(sys.status!=='PRESENT'||sys.facts.planetCount===0n)continue;
-      for(let slot=0n;slot<sys.facts.planetCount;slot++){
-        const key={...k,orbitSlot:slot},s=A.planetaryInputSnapshot(ctx,key);if(s.status==='PRESENT'&&s.formation.bulkPriorClass==='TERRESTRIAL'&&s.formation.baselineMassMilliEarth>=1000n&&s.formation.baselineMassMilliEarth<=8000n){chosen={key,s};break outer}
-      }
+  outer:for(let y=0n;y<16n;y++)for(let x=0n;x<512n;x++){
+    const base={galaxyX:48n,galaxyY:-50n,galaxyZ:-1n,sectorX:0n,sectorY:0n,sectorZ:0n,siteX:x,siteY:y,siteZ:0n},sys=A.resolveSystem(ctx,base);if(sys.status!=='PRESENT'||sys.facts.planetCount===0n)continue;
+    for(let slot=0n;slot<sys.facts.planetCount;slot++){
+      const key={...base,orbitSlot:slot},s=A.planetaryInputSnapshot(ctx,key);if(s.status==='PRESENT'&&s.formation.bulkPriorClass==='TERRESTRIAL'&&s.formation.baselineMassMilliEarth>=1000n&&s.formation.baselineMassMilliEarth<=8000n){chosen={key,s};break outer}
     }
   }
-  if(!chosen)throw new Error('no supported planet');
-  const planet=P5.realizePhysicalPlanet(ctx,P5.adaptP3PlanetaryInputSnapshot(chosen.s)),topology=P5.createTerrainTopology(planet),projection=P5.p6EnvironmentalProjection(planet,topology),canonical=X.adaptP5EnvironmentV1(X.canonicalP5SourceEnvelope(P5,projection)),minimum=X.evaluateCanonicalMinimum(canonical);
+  if(!chosen)throw new Error('no bounded terrestrial P3 planet found in canonical browser search window');
+  const adapted=P5.adaptP3PlanetaryInputSnapshot(chosen.s);if(!P5.assertP3BaselinePreserved(chosen.s,adapted))throw new Error('P3 baseline preservation failed');
+  const planet=P5.realizePhysicalPlanet(ctx,adapted);if(planet.status!=='SUPPORTED')throw new Error('P5 physical realization unexpectedly unsupported');
+  const topology=P5.createTerrainTopology(planet),projection=P5.p6EnvironmentalProjection(planet,topology),canonical=X.adaptP5EnvironmentV1(X.canonicalP5SourceEnvelope(P5,projection)),minimum=X.evaluateCanonicalMinimum(canonical);
   const ext=X.adaptP5ResearchExtensionV02({version:'p6-environment-research-v0.2',authority:'P5_RESEARCH_DRAFT',planetId:chosen.s.planetId,environmentalEpochRef:'BROWSER_RESEARCH_T0',energy:{baselineInsolationPpm:Number(chosen.s.orbit.baselineInsolationPpm)},temperature:{meanK:288,minSeasonalK:250,maxSeasonalK:315,highLatitudeSeasonalityK:45},atmosphere:{pressurePa:101325,columnEquivalentPressurePa:101325,pressureInterpretation:'RESEARCH',heavyGasRetentionProxy:0.9,xuvEscapeKgS:1000},solvent:{surfaceWaterRegime:'LIQUID_SURFACE_CAPABLE',deepWaterRegime:'RESEARCH'},geology:{activityProxy:0.4,regimeProxy:'RESEARCH'},terrain:{oceanFractionPpm:500000,reliefScaleM:4000},radiation:{xuvFractionProxy:0.00001}}),env=X.composeResearchEnvironment(canonical,ext),uid=P.universeIdentity(seed,ctx.semanticManifestHash).digest,mh=X.semanticManifestHash(P),bindings=X.createP2BiosphereBindings({p2:P,masterSeed:seed,p6SemanticManifestHash:mh,canonicalUniverseIdentity:uid}),macro=X.generateBiosphereMacro(env,bindings),indexes=Array.from({length:Math.min(4,macro.commitments.lineageCount)},(_,i)=>i),meso=X.materializeMeso(env,macro,bindings,{lineageIndexes:indexes,speciesPerLineage:2});
   const browserHeapUsedBytes=globalThis.performance&&performance.memory&&Number.isFinite(performance.memory.usedJSHeapSize)?performance.memory.usedJSHeapSize:null;
   return {status:'PASS',browser:navigator.userAgent,browserHeapUsedBytes,planetId:P.hex(chosen.s.planetId),manifestHash:P.hex(mh),canonicalState:canonical.state,minimumCanGenerate:minimum.canGenerateBiosphere,biosphereId:P.hex(macro.biosphereId),lineages:meso.lineages.map(x=>P.hex(x.lineageId)).sort(),species:meso.species.map(x=>P.hex(x.speciesId)).sort(),primaryProductivityU:macro.productivity.primaryProductivityU};
