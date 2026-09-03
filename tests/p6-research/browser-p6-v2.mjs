@@ -13,10 +13,12 @@ try{
   const result=await page.evaluate(()=>{
     const P=OFU.p2,A=OFU.p3Astronomy,P5=OFU.p5Planetology,X=P6W2,seed=Uint8Array.from({length:32},(_,i)=>i),ctx={masterSeed:seed,semanticManifestHash:A.semanticManifestHash()};
     let chosen=null;
+    // Exact selector semantics from tests/p5/browser-p5.mjs: only ABSENT is excluded.
     outer:for(let y=0n;y<16n;y++)for(let x=0n;x<512n;x++){
       const base={galaxyX:48n,galaxyY:-50n,galaxyZ:-1n,sectorX:0n,sectorY:0n,sectorZ:0n,siteX:x,siteY:y,siteZ:0n},sys=A.resolveSystem(ctx,base);if(sys.status!=='PRESENT'||sys.facts.planetCount===0n)continue;
       for(let slot=0n;slot<sys.facts.planetCount;slot++){
-        const key={...base,orbitSlot:slot},s=A.planetaryInputSnapshot(ctx,key);if(s.status==='PRESENT'&&s.formation.bulkPriorClass==='TERRESTRIAL'&&s.formation.baselineMassMilliEarth>=1000n&&s.formation.baselineMassMilliEarth<=8000n){chosen={key,s};break outer}
+        const key={...base,orbitSlot:slot},s=A.planetaryInputSnapshot(ctx,key);if(s.status==='ABSENT')continue;
+        if(s.formation.bulkPriorClass==='TERRESTRIAL'&&s.formation.baselineMassMilliEarth>=1000n&&s.formation.baselineMassMilliEarth<=8000n){chosen={key,s};break outer}
       }
     }
     if(!chosen)throw new Error('no bounded terrestrial P3 planet found in shipped canonical browser search window');
