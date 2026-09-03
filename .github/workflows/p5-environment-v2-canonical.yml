@@ -1,0 +1,159 @@
+name: P5 Environment v2 Canonical Promotion
+
+on:
+  push:
+    branches:
+      - feature/p5-environment-v2-canonical
+      - main
+    paths:
+      - 'src/domains/planetology/p5-environment-v2.js'
+      - 'tests/p5-environment-v2/**'
+      - 'tests/vectors/golden-p5-environment-v2-corpus.json'
+      - 'tools/p5_environment_v2_oracle.py'
+      - 'tools/build-ofu-p5-environment-v2.mjs'
+      - 'docs/p5-environment-v2/**'
+      - 'docs/ROADMAP.md'
+      - 'docs/INTEGRATION_MATRIX.md'
+      - '.github/workflows/p5-environment-v2-canonical.yml'
+  pull_request:
+
+concurrency:
+  group: p5-env-v2-${{ github.event_name }}-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+permissions:
+  contents: read
+
+jobs:
+  exact-head:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: '${{ env.OFU_SOURCE_SHA }}'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24.20.0'}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Foundation P1 P2
+        run: node tools/validate-foundation.mjs && node tests/run-node-tests.mjs && node tests/p1/portable-save-size.mjs && npm run test:p2
+      - name: P3
+        run: node tools/p3-evidence.mjs && python3 tools/p3_spatial_oracle.py
+      - name: P4
+        run: node tests/p4/run-p4-tests.mjs && node tests/p4/semantic-closure-tests.mjs && node tests/p4/archive-lineage-tests.mjs && node tests/p4/checkpoint-authority-tests.mjs
+      - name: Frozen P5 v1
+        run: node tests/p5/run-p5-conformance.mjs && node tests/integration/p3-p5-contract-tests.mjs
+      - name: Environment v2 conformance and Golden corpus
+        run: node tests/p5-environment-v2/run-environment-v2-conformance.mjs
+      - name: Independent Python oracle
+        run: python3 tools/p5_environment_v2_oracle.py
+      - name: Sparse working-set benchmark
+        shell: bash
+        run: |
+          mkdir -p dist/evidence/p5-environment-v2
+          node --expose-gc tests/p5-environment-v2/benchmark-environment-v2.mjs | tee dist/evidence/p5-environment-v2/node-performance.json
+      - name: Evidence isolation
+        run: node tests/integration/evidence-isolation-generic.mjs
+      - name: Reproducible Environment v2 single-file build
+        shell: bash
+        run: |
+          node tools/build-ofu-p5-environment-v2.mjs > /tmp/build-first.json
+          cp dist/One_File_Universe.html /tmp/One_File_Universe.first.html
+          cp dist/p5-environment-v2-build-manifest.json /tmp/build-manifest.first.json
+          node tools/build-ofu-p5-environment-v2.mjs > /tmp/build-second.json
+          cmp /tmp/One_File_Universe.first.html dist/One_File_Universe.html
+          cmp /tmp/build-manifest.first.json dist/p5-environment-v2-build-manifest.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: p5-env-v2-build-${{ env.OFU_SOURCE_SHA }}
+          path: |
+            dist/One_File_Universe.html
+            dist/p5-environment-v2-build-manifest.json
+            dist/evidence/p5-environment-v2/node-performance.json
+
+  browser-linux:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: {browser: [chromium, firefox, webkit]}
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: '${{ env.OFU_SOURCE_SHA }}'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24.20.0'}
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - run: node tools/build-ofu-p5-environment-v2.mjs
+      - run: npm install --no-save playwright@1.62.1
+      - run: npx playwright install --with-deps ${{ matrix.browser }}
+      - run: node tests/p5-environment-v2/browser-environment-v2.mjs
+        env: {BROWSER: '${{ matrix.browser }}'}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: p5-env-v2-linux-x64-${{ matrix.browser }}-${{ env.OFU_SOURCE_SHA }}
+          path: dist/evidence/p5-environment-v2/
+
+  browser-platform:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {os: windows-latest, browser: chromium}
+          - {os: macos-latest, browser: webkit}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: '${{ env.OFU_SOURCE_SHA }}'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24.20.0'}
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - run: node tools/build-ofu-p5-environment-v2.mjs
+      - run: npm install --no-save playwright@1.62.1
+      - run: npx playwright install ${{ matrix.browser }}
+      - run: node tests/p5-environment-v2/browser-environment-v2.mjs
+        env: {BROWSER: '${{ matrix.browser }}'}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: p5-env-v2-${{ runner.os }}-${{ runner.arch }}-${{ matrix.browser }}-${{ env.OFU_SOURCE_SHA }}
+          path: dist/evidence/p5-environment-v2/
+
+  seal:
+    if: ${{ always() }}
+    needs: [exact-head, browser-linux, browser-platform]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every Environment v2 gate
+        shell: bash
+        run: |
+          test '${{ needs.exact-head.result }}' = success
+          test '${{ needs.browser-linux.result }}' = success
+          test '${{ needs.browser-platform.result }}' = success
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: p5-env-v2-*-${{ env.OFU_SOURCE_SHA }}
+          path: evidence
+          merge-multiple: true
+      - name: Require exact cross-runtime canonical agreement
+        shell: bash
+        run: |
+          count=$(find evidence -name 'browser-*.json' -type f | wc -l)
+          test "$count" -eq 5
+          test "$(jq -r '.status' evidence/browser-*.json | sort -u)" = PASS
+          test "$(jq -r '.goldenCorpusVersion' evidence/browser-*.json | sort -u)" = golden-p5-environment-v2-corpus-v1
+          test "$(jq -r '.manifestHash' evidence/browser-*.json | sort -u | wc -l)" -eq 1
+          test "$(jq -r '.environmentDigest' evidence/browser-*.json | sort -u | wc -l)" -eq 1
+          test "$(jq -r '.physicalDigest' evidence/browser-*.json | sort -u | wc -l)" -eq 1
+          test "$(jq -r '.artifactSha256' evidence/browser-*.json | sort -u | wc -l)" -eq 1
+          test "$(jq -r '.earthAnchorMilliK' evidence/browser-*.json | sort -u)" = 254578
+          test "$(jq -r 'select(.platform=="darwin") | .arch' evidence/browser-*.json)" = arm64
+          echo 'P5 Environment v2 exact-head cross-runtime seal PASS'
