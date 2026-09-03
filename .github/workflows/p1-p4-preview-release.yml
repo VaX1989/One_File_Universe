@@ -4,96 +4,40 @@ on:
   workflow_run:
     workflows: ["P1-P4 Canonical Baseline"]
     types: [completed]
+  workflow_dispatch:
 
+# Historical release. Verify only; never delete, recreate, retarget or upload.
 permissions:
-  contents: write
+  contents: read
   actions: read
 
 jobs:
-  publish:
-    if: >-
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.head_branch == 'main' &&
-      contains(github.event.workflow_run.head_commit.message, '[p1-p4-release]')
+  verify-historical-release:
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ github.token }}
-      OFU_RELEASE_TAG: v0.4.0-preview.1
-      OFU_RELEASE_SHA: ${{ github.event.workflow_run.head_sha }}
-      OFU_BASELINE_RUN_ID: ${{ github.event.workflow_run.id }}
+      RELEASE_TAG: v0.4.0-preview.1
+      RELEASE_SOURCE_SHA: 5b088e079684627ccdb24c7bc7eec924b1cf1f12
+      RELEASE_ASSET_BYTES: '144116'
+      RELEASE_ASSET_SHA256: c9a6d74ceddaaac77c7ba21e5d867f6803096d8451f6b382d9238bcb15cce253
     steps:
-      - name: Checkout certified source
-        uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          ref: ${{ env.OFU_RELEASE_SHA }}
-      - name: Verify exact certified source
-        shell: bash
-        run: test "$(git rev-parse HEAD)" = "$OFU_RELEASE_SHA"
-      - name: Download exact certified P1-P4 build
-        shell: bash
-        run: gh run download "$OFU_BASELINE_RUN_ID" -n "p1-p4-certified-build-$OFU_RELEASE_SHA" -D release-build
-      - name: Verify release inputs and compose evidence seal
+          ref: ${{ env.RELEASE_SOURCE_SHA }}
+      - name: Verify historical release metadata and tag
         shell: bash
         run: |
-          node <<'NODE'
-          const fs=require('node:fs');
-          const crypto=require('node:crypto');
-          const {execFileSync}=require('node:child_process');
-          const build=JSON.parse(fs.readFileSync('release-build/p1-p4-build-manifest.json','utf8'));
-          const html=fs.readFileSync('release-build/One_File_Universe.html');
-          const p4=JSON.parse(fs.readFileSync('release-build/evidence/p4/p4-node-replay.json','utf8'));
-          const sha=crypto.createHash('sha256').update(html).digest('hex');
-          const source=process.env.OFU_RELEASE_SHA;
-          const tree=execFileSync('git',['rev-parse','HEAD^{tree}'],{encoding:'utf8'}).trim();
-          function req(ok,msg){if(!ok)throw new Error(msg)}
-          req(build.sourceCommit===source,'build source SHA mismatch');
-          req(build.status==='PASS','build status is not PASS');
-          req(build.artifact==='One_File_Universe.html','unexpected release artifact');
-          req(build.artifactSha256===sha,'HTML SHA mismatch');
-          req(build.artifactBytes===html.length,'HTML byte-count mismatch');
-          req(build.runtime.strictSingleFile===true && build.runtime.directFile===true && build.runtime.offline===true && build.runtime.networkRequired===false,'runtime contract mismatch');
-          req(build.p2.canonicalBytes==='OFU-CBV-1','P2 canonical-byte pin mismatch');
-          req(build.p3.schemaVersion===1 && build.p3.modelVersion==='p3-astronomy-1' && build.p3.baselineEpoch==='P4_T0','P3 pin mismatch');
-          req(build.p4.protocol==='ofu-p4-temporal-v1' && build.p4.transitionContract==='ofu.p4.core-transition@1.0.0','P4 pin mismatch');
-          req(p4.sourceCommit===source && p4.status==='PASS','P4 evidence source/status mismatch');
-          const notes=`# One File Universe P1–P4 Canonical Baseline Preview\n\nFirst genuinely explorable canonical OFU preview containing the deterministic P2 authority, canonical P3 sparse Universe Skeleton and canonical P4 Temporal Kernel inside one strict direct-open HTML artifact.\n\n## Certified source\n\n- main/source SHA: \`${source}\`\n- source tree: \`${tree}\`\n- P1–P4 Canonical Baseline run: \`${process.env.OFU_BASELINE_RUN_ID}\`\n- baseline seal: \`PASS\`\n\n## Artifact\n\n- asset: \`One_File_Universe.html\`\n- SHA-256: \`${sha}\`\n- bytes: \`${html.length}\`\n- Component Manifest Hash: \`${build.componentManifestHash}\`\n- strict single file: \`true\`\n- direct \`file://\`: \`true\`\n- runtime network required: \`false\`\n\n## Canonical P2 pins\n\n- canonical bytes: \`${build.p2.canonicalBytes}\`\n- Golden Corpus Digest: \`${build.p2.corpusDigest}\`\n- Kernel Digest: \`${build.p2.kernelDigest}\`\n- Semantic Manifest Hash: \`${build.p2.semanticManifestHash}\`\n- reference Universe Identity: \`${build.p2.universeIdentity}\`\n- Unicode profile: \`${build.p2.unicodeProfile.version}\` / ${build.p2.unicodeProfile.rangeCount} ranges / \`${build.p2.unicodeProfile.rangeSha256}\`\n\n## Canonical P3 pins\n\n- schema: \`v${build.p3.schemaVersion}\`\n- model: \`${build.p3.modelVersion}\`\n- baseline epoch: \`${build.p3.baselineEpoch}\`\n- Golden P3 corpus digest: \`${build.p3.corpusDigest}\`\n- semantic manifest hash: \`${build.p3.semanticManifestHash}\`\n\n## Canonical P4 pins\n\n- temporal protocol: \`${build.p4.protocol}\`\n- transition contract: \`${build.p4.transitionContract}\`\n- transition contract digest: \`${p4.golden.transitionContractDigest}\`\n- Golden mutable state digest: \`${p4.golden.stateDigest}\`\n- cross-runtime mutable state digest: \`${p4.crossRuntime.stateDigest}\`\n- event schema: \`v${build.p4.eventSchemaVersion}\`; checkpoint schema: \`v${build.p4.checkpointSchemaVersion}\`; archive schema: \`v${build.p4.archiveSchemaVersion}\`\n\n## Executed shipped-artifact matrix\n\n- Linux x64 Chromium: PASS\n- Linux x64 Firefox: PASS\n- Linux x64 WebKit: PASS\n- Windows x64 Chromium: PASS\n- macOS ARM64 WebKit: PASS\n\nThe baseline also runs Foundation/P1/P2/P3/P4 regressions, P2→P4 and executable P3→P4 integration, evidence isolation, and byte-for-byte reproducible full builds. Playwright WebKit is WebKit conformance evidence, not Safari certification. Real Safari/iOS remain NOT_VERIFIED.\n\n## Scope / limitations\n\n- P5 planetology remains research and is not canonical in this preview.\n- Biosphere, civilization and production multiscale rendering are not included.\n- \`core.field.set\` in the inspector is explicitly a P4 temporal-kernel diagnostic, not planetary physics.\n- Presentation state (DOM order, UI state, formatting, animation/camera/cache state) has no canonical authority.\n`;
-          fs.writeFileSync('release-notes.md',notes);
-          fs.writeFileSync('release-expected-sha.txt',sha+'\n');
-          fs.writeFileSync('release-expected-bytes.txt',String(html.length)+'\n');
-          fs.writeFileSync('release-component-manifest-hash.txt',build.componentManifestHash+'\n');
-          fs.writeFileSync('release-source-tree.txt',tree+'\n');
-          NODE
-      - name: Publish preview at exact certified source
+          test "$(git rev-parse HEAD)" = "$RELEASE_SOURCE_SHA"
+          gh release view "$RELEASE_TAG" --json tagName,targetCommitish,isPrerelease,isDraft > /tmp/release.json
+          test "$(jq -r .tagName /tmp/release.json)" = "$RELEASE_TAG"
+          test "$(jq -r .targetCommitish /tmp/release.json)" = "$RELEASE_SOURCE_SHA"
+          test "$(jq -r .isPrerelease /tmp/release.json)" = true
+          test "$(jq -r .isDraft /tmp/release.json)" = false
+          test "$(git ls-remote origin refs/tags/$RELEASE_TAG | cut -f1)" = "$RELEASE_SOURCE_SHA"
+      - name: Verify historical asset bytes
         shell: bash
         run: |
-          if gh release view "$OFU_RELEASE_TAG" >/dev/null 2>&1; then
-            gh release delete "$OFU_RELEASE_TAG" --cleanup-tag --yes
-          fi
-          gh release create "$OFU_RELEASE_TAG" release-build/One_File_Universe.html \
-            --target "$OFU_RELEASE_SHA" \
-            --title "One File Universe P1–P4 Canonical Baseline Preview" \
-            --notes-file release-notes.md \
-            --prerelease
-      - name: Verify published release asset bytes
-        shell: bash
-        run: |
-          rm -rf release-verify && mkdir release-verify
-          gh release download "$OFU_RELEASE_TAG" -p One_File_Universe.html -D release-verify --clobber
-          test "$(sha256sum release-verify/One_File_Universe.html | awk '{print $1}')" = "$(tr -d '\n' < release-expected-sha.txt)"
-          test "$(wc -c < release-verify/One_File_Universe.html | tr -d ' ')" = "$(tr -d '\n' < release-expected-bytes.txt)"
-          cmp -s release-build/One_File_Universe.html release-verify/One_File_Universe.html
-          printf '\n## Release asset verification\n\n- status: **PASS**\n- downloaded release asset SHA-256: `%s`\n- downloaded release asset bytes: `%s`\n- byte-identical to certified P1–P4 build artifact: `true`\n' \
-            "$(tr -d '\n' < release-expected-sha.txt)" \
-            "$(tr -d '\n' < release-expected-bytes.txt)" >> release-notes.md
-          gh release edit "$OFU_RELEASE_TAG" --notes-file release-notes.md
-          cp release-verify/One_File_Universe.html release-redownload.html
-      - uses: actions/upload-artifact@v4
-        with:
-          name: p1-p4-release-verification-${{ env.OFU_RELEASE_SHA }}
-          path: |
-            release-notes.md
-            release-expected-sha.txt
-            release-expected-bytes.txt
-            release-component-manifest-hash.txt
-            release-source-tree.txt
-            release-redownload.html
+          mkdir -p /tmp/release
+          gh release download "$RELEASE_TAG" -p One_File_Universe.html -D /tmp/release
+          test "$(sha256sum /tmp/release/One_File_Universe.html | cut -d' ' -f1)" = "$RELEASE_ASSET_SHA256"
+          test "$(stat -c%s /tmp/release/One_File_Universe.html)" = "$RELEASE_ASSET_BYTES"
