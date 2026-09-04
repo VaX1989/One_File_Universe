@@ -9,7 +9,7 @@ const read=rel=>fs.readFileSync(path.join(root,rel),'utf8').replace(/\r\n?/g,'\n
 const artifactPath=path.join(root,'dist','One_File_Universe.html');
 const manifestPath=path.join(root,'dist','rendering-build-manifest.json');
 const fragmentPaths=['src/bootstrap/product/workspace-nav.html','src/bootstrap/product/viewport.html','src/bootstrap/product/explore-panel.html','src/bootstrap/product/inspect-panel.html','src/bootstrap/product/lab-panel.html'];
-const scriptPaths=['src/bootstrap/product/selection-bridge.js','src/rendering/planet-framing.js','src/bootstrap/product/explore-navigation.js','src/bootstrap/product/inspector-product.js','src/bootstrap/product/mobile-interaction.js','src/bootstrap/product/lab-technical.js','src/bootstrap/product/explorer-beta-core.js','src/bootstrap/product/explorer-beta.js'];
+const scriptPaths=['src/bootstrap/product/selection-bridge.js','src/rendering/planet-framing.js','src/bootstrap/product/explore-navigation.js','src/bootstrap/product/inspector-product.js','src/bootstrap/product/mobile-interaction.js','src/bootstrap/product/lab-technical.js','src/bootstrap/product/explorer-beta-core.js','src/bootstrap/product/explorer-scene-adapter.js','src/bootstrap/product/inspector-beta.js','src/bootstrap/product/explorer-beta.js'];
 const stylePaths=['src/bootstrap/product/mobile.css','src/bootstrap/product/explorer-beta.css'];
 const productSourcePaths=[...fragmentPaths,...scriptPaths,...stylePaths];
 
