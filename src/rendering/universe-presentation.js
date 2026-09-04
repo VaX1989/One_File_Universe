@@ -1,17 +1,17 @@
 (function(root){
 'use strict';
 const O=root.OFU=root.OFU||{};
-const AUTHORITY='PRESENTATION_ONLY',VERSION='ofu-visual-universe-presentation-2';
+const AUTHORITY='PRESENTATION_ONLY',VERSION='ofu-visual-universe-presentation-3';
 const BODY_CLASSES=Object.freeze(['TERRESTRIAL','VOLATILE_RICH','ICE_GIANT','GAS_GIANT']);
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const finite=(v,f=0)=>Number.isFinite(Number(v))?Number(v):f;
 const freezeRgb=v=>Object.freeze(v.map(x=>clamp(finite(x),0,1)));
 const PALETTES=Object.freeze({
- TERRESTRIAL:Object.freeze({family:'TERRESTRIAL_MINERAL',primary:freezeRgb([0.46,0.42,0.33]),secondary:freezeRgb([0.16,0.22,0.24]),accent:freezeRgb([0.72,0.58,0.38]),marker:'#b99b63',bandingCue:0.05,macroVariation:0.82}),
- VOLATILE_RICH:Object.freeze({family:'VOLATILE_RICH_NEUTRAL',primary:freezeRgb([0.36,0.50,0.58]),secondary:freezeRgb([0.18,0.26,0.33]),accent:freezeRgb([0.68,0.76,0.78]),marker:'#78a2b4',bandingCue:0.34,macroVariation:0.66}),
- ICE_GIANT:Object.freeze({family:'ICE_GIANT_RESTRAINED',primary:freezeRgb([0.40,0.62,0.72]),secondary:freezeRgb([0.20,0.36,0.48]),accent:freezeRgb([0.72,0.83,0.86]),marker:'#79b5cb',bandingCue:0.72,macroVariation:0.52}),
- GAS_GIANT:Object.freeze({family:'GAS_GIANT_RESTRAINED',primary:freezeRgb([0.69,0.49,0.30]),secondary:freezeRgb([0.28,0.20,0.27]),accent:freezeRgb([0.90,0.72,0.48]),marker:'#c18c51',bandingCue:0.88,macroVariation:0.60}),
- UNKNOWN:Object.freeze({family:'UNCLASSIFIED_NEUTRAL',primary:freezeRgb([0.44,0.46,0.50]),secondary:freezeRgb([0.17,0.19,0.24]),accent:freezeRgb([0.66,0.61,0.72]),marker:'#9894a8',bandingCue:0.18,macroVariation:0.58})
+ TERRESTRIAL:Object.freeze({family:'TERRESTRIAL_MINERAL',primary:freezeRgb([0.28,0.40,0.43]),secondary:freezeRgb([0.075,0.11,0.16]),accent:freezeRgb([0.74,0.52,0.24]),marker:'#71949a',bandingCue:0.08,macroVariation:0.92}),
+ VOLATILE_RICH:Object.freeze({family:'VOLATILE_RICH_NEUTRAL',primary:freezeRgb([0.30,0.56,0.68]),secondary:freezeRgb([0.08,0.18,0.30]),accent:freezeRgb([0.72,0.88,0.91]),marker:'#65b0c8',bandingCue:0.45,macroVariation:0.78}),
+ ICE_GIANT:Object.freeze({family:'ICE_GIANT_RESTRAINED',primary:freezeRgb([0.32,0.68,0.82]),secondary:freezeRgb([0.08,0.22,0.46]),accent:freezeRgb([0.78,0.92,0.96]),marker:'#70c5db',bandingCue:0.72,macroVariation:0.64}),
+ GAS_GIANT:Object.freeze({family:'GAS_GIANT_RESTRAINED',primary:freezeRgb([0.76,0.55,0.25]),secondary:freezeRgb([0.20,0.08,0.22]),accent:freezeRgb([0.96,0.78,0.46]),marker:'#d39a45',bandingCue:0.95,macroVariation:0.72}),
+ UNKNOWN:Object.freeze({family:'UNCLASSIFIED_NEUTRAL',primary:freezeRgb([0.38,0.38,0.58]),secondary:freezeRgb([0.10,0.12,0.22]),accent:freezeRgb([0.72,0.60,0.82]),marker:'#8988bd',bandingCue:0.20,macroVariation:0.68})
 });
 function bodyClassOf(input){const f=input?.facts||input?.upstreamBaseline?.formation||input?.formation||{};const raw=String(f.bulkPriorClass??f.compositionClass??input?.bulkPriorClass??'UNKNOWN').toUpperCase();return BODY_CLASSES.includes(raw)?raw:'UNKNOWN'}
 function presentationDescriptorForBody(input){
