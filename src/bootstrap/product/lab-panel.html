@@ -1,0 +1,97 @@
+<section class="workspace-panel" data-workspace-panel="lab" tabindex="-1" aria-labelledby="lab-heading" hidden>
+  <div class="panel-title">
+    <div>
+      <h2 id="lab-heading">Lab / technical</h2>
+      <p>Canonical evidence, temporal diagnostics, archive/replay, and presentation engineering.</p>
+    </div>
+    <button class="action-button secondary" type="button" data-open-workspace="explore">Back</button>
+  </div>
+
+  <section class="section" data-lab-section-id="canonical-evidence" tabindex="-1" aria-labelledby="lab-canonical-heading">
+    <h3 id="lab-canonical-heading">Canonical evidence</h3>
+    <p class="semantic-note">Raw identifiers and records are shown here for verification. This view reads existing canonical state; it does not create a second source of truth.</p>
+    <div class="metric-grid">
+      <div class="metric-card"><span>Entity type</span><strong id="lab-entity-type">not resolved</strong></div>
+      <div class="metric-card"><span>Entity Identity</span><strong id="lab-entity-id">not resolved</strong></div>
+      <div class="metric-card"><span>Baseline fact digest</span><strong id="lab-entity-digest">not resolved</strong></div>
+      <div class="metric-card"><span>Universe Identity</span><strong id="universe-id">pending</strong></div>
+      <div class="metric-card"><span>P3 canonical model</span><strong id="p3-version">pending</strong></div>
+      <div class="metric-card"><span>Deterministic re-query</span><strong id="lab-requery-status">not run</strong></div>
+    </div>
+    <div class="row" style="margin-top:.65rem">
+      <button id="lab-open-sparse-query" type="button">Open sparse direct query</button>
+      <button id="lab-requery" type="button">Verify deterministic re-query</button>
+    </div>
+    <p class="semantic-note">The sparse resolver remains owned by the shared Inspector service in this parallel lane. Lab links to it rather than duplicating canonical query state.</p>
+    <details class="raw-details" open>
+      <summary>Canonical address</summary>
+      <pre id="lab-canonical-address">Resolve a canonical entity first.</pre>
+    </details>
+    <details class="raw-details">
+      <summary>Raw canonical record</summary>
+      <pre id="lab-canonical-record">Resolve a canonical entity first.</pre>
+    </details>
+    <details class="raw-details">
+      <summary>Canonical provenance</summary>
+      <pre id="lab-canonical-provenance">Resolve a canonical entity first.</pre>
+    </details>
+  </section>
+
+  <section class="section" data-lab-section-id="temporal-laboratory" tabindex="-1" aria-labelledby="lab-temporal-heading">
+    <h3 id="lab-temporal-heading">Temporal laboratory</h3>
+    <p class="danger-note">Diagnostic P4 mutable overlay only. <strong>core.field.set</strong> is a temporal-kernel test event, not planetary physics.</p>
+    <div class="metric-grid">
+      <div class="metric-card"><span>P4 protocol</span><strong id="p4-version">pending</strong></div>
+      <div class="metric-card"><span>Last Event ID</span><strong id="event-id">none</strong></div>
+      <div class="metric-card"><span>Mutable state digest</span><strong id="world-digest">none</strong></div>
+    </div>
+    <div class="row" style="margin-top:.65rem">
+      <button id="world-create" type="button">Create live world</button>
+      <button id="event-submit" type="button">Submit typed event</button>
+      <button id="world-checkpoint" type="button">Checkpoint / compact / replay</button>
+    </div>
+    <pre id="temporal-output">Resolve a canonical entity first.</pre>
+  </section>
+
+  <section class="section" data-lab-section-id="archive-replay" tabindex="-1" aria-labelledby="lab-archive-heading">
+    <h3 id="lab-archive-heading">Archive / replay</h3>
+    <p class="semantic-note">Portable P4 archive validation and replay remain delegated to the canonical P4 service. Import is validation-first and does not reinterpret planetary science.</p>
+    <div class="row">
+      <button id="archive-export" type="button">Export archive</button>
+      <button id="archive-import" type="button">Validate and import</button>
+    </div>
+    <label for="archive">OFU-CBV-1 archive (hex)
+      <textarea id="archive" spellcheck="false" autocomplete="off"></textarea>
+    </label>
+    <pre id="archive-output">No archive exported.</pre>
+  </section>
+
+  <section class="section" data-lab-section-id="rendering-diagnostics" tabindex="-1" aria-labelledby="lab-rendering-heading">
+    <h3 id="lab-rendering-heading">Rendering diagnostics</h3>
+    <p class="danger-note">Presentation engineering evidence only. Camera, LOD, backend, GPU, and working-set metrics are not canonical planetary facts and cannot mutate canonical state.</p>
+    <div class="metric-grid">
+      <div class="metric-card"><span>Target continuity</span><strong id="lab-target-continuity">pending</strong></div>
+      <div class="metric-card"><span>Derived scale regime</span><strong id="render-scale">pending</strong></div>
+      <div class="metric-card"><span>Continuous distance</span><strong id="render-distance">pending</strong></div>
+      <div class="metric-card"><span>Terrain working set</span><strong id="render-patches">pending</strong></div>
+      <div class="metric-card"><span>GPU registry</span><strong id="render-gpu">pending</strong></div>
+      <div class="metric-card"><span>Backend</span><strong id="render-backend">pending</strong></div>
+      <div class="metric-card"><span>Depth strategy</span><strong id="render-depth">pending</strong></div>
+    </div>
+    <div class="row" style="margin-top:.65rem"><button id="lab-refresh-rendering" type="button">Refresh diagnostic snapshot</button></div>
+    <details class="raw-details">
+      <summary>Raw renderer snapshot</summary>
+      <pre id="lab-renderer-snapshot">Renderer snapshot not available yet.</pre>
+    </details>
+  </section>
+
+  <section class="section" data-lab-section-id="artifact-integrity" tabindex="-1" aria-labelledby="lab-integrity-heading">
+    <h3 id="lab-integrity-heading">Artifact integrity</h3>
+    <p class="semantic-note">Build and component integrity establish what code is running. They are technical provenance, not scientific observations.</p>
+    <div class="metric-grid">
+      <div class="metric-card"><span>Artifact integrity</span><strong id="integrity">checking...</strong></div>
+      <div class="metric-card"><span>Source SHA</span><strong id="source-sha">pending</strong></div>
+    </div>
+    <details class="raw-details"><summary>Build provenance and component integrity</summary><pre id="provenance">pending</pre></details>
+  </section>
+</section>

@@ -1,0 +1,61 @@
+<section class="workspace-panel" data-workspace-panel="explore" tabindex="-1" aria-labelledby="explore-heading">
+  <div class="panel-title">
+    <div>
+      <p class="eyebrow">Current system</p>
+      <h2 id="explore-heading">Explore</h2>
+      <p id="explore-orientation">Find your place, choose a world, then move closer.</p>
+    </div>
+  </div>
+
+  <div class="section" aria-labelledby="explore-system-heading">
+    <div class="panel-title">
+      <div>
+        <h3 id="explore-system-heading">System overview</h3>
+        <p id="explore-system-summary">Reading the canonical system…</p>
+      </div>
+    </div>
+    <p class="semantic-note" id="explore-layout-note">This map shows canonical relationships and orbit order. Spacing is a navigation aid, not a claim about physical orbital geometry.</p>
+    <div id="explore-system-map" aria-live="polite">
+      <div class="fact"><strong>Primary star</strong><span id="explore-star-summary">Reading host-star context…</span></div>
+      <ol id="explore-target-list" aria-label="Planets in this system"></ol>
+    </div>
+    <div class="panel-actions" aria-label="Target navigation">
+      <button class="action-button secondary" type="button" data-explore-relative="-1">Previous world</button>
+      <button class="action-button secondary" type="button" data-explore-relative="1">Next world</button>
+      <button class="action-button secondary" type="button" id="explore-next-system" data-explore-system="1">Explore another system</button>
+    </div>
+  </div>
+
+  <div class="section" aria-labelledby="explore-selected-heading">
+    <p class="eyebrow">Selected world</p>
+    <h3 id="explore-selected-heading">Finding target…</h3>
+    <p id="explore-selected-context">Canonical identity is being resolved.</p>
+    <p class="semantic-note" id="explore-selection-status">Visualization status pending.</p>
+    <div class="panel-actions">
+      <button class="action-button" type="button" id="explore-go" data-explore-action="approach">Approach selected world</button>
+      <button class="action-button secondary" type="button" data-open-workspace="inspect">Inspect this world</button>
+    </div>
+  </div>
+
+  <div class="section" aria-labelledby="explore-scale-heading">
+    <h3 id="explore-scale-heading">Move through scale</h3>
+    <p id="explore-stage-note" class="semantic-note">System — understand the relationship map before moving closer.</p>
+    <div class="scale-actions" role="group" aria-label="Exploration scale">
+      <button class="action-button secondary" type="button" data-explore-stage="system" aria-pressed="true">System</button>
+      <button class="action-button secondary" type="button" data-explore-stage="orbit" aria-pressed="false">Orbit</button>
+      <button class="action-button secondary" type="button" data-explore-stage="approach" aria-pressed="false">Approach</button>
+      <button class="action-button secondary" type="button" data-explore-stage="close" aria-pressed="false">Close</button>
+    </div>
+  </div>
+
+  <details class="section">
+    <summary>About this view</summary>
+    <p class="semantic-note">Explore reads canonical system and object relationships. It does not create scientific facts. If a world cannot be visualized, the world remains a valid canonical target and the limitation is stated rather than filled with invented atmosphere, oceans, weather, geology, life, or topography.</p>
+    <p class="semantic-note">“Explore another system” follows a bounded canonical site-order navigation rule. It is a product navigation order, not a claim that systems are physically nearest in space.</p>
+    <p class="semantic-note">Close rendering detail is presentation-only unless Inspect identifies a canonical scientific property that supports a stronger claim.</p>
+  </details>
+
+  <span id="render-planet" hidden>pending</span>
+  <span id="science-environment" hidden>pending</span>
+  <span id="science-biology" hidden>pending</span>
+</section>

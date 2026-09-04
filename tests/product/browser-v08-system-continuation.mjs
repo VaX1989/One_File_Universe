@@ -1,0 +1,40 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import process from 'node:process';
+import {pathToFileURL} from 'node:url';
+import {chromium,firefox,webkit} from 'playwright';
+
+const browserName=process.env.BROWSER||'chromium';
+const engine={chromium,firefox,webkit}[browserName];
+if(!engine)throw new Error('unknown browser '+browserName);
+const file=path.resolve('dist/One_File_Universe.html');
+if(!fs.existsSync(file))throw new Error('build artifact missing');
+const browser=await engine.launch({headless:true});
+const page=await browser.newPage({viewport:{width:1440,height:900}});
+const errors=[];page.on('pageerror',e=>errors.push(String(e.message||e).slice(0,500)));
+try{
+ await page.goto(pathToFileURL(file).href,{waitUntil:'load'});
+ await page.waitForFunction(()=>OFU?.v08ExploreNavigation?.state?.ready&&OFU?.inspectorTest?.state?.current?.type==='Planet'&&__OFU_PLANET_PREVIEW__?.targetStatus==='SUPPORTED',undefined,{timeout:30000});
+ const before=await page.evaluate(()=>{const O=OFU,N=O.v08ExploreNavigation,P=__OFU_PLANET_PREVIEW__,A=O.p3Astronomy,target=N.state.targets[N.state.selectedIndex],planet=A.resolvePlanet(P.ctx,target.key);return{systemId:O.p2.hex(N.state.system.id),systemDigest:O.p2.hex(A.digestFact(N.state.system)),planetId:O.p2.hex(planet.id),planetDigest:O.p2.hex(A.digestFact(planet)),siteX:String(target.key.siteX),targetCount:N.state.targets.length,scanLimit:N.SYSTEM_SCAN_LIMIT}});
+ if(before.scanLimit!==64)throw new Error('bounded system scan limit drift '+before.scanLimit);
+ await page.click('#explore-next-system');
+ await page.waitForFunction(id=>OFU.v08ExploreNavigation.state.lastSystemId&&OFU.p2.hex(OFU.v08ExploreNavigation.state.system.id)!==id,before.systemId,{timeout:20000});
+ await page.waitForFunction(()=>{const O=OFU,N=O.v08ExploreNavigation,P=__OFU_PLANET_PREVIEW__,I=O.inspectorTest?.state?.current,target=N.state.targets[N.state.selectedIndex];return target&&I?.type==='Planet'&&['galaxyX','galaxyY','galaxyZ','sectorX','sectorY','sectorZ','siteX','siteY','siteZ','orbitSlot'].every(k=>String(target.key[k])===String(P.chosen?.key?.[k])&&String(target.key[k])===String(I.key?.[k]));},{timeout:20000});
+ const after=await page.evaluate(()=>{const O=OFU,N=O.v08ExploreNavigation,P=__OFU_PLANET_PREVIEW__,I=O.inspectorTest.state.current,A=O.p3Astronomy,target=N.state.targets[N.state.selectedIndex],planet=A.resolvePlanet(P.ctx,target.key),oldSystem=A.resolveSystem(P.ctx,{galaxyX:48n,galaxyY:-50n,galaxyZ:-1n,sectorX:0n,sectorY:0n,sectorZ:0n,siteX:61n,siteY:0n,siteZ:0n}),oldPlanet=A.resolvePlanet(P.ctx,{galaxyX:48n,galaxyY:-50n,galaxyZ:-1n,sectorX:0n,sectorY:0n,sectorZ:0n,siteX:61n,siteY:0n,siteZ:0n,orbitSlot:0n});return{systemId:O.p2.hex(N.state.system.id),systemDigest:O.p2.hex(A.digestFact(N.state.system)),siteX:String(target.key.siteX),targetCount:N.state.targets.length,selectedIndex:N.state.selectedIndex,planetId:O.p2.hex(planet.id),previewId:P.provider?.planetId||P.chosen?.planetId,inspectorId:O.p2.hex(I.r.id),targetStatus:P.targetStatus,approachDisabled:document.getElementById('explore-go').disabled,navigation:N.state.lastSystemNavigation,oldSystemDigest:O.p2.hex(A.digestFact(oldSystem)),oldPlanetDigest:O.p2.hex(A.digestFact(oldPlanet))}});
+ if(after.systemId===before.systemId||after.siteX===before.siteX)throw new Error('another-system action did not leave the initial system '+JSON.stringify(after));
+ if(after.targetCount<2)throw new Error('bounded continuation did not expose a multi-world canonical system '+JSON.stringify(after));
+ if(after.planetId!==after.previewId||after.planetId!==after.inspectorId)throw new Error('system continuation lost target identity continuity '+JSON.stringify(after));
+ if(after.targetStatus!=='SUPPORTED'||after.approachDisabled)throw new Error('system continuation did not select a visualizable starting world '+JSON.stringify(after));
+ if(!after.navigation||after.navigation.steps<1||after.navigation.steps>before.scanLimit||after.navigation.planetCount!==after.targetCount)throw new Error('bounded system navigation evidence invalid '+JSON.stringify(after.navigation));
+ if(after.oldSystemDigest!==before.systemDigest||after.oldPlanetDigest!==before.planetDigest)throw new Error('canonical witness changed after system navigation');
+ const initialIndex=after.selectedIndex,otherIndex=initialIndex===0?1:0;
+ await page.click(`[data-explore-target="${otherIndex}"]`);
+ await page.waitForFunction(index=>OFU.v08ExploreNavigation.state.selectedIndex===index,otherIndex,{timeout:10000});
+ await page.waitForFunction(index=>{const O=OFU,N=O.v08ExploreNavigation,P=__OFU_PLANET_PREVIEW__,I=O.inspectorTest.state.current,target=N.state.targets[index];return target&&['galaxyX','galaxyY','galaxyZ','sectorX','sectorY','sectorZ','siteX','siteY','siteZ','orbitSlot'].every(k=>String(target.key[k])===String(P.chosen?.key?.[k])&&String(target.key[k])===String(I.key?.[k]));},otherIndex,{timeout:20000});
+ const alternate=await page.evaluate(()=>({status:__OFU_PLANET_PREVIEW__.targetStatus,reason:__OFU_PLANET_PREVIEW__.targetReason,approachDisabled:document.getElementById('explore-go').disabled,message:document.getElementById('explore-selection-status').textContent}));
+ if(alternate.status==='SUPPORTED'&&alternate.approachDisabled)throw new Error('supported alternate world disabled Approach');
+ if(alternate.status==='UNSUPPORTED'&&(!alternate.approachDisabled||!/cannot visualize|visualization unavailable/i.test(alternate.message)))throw new Error('unsupported alternate world did not fail closed '+JSON.stringify(alternate));
+ if(!['SUPPORTED','UNSUPPORTED'].includes(alternate.status))throw new Error('unexpected alternate target state '+alternate.status);
+ if(errors.length)throw new Error('page errors '+JSON.stringify(errors));
+ console.log(JSON.stringify({status:'PASS',browser:browserName,boundedSystemContinuation:true,scanLimit:before.scanLimit,initialTargetCount:before.targetCount,continuedTargetCount:after.targetCount,continuedSiteX:after.siteX,persistentSelection:true,alternateWorldSelectable:true,alternatePresentationStatus:alternate.status,canonicalWitnessNonInterference:true}));
+}finally{await browser.close()}

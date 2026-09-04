@@ -1,0 +1,64 @@
+<section class="workspace-panel" data-workspace-panel="inspect" tabindex="-1" aria-labelledby="inspect-heading" hidden>
+  <div class="panel-title">
+    <div><h2 id="inspect-heading">Inspect</h2><p>Understand what the canonical model says about the selected object, what remains unknown, and why the scientific conclusion stops where it does.</p></div>
+    <button class="action-button secondary" type="button" data-open-workspace="explore">Back</button>
+  </div>
+
+  <div class="section" aria-labelledby="inspector-overview-heading">
+    <div class="query-head"><div><span class="semantic-chip canonical">Overview</span><h3 id="inspector-overview-heading"><span id="inspector-object-title">Resolving object…</span></h3></div><span id="inspector-object-status" class="semantic-chip">pending</span></div>
+    <p id="inspector-overview-copy">Resolving the current canonical selection.</p>
+    <dl class="fact-list"><div class="fact"><dt>Object type</dt><dd id="inspector-object-type">pending</dd></div><div class="fact"><dt>Selection</dt><dd id="inspector-selection-label">Canonical target</dd></div></dl>
+  </div>
+
+  <div class="section" aria-labelledby="inspector-location-heading">
+    <h3 id="inspector-location-heading">Where is it?</h3>
+    <p id="inspector-location-copy">Location context will appear after resolution.</p>
+    <dl id="inspector-orbit-facts" class="fact-list"></dl>
+  </div>
+
+  <div class="section" aria-labelledby="inspector-physical-heading">
+    <div class="query-head"><h3 id="inspector-physical-heading">Physical state</h3><span id="inspector-physical-state" class="semantic-chip">pending</span></div>
+    <p id="inspector-physical-copy">Physical state will appear when supported by the canonical target.</p>
+    <dl id="inspector-physical-facts" class="fact-list"></dl>
+  </div>
+
+  <div class="section" aria-labelledby="inspector-environment-heading">
+    <div class="query-head"><h3 id="inspector-environment-heading">Environment</h3><span id="inspector-environment-state" class="semantic-chip">pending</span></div>
+    <p id="inspector-environment-copy">Environment state will appear when supported by the canonical target.</p>
+    <p class="semantic-note">Unknown values remain unknown. Phenomena outside the promoted model remain unsupported; Inspector does not fill either gap with a stronger conclusion.</p>
+    <dl id="inspector-environment-summary" class="fact-list"></dl>
+    <details><summary>Show technical environment states and provenance</summary><dl id="inspector-environment-statuses" class="fact-list"></dl></details>
+    <details><summary>Environment authority</summary><dl class="fact-list"><div class="fact"><dt>Canonical authority</dt><dd id="inspector-environment-authority" class="mono-value">pending</dd></div><div class="fact"><dt>Renderer technical state</dt><dd id="render-environment" class="mono-value">pending</dd></div></dl></details>
+  </div>
+
+  <div class="section" aria-labelledby="inspector-biology-heading">
+    <h3 id="inspector-biology-heading">Biology</h3>
+    <p><strong id="inspector-biology-copy">Biology state will appear when the environmental basis is available.</strong></p>
+    <p id="inspector-biology-limit" class="semantic-note">No conclusion is inferred before the canonical state is evaluated.</p>
+    <dl class="fact-list"><div class="fact"><dt>Technical P6 state</dt><dd id="inspector-biology-state" class="mono-value">pending</dd></div><div class="fact"><dt>Canonical biosphere established</dt><dd id="inspector-biology-established">pending</dd></div></dl>
+  </div>
+
+  <div class="section" aria-labelledby="inspector-evidence-heading">
+    <h3 id="inspector-evidence-heading">Evidence, limits & provenance</h3>
+    <p id="inspector-evidence-copy">Evidence summary will appear after the current target is matched.</p>
+    <details><summary>Show evidence classes and model fidelity</summary><dl id="inspector-evidence-facts" class="fact-list"></dl></details>
+    <p class="semantic-note">For exact identities, digests and the canonical record, open Advanced details. For temporal, archive, integrity and renderer diagnostics, continue to Lab.</p>
+    <button class="action-button secondary" type="button" data-open-workspace="lab">Open Lab technical evidence</button>
+  </div>
+
+  <details class="raw-details">
+    <summary>Advanced details & canonical record</summary>
+    <div class="section">
+      <h3>Technical selection</h3>
+      <dl class="fact-list"><div class="fact"><dt>Entity Identity</dt><dd class="mono-value" id="entity-id">not resolved</dd></div><div class="fact"><dt>Baseline fact digest</dt><dd class="mono-value" id="entity-digest">not resolved</dd></div><div class="fact"><dt>Target state</dt><dd id="inspector-tech-target-state" class="mono-value">pending</dd></div><div class="fact"><dt>Target reason</dt><dd id="inspector-tech-target-reason" class="mono-value">none</dd></div><div class="fact"><dt>Environment authority</dt><dd id="inspector-tech-environment-authority" class="mono-value">pending</dd></div><div class="fact"><dt>Environment contract</dt><dd id="inspector-tech-environment-contract" class="mono-value">pending</dd></div><div class="fact"><dt>P6 state</dt><dd id="inspector-tech-p6-state" class="mono-value">pending</dd></div><div class="fact"><dt>P6 witness digest</dt><dd id="inspector-tech-p6-witness" class="mono-value">pending</dd></div><div class="fact"><dt>Renderer P6 state</dt><dd id="render-p6" class="mono-value">pending</dd></div><div class="fact"><dt>Renderer biosphere flag</dt><dd id="render-biosphere" class="mono-value">pending</dd></div></dl>
+      <details><summary>Resolved canonical record</summary><pre id="entity-output">Choose a supported entity and resolve it.</pre></details>
+    </div>
+    <div class="section query-group">
+      <h3>Canonical address query</h3>
+      <p class="semantic-note">Use this only when you need exact sparse addressing. Coordinates are technical inputs, not the primary exploration language.</p>
+      <div class="query-head"><label>Entity type<select id="entity-type"><option selected>System</option><option>Planet</option><option>Star</option><option>Moon</option><option>Sector</option><option>Galaxy</option><option>Region</option></select></label><span class="semantic-chip canonical">Advanced canonical query</span></div>
+      <div id="query-fields" class="fields"></div>
+      <div class="row"><button id="query" type="button">Resolve canonical entity</button><button id="requery" type="button">Verify deterministic re-query</button></div>
+    </div>
+  </details>
+</section>
