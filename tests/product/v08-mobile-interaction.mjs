@@ -21,7 +21,7 @@ for(const [pattern,label] of [
 ])requirePattern(css,pattern,label);
 
 for(const [pattern,label] of [
- [/seamVersion:2/,'Lane D seam version'],
+ [/seamVersion:3/,'Lane D seam version'],
  [/visualViewport/,'visual viewport adaptation'],
  [/orientationchange/,'orientation handling'],
  [/pointercancel/,'touch cancellation diagnostics'],
@@ -31,7 +31,9 @@ for(const [pattern,label] of [
  [/file:/,'file URI classification'],
  [/__OFU_MOBILE_INTERACTION__/,'founder diagnostic seam'],
  [/O\.productUI/,'shared product compatibility API usage'],
- [/mobile-device-diagnostics/,'physical-device retest diagnostics']
+ [/mobile-device-diagnostics/,'physical-device retest diagnostics'],
+ [/const wasActive=state\.active/,'mobile-mode entry transition tracking'],
+ [/if\(focusedInside\)toggle\?\.focus/,'focus-safe collapse on mobile entry']
 ])requirePattern(js,pattern,label);
 
 if(/\b(?:fetch|XMLHttpRequest|WebSocket|EventSource)\b/.test(js))throw new Error('Lane D introduced a network API');
@@ -39,4 +41,4 @@ if(/O\.(?:p3|p4|p5|p6)|p3Astronomy|p5Planetology|p6Biosphere/.test(js))throw new
 if(/navigateToRadii\s*\(|retarget\s*\(/.test(js))throw new Error('Lane D must not implement independent target navigation');
 if(!/Physical-device status is browser-reported only/.test(js))throw new Error('Lane D diagnostics must not claim physical-device certification');
 
-console.log(JSON.stringify({status:'PASS',lane:'D',mobileArchitecture:'VIEWPORT_FIRST_BOTTOM_SHEET',touchModel:'HORIZONTAL_ROTATE_NATIVE_VERTICAL_SCROLL_NATIVE_PINCH',offline:true,scientificAuthorityWrites:0,physicalDeviceClaim:false}));
+console.log(JSON.stringify({status:'PASS',lane:'D',mobileArchitecture:'VIEWPORT_FIRST_BOTTOM_SHEET',touchModel:'HORIZONTAL_ROTATE_NATIVE_VERTICAL_SCROLL_NATIVE_PINCH',responsiveModeEntry:'FOCUS_SAFE_PEEK',offline:true,scientificAuthorityWrites:0,physicalDeviceClaim:false}));
