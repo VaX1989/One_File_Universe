@@ -3,7 +3,7 @@
 const O=root.OFU=root.OFU||{},R=O.waveIVScaleRuntime;if(!R)return;
 const SURFACE=new Set(['global_surface','regional_surface','local_surface','human']);
 const CAMERA_POLICY=Object.freeze({
- global_surface:Object.freeze({pitchRad:-.7853981633974483,label:'GLOBAL_SURFACE'}),
+ global_surface:Object.freeze({pitchRad:-1.0995574287564276,label:'GLOBAL_SURFACE'}),
  regional_surface:Object.freeze({pitchRad:-.6632251157578453,label:'REGIONAL_SURFACE'}),
  local_surface:Object.freeze({pitchRad:-.6108652381980153,label:'LOCAL_SURFACE'}),
  human:Object.freeze({pitchRad:-.41887902047863906,label:'HUMAN'})
