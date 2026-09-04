@@ -1,0 +1,10 @@
+/* v0.9 visual-universe overlay: presentation-only system/depth layer. */
+.viewport-frame{isolation:isolate}
+#planet-view{position:relative;z-index:0}
+#visual-universe-overlay{position:absolute;inset:0;z-index:1;display:block;width:100%;height:100%;pointer-events:none;background:transparent}
+.viewport-overlay{z-index:2}
+@media (forced-colors:active){#visual-universe-overlay{display:none}}
+@media (prefers-reduced-motion:reduce){#visual-universe-overlay{transition:none!important}}
+#explore-system-map .fact{grid-template-columns:auto minmax(0,1fr);gap:.6rem;align-items:start}
+#explore-system-map .fact>span{text-align:right;min-width:0;overflow-wrap:anywhere}
+@media (max-width:620px){#explore-system-map .fact{grid-template-columns:1fr}#explore-system-map .fact>span{text-align:left}}
