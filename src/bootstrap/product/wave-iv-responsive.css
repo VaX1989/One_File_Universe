@@ -6,7 +6,7 @@
 @media (max-width:700px), (max-height:520px) and (pointer:coarse){
   .experience,.viewport-shell,.viewport-frame{width:100%;max-width:100%;min-width:0}
   .viewport-shell{overflow:hidden}
-  #wave-iv-scale-rail{left:6px!important;right:6px!important;bottom:6px!important;gap:3px!important;padding:4px!important;border-radius:10px!important;max-width:calc(100% - 12px)!important}
+  #wave-iv-scale-rail{left:6px!important;right:6px!important;bottom:calc(var(--ofu-mobile-sheet-peek,4.75rem) + 8px)!important;gap:3px!important;padding:4px!important;border-radius:10px!important;max-width:calc(100% - 12px)!important}
   #wave-iv-scale-rail button{min-width:58px!important;min-height:44px!important;padding:0 7px!important;font-size:10px!important}
   #wave-iv-context-hint{top:6px!important;right:6px!important;max-width:calc(100% - 12px)!important;padding:6px 8px!important;font-size:10px!important;line-height:1.25!important;background:rgba(4,9,15,.58)!important}
 }
