@@ -52,10 +52,11 @@ jobs:
           cmp /tmp/wave-iv-first.html dist/One_File_Universe.html
           cmp /tmp/wave-iv-first-manifest.json dist/rendering-build-manifest.json
           grep -q 'ofu-wave-iv-scale-runtime-2' dist/rendering-build-manifest.json
-          grep -q 'ofu-wave-iv-macro-canvas-2' dist/rendering-build-manifest.json
+          grep -q 'ofu-wave-iv-macro-canvas-3' dist/rendering-build-manifest.json
           grep -q 'ofu-local-terrain-lod-4' dist/rendering-build-manifest.json
-          grep -q 'ofu-local-surface-webgl2-3' dist/rendering-build-manifest.json
+          grep -q 'ofu-local-surface-webgl2-4' dist/rendering-build-manifest.json
           grep -q 'FRUSTUM_GROUND_FOOTPRINT_BOUNDED' dist/rendering-build-manifest.json
+          grep -q 'BAND_SCALED_LOW_FREQUENCY_MATERIAL_VARIATION' dist/rendering-build-manifest.json
           grep -q 'INSTANCED_LOW_POLY_TRIANGLES' dist/rendering-build-manifest.json
           grep -q 'dd3348834d15ddf6a409912ac3e263c1e6d81fc4' dist/rendering-build-manifest.json
           grep -q '34874da12a157deba6d7615ff07a20a83606d938' dist/rendering-build-manifest.json
