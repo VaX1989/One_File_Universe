@@ -1,0 +1,20 @@
+{
+  "dagId": "ofu-p5-p6-wave4-dependency-dag-2026-09-04",
+  "status": "RESEARCH_ONLY",
+  "nodes": [
+    {"id":"volatileState","dependsOn":["sourceGovernance"],"state":"ADVANCED"},
+    {"id":"atmosphericState","dependsOn":["volatileState","gravity","radius"],"state":"ADVANCED"},
+    {"id":"surfaceTemperature","dependsOn":["sourceBoundThermalState"],"state":"DATA_OR_MODEL_BLOCKED"},
+    {"id":"waterPhase","dependsOn":["volatileState","surfaceTemperature","pressure","waterThermodynamics"],"state":"ADVANCED_NARROW"},
+    {"id":"usableEnergy","dependsOn":["sourceBoundPhototrophicOrChemotrophicEnergy"],"state":"DATA_MODEL_BLOCKED"},
+    {"id":"nutrientRedox","dependsOn":["sourceBoundGeochemicalState"],"state":"DATA_MODEL_BLOCKED"},
+    {"id":"environmentHistory","dependsOn":["P4","typedP5Transition"],"state":"ADVANCED"},
+    {"id":"p6ResearchReadiness","dependsOn":["volatileState","environmentHistory","surfaceTemperature","viableMedium","usableEnergy","nutrientRedox","postGenesisAuthority"],"state":"ADVANCED_RESEARCH_ONLY"},
+    {"id":"postGenesisSeed","dependsOn":["p6ResearchReadiness"],"state":"ADVANCED_RESEARCH_ONLY"},
+    {"id":"ecologyEnergy","dependsOn":["postGenesisSeed","usableEnergy","parameterAuthority"],"state":"ADVANCED_RESEARCH_ONLY"},
+    {"id":"population","dependsOn":["postGenesisSeed","demographicFlowAuthority"],"state":"ADVANCED_BOOKKEEPING_ONLY"},
+    {"id":"traitResponse","dependsOn":["postGenesisSeed","heritabilityAuthority","selectionDifferentialAuthority"],"state":"ADVANCED_MODEL_CONDITIONAL"},
+    {"id":"speciation","dependsOn":["lineageDivergenceWitness","speciesDelimitationCriterion"],"state":"ADVANCED_CRITERION_GATED"},
+    {"id":"canonicalAbiogenesis","dependsOn":["predictiveScientificallyValidatedGenesisModel"],"state":"FUNDAMENTALLY_UNSUPPORTED_CURRENTLY"}
+  ]
+}
