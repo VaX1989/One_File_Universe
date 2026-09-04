@@ -13,6 +13,7 @@ on:
       - feature/v08-inspector-product
       - feature/v08-mobile-interaction
       - feature/v08-lab-technical
+      - feature/v08-founder-visual-closure
       - main
   pull_request:
     branches: [main]
@@ -49,6 +50,8 @@ jobs:
           node tests/product/v08-inspector-product.mjs
           node tests/product/v08-lab-technical.mjs
           node tests/product/v08-mobile-interaction.mjs
+      - name: Founder visual framing mathematics
+        run: node tests/rendering/v08-camera-framing.mjs
       - name: Frozen Foundation and P1-P6 regression
         run: |
           node tools/validate-foundation.mjs
@@ -94,7 +97,7 @@ jobs:
           cmp /tmp/render-manifest-first.json dist/rendering-build-manifest.json
           test "$(grep -Eoc '(src|href)=[\"'\'']https?://' dist/One_File_Universe.html)" -eq 0
           grep -q "connect-src 'none'" dist/One_File_Universe.html
-          grep -q 'v08-product-template-fragments-2' dist/rendering-build-manifest.json
+          grep -q 'v08-product-template-fragments-3' dist/rendering-build-manifest.json
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: rendering-production-build-${{ env.OFU_SOURCE_SHA }}
@@ -149,6 +152,11 @@ jobs:
           DPR: ${{ matrix.browser == 'chromium' && '2' || '1' }}
       - name: Product v0.8 integrated experience
         run: node tests/product/browser-v08-integrated-experience.mjs
+        env:
+          BROWSER: ${{ matrix.browser }}
+          DPR: ${{ matrix.browser == 'chromium' && '2' || '1' }}
+      - name: Founder visual settled camera and framebuffer closure
+        run: node tests/product/browser-v08-settled-visual-closure.mjs
         env:
           BROWSER: ${{ matrix.browser }}
           DPR: ${{ matrix.browser == 'chromium' && '2' || '1' }}
@@ -208,6 +216,11 @@ jobs:
           DPR: '1'
       - name: Product v0.8 integrated experience
         run: node tests/product/browser-v08-integrated-experience.mjs
+        env:
+          BROWSER: ${{ matrix.browser }}
+          DPR: '1'
+      - name: Founder visual settled camera and framebuffer closure
+        run: node tests/product/browser-v08-settled-visual-closure.mjs
         env:
           BROWSER: ${{ matrix.browser }}
           DPR: '1'
