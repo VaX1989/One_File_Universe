@@ -14,12 +14,12 @@ const titleCase=value=>String(value||'').toLowerCase().replace(/(^|_)([a-z])/g,(
 const planetName=index=>'Planet '+String(index+1);
 const samePlanetKey=(a,b)=>!!a&&!!b&&['galaxyX','galaxyY','galaxyZ','sectorX','sectorY','sectorZ','siteX','siteY','siteZ','orbitSlot'].every(name=>a[name]===b[name]);
 const systemKey=key=>Object.freeze(Object.fromEntries(['galaxyX','galaxyY','galaxyZ','sectorX','sectorY','sectorZ','siteX','siteY','siteZ'].map(name=>[name,BigInt(key[name])])));
-function targetFromPlanet(planet,index,total){
+function targetFromPlanet(planet,key,index,total){
  const facts=planet.facts||{};
  return Object.freeze({
   index,
   name:planetName(index),
-  key:Object.freeze({...systemKey(planet.key||{}),orbitSlot:BigInt(index)}),
+  key:Object.freeze({...key,orbitSlot:BigInt(index)}),
   id:planet.id,
   orbitLabel:'Orbit '+String(index+1)+' of '+String(total),
   classLabel:facts.bulkPriorClass?titleCase(facts.bulkPriorClass):'Bulk class unavailable',
@@ -35,7 +35,7 @@ function resolveSystemContext(){
  const targets=[];
  for(let i=0;i<count;i++){
   const planet=A.resolvePlanet(P.ctx,{...key,orbitSlot:BigInt(i)});
-  if(planet?.status==='PRESENT')targets.push(targetFromPlanet(planet,i,count));
+  if(planet?.status==='PRESENT')targets.push(targetFromPlanet(planet,key,i,count));
  }
  return {key,system,star:star?.status==='PRESENT'?star:null,targets};
 }
@@ -75,7 +75,7 @@ function renderStage(){
 function selectIndex(index,{announce=true}={}){
  if(!state.targets.length)return false;
  const next=Math.max(0,Math.min(state.targets.length-1,Number(index)));
- state.selectedIndex=next;renderSystem();renderSelection();
+ state.selectedIndex=next;renderSelection();
  if(announce)O.productUI?.announce?.('Selected '+selected().name);
  return true;
 }
