@@ -48,6 +48,7 @@ try{
  if(tokenContrast.foreground<4.5||tokenContrast.muted<4.5)throw new Error('token contrast below 4.5');
  await noOverflow(page,'desktop Explore');await screen(page,'desktop-explore');
  await page.click('[data-workspace="inspect"]');
+ await page.locator('details.raw-details').evaluate(el=>{el.open=true});
  await page.selectOption('#entity-type','Planet');
  await page.evaluate(()=>document.getElementById('entity-type').dispatchEvent(new Event('change',{bubbles:true})));
  await screen(page,'desktop-inspect');
@@ -63,6 +64,7 @@ try{
  if(await page.evaluate(()=>__OFU_PLANET_PREVIEW__.targetSwitches)!==absent.switches)throw new Error('ABSENT mutated target');
  for(const [f,v] of Object.entries(absent.key))await page.fill('#f-'+f,String(v));
  await page.click('#query');
+ await page.locator('details.raw-details').evaluate(el=>{el.open=false});
  await page.click('[data-workspace="lab"]');await page.fill('#archive','xyz');await page.click('#archive-import');
  if(!(await page.textContent('#archive-output'))?.startsWith('Import not applied:'))throw new Error('archive error not productized');
  await screen(page,'desktop-lab');await page.keyboard.press('Escape');
@@ -73,7 +75,7 @@ try{
  for(let i=0;i<20;i++){await page.click('[data-workspace="inspect"]');await page.click('[data-workspace="lab"]');await page.click('[data-workspace="explore"]')}
  const nodesAfter=await page.evaluate(()=>document.querySelectorAll('*').length);if(nodesAfter!==nodes)throw new Error('workspace node leak');
  const sizes=[[1440,900],[1024,768],[768,1024],[390,844],[320,700]],responsive=[];
- for(const [width,height] of sizes){await page.setViewportSize({width,height});await page.click('[data-workspace="explore"]');const ov=await noOverflow(page,`${width}x${height} Explore`),vp=await page.locator('#planet-view').boundingBox();if(!vp||vp.width<Math.min(250,width-20)||vp.height<250)throw new Error(`viewport unusable ${width}x${height}`);await page.click('[data-workspace="inspect"]');await noOverflow(page,`${width}x${height} Inspect`);if(!await page.locator('#query').isVisible())throw new Error(`Inspector inaccessible ${width}x${height}`);responsive.push({width,height,scrollWidth:ov.sw,clientWidth:ov.cw,viewport:{width:vp.width,height:vp.height}});if(width===390){await page.click('[data-workspace="explore"]');await screen(page,'mobile-explore');await page.click('[data-workspace="inspect"]');await screen(page,'mobile-inspect')}}
+ for(const [width,height] of sizes){await page.setViewportSize({width,height});await page.click('[data-workspace="explore"]');const ov=await noOverflow(page,`${width}x${height} Explore`),vp=await page.locator('#planet-view').boundingBox();if(!vp||vp.width<Math.min(250,width-20)||vp.height<250)throw new Error(`viewport unusable ${width}x${height}`);await page.click('[data-workspace="inspect"]');await noOverflow(page,`${width}x${height} Inspect`);if(!await page.locator('#inspector-object-title').isVisible())throw new Error(`Inspector inaccessible ${width}x${height}`);responsive.push({width,height,scrollWidth:ov.sw,clientWidth:ov.cw,viewport:{width:vp.width,height:vp.height}});if(width===390){await page.click('[data-workspace="explore"]');await screen(page,'mobile-explore');await page.click('[data-workspace="inspect"]');await screen(page,'mobile-inspect')}}
  await page.setViewportSize({width:390,height:844});
  await page.evaluate(()=>{document.documentElement.style.zoom='2';document.getElementById('entity-output').textContent='LONG-'+('0123456789abcdef'.repeat(80));document.getElementById('selected-object-id').textContent='ID-'+('abcdef'.repeat(80))});
  const zoomOverflow=await noOverflow(page,'2x CSS zoom long content');await page.evaluate(()=>document.documentElement.style.zoom='');
