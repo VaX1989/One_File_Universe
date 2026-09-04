@@ -87,7 +87,7 @@ jobs:
             dist/FOUNDER_TEST_ARTIFACT.txt
             dist/evidence/wave-iv-convergence/
   browser-linux:
-    if: ${{ github.event_name != 'pull_request' || github.base_ref == 'main' || github.event.pull_request.draft == false }}
+    if: ${{ github.event_name == 'pull_request' && github.base_ref == 'main' }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -110,7 +110,7 @@ jobs:
           BROWSER: ${{ matrix.browser }}
           DPR: ${{ matrix.browser == 'chromium' && '2' || '1' }}
   browser-platform:
-    if: ${{ github.event_name != 'pull_request' || github.base_ref == 'main' || github.event.pull_request.draft == false }}
+    if: ${{ github.event_name == 'pull_request' && github.base_ref == 'main' }}
     strategy:
       fail-fast: false
       matrix:
@@ -138,7 +138,7 @@ jobs:
           BROWSER: ${{ matrix.browser }}
           DPR: '1'
   seal:
-    if: ${{ always() && (github.event_name != 'pull_request' || github.base_ref == 'main' || github.event.pull_request.draft == false) }}
+    if: ${{ always() && github.event_name == 'pull_request' && github.base_ref == 'main' }}
     needs: [exact-head, browser-linux, browser-platform]
     runs-on: ubuntu-latest
     steps:
