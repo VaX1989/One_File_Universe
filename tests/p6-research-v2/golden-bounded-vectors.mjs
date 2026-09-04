@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';import vm from 'node:vm';
+globalThis.OFU={};for(const f of ['src/kernel/sha256.js','src/kernel/p2-unicode.js','src/kernel/p2-canonical.js'])vm.runInThisContext(fs.readFileSync(f,'utf8'),{filename:f});
+const P=OFU.p2,M=await import('../../research/p6/biology-v2-bounded.mjs'),g=JSON.parse(fs.readFileSync('tests/p6-research-v2/golden-bounded-v2.json','utf8'));
+assert.equal(M.RESEARCH_CONTRACT,g.contract);assert.equal(M.RESEARCH_MODEL,g.model);assert.equal(M.RESEARCH_AUTHORITY,g.authority);assert.equal(M.IDENTITY_POLICY,g.identityPolicy);
+assert.deepEqual({maxBiospheresPerWorld:M.LIMITS.MAX_BIOSPHERES_PER_WORLD,maxTotalLineagesPerBiosphere:M.LIMITS.MAX_TOTAL_LINEAGES_PER_BIOSPHERE,maxActiveLineagesPerBiosphere:M.LIMITS.MAX_ACTIVE_LINEAGES_PER_BIOSPHERE,maxTraitsPerLineage:M.LIMITS.MAX_TRAITS_PER_LINEAGE,maxTrophicTransfers:M.LIMITS.MAX_TROPHIC_TRANSFERS},g.limits);
+const u=P.unhex(g.case.universeIdentityHex),planet=P.unhex(g.case.planetIdHex),ids=M.stableKeys(P,u),bio=ids.biosphere(planet),lin=ids.lineage(bio,null,g.case.founderOperationKey),sp=ids.species(lin,g.case.founderOperationKey);
+assert.equal(P.hex(bio),g.case.biosphereIdHex);assert.equal(P.hex(lin),g.case.lineageIdHex);assert.equal(P.hex(sp),g.case.speciesIdHex);
+const e=g.case.ecology,eco=M.ecologyBudget({phototrophicUsableEnergyU:BigInt(e.phototrophicUsableEnergyU),phototrophicCaptureEfficiencyPpm:BigInt(e.phototrophicCaptureEfficiencyPpm),chemotrophicUsableEnergyU:null,chemotrophicCaptureEfficiencyPpm:null,maintenanceFractionPpm:BigInt(e.maintenanceFractionPpm),trophicEfficienciesPpm:e.trophicEfficienciesPpm.map(BigInt)});
+assert.equal(eco.energySource,e.energySource);assert.equal(eco.primaryProductivityCeilingU.toString(),e.primaryProductivityCeilingU);assert.equal(eco.allocatableEnergyU.toString(),e.allocatableEnergyU);assert.deepEqual(eco.trophic.map(x=>x.energyCeilingU.toString()),e.trophicCeilingsU);
+assert.equal(M.P5_DEPENDENCY.canonicalPositivePath,false);assert.equal(M.P5_DEPENDENCY.researchNextPositivePath,false);assert.equal(M.OWNERSHIP.positiveCanonicalBiology,false);
+console.log('P6 Biology v2 bounded Golden vectors PASS');
