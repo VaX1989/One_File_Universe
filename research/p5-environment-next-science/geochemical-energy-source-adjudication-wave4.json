@@ -1,0 +1,9 @@
+{
+  "registryId":"ofu-p5-geochemical-energy-source-adjudication-wave4",
+  "retrievedDate":"2026-09-04",
+  "status":"RESEARCH_ONLY",
+  "sources":[
+    {"sourceId":"AMEND_SHOCK_2001_METABOLIC_REACTION_ENERGETICS","sourceVersion":"FEMS-Microbiol-Rev-25-175-243","locator":"doi:10.1111/j.1574-6976.2001.tb00576.x","evidenceClass":"EMPIRICALLY_CONSTRAINED","fidelity":"HIGH_FIDELITY","validityDomain":"Thermodynamic energetics of specified microbial redox and related reactions under stated temperatures/compositions; Wave IV uses this only to justify source-bound reaction free-energy state, not occurrence.","assumptions":["Reaction identity and thermodynamic state are externally supplied","Temperature/composition domain must match source/model"],"uncertainty":"Reaction energetics can vary strongly with temperature and composition; no universal reaction inventory or flux is implied.","units":"J_PER_MOL_OR_SOURCE_CONVERTED_FIXED_POINT"},
+    {"sourceId":"HOEHLER_2004_BIOLOGICAL_ENERGY_BOUNDARIES","sourceVersion":"Geobiology-2-205-215","locator":"doi:10.1111/j.1472-4677.2004.00033.x","evidenceClass":"EMPIRICALLY_CONSTRAINED","fidelity":"APPROXIMATE","validityDomain":"Energy availability and maintenance constraints for known subsurface life; used to preserve separation between environmental free-energy supply and biologically usable/maintenance-sufficient energy.","assumptions":["Biological energetic thresholds are environment and organism dependent","Temperature is a material control"],"uncertainty":"Does not establish universal extraterrestrial biological capture efficiency or maintenance threshold.","units":"ENERGY_AND_POWER_DOMAIN_DEPENDENT"}
+  ]
+}
