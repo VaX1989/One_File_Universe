@@ -9,7 +9,7 @@ const read=rel=>fs.readFileSync(path.join(root,rel),'utf8').replace(/\r\n?/g,'\n
 const artifactPath=path.join(root,'dist','One_File_Universe.html');
 const manifestPath=path.join(root,'dist','rendering-build-manifest.json');
 const fragmentPaths=['src/bootstrap/product/workspace-nav.html','src/bootstrap/product/viewport.html','src/bootstrap/product/explore-panel.html','src/bootstrap/product/inspect-panel.html','src/bootstrap/product/lab-panel.html'];
-const extensionPaths=['src/bootstrap/product/explore-navigation.js','src/bootstrap/product/inspector-product.js','src/bootstrap/product/mobile-interaction.js','src/bootstrap/product/lab-technical.js','src/bootstrap/product/mobile.css'];
+const extensionPaths=['src/bootstrap/product/selection-bridge.js','src/bootstrap/product/explore-navigation.js','src/bootstrap/product/inspector-product.js','src/bootstrap/product/mobile-interaction.js','src/bootstrap/product/lab-technical.js','src/bootstrap/product/mobile.css'];
 const productSourcePaths=[...fragmentPaths,...extensionPaths];
 
 execFileSync(process.execPath,['tools/build-ofu-rendering.mjs'],{cwd:root,env:process.env,stdio:['ignore','inherit','inherit']});
@@ -17,14 +17,14 @@ const legacy=fs.readFileSync(artifactPath,'utf8').replace(/\r\n?/g,'\n');
 let composed=composeProductTemplate(legacy,read);
 const mobileCss=read('src/bootstrap/product/mobile.css').trimEnd();
 if(mobileCss)composed=composed.replace('</style>',mobileCss+'\n</style>');
-const extensionScripts=['src/bootstrap/product/explore-navigation.js','src/bootstrap/product/inspector-product.js','src/bootstrap/product/mobile-interaction.js','src/bootstrap/product/lab-technical.js'].map(path=>`<script>${read(path).trimEnd().replace(/<\/script/gi,'<\\/script')}</script>`).join('');
+const extensionScripts=['src/bootstrap/product/selection-bridge.js','src/bootstrap/product/explore-navigation.js','src/bootstrap/product/inspector-product.js','src/bootstrap/product/mobile-interaction.js','src/bootstrap/product/lab-technical.js'].map(path=>`<script>${read(path).trimEnd().replace(/<\/script/gi,'<\\/script')}</script>`).join('');
 composed=composed.replace('</body>',extensionScripts+'</body>');
 fs.writeFileSync(artifactPath,composed,'utf8');
 const bytes=fs.readFileSync(artifactPath);
 const sha256=crypto.createHash('sha256').update(bytes).digest('hex');
 const productSourceFragments=productSourcePaths.map(componentId=>{const source=read(componentId);return{componentId,hashAlgorithm:'SHA-256',hash:crypto.createHash('sha256').update(source).digest('hex'),embeddedBytes:Buffer.byteLength(source,'utf8')}});
 const manifest=JSON.parse(fs.readFileSync(manifestPath,'utf8'));
-manifest.productSourceComposition='v08-product-template-fragments-1';
+manifest.productSourceComposition='v08-product-template-fragments-2';
 manifest.productSourceFragments=productSourceFragments;
 manifest.artifactBytes=bytes.length;
 manifest.artifactSha256=sha256;
