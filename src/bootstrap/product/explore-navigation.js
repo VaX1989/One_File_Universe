@@ -111,13 +111,18 @@ function sync(){
  if(systemId!==state.lastSystemId){
   state.system=context.system;state.star=context.star;state.targets=context.targets;state.lastSystemId=systemId;
   const currentIndex=context.targets.findIndex(target=>samePlanetKey(target.key,P?.chosen?.key));state.selectedIndex=currentIndex>=0?currentIndex:0;
-  const target=selected();
-  if(target&&!inspectorMatches(target)&&O.v08SelectionBridge?.selectPlanet){try{establishSelection(target,{announce:false})}catch(error){state.lastSelectionError=String(error?.message||error)}}
   renderSystem();renderSelection();renderStage();state.ready=true;
+ }
+ const target=selected();
+ // The Inspector can boot after this extension's first DOMContentLoaded callback.
+ // Retry the selection handshake until the shared canonical service is ready; the
+ // bridge itself fails closed without mutating Inspector state before readiness.
+ if(target&&!inspectorMatches(target)&&O.v08SelectionBridge?.selectPlanet){
+  try{establishSelection(target,{announce:false})}catch(error){state.lastSelectionError=String(error?.message||error)}
  }
  if(previewId!==state.lastPreviewId){
   state.lastPreviewId=previewId;
-  const currentIndex=state.targets.findIndex(target=>samePlanetKey(target.key,P?.chosen?.key));
+  const currentIndex=state.targets.findIndex(item=>samePlanetKey(item.key,P?.chosen?.key));
   if(currentIndex>=0){state.selectedIndex=currentIndex;renderSelection()}
  }
  const notice=[P?.targetStatus,P?.targetReason,state.selectedIndex,state.lastSelectionError||''].join('|');if(notice!==state.lastRenderNotice){state.lastRenderNotice=notice;renderSelection()}
@@ -132,5 +137,5 @@ function init(){
  setInterval(sync,250);sync();
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
-O.v08ExploreNavigation=Object.freeze({seamVersion:2,state,STAGES,selectIndex,moveSelection,setStage,sync,rendererCanShow,planetName});
+O.v08ExploreNavigation=Object.freeze({seamVersion:3,state,STAGES,selectIndex,moveSelection,setStage,sync,rendererCanShow,planetName});
 })(typeof globalThis!=='undefined'?globalThis:this);
