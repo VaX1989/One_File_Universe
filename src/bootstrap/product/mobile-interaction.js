@@ -2,13 +2,13 @@
 'use strict';
 const O=root.OFU=root.OFU||{};
 const DOC=typeof document!=='undefined'?document:null;
-if(!DOC){O.v08MobileInteraction=Object.freeze({seamVersion:2,active:false});return}
+if(!DOC){O.v08MobileInteraction=Object.freeze({seamVersion:3,active:false});return}
 const q=s=>DOC.querySelector(s);
 const MOBILE_QUERY='(max-width: 700px), (max-height: 520px) and (pointer: coarse)';
 const mobileQuery=typeof root.matchMedia==='function'?root.matchMedia(MOBILE_QUERY):null;
 const coarseQuery=typeof root.matchMedia==='function'?root.matchMedia('(pointer: coarse)'):null;
 const reducedQuery=typeof root.matchMedia==='function'?root.matchMedia('(prefers-reduced-motion: reduce)'):null;
-const state={seamVersion:2,initialized:false,active:false,workspace:'explore',sheet:'expanded',lastGesture:'none',canvasPointerCancels:0,resizeEvents:0,orientationEvents:0,visualViewportEvents:0,lastViewport:null,diagnosticsOpen:false};
+const state={seamVersion:3,initialized:false,active:false,workspace:'explore',sheet:'expanded',lastGesture:'none',canvasPointerCancels:0,resizeEvents:0,orientationEvents:0,visualViewportEvents:0,lastViewport:null,diagnosticsOpen:false};
 let panel=null,body=null,toggle=null,toggleLabel=null,toggleState=null,diagnostics=null,diagnosticsText=null,diagnosticsButton=null,drag=null,raf=0;
 
 function sourceKind(){
@@ -100,11 +100,18 @@ function updateViewport(){
 }
 function scheduleViewport(){if(raf)return;raf=(root.requestAnimationFrame||((fn)=>root.setTimeout(fn,0)))(updateViewport)}
 function syncMode({preserveFocus=true}={}){
+ const wasActive=state.active;
  state.active=mobileActive();
  DOC.documentElement.dataset.ofuMobile=state.active?'true':'false';
  DOC.documentElement.dataset.ofuInput=coarseQuery?.matches?'coarse':'fine';
  state.workspace=workspaceName();
- if(!state.active)setSheet('expanded');else if(state.workspace==='inspect'||state.workspace==='lab')setSheet('expanded');else syncWorkspace({preserveFocus});
+ if(!state.active)setSheet('expanded');
+ else if(state.workspace==='inspect'||state.workspace==='lab')setSheet('expanded');
+ else if(!wasActive){
+  const focusedInside=!!(body&&body.contains(DOC.activeElement));
+  setSheet('peek');
+  if(focusedInside)toggle?.focus({preventScroll:true});
+ }else syncWorkspace({preserveFocus});
  scheduleViewport();
 }
 function buildSheet(){
@@ -160,7 +167,7 @@ function init(){
  bind();syncMode({preserveFocus:true});updateToggle();updateViewport();
  root.__OFU_MOBILE_INTERACTION__=api;
 }
-const api=Object.freeze({seamVersion:2,state,snapshot,expand:()=>setSheet('expanded',{announce:true}),collapse:()=>setSheet('peek',{announce:true}),refresh:()=>{syncMode({preserveFocus:true});return snapshot()}});
+const api=Object.freeze({seamVersion:3,state,snapshot,expand:()=>setSheet('expanded',{announce:true}),collapse:()=>setSheet('peek',{announce:true}),refresh:()=>{syncMode({preserveFocus:true});return snapshot()}});
 O.v08MobileInteraction=api;
 if(DOC.readyState==='loading')DOC.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })(typeof globalThis!=='undefined'?globalThis:this);
