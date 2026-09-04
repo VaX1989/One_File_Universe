@@ -1,0 +1,45 @@
+name: P6 Biology v2 Bounded Research
+on:
+  push:
+    branches: [research/p6-biology-v2]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: p6-biology-v2-bounded-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  node:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: '${{ github.sha }}'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24.20.0'}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - name: Verify exact source
+        run: test "$(git rev-parse HEAD)" = "${{ github.sha }}"
+      - name: Frozen canonical P6 v1 regression
+        run: node tests/p6/environment-state-conformance.mjs && node tests/p6/authority-identity-adversarial.mjs && node tests/p6/run-p6-v1.mjs && node tests/p6/golden-v1.mjs && node tests/p6/save-compatibility.mjs && node tests/p6/worker-order.mjs
+      - name: Bounded Biology v2 lifecycle and replay
+        run: node tests/p6-research-v2/run-bounded-lifecycle.mjs
+      - name: Bounded Biology v2 Golden vectors
+        run: node tests/p6-research-v2/golden-bounded-vectors.mjs
+      - name: Independent bounded Biology v2 oracle
+        run: python3 tools/p6_biology_v2_bounded_oracle.py
+  browser:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: {browser: [chromium, firefox, webkit]}
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: '${{ github.sha }}'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24.20.0'}
+      - run: npm install --no-save playwright@1.62.1
+      - run: npx playwright install --with-deps ${{ matrix.browser }}
+      - name: Research browser determinism smoke
+        env: {BROWSER: '${{ matrix.browser }}'}
+        run: node tests/p6-research-v2/browser-bounded-smoke.mjs
