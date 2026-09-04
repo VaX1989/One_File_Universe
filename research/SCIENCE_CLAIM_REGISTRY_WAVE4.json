@@ -1,0 +1,26 @@
+{
+  "registryId": "ofu-science-claim-registry-wave4-2026-09-04",
+  "status": "RESEARCH_ONLY",
+  "claimLaw": {
+    "evidence": ["ESTABLISHED", "EMPIRICALLY_CONSTRAINED", "HYPOTHETICAL", "SPECULATIVE", "FICTIONAL"],
+    "fidelity": ["FORMAL", "HIGH_FIDELITY", "APPROXIMATE", "STYLIZED", "METAPHORICAL"]
+  },
+  "claims": [
+    {"id":"p5.source-governance","evidence":"ESTABLISHED","fidelity":"FORMAL","readiness":"PROMOTION_REVIEW_READY","canonicalReady":false,"limit":"governance semantics only"},
+    {"id":"p5.volatile-source-bound-state","evidence":"ESTABLISHED","fidelity":"FORMAL","readiness":"ORACLE_READY","canonicalReady":false,"limit":"no canonical volatile genesis or occurrence prior"},
+    {"id":"p5.surface-from-effective","evidence":"EMPIRICALLY_CONSTRAINED","fidelity":"APPROXIMATE","readiness":"RESEARCH_ONLY","canonicalReady":false,"limit":"no universal mapping; implementation abstains"},
+    {"id":"p5.thermal-separation","evidence":"ESTABLISHED","fidelity":"FORMAL","readiness":"ORACLE_READY","canonicalReady":false,"limit":"arithmetic offset only; no causal greenhouse attribution"},
+    {"id":"p5.water-phase-plausibility","evidence":"ESTABLISHED","fidelity":"APPROXIMATE","readiness":"ORACLE_READY","canonicalReady":false,"limit":"global idealized thermodynamic plausibility only; no ocean or viable-medium claim"},
+    {"id":"p5.xuv-escape-dependency","evidence":"EMPIRICALLY_CONSTRAINED","fidelity":"APPROXIMATE","readiness":"IMPLEMENTATION_READY","canonicalReady":false,"limit":"no universal escape rate"},
+    {"id":"p5.geochemistry-prerequisite","evidence":"EMPIRICALLY_CONSTRAINED","fidelity":"APPROXIMATE","readiness":"IMPLEMENTATION_READY","canonicalReady":false,"limit":"no tectonics, redox power or nutrients inferred from bulk planet state"},
+    {"id":"p5.p6-readiness-v2","evidence":"ESTABLISHED","fidelity":"FORMAL","readiness":"ORACLE_READY","canonicalReady":false,"limit":"may authorize research post-genesis fixture only; canonical biology always false"},
+    {"id":"p6.parameter-authority","evidence":"ESTABLISHED","fidelity":"FORMAL","readiness":"PROMOTION_REVIEW_READY","canonicalReady":false,"limit":"provenance/validity enforcement does not validate parameter transferability"},
+    {"id":"p6.energy-accounting","evidence":"ESTABLISHED","fidelity":"FORMAL","readiness":"ORACLE_READY","canonicalReady":false,"limit":"efficiencies remain explicit sourced parameters"},
+    {"id":"p6.trophic-model","evidence":"EMPIRICALLY_CONSTRAINED","fidelity":"APPROXIMATE","readiness":"ORACLE_READY","canonicalReady":false,"limit":"no universal trophic efficiency"},
+    {"id":"p6.population-balance","evidence":"ESTABLISHED","fidelity":"FORMAL","readiness":"ORACLE_READY","canonicalReady":false,"limit":"externally supplied demographic flows only; no endogenous growth law"},
+    {"id":"p6.trait-response","evidence":"EMPIRICALLY_CONSTRAINED","fidelity":"APPROXIMATE","readiness":"ORACLE_READY","canonicalReady":false,"limit":"Breeder-equation research diagnostic is model conditional"},
+    {"id":"p6.species-delimitation","evidence":"EMPIRICALLY_CONSTRAINED","fidelity":"APPROXIMATE","readiness":"IMPLEMENTATION_READY","canonicalReady":false,"limit":"explicit criterion required; scalar trait distance alone insufficient"},
+    {"id":"p6.post-genesis-seed","evidence":"ESTABLISHED","fidelity":"FORMAL","readiness":"ORACLE_READY","canonicalReady":false,"limit":"external seed or research fixture only; no abiogenesis inferred"},
+    {"id":"p6.abiogenesis","evidence":"EMPIRICALLY_CONSTRAINED","fidelity":"APPROXIMATE","readiness":"RESEARCH_ONLY","canonicalReady":false,"limit":"NO_CANONICAL_GENESIS_MODEL; no predictive planetary trigger"}
+  ]
+}
