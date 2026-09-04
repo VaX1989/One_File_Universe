@@ -1,0 +1,91 @@
+{
+  "registryId": "ofu-p5-environment-next-source-adjudication-wave4",
+  "retrievedDate": "2026-09-04",
+  "status": "RESEARCH_ONLY",
+  "sources": [
+    {
+      "sourceId": "ROBINSON_CATLING_2012_ANALYTIC_RADIATIVE_CONVECTIVE",
+      "sourceVersion": "ApJ-757-104-2012",
+      "locator": "doi:10.1088/0004-637X/757/1/104",
+      "sourceType": "PRIMARY_LITERATURE",
+      "evidenceClass": "EMPIRICALLY_CONSTRAINED",
+      "fidelity": "APPROXIMATE",
+      "validityDomain": "Analytic one-dimensional gray, two-stream, hydrostatic radiative-convective atmospheric structure with explicit optical-depth and convective assumptions.",
+      "assumptions": ["Gray thermal radiative transfer", "Two-stream approximation", "Hydrostatic equilibrium", "Pressure-optical-depth power-law relation", "Convective regions follow an adiabat with a condensation scaling parameter"],
+      "uncertainty": "Model-family assumptions are material and planet/domain dependent; not a universal surface-temperature law.",
+      "units": "NOT_APPLICABLE_QUALITATIVE_MODEL_CONSTRAINT"
+    },
+    {
+      "sourceId": "DEL_GENIO_ET_AL_2019_ALBEDO_EQUILIBRIUM_SURFACE_TEMPERATURE",
+      "sourceVersion": "ApJ-884-75-2019",
+      "locator": "doi:10.3847/1538-4357/ab3be8",
+      "sourceType": "PRIMARY_LITERATURE",
+      "evidenceClass": "EMPIRICALLY_CONSTRAINED",
+      "fidelity": "APPROXIMATE",
+      "validityDomain": "GCM ensemble for habitable-planet climate cases; used here only to adjudicate separation of equilibrium/effective and surface temperature and the dependence on albedo/cloud/climate state.",
+      "assumptions": ["Model ensemble and represented climate regimes define applicability", "Surface temperature depends on atmospheric greenhouse and climate state"],
+      "uncertainty": "No universal effective-temperature to surface-temperature mapping follows from this source.",
+      "units": "NOT_APPLICABLE_QUALITATIVE_MODEL_CONSTRAINT"
+    },
+    {
+      "sourceId": "IAPWS_95_2018_WATER_THERMODYNAMIC_PROPERTIES",
+      "sourceVersion": "R6-95(2018)",
+      "locator": "https://www.iapws.org/relguide/IAPWS-95.html",
+      "sourceType": "AUTHORITATIVE_REFERENCE",
+      "evidenceClass": "ESTABLISHED",
+      "fidelity": "HIGH_FIDELITY",
+      "validityDomain": "Ordinary water stable fluid region from the melting curve to 1273 K and pressures to 1000 MPa; vapor-liquid equilibrium included.",
+      "assumptions": ["Ordinary water substance", "Use only within the formulation validity domain for promoted thermodynamic claims"],
+      "uncertainty": "Use formulation-specific uncertainty statements from IAPWS; Wave IV does not extend them to planetary spatial coverage.",
+      "units": "SI"
+    },
+    {
+      "sourceId": "SALZ_ET_AL_2016_ENERGY_LIMITED_ESCAPE_REVISED",
+      "sourceVersion": "A&A-586-A75-2016",
+      "locator": "doi:10.1051/0004-6361/201527042",
+      "sourceType": "PRIMARY_LITERATURE",
+      "evidenceClass": "EMPIRICALLY_CONSTRAINED",
+      "fidelity": "APPROXIMATE",
+      "validityDomain": "Hydrodynamic atmospheric escape regimes for irradiated planets with model-dependent heating efficiency and XUV absorption radius.",
+      "assumptions": ["Energy-limited treatment is regime dependent", "Heating efficiency is not universal", "Expanded-atmosphere XUV absorption radius can differ materially from optical radius"],
+      "uncertainty": "A universal energy-limited rate is not scientifically authorized by bulk planet inputs alone.",
+      "units": "SI_WHEN_MODEL_INPUTS_ARE_SUPPLIED"
+    },
+    {
+      "sourceId": "STEINMEYER_ET_AL_2026_ROCKY_ATMOSPHERE_EVOLUTION",
+      "sourceVersion": "Space-Sci-Rev-222-56-2026",
+      "locator": "doi:10.1007/s11214-026-01308-4",
+      "sourceType": "REVIEW_LITERATURE",
+      "evidenceClass": "EMPIRICALLY_CONSTRAINED",
+      "fidelity": "APPROXIMATE",
+      "validityDomain": "Rocky-planet atmosphere formation, escape, surface-interior exchange, photochemistry, and long-term evolution.",
+      "assumptions": ["Escape regime, composition, XUV spectrum, absorption radius, heating/cooling physics and history matter", "Energy-limited estimates can over- or underestimate hydrodynamic calculations"],
+      "uncertainty": "Review synthesizes model-dependent regimes; it does not establish a single universal escape law.",
+      "units": "NOT_APPLICABLE_REVIEW_CONSTRAINT"
+    },
+    {
+      "sourceId": "LOURENCO_ET_AL_2026_ROCKY_PLANETS_HEAT_ENGINES",
+      "sourceVersion": "Space-Sci-Rev-222-64-2026",
+      "locator": "doi:10.1007/s11214-026-01317-3",
+      "sourceType": "REVIEW_LITERATURE",
+      "evidenceClass": "EMPIRICALLY_CONSTRAINED",
+      "fidelity": "APPROXIMATE",
+      "validityDomain": "Rocky-planet thermal/interior evolution, tectonic-regime diversity, magmatism and surface-interior coupling.",
+      "assumptions": ["Multiple tectonic regimes are possible", "Surface expression depends on rheology, volatile content, thermal history and boundary conditions", "History can produce non-unique tectonic states for similar bulk parameters"],
+      "uncertainty": "Bulk mass/radius do not uniquely establish plate tectonics, volcanism, or a geochemical energy flux.",
+      "units": "NOT_APPLICABLE_REVIEW_CONSTRAINT"
+    },
+    {
+      "sourceId": "ANSARI_2026_ORIGIN_OF_LIFE_PERSISTENT_QUESTIONS",
+      "sourceVersion": "Discover-Life-56-35-2026",
+      "locator": "doi:10.1007/s11084-026-09753-5",
+      "sourceType": "REVIEW_LITERATURE",
+      "evidenceClass": "EMPIRICALLY_CONSTRAINED",
+      "fidelity": "APPROXIMATE",
+      "validityDomain": "Review of Hadean constraints, prebiotic chemistry and leading origin-of-life settings/pathways.",
+      "assumptions": ["No single proposed setting currently satisfies all requirements for life's emergence", "Transition from geochemistry to biology remains unresolved"],
+      "uncertainty": "Does not support a predictive canonical planetary abiogenesis probability or trigger.",
+      "units": "NOT_APPLICABLE_REVIEW_CONSTRAINT"
+    }
+  ]
+}
