@@ -1,0 +1,161 @@
+name: Certified Preview Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: New preview tag (must not already exist)
+        required: true
+        type: string
+      title:
+        description: Release title
+        required: true
+        type: string
+
+concurrency:
+  group: certified-preview-release
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  actions: read
+
+env:
+  GH_TOKEN: ${{ github.token }}
+  RELEASE_TAG: ${{ inputs.tag }}
+  RELEASE_TITLE: ${{ inputs.title }}
+  SOURCE_SHA: ${{ github.sha }}
+
+jobs:
+  stage-verify-publish:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+      - name: Require exact unchanged live main and a new release line
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git ls-remote origin refs/heads/main | cut -f1)" = "$SOURCE_SHA"
+          test "$RELEASE_TAG" != v0.5.0-preview.1
+          case "$RELEASE_TAG" in
+            v*-preview.*) ;;
+            *) echo 'Release tag must be a preview tag such as v0.6.0-preview.1' >&2; exit 1 ;;
+          esac
+          test -z "$(git ls-remote origin refs/tags/$RELEASE_TAG | cut -f1)"
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            echo 'Release already exists; historical releases are immutable' >&2
+            exit 1
+          fi
+      - name: Resolve successful exact-main Rendering Production run
+        id: certification
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh run list --workflow 'Rendering Production' --branch main --commit "$SOURCE_SHA" --limit 50 \
+            --json databaseId,headSha,conclusion,event,status > /tmp/runs.json
+          RUN_ID="$(jq -r --arg sha "$SOURCE_SHA" '[.[] | select(.headSha==$sha and .conclusion=="success" and .status=="completed")][0].databaseId // empty' /tmp/runs.json)"
+          test -n "$RUN_ID"
+          printf 'run_id=%s\n' "$RUN_ID" >> "$GITHUB_OUTPUT"
+      - name: Download certified exact-main artifact
+        shell: bash
+        env:
+          CERT_RUN_ID: ${{ steps.certification.outputs.run_id }}
+        run: |
+          set -euo pipefail
+          gh run download "$CERT_RUN_ID" -n "rendering-production-build-$SOURCE_SHA" -D release-build
+          test -f release-build/One_File_Universe.html
+          test -f release-build/rendering-build-manifest.json
+      - name: Verify certified artifact and prepare release evidence
+        shell: bash
+        env:
+          CERT_RUN_ID: ${{ steps.certification.outputs.run_id }}
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('node:fs');
+          const crypto=require('node:crypto');
+          const m=JSON.parse(fs.readFileSync('release-build/rendering-build-manifest.json','utf8'));
+          const html=fs.readFileSync('release-build/One_File_Universe.html');
+          const digest=crypto.createHash('sha256').update(html).digest('hex');
+          const req=(ok,msg)=>{if(!ok)throw new Error(msg)};
+          req(m.status==='PASS','certified build status is not PASS');
+          req(m.sourceCommit===process.env.SOURCE_SHA,'certified build source mismatch');
+          req(m.artifact==='One_File_Universe.html','unexpected artifact');
+          req(m.artifactSha256===digest,'manifest/artifact SHA mismatch');
+          req(m.artifactBytes===html.length,'manifest/artifact byte-count mismatch');
+          req(m.runtime?.strictSingleFile===true,'single-file contract mismatch');
+          req(m.runtime?.directFile===true,'direct-file contract mismatch');
+          req(m.runtime?.offline===true && m.runtime?.networkRequired===false,'offline contract mismatch');
+          req(m.rendering?.authority==='PRESENTATION_ONLY','rendering authority mismatch');
+          fs.writeFileSync('expected-sha256.txt',digest+'\n');
+          fs.writeFileSync('expected-bytes.txt',String(html.length)+'\n');
+          const notes=[
+            '# One File Universe Certified Preview',
+            '',
+            `- exact certified main: \`${process.env.SOURCE_SHA}\``,
+            `- Rendering Production run: \`${process.env.CERT_RUN_ID}\``,
+            '- integration gate: `rendering-production-seal` = `PASS`',
+            '- asset: `One_File_Universe.html`',
+            `- SHA-256: \`${digest}\``,
+            `- bytes: \`${html.length}\``,
+            '- strict single file: `true`',
+            '- direct `file://`: `true`',
+            '- runtime network required: `false`',
+            '- Rendering authority: `PRESENTATION_ONLY`',
+            '',
+            'This release is staged as a draft and is published only after remote re-download and byte/hash verification.'
+          ].join('\n');
+          fs.writeFileSync('release-notes.md',notes+'\n');
+          NODE
+      - name: Stage draft release only
+        id: draft
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release create "$RELEASE_TAG" release-build/One_File_Universe.html \
+            --target "$SOURCE_SHA" \
+            --title "$RELEASE_TITLE" \
+            --notes-file release-notes.md \
+            --prerelease \
+            --draft
+          RELEASE_ID="$(gh release view "$RELEASE_TAG" --json databaseId --jq .databaseId)"
+          test -n "$RELEASE_ID"
+          printf 'release_id=%s\n' "$RELEASE_ID" >> "$GITHUB_OUTPUT"
+      - name: Re-download remote draft asset and verify bytes/hash
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf remote-release && mkdir remote-release
+          gh release download "$RELEASE_TAG" -p One_File_Universe.html -D remote-release
+          REMOTE_SHA="$(sha256sum remote-release/One_File_Universe.html | cut -d' ' -f1)"
+          REMOTE_BYTES="$(stat -c%s remote-release/One_File_Universe.html)"
+          test "$REMOTE_SHA" = "$(tr -d '\n' < expected-sha256.txt)"
+          test "$REMOTE_BYTES" = "$(tr -d '\n' < expected-bytes.txt)"
+          cmp -s release-build/One_File_Universe.html remote-release/One_File_Universe.html
+          printf '\n## Remote draft verification\n\n- status: **PASS**\n- re-downloaded SHA-256: `%s`\n- re-downloaded bytes: `%s`\n- byte-identical to certified exact-main artifact: `true`\n' \
+            "$REMOTE_SHA" "$REMOTE_BYTES" >> release-notes.md
+          gh release edit "$RELEASE_TAG" --notes-file release-notes.md
+      - name: Publish only after verified draft
+        shell: bash
+        env:
+          RELEASE_ID: ${{ steps.draft.outputs.release_id }}
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" -X PATCH \
+            -F draft=false -F prerelease=true >/tmp/published.json
+          test "$(jq -r .draft /tmp/published.json)" = false
+          test "$(jq -r .prerelease /tmp/published.json)" = true
+          test "$(jq -r .target_commitish /tmp/published.json)" = "$SOURCE_SHA"
+      - name: Final published-asset verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf published-release && mkdir published-release
+          gh release download "$RELEASE_TAG" -p One_File_Universe.html -D published-release
+          test "$(sha256sum published-release/One_File_Universe.html | cut -d' ' -f1)" = "$(tr -d '\n' < expected-sha256.txt)"
+          test "$(stat -c%s published-release/One_File_Universe.html)" = "$(tr -d '\n' < expected-bytes.txt)"
+          cmp -s release-build/One_File_Universe.html published-release/One_File_Universe.html
