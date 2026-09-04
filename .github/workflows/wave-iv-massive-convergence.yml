@@ -1,0 +1,61 @@
+name: Wave IV Massive Convergence Development
+on:
+  push:
+    branches: [integration/wave-iv-massive-convergence-vertical-slice-2026-09-04]
+  workflow_dispatch:
+concurrency:
+  group: wave-iv-massive-convergence-${{ github.ref_name }}
+  cancel-in-progress: true
+env:
+  OFU_SOURCE_SHA: ${{ github.sha }}
+permissions:
+  contents: read
+jobs:
+  focused-vertical-slice:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.20.0'
+      - name: Exact source
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Hardened planet regressions
+        run: |
+          node tests/rendering/v08-camera-framing.mjs
+          node tests/rendering/v08-fv04-diagnostic.mjs
+          node tests/rendering/v08-visual-oracles.mjs
+      - name: Macrocosm oracles
+        run: node tests/wave-iv/macro/macro-oracles.mjs
+      - name: Full scale runtime oracle
+        run: node tests/wave-iv/convergence-runtime.mjs
+      - name: Surface frame and bounded terrain oracles
+        run: |
+          node tests/rendering/wave-iv-surface-frame.mjs
+          node tests/rendering/wave-iv-surface-terrain.mjs
+          node tests/wave-iv/terrain-continuity.mjs
+      - name: Exact-head single-file build
+        run: |
+          node tools/build-ofu-rendering-v09.mjs > /tmp/wave-iv-build.json
+          grep -q 'ofu-wave-iv-scale-runtime-2' dist/rendering-build-manifest.json
+          grep -q 'ofu-local-terrain-lod-3' dist/rendering-build-manifest.json
+          grep -q 'dd3348834d15ddf6a409912ac3e263c1e6d81fc4' dist/rendering-build-manifest.json
+          grep -q '34874da12a157deba6d7615ff07a20a83606d938' dist/rendering-build-manifest.json
+          grep -q '56e44c8708338309f90a6354ce16f4140ea87ca0' dist/rendering-build-manifest.json
+          test "$(grep -Eoc '(src|href)=[\"'\'']https?://' dist/One_File_Universe.html)" -eq 0
+          grep -q "connect-src 'none'" dist/One_File_Universe.html
+      - name: Install Chromium
+        run: |
+          npm install --no-save playwright@1.62.1
+          npx playwright install --with-deps chromium
+      - name: Desktop and mobile vertical traversal
+        run: node tests/wave-iv/browser-convergence.mjs
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: wave-iv-convergence-${{ env.OFU_SOURCE_SHA }}
+          path: |
+            dist/One_File_Universe.html
+            dist/rendering-build-manifest.json
+            dist/evidence/wave-iv-convergence/
