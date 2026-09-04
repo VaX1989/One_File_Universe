@@ -54,14 +54,15 @@ jobs:
           cmp /tmp/wave-iv-first-manifest.json dist/rendering-build-manifest.json
           grep -q 'ofu-wave-iv-scale-runtime-3' dist/rendering-build-manifest.json
           grep -q 'ofu-wave-iv-input-router-4' dist/rendering-build-manifest.json
-          grep -q 'ofu-wave-iv-surface-scale-sync-6' dist/rendering-build-manifest.json
+          grep -q 'ofu-wave-iv-surface-scale-sync-7' dist/rendering-build-manifest.json
           grep -q 'SPHERICAL_PLANET_WEBGL_HANDOFF' dist/rendering-build-manifest.json
           grep -q 'globalSurfaceGlobeDistanceRadii' dist/rendering-build-manifest.json
           grep -q 'globalGlobeHandoffAtomic' dist/rendering-build-manifest.json
           grep -q 'ofu-wave-iv-macro-canvas-3' dist/rendering-build-manifest.json
           grep -q 'ofu-local-terrain-lod-4' dist/rendering-build-manifest.json
           grep -q 'ofu-surface-relief-presentation-1' dist/rendering-build-manifest.json
-          grep -q 'ofu-local-surface-webgl2-5' dist/rendering-build-manifest.json
+          grep -q 'ofu-local-surface-webgl2-6' dist/rendering-build-manifest.json
+          grep -q 'presentationElevationColorRangeM' dist/rendering-build-manifest.json
           grep -q 'FRUSTUM_GROUND_FOOTPRINT_BOUNDED' dist/rendering-build-manifest.json
           grep -q 'CAMERA_LOCATION_PRESENTATION_RELIEF_DATUM' dist/rendering-build-manifest.json
           grep -q 'PLANET_WIDE_TO_HUMAN_SCALE_PRESENTATION_V3' dist/rendering-build-manifest.json
