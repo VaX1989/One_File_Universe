@@ -1,0 +1,62 @@
+{
+  "registryId": "ofu-p6-biology-v2-source-adjudication-wave4",
+  "retrievedDate": "2026-09-04",
+  "status": "RESEARCH_ONLY",
+  "sources": [
+    {
+      "sourceId": "LINDEMAN_1942_TROPHIC_DYNAMIC",
+      "sourceVersion": "Ecology-23-399-417",
+      "locator": "doi:10.2307/1930126",
+      "evidenceClass": "ESTABLISHED",
+      "fidelity": "APPROXIMATE",
+      "validityDomain": "Trophic-dynamic energy-transfer framing in ecosystems; used to justify explicit trophic energy accounting, not a universal fixed transfer efficiency.",
+      "assumptions": ["Energy-transfer organization is modeled explicitly", "Efficiency parameters remain ecosystem/model specific"],
+      "uncertainty": "Does not authorize a universal ten-percent constant or exoplanet-wide trophic efficiency.",
+      "units": "DIMENSIONLESS_WHEN_EFFICIENCY_IS_SUPPLIED"
+    },
+    {
+      "sourceId": "HOLT_2009_HUTCHINSONIAN_NICHE",
+      "sourceVersion": "PNAS-106-S2-19659-19665",
+      "locator": "doi:10.1073/pnas.0905137106",
+      "evidenceClass": "EMPIRICALLY_CONSTRAINED",
+      "fidelity": "APPROXIMATE",
+      "validityDomain": "Population persistence as a function of abiotic and biotic environmental axes, with density dependence, dispersal, temporal heterogeneity, and evolutionary variation.",
+      "assumptions": ["Niche/persistence is multidimensional", "Biotic interactions and temporal/spatial context can matter"],
+      "uncertainty": "No universal one-dimensional stress-to-population law follows.",
+      "units": "NOT_APPLICABLE_CONCEPTUAL_CONSTRAINT"
+    },
+    {
+      "sourceId": "DE_QUEIROZ_2007_SPECIES_DELIMITATION",
+      "sourceVersion": "Systematic-Biology-56-879-886",
+      "locator": "doi:10.1080/10635150701701083",
+      "evidenceClass": "EMPIRICALLY_CONSTRAINED",
+      "fidelity": "APPROXIMATE",
+      "validityDomain": "Species conceptualization and delimitation; separately evolving metapopulation lineages with multiple secondary criteria for operational delimitation.",
+      "assumptions": ["Species delimitation requires evidence/criteria appropriate to the lineage and method", "Different operational criteria may become informative at different stages of divergence"],
+      "uncertainty": "Does not support a universal scalar trait-distance threshold for speciation.",
+      "units": "NOT_APPLICABLE_CONCEPTUAL_CONSTRAINT"
+    },
+    {
+      "sourceId": "HILL_2010_QUANTITATIVE_GENETIC_VARIATION",
+      "sourceVersion": "Philos-Trans-R-Soc-B-365-73-85",
+      "locator": "pmc:PMC2842708",
+      "evidenceClass": "EMPIRICALLY_CONSTRAINED",
+      "fidelity": "APPROXIMATE",
+      "validityDomain": "Quantitative-genetic variance models and assumptions, including additive genetic variance and conditions affecting prediction.",
+      "assumptions": ["Model assumptions and population context must be declared", "Heritability is population/environment dependent rather than a universal trait constant"],
+      "uncertainty": "Transfer across populations, environments, mating structures, linkage structures, and selection regimes is not automatic.",
+      "units": "DIMENSIONLESS_FOR_HERITABILITY"
+    },
+    {
+      "sourceId": "CHALUB_SOUZA_2014_BREEDER_EQUATION_ALTERNATIVE",
+      "sourceVersion": "J-Math-Biol-68-1003-1021",
+      "locator": "pmc:PMC3887544",
+      "evidenceClass": "EMPIRICALLY_CONSTRAINED",
+      "fidelity": "APPROXIMATE",
+      "validityDomain": "Analysis of the breeder's equation R=h^2 S and its assumptions; used to keep Wave IV trait response explicitly model conditional.",
+      "assumptions": ["Narrow-sense heritability and selection differential must be supplied", "Distributional/model assumptions affect validity"],
+      "uncertainty": "Not a universal predictor of phenotypic evolution in arbitrary wild or extraterrestrial populations.",
+      "units": "TRAIT_SCALE_DEPENDENT"
+    }
+  ]
+}
