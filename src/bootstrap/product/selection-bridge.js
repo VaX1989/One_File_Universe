@@ -21,7 +21,9 @@ function establishInspectorPlanet(key){
 function selectPlanet(key,{announce=true}={}){
  const P=root.__OFU_PLANET_PREVIEW__;
  if(!P?.retarget)throw new Error('renderer retarget interface unavailable');
- const selected=establishInspectorPlanet(key),rendered=P.retarget(selected.key);
+ const selected=establishInspectorPlanet(key);
+ const alreadyTargeted=sameKey(P.chosen?.key,selected.key)&&P.targetTestOnly!==true;
+ const rendered=alreadyTargeted?P.targetStatus==='SUPPORTED':P.retarget(selected.key);
  if(!sameKey(P.chosen?.key,selected.key))throw new Error('renderer target did not establish requested canonical planet');
  O.productUI?.sync?.();O.v08InspectorProduct?.render?.();O.v08LabTechnical?.sync?.();
  const result=Object.freeze({
@@ -30,7 +32,8 @@ function selectPlanet(key,{announce=true}={}){
   planetId:O.p2?.hex?O.p2.hex(selected.record.id):null,
   presentationStatus:P.targetStatus,
   presentationReason:P.targetReason||null,
-  rendered:rendered!==false
+  rendered:rendered!==false,
+  presentationRetargeted:!alreadyTargeted
  });
  if(announce)O.productUI?.announce?.(P.targetStatus==='SUPPORTED'?'Selected world ready to explore':'Selected canonical world; visualization unavailable');
  return result;
