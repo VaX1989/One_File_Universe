@@ -48,7 +48,7 @@ try{
  if(tokenContrast.foreground<4.5||tokenContrast.muted<4.5)throw new Error('token contrast below 4.5');
  await noOverflow(page,'desktop Explore');await screen(page,'desktop-explore');
  await page.click('[data-workspace="inspect"]');
- await page.locator('details.raw-details').evaluate(el=>{el.open=true});
+ await page.locator('#entity-type').evaluate(el=>{const details=el.closest('details');if(details)details.open=true});
  await page.selectOption('#entity-type','Planet');
  await page.evaluate(()=>document.getElementById('entity-type').dispatchEvent(new Event('change',{bubbles:true})));
  await screen(page,'desktop-inspect');
@@ -64,7 +64,7 @@ try{
  if(await page.evaluate(()=>__OFU_PLANET_PREVIEW__.targetSwitches)!==absent.switches)throw new Error('ABSENT mutated target');
  for(const [f,v] of Object.entries(absent.key))await page.fill('#f-'+f,String(v));
  await page.click('#query');
- await page.locator('details.raw-details').evaluate(el=>{el.open=false});
+ await page.locator('#entity-type').evaluate(el=>{const details=el.closest('details');if(details)details.open=false});
  await page.click('[data-workspace="lab"]');await page.fill('#archive','xyz');await page.click('#archive-import');
  if(!(await page.textContent('#archive-output'))?.startsWith('Import not applied:'))throw new Error('archive error not productized');
  await screen(page,'desktop-lab');await page.keyboard.press('Escape');
