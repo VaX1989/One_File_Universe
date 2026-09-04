@@ -53,12 +53,20 @@ jobs:
           cmp /tmp/wave-iv-first.html dist/One_File_Universe.html
           cmp /tmp/wave-iv-first-manifest.json dist/rendering-build-manifest.json
           grep -q 'ofu-wave-iv-scale-runtime-3' dist/rendering-build-manifest.json
-          grep -q 'ofu-wave-iv-input-router-4' dist/rendering-build-manifest.json
+          grep -q 'ofu-wave-iv-input-router-5' dist/rendering-build-manifest.json
+          grep -q 'ofu-wave-iv-input-intent-3' dist/rendering-build-manifest.json
+          grep -q 'ofu-wave-iv-macro-canvas-4' dist/rendering-build-manifest.json
+          grep -q 'ofu-wave-iv-macro-interaction-3' dist/rendering-build-manifest.json
+          grep -q 'ofu-wave-iv-macro-travel-2' dist/rendering-build-manifest.json
+          grep -q 'applicationOwnsCanvasTouchGestures' dist/rendering-build-manifest.json
+          grep -q 'allCanonicalPlanetsVisible' dist/rendering-build-manifest.json
+          grep -q 'directPlanetVisit' dist/rendering-build-manifest.json
+          grep -q 'ofu-planet-webgl2-presentation-2' dist/rendering-build-manifest.json
+          grep -q 'DETERMINISTIC_PLANET_WIDE_FBM_V2' dist/rendering-build-manifest.json
           grep -q 'ofu-wave-iv-surface-scale-sync-7' dist/rendering-build-manifest.json
           grep -q 'SPHERICAL_PLANET_WEBGL_HANDOFF' dist/rendering-build-manifest.json
           grep -q 'globalSurfaceGlobeDistanceRadii' dist/rendering-build-manifest.json
           grep -q 'globalGlobeHandoffAtomic' dist/rendering-build-manifest.json
-          grep -q 'ofu-wave-iv-macro-canvas-3' dist/rendering-build-manifest.json
           grep -q 'ofu-local-terrain-lod-4' dist/rendering-build-manifest.json
           grep -q 'ofu-surface-relief-presentation-1' dist/rendering-build-manifest.json
           grep -q 'ofu-local-surface-webgl2-6' dist/rendering-build-manifest.json
@@ -76,6 +84,8 @@ jobs:
         run: |
           npm install --no-save playwright@1.62.1
           npx playwright install --with-deps chromium
+      - name: Founder interaction, touch, direct-world, responsive and globe-detail oracle
+        run: node tests/wave-iv/browser-founder-interaction.mjs
       - name: Desktop and 390x844 full visual traversal
         run: node tests/wave-iv/browser-convergence.mjs
       - name: 360x800 and 320x700 compact mobile pass
