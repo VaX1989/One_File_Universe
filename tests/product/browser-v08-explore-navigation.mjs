@@ -3,78 +3,24 @@ import path from 'node:path';
 import process from 'node:process';
 import {pathToFileURL} from 'node:url';
 import {chromium,firefox,webkit} from 'playwright';
+import {waitForSettledCamera,projectionEvidence,assertApproachProjection} from '../rendering/v08-visual-oracles.mjs';
 
 const browserName=process.env.BROWSER||'chromium';
 const engine={chromium,firefox,webkit}[browserName];
 if(!engine)throw new Error('unknown browser '+browserName);
 const file=path.resolve('dist/One_File_Universe.html');
 if(!fs.existsSync(file))throw new Error('build dist/One_File_Universe.html before running Lane A browser evidence');
-const evidenceDir=path.resolve('dist/evidence/rendering-production');
-fs.mkdirSync(evidenceDir,{recursive:true});
-const browser=await engine.launch({headless:true});
-const page=await browser.newPage({viewport:{width:1440,height:900}});
-const pageErrors=[];page.on('pageerror',error=>pageErrors.push(String(error.message||error).slice(0,500)));
-const FIELDS=['galaxyX','galaxyY','galaxyZ','sectorX','sectorY','sectorZ','siteX','siteY','siteZ','orbitSlot'];
+const evidenceDir=path.resolve('dist/evidence/rendering-production');fs.mkdirSync(evidenceDir,{recursive:true});
+const browser=await engine.launch({headless:true});const page=await browser.newPage({viewport:{width:1440,height:900}});const pageErrors=[];page.on('pageerror',error=>pageErrors.push(String(error.message||error).slice(0,500)));
 try{
  await page.goto(pathToFileURL(file).href,{waitUntil:'load'});
- await page.waitForFunction(()=>{
-  const N=globalThis.OFU?.v08ExploreNavigation,P=globalThis.__OFU_PLANET_PREVIEW__,I=globalThis.OFU?.inspectorTest?.state?.current;
-  if(globalThis.__OFU_BASELINE_REPORT__?.status!=='READY'||!N?.state?.ready||!P?.chosen?.key||I?.type!=='Planet')return false;
-  return ['galaxyX','galaxyY','galaxyZ','sectorX','sectorY','sectorZ','siteX','siteY','siteZ','orbitSlot'].every(k=>String(I.key?.[k])===String(P.chosen.key?.[k]));
- },undefined,{timeout:30000});
- const initial=await page.evaluate(()=>{
-  const O=OFU,N=O.v08ExploreNavigation,P=__OFU_PLANET_PREVIEW__,A=O.p3Astronomy,I=O.inspectorTest.state.current;
-  const target=N.state.targets[N.state.selectedIndex],system=N.state.system,current=A.resolvePlanet(P.ctx,target.key);
-  return{planetCount:Number(system.facts.planetCount),targetCount:N.state.targets.length,selectedIndex:N.state.selectedIndex,selectedName:target.name,previewId:P.provider?.planetId||P.chosen?.planetId,currentId:O.p2.hex(current.id),inspectorId:O.p2.hex(I.r.id),systemDigest:O.p2.hex(A.digestFact(system)),planetDigest:O.p2.hex(A.digestFact(current)),approachDisabled:document.getElementById('explore-go').disabled,layoutNote:document.getElementById('explore-layout-note').textContent,bridge:O.v08SelectionBridge?.contract};
- });
- if(initial.planetCount!==initial.targetCount||initial.targetCount<1)throw new Error('canonical system discovery count mismatch');
- if(initial.previewId!==initial.currentId||initial.inspectorId!==initial.currentId||initial.approachDisabled)throw new Error('initial Explore / Inspector / renderer target continuity failed '+JSON.stringify(initial));
- if(initial.bridge!=='ofu-product-canonical-planet-selection-1')throw new Error('shared canonical selection bridge missing');
- if(!/not a claim about physical orbital geometry/i.test(initial.layoutNote))throw new Error('presentation-layout scientific guardrail missing');
- await page.click('#explore-go');
- await page.waitForFunction(()=>Math.abs(__OFU_PLANET_PREVIEW__.camera.targetDistanceM/__OFU_PLANET_PREVIEW__.radius-1.35)<1e-9);
- const approach=await page.evaluate(()=>{const P=__OFU_PLANET_PREVIEW__,s=P.snapshot();return{stage:OFU.v08ExploreNavigation.state.stage,targetRadii:P.camera.targetDistanceM/P.radius,penetrating:s.camera?.penetratingPresentationGeometry,coverage:s.plan?.coverageComplete}});
- if(approach.stage!=='approach'||Math.abs(approach.targetRadii-1.35)>1e-9||approach.penetrating===true||approach.coverage===false)throw new Error('selection to safe Approach failed '+JSON.stringify(approach));
- await page.click('[data-explore-stage="system"]');
- await page.waitForFunction(()=>Math.abs(__OFU_PLANET_PREVIEW__.camera.targetDistanceM/__OFU_PLANET_PREVIEW__.radius-180)<1e-9);
- let alternate=null;
- if(initial.targetCount>1){
-  await page.focus('[data-explore-relative="1"]');await page.keyboard.press('Enter');
-  await page.waitForFunction(index=>{
-   const O=OFU,N=O.v08ExploreNavigation,P=__OFU_PLANET_PREVIEW__,I=O.inspectorTest?.state?.current,target=N.state.targets[N.state.selectedIndex];
-   return N.state.selectedIndex!==index&&I?.type==='Planet'&&target&&['galaxyX','galaxyY','galaxyZ','sectorX','sectorY','sectorZ','siteX','siteY','siteZ','orbitSlot'].every(k=>String(target.key[k])===String(P.chosen?.key?.[k])&&String(target.key[k])===String(I.key?.[k]));
-  },initial.selectedIndex,{timeout:20000});
-  alternate=await page.evaluate(()=>{
-   const O=OFU,N=O.v08ExploreNavigation,P=__OFU_PLANET_PREVIEW__,I=O.inspectorTest.state.current,A=O.p3Astronomy,target=N.state.targets[N.state.selectedIndex],resolved=A.resolvePlanet(P.ctx,target.key),snap=P.snapshot();
-   return{selectedIndex:N.state.selectedIndex,name:target.name,status:resolved.status,planetId:O.p2.hex(resolved.id),previewId:P.provider?.planetId||P.chosen?.planetId,inspectorId:O.p2.hex(I.r.id),targetStatus:P.targetStatus,targetReason:P.targetReason,approachDisabled:document.getElementById('explore-go').disabled,message:document.getElementById('explore-selection-status').textContent,digest:O.p2.hex(A.digestFact(resolved)),environment:snap.environment,p6:snap.p6};
-  });
-  if(alternate.selectedIndex===initial.selectedIndex||alternate.status!=='PRESENT'||alternate.planetId!==alternate.previewId||alternate.planetId!==alternate.inspectorId)throw new Error('alternate canonical selection continuity failed '+JSON.stringify(alternate));
-  if(alternate.targetStatus==='SUPPORTED'){
-   if(alternate.approachDisabled)throw new Error('supported alternate target did not enable Approach');
-   await page.click('#explore-go');
-   await page.waitForFunction(()=>Math.abs(__OFU_PLANET_PREVIEW__.camera.targetDistanceM/__OFU_PLANET_PREVIEW__.radius-1.35)<1e-9);
-  }else if(alternate.targetStatus==='UNSUPPORTED'){
-   if(!alternate.approachDisabled||!/cannot be visualized|visualization unavailable/i.test(alternate.message))throw new Error('unsupported alternate target not represented fail-closed '+JSON.stringify(alternate));
-   if(alternate.environment!==null||alternate.p6!==null)throw new Error('unsupported alternate exposed stale downstream projection');
-  }else throw new Error('unexpected alternate renderer target state '+alternate.targetStatus);
-  await page.focus('[data-explore-relative="-1"]');await page.keyboard.press('Enter');
-  await page.waitForFunction(index=>OFU.v08ExploreNavigation.state.selectedIndex===index,initial.selectedIndex,{timeout:20000});
-  await page.waitForFunction(id=>{
-   const O=OFU,P=__OFU_PLANET_PREVIEW__,I=O.inspectorTest.state.current;return (P.provider?.planetId||P.chosen?.planetId)===id&&O.p2.hex(I.r.id)===id;
-  },initial.currentId,{timeout:20000});
- }
- const final=await page.evaluate(()=>{
-  const O=OFU,N=O.v08ExploreNavigation,P=__OFU_PLANET_PREVIEW__,A=O.p3Astronomy,target=N.state.targets[N.state.selectedIndex],system=A.resolveSystem(P.ctx,Object.fromEntries(Object.entries(target.key).filter(([k])=>k!=='orbitSlot'))),planet=A.resolvePlanet(P.ctx,target.key),I=O.inspectorTest.state.current;
-  return{selectedIndex:N.state.selectedIndex,systemDigest:O.p2.hex(A.digestFact(system)),planetDigest:O.p2.hex(A.digestFact(planet)),previewId:P.provider?.planetId||P.chosen?.planetId,inspectorId:O.p2.hex(I.r.id),workspace:O.productUI.state.workspace};
- });
- if(final.selectedIndex!==initial.selectedIndex||final.previewId!==initial.currentId||final.inspectorId!==initial.currentId)throw new Error('previous/next target round trip failed '+JSON.stringify(final));
- if(final.systemDigest!==initial.systemDigest||final.planetDigest!==initial.planetDigest)throw new Error('canonical witness changed after Explore navigation');
- if(pageErrors.length)throw new Error('page errors '+JSON.stringify(pageErrors));
- const shots=[];
- if(browserName==='chromium'){
-  const shot=path.join(evidenceDir,'v08-explore-system.png');await page.screenshot({path:shot,fullPage:true});shots.push(path.basename(shot));
- }
- const evidence={status:'PASS',lane:'A-integrated',browser:browserName,systemToBodyDiscovery:true,persistentCanonicalSelectionBridge:true,selectionToApproach:true,backToSystem:true,targetIdentityContinuity:true,alternateTargetExercised:initial.targetCount>1,canonicalWitnessNonInterference:true,keyboardButtonActivation:true,presentationOrbitLayoutDisclosed:true,screenshots:shots};
- fs.writeFileSync(path.join(evidenceDir,`v08-explore-${browserName}.json`),JSON.stringify(evidence,null,2)+'\n');
- console.log(JSON.stringify(evidence));
+ await page.waitForFunction(()=>{const N=globalThis.OFU?.v08ExploreNavigation,P=globalThis.__OFU_PLANET_PREVIEW__,I=globalThis.OFU?.inspectorTest?.state?.current;if(globalThis.__OFU_BASELINE_REPORT__?.status!=='READY'||!N?.state?.ready||!P?.chosen?.key||I?.type!=='Planet')return false;return ['galaxyX','galaxyY','galaxyZ','sectorX','sectorY','sectorZ','siteX','siteY','siteZ','orbitSlot'].every(k=>String(I.key?.[k])===String(P.chosen.key?.[k]))},undefined,{timeout:30000});
+ const initial=await page.evaluate(()=>{const O=OFU,N=O.v08ExploreNavigation,P=__OFU_PLANET_PREVIEW__,A=O.p3Astronomy,I=O.inspectorTest.state.current,target=N.state.targets[N.state.selectedIndex],system=N.state.system,current=A.resolvePlanet(P.ctx,target.key);return{planetCount:Number(system.facts.planetCount),targetCount:N.state.targets.length,selectedIndex:N.state.selectedIndex,selectedName:target.name,previewId:P.provider?.planetId||P.chosen?.planetId,currentId:O.p2.hex(current.id),inspectorId:O.p2.hex(I.r.id),systemDigest:O.p2.hex(A.digestFact(system)),planetDigest:O.p2.hex(A.digestFact(current)),approachDisabled:document.getElementById('explore-go').disabled,layoutNote:document.getElementById('explore-layout-note').textContent,bridge:O.v08SelectionBridge?.contract}});
+ if(initial.planetCount!==initial.targetCount||initial.targetCount<1)throw new Error('canonical system discovery count mismatch');if(initial.previewId!==initial.currentId||initial.inspectorId!==initial.currentId||initial.approachDisabled)throw new Error('initial Explore / Inspector / renderer target continuity failed '+JSON.stringify(initial));if(initial.bridge!=='ofu-product-canonical-planet-selection-1')throw new Error('shared canonical selection bridge missing');if(!/not a claim about physical orbital geometry/i.test(initial.layoutNote))throw new Error('presentation-layout scientific guardrail missing');
+ await page.click('#explore-go');const approachSettled=await waitForSettledCamera(page),approachProjection=await projectionEvidence(page);assertApproachProjection(approachProjection,'Explore selection Approach');
+ const approach=await page.evaluate(()=>{const P=__OFU_PLANET_PREVIEW__,s=P.snapshot(),N=OFU.v08ExploreNavigation;return{stage:N.state.stage,productStage:N.state.stage,targetRadii:P.camera.targetDistanceM/P.radius,penetrating:s.camera?.penetratingPresentationGeometry,coverage:s.plan?.coverageComplete,framing:N.state.framing}});if(approach.stage!=='approach'||approach.productStage!=='approach'||approach.framing?.kind!=='PROJECTION_AWARE_OCCUPANCY'||approach.penetrating===true||approach.coverage===false)throw new Error('selection to projection-aware settled Approach failed '+JSON.stringify(approach));
+ await page.click('[data-explore-stage="system"]');await page.waitForFunction(()=>Math.abs(__OFU_PLANET_PREVIEW__.camera.targetDistanceM/__OFU_PLANET_PREVIEW__.radius-180)<1e-9);
+ let alternate=null;if(initial.targetCount>1){await page.focus('[data-explore-relative="1"]');await page.keyboard.press('Enter');await page.waitForFunction(index=>{const O=OFU,N=O.v08ExploreNavigation,P=__OFU_PLANET_PREVIEW__,I=O.inspectorTest?.state?.current,target=N.state.targets[N.state.selectedIndex];return N.state.selectedIndex!==index&&I?.type==='Planet'&&target&&['galaxyX','galaxyY','galaxyZ','sectorX','sectorY','sectorZ','siteX','siteY','siteZ','orbitSlot'].every(k=>String(target.key[k])===String(P.chosen?.key?.[k])&&String(target.key[k])===String(I.key?.[k]))},initial.selectedIndex,{timeout:20000});alternate=await page.evaluate(()=>{const O=OFU,N=O.v08ExploreNavigation,P=__OFU_PLANET_PREVIEW__,I=O.inspectorTest.state.current,A=O.p3Astronomy,target=N.state.targets[N.state.selectedIndex],resolved=A.resolvePlanet(P.ctx,target.key),snap=P.snapshot();return{selectedIndex:N.state.selectedIndex,name:target.name,status:resolved.status,planetId:O.p2.hex(resolved.id),previewId:P.provider?.planetId||P.chosen?.planetId,inspectorId:O.p2.hex(I.r.id),targetStatus:P.targetStatus,targetReason:P.targetReason,approachDisabled:document.getElementById('explore-go').disabled,message:document.getElementById('explore-selection-status').textContent,digest:O.p2.hex(A.digestFact(resolved)),environment:snap.environment,p6:snap.p6}});if(alternate.selectedIndex===initial.selectedIndex||alternate.status!=='PRESENT'||alternate.planetId!==alternate.previewId||alternate.planetId!==alternate.inspectorId)throw new Error('alternate canonical selection continuity failed '+JSON.stringify(alternate));if(alternate.targetStatus==='SUPPORTED'){if(alternate.approachDisabled)throw new Error('supported alternate target did not enable Approach');await page.click('#explore-go');await waitForSettledCamera(page);const alternateProjection=await projectionEvidence(page);assertApproachProjection(alternateProjection,'alternate target Approach')}else if(alternate.targetStatus==='UNSUPPORTED'){if(!alternate.approachDisabled||!/cannot be visualized|visualization unavailable/i.test(alternate.message))throw new Error('unsupported alternate target not represented fail-closed '+JSON.stringify(alternate));if(alternate.environment!==null||alternate.p6!==null)throw new Error('unsupported alternate exposed stale downstream projection')}else throw new Error('unexpected alternate renderer target state '+alternate.targetStatus);await page.focus('[data-explore-relative="-1"]');await page.keyboard.press('Enter');await page.waitForFunction(index=>OFU.v08ExploreNavigation.state.selectedIndex===index,initial.selectedIndex,{timeout:20000});await page.waitForFunction(id=>{const O=OFU,P=__OFU_PLANET_PREVIEW__,I=O.inspectorTest.state.current;return (P.provider?.planetId||P.chosen?.planetId)===id&&O.p2.hex(I.r.id)===id},initial.currentId,{timeout:20000})}
+ const final=await page.evaluate(()=>{const O=OFU,N=O.v08ExploreNavigation,P=__OFU_PLANET_PREVIEW__,A=O.p3Astronomy,target=N.state.targets[N.state.selectedIndex],system=A.resolveSystem(P.ctx,Object.fromEntries(Object.entries(target.key).filter(([k])=>k!=='orbitSlot'))),planet=A.resolvePlanet(P.ctx,target.key),I=O.inspectorTest.state.current;return{selectedIndex:N.state.selectedIndex,systemDigest:O.p2.hex(A.digestFact(system)),planetDigest:O.p2.hex(A.digestFact(planet)),previewId:P.provider?.planetId||P.chosen?.planetId,inspectorId:O.p2.hex(I.r.id),workspace:O.productUI.state.workspace}});if(final.selectedIndex!==initial.selectedIndex||final.previewId!==initial.currentId||final.inspectorId!==initial.currentId)throw new Error('previous/next target round trip failed '+JSON.stringify(final));if(final.systemDigest!==initial.systemDigest||final.planetDigest!==initial.planetDigest)throw new Error('canonical witness changed after Explore navigation');if(pageErrors.length)throw new Error('page errors '+JSON.stringify(pageErrors));
+ const shots=[];if(browserName==='chromium'){const shot=path.join(evidenceDir,'v08-explore-system.png');await page.screenshot({path:shot,fullPage:true});shots.push(path.basename(shot))}const evidence={status:'PASS',lane:'A-integrated',browser:browserName,systemToBodyDiscovery:true,persistentCanonicalSelectionBridge:true,selectionToApproach:true,settledApproach:true,projectionAwareApproach:true,approachSettle:approachSettled,approachProjection,backToSystem:true,targetIdentityContinuity:true,alternateTargetExercised:initial.targetCount>1,canonicalWitnessNonInterference:true,keyboardButtonActivation:true,presentationOrbitLayoutDisclosed:true,screenshots:shots};fs.writeFileSync(path.join(evidenceDir,`v08-explore-${browserName}.json`),JSON.stringify(evidence,null,2)+'\n');console.log(JSON.stringify(evidence));
 }finally{await browser.close()}
