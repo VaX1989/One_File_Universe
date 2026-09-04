@@ -131,10 +131,17 @@ jobs:
       - run: npm install --no-save playwright@1.62.1
       - run: npx playwright install --with-deps ${{ matrix.browser }}
       - name: Galaxy to Human cross-browser traversal
-        run: node tests/wave-iv/browser-convergence-matrix.mjs
+        shell: bash
+        run: |
+          if [ "$BROWSER" = "chromium" ]; then
+            node tests/wave-iv/browser-convergence-matrix.mjs
+          else
+            xvfb-run -a node tests/wave-iv/browser-convergence-matrix.mjs
+          fi
         env:
           BROWSER: ${{ matrix.browser }}
           DPR: ${{ matrix.browser == 'chromium' && '2' || '1' }}
+          HEADED: ${{ matrix.browser == 'chromium' && '0' || '1' }}
   browser-platform:
     if: ${{ github.event_name == 'pull_request' && github.base_ref == 'main' }}
     strategy:
