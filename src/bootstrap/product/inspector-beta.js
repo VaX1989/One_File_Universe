@@ -17,6 +17,6 @@ function copyFor(){
  return{overview:'This world has a supported physical realization. The sections below separate what is established from what remains unknown.',physical:'A bounded physical state is derived from the world’s baseline mass and other supported inputs.',environment:'Some stellar forcing is established, but atmosphere, pressure, climate and related surface conditions remain unknown unless the model explicitly resolves them.',biology};
 }
 function sync(){const copy=copyFor();if(!copy)return;const stamp=JSON.stringify(copy),matches=q('inspector-overview-copy')?.textContent===copy.overview&&q('inspector-physical-copy')?.textContent===copy.physical&&q('inspector-environment-copy')?.textContent===copy.environment&&q('inspector-biology-copy')?.textContent===copy.biology;if(stamp===state.lastStamp&&matches)return;state.lastStamp=stamp;state.syncs++;set('inspector-overview-copy',copy.overview);set('inspector-physical-copy',copy.physical);set('inspector-environment-copy',copy.environment);set('inspector-biology-copy',copy.biology)}
-function init(){setInterval(sync,200);sync()}
+function init(){const observer=new MutationObserver(()=>queueMicrotask(sync));observer.observe(document.body,{subtree:true,childList:true,characterData:true});setInterval(sync,250);sync()}
 const api=Object.freeze({seamVersion:1,state,sync});O.v09InspectorLanguage=api;if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })(typeof globalThis!=='undefined'?globalThis:this);

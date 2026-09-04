@@ -28,7 +28,7 @@ try{
   const compare=await page.evaluate(()=>({rows:document.querySelectorAll('#beta-compare-body tr').length,copy:document.getElementById('beta-compare-copy')?.textContent,recent:document.querySelectorAll('#beta-recent-list .beta-world-card').length,bookmarks:document.querySelectorAll('#beta-bookmark-list .beta-world-card').length}));
   if(compare.rows<6||compare.recent<1||compare.bookmarks<1||!/compared with pinned/i.test(compare.copy||''))throw new Error('comparison/session flow incomplete '+JSON.stringify(compare));
  }
- await page.click('[data-open-workspace="inspect"]');await page.waitForFunction(()=>OFU.productUI.state.workspace==='inspect');await page.waitForFunction(()=>OFU.v09InspectorLanguage?.state?.syncs>0);
+ await page.click('[data-open-workspace="inspect"]');await page.waitForFunction(()=>OFU.productUI.state.workspace==='inspect');await page.waitForFunction(()=>/sections below separate|outside the range|selected world is changing|part of the generated universe/i.test(document.getElementById('inspector-overview-copy')?.textContent||''));
  const inspect=await page.evaluate(()=>({overview:document.getElementById('inspector-overview-copy')?.textContent,environment:document.getElementById('inspector-environment-copy')?.textContent,biology:document.getElementById('inspector-biology-copy')?.textContent,technical:document.querySelector('.raw-details')?.open===true}));
  if(inspect.technical)throw new Error('advanced technical details opened by default');if(!/world|object/i.test(inspect.overview||'')||!/environment|forcing|waiting/i.test(inspect.environment||''))throw new Error('plain-language Inspector missing '+JSON.stringify(inspect));
  await shot('desktop-inspect');
