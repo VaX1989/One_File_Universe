@@ -1,0 +1,28 @@
+{
+  "contractId": "ofu-p5-environment-next-frontier-research-v3",
+  "initial": {
+    "gravityMicroMs2": "9800000",
+    "meanRadiusM": "6371000",
+    "totalAtmosphericMassTg": "10000000",
+    "pressurePa": "192",
+    "meanMolarMassNanoKgPerMol": "26540462"
+  },
+  "condensation": {
+    "speciesId": "H2O",
+    "massTg": "250000",
+    "postAtmosphericMassTg": "9750000",
+    "postPressurePa": "187",
+    "postMeanMolarMassNanoKgPerMol": "26866454"
+  },
+  "lossAfterCondensation": {
+    "speciesId": "H2O",
+    "massTg": "50000",
+    "postAtmosphericMassTg": "9700000",
+    "postPressurePa": "186",
+    "postMeanMolarMassNanoKgPerMol": "26934667"
+  },
+  "boundedness": {
+    "maxTransferStepsPerQuery": 4096,
+    "retainedHistoryEntries": 0
+  }
+}
