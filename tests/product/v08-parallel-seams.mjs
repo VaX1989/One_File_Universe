@@ -2,23 +2,52 @@ import fs from 'node:fs';
 import {composeProductTemplate} from '../../tools/product-template-compose.mjs';
 
 const read=path=>fs.readFileSync(path,'utf8').replace(/\r\n?/g,'\n');
-const template=read('src/bootstrap/ofu-template.html');
-const composed=composeProductTemplate(template,read);
-if(composed!==template)throw new Error('v0.8 extracted HTML fragments are not byte-equivalent to the v0.7 template baseline');
-const required=[
- 'src/bootstrap/product/workspace-nav.html',
- 'src/bootstrap/product/viewport.html',
- 'src/bootstrap/product/explore-panel.html',
- 'src/bootstrap/product/inspect-panel.html',
- 'src/bootstrap/product/lab-panel.html',
+const count=(source,token)=>source.split(token).length-1;
+const fragments=[
+ ['src/bootstrap/product/workspace-nav.html','data-workspace="explore"'],
+ ['src/bootstrap/product/viewport.html','id="planet-view"'],
+ ['src/bootstrap/product/explore-panel.html','data-workspace-panel="explore"'],
+ ['src/bootstrap/product/inspect-panel.html','data-workspace-panel="inspect"'],
+ ['src/bootstrap/product/lab-panel.html','data-workspace-panel="lab"']
+];
+const extensions=[
  'src/bootstrap/product/explore-navigation.js',
  'src/bootstrap/product/inspector-product.js',
  'src/bootstrap/product/mobile-interaction.js',
  'src/bootstrap/product/lab-technical.js',
  'src/bootstrap/product/mobile.css'
 ];
-for(const path of required)if(!fs.existsSync(path)||read(path).length===0)throw new Error('missing v0.8 lane seam '+path);
-const mobile=read('src/bootstrap/product/mobile.css');
-if(!/Intentionally empty/.test(mobile))throw new Error('frozen baseline mobile seam must remain behavior-neutral');
-for(const path of required.filter(path=>path.endsWith('.js'))){const source=read(path);if(/document\.|addEventListener|requestAnimationFrame|setInterval|setTimeout/.test(source))throw new Error('frozen baseline extension is not behavior-neutral: '+path)}
-console.log(JSON.stringify({status:'PASS',htmlFragmentsByteEquivalent:true,behaviorNeutralExtensionPoints:true,seams:required.length}));
+const required=[...fragments.map(([path])=>path),...extensions];
+for(const path of required){
+ if(!fs.existsSync(path))throw new Error('missing v0.8 product seam '+path);
+ if(read(path).trim().length===0)throw new Error('empty v0.8 product seam '+path);
+}
+
+const template=read('src/bootstrap/ofu-template.html');
+const composed=composeProductTemplate(template,read);
+for(const [path,marker] of fragments){
+ const source=read(path).trimEnd();
+ if(!composed.includes(source))throw new Error('composed template does not contain owned fragment '+path);
+ if(count(composed,marker)!==1)throw new Error('composed template marker must remain unique: '+marker);
+}
+if(count(composed,'id="planet-view"')!==1)throw new Error('viewport composition duplicated the canonical presentation canvas');
+if(count(composed,'data-workspace-panel=')!==3)throw new Error('Explore / Inspect / Lab workspace composition drifted');
+
+const build=read('tools/build-ofu-rendering-v08.mjs');
+for(const path of required)if(!build.includes(path))throw new Error('v0.8 build does not compose declared product source '+path);
+if(!/build-ofu-rendering\.mjs/.test(build))throw new Error('v0.8 build must retain the certified rendering build as its canonical runtime foundation');
+
+for(const path of extensions.filter(path=>path.endsWith('.js'))){
+ const source=read(path);
+ if(/\b(?:fetch|XMLHttpRequest|WebSocket|EventSource)\s*\(/.test(source))throw new Error('product lane extension introduced a network runtime dependency: '+path);
+}
+
+console.log(JSON.stringify({
+ status:'PASS',
+ contract:'v08-product-composition-integrity-1',
+ frozenBaselineNeutralityReplacedBy:'multi-lane composition ownership',
+ fragments:fragments.length,
+ extensions:extensions.length,
+ singleFileComposition:true,
+ externalRuntimeDependencyIntroduced:false
+}));
