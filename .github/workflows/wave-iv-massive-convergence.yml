@@ -61,8 +61,10 @@ jobs:
           grep -q 'applicationOwnsCanvasTouchGestures' dist/rendering-build-manifest.json
           grep -q 'allCanonicalPlanetsVisible' dist/rendering-build-manifest.json
           grep -q 'directPlanetVisit' dist/rendering-build-manifest.json
-          grep -q 'ofu-planet-webgl2-presentation-2' dist/rendering-build-manifest.json
-          grep -q 'DETERMINISTIC_PLANET_WIDE_FBM_V2' dist/rendering-build-manifest.json
+          grep -q 'ofu-planet-webgl2-presentation-3' dist/rendering-build-manifest.json
+          grep -q 'DETERMINISTIC_PLANET_WIDE_MATERIAL_REGIONS_V3' dist/rendering-build-manifest.json
+          grep -q 'largeScalePresentationRegions' dist/rendering-build-manifest.json
+          grep -q 'canonicalRegionClaim' dist/rendering-build-manifest.json
           grep -q 'ofu-wave-iv-surface-scale-sync-7' dist/rendering-build-manifest.json
           grep -q 'SPHERICAL_PLANET_WEBGL_HANDOFF' dist/rendering-build-manifest.json
           grep -q 'globalSurfaceGlobeDistanceRadii' dist/rendering-build-manifest.json
