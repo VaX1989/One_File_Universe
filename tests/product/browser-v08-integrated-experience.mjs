@@ -51,7 +51,7 @@ try{
  await page.waitForFunction(()=>/canonical|unsupported|synchronizing/i.test(document.getElementById('inspector-object-status')?.textContent||''));
  const inspect=await page.evaluate(()=>{
   const panel=document.querySelector('[data-workspace-panel="inspect"]'),advanced=panel.querySelector('.raw-details');
-  return{text:String(panel.innerText||'').replace(/\s+/g,' ').trim(),headings:[...panel.querySelectorAll('h3')].map(n=>n.textContent.trim()),advancedOpen:advanced?.open===true,identityVisible:!!(document.getElementById('entity-id')?.offsetParent),biology:document.getElementById('inspector-biology-copy')?.textContent,p6:document.getElementById('inspector-biology-state')?.textContent};
+  return{text:String(panel.innerText||'').replace(/\s+/g,' ').trim(),headings:[...panel.querySelectorAll('h3')].map(n=>n.textContent.trim()),advancedOpen:advanced?.open===true,identityVisible:!!document.getElementById('entity-id')?.getClientRects().length,biology:document.getElementById('inspector-biology-copy')?.textContent,p6:document.getElementById('inspector-biology-state')?.textContent};
  });
  for(const expected of ['Where is it?','Physical state','Environment','Biology','Evidence, limits & provenance'])if(!inspect.headings.includes(expected))throw new Error('Inspector missing human-first section '+expected);
  if(inspect.advancedOpen||inspect.identityVisible)throw new Error('raw canonical identity is not progressively disclosed');
