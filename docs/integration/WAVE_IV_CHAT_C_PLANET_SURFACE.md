@@ -12,13 +12,18 @@ Write-authorized lane:
 
 ## PLANET_GLOBE_READY
 
+Checkpoint:
+
+- SHA: `4ab6debd92f4a5ce0c94eedd14687170fcdbea79`
+- tree: `24b77190ea176a9f339a2dd4b149bc80657f27a4`
+
 Scope:
 
-- preserve the hardened FV-04/v0.8 bounded camera, cube-sphere LOD, clipping and GPU-resource lifecycle;
-- move broad-family material differentiation into the primary WebGL planet renderer;
-- remove the Canvas2D full-disk terrestrial repaint path so Orbit/Approach have one visible primary planet representation;
-- keep all family coloration, banding and macro variation `PRESENTATION_ONLY`;
-- preserve explicit non-claims for canonical color/albedo, atmosphere, clouds, oceans, ice coverage, vegetation, weather, geology, biosphere and physical terrain elevation.
+- hardened FV-04/v0.8 bounded camera, cube-sphere LOD, clipping and GPU-resource lifecycle preserved;
+- broad-family material differentiation moved into the primary WebGL planet renderer;
+- Canvas2D full-disk terrestrial repaint removed: Orbit/Approach have one visible primary planet representation;
+- family coloration, banding and macro variation remain `PRESENTATION_ONLY`;
+- Orbit/Approach retain projection-aware framing, camera clearance and visible-horizon LOD from the normalized base.
 
 Integration surface:
 
@@ -27,7 +32,7 @@ Integration surface:
 - `OFU.v09VisualUniverse.snapshot().primaryPlanetOwner === 'WEBGL_PLANET_RENDERER'`
 - `OFU.v09VisualUniverse.snapshot().overlayRepaintsPrimaryPlanet === false`
 
-Resource bounds remain unchanged at this checkpoint:
+Global resource bounds remain:
 
 - active planet patches: 28
 - retained CPU meshes: 56
@@ -35,12 +40,12 @@ Resource bounds remain unchanged at this checkpoint:
 - tracked GPU bytes: 8 MiB
 - DPR cap: 2
 
+## SURFACE_FRAME_READY
+
 Checkpoint:
 
-- SHA: `4ab6debd92f4a5ce0c94eedd14687170fcdbea79`
-- tree: `24b77190ea176a9f339a2dd4b149bc80657f27a4`
-
-## SURFACE_FRAME_READY
+- SHA: `53a263c57ff163040c6c2b2ba378cd538d8b1531`
+- tree: `539f83831eb82180ead4fe627587a909a21c76a5`
 
 The surface transition is a real reference-frame transition rather than continued center-directed zoom.
 
@@ -71,11 +76,53 @@ Unsupported semantics:
 - other unsupported/unknown solid semantics return `CANONICAL_SURFACE_MODEL_UNAVAILABLE` or a bounded-provider requirement;
 - Orbit/Approach presentation remains logically separate from local-surface availability.
 
-Scientific non-claims remain hard false: geology, hydrology, vegetation, biosphere, physical terrain elevation, canonical geodesy and canonical surface-anchor semantics.
+## REGIONAL_TERRAIN_READY
 
-Verification status at checkpoint construction:
+Local terrain is a bounded presentation geometry system; it is not a physical elevation model.
 
-- semantic oracle source covers tangent-frame orthonormality, global/local round trip, deterministic anchor stability, identity preservation, floating-origin rebasing, reverse handoff, scale-band boundaries and unsupported fail-closed behavior;
-- hosted/browser execution is not claimed until an exact-head run is observed.
+Architecture:
+
+- deterministic patch identity: anchor token + uniform local LOD level + signed patch grid coordinates;
+- all active patches in one camera neighborhood use one level, avoiding parent/child T-junctions during a frame;
+- neighboring patches sample the same anchor-global coordinate function at shared boundaries, making edge heights identical;
+- multiscale deterministic presentation variation creates broad forms, ridges/depressions and microrelief without naming geology/hydrology;
+- deterministic `ROCK_LIKE_PRESENTATION_FORM` instances are capped and explicitly `geologyClaim:false`;
+- camera-neighborhood materialization only: no planet-wide human-resolution terrain.
+
+Local LOD:
+
+- GLOBAL_SURFACE: level 3
+- REGIONAL_SURFACE: level 6
+- LOCAL_SURFACE: level 9
+- HUMAN: level 12
+- base patch span: 65,536 presentation metres
+- HUMAN patch span: 16 presentation metres with 16 segments (metre-order visual sampling)
+
+Local resource bounds:
+
+- active patches: 25 maximum
+- retained CPU terrain meshes: 64 maximum
+- retained CPU terrain mesh bytes: 6 MiB maximum
+- patch segments: 16 maximum
+- local LOD: 12 maximum
+- rock-like instances: 96 maximum
+
+The words `presentation metres` describe renderer/local navigation scale only and do not promote terrain height, geology, geodesy or surface coordinates to canonical science.
+
+## Claim boundary (all checkpoints)
+
+Hard false unless a future canonical contract explicitly changes authority:
+
+- canonical color / canonical albedo
+- atmosphere / clouds / oceans / ice coverage / weather
+- vegetation / biosphere
+- geology / hydrology
+- physical terrain elevation
+- canonical geodesy
+- canonical surface-anchor semantics
+
+Verification source covers: family mapping, no-second-planet invariant, tangent orthonormality and round trips, identity-preserving handoffs, floating-origin rebasing, scale bands, fail-closed unsupported surfaces, bounded terrain working sets, deterministic microdetail and exact shared-edge height equality.
+
+Hosted/browser execution and physical Android/iOS verification are not claimed until exact-head evidence is observed.
 
 No main write, no promotion, no certification claim.
