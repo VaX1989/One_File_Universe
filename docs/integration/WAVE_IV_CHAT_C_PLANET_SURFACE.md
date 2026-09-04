@@ -35,9 +35,47 @@ Resource bounds remain unchanged at this checkpoint:
 - tracked GPU bytes: 8 MiB
 - DPR cap: 2
 
+Checkpoint:
+
+- SHA: `4ab6debd92f4a5ce0c94eedd14687170fcdbea79`
+- tree: `24b77190ea176a9f339a2dd4b149bc80657f27a4`
+
+## SURFACE_FRAME_READY
+
+The surface transition is a real reference-frame transition rather than continued center-directed zoom.
+
+Contract:
+
+- `OFU.planetSurface.surfaceCapability(source)` fails closed unless a bounded terrestrial presentation provider is available;
+- `OFU.planetSurface.createAnchor(...)` creates a deterministic navigation anchor from canonical planet identity + current globe view direction;
+- anchor coordinates are explicitly `LOCAL_TANGENT_PRESENTATION_FRAME_NOT_CANONICAL_GEODESY`;
+- basis is a stable right-handed east/north/up-like tangent basis without calling the axes canonical latitude/longitude;
+- `localFromGlobal` / `globalFromLocal` are reversible transforms around the selected anchor;
+- `handoffFromGlobe` preserves canonical planet identity and view direction;
+- `reverseHandoff` preserves identity and returns to Approach directionally;
+- local camera state is held as integer millimetres with camera-relative floating-origin rebasing; rebasing never changes canonical coordinates or identity;
+- local movement is accepted as renderer intents (`MOVE_FORWARD`, `MOVE_RIGHT`, `CHANGE_ALTITUDE`, `LOOK_YAW`, `LOOK_PITCH`), not a second DOM/input subsystem.
+
+Scale bands exposed by the renderer-facing provider:
+
+- `PLANET_ORBIT`
+- `PLANET_APPROACH`
+- `GLOBAL_SURFACE`
+- `REGIONAL_SURFACE`
+- `LOCAL_SURFACE`
+- `HUMAN`
+
+Unsupported semantics:
+
+- gas/ice giant local surfaces return `NO_SUPPORTED_SOLID_LOCAL_SURFACE`;
+- other unsupported/unknown solid semantics return `CANONICAL_SURFACE_MODEL_UNAVAILABLE` or a bounded-provider requirement;
+- Orbit/Approach presentation remains logically separate from local-surface availability.
+
+Scientific non-claims remain hard false: geology, hydrology, vegetation, biosphere, physical terrain elevation, canonical geodesy and canonical surface-anchor semantics.
+
 Verification status at checkpoint construction:
 
-- semantic/node oracle source updated for four presentation families and the no-second-planet invariant;
+- semantic oracle source covers tangent-frame orthonormality, global/local round trip, deterministic anchor stability, identity preservation, floating-origin rebasing, reverse handoff, scale-band boundaries and unsupported fail-closed behavior;
 - hosted/browser execution is not claimed until an exact-head run is observed.
 
 No main write, no promotion, no certification claim.
