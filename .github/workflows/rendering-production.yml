@@ -142,6 +142,11 @@ jobs:
         env:
           BROWSER: ${{ matrix.browser }}
           DPR: ${{ matrix.browser == 'chromium' && '2' || '1' }}
+      - name: Product v0.8 continue exploring across systems
+        run: node tests/product/browser-v08-system-continuation.mjs
+        env:
+          BROWSER: ${{ matrix.browser }}
+          DPR: ${{ matrix.browser == 'chromium' && '2' || '1' }}
       - name: Product v0.8 integrated experience
         run: node tests/product/browser-v08-integrated-experience.mjs
         env:
@@ -193,6 +198,11 @@ jobs:
           DPR: '1'
       - name: Product v0.8 Explore selection and navigation
         run: node tests/product/browser-v08-explore-navigation.mjs
+        env:
+          BROWSER: ${{ matrix.browser }}
+          DPR: '1'
+      - name: Product v0.8 continue exploring across systems
+        run: node tests/product/browser-v08-system-continuation.mjs
         env:
           BROWSER: ${{ matrix.browser }}
           DPR: '1'
