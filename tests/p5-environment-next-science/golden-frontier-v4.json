@@ -1,0 +1,11 @@
+{
+  "contractId": "ofu-p5-environment-next-frontier-research-v4",
+  "thermalOffsetLowerMilliK": "38000",
+  "thermalOffsetUpperMilliK": "40000",
+  "waterPhasePlausibility": "LIQUID_WATER_THERMODYNAMICALLY_PERMITTED_GLOBAL_IDEALIZED",
+  "waterViableBiologicalMediumEstablished": false,
+  "researchPostGenesisEligible": true,
+  "canonicalPositivePath": false,
+  "escapeRate": null,
+  "researchMode": "RESEARCH_ONLY"
+}
