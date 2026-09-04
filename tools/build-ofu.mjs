@@ -24,7 +24,8 @@ const specs=[
  ['src/domains/astronomy/p3-skeleton.js','P3','universe-skeleton','D3','p3-prototype-engine'],
  ['src/domains/astronomy/p3-canonical.js','P3','canonical-astronomy','D3','p3-astronomy-1/schema-1'],
  ['src/temporal/p4-temporal.js','P4','temporal-kernel','D3','ofu-p4-temporal-v1'],
- ['src/bootstrap/ofu-inspector.js','Integration','canonical-inspector','D0','p1-p4-preview-1']
+ ['src/bootstrap/ofu-inspector.js','Integration','canonical-inspector','D0','p1-p4-preview-1'],
+ ['src/bootstrap/product-shell.js','Integration','workspace-shell','D0','ofu-product-workspace-shell-1']
 ];
 const components=specs.map(([componentId,phase,feature,determinismClass,version])=>{const source=read(componentId);return{componentId,phase,feature,version,determinismClass,hashAlgorithm:'SHA-256',hash:sha(source),embeddedBytes:bytes(source),source}});
 const publicComponents=components.map(({source,...x})=>x),componentManifestHash=sha(JSON.stringify(publicComponents));
