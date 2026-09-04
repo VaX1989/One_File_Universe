@@ -1,0 +1,32 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import {
+  CONTRACT_ID,SOURCE_RECORD_CONTRACT,PARAMETER_CONTRACT,POST_GENESIS_SEED_CONTRACT,CHECKPOINT_CONTRACT,
+  validateParameter,ecologyEnergyBudgetV2,traitResponseInterval,speciationAssessment,populationBalance,
+  validatePostGenesisSeed,validateResearchCheckpoint
+} from '../../research/p6/biology-v2-frontier-wave4.mjs';
+const golden=JSON.parse(fs.readFileSync(new URL('./golden-biology-v2-wave4.json',import.meta.url),'utf8'));
+const source=(id,evidenceClass='EMPIRICALLY_CONSTRAINED',fidelity='APPROXIMATE')=>({contractId:SOURCE_RECORD_CONTRACT,sourceId:id,sourceVersion:'research-v1',locator:'doi:fixture/'+id,retrievedDate:'2026-09-04',sourceType:'PRIMARY_LITERATURE',evidenceClass,fidelity,validityDomain:'explicit test validity domain',assumptions:['test-scoped parameterization'],uncertainty:'explicit interval supplied',units:'as parameter'});
+const param=(id,kind,lo,hi,authority='EMPIRICALLY_CONSTRAINED_MODEL',e='EMPIRICALLY_CONSTRAINED',f='APPROXIMATE')=>validateParameter({contractId:PARAMETER_CONTRACT,parameterId:id,kind,authorityClass:authority,evidenceClass:e,fidelity:f,valueLower:lo,valueUpper:hi,unit:'PPM',source:source(id,e,f),validityDomain:'research test domain only',assumptions:['no cross-domain transfer'],dependencies:['explicit-environment-epoch']});
+const photo=param('photo-cap','PHOTOTROPHIC_CAPTURE_EFFICIENCY',200000n,300000n);
+const chemo=param('chemo-cap','CHEMOTROPHIC_CAPTURE_EFFICIENCY',100000n,200000n);
+const maint=param('maintenance','MAINTENANCE_FRACTION',100000n,300000n);
+const troph=param('trophic-0','TROPHIC_TRANSFER_EFFICIENCY_0',100000n,200000n);
+const energy=ecologyEnergyBudgetV2({phototrophicUsableEnergyU:1000n,chemotrophicUsableEnergyU:1000n,phototrophicCaptureEfficiency:photo,chemotrophicCaptureEfficiency:chemo,maintenanceFraction:maint,trophicEfficiencies:[troph]});
+assert.deepEqual(energy.primaryProductivityIntervalU,[300n,500n]);assert.deepEqual(energy.allocatableEnergyIntervalU,[210n,450n]);assert.deepEqual([energy.trophic[1].energyLowerU,energy.trophic[1].energyUpperU],[21n,90n]);assert.equal(energy.silentDefaultsUsed,false);
+assert.throws(()=>ecologyEnergyBudgetV2({phototrophicUsableEnergyU:1n,chemotrophicUsableEnergyU:null,phototrophicCaptureEfficiency:photo,chemotrophicCaptureEfficiency:null,maintenanceFraction:maint,trophicEfficiencies:new Array(9).fill(troph)}),/exceeds bound/);
+
+const h2=param('heritability','NARROW_SENSE_HERITABILITY',200000n,300000n);
+const trait=traitResponseInterval({currentTraitPpm:500000n,narrowSenseHeritability:h2,selectionDifferentialPpmLower:50000n,selectionDifferentialPpmUpper:100000n,modelClass:'BREEDERS_EQUATION_RESEARCH'});
+assert.deepEqual(trait.responseIntervalPpm,[10000n,30000n]);assert.deepEqual(trait.projectedTraitIntervalPpm,[510000n,530000n]);
+assert.throws(()=>traitResponseInterval({currentTraitPpm:990000n,narrowSenseHeritability:h2,selectionDifferentialPpmLower:100000n,selectionDifferentialPpmUpper:100000n,modelClass:'BREEDERS_EQUATION_RESEARCH'}),/no silent clamping/);
+
+const noCriterion=speciationAssessment({lineageDivergenceWitness:'explicit P4 lineage divergence record',delimitationCriterion:null,criterionSatisfied:false});assert.equal(noCriterion.mayEmitSpeciationEvent,false);
+const criterion=validateParameter({contractId:PARAMETER_CONTRACT,parameterId:'species-delimitation-criterion',kind:'SPECIES_DELIMITATION_CRITERION',authorityClass:'RESEARCH_FIXTURE',evidenceClass:'HYPOTHETICAL',fidelity:'STYLIZED',valueLower:1n,valueUpper:1n,unit:'BOOLEAN_WITNESS',source:source('species-delimitation-criterion','HYPOTHETICAL','STYLIZED'),validityDomain:'research fixture lineage pair only',assumptions:['criterion selected before assessment'],dependencies:['P4 lineage divergence witness']});
+const yesCriterion=speciationAssessment({lineageDivergenceWitness:'explicit P4 lineage divergence record',delimitationCriterion:criterion,criterionSatisfied:true});assert.equal(yesCriterion.mayEmitSpeciationEvent,true);assert.equal(yesCriterion.scalarTraitDistanceAloneSufficient,false);
+
+const pop=populationBalance({populationBeforeU:1000n,birthsU:100n,deathsU:50n,immigrationU:10n,emigrationU:30n});assert.equal(pop.populationAfterU,1030n);assert.throws(()=>populationBalance({populationBeforeU:1n,birthsU:0n,deathsU:2n,immigrationU:0n,emigrationU:0n}),/exceeds available/);
+const digest='a'.repeat(64),planet='b'.repeat(64);const seedInput={contractId:POST_GENESIS_SEED_CONTRACT,authority:'RESEARCH_FIXTURE_ONLY',sourceId:'fixture-seed',sourceVersion:'1',sourceDigestHex:digest,planetIdHex:planet,environmentEpochKey:'P4:E1',p5ReadinessContract:'ofu-p5-p6-environment-readiness-research-v2',p5ResearchPostGenesisEligible:true,canonicalGenesisClaim:false};const seed=validatePostGenesisSeed(seedInput);assert.equal(seed.canonicalBiologyAuthority,false);assert.equal(seed.abiogenesisInferred,false);assert.throws(()=>validatePostGenesisSeed({...seedInput,canonicalGenesisClaim:true}),/cannot claim canonical genesis/);
+const checkpointInput={contractId:CHECKPOINT_CONTRACT,biosphereIdHex:'c'.repeat(64),environmentEpochKey:'P4:E1',lineageCount:12n,activeLineageCount:9n,maxTraitsObserved:5n,stateDigestHex:'d'.repeat(64),p4EventCount:42n};const checkpoint=validateResearchCheckpoint(checkpointInput);assert.equal(checkpoint.privateP6HistoryEntries,0);assert.equal(checkpoint.persistenceOwner,'P4');assert.throws(()=>validateResearchCheckpoint({...checkpointInput,lineageCount:1025n}),/boundedness/);
+const actual={contractId:CONTRACT_ID,primaryLowerU:String(energy.primaryProductivityIntervalU[0]),primaryUpperU:String(energy.primaryProductivityIntervalU[1]),allocatableLowerU:String(energy.allocatableEnergyIntervalU[0]),allocatableUpperU:String(energy.allocatableEnergyIntervalU[1]),trophic1LowerU:String(energy.trophic[1].energyLowerU),trophic1UpperU:String(energy.trophic[1].energyUpperU),traitResponseLowerPpm:String(trait.responseIntervalPpm[0]),traitResponseUpperPpm:String(trait.responseIntervalPpm[1]),projectedTraitLowerPpm:String(trait.projectedTraitIntervalPpm[0]),projectedTraitUpperPpm:String(trait.projectedTraitIntervalPpm[1]),speciationWithoutCriterion:noCriterion.mayEmitSpeciationEvent,speciationWithCriterion:yesCriterion.mayEmitSpeciationEvent,populationAfterU:String(pop.populationAfterU),canonicalGenesis:seed.canonicalBiologyAuthority,privateP6HistoryEntries:checkpoint.privateP6HistoryEntries};
+assert.deepEqual(actual,golden);console.log('P6 Wave IV focused tests PASS',actual);
