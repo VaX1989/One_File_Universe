@@ -1,0 +1,18 @@
+{
+  "contractId": "ofu-p6-biology-v2-frontier-research-wave4",
+  "primaryLowerU": "300",
+  "primaryUpperU": "500",
+  "allocatableLowerU": "210",
+  "allocatableUpperU": "450",
+  "trophic1LowerU": "21",
+  "trophic1UpperU": "90",
+  "traitResponseLowerPpm": "10000",
+  "traitResponseUpperPpm": "30000",
+  "projectedTraitLowerPpm": "510000",
+  "projectedTraitUpperPpm": "530000",
+  "speciationWithoutCriterion": false,
+  "speciationWithCriterion": true,
+  "populationAfterU": "1030",
+  "canonicalGenesis": false,
+  "privateP6HistoryEntries": 0
+}
