@@ -1,0 +1,27 @@
+{
+  "mapId": "ofu-p5-p6-wave4-promotion-readiness-2026-09-04",
+  "canonicalPromotionAuthorized": false,
+  "canonicalBiologyPositivePath": false,
+  "renderFacingCanonicalDescriptors": [
+    "canonical P5 physical planet descriptors inherited from product baseline",
+    "canonical P3 insolation/effective-radiative Tier-0 descriptors where already canonical",
+    "canonical Environment-v2 UNKNOWN/UNSUPPORTED epistemic descriptors"
+  ],
+  "renderFacingResearchOnlyDescriptors": [
+    "source-bound volatile species/reservoir state",
+    "global pressure and ideal-mixture diagnostics",
+    "surface-minus-effective temperature interval with causal attribution NOT_INFERRED",
+    "water thermodynamic phase plausibility with globalOceanEstablished=false",
+    "research-post-genesis eligibility witness",
+    "bounded ecology energy intervals",
+    "model-conditional trait-response intervals",
+    "criterion-gated speciation-event eligibility",
+    "post-genesis research biosphere/lineage/ecology descriptors"
+  ],
+  "remaining": {
+    "engineeringBlocked": ["promotion-grade integration of source authority registries", "cross-runtime certification of new research contracts"],
+    "dataBlocked": ["canonical volatile inventories", "authoritative planet surface-temperature histories", "stellar XUV histories and upper-atmosphere states", "planet-specific usable geochemical energy", "planet-specific nutrient/redox state", "domain-specific biological parameter datasets"],
+    "scientificallyUnderdetermined": ["general greenhouse surface-temperature prediction from current upstream state", "tectonic regime and hydrothermal activity from bulk planet state", "universal population-growth law", "universal trophic efficiency", "universal speciation threshold"],
+    "fundamentallyUnsupported": ["predictive canonical planetary abiogenesis trigger/model"]
+  }
+}
