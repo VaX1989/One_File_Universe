@@ -3,13 +3,14 @@
 const O=root.OFU=root.OFU||{};
 if(typeof document==='undefined')return;
 const q=id=>document.getElementById(id);
+const SYSTEM_SCAN_LIMIT=64;
 const STAGES=Object.freeze({
  system:Object.freeze({radii:180,label:'System',note:'System — understand the host star and the worlds that belong here.'}),
  orbit:Object.freeze({radii:4,label:'Orbit',note:'Orbit — frame the selected world as an object in its system.'}),
  approach:Object.freeze({radii:1.35,label:'Approach',note:'Approach — move close enough to read the world as a distinct body.'}),
  close:Object.freeze({radii:1.012,label:'Close',note:'Close — inspect presentation detail without treating it as canonical terrain.'})
 });
-const state={ready:false,system:null,star:null,targets:[],selectedIndex:0,stage:'system',lastPreviewId:null,lastSystemId:null,lastRenderNotice:null,lastSelectionResult:null,lastSelectionError:null};
+const state={ready:false,system:null,star:null,targets:[],selectedIndex:0,stage:'system',lastPreviewId:null,lastSystemId:null,lastRenderNotice:null,lastSelectionResult:null,lastSelectionError:null,lastSystemNavigation:null};
 const titleCase=value=>String(value||'').toLowerCase().replace(/(^|_)([a-z])/g,(_,space,c)=>(space?' ':'')+c.toUpperCase());
 const planetName=index=>'Planet '+String(index+1);
 const PLANET_FIELDS=Object.freeze(['galaxyX','galaxyY','galaxyZ','sectorX','sectorY','sectorZ','siteX','siteY','siteZ','orbitSlot']);
@@ -52,6 +53,7 @@ function renderSystem(){
   button.textContent=target.name+' · '+target.orbitLabel+' · '+target.classLabel;
   item.append(button);list.append(item);
  }
+ for(const button of document.querySelectorAll('[data-explore-relative]'))button.disabled=count<2;
 }
 function selected(){return state.targets[state.selectedIndex]||null}
 function inspectorMatches(target){const I=O.inspectorTest?.state?.current;return !!target&&I?.type==='Planet'&&samePlanetKey(I.key,target.key)}
@@ -95,7 +97,31 @@ function selectIndex(index,{announce=true,establish=true}={}){
  if(announce)O.productUI?.announce?.(rendererCanShow(target)?'Selected '+target.name+'; ready to explore':'Selected '+target.name+'; visualization unavailable');
  return true;
 }
-function moveSelection(delta){if(!state.targets.length)return false;const next=(state.selectedIndex+Number(delta)+state.targets.length)%state.targets.length;return selectIndex(next)}
+function moveSelection(delta){if(state.targets.length<2)return false;const next=(state.selectedIndex+Number(delta)+state.targets.length)%state.targets.length;return selectIndex(next)}
+function navigateSystem(direction=1,{announce=true}={}){
+ const P=root.__OFU_PLANET_PREVIEW__,A=O.p3Astronomy,bridge=O.v08SelectionBridge,current=selected()?.key||P?.chosen?.key;
+ if(!P?.ctx||!A||!bridge?.selectPlanet||!current)return false;
+ const origin=systemKey(current),sign=Number(direction)<0?-1n:1n;
+ for(let step=1;step<=SYSTEM_SCAN_LIMIT;step++){
+  const key=Object.freeze({...origin,siteX:origin.siteX+sign*BigInt(step)}),system=A.resolveSystem(P.ctx,key);
+  if(system?.status!=='PRESENT'||system.facts.planetCount<=0n)continue;
+  let selectedResult=null,selectedSlot=null,lastError=null;
+  for(let orbitSlot=0n;orbitSlot<system.facts.planetCount;orbitSlot++){
+   const planetKey=Object.freeze({...key,orbitSlot}),planet=A.resolvePlanet(P.ctx,planetKey);if(planet?.status!=='PRESENT')continue;
+   try{
+    const result=bridge.selectPlanet(planetKey,{announce:false});selectedResult=result;selectedSlot=orbitSlot;
+    if(result.presentationStatus==='SUPPORTED')break;
+   }catch(error){lastError=String(error?.message||error);break}
+  }
+  if(!selectedResult){state.lastSelectionError=lastError||'No canonical planet could be selected in the next system.';continue}
+  state.lastSystemNavigation=Object.freeze({direction:Number(sign),steps:step,planetCount:Number(system.facts.planetCount),selectedOrbitSlot:Number(selectedSlot),presentationStatus:selectedResult.presentationStatus});
+  state.lastSystemId=null;state.lastPreviewId=null;state.stage='system';sync();renderStage();
+  if(announce)O.productUI?.announce?.('Opened another star system with '+String(system.facts.planetCount)+' canonical '+(system.facts.planetCount===1n?'planet':'planets'));
+  return true;
+ }
+ if(announce)O.productUI?.announce?.('No populated canonical system was found within this bounded navigation window');
+ return false;
+}
 function setStage(name,{announce=true}={}){
  const stage=STAGES[name],target=selected(),P=root.__OFU_PLANET_PREVIEW__;
  if(!stage||!target)return false;
@@ -114,9 +140,6 @@ function sync(){
   renderSystem();renderSelection();renderStage();state.ready=true;
  }
  const target=selected();
- // The Inspector can boot after this extension's first DOMContentLoaded callback.
- // Retry the selection handshake until the shared canonical service is ready; the
- // bridge itself fails closed without mutating Inspector state before readiness.
  if(target&&!inspectorMatches(target)&&O.v08SelectionBridge?.selectPlanet){
   try{establishSelection(target,{announce:false})}catch(error){state.lastSelectionError=String(error?.message||error)}
  }
@@ -131,11 +154,12 @@ function init(){
  document.addEventListener('click',event=>{
   const target=event.target.closest?.('[data-explore-target]');if(target){selectIndex(Number(target.dataset.exploreTarget));return}
   const relative=event.target.closest?.('[data-explore-relative]');if(relative){moveSelection(Number(relative.dataset.exploreRelative));return}
+  const system=event.target.closest?.('[data-explore-system]');if(system){navigateSystem(Number(system.dataset.exploreSystem));return}
   const stage=event.target.closest?.('[data-explore-stage]');if(stage){setStage(stage.dataset.exploreStage);return}
   if(event.target.closest?.('[data-explore-action="approach"]'))approach();
  });
  setInterval(sync,250);sync();
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
-O.v08ExploreNavigation=Object.freeze({seamVersion:3,state,STAGES,selectIndex,moveSelection,setStage,sync,rendererCanShow,planetName});
+O.v08ExploreNavigation=Object.freeze({seamVersion:4,state,STAGES,SYSTEM_SCAN_LIMIT,selectIndex,moveSelection,navigateSystem,setStage,sync,rendererCanShow,planetName});
 })(typeof globalThis!=='undefined'?globalThis:this);
