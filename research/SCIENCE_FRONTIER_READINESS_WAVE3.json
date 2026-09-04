@@ -1,0 +1,26 @@
+{
+  "schema": "ofu-science-frontier-readiness-v1",
+  "canonicalPromotionPerformed": false,
+  "p5Next": {
+    "sourceBoundVolatileState": {"readiness":"ORACLE_READY","evidenceClass":"ESTABLISHED","fidelity":"FORMAL","canonicalClaim":false,"blockers":["canonical state producer","canonical source-governance policy"]},
+    "globalColumnPressure": {"readiness":"ORACLE_READY","evidenceClass":"ESTABLISHED","fidelity":"APPROXIMATE","canonicalClaim":false,"blockers":["canonical atmosphere mass state"]},
+    "idealMixtureComposition": {"readiness":"ORACLE_READY","evidenceClass":"ESTABLISHED","fidelity":"APPROXIMATE","canonicalClaim":false,"blockers":["complete canonical species composition","declared mixing validity"]},
+    "volatileTransferKernel": {"readiness":"ORACLE_READY","evidenceClass":"ESTABLISHED","fidelity":"FORMAL","canonicalClaim":false,"blockers":["physical transition-rate laws","P4 event integration for persistent history"]},
+    "mixtureSummary": {"readiness":"ORACLE_READY","evidenceClass":"ESTABLISHED","fidelity":"FORMAL","canonicalClaim":false,"blockers":["canonical species-resolved state"]},
+    "waterSaturationDiagnostic": {"readiness":"ORACLE_READY","evidenceClass":"EMPIRICALLY_CONSTRAINED","fidelity":"APPROXIMATE","canonicalClaim":false,"blockers":["authoritative surface temperature","canonical H2O partial pressure"]},
+    "p5ToP6ReadinessWitness": {"readiness":"ORACLE_READY","evidenceClass":"ESTABLISHED","fidelity":"FORMAL","canonicalClaim":false,"blockers":["positive environmental prerequisites remain unsupported"]},
+    "surfaceTemperatureGreenhouse": {"readiness":"RESEARCH_ONLY","evidenceClass":"HYPOTHETICAL","fidelity":"STYLIZED","canonicalClaim":false,"blockers":["opacity/greenhouse authority","heat redistribution","cloud/albedo authority"]},
+    "xuvEscapeHistory": {"readiness":"RESEARCH_ONLY","evidenceClass":"HYPOTHETICAL","fidelity":"STYLIZED","canonicalClaim":false,"blockers":["stellar rotation/XUV history","upper atmosphere composition","absorption radius","heating efficiency","accepted P4 history"]},
+    "geologyGeochemicalEnergy": {"readiness":"RESEARCH_ONLY","evidenceClass":"HYPOTHETICAL","fidelity":"STYLIZED","canonicalClaim":false,"blockers":["thermal/tectonic state","redox state","fluid-rock fluxes","nutrient availability"]}
+  },
+  "p6v2": {
+    "stableBiologicalIdentity": {"readiness":"ORACLE_READY","evidenceClass":"ESTABLISHED","fidelity":"FORMAL","canonicalClaim":false,"blockers":["promotion transaction and canonical positive environment path"]},
+    "boundedLineageSpeciesLifecycle": {"readiness":"ORACLE_READY","evidenceClass":"ESTABLISHED","fidelity":"FORMAL","canonicalClaim":false,"blockers":["canonical positive environment path"]},
+    "p4TransitionReplayIntegration": {"readiness":"ORACLE_READY","evidenceClass":"ESTABLISHED","fidelity":"FORMAL","canonicalClaim":false,"blockers":["research-only event semantics"]},
+    "boundedEcologyBudget": {"readiness":"ORACLE_READY","evidenceClass":"EMPIRICALLY_CONSTRAINED","fidelity":"APPROXIMATE","canonicalClaim":false,"blockers":["physical energy authority","calibration"]},
+    "adaptationSpeciationSemantics": {"readiness":"IMPLEMENTATION_READY","evidenceClass":"HYPOTHETICAL","fidelity":"STYLIZED","canonicalClaim":false,"blockers":["validated transition-rate/selection model","scientific calibration"]},
+    "p5NextDependencyAdapter": {"readiness":"ORACLE_READY","evidenceClass":"ESTABLISHED","fidelity":"FORMAL","canonicalClaim":false,"blockers":["positive P5 eligibility fields remain unsupported"]},
+    "postGenesisFixtureSeparation": {"readiness":"ORACLE_READY","evidenceClass":"ESTABLISHED","fidelity":"FORMAL","canonicalClaim":false,"blockers":[]},
+    "abiogenesis": {"readiness":"RESEARCH_ONLY","evidenceClass":"SPECULATIVE","fidelity":"METAPHORICAL","canonicalClaim":false,"blockers":["no accepted abiogenesis authority","deterministic draw is not evidence"]}
+  }
+}
