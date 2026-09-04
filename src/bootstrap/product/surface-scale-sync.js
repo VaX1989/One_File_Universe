@@ -1,21 +1,24 @@
 (function(root){
 'use strict';
-const O=root.OFU=root.OFU||{},R=O.waveIVScaleRuntime;if(!R)return;
-const SURFACE=new Set(['global_surface','regional_surface','local_surface','human']);
+const O=root.OFU=root.OFU||{},R=O.waveIVScaleRuntime,C=O.planetRenderCore;if(!R)return;
+const ALL_SURFACE=new Set(['global_surface','regional_surface','local_surface','human']),LOCAL_SURFACE=new Set(['regional_surface','local_surface','human']);
 const CAMERA_POLICY=Object.freeze({
- global_surface:Object.freeze({pitchRad:-1.0995574287564276,label:'GLOBAL_SURFACE'}),
- regional_surface:Object.freeze({pitchRad:-.6632251157578453,label:'REGIONAL_SURFACE'}),
- local_surface:Object.freeze({pitchRad:-.6108652381980153,label:'LOCAL_SURFACE'}),
+ regional_surface:Object.freeze({pitchRad:-.4014257279586958,label:'REGIONAL_SURFACE'}),
+ local_surface:Object.freeze({pitchRad:-.29670597283903605,label:'LOCAL_SURFACE'}),
  human:Object.freeze({pitchRad:-.41887902047863906,label:'HUMAN'})
 });
-const state={version:'ofu-wave-iv-surface-scale-sync-3',updates:0,unsupportedRedirects:0,cameraPolicyApplications:0};
+const state={version:'ofu-wave-iv-surface-scale-sync-4',updates:0,unsupportedRedirects:0,cameraPolicyApplications:0,globalGlobeHandoffs:0};
+function unsupported(P){return !P||P.targetStatus!=='SUPPORTED'||!P.surfaceProvider?.capability?.available}
 function applyCameraPolicy(P,scale){const policy=CAMERA_POLICY[scale],snap=P?.surfaceProvider?.snapshot?.()?.camera;if(!policy||!snap)return false;const delta=policy.pitchRad-Number(snap.pitchRad||0);if(Math.abs(delta)>1e-5){P.surfaceIntent?.({type:'LOOK_PITCH',amount:delta/.035});state.cameraPolicyApplications++}return true}
+function applyGlobalGlobe(P,s){if(P.surfaceMode==='LOCAL')P.leaveSurface?.();const radii=Number(s?.anchors?.global_surface||2.16);if(C?.setCameraTarget&&P.camera&&Number(P.radius)>0){C.setCameraTarget(P.camera,{distanceM:Number(P.radius)*radii,direction:P.camera.targetDirection||P.camera.direction});if(P.reducedMotion){P.camera.distanceM=Math.max(P.camera.minDistanceM,P.camera.targetDistanceM);P.camera.direction=P.camera.targetDirection}}state.globalGlobeHandoffs++;state.updates++;return true}
 function sync(s=R.snapshot()){
- const P=root.__OFU_PLANET_PREVIEW__,scale=s.semanticScale;if(!SURFACE.has(scale))return;
- if(!P||P.targetStatus!=='SUPPORTED'||!P.surfaceProvider?.capability?.available){state.unsupportedRedirects++;O.productUI?.announce?.('Local solid-surface traversal is not available for this world.');root.queueMicrotask?.(()=>{if(SURFACE.has(R.snapshot().semanticScale))R.requestStage('approach',{source:'unsupported-surface-gate'})});return}
+ const P=root.__OFU_PLANET_PREVIEW__,scale=s.semanticScale;if(!ALL_SURFACE.has(scale))return;
+ if(unsupported(P)){state.unsupportedRedirects++;O.productUI?.announce?.('Local solid-surface traversal is not available for this world.');root.queueMicrotask?.(()=>{if(ALL_SURFACE.has(R.snapshot().semanticScale))R.requestStage('approach',{source:'unsupported-surface-gate'})});return}
+ if(scale==='global_surface'){applyGlobalGlobe(P,s);return}
+ if(!LOCAL_SURFACE.has(scale))return;
  if(P.surfaceMode!=='LOCAL'){const entered=P.enterSurface?.(String(scale).toUpperCase());if(entered?.ready===false){state.unsupportedRedirects++;root.queueMicrotask?.(()=>R.requestStage('approach',{source:'unsupported-surface-gate'}));return}}
  P.setSurfaceBand?.(String(scale).toUpperCase());applyCameraPolicy(P,scale);state.updates++;
 }
 R.on('scaleChanged',e=>sync(e.snapshot));R.on('selectionChanged',()=>sync());
-O.waveIVSurfaceScaleSync=Object.freeze({VERSION:state.version,CAMERA_POLICY,state,sync,snapshot:()=>Object.freeze({...state})});
+O.waveIVSurfaceScaleSync=Object.freeze({VERSION:state.version,ALL_SURFACE,LOCAL_SURFACE,CAMERA_POLICY,state,sync,snapshot:()=>Object.freeze({...state})});
 })(typeof globalThis!=='undefined'?globalThis:this);
