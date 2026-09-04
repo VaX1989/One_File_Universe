@@ -61,8 +61,8 @@ jobs:
           grep -q 'applicationOwnsCanvasTouchGestures' dist/rendering-build-manifest.json
           grep -q 'allCanonicalPlanetsVisible' dist/rendering-build-manifest.json
           grep -q 'directPlanetVisit' dist/rendering-build-manifest.json
-          grep -q 'ofu-planet-webgl2-presentation-3' dist/rendering-build-manifest.json
-          grep -q 'DETERMINISTIC_PLANET_WIDE_MATERIAL_REGIONS_V3' dist/rendering-build-manifest.json
+          grep -q 'ofu-planet-webgl2-presentation-4' dist/rendering-build-manifest.json
+          grep -q 'DETERMINISTIC_PLANET_WIDE_MATERIAL_REGIONS_V4' dist/rendering-build-manifest.json
           grep -q 'largeScalePresentationRegions' dist/rendering-build-manifest.json
           grep -q 'canonicalRegionClaim' dist/rendering-build-manifest.json
           grep -q 'ofu-wave-iv-surface-scale-sync-7' dist/rendering-build-manifest.json
@@ -71,7 +71,8 @@ jobs:
           grep -q 'globalGlobeHandoffAtomic' dist/rendering-build-manifest.json
           grep -q 'ofu-local-terrain-lod-4' dist/rendering-build-manifest.json
           grep -q 'ofu-surface-relief-presentation-1' dist/rendering-build-manifest.json
-          grep -q 'ofu-local-surface-webgl2-6' dist/rendering-build-manifest.json
+          grep -q 'ofu-local-surface-webgl2-7' dist/rendering-build-manifest.json
+          grep -q 'DETERMINISTIC_LOCAL_MATERIAL_REGIONS_V1' dist/rendering-build-manifest.json
           grep -q 'presentationElevationColorRangeM' dist/rendering-build-manifest.json
           grep -q 'FRUSTUM_GROUND_FOOTPRINT_BOUNDED' dist/rendering-build-manifest.json
           grep -q 'CAMERA_LOCATION_PRESENTATION_RELIEF_DATUM' dist/rendering-build-manifest.json
