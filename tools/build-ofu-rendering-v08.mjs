@@ -25,7 +25,7 @@ const bytes=fs.readFileSync(artifactPath);
 const sha256=crypto.createHash('sha256').update(bytes).digest('hex');
 const productSourceFragments=productSourcePaths.map(componentId=>{const source=read(componentId);return{componentId,hashAlgorithm:'SHA-256',hash:crypto.createHash('sha256').update(source).digest('hex'),embeddedBytes:Buffer.byteLength(source,'utf8')}});
 const manifest=JSON.parse(fs.readFileSync(manifestPath,'utf8'));
-manifest.productSourceComposition='v09-explorer-beta-fragments-1';
+manifest.productSourceComposition='v08-product-template-fragments-3+v09-explorer-beta-fragments-1';
 manifest.productSourceFragments=productSourceFragments;
 manifest.artifactBytes=bytes.length;
 manifest.artifactSha256=sha256;

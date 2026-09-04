@@ -1,0 +1,54 @@
+name: Product v0.9 Development Checkpoint
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: product-v09-development-${{ github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  OFU_SOURCE_SHA: ${{ github.sha }}
+
+permissions:
+  contents: read
+
+jobs:
+  checkpoint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.20.0'
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Focused product contracts
+        run: |
+          node tests/product/v08-parallel-seams.mjs
+          node tests/product/v08-inspector-product.mjs
+          node tests/product/v08-lab-technical.mjs
+          node tests/product/v08-mobile-interaction.mjs
+          node tests/product/v09-explorer-beta.mjs
+          node tests/product/v09-product-seams.mjs
+      - name: Build Explorer Beta development file
+        run: |
+          node tools/build-ofu-rendering-v08.mjs > /tmp/v09-build.json
+          grep -q 'v08-product-template-fragments-3+v09-explorer-beta-fragments-1' dist/rendering-build-manifest.json
+          test "$(grep -Eoc '(src|href)=[\"'\'']https?://' dist/One_File_Universe.html)" -eq 0
+          grep -q "connect-src 'none'" dist/One_File_Universe.html
+      - name: Explorer Beta Chromium evidence
+        run: |
+          npm install --no-save playwright@1.62.1
+          npx playwright install --with-deps chromium
+          node tests/product/browser-v09-explorer-beta.mjs
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: product-v09-development-${{ env.OFU_SOURCE_SHA }}
+          path: |
+            dist/One_File_Universe.html
+            dist/rendering-build-manifest.json
+            dist/evidence/product-v09/
