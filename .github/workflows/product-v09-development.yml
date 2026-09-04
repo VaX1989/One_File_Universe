@@ -2,6 +2,9 @@ name: Product v0.9 Development Checkpoint
 
 on:
   workflow_dispatch:
+  push:
+    branches: [integration/product-evolution-v0.9]
+    paths: [.github/product-v09-checkpoint]
 
 concurrency:
   group: product-v09-development-${{ github.ref_name }}
