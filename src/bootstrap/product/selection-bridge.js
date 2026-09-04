@@ -9,6 +9,9 @@ const sameKey=(a,b)=>!!a&&!!b&&FIELDS.every(name=>BigInt(a[name])===BigInt(b[nam
 function establishInspectorPlanet(key){
  const P=root.__OFU_PLANET_PREVIEW__,I=O.inspectorTest,A=O.p3Astronomy,k=copyKey(key);
  if(!P?.ctx||!I?.query||!I?.state||!A)throw new Error('product selection bridge unavailable');
+ // The legacy Inspector creates its sparse-query inputs during its own DOMContentLoaded boot.
+ // Fail without mutating the selector until that boot has established its canonical context.
+ if(!I.state.ctx)throw new Error('Inspector canonical service not ready');
  const canonical=A.resolvePlanet(P.ctx,k);
  if(canonical?.status!=='PRESENT')throw new Error('product selection requires a PRESENT canonical planet');
  const type=q('entity-type');if(!type)throw new Error('Inspector entity selector unavailable');
@@ -38,6 +41,6 @@ function selectPlanet(key,{announce=true}={}){
  if(announce)O.productUI?.announce?.(P.targetStatus==='SUPPORTED'?'Selected world ready to explore':'Selected canonical world; visualization unavailable');
  return result;
 }
-const API=Object.freeze({seamVersion:1,contract:'ofu-product-canonical-planet-selection-1',authority:'SELECTION_ONLY',selectPlanet,sameKey});
+const API=Object.freeze({seamVersion:2,contract:'ofu-product-canonical-planet-selection-1',authority:'SELECTION_ONLY',selectPlanet,sameKey});
 O.v08SelectionBridge=API;
 })(typeof globalThis!=='undefined'?globalThis:this);
