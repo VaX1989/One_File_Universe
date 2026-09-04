@@ -124,6 +124,11 @@ jobs:
         env:
           BROWSER: ${{ matrix.browser }}
           DPR: ${{ matrix.browser == 'chromium' && '2' || '1' }}
+      - name: Product Polish v0.7 closure truthfulness and focus regression
+        run: node tests/rendering/browser-product-v07-closure.mjs
+        env:
+          BROWSER: ${{ matrix.browser }}
+          DPR: ${{ matrix.browser == 'chromium' && '2' || '1' }}
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
@@ -165,6 +170,11 @@ jobs:
           DPR: '1'
       - name: Product Polish v0.7 experience accessibility and responsive evidence
         run: node tests/rendering/browser-product-v07.mjs
+        env:
+          BROWSER: ${{ matrix.browser }}
+          DPR: '1'
+      - name: Product Polish v0.7 closure truthfulness and focus regression
+        run: node tests/rendering/browser-product-v07-closure.mjs
         env:
           BROWSER: ${{ matrix.browser }}
           DPR: '1'
