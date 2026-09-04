@@ -1,8 +1,7 @@
 import fs from 'node:fs';
 import vm from 'node:vm';
 import assert from 'node:assert/strict';
-globalThis.OFU={};
-vm.runInThisContext(fs.readFileSync('src/rendering/planet-core.js','utf8'));
+globalThis.OFU={planetRenderCore:{}};
 vm.runInThisContext(fs.readFileSync('src/rendering/planet-surface.js','utf8'));
 const S=globalThis.OFU.planetSurface;
 const provider={planetId:'planet-test',physical:{physical:{meanRadiusM:6371000},upstreamBaseline:{formation:{bulkPriorClass:'TERRESTRIAL'}}},presentationBounds:{minRadiusM:6371000,maxRadiusM:6400000}};
