@@ -35,10 +35,11 @@ jobs:
         run: |
           node tests/wave-iv/macro/macro-oracles.mjs
           node tests/wave-iv/convergence-runtime.mjs
-      - name: Surface authority and continuity oracles
+      - name: Surface authority, unsupported-body, and continuity oracles
         run: |
           node tests/rendering/wave-iv-surface-frame.mjs
           node tests/rendering/wave-iv-surface-terrain.mjs
+          node tests/wave-iv/surface-capability.mjs
           node tests/wave-iv/terrain-continuity.mjs
       - name: Reproducible exact-head Wave IV single file
         shell: bash
