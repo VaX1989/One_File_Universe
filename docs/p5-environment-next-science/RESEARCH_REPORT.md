@@ -1,202 +1,138 @@
-# Advanced P5 Environment Next Science — Research Report
+# Advanced P5 Environment Next Science — Research Freeze v2
 
 **Status:** RESEARCH / NON-CANONICAL  
 **Research authority:** `P5_RESEARCH_DRAFT`  
-**Prototype contract:** `ofu-p5-environment-next-research-v1`  
+**Prototype contract:** `ofu-p5-environment-next-research-v2`  
+**Species-state contract:** `ofu-p5-volatile-species-state-research-v2`  
+**Registry:** `ofu-p5-volatile-species-registry-research-v1`  
 **Frozen upstream:** `ofu-p5-p6-environment-v2` remains unchanged and authoritative.  
-**Research date:** 2026-09-03
+**Research date:** 2026-09-04
 
-## Decision
+## Live rebaseline and adjudication
 
-The next useful scientific step is **not** a generated Earth-like atmosphere, a greenhouse-corrected surface temperature, an age-only XUV escape history, or a geology/habitability score. The smallest defensible frontier is a composition-aware volatile state that remains source-driven: exact species-resolved reservoir bookkeeping, explicit unresolved composition, and derived gas/solvent diagnostics only when their causal inputs are established. The prototype proves deterministic laws for that frontier. Current canonical planets must remain `INSUFFICIENT_ENVIRONMENT`: Environment v2 still has no canonical volatile-state producer and no authoritative surface-temperature model.
+The existing research branch was retained because its scientific question remains valid. Its pre-rebaseline tip was `96ce1894aa8107f0bdb6004feb91637a94da7d0d`; current live `main` was revalidated at `ddc31e9f15ae63293d2111782ba643df8524ab2f`. The research branch was brought forward without modifying `main`, Product v0.8 branches, or canonical P5.
 
-## Literature map and scientific adjudication
+Canonical Environment v2 still deliberately owns no generated volatile genesis (`NO_CANONICAL_GENESIS`), no mean surface-temperature/greenhouse authority, no canonical XUV/escape history, and no geology/geochemical-energy authority. Canonical P6 still consumes the frozen Environment-v2 boundary. Product work therefore does not invalidate this lane's dependency graph.
 
-### Thermal state
+## Research question
 
-- Del Genio et al. (2019), *Albedos, Equilibrium Temperatures, and Surface Temperatures of Habitable Planets*, ApJ 884:75, DOI `10.3847/1538-4357/ab3be8`.
-- Wordsworth & Kreidberg (2022), *Atmospheres of Rocky Exoplanets*, ARA&A 60:159–201, DOI `10.1146/annurev-astro-052920-125632`.
+**What is the smallest scientifically defensible environment state that unlocks multiple downstream composition, pressure, solvent, climate and escape questions while preserving deterministic/oracleable semantics and refusing to fabricate volatile genesis?**
 
-Nominal radiative/equilibrium temperature is not a surface-temperature authority. Albedo, atmospheric greenhouse behavior, composition, rotation/transport and other non-current inputs create substantial degeneracy. A fixed offset/factor is rejected. A grey greenhouse or 1-D radiative-convective model may be useful future research, but neither is a minimal defensible promotion from current inputs.
+The answer remains **source-bound species-resolved volatile state**, but the v1 prototype needed stronger identity and authority semantics before that answer was research-grade.
 
-**Current result:** surface temperature and greenhouse response remain `UNSUPPORTED`. Evidence class for the physical problem: `EMPIRICALLY_CONSTRAINED`; any compact grey model would be `APPROXIMATE`.
+## Why this is the highest-leverage dependency
 
-### Atmosphere / volatiles
+Rocky-planet atmosphere composition is history-dependent: formation, outgassing/interior exchange, irradiation, escape and sequestration are coupled. A deterministic random atmosphere or Earth-like default would therefore create reproducible fiction rather than scientific authority. Once a governed source supplies species-resolved reservoirs, however, the same state can support pressure, composition, solvent, later radiative/climate research and eventually species-dependent escape without forcing any downstream model into the state producer.
 
-- Steinmeyer et al. (2026), *Evolution and Observable Properties of Rocky Planet Atmospheres*, Space Sci. Rev. 222:56, DOI `10.1007/s11214-026-01308-4`.
-- Tomberg & Johansen (2024), *Evolution of gas envelopes and outgassed atmospheres of rocky planets that formed via pebble accretion*, A&A 691:A183, DOI `10.1051/0004-6361/202451114`.
+Research v2 therefore advances the **state contract and identity layer**, not the number of derived outputs.
 
-Rocky atmosphere composition is coupled to formation, interior exchange/outgassing, irradiation and escape. A universal generated volatile inventory or Earth-like composition is therefore rejected. What is mature is the state algebra **after** a governed source exists.
+## Authority model
 
-Prototype state is species-resolved, exactly conserved and provenance-bearing. `PARTIAL` composition carries an explicit unresolved reservoir so an omitted species cannot silently become a known zero. `COMPLETE` requires unresolved mass to be zero.
+All prototype output remains `P5_RESEARCH_DRAFT` and non-canonical. Species-state records carry explicit `epistemicStatus`, `origin` and provenance.
 
-**Evidence:** bookkeeping `ESTABLISHED / FORMAL`; a generated universal volatile genesis remains `HYPOTHETICAL / STYLIZED` and is not implemented.
+Allowed origin classes:
 
-### Solvent / water phase
+- `AUTHORITATIVE_EXTERNAL_STATE` — required for research records marked `KNOWN`;
+- `MODEL_HYPOTHESIS` — produces `HYPOTHETICAL_MODEL_VALUE` state;
+- `RESEARCH_FIXTURE` — test/research-only state and also `HYPOTHETICAL_MODEL_VALUE`.
 
-- IAPWS R7-97(2012), Revised Release on the IAPWS Industrial Formulation 1997, including Region 4 vapor-liquid saturation curve.
+Derived gas/water results propagate that distinction. Exact algebra over hypothetical inputs remains `HYPOTHETICAL_MODEL_VALUE`; `DERIVED` is reserved for diagnostics whose required source states are `KNOWN` under the research contract.
 
-The prototype implements IAPWS-IF97 Region 4 deterministically over the deliberately bounded `273.160 K .. 647.096 K` vapor-liquid research domain. Total atmospheric pressure is not H2O partial pressure in a mixture, so saturation assessment requires complete composition, explicit molar masses, an explicit `IDEAL_WELL_MIXED_DALTON` law profile and an authoritative surface temperature.
+This does not define who may create future canonical state. That remains a promotion blocker.
 
-The result is only a **saturation tendency**. It does not establish oceans, ocean coverage, rain, ice, deep-water phases, or a biological solvent. Below the triple-point research bound the current prototype returns `UNSUPPORTED`; above the critical temperature it explicitly states that no pure-water liquid-vapor boundary exists.
+## Bounded species registry
 
-**Evidence:** pure-water saturation relation `ESTABLISHED`; mixed-atmosphere use `APPROXIMATE` under declared ideal-gas/well-mixed assumptions.
+Research v2 introduces a fixed 12-species registry for deterministic identity/reference-mass bookkeeping:
 
-### XUV / escape
+`Ar`, `CH4`, `CO`, `CO2`, `H2`, `H2O`, `H2S`, `He`, `N2`, `NH3`, `O2`, `SO2`.
 
-- Tu et al. (2015), *The extreme ultraviolet and X-ray Sun in Time*, A&A 577:L3, DOI `10.1051/0004-6361/201526146`.
-- Owen (2019), *Atmospheric Escape and the Evolution of Close-In Exoplanets*, ARA&E 47:67–90, DOI `10.1146/annurev-earth-053018-060246`.
-- Salz et al. (2016), *Energy-limited escape revised*, A&A 585:L2, DOI `10.1051/0004-6361/201527042`.
+The profile records NIST Chemistry WebBook SRD 69 reference molecular weights and CAS identifiers, with CIAAW atomic-weight guidance as a governance reminder that natural isotopic composition can vary. These numbers are therefore **reference molecular weights**, not exact isotopologue masses, abundance priors, formation priors or occurrence claims.
 
-Young-star high-energy histories depend strongly on rotational evolution; a unique age-only law is rejected. Energy-limited escape also depends on heating efficiency, absorption/expansion radius and physical regime. The prototype therefore requires stellar rotation history, XUV history, upper-atmosphere composition, absorption-radius law, heating-efficiency law and P4-accepted history before even considering a future transition, and still marks a generic energy-limited result as diagnostic rather than universal authority.
+Caller-supplied molar masses are rejected. Unknown species are rejected rather than guessed. Species must be strictly sorted by identifier, preventing equivalent compositions from acquiring different output ordering solely from payload order.
 
-**Current result:** XUV evolution and escape remain `UNSUPPORTED`, evidence `EMPIRICALLY_CONSTRAINED / APPROXIMATE`.
+## Implemented semantics
 
-### Geology / geochemical energy
+### Species-resolved reservoirs
 
-- Baumeister et al. (2025), *Fundamentals of Interior Modelling and Challenges in the Interpretation of Observed Rocky Exoplanets*, Space Sci. Rev. 221:123, DOI `10.1007/s11214-025-01248-5`.
-- *Exo-Geoscience Perspectives Beyond Habitability* (2026), Space Sci. Rev., DOI `10.1007/s11214-026-01265-y`.
-
-Mass-radius observations are compositionally/interior-degenerate, and tectonic predictions depend on additional interior properties and thermal/rheological assumptions. Current P5 bulk inputs do not justify a tectonic flag, heat-flow index, nutrient index or chemotrophic-energy budget.
-
-**Current result:** geology and geochemical energy remain `UNSUPPORTED`.
-
-## Alternatives evaluated
-
-| Domain | Alternative | Verdict | Reason |
-| --- | --- | --- | --- |
-| Thermal | fixed `T_eff -> T_surface` offset/factor | REJECTED | hides greenhouse/albedo/transport assumptions |
-| Thermal | grey greenhouse | RESEARCH ONLY | optical depth/composition not established upstream |
-| Thermal | 1-D radiative-convective column | DEFERRED | stronger science, too many missing causal inputs for minimal successor |
-| Volatiles | Earth-like generated composition | REJECTED | hidden Earth default |
-| Volatiles | mass/radius-conditioned random inventory | REJECTED | deterministic does not make genesis scientifically valid |
-| Volatiles | source-driven species-resolved reservoirs | RETAINED | formal conservation and provenance, no genesis overclaim |
-| Water | use `T_eff` as surface temperature | REJECTED | wrong authority and physics |
-| Water | infer ocean coverage from stylized terrain | REJECTED | rendering/topology is not physical elevation |
-| Water | IAPWS saturation tendency with authoritative inputs | RETAINED | established bounded physical relation |
-| XUV | universal age-only XUV decay | REJECTED | rotational-history dependence |
-| Escape | fixed-efficiency energy-limited rate | REJECTED | efficiency/radius/regime are not universal |
-| Geology | mass-based plate-tectonics flag | REJECTED | interior/geodynamic degeneracy |
-| Geochemistry | synthetic chemotrophic-energy score | REJECTED | no causal redox/fluid-rock/nutrient inputs |
-
-## Prototype architecture
-
-The research library is pure and per-planet. It creates no P5 clock, event log, universe identity, RNG tree, global enumeration or renderer-derived truth.
-
-### Species-resolved volatile state
-
-`ofu-p5-volatile-species-state-research-v1` permits at most 32 named components. Each carries:
-
-- `speciesId`;
-- explicit `molarMassNanoKgPerMol` input with provenance expected from a future bounded registry;
-- `atmosphereTg`;
-- `condensedSurfaceTg`;
-- `subsurfaceInteriorTg`;
-- `lostTg`;
-- exact `totalTg`.
-
-For every component:
+For every registered species:
 
 `total = atmosphere + condensed_surface + subsurface_interior + lost`.
 
-`COMPLETE` versus `PARTIAL` composition and the unresolved reservoir preserve epistemic honesty.
+All masses are non-negative u64 teragrams. Aggregate arithmetic is overflow-checked. `COMPLETE` requires zero unresolved mass. `PARTIAL` requires a non-zero explicit unresolved reservoir, preventing omitted composition from silently becoming known zero.
+
+No genesis distribution or mass/radius-conditioned abundance law is implemented.
 
 ### Pressure and gas composition
 
-Global column pressure retains the Environment-v2 spherical law:
+Global mean column pressure retains the frozen Environment-v2 spherical law:
 
 `p = M_atm * g / (4*pi*R^2)`
 
-with `pi=355/113`, integer inputs and nearest-ties-to-even output Pa. Gas mole fractions and partial pressures are derived with exact rationals only for complete composition under the named ideal well-mixed law.
+with `pi=355/113`, integer inputs and nearest-ties-to-even pascals.
+
+Mole fractions and partial pressures are computed from exact rational amount ratios using registry reference molecular weights only when composition is complete and the caller explicitly selects `IDEAL_WELL_MIXED_DALTON`. This remains an approximation with a declared validity domain, not a universal high-pressure/non-ideal atmosphere model.
 
 ### Water saturation
 
-IAPWS-IF97 Region 4 is evaluated in Q1e14 fixed point. Published decimal coefficients are frozen as exact scaled integers; square root uses integer arithmetic; irreversible reductions use nearest ties-to-even. Output is integer Pa.
+The existing fixed-point IAPWS-IF97 Region 4 relation remains bounded to `273.160 K .. 647.096 K`. It is a pure-water vapor-liquid **saturation tendency** diagnostic. It does not establish ocean presence, ocean coverage, rainfall, ice, a regional phase map or biological solvent availability.
 
-### Unsupported families retained explicitly
+Research v2 removes an authority ambiguity: water-saturation assessment no longer accepts a bare surface-temperature scalar. It requires an explicit surface-temperature state object carrying value, epistemic status, authority and provenance. Hypothetical temperature keeps the diagnostic hypothetical; no temperature state keeps it unknown.
 
-Surface temperature, greenhouse forcing, regional climate/weather, ocean area/physical elevation, sub-triple and deep high-pressure water phase, endogenous XUV/escape, tectonic regime, heat flux, geochemical energy and nutrient availability remain unsupported.
+### Explicitly unsupported
 
-## Deterministic semantics
+Mean surface temperature/greenhouse response, regional climate/weather, physical ocean area/elevation, sub-triple/deep-water phase behavior, canonical stellar XUV/escape history, tectonics, heat flow, geochemical energy/nutrients and gas-giant semantics remain unsupported.
 
-- integer/fixed/rational only in the prototype output path;
-- mass: teragrams (`10^9 kg`), non-negative u64;
-- gravity: integer micro-m/s^2;
-- radius: integer m;
-- temperature: integer mK;
-- pressure: integer Pa;
-- gas fraction: integer ppm;
-- molar mass: integer nanokg/mol;
-- rounding: nearest ties-to-even;
-- species count: `<=32`;
-- duplicate species IDs reject;
-- no mutable query state, so query order cannot alter results.
+## Determinism and working set
 
-## Oracle / Golden evidence
+The output path remains integer/fixed/rational only. Species count is bounded by the 12-entry registry. Queries are pure and per-planet; there is no mutable query state, private clock, global planet enumeration, retained climate grid, renderer-derived authority or persistent research history. Pressure and IAPWS evaluation are O(1); gas composition is O(S), `S <= 12`.
 
-Golden corpus: `tests/p5-environment-next-science/golden-research-v1.json`.
+A descriptive local run of 50,000 paired pressure + saturation evaluations completed in about 201 ms (~4.02 microseconds per paired iteration) with ~211 kB transient heap delta, zero retained planet records, zero climate-grid cells and zero persistent history entries. These are research observations, not normative SLOs.
 
-The JavaScript implementation and independent Python `Decimal`/`Fraction` oracle agree on all frozen pressure, gas-composition and saturation vectors. IAPWS anchors include:
+## Oracles and tests
 
-- `273.160 K -> 612 Pa`;
-- `300.000 K -> 3537 Pa`;
-- `373.150 K -> 101418 Pa`;
-- `500.000 K -> 2638898 Pa`;
-- `647.096 K -> 22064000 Pa`.
+Active Golden witness: `tests/p5-environment-next-science/golden-research-v2.json`.
 
-The Python oracle evaluates the algebraic IF97 relation directly rather than reproducing the JavaScript Q1e14 implementation.
+The Node suite checks registry identity/reference values, canonical species ordering, conservation, fail-closed unknown/legacy payloads, origin/epistemic constraints, complete/partial composition, pressure vectors, gas-composition vectors, water epistemic propagation, IAPWS anchors, raw-temperature rejection and continued unsupported status for surface climate/XUV/geochemistry.
 
-## Working set / performance
+The independent Python oracle uses Python `Fraction` and high-precision `Decimal`; it owns a separate frozen reference-mass table and directly evaluates pressure, gas and IAPWS algebra against Golden v2 rather than importing JavaScript implementation code.
 
-Complexity is `O(S)` per queried planet, with `S <= 32` species; IAPWS evaluation is `O(1)`. No climate grid, planet enumeration, retained regional cache or persistent history is required.
+Local research freeze results:
 
-A local research run of 50,000 paired saturation + pressure evaluations reported about `206.5 ms` total (`~4.13 us` per paired iteration), `~198 kB` transient heap delta, `0` retained planet records, `0` climate grid cells and `0` history entries. These are descriptive research numbers, not normative SLOs.
+- Node research suite — PASS;
+- independent Python oracle — PASS;
+- bounded 50,000-iteration benchmark — PASS with no retained planet/grid/history state.
 
-## Promotion-readiness answer
+Promotion-grade browser/OS equality is intentionally not claimed.
 
-### Is a small subset scientifically mature enough to become a future Environment v3 candidate?
+## Established versus hypothetical
 
-**YES as a candidate specification, CONDITIONALLY; NO as a promotion request today.**
+| Surface | Research classification | Claim limit |
+| --- | --- | --- |
+| Registry identity/reference molecular weights | `ESTABLISHED / REFERENCE_DATA` | deterministic reference values only; not isotopologue-exact or abundance priors |
+| Reservoir conservation/schema | `ESTABLISHED / FORMAL` | bookkeeping after a source exists; no genesis claim |
+| Global column pressure | `ESTABLISHED / APPROXIMATE` | global spherical column weight, not weather/local pressure |
+| Ideal-gas mole fractions / partial pressures | `ESTABLISHED / APPROXIMATE` | complete well-mixed ideal-gas state under explicit law |
+| IAPWS Region 4 saturation relation | `ESTABLISHED / APPROXIMATE` in mixed-gas use | saturation tendency only in bounded temperature domain |
+| Volatile genesis / arbitrary planet abundances | `HYPOTHETICAL / NOT ESTABLISHED` | not implemented |
+| Mean surface temperature / greenhouse | `EMPIRICALLY_CONSTRAINED / UNSUPPORTED` | not implemented |
+| Canonical XUV history / escape | `EMPIRICALLY_CONSTRAINED / UNSUPPORTED` | not implemented |
+| Tectonics / geochemical energy | `EMPIRICALLY_CONSTRAINED / UNSUPPORTED` | not implemented |
 
-The mature law/schema subset is:
+## Remaining blockers to canonical promotion
 
-1. species-resolved conserved volatile reservoirs with `COMPLETE/PARTIAL` composition and explicit unresolved mass;
-2. total column pressure derived from the resulting atmospheric mass;
-3. optional ideal-well-mixed mole/partial-pressure derivation under a named validity law;
-4. optional IAPWS H2O vapor-liquid saturation tendency when authoritative P5 surface temperature and complete H2O gas composition exist.
+1. **No canonical volatile-species state producer or governed import/state-origin policy.** This remains the primary blocker.
+2. The bounded species registry is a research reference profile, not yet a canonical P2-manifest-bound registry contract with frozen source/update policy.
+3. No authoritative P5 mean surface-temperature state/model exists, so saturation cannot become a current canonical planet claim and climate remains blocked.
+4. Mutable atmosphere/reservoir evolution would need P4-owned event/time/history semantics with replay, checkpointing, compaction equivalence and lineage.
+5. Promotion evidence is incomplete: full-domain fixed-point IF97 error bounds, larger independent randomized/metamorphic vectors, browser/OS cross-runtime identity where required, bounded-working-set certification, save/version migration and adversarial review.
+6. P6 must separately version and re-adjudicate eligibility against any future richer Environment contract.
 
-Current canonical upstream has no scientifically justified producer for the species-resolved volatile state and no surface-temperature authority. Promoting only the empty schema would add interface surface without adding environmental truth.
+## P6 implications
 
-### Required upstream inputs before an actual v3 promotion candidate
+**No canonical P6 behavior changes.** Current canonical planets remain `INSUFFICIENT_ENVIRONMENT`; this research does not establish `canGenerateBiosphere` or `biologyEstablished`. Even a future species-resolved atmosphere must not automatically unlock biology. P6 needs its own evidence threshold and versioned adapter/eligibility transaction.
 
-- a P5/P4-governed genesis/transition/import source for species-resolved volatile reservoir masses;
-- a versioned chemical-species/molar-mass registry with provenance;
-- for water saturation: a separately promoted P5 surface-temperature state/model with explicit uncertainty/domain;
-- for mutable reservoirs: P4-accepted event/time/history with replay/checkpoint/compaction equivalence.
+## Research conclusion
 
-### Fields remaining unknown/unsupported in the first candidate
+The highest-leverage frontier is not “more atmosphere outputs.” It is a trustworthy, bounded, source-bound **volatile identity and state contract** that can be consumed by many later models without pretending to know where the atmosphere came from. Research v2 materially improves that foundation while preserving the scientific unknowns that canonical Environment v2 correctly exposes.
 
-Generated volatile inventory without a producer; surface temperature without a climate model; greenhouse response; regional climate/weather; ocean fraction/elevation; sub-triple/deep-water phases; XUV history/escape; geology/tectonics; geochemical energy/nutrients.
-
-## Effect on P6
-
-Current canonical P6 remains exactly `INSUFFICIENT_ENVIRONMENT`, `canGenerateBiosphere=false`, `biologyEstablished=false`. This research branch creates no canonical life. Even a future species-resolved atmosphere slice must not automatically unlock biology; P6 must version and re-adjudicate its own eligibility policy against real P5 evidence.
-
-## MATERIAL BLOCKERS
-
-1. No canonical volatile-species genesis/state producer.
-2. No authoritative P5 surface-temperature model/state.
-3. No canonical stellar rotation/XUV history plus upper-atmosphere state for escape.
-4. No defensible geodynamic/redox/fluid-rock/nutrient upstream state for geochemical energy.
-5. Cross-runtime browser conformance and full fixed-point IF97 error sweep are not yet promotion evidence; current evidence is local Node + independent Python only.
-
-## IMPORTANT NON-BLOCKERS
-
-- Extend water physics below the triple point and into high-pressure phases only if future P6 requirements justify it.
-- Evaluate non-ideal gas/fugacity treatment before high-pressure composition use.
-- Replace free molar-mass payloads with a bounded canonical species registry before promotion.
-- Add full-domain fixed-point error bounds and randomized independent metamorphic vectors.
-
-## Integration-owner handoff
-
-Do **not** merge this research branch as a P5 successor. A future promotion request should supply an exact upstream source for species-resolved state, new P2 manifest lineage/contract IDs, exact-head Node + independent oracle + Golden evidence, browser cross-runtime equality, P4 replay/checkpoint/compaction evidence for mutable state, P6 negative/positive eligibility review, bounded working-set proof, save/versioning strategy and adversarial review with `MATERIAL BLOCKERS = 0`.
+**PROMOTION REQUESTED = NO**

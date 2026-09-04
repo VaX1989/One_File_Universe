@@ -1,27 +1,42 @@
 # P5 Environment Next Science Research
 
-Status: **RESEARCH / NON-CANONICAL**.
+Status: **RESEARCH / NON-CANONICAL**.  
+Authority: `P5_RESEARCH_DRAFT`.  
+Prototype: `ofu-p5-environment-next-research-v2`.  
+Frozen canonical upstream: `ofu-p5-p6-environment-v2`.
 
-This directory explores the smallest scientifically defensible successor surface beyond frozen `ofu-p5-p6-environment-v2`. It does not replace Environment v2, does not generate a volatile inventory, does not infer a surface temperature from radiative effective temperature, and does not create canonical escape, geology, ocean, climate, or biology.
+This lane asks: **what is the smallest scientifically defensible environment state that can unlock composition, pressure, solvent and later climate/escape research without inventing volatile genesis?**
 
-Research authority: `P5_RESEARCH_DRAFT`.
+Research v2 keeps the answer source-driven. It does not generate an atmosphere. It hardens the species-resolved volatile-state seam needed before richer environment science can be truthful.
 
-Prototype contract: `ofu-p5-environment-next-research-v1`.
+## Research v2 semantics
 
-Main executable ideas:
+- bounded reference registry: `ofu-p5-volatile-species-registry-research-v1`, 12 common volatile/gas species;
+- reference molecular weights are registry-owned, not caller-supplied, and are explicitly not exact isotopologue masses or abundance priors;
+- volatile state is exact per-species reservoir bookkeeping in teragrams with `COMPLETE` / `PARTIAL` composition and an explicit unresolved reservoir;
+- every state has an origin class, source ID, source revision, provenance and epistemic status;
+- `KNOWN` requires `AUTHORITATIVE_EXTERNAL_STATE`; model/fixture states remain `HYPOTHETICAL_MODEL_VALUE` through derived gas and water diagnostics;
+- species are strictly canonicalized by registry identifier; unregistered, duplicate, unsorted and extra-field payloads fail closed;
+- global mean column pressure remains the Environment-v2 deterministic spherical law;
+- complete gas composition may derive mole fractions and partial pressures only under the explicit `IDEAL_WELL_MIXED_DALTON` assumption;
+- IAPWS-IF97 Region 4 remains a bounded water vapor-liquid saturation tendency, not an ocean or climate model;
+- saturation requires an explicit surface-temperature state object with authority/provenance; a raw temperature scalar is rejected;
+- surface temperature/greenhouse, canonical XUV/escape, geology and geochemical energy remain `UNSUPPORTED`.
 
-- species-resolved, exactly conserved volatile reservoirs with explicit unresolved composition;
-- global column pressure from atmospheric mass using the frozen Environment-v2 pressure-law geometry;
-- ideal well-mixed gas mole fractions / partial pressures only under an explicit assumption and complete composition;
-- deterministic IAPWS-IF97 Region-4 H2O vapor-liquid saturation pressure, used only as a saturation-tendency diagnostic when an authoritative surface temperature and H2O partial pressure exist;
-- explicit fail-closed readiness assessments for surface temperature, XUV escape and geochemical energy.
+No P5 clock, private RNG, global enumeration, climate grid, renderer-derived truth or canonical state is introduced.
 
-No global grid, planet enumeration, private clock, event log, renderer input, or independent RNG is introduced.
-
-Run research checks:
+## Research evidence
 
 ```sh
 node tests/p5-environment-next-science/run-research-tests.mjs
-python3 tools/p5_environment_next_oracle.py tests/p5-environment-next-science/golden-research-v1.json
+python3 tools/p5_environment_next_oracle.py tests/p5-environment-next-science/golden-research-v2.json
 node tests/p5-environment-next-science/benchmark-research.mjs
 ```
+
+The Golden v1 file is retained as historical evidence. Golden v2 is the active research witness.
+
+## Promotion boundary
+
+This branch is not an Environment v3 proposal for immediate merge. OFU still has no canonical producer for species-resolved volatile state. A future promotion transaction would separately need P2 manifest/versioning, a governed registry policy, P4 transition/replay semantics for mutable reservoirs, promotion-grade cross-runtime certification, save/version migration, and P6 eligibility re-adjudication.
+
+**PROMOTION REQUESTED = NO**

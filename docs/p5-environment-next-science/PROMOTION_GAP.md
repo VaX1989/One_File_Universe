@@ -1,31 +1,33 @@
-# Environment v3 Promotion Gap
+# Environment Next Promotion Gap
 
-This is a research handoff, not a promotion request.
+Status: **RESEARCH / NON-CANONICAL**. This is not a promotion request.
 
-## Smallest plausible future delta
+Research v2 closes several internal prototype gaps: molar masses are no longer caller payloads; the bounded species registry owns chemical identity/reference mass; state origin and epistemic status are mandatory; species ordering is canonical; and derived gas/water claims preserve hypothetical status when their source state or surface-temperature state is hypothetical.
 
-A future `ofu-p5-p6-environment-v3` should be **additive** over frozen v2. The first plausible delta is species-resolved volatile state plus derived composition diagnostics, not a climate or geology package.
+Those improvements do **not** establish a canonical atmosphere.
 
-Candidate additions once upstream authority exists:
+## Smallest plausible future canonical delta
 
-- `volatileSpeciesState` with exact per-species atmosphere / condensed-surface / subsurface-interior / lost masses;
-- `compositionCompleteness` plus an explicit unresolved reservoir;
-- `gasComposition` under a named, bounded mixing law;
-- optional `waterVaporSaturation` under an IAPWS law when surface temperature and H2O partial-pressure prerequisites are actually known.
+If upstream authority later exists, the first plausible Environment successor remains additive over frozen v2 and should contain only a governed species-resolved volatile state plus diagnostics whose inputs are actually established. It should not bundle greenhouse climate, escape history, geology, ocean maps or biosphere gates.
 
-No change to frozen v2 semantics or identity is implied. A v3 projection must retain the full v2 witness or bind its exact source digest.
+Potentially mature pieces are:
 
-## Required promotion evidence
+- exact species-resolved atmosphere / condensed-surface / subsurface-interior / lost reservoirs;
+- explicit complete/partial composition plus unresolved reservoir;
+- bounded registry identity and reference molecular-weight profile;
+- global column pressure from total retained atmosphere;
+- ideal-well-mixed gas fractions/partial pressures only under a named validity assumption;
+- optional H2O vapor-liquid saturation tendency only when a separately authoritative surface-temperature state exists.
 
-- P2 manifest lineage and new contract IDs;
-- canonical state-origin policy for volatile species;
-- P4 transition descriptor if mutable;
-- independent oracle and Golden digest;
-- full-temperature-domain error analysis for fixed-point IF97;
-- Chromium / Firefox / WebKit / Windows / macOS cross-runtime byte equality where OFU certification policy requires it;
-- P6 adapter versioning and negative eligibility regression on current real planets;
-- save/version migration decision;
-- no renderer-derived inputs;
-- exact-head and exact-main certification by the integration owner.
+## Material blockers to canonical promotion
 
-Until the state-origin blocker is closed, verdict is **CANDIDATE NOT READY** despite the maturity of several underlying deterministic laws.
+1. No canonical volatile-species state producer or governed import/state-origin policy exists. `NO_CANONICAL_GENESIS` remains correct for current Environment v2.
+2. The research registry is reference data, not yet a canonical P2-manifest-bound chemical registry contract with a frozen source/update policy.
+3. No authoritative P5 mean surface-temperature state/model exists; radiative effective temperature cannot fill that role.
+4. Any mutable reservoir history needs P4-owned events, ordering, replay, checkpointing, compaction equivalence and lineage.
+5. Promotion-grade evidence is still missing: full-domain fixed-point IF97 error bounds, larger independent/metamorphic vectors, browser/OS cross-runtime byte equality where required, bounded-working-set certification, save/version migration, and adversarial review.
+6. P6 would need a separately versioned eligibility review; a richer atmosphere must not silently turn `INSUFFICIENT_ENVIRONMENT` into biosphere authority.
+
+A future canonical candidate must bind its exact frozen Environment-v2 witness or source digest and must not consume renderer-derived properties.
+
+**PROMOTION REQUESTED = NO**

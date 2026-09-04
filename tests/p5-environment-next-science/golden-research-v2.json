@@ -1,0 +1,42 @@
+{
+  "schema": "golden-p5-environment-next-research-v2",
+  "authority": "P5_RESEARCH_DRAFT",
+  "contractId": "ofu-p5-environment-next-research-v2",
+  "speciesStateContractId": "ofu-p5-volatile-species-state-research-v2",
+  "registry": {
+    "registryId": "ofu-p5-volatile-species-registry-research-v1",
+    "sourceProfile": "NIST_SRD69_CIAAW_2024_REFERENCE_MASSES_RETRIEVED_2026-09-04",
+    "species": [
+      {"speciesId":"Ar","formula":"Ar","molarMassNanoKgPerMol":"39948000","casRegistryNumber":"7440-37-1"},
+      {"speciesId":"CH4","formula":"CH4","molarMassNanoKgPerMol":"16042500","casRegistryNumber":"74-82-8"},
+      {"speciesId":"CO","formula":"CO","molarMassNanoKgPerMol":"28010100","casRegistryNumber":"630-08-0"},
+      {"speciesId":"CO2","formula":"CO2","molarMassNanoKgPerMol":"44009500","casRegistryNumber":"124-38-9"},
+      {"speciesId":"H2","formula":"H2","molarMassNanoKgPerMol":"2015880","casRegistryNumber":"1333-74-0"},
+      {"speciesId":"H2O","formula":"H2O","molarMassNanoKgPerMol":"18015300","casRegistryNumber":"7732-18-5"},
+      {"speciesId":"H2S","formula":"H2S","molarMassNanoKgPerMol":"34081000","casRegistryNumber":"7783-06-4"},
+      {"speciesId":"He","formula":"He","molarMassNanoKgPerMol":"4002602","casRegistryNumber":"7440-59-7"},
+      {"speciesId":"N2","formula":"N2","molarMassNanoKgPerMol":"28013400","casRegistryNumber":"7727-37-9"},
+      {"speciesId":"NH3","formula":"NH3","molarMassNanoKgPerMol":"17030500","casRegistryNumber":"7664-41-7"},
+      {"speciesId":"O2","formula":"O2","molarMassNanoKgPerMol":"31998800","casRegistryNumber":"7782-44-7"},
+      {"speciesId":"SO2","formula":"SO2","molarMassNanoKgPerMol":"64064000","casRegistryNumber":"7446-09-5"}
+    ]
+  },
+  "pressureVectors": [
+    {"gravityMicroMs2":"9806650","meanRadiusM":"6371000","atmosphericMassTg":"5148000000","expectedPressurePa":"98977"},
+    {"gravityMicroMs2":"9800000","meanRadiusM":"6371000","atmosphericMassTg":"0","expectedPressurePa":"0"}
+  ],
+  "saturationVectors": [
+    {"temperatureMilliK":"273160","expectedSaturationPressurePa":"612"},
+    {"temperatureMilliK":"300000","expectedSaturationPressurePa":"3537"},
+    {"temperatureMilliK":"373150","expectedSaturationPressurePa":"101418"},
+    {"temperatureMilliK":"500000","expectedSaturationPressurePa":"2638898"},
+    {"temperatureMilliK":"647096","expectedSaturationPressurePa":"22064000"}
+  ],
+  "gasVector": {
+    "gravityMicroMs2":"9800000","meanRadiusM":"6371000","expectedTotalPressurePa":"192",
+    "species":[
+      {"speciesId":"H2O","atmosphereTg":"1000000","expectedMoleFractionPpm":"147322","expectedPartialPressurePa":"28"},
+      {"speciesId":"N2","atmosphereTg":"9000000","expectedMoleFractionPpm":"852678","expectedPartialPressurePa":"164"}
+    ]
+  }
+}
