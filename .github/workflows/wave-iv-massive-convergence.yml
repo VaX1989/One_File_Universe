@@ -2,16 +2,18 @@ name: Wave IV Massive Convergence Development
 on:
   push:
     branches: [integration/wave-iv-massive-convergence-vertical-slice-2026-09-04]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 concurrency:
-  group: wave-iv-massive-convergence-${{ github.ref_name }}
+  group: wave-iv-massive-convergence-${{ github.event_name }}-${{ github.event.pull_request.head.ref || github.ref_name }}
   cancel-in-progress: true
 env:
-  OFU_SOURCE_SHA: ${{ github.sha }}
+  OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 permissions:
   contents: read
 jobs:
-  focused-vertical-slice:
+  exact-head:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -20,42 +22,124 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '24.20.0'
-      - name: Exact source
+      - name: Verify exact source
         run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
-      - name: Hardened planet regressions
+      - name: Frozen camera and presentation regressions
         run: |
           node tests/rendering/v08-camera-framing.mjs
           node tests/rendering/v08-fv04-diagnostic.mjs
           node tests/rendering/v08-visual-oracles.mjs
-      - name: Macrocosm oracles
-        run: node tests/wave-iv/macro/macro-oracles.mjs
-      - name: Full scale runtime oracle
-        run: node tests/wave-iv/convergence-runtime.mjs
-      - name: Surface frame and bounded terrain oracles
+      - name: Macro and convergence semantic oracles
+        run: |
+          node tests/wave-iv/macro/macro-oracles.mjs
+          node tests/wave-iv/convergence-runtime.mjs
+      - name: Surface authority and continuity oracles
         run: |
           node tests/rendering/wave-iv-surface-frame.mjs
           node tests/rendering/wave-iv-surface-terrain.mjs
           node tests/wave-iv/terrain-continuity.mjs
-      - name: Exact-head single-file build
+      - name: Reproducible exact-head Wave IV single file
+        shell: bash
         run: |
-          node tools/build-ofu-rendering-v09.mjs > /tmp/wave-iv-build.json
+          node tools/build-ofu-rendering-v09.mjs > /tmp/wave-iv-build-1.json
+          cp dist/One_File_Universe.html /tmp/wave-iv-first.html
+          cp dist/rendering-build-manifest.json /tmp/wave-iv-first-manifest.json
+          node tools/build-ofu-rendering-v09.mjs > /tmp/wave-iv-build-2.json
+          cmp /tmp/wave-iv-first.html dist/One_File_Universe.html
+          cmp /tmp/wave-iv-first-manifest.json dist/rendering-build-manifest.json
           grep -q 'ofu-wave-iv-scale-runtime-2' dist/rendering-build-manifest.json
           grep -q 'ofu-local-terrain-lod-3' dist/rendering-build-manifest.json
+          grep -q 'ofu-local-surface-webgl2-2' dist/rendering-build-manifest.json
+          grep -q 'INSTANCED_LOW_POLY_TRIANGLES' dist/rendering-build-manifest.json
           grep -q 'dd3348834d15ddf6a409912ac3e263c1e6d81fc4' dist/rendering-build-manifest.json
           grep -q '34874da12a157deba6d7615ff07a20a83606d938' dist/rendering-build-manifest.json
           grep -q '56e44c8708338309f90a6354ce16f4140ea87ca0' dist/rendering-build-manifest.json
           test "$(grep -Eoc '(src|href)=[\"'\'']https?://' dist/One_File_Universe.html)" -eq 0
           grep -q "connect-src 'none'" dist/One_File_Universe.html
-      - name: Install Chromium
+      - name: Install Chromium evidence runtime
         run: |
           npm install --no-save playwright@1.62.1
           npx playwright install --with-deps chromium
-      - name: Desktop and mobile vertical traversal
+      - name: Desktop and 390x844 full visual traversal
         run: node tests/wave-iv/browser-convergence.mjs
+      - name: 360x800 and 320x700 compact mobile pass
+        run: node tests/wave-iv/browser-mobile-compact.mjs
+      - name: Ten-cycle resource soak
+        run: node tests/wave-iv/browser-soak.mjs
+      - name: Freeze founder-test filename and checksums
+        shell: bash
+        run: |
+          short="${OFU_SOURCE_SHA:0:12}"
+          name="One_File_Universe-WAVE-IV-FOUNDER-TEST-${short}.html"
+          cp dist/One_File_Universe.html "dist/${name}"
+          bytes=$(wc -c < "dist/${name}" | tr -d ' ')
+          sha=$(sha256sum "dist/${name}" | awk '{print $1}')
+          printf 'source_sha=%s\nartifact=%s\nbytes=%s\nsha256=%s\n' "$OFU_SOURCE_SHA" "$name" "$bytes" "$sha" | tee dist/FOUNDER_TEST_ARTIFACT.txt
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: wave-iv-convergence-${{ env.OFU_SOURCE_SHA }}
+          name: wave-iv-founder-test-${{ env.OFU_SOURCE_SHA }}
           path: |
-            dist/One_File_Universe.html
+            dist/One_File_Universe-WAVE-IV-FOUNDER-TEST-*.html
             dist/rendering-build-manifest.json
+            dist/FOUNDER_TEST_ARTIFACT.txt
             dist/evidence/wave-iv-convergence/
+  browser-linux:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.20.0'
+      - run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - run: node tools/build-ofu-rendering-v09.mjs
+      - run: npm install --no-save playwright@1.62.1
+      - run: npx playwright install --with-deps ${{ matrix.browser }}
+      - name: Galaxy to Human cross-browser traversal
+        run: node tests/wave-iv/browser-convergence-matrix.mjs
+        env:
+          BROWSER: ${{ matrix.browser }}
+          DPR: ${{ matrix.browser == 'chromium' && '2' || '1' }}
+  browser-platform:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            browser: chromium
+          - os: macos-latest
+            browser: webkit
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.20.0'
+      - shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - run: node tools/build-ofu-rendering-v09.mjs
+      - run: npm install --no-save playwright@1.62.1
+      - run: npx playwright install ${{ matrix.browser }}
+      - name: Galaxy to Human platform traversal
+        run: node tests/wave-iv/browser-convergence-matrix.mjs
+        env:
+          BROWSER: ${{ matrix.browser }}
+          DPR: '1'
+  seal:
+    if: ${{ always() }}
+    needs: [exact-head, browser-linux, browser-platform]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require all Wave IV gates
+        shell: bash
+        run: |
+          test '${{ needs.exact-head.result }}' = success
+          test '${{ needs.browser-linux.result }}' = success
+          test '${{ needs.browser-platform.result }}' = success
