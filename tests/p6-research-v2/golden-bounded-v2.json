@@ -1,0 +1,33 @@
+{
+  "contract": "ofu-p6-biology-v2-bounded-research",
+  "model": "p6-biology-v2-bounded-research-1",
+  "authority": "P6_RESEARCH_ENVIRONMENT_ONLY",
+  "identityPolicy": "p6-biological-lineage-stable-key-research-v3",
+  "limits": {
+    "maxBiospheresPerWorld": 1,
+    "maxTotalLineagesPerBiosphere": 1024,
+    "maxActiveLineagesPerBiosphere": 256,
+    "maxTraitsPerLineage": 32,
+    "maxTrophicTransfers": 8
+  },
+  "case": {
+    "universeIdentityHex": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+    "planetIdHex": "030a11181f262d343b424950575e656c737a81888f969da4abb2b9c0c7ced5dc",
+    "founderOperationKey": "founder-alpha",
+    "biosphereIdHex": "09b9b8c14302d3c6d9d4dc09de2209c120e04eb13b5e4db1a9ee16e3239de92c",
+    "lineageIdHex": "10e5b7126ec4b1e6f34f03fbf5eb7b16337507754e60776bb0b199f10bfa9f24",
+    "speciesIdHex": "cb4fa6e73e534cc180646180e75b46bafa2eebff54223544a48ae685a0d3bfda",
+    "ecology": {
+      "phototrophicUsableEnergyU": "1000000",
+      "phototrophicCaptureEfficiencyPpm": "400000",
+      "chemotrophicUsableEnergyU": null,
+      "chemotrophicCaptureEfficiencyPpm": null,
+      "maintenanceFractionPpm": "250000",
+      "trophicEfficienciesPpm": ["100000", "100000"],
+      "energySource": "PHOTOTROPHIC",
+      "primaryProductivityCeilingU": "400000",
+      "allocatableEnergyU": "300000",
+      "trophicCeilingsU": ["300000", "30000", "3000"]
+    }
+  }
+}
