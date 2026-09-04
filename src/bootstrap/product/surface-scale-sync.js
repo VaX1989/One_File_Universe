@@ -2,8 +2,8 @@
 'use strict';
 const O=root.OFU=root.OFU||{},R=O.waveIVScaleRuntime,C=O.planetRenderCore;if(!R)return;
 const ALL_SURFACE=new Set(['global_surface','regional_surface','local_surface','human']),LOCAL_SURFACE=new Set(['regional_surface','local_surface','human']),GLOBAL_GLOBE_DISTANCE_RADII=2.16;
-const CAMERA_POLICY=Object.freeze({regional_surface:Object.freeze({pitchRad:-.4014257279586958,label:'REGIONAL_SURFACE'}),local_surface:Object.freeze({pitchRad:-.29670597283903605,label:'LOCAL_SURFACE'}),human:Object.freeze({pitchRad:-.41887902047863906,label:'HUMAN'})});
-const state={version:'ofu-wave-iv-surface-scale-sync-6',updates:0,unsupportedRedirects:0,cameraPolicyApplications:0,globalGlobeHandoffs:0,globalGlobeDistanceRadii:GLOBAL_GLOBE_DISTANCE_RADII,globalGlobeHandoffAtomic:true};
+const CAMERA_POLICY=Object.freeze({regional_surface:Object.freeze({pitchRad:-.3490658503988659,label:'REGIONAL_SURFACE'}),local_surface:Object.freeze({pitchRad:-.2617993877991494,label:'LOCAL_SURFACE'}),human:Object.freeze({pitchRad:-.41887902047863906,label:'HUMAN'})});
+const state={version:'ofu-wave-iv-surface-scale-sync-7',updates:0,unsupportedRedirects:0,cameraPolicyApplications:0,globalGlobeHandoffs:0,globalGlobeDistanceRadii:GLOBAL_GLOBE_DISTANCE_RADII,globalGlobeHandoffAtomic:true};
 function unsupported(P){return !P||P.targetStatus!=='SUPPORTED'||!P.surfaceProvider?.capability?.available}
 function applyCameraPolicy(P,scale){const policy=CAMERA_POLICY[scale],snap=P?.surfaceProvider?.snapshot?.()?.camera;if(!policy||!snap)return false;const delta=policy.pitchRad-Number(snap.pitchRad||0);if(Math.abs(delta)>1e-5){P.surfaceIntent?.({type:'LOOK_PITCH',amount:delta/.035});state.cameraPolicyApplications++}return true}
 function applyGlobalGlobe(P){if(P.surfaceMode==='LOCAL')P.leaveSurface?.();if(C?.setCameraTarget&&P.camera&&Number(P.radius)>0){C.setCameraTarget(P.camera,{distanceM:Number(P.radius)*GLOBAL_GLOBE_DISTANCE_RADII,direction:P.camera.targetDirection||P.camera.direction});P.camera.distanceM=Math.max(P.camera.minDistanceM,P.camera.targetDistanceM);P.camera.direction=P.camera.targetDirection}state.globalGlobeHandoffs++;state.updates++;return true}
