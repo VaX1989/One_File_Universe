@@ -52,7 +52,11 @@ jobs:
           node tools/build-ofu-rendering-v09.mjs > /tmp/wave-iv-build-2.json
           cmp /tmp/wave-iv-first.html dist/One_File_Universe.html
           cmp /tmp/wave-iv-first-manifest.json dist/rendering-build-manifest.json
-          grep -q 'ofu-wave-iv-scale-runtime-2' dist/rendering-build-manifest.json
+          grep -q 'ofu-wave-iv-scale-runtime-3' dist/rendering-build-manifest.json
+          grep -q 'ofu-wave-iv-input-router-4' dist/rendering-build-manifest.json
+          grep -q 'ofu-wave-iv-surface-scale-sync-5' dist/rendering-build-manifest.json
+          grep -q 'SPHERICAL_PLANET_WEBGL_HANDOFF' dist/rendering-build-manifest.json
+          grep -q 'globalSurfaceGlobeDistanceRadii' dist/rendering-build-manifest.json
           grep -q 'ofu-wave-iv-macro-canvas-3' dist/rendering-build-manifest.json
           grep -q 'ofu-local-terrain-lod-4' dist/rendering-build-manifest.json
           grep -q 'ofu-surface-relief-presentation-1' dist/rendering-build-manifest.json
