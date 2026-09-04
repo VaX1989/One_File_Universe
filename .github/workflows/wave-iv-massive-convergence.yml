@@ -3,7 +3,9 @@ on:
   push:
     branches: [integration/wave-iv-massive-convergence-vertical-slice-2026-09-04]
   pull_request:
-    branches: [main]
+    branches:
+      - main
+      - integration/wave-iv-parallel-base-normalization-2026-09-04
   workflow_dispatch:
 concurrency:
   group: wave-iv-massive-convergence-${{ github.event_name }}-${{ github.event.pull_request.head.ref || github.ref_name }}
@@ -24,7 +26,7 @@ jobs:
           node-version: '24.20.0'
       - name: Verify exact source
         run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
-      - name: Frozen camera and presentation regressions
+      - name: Hardened camera and presentation regressions
         run: |
           node tests/rendering/v08-camera-framing.mjs
           node tests/rendering/v08-fv04-diagnostic.mjs
@@ -84,6 +86,7 @@ jobs:
             dist/FOUNDER_TEST_ARTIFACT.txt
             dist/evidence/wave-iv-convergence/
   browser-linux:
+    if: ${{ github.event_name != 'pull_request' || github.base_ref == 'main' || github.event.pull_request.draft == false }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -106,6 +109,7 @@ jobs:
           BROWSER: ${{ matrix.browser }}
           DPR: ${{ matrix.browser == 'chromium' && '2' || '1' }}
   browser-platform:
+    if: ${{ github.event_name != 'pull_request' || github.base_ref == 'main' || github.event.pull_request.draft == false }}
     strategy:
       fail-fast: false
       matrix:
@@ -133,7 +137,7 @@ jobs:
           BROWSER: ${{ matrix.browser }}
           DPR: '1'
   seal:
-    if: ${{ always() }}
+    if: ${{ always() && (github.event_name != 'pull_request' || github.base_ref == 'main' || github.event.pull_request.draft == false) }}
     needs: [exact-head, browser-linux, browser-platform]
     runs-on: ubuntu-latest
     steps:
