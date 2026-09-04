@@ -1,0 +1,16 @@
+(function(root){
+'use strict';
+const O=root.OFU=root.OFU||{},T=O.planetSurfaceTerrain;if(!T||typeof T.createTerrainSession!=='function')throw new Error('surface relief requires frustum-aware terrain');
+const VERSION='ofu-surface-relief-presentation-1',AUTHORITY='PRESENTATION_ONLY',R=Number(T.PRESENTATION_SPHERE_RADIUS_M)||6400000,baseCreate=T.createTerrainSession,baseHeight=T.presentationHeightM,baseHeightDirection=T.presentationHeightAtDirection,baseMicro=T.microdetailInstances,hash=T.hash32;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function planetId(token){const s=String(token),m='/nav-anchor/',i=s.lastIndexOf(m);if(i<1)throw new Error('invalid surface anchor');return s.slice(0,i)}
+function unitFromSeed(seed,salt){let x=(seed^Math.imul(salt+1,0x9e3779b1))>>>0;const next=()=>{x^=x>>>16;x=Math.imul(x,0x7feb352d);x^=x>>>15;x=Math.imul(x,0x846ca68b);x^=x>>>16;return x>>>0},v=[next()/2147483647.5-1,next()/2147483647.5-1,next()/2147483647.5-1],m=Math.hypot(...v)||1;return v.map(q=>q/m)}
+function wave(seed,d,freq,salt){const v=unitFromSeed(seed,salt),phase=((seed>>>((salt%4)*8))&255)/255*Math.PI*2;return Math.sin((d[0]*v[0]+d[1]*v[1]+d[2]*v[2])*freq*Math.PI+phase)}
+function reliefAtDirection(id,d){const seed=hash('planet-surface-relief-v1|'+id),a=wave(seed,d,18,0),b=wave(seed,d,43,1),c=wave(seed,d,91,2),r=1-Math.abs(wave(seed,d,67,3)),basin=wave(seed,d,173,4),regional=wave(seed,d,460,5);return a*1450+b*780+c*360+Math.pow(clamp(r,0,1),3)*1250+basin*210+regional*95}
+function heightAtDirection(id,d){return Number(baseHeightDirection(id,d))+reliefAtDirection(id,d)}
+function height(token,x,y){const id=planetId(token),d=T.surfaceDirectionFromLocal(token,x,y);return heightAtDirection(id,d)}
+function transformMesh(mesh){if(mesh.__waveIVReliefApplied)return mesh;const v=mesh.vertices,k=mesh.key,size=Number(k.sizeM||T.patchSizeM(k.level)),segments=Number(mesh.segments),x0=Number(mesh.localOriginM[0]),y0=Number(mesh.localOriginM[1]),step=size/segments;let p=0;for(let j=0;j<=segments;j++)for(let i=0;i<=segments;i++){p+=2;v[p++]=height(k.anchorToken,x0+i*step,y0+j*step)}try{Object.defineProperty(mesh,'__waveIVReliefApplied',{value:true,enumerable:false})}catch{}return mesh}
+function createTerrainSession(...args){const s=baseCreate(...args),seen=new Set(),rawCache=s.cache?.map instanceof Map?s.cache.map:s.cache;function apply(){if(!(rawCache instanceof Map))return;for(const [id,r] of rawCache){if(seen.has(id))continue;transformMesh(r.mesh);seen.add(id)}}return Object.freeze({...s,update(camera){const out=s.update(camera);apply();return out},dispose(){seen.clear();return s.dispose()}})}
+function microdetailInstances(token,s,opts){return Object.freeze(baseMicro(token,s,opts).map(r=>{const x=Number(r.positionM[0]),y=Number(r.positionM[1]);return Object.freeze({...r,positionM:Object.freeze([x,y,height(token,x,y)]),authority:AUTHORITY,geologyClaim:false})}))}
+O.planetSurfaceTerrain=Object.freeze({...T,presentationReliefVersion:VERSION,detailSpectrum:'PLANET_WIDE_TO_HUMAN_SCALE_PRESENTATION_V3',presentationHeightAtDirection:heightAtDirection,presentationHeightM:height,createTerrainSession,microdetailInstances,reliefAtDirection,reliefAuthority:AUTHORITY,reliefPhysicalClaim:false,reliefGeologyClaim:false});
+})(typeof globalThis!=='undefined'?globalThis:this);
