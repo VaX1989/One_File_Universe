@@ -35,13 +35,14 @@ jobs:
         run: |
           node tests/wave-iv/macro/macro-oracles.mjs
           node tests/wave-iv/convergence-runtime.mjs
-      - name: Surface authority, frustum coverage, unsupported-body, and continuity oracles
+      - name: Surface authority, frustum coverage, unsupported-body, continuity, and relief oracles
         run: |
           node tests/rendering/wave-iv-surface-frame.mjs
           node tests/rendering/wave-iv-surface-terrain.mjs
           node tests/wave-iv/surface-capability.mjs
           node tests/wave-iv/terrain-continuity.mjs
           node tests/wave-iv/surface-frustum-coverage.mjs
+          node tests/wave-iv/surface-relief-presentation.mjs
       - name: Reproducible exact-head Wave IV single file
         shell: bash
         run: |
@@ -54,9 +55,11 @@ jobs:
           grep -q 'ofu-wave-iv-scale-runtime-2' dist/rendering-build-manifest.json
           grep -q 'ofu-wave-iv-macro-canvas-3' dist/rendering-build-manifest.json
           grep -q 'ofu-local-terrain-lod-4' dist/rendering-build-manifest.json
-          grep -q 'ofu-local-surface-webgl2-4' dist/rendering-build-manifest.json
+          grep -q 'ofu-surface-relief-presentation-1' dist/rendering-build-manifest.json
+          grep -q 'ofu-local-surface-webgl2-5' dist/rendering-build-manifest.json
           grep -q 'FRUSTUM_GROUND_FOOTPRINT_BOUNDED' dist/rendering-build-manifest.json
-          grep -q 'BAND_SCALED_LOW_FREQUENCY_MATERIAL_VARIATION' dist/rendering-build-manifest.json
+          grep -q 'CAMERA_LOCATION_PRESENTATION_RELIEF_DATUM' dist/rendering-build-manifest.json
+          grep -q 'PLANET_WIDE_TO_HUMAN_SCALE_PRESENTATION_V3' dist/rendering-build-manifest.json
           grep -q 'INSTANCED_LOW_POLY_TRIANGLES' dist/rendering-build-manifest.json
           grep -q 'dd3348834d15ddf6a409912ac3e263c1e6d81fc4' dist/rendering-build-manifest.json
           grep -q '34874da12a157deba6d7615ff07a20a83606d938' dist/rendering-build-manifest.json
