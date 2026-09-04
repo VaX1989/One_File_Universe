@@ -1,0 +1,61 @@
+name: Wave IV Chat C Planet Surface Development Evidence
+
+on:
+  push:
+    branches: [parallel/wave-iv-planet-surface-human-2026-09-04]
+  workflow_dispatch:
+
+concurrency:
+  group: wave-iv-chat-c-${{ github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  OFU_SOURCE_SHA: ${{ github.sha }}
+
+permissions:
+  contents: read
+
+jobs:
+  targeted-development-evidence:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.20.0'
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Hardened global renderer regression and Wave IV semantic oracles
+        run: |
+          node tests/rendering/v08-camera-framing.mjs
+          node tests/rendering/v08-fv04-diagnostic.mjs
+          node tests/rendering/v08-visual-oracles.mjs
+          node tests/rendering/v09-visual-universe.mjs
+          node tests/rendering/wave-iv-surface-frame.mjs
+          node tests/rendering/wave-iv-surface-terrain.mjs
+          node tests/rendering/wave-iv-human-scale.mjs
+      - name: Build exact-head single-file development artifact
+        run: |
+          node tools/build-ofu-rendering-v09.mjs > /tmp/wave-iv-chat-c-build.json
+          grep -q 'src/rendering/planet-surface.js' dist/rendering-build-manifest.json
+          grep -q 'src/rendering/planet-surface-terrain.js' dist/rendering-build-manifest.json
+          grep -q 'src/rendering/planet-surface-webgl2.js' dist/rendering-build-manifest.json
+          grep -q '"primaryPlanetOwner": "WEBGL_PLANET_RENDERER"' dist/rendering-build-manifest.json
+          grep -q '"overlayRepaintsPrimaryPlanet": false' dist/rendering-build-manifest.json
+          test "$(grep -Eoc '(src|href)=[\"'\'']https?://' dist/One_File_Universe.html)" -eq 0
+          grep -q "connect-src 'none'" dist/One_File_Universe.html
+      - name: Chromium desktop and 390x844 mobile-emulation evidence
+        run: |
+          npm install --no-save playwright@1.62.1
+          npx playwright install --with-deps chromium
+          node tests/rendering/browser-wave-iv-planet-surface.mjs
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: wave-iv-chat-c-${{ env.OFU_SOURCE_SHA }}
+          path: |
+            dist/One_File_Universe.html
+            dist/rendering-build-manifest.json
+            dist/evidence/wave-iv-chat-c/
