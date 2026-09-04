@@ -1,22 +1,22 @@
 (function(root){
 'use strict';
 const O=root.OFU=root.OFU||{};
-const AUTHORITY='PRESENTATION_ONLY',VERSION='ofu-visual-universe-presentation-1';
+const AUTHORITY='PRESENTATION_ONLY',VERSION='ofu-visual-universe-presentation-2';
 const BODY_CLASSES=Object.freeze(['TERRESTRIAL','VOLATILE_RICH','ICE_GIANT','GAS_GIANT']);
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const finite=(v,f=0)=>Number.isFinite(Number(v))?Number(v):f;
 const freezeRgb=v=>Object.freeze(v.map(x=>clamp(finite(x),0,1)));
 const PALETTES=Object.freeze({
- TERRESTRIAL:Object.freeze({family:'TERRESTRIAL_MINERAL',primary:freezeRgb([0.52,0.46,0.38]),secondary:freezeRgb([0.27,0.26,0.24]),accent:freezeRgb([0.68,0.59,0.47]),marker:'#a99579'}),
- VOLATILE_RICH:Object.freeze({family:'VOLATILE_RICH_NEUTRAL',primary:freezeRgb([0.46,0.50,0.53]),secondary:freezeRgb([0.28,0.31,0.34]),accent:freezeRgb([0.61,0.64,0.66]),marker:'#8d9aa4'}),
- ICE_GIANT:Object.freeze({family:'ICE_GIANT_RESTRAINED',primary:freezeRgb([0.42,0.51,0.57]),secondary:freezeRgb([0.26,0.31,0.35]),accent:freezeRgb([0.56,0.64,0.69]),marker:'#8199a7'}),
- GAS_GIANT:Object.freeze({family:'GAS_GIANT_RESTRAINED',primary:freezeRgb([0.57,0.49,0.41]),secondary:freezeRgb([0.34,0.30,0.28]),accent:freezeRgb([0.68,0.59,0.49]),marker:'#aa957d'}),
- UNKNOWN:Object.freeze({family:'UNCLASSIFIED_NEUTRAL',primary:freezeRgb([0.47,0.47,0.45]),secondary:freezeRgb([0.28,0.29,0.30]),accent:freezeRgb([0.59,0.59,0.57]),marker:'#929493'})
+ TERRESTRIAL:Object.freeze({family:'TERRESTRIAL_MINERAL',primary:freezeRgb([0.46,0.42,0.33]),secondary:freezeRgb([0.16,0.22,0.24]),accent:freezeRgb([0.72,0.58,0.38]),marker:'#b99b63',bandingCue:0.05,macroVariation:0.82}),
+ VOLATILE_RICH:Object.freeze({family:'VOLATILE_RICH_NEUTRAL',primary:freezeRgb([0.36,0.50,0.58]),secondary:freezeRgb([0.18,0.26,0.33]),accent:freezeRgb([0.68,0.76,0.78]),marker:'#78a2b4',bandingCue:0.34,macroVariation:0.66}),
+ ICE_GIANT:Object.freeze({family:'ICE_GIANT_RESTRAINED',primary:freezeRgb([0.40,0.62,0.72]),secondary:freezeRgb([0.20,0.36,0.48]),accent:freezeRgb([0.72,0.83,0.86]),marker:'#79b5cb',bandingCue:0.72,macroVariation:0.52}),
+ GAS_GIANT:Object.freeze({family:'GAS_GIANT_RESTRAINED',primary:freezeRgb([0.69,0.49,0.30]),secondary:freezeRgb([0.28,0.20,0.27]),accent:freezeRgb([0.90,0.72,0.48]),marker:'#c18c51',bandingCue:0.88,macroVariation:0.60}),
+ UNKNOWN:Object.freeze({family:'UNCLASSIFIED_NEUTRAL',primary:freezeRgb([0.44,0.46,0.50]),secondary:freezeRgb([0.17,0.19,0.24]),accent:freezeRgb([0.66,0.61,0.72]),marker:'#9894a8',bandingCue:0.18,macroVariation:0.58})
 });
 function bodyClassOf(input){const f=input?.facts||input?.upstreamBaseline?.formation||input?.formation||{};const raw=String(f.bulkPriorClass??f.compositionClass??input?.bulkPriorClass??'UNKNOWN').toUpperCase();return BODY_CLASSES.includes(raw)?raw:'UNKNOWN'}
 function presentationDescriptorForBody(input){
  const bulkPriorClass=bodyClassOf(input),palette=PALETTES[bulkPriorClass]||PALETTES.UNKNOWN;
- return Object.freeze({version:VERSION,authority:AUTHORITY,kind:'BODY',bulkPriorClass,presentationFamily:palette.family,palette,sourceBasis:bulkPriorClass==='UNKNOWN'?Object.freeze([]):Object.freeze(['P3_BULK_PRIOR_CLASS']),surfaceDetailEligible:bulkPriorClass==='TERRESTRIAL'&&input?.status==='SUPPORTED',lighting:Object.freeze({authority:AUTHORITY,directionModel:'FIXED_PRESENTATION_DERIVED',direction:Object.freeze([0.42,0.24,0.875]),physicalPhaseClaim:false}),claims:Object.freeze({canonicalColor:false,canonicalAlbedo:false,atmosphere:false,clouds:false,oceans:false,iceCoverage:false,vegetation:false,weather:false,geology:false,biosphere:false,physicalTerrainElevation:false})});
+ return Object.freeze({version:VERSION,authority:AUTHORITY,kind:'BODY',bulkPriorClass,presentationFamily:palette.family,palette,sourceBasis:bulkPriorClass==='UNKNOWN'?Object.freeze([]):Object.freeze(['P3_BULK_PRIOR_CLASS']),surfaceDetailEligible:bulkPriorClass==='TERRESTRIAL'&&input?.status==='SUPPORTED',lighting:Object.freeze({authority:AUTHORITY,directionModel:'FIXED_PRESENTATION_DERIVED',direction:Object.freeze([0.42,0.24,0.875]),physicalPhaseClaim:false}),claims:Object.freeze({canonicalColor:false,canonicalAlbedo:false,atmosphere:false,clouds:false,oceans:false,iceCoverage:false,vegetation:false,weather:false,geology:false,biosphere:false,physicalTerrainElevation:false,canonicalSurfaceFeatures:false})});
 }
 function stellarFacts(star){const f=star?.facts||star?.host||star||{};return{temperatureK:finite(f.baselineTemperatureK??f.temperatureK,0),radiusMilliSolar:finite(f.baselineRadiusMilliSolar??f.radiusMilliSolar,0),luminosityMilliSolar:finite(f.baselineLuminosityMilliSolar??f.luminosityMilliSolar,0),evolutionaryClass:String(f.baselineEvolutionaryClass??f.evolutionaryClass??'UNKNOWN').toUpperCase()}}
 function stellarDisplayRgb(temperatureK,luminosityMilliSolar){
