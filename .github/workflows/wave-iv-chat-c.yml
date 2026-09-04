@@ -28,15 +28,20 @@ jobs:
       - name: Verify exact source checkout
         shell: bash
         run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
-      - name: Hardened global renderer regression and Wave IV semantic oracles
-        run: |
-          node tests/rendering/v08-camera-framing.mjs
-          node tests/rendering/v08-fv04-diagnostic.mjs
-          node tests/rendering/v08-visual-oracles.mjs
-          node tests/rendering/v09-visual-universe.mjs
-          node tests/rendering/wave-iv-surface-frame.mjs
-          node tests/rendering/wave-iv-surface-terrain.mjs
-          node tests/rendering/wave-iv-human-scale.mjs
+      - name: FV-04 camera framing regression
+        run: node tests/rendering/v08-camera-framing.mjs
+      - name: FV-04 diagnostic regression
+        run: node tests/rendering/v08-fv04-diagnostic.mjs
+      - name: FV-04 geometric visual oracles
+        run: node tests/rendering/v08-visual-oracles.mjs
+      - name: Wave III visual-universe compatibility
+        run: node tests/rendering/v09-visual-universe.mjs
+      - name: Wave IV surface-frame semantic oracles
+        run: node tests/rendering/wave-iv-surface-frame.mjs
+      - name: Wave IV local-terrain semantic oracles
+        run: node tests/rendering/wave-iv-surface-terrain.mjs
+      - name: Wave IV Human integration composition oracle
+        run: node tests/rendering/wave-iv-human-scale.mjs
       - name: Build exact-head single-file development artifact
         run: |
           node tools/build-ofu-rendering-v09.mjs > /tmp/wave-iv-chat-c-build.json
@@ -47,11 +52,12 @@ jobs:
           grep -q '"overlayRepaintsPrimaryPlanet": false' dist/rendering-build-manifest.json
           test "$(grep -Eoc '(src|href)=[\"'\'']https?://' dist/One_File_Universe.html)" -eq 0
           grep -q "connect-src 'none'" dist/One_File_Universe.html
-      - name: Chromium desktop and 390x844 mobile-emulation evidence
+      - name: Install Chromium evidence runtime
         run: |
           npm install --no-save playwright@1.62.1
           npx playwright install --with-deps chromium
-          node tests/rendering/browser-wave-iv-planet-surface.mjs
+      - name: Chromium desktop and 390x844 mobile-emulation evidence
+        run: node tests/rendering/browser-wave-iv-planet-surface.mjs
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: wave-iv-chat-c-${{ env.OFU_SOURCE_SHA }}
