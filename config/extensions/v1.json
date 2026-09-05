@@ -752,6 +752,212 @@
         }
       ],
       "mandatory": true
+    },
+    {
+      "contract": "ofu-px-contracts-1",
+      "id": "v1.persistence.session",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "persistence",
+      "authority": {
+        "class": "DERIVED",
+        "contract": "ofu-px-contracts-1",
+        "model": "v1.portable-session",
+        "version": "1.0.0",
+        "sources": [
+          "src/temporal/p4-temporal.js",
+          "src/kernel/p2-canonical.js",
+          "docs/governance/V1_IMPLEMENTATION_CONTRACT.md"
+        ],
+        "assumptions": [
+          "Portable session reconstruction is exact for the same Universe Identity and sealed v1 provider manifest."
+        ],
+        "limitations": [
+          "v1.0 uses exact provider-manifest compatibility; future incompatible models require an explicit migration.",
+          "Browser storage is convenience only; exported OFU-V1-SESSION bytes are authoritative."
+        ],
+        "evidence": []
+      },
+      "fidelity": {
+        "regime": "v1_product",
+        "validity": "Portable exact reconstruction of supported v1 selection, scale, model regime and governed P4 player overlay",
+        "resolution": "One bounded session envelope up to 1 MiB",
+        "uncertainty": "Does not convert MODEL_DERIVED_SIMULATION state into canonical truth"
+      },
+      "lifecycle": "SHIPPING",
+      "requires": [
+        {
+          "id": "px.persistence.context",
+          "version": "1.0.0",
+          "authority": "DERIVED"
+        },
+        {
+          "id": "v1.domain.modeled-world",
+          "version": "1.0.0",
+          "authority": "MODEL_DERIVED_SIMULATION"
+        }
+      ],
+      "claims": [
+        "persistence.v1-session"
+      ],
+      "operations": [
+        "ENCODE",
+        "DECODE"
+      ],
+      "budget": {
+        "entities": 64,
+        "bytes": 1048576,
+        "operations": 8192,
+        "queue": 8
+      },
+      "evidence": [
+        {
+          "id": "v1.session-persistence",
+          "tier": "FAST_LOCAL"
+        },
+        {
+          "id": "v1.provider-integration",
+          "tier": "INTEGRATION"
+        },
+        {
+          "id": "v1.release-model-seal",
+          "tier": "RELEASE"
+        }
+      ],
+      "mandatory": true
+    },
+    {
+      "contract": "ofu-px-contracts-1",
+      "id": "v1.interaction.player-agency",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "interaction",
+      "authority": {
+        "class": "MODEL_DERIVED_SIMULATION",
+        "contract": "ofu-px-contracts-1",
+        "model": "v1.player-agency-overlay",
+        "version": "1.0.0",
+        "sources": [
+          "src/temporal/p4-temporal.js",
+          "docs/governance/V1_IMPLEMENTATION_CONTRACT.md"
+        ],
+        "assumptions": [
+          "Player interventions modify only the explicit v1 modeled overlay through P4 events."
+        ],
+        "limitations": [
+          "Interventions never mutate certified P0-P6 canonical facts or canonical P6 biology.",
+          "Only explicitly supported bounded action classes are admitted in v1.0."
+        ],
+        "evidence": []
+      },
+      "fidelity": {
+        "regime": "v1_product",
+        "validity": "Governed P4 event admission for supported modeled observation and intervention actions",
+        "resolution": "Single selected canonical planet per event with bounded parameters",
+        "uncertainty": "Modeled intervention consequences are scenario state, not empirical or canonical claims"
+      },
+      "lifecycle": "SHIPPING",
+      "requires": [
+        {
+          "id": "v1.domain.modeled-world",
+          "version": "1.0.0",
+          "authority": "MODEL_DERIVED_SIMULATION"
+        }
+      ],
+      "claims": [
+        "interaction.v1-player-agency"
+      ],
+      "operations": [
+        "TRANSITION",
+        "MEASURE"
+      ],
+      "budget": {
+        "entities": 64,
+        "bytes": 65536,
+        "operations": 4096,
+        "queue": 32
+      },
+      "evidence": [
+        {
+          "id": "v1.session-persistence",
+          "tier": "FAST_LOCAL"
+        },
+        {
+          "id": "v1.provider-integration",
+          "tier": "INTEGRATION"
+        },
+        {
+          "id": "v1.release-model-seal",
+          "tier": "RELEASE"
+        }
+      ],
+      "mandatory": true
+    },
+    {
+      "contract": "ofu-px-contracts-1",
+      "id": "v1.representation.audio-context",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "representation",
+      "authority": {
+        "class": "PRESENTATION_ONLY",
+        "contract": "ofu-px-contracts-1",
+        "model": "v1.systemic-audio-context",
+        "version": "1.0.0",
+        "sources": [
+          "src/bootstrap/product/audio-system.js",
+          "docs/governance/V1_IMPLEMENTATION_CONTRACT.md"
+        ],
+        "assumptions": [
+          "Audio is an optional user-activated presentation of modeled environmental context."
+        ],
+        "limitations": [
+          "No natural acoustic propagation is claimed in vacuum.",
+          "Procedural ambience is not a measured sound field or physical acoustics simulation."
+        ],
+        "evidence": []
+      },
+      "fidelity": {
+        "regime": "v1_product",
+        "validity": "Procedural interaction/environment audio policy for the selected modeled context",
+        "resolution": "Scale/context class only",
+        "uncertainty": "Presentation mapping, not physical acoustic prediction"
+      },
+      "lifecycle": "SHIPPING",
+      "requires": [
+        {
+          "id": "v1.domain.modeled-world",
+          "version": "1.0.0",
+          "authority": "MODEL_DERIVED_SIMULATION"
+        }
+      ],
+      "claims": [
+        "representation.v1-audio-context"
+      ],
+      "operations": [
+        "REPRESENT"
+      ],
+      "budget": {
+        "entities": 16,
+        "bytes": 32768,
+        "operations": 1024,
+        "queue": 8
+      },
+      "evidence": [
+        {
+          "id": "v1.audio-context",
+          "tier": "FAST_LOCAL"
+        },
+        {
+          "id": "v1.provider-integration",
+          "tier": "INTEGRATION"
+        },
+        {
+          "id": "v1.release-model-seal",
+          "tier": "RELEASE"
+        }
+      ],
+      "mandatory": true
     }
   ]
 }

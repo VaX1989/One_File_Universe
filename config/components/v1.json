@@ -194,6 +194,43 @@
       ]
     },
     {
+      "id": "v1.session.runtime",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/domains/v1/session.js",
+      "dependencies": [
+        "v1.models.regime-runtime",
+        "v1.providers.bindings",
+        "ofu.bootstrap.product.scale-runtime"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "P4-authoritative bounded player overlay plus OFU-CBV-1 portable session reconstruction; never mutates canonical P0-P6 state.",
+      "provides": [
+        "v1.session.runtime"
+      ]
+    },
+    {
+      "id": "v1.product.audio",
+      "version": "1.0.0",
+      "owner": "product",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/bootstrap/product/audio-system.js",
+      "dependencies": [
+        "v1.providers.bindings",
+        "ofu.bootstrap.product.scale-runtime"
+      ],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "User-activated procedural Web Audio; environmental ambience is disabled in vacuum and never claims acoustic simulation.",
+      "provides": [
+        "v1.product.audio"
+      ]
+    },
+    {
       "id": "v1.product.experience",
       "version": "1.0.0",
       "owner": "product",
@@ -204,7 +241,9 @@
       "dependencies": [
         "v1.render.micro-canvas",
         "ofu.bootstrap.product.wave-iv-convergence",
-        "ofu.bootstrap.product.inspector-product"
+        "ofu.bootstrap.product.inspector-product",
+        "v1.session.runtime",
+        "v1.product.audio"
       ],
       "authority": "PRESENTATION_ONLY",
       "provenance": "User-visible modeled-world Inspect projection and reversible Human-to-micro navigation.",

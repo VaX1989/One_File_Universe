@@ -1,0 +1,8 @@
+import fs from 'node:fs';import vm from 'node:vm';import assert from 'node:assert/strict';
+const listeners={};globalThis.OFU={waveIVScaleRuntime:{snapshot:()=>({semanticScale:'galaxy',selectedCanonicalTarget:null}),on:(e,f)=>{listeners[e]=f}},v1Providers:{worldFor:()=>null},pxProduct:{captured:()=>null}};vm.runInThisContext(fs.readFileSync('src/bootstrap/product/audio-system.js','utf8'),{filename:'audio-system'});const A=OFU.v1Audio;let cases=0;
+const w={planetology:{atmosphere:{inventoryUnits:8},hydrosphere:{waterAreaPpm:400000}},biology:{occupancy:{state:'MODELED_BIOSPHERE'}},civilization:{state:'MODELED_CIVILIZATION'}};
+for(const scale of ['galaxy','galactic_region','stellar_neighborhood','system','orbit']){const c=A.contextFor(scale,w);assert.equal(c.environmentalAudioAllowed,false);assert.equal(c.naturalVacuumAcousticsClaim,false);cases+=2;}
+const h=A.contextFor('human',w);assert.equal(h.environmentalAudioAllowed,true);assert.equal(h.atmosphere,true);assert.equal(h.water,true);assert.equal(h.biosphere,true);assert.equal(h.civilization,true);assert.equal(h.authority,'PRESENTATION_ONLY');cases+=6;
+const airless=A.contextFor('human',{planetology:{atmosphere:{inventoryUnits:0},hydrosphere:{waterAreaPpm:500000}},biology:{occupancy:{state:'STERILE_MODEL_OUTCOME'}},civilization:{state:'NO_CIVILIZATION_MODEL'}});assert.equal(airless.environmentalAudioAllowed,false);cases++;
+assert.equal(A.snapshot().autoplay,false);assert.equal(A.snapshot().muted,true);cases+=2;
+console.log(JSON.stringify({status:'PASS',suite:'v1-audio-context',cases,autoplay:false,vacuumNaturalAudio:false,authority:'PRESENTATION_ONLY'}));

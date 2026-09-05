@@ -52,6 +52,35 @@
       "timeoutMs": 60000
     },
     {
+      "id": "v1.session-persistence",
+      "owner": "v1",
+      "tier": "FAST_LOCAL",
+      "command": [
+        "node",
+        "tests/v1/session-persistence.mjs"
+      ],
+      "providers": [
+        "v1.persistence.session",
+        "v1.interaction.player-agency"
+      ],
+      "oracle": "v1-session-persistence-oracle-1",
+      "timeoutMs": 30000
+    },
+    {
+      "id": "v1.audio-context",
+      "owner": "v1",
+      "tier": "FAST_LOCAL",
+      "command": [
+        "node",
+        "tests/v1/audio-context.mjs"
+      ],
+      "providers": [
+        "v1.representation.audio-context"
+      ],
+      "oracle": "v1-audio-context-oracle-1",
+      "timeoutMs": 30000
+    },
+    {
       "id": "v1.provider-integration",
       "owner": "v1",
       "tier": "INTEGRATION",
@@ -70,7 +99,10 @@
         "v1.inspector.world",
         "v1.representation.microscopic",
         "v1.interaction.universal-exploration",
-        "v1.query.world-candidates"
+        "v1.query.world-candidates",
+        "v1.persistence.session",
+        "v1.interaction.player-agency",
+        "v1.representation.audio-context"
       ],
       "oracle": "v1-provider-integration-oracle-1",
       "timeoutMs": 30000
@@ -94,7 +126,10 @@
         "v1.inspector.world",
         "v1.representation.microscopic",
         "v1.interaction.universal-exploration",
-        "v1.query.world-candidates"
+        "v1.query.world-candidates",
+        "v1.persistence.session",
+        "v1.interaction.player-agency",
+        "v1.representation.audio-context"
       ],
       "oracle": "v1-release-model-seal-oracle-1",
       "timeoutMs": 30000
