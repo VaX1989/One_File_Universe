@@ -1,0 +1,43 @@
+{
+  "schema": "ofu-v1-life-evolution-lane-1",
+  "authority": "MODEL_DERIVED_SIMULATION",
+  "canonicalP6Mutation": false,
+  "sourceBase": {
+    "sha": "a1a77f66bb617415db956366b295c45d316945b1",
+    "tree": "1179192337886b9a7c9042b5eb816485eca78153"
+  },
+  "branch": "parallel/v1-wave-a-life-evolution-2026-09-05",
+  "surfaces": [
+    {
+      "id": "v1.life.provider",
+      "source": "src/domains/v1/biology/provider.js",
+      "requires": ["v1.models.biology", "v1.models.planetology"],
+      "operations": ["INSPECT", "REGION_QUERY", "LOCAL_QUERY", "RENDERER_SNAPSHOT"],
+      "budget": {"cacheEntries": 12, "regionalPopulations": 64, "localPopulations": 24}
+    },
+    {
+      "id": "v1.ecology.query",
+      "source": "src/domains/v1/ecology/query.js",
+      "requires": ["v1.models.biology"],
+      "operations": ["TROPHIC_NETWORK", "ECOREGION", "LOCAL_ASSEMBLAGE"],
+      "budget": {"populations": 96, "interactions": 192}
+    },
+    {
+      "id": "v1.evolution.history",
+      "source": "src/domains/v1/evolution/history.js",
+      "requires": ["v1.models.biology"],
+      "operations": ["ADVANCE", "HISTORY", "LINEAGE_SUMMARY", "INTELLIGENCE_HANDOFF", "P4_PROPOSAL"],
+      "budget": {"epochsPerRequest": 64, "historyEvents": 256, "lineages": 96}
+    }
+  ],
+  "assumptions": [
+    "Environmental opportunity does not imply origin of life.",
+    "Origin is a deterministic scenario outcome parameterized independently of canonical P6.",
+    "Evolutionary and ecological dynamics are bounded approximations for v1 exploration, not universal biological laws."
+  ],
+  "limitations": [
+    "No claim that modeled metabolisms or morphology families exhaust plausible alien life.",
+    "No model-derived event becomes canonical P4 history without explicit admission.",
+    "Renderer-facing morphology and pigment families summarize modeled function and are not observations."
+  ]
+}
