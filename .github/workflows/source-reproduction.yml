@@ -1,0 +1,49 @@
+name: Exact Source Reproduction Bundle
+
+# Diagnostic source transport, not a certification or release gate.
+# Only tracked public repository objects are archived; no runner files,
+# credentials, caches, or environment values are included.
+on:
+  push:
+    branches:
+      - integration/wave-iv-massive-convergence-vertical-slice-2026-09-04
+    paths:
+      - .github/workflows/source-reproduction.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: source-reproduction-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-reproduction:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Archive exact tracked source and ancestry
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          mkdir -p dist/source-reproduction
+          git archive --format=tar.gz --output=dist/source-reproduction/exact-source.tar.gz HEAD
+          git bundle create dist/source-reproduction/source.bundle --all
+          git bundle verify dist/source-reproduction/source.bundle
+          git for-each-ref --format='%(refname) %(objectname)' > dist/source-reproduction/refs.txt
+          printf 'SOURCE_SHA=%s\nSOURCE_TREE=%s\nPURPOSE=DIAGNOSTIC_NOT_CERTIFICATION\n' "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})" > dist/source-reproduction/source.txt
+          (cd dist/source-reproduction && sha256sum exact-source.tar.gz source.bundle refs.txt source.txt > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: source-reproduction-${{ github.sha }}
+          path: dist/source-reproduction/
+          if-no-files-found: error
+          retention-days: 30
