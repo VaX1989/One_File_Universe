@@ -66,7 +66,8 @@ export function regimeDescriptor(input) {
   if (!Object.values(DYNAMICAL_AUTHORITY).includes(input.dynamicalAuthority)) throw new TypeError('unknown dynamicalAuthority');
   if (!Object.values(VISUAL_AUTHORITY).includes(input.visualAuthority)) throw new TypeError('unknown visualAuthority');
   assertFinitePositive(input.nominalTimeScaleSeconds, 'nominalTimeScaleSeconds');
-  const observables = Array.isArray(input.observables) ? input.observables.map((x) => ({ ...x })) : [];
+  const observables = Array.isArray(input.observables) ? input.observables.map((x) =>
+    typeof x === 'string' ? x : Object.freeze({ ...x })) : [];
   return Object.freeze({ ...input, observables: Object.freeze(observables) });
 }
 
@@ -74,7 +75,6 @@ export function representationIdentity({ entityId, regimeId, localAddress = '', 
   for (const [k, v] of Object.entries({ entityId, regimeId, localAddress, epoch })) {
     if (typeof v !== 'string') throw new TypeError(`${k} must be string`);
   }
-  // Representation identity is deliberately not CanonicalEntityIdentity.
   return createHash('sha256')
     .update('OFU-WVE-REPRESENTATION-v0\0')
     .update(JSON.stringify([entityId, regimeId, localAddress, epoch]))

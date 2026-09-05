@@ -54,7 +54,7 @@ A visualization can be scientifically useful without being a dynamical microstat
 
 `node research/wave-v-microscopic-matter/tests/run.mjs`
 
-Local research result before commit: **PASS**, 17 checks. The primary tissue fixture ran 200 steps on a `24×24` grid with 32 agents and conserved the prototype's closed-system mass-like quantity to a discrepancy of approximately `3.4e-13`.
+Local research result before commit: **PASS**, 18 checks. The primary tissue fixture ran 200 steps on a `24×24` grid with 32 agents and conserved the prototype's closed-system mass-like quantity to a discrepancy of approximately `3.4e-13`.
 
 ## Implementation completeness vs promotion readiness
 

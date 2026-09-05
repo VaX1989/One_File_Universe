@@ -18,6 +18,7 @@ const ridA = representationIdentity({ entityId: 'E1', regimeId: RESEARCH_REGIMES
 const ridB = representationIdentity({ entityId: 'E1', regimeId: RESEARCH_REGIMES.tissue.regimeId, localAddress: 'patch/0' });
 assert.equal(ridA, ridB);
 assert.notEqual(ridA, representationIdentity({ entityId: 'E1', regimeId: RESEARCH_REGIMES.singleCell.regimeId, localAddress: 'patch/0' }));
+assert.deepEqual(RESEARCH_REGIMES.tissue.observables, ['cellCount', 'fieldMass', 'cellStoreMass', 'meanField']);
 
 let tissue = createTissueState({
   width: 24, height: 24, dtSeconds: 0.25, diffusivityM2PerS: 1e-10,
@@ -77,7 +78,7 @@ assert.equal(new Set(requests.map(requestKey)).size, 50);
 assert(a.snapshotKeys().length <= 64 && b.snapshotKeys().length <= 64);
 
 console.log(JSON.stringify({
-  status: 'PASS', tests: 17,
+  status: 'PASS', tests: 18,
   tissue: { steps: 200, cells: tissue.cells.length, grid: `${tissue.width}x${tissue.height}`, conservationDiscrepancy: witness.discrepancy },
   molecular: { syntheticAtoms: backA.atoms.length, sourceAtoms: source.atoms.length },
   materialization: { requests: requests.length, maxCached: 64 }
