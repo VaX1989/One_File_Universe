@@ -1,6 +1,6 @@
 body.wave-a-active .viewport-frame{position:relative;isolation:isolate;min-height:540px;background:#07131e;border:1px solid #243d4d;border-radius:18px;overflow:hidden}
 body.wave-a-active #planet-view,body.wave-a-active #wave-iv-macro-view,body.wave-a-active #visual-universe-overlay,body.wave-a-active #v1-micro-view,body.wave-a-active #wave-iv-scale-rail,body.wave-a-active .viewport-frame>.viewport-overlay,body.wave-a-active .viewport-shell>.scale-bar,body.wave-a-active .viewport-shell>.viewport-help{display:none!important}
-body.wave-a-active [data-workspace-panel="explore"]>:not(#living-panel){display:none!important}
+body.wave-a-active [data-workspace-panel="explore"]>:not(#living-panel):not(#v1-modeled-discovery){display:none!important}
 #living-stage{position:absolute;inset:0;z-index:12;display:flex;flex-direction:column;background:#07131e;color:#dae7ed}
 #living-titlebar{padding:22px 24px 8px;display:flex;align-items:start;justify-content:space-between;gap:16px;position:relative;z-index:2;background:linear-gradient(#0b1925,rgba(11,25,37,.2))}
 #living-heading{margin:4px 0;font:500 25px/1.2 system-ui;color:#e1ecf2;letter-spacing:-.6px}
