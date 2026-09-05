@@ -1,0 +1,33 @@
+{
+  "matrixId": "ofu-wave-v-biology-evolution-scientific-claim-matrix-v1",
+  "status": "RESEARCH_ONLY_NON_CANONICAL",
+  "claims": [
+    {"id":"authority_gate","statusCategory":"ESTABLISHED_GENERAL","fidelity":"FORMAL","promotableNow":false,"claim":"Positive research materialization requires explicit upstream witnesses and can never manufacture canonical genesis authority."},
+    {"id":"energy_accounting","statusCategory":"ESTABLISHED_GENERAL","fidelity":"FORMAL","promotableNow":false,"claim":"Conservation/bookkeeping arithmetic can be exact when all source energy and efficiency intervals are supplied."},
+    {"id":"metabolic_redox","statusCategory":"EARTH_EMPIRICAL","fidelity":"APPROXIMATE","promotableNow":false,"claim":"Redox/electron-transfer and free-energy constraints are central to known terrestrial metabolism."},
+    {"id":"nutrient_limitation","statusCategory":"EARTH_EMPIRICAL","fidelity":"APPROXIMATE","promotableNow":false,"claim":"Bioavailable nutrient limitation and co-limitation strongly regulate terrestrial productivity; total elemental inventory is not equivalent to biological availability."},
+    {"id":"trophic_networks","statusCategory":"EARTH_EMPIRICAL","fidelity":"APPROXIMATE","promotableNow":false,"claim":"Ecological interaction networks are useful representations, but topology alone does not establish causal specialization, stability or coextinction risk."},
+    {"id":"population_bookkeeping","statusCategory":"ESTABLISHED_GENERAL","fidelity":"FORMAL","promotableNow":false,"claim":"Population counts can be conserved under explicitly supplied births, deaths and stage transitions without assuming an endogenous universal growth law."},
+    {"id":"stage_structure","statusCategory":"EARTH_EMPIRICAL","fidelity":"APPROXIMATE","promotableNow":false,"claim":"Stage-structured demographic models are useful Earth-calibrated abstractions when lifecycle stages and rates are explicit inputs."},
+    {"id":"evolution_mechanisms","statusCategory":"EARTH_EMPIRICAL","fidelity":"APPROXIMATE","promotableNow":false,"claim":"Mutation, selection, drift and migration are established mechanisms of terrestrial evolution; their mapping to deep-time macroevolution is not universal or complete."},
+    {"id":"speciation","statusCategory":"EARTH_EMPIRICAL","fidelity":"APPROXIMATE","promotableNow":false,"claim":"Speciation assessment must be criterion/evidence bound; no universal scalar trait-distance or rate is authorized."},
+    {"id":"extinction","statusCategory":"EARTH_EMPIRICAL","fidelity":"APPROXIMATE","promotableNow":false,"claim":"Zero modeled population establishes demographic extinction in that model state; predictive extinction rates remain model- and context-bound."},
+    {"id":"multicellular_innovation","statusCategory":"EARTH_EMPIRICAL","fidelity":"APPROXIMATE","promotableNow":false,"claim":"Known multicellular complexity involves cooperation, division of labour, development and interdependence; it is not a generic automatic consequence of time."},
+    {"id":"alien_morphology_constraints","statusCategory":"PLAUSIBLE_HYPOTHESIS","fidelity":"STYLIZED","promotableNow":false,"claim":"Synthetic organism proposals may be constrained by explicit environment, ecological role, inherited lineage envelopes and lifecycle state, but no alien body plan is predicted."},
+    {"id":"alien_taxonomy","statusCategory":"SPECULATIVE_EXOBIOLOGY","fidelity":"METAPHORICAL","promotableNow":false,"claim":"Earth taxonomy must not be universalized to extraterrestrial lineages."},
+    {"id":"synthetic_fixture_traits","statusCategory":"GENERATIVE_FICTIONAL","fidelity":"STYLIZED","promotableNow":false,"claim":"Fixture trait values and morphology envelopes exist only to test deterministic/reconciliation semantics."},
+    {"id":"abiogenesis","statusCategory":"SPECULATIVE_EXOBIOLOGY","fidelity":"METAPHORICAL","promotableNow":false,"claim":"No predictive abiogenesis probability, universal trigger or canonical genesis law is established; WV-C does not implement one."},
+    {"id":"materialization_semantics","statusCategory":"ESTABLISHED_GENERAL","fidelity":"FORMAL","promotableNow":false,"claim":"COLD/WARM/HOT/IMMEDIATE refinement can preserve coarse commitments and keep organism samples ephemeral without creating new truth."}
+  ],
+  "promotionReadiness": {
+    "implementationCompleteness": "RESEARCH_CANDIDATE_IMPLEMENTED_FOR_DEPENDENCY_ELIGIBLE_BLOCKS",
+    "canonicalPromotion": "BLOCKED",
+    "blockers": [
+      "Exact Wave V shared base/ownership manifest unresolved at research freeze time unless separately supplied by Prompt 0.",
+      "No canonical P5 positive environment/energy/nutrient/redox authority exists for life.",
+      "No canonical predictive abiogenesis model exists.",
+      "Exobiology morphology/taxonomy claims are not empirically validated.",
+      "Cross-runtime certification and any future migration contract require a separate promotion transaction."
+    ]
+  }
+}

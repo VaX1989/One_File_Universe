@@ -1,0 +1,39 @@
+{
+  "dagId": "ofu-wave-v-biology-evolution-dependency-dag-v1",
+  "status": "RESEARCH_ONLY_NON_CANONICAL",
+  "nodes": [
+    {"id":"P2_IDENTITY","owner":"P2","kind":"frozen_authority","requires":[]},
+    {"id":"P4_HISTORY","owner":"P4","kind":"frozen_authority","requires":[]},
+    {"id":"P5_ENVIRONMENT_READINESS","owner":"P5_RESEARCH","kind":"upstream_research_witness","requires":[]},
+    {"id":"P5_VIABLE_MEDIUM","owner":"P5_RESEARCH","kind":"upstream_research_witness","requires":["P5_ENVIRONMENT_READINESS"]},
+    {"id":"P5_USABLE_ENERGY","owner":"P5_RESEARCH","kind":"upstream_research_witness","requires":["P5_ENVIRONMENT_READINESS"]},
+    {"id":"P5_NUTRIENTS_REDOX","owner":"P5_RESEARCH","kind":"upstream_research_witness","requires":["P5_ENVIRONMENT_READINESS"]},
+    {"id":"POST_GENESIS_ELIGIBILITY","owner":"WV-C","kind":"research_gate","requires":["P5_VIABLE_MEDIUM","P5_USABLE_ENERGY","P5_NUTRIENTS_REDOX"]},
+    {"id":"POST_GENESIS_SEED","owner":"EXTERNAL_OR_FIXTURE","kind":"noncanonical_seed","requires":["POST_GENESIS_ELIGIBILITY"]},
+    {"id":"BIOSPHERE","owner":"WV-C","kind":"research_state","requires":["P2_IDENTITY","P4_HISTORY","POST_GENESIS_SEED"]},
+    {"id":"ENERGY_BUDGET","owner":"WV-C","kind":"research_model","requires":["P5_USABLE_ENERGY","BIOSPHERE"]},
+    {"id":"ECOSYSTEM_NETWORK","owner":"WV-C","kind":"research_model","requires":["BIOSPHERE","ENERGY_BUDGET"]},
+    {"id":"POPULATION_STATE","owner":"WV-C","kind":"research_model","requires":["ECOSYSTEM_NETWORK","P4_HISTORY"]},
+    {"id":"LINEAGE_EVOLUTION","owner":"WV-C","kind":"research_model","requires":["POPULATION_STATE","P4_HISTORY","P2_IDENTITY"]},
+    {"id":"SPECIATION_EXTINCTION","owner":"WV-C","kind":"criterion_bound_event_eligibility","requires":["LINEAGE_EVOLUTION","POPULATION_STATE","P4_HISTORY"]},
+    {"id":"LIFECYCLE","owner":"WV-C","kind":"research_model","requires":["LINEAGE_EVOLUTION","P4_HISTORY"]},
+    {"id":"MORPHOLOGY_CONSTRAINTS","owner":"WV-C","kind":"research_constraint_model","requires":["LINEAGE_EVOLUTION","ECOSYSTEM_NETWORK","LIFECYCLE","P5_ENVIRONMENT_READINESS"]},
+    {"id":"COLD_WARM_HOT_IMMEDIATE","owner":"WV-C","kind":"materialization_policy","requires":["BIOSPHERE","ECOSYSTEM_NETWORK","POPULATION_STATE","LINEAGE_EVOLUTION","MORPHOLOGY_CONSTRAINTS"]},
+    {"id":"ORGANISM_SAMPLE","owner":"WV-C","kind":"ephemeral_noncanonical_sample","requires":["COLD_WARM_HOT_IMMEDIATE"]},
+    {"id":"UPWARD_PROJECTION","owner":"WV-C","kind":"reconciliation_witness","requires":["ORGANISM_SAMPLE","POPULATION_STATE","LINEAGE_EVOLUTION","P4_HISTORY"]}
+  ],
+  "hardBlocks": [
+    "No predictive/canonical abiogenesis model is established.",
+    "A positive P5 research witness cannot authorize canonical biology.",
+    "Environment-to-biomass, universal trophic efficiency, universal demographic law, universal speciation threshold and universal extinction rate are not established.",
+    "No extraterrestrial biological observations exist to validate alien taxonomy or morphology laws."
+  ],
+  "invariants": [
+    "P6 v1 is never rewritten.",
+    "P4 owns every persistent biological transition, replay ordering and history.",
+    "P2 remains identity authority.",
+    "No lower materialization level creates new coarse truth.",
+    "IMMEDIATE organisms are ephemeral and individual identity is not promoted.",
+    "Synthetic positive fixtures never establish life on a canonical shipped planet."
+  ]
+}

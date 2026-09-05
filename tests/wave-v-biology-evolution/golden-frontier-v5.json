@@ -1,0 +1,19 @@
+{
+  "contractId": "ofu-wave-v-biology-evolution-research-v1",
+  "modelId": "wave-v-biology-evolution-research-1",
+  "eligibilityState": "RESEARCH_POST_GENESIS_ELIGIBLE",
+  "canonicalBiologyAuthority": false,
+  "capturedEnergyIntervalU": ["250", "500"],
+  "allocatableEnergyIntervalU": ["200", "450"],
+  "stageCounts": [
+    {"stageId": "juvenile", "countU": "70"},
+    {"stageId": "adult", "countU": "85"}
+  ],
+  "stageTotalAfterU": "155",
+  "ecologyStabilityInferred": false,
+  "speciationTaxonomicTruthEstablished": false,
+  "extinctionZeroPopulationEstablished": true,
+  "morphologyGeometryPrescription": false,
+  "materializationCreatesTruth": false,
+  "hierarchyReconciled": true
+}

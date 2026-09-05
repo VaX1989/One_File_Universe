@@ -1,0 +1,142 @@
+{
+  "registryId": "ofu-wave-v-biology-evolution-source-provenance-v1",
+  "retrievedDate": "2026-09-05",
+  "status": "RESEARCH_ONLY_NON_CANONICAL",
+  "statusVocabulary": [
+    "ESTABLISHED_GENERAL",
+    "EARTH_EMPIRICAL",
+    "PLAUSIBLE_HYPOTHESIS",
+    "SPECULATIVE_EXOBIOLOGY",
+    "GENERATIVE_FICTIONAL"
+  ],
+  "sources": [
+    {
+      "sourceId": "HOEHLER_JORGENSEN_2013_ENERGY_LIMIT",
+      "locator": "doi:10.1038/nrmicro2939",
+      "type": "peer_reviewed_review",
+      "statusCategory": "EARTH_EMPIRICAL",
+      "use": "Constrains claims about maintenance power and extreme energy limitation; prevents culture-derived maintenance constants from becoming universal life thresholds.",
+      "claimLimit": "Earth microbial observations only; no universal extraterrestrial minimum-energy constant is authorized."
+    },
+    {
+      "sourceId": "SHER_SEGRE_FOLLOWS_2024_METABOLIC_SCALES",
+      "locator": "doi:10.1038/s41564-024-01764-0",
+      "type": "peer_reviewed_perspective",
+      "statusCategory": "EARTH_EMPIRICAL",
+      "use": "Supports explicit links among molecular, cellular and ecosystem metabolism while retaining scale-specific parameters.",
+      "claimLimit": "Quantitative principles are drawn from terrestrial microbial systems."
+    },
+    {
+      "sourceId": "BOURANIS_TFAILY_2024_REDOX_METABOLISM",
+      "locator": "doi:10.1016/j.tim.2024.05.003",
+      "type": "peer_reviewed_review",
+      "statusCategory": "EARTH_EMPIRICAL",
+      "use": "Supports redox/electron-transfer bookkeeping as a central metabolic constraint.",
+      "claimLimit": "Does not establish alien biochemistry or a universal set of electron carriers."
+    },
+    {
+      "sourceId": "LYONS_ET_AL_2024_EARLY_EARTH_MICROBES",
+      "locator": "doi:10.1038/s41579-024-01044-y",
+      "type": "peer_reviewed_review",
+      "statusCategory": "EARTH_EMPIRICAL",
+      "use": "Supports bidirectional environment-biosphere coupling and long-timescale co-evolution of metabolism and planetary chemistry.",
+      "claimLimit": "Earth history is calibration/evidence, not a universal planetary sequence."
+    },
+    {
+      "sourceId": "STUEKEN_ET_AL_2024_NITROGEN_HISTORY",
+      "locator": "doi:10.1038/s43017-024-00591-5",
+      "type": "peer_reviewed_review",
+      "statusCategory": "EARTH_EMPIRICAL",
+      "use": "Supports explicit bioavailable nutrient limitation and redox coupling rather than assuming abundant bulk elemental inventory is biologically usable.",
+      "claimLimit": "Nitrogen biochemistry and Earth-ocean history are not universal exobiology."
+    },
+    {
+      "sourceId": "DUHAMEL_2025_PHOSPHORUS_CYCLE",
+      "locator": "doi:10.1038/s41579-024-01119-w",
+      "type": "peer_reviewed_review",
+      "statusCategory": "EARTH_EMPIRICAL",
+      "use": "Supports explicit nutrient-form availability, recycling and microbial transformation rather than scalar total-phosphorus sufficiency.",
+      "claimLimit": "Earth phosphorus dependence is not promoted as a universal requirement for all conceivable life."
+    },
+    {
+      "sourceId": "BLUTHGEN_STAAB_2024_NETWORKS",
+      "locator": "doi:10.1146/annurev-ecolsys-102722-021904",
+      "type": "peer_reviewed_review",
+      "statusCategory": "EARTH_EMPIRICAL",
+      "use": "Requires caution when interpreting interaction-network metrics; abundance, diversity and sampling can generate apparent network patterns.",
+      "claimLimit": "Network topology alone must not authorize ecosystem stability, specialization or coextinction claims."
+    },
+    {
+      "sourceId": "AGUILEE_ET_AL_2023_MICRO_MACRO_BRIDGES",
+      "locator": "doi:10.1038/s41559-023-02116-7",
+      "type": "peer_reviewed_perspective",
+      "statusCategory": "EARTH_EMPIRICAL",
+      "use": "Supports keeping mutation/selection/drift/migration distinct from higher-scale speciation/extinction/biogeographic outcomes and making the bridge explicit rather than automatic.",
+      "claimLimit": "No universal micro-to-macroevolution predictive mapping is established."
+    },
+    {
+      "sourceId": "COUVERT_ET_AL_2024_SPECIATION_MODELS",
+      "locator": "doi:10.1093/jeb/voae134",
+      "type": "peer_reviewed_review",
+      "statusCategory": "EARTH_EMPIRICAL",
+      "use": "Supports criterion-bound speciation modeling and warns against both opaque species-particle rates and over-detailed models claimed as robust macroevolution predictors.",
+      "claimLimit": "No universal speciation rate or trait-distance threshold."
+    },
+    {
+      "sourceId": "DE_QUEIROZ_2007_SPECIES_DELIMITATION",
+      "locator": "doi:10.1080/10635150701701083",
+      "type": "peer_reviewed_review",
+      "statusCategory": "EARTH_EMPIRICAL",
+      "use": "Supports explicit species-delimitation criteria/witnesses rather than one universal scalar threshold.",
+      "claimLimit": "Operational criteria are lineage/method dependent."
+    },
+    {
+      "sourceId": "PARKER_2024_ORGAN_EVOLUTION",
+      "locator": "doi:10.1146/annurev-cellbio-111822-121620",
+      "type": "peer_reviewed_review",
+      "statusCategory": "EARTH_EMPIRICAL",
+      "use": "Supports multicellular function emerging through division of labour and evolving interdependence, motivating lineage/development constraints before organism morphology materialization.",
+      "claimLimit": "Earth multicellular mechanisms do not define universal alien anatomy."
+    },
+    {
+      "sourceId": "SHAH_ET_AL_2024_LIFECYCLE_MITOSIS",
+      "locator": "doi:10.1038/s41586-024-07430-z",
+      "type": "peer_reviewed_primary_research",
+      "statusCategory": "EARTH_EMPIRICAL",
+      "use": "Supports treating lifecycle state and cellular/developmental machinery as coupled rather than assuming one fixed direct-development template.",
+      "claimLimit": "Specific mitotic mechanisms are Earth-eukaryote evidence only."
+    },
+    {
+      "sourceId": "HUELSMANN_ET_AL_2024_COLLECTIVE_METABOLISM",
+      "locator": "doi:10.1038/s41564-024-01850-3",
+      "type": "peer_reviewed_review",
+      "statusCategory": "EARTH_EMPIRICAL",
+      "use": "Supports ecological metabolic complementarity and exchange as explicit interactions rather than assuming every population is metabolically self-sufficient.",
+      "claimLimit": "Earth microbiome mechanisms; no universal extraterrestrial dependency graph."
+    },
+    {
+      "sourceId": "DANOVARO_ET_AL_2024_MICROBIAL_ENGINEERS",
+      "locator": "doi:10.1038/s41559-024-02407-7",
+      "type": "peer_reviewed_review",
+      "statusCategory": "EARTH_EMPIRICAL",
+      "use": "Supports ecosystem-engineering feedback from microbes to habitat structure and therefore future biology-to-environment projection hooks.",
+      "claimLimit": "Marine Earth evidence only; feedback magnitude and mechanisms are environment-specific."
+    },
+    {
+      "sourceId": "SUSTAINED_COMPARATIVE_HABITABILITY_2023",
+      "locator": "doi:10.1038/s41550-023-02158-8",
+      "type": "peer_reviewed_perspective",
+      "statusCategory": "PLAUSIBLE_HYPOTHESIS",
+      "use": "Supports separating instantaneous physical/chemical habitability from sustained habitability over geological time.",
+      "claimLimit": "Habitability remains a necessary/constraint concept, not evidence of biological occupancy."
+    },
+    {
+      "sourceId": "BREADTH_LIMITS_LIFE_2024",
+      "locator": "pmid:38498824",
+      "type": "scholarly_reference_chapter",
+      "statusCategory": "EARTH_EMPIRICAL",
+      "use": "Supports retaining energy production and nutrient requirements as Earth-derived operational constraints while explicitly tracking that observed limits expand with discovery.",
+      "claimLimit": "Known Earth limits are not hard universal boundaries for exobiology."
+    }
+  ]
+}
