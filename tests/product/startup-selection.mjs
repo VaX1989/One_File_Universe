@@ -1,3 +1,4 @@
+import {assertSurfaceResources} from '../rendering/local-surface-visual-oracle.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
@@ -53,3 +54,11 @@ for(const options of [{malformed:true},{wrongIdentity:true}]){
  assert.equal(f.sandbox.__OFU_BASELINE_REPORT__.status,'FAIL');
 }
 console.log(JSON.stringify({status:'PASS',oracle:'STARTUP_SELECTION_OWNER',restoredEntityTypes:types.length,renderingAndInspectorOnly:true,userQueryNotOverridden:true,invalidManifestFailsClosed:true,bootstrapOrder:'DOCUMENT_BEFORE_PREVIEW',canonicalScienceClaim:false}));
+
+// Independent raw-counter conformance: no dependency on a globe-only wrapper flag.
+const resources={terrain:{activePatches:25,cpuMeshes:25,cpuBytes:163500},gpu:{valid:true,liveMeshes:25,liveBuffers:50,liveTrackedBytes:163500,createdBuffers:58,deletedBuffers:6,invalidatedBuffers:2,microdetailBufferBytes:1824,totalTrackedBytes:165324}};
+assertSurfaceResources(resources);
+for(const [key,value] of [['createdBuffers',59],['liveBuffers',49],['totalTrackedBytes',165325],['liveMeshes',33],['invalidatedBuffers',-1],['valid',false]]){
+ assert.throws(()=>assertSurfaceResources({...resources,gpu:{...resources.gpu,[key]:value}}));
+}
+console.log(JSON.stringify({status:'PASS',oracle:'LOCAL_SURFACE_RAW_GPU_COUNTER_CONSERVATION',invalidCases:6}));

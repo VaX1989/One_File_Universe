@@ -1,5 +1,16 @@
 import assert from 'node:assert/strict';
 
+export function assertSurfaceResources({terrain:t,gpu:g}) {
+  for(const k of ['activePatches','cpuMeshes','cpuBytes'])assert(Number.isSafeInteger(t[k])&&t[k]>=0,'invalid terrain counter '+k);
+  for(const k of ['liveMeshes','liveBuffers','liveTrackedBytes','createdBuffers','deletedBuffers','invalidatedBuffers','microdetailBufferBytes','totalTrackedBytes'])assert(Number.isSafeInteger(g[k])&&g[k]>=0,'invalid GPU counter '+k);
+  assert(t.activePatches>0&&t.activePatches<=25);assert(t.cpuMeshes<=64&&t.cpuBytes<=6*1024*1024);
+  assert(g.liveMeshes<=32&&g.totalTrackedBytes<=6*1024*1024);assert.equal(g.valid,true);
+  // The surface exposes raw registry counters, not the globe lifecycle wrapper.
+  assert.equal(g.createdBuffers,g.deletedBuffers+g.invalidatedBuffers+g.liveBuffers,'surface registry buffer conservation');
+  assert.equal(g.liveBuffers,g.liveMeshes*2,'two terrain buffers per live mesh');
+  assert.equal(g.totalTrackedBytes,g.liveTrackedBytes+g.microdetailBufferBytes,'terrain plus microdetail allocation accounting');
+}
+
 /** Actual local-camera / local-renderer evidence. Never reuse the inactive globe
  * camera or the globe's spherical coverage mask to certify a surface frame. */
 export async function localSurfaceEvidence(page, {requireWebGL = false, sampleFramebuffer = true, expectedBand = 'HUMAN'} = {}) {
@@ -59,7 +70,7 @@ export async function localSurfaceEvidence(page, {requireWebGL = false, sampleFr
   for(const v of [...e.camera.absolutePresentationPositionM,...e.camera.cameraRelativePositionM,e.camera.headingRad,e.camera.pitchRad])assert(Number.isFinite(v),'local pose must be finite');
   assert(e.camera.presentationAltitudeM>=2);
   for(const claim of ['physicalTerrainElevationClaim','canonicalGeodesyClaim','geologyClaim','hydrologyClaim','vegetationClaim','biosphereClaim'])assert.equal(e.claims[claim],false);
-  if(e.resources){const {terrain:t,gpu:g}=e.resources;assert(t.activePatches>0&&t.activePatches<=25);assert(t.cpuMeshes<=64&&t.cpuBytes<=6*1024*1024);assert(g.liveMeshes<=32&&g.totalTrackedBytes<=6*1024*1024);assert.equal(g.lifecycleAccountingExact,true);}
-  if(e.framebuffer.status==='MEASURED'){assert(e.framebuffer.cpuHits>=8,'local oracle must sample actual terrain');assert.equal(e.framebuffer.cpuHitClear,0,'local terrain is missing at independently confirmed visible mesh intersections');}
+  if(e.resources)assertSurfaceResources(e.resources);
+  if(e.framebuffer.status==='MEASURED'){assert(e.framebuffer.cpuHits>=8,'local oracle must sample actual terrain: '+JSON.stringify(e.framebuffer));assert.equal(e.framebuffer.cpuHitClear,0,'local terrain is missing at independently confirmed visible mesh intersections: '+JSON.stringify(e.framebuffer));}
   return e;
 }
