@@ -129,6 +129,7 @@
       "dependencies": [
         "v1.models.astronomy",
         "v1.models.planetology",
+        "v1.models.environment.world-system",
         "v1.models.biology",
         "v1.models.civilization",
         "v1.models.microscopic"

@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import vm from 'node:vm';
+const ROOT=path.resolve(import.meta.dirname,'../../..');
+globalThis.OFU={};
+for(const rel of ['src/kernel/sha256.js','src/extensions/contracts.js','src/domains/v1/common.js','src/domains/v1/planetology/causal-system.js'])vm.runInThisContext(fs.readFileSync(path.join(ROOT,rel),'utf8'),{filename:rel});
+const C=OFU.v1PlanetologyCausal,id=c=>c.repeat(64);
+const earth={planetIdentity:id('a'),bulkPriorClass:'TERRESTRIAL',stellarLuminosityMilliSolar:1000,stellarTemperatureK:5772,orbitMilliAu:1000,massMilliEarth:1000,radiusKm:6371,ageMyr:4500,eccentricityPpm:16700,obliquityMilliDeg:23440,rotationPeriodMilliHours:23934,tidalHeatingPpm:0,xuvMilliWm2:4500};
+const a=C.build(earth),b=C.build(earth);
+assert.deepEqual(a,b);assert.equal(a.authority.class,'MODEL_DERIVED_SIMULATION');assert.equal(a.fidelity.canonicalMeasurementsPromoted,false);assert.equal(a.composition.sumPpm,1000000);assert.equal(a.composition.metalPpm+a.composition.silicatePpm+a.composition.icePpm+a.composition.lightVolatilePpm,1000000);assert.equal(a.atmosphere.conserved,true);assert.equal(a.atmosphere.escapedUnits+a.atmosphere.interiorUnits+a.atmosphere.surfaceCondensedUnits+a.atmosphere.atmosphereUnits,a.atmosphere.initialInventoryUnits);
+for(const v of [a.interior.differentiationPpm,a.interior.convectiveVigorPpm,a.interior.volcanismPpm,a.atmosphere.escape.escapePpm,a.atmosphere.collapsePotentialPpm])assert.ok(v>=0&&v<=1000000);
+const young=C.build({...earth,ageMyr:500}),old=C.build({...earth,ageMyr:9000});assert.ok(young.interior.heat.heatIndexPpm>old.interior.heat.heatIndexPpm);
+const base={...earth,planetIdentity:id('9'),orbitMilliAu:700,ageMyr:5000,xuvMilliWm2:12000};const low=C.build({...base,massMilliEarth:80,radiusKm:3000}),high=C.build({...base,massMilliEarth:5000,radiusKm:9000});assert.ok(low.atmosphere.escape.escapePpm>high.atmosphere.escape.escapePpm);
+const inner=C.build({...earth,planetIdentity:id('b'),orbitMilliAu:180}),outer=C.build({...earth,planetIdentity:id('c'),bulkPriorClass:'VOLATILE_RICH',orbitMilliAu:7000});assert.equal(inner.formation.formationZone,'INNER_REFRACTORY');assert.ok(outer.composition.icePpm+outer.composition.lightVolatilePpm>inner.composition.icePpm+inner.composition.lightVolatilePpm);
+const gas=C.build({...earth,planetIdentity:id('d'),bulkPriorClass:'GAS_GIANT',orbitMilliAu:5200,massMilliEarth:318000,radiusKm:69911});assert.equal(gas.interior.tectonicRegime,'NO_ROCKY_SURFACE_TECTONIC_REGIME');assert.equal(gas.atmosphere.compositionFamily,'H2_HE_DOMINATED');assert.deepEqual(C.atAge(a,4500),a);assert.throws(()=>C.build({...earth,eccentricityPpm:1000001}));
+console.log(JSON.stringify({status:'PASS',suite:'v1 planetology causal-system',version:C.VERSION}));
