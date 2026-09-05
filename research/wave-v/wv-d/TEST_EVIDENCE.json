@@ -1,0 +1,36 @@
+{
+  "mode": "RESEARCH_ONLY",
+  "modelVersion": "wv-d-civilization-history-research-1",
+  "focusedTestCommand": "node research/wave-v/wv-d/civilization-history-tests.mjs",
+  "focusedTestResult": {
+    "status": "PASS",
+    "tests": 28,
+    "coldDigest": "3e5718156100247fabc3ddd763730609098748f873523b624834908bc4e09d8c",
+    "warmDigest": "630b11c8678d617a1922bfdd66350c90e5be32cbf369cd475c2887ab8901b3d5",
+    "historyRoot": "4f9e92bb3742f5a7076273aad70d5a1d42d8bcfb4d34d2723353d07c2ee8c98b"
+  },
+  "syntheticCorpus": [
+    {
+      "fixtureId": "river-valley",
+      "cold": "e92cfd95aae8b90ffa3bdec972eb7e98e553657ba2ef82fda9b750574aed271e",
+      "warm": "a33855a0465115075b617a0d2bb25646b5e12402b1b2340b17db4c77328bd864",
+      "hot": "8c01308a8ef06fa8f3174c60430e7a82cf6549f2ae0d5c3cf06ddfddd9aae39c",
+      "immediate": "16ed27de04ed43102a3db93740d8a4bd92cb40de3ca828155c7dd60184f51fda"
+    },
+    {
+      "fixtureId": "island-chain",
+      "cold": "b93da49267367ba59291db4c6093155ee29203cd3b2e6662281aa176f70ad1d2",
+      "warm": "3ca12bcf6adb4d3c9492b6f9876554cdb491669706023daf96ae36b2fda6b8e5",
+      "hot": "5b958247abf0ecb478f87ae77f46da8a54265a3686551cceefc0742f43c93e6d",
+      "immediate": "09c03b3abb681813d6e2ff192ec6328d7debf9e188183771ecdd4c3b1b1e1ab3"
+    },
+    {
+      "fixtureId": "dry-interior",
+      "cold": "85a48ad19c9e2cea95b94745318fdf76fa1777ad12ee4789ba35905d70fc6f6d",
+      "warm": "01c73c73d56af980b38cbd6b605f9b9ac874b9d8b3e05828d19d5443b92e120d",
+      "hot": "62711344dda39b9598cac64a9f9f9e0444a71779f6530769dc279731ca243cea",
+      "immediate": "d6c3100147e6a56009a1e1f6d192d6776377b4668101d9f12ed82cf95ffc3121"
+    }
+  ],
+  "authorityNotice": "All positive fixtures are SYNTHETIC_TEST_ONLY and are not evidence of canonical life or civilization."
+}
