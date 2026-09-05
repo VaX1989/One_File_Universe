@@ -28,6 +28,8 @@ jobs:
         run: |
           npm install --no-save playwright@1.62.1
           npx playwright install --with-deps chromium
+      - name: Build RELEASE browser oracle fixture
+        run: node tools/build-ofu-rendering-v09.mjs
       - name: V1 scientific, persistence and PX conformance
         run: |
           node tests/v1/domain-models.mjs
