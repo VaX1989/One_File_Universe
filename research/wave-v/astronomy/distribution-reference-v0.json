@@ -1,0 +1,7 @@
+{
+  "status": "RESEARCH_ONLY",
+  "oracle": "wv-a-independent-oracle.py",
+  "kroupa_number_fraction_below_0_5": 0.7606678656365657,
+  "gama_shape_stellar_mass_fraction_9_6_11_6": 0.908181493869172,
+  "notes": "Independent numerical shape-only references; not absolute density or canonical science authority."
+}
