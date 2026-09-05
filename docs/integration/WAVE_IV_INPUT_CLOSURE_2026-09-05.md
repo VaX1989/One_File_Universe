@@ -55,3 +55,47 @@ exact-committed-head cross-browser seal. Hosted checks remain mandatory.
 Physical-device status: **NOT_VERIFIED**. Required protected checks are unchanged.
 The founder's superseding engineering-sequencing instruction is recorded in
 `docs/governance/V1_PROGRAM_EXECUTION_AUTHORITY.md`.
+
+## Second-pass closure: deterministic startup and renderer-specific coverage
+
+Run `33956223782` at `d76d04576c989d9aeb33de5bd36332c15fc2b961`
+passed the exact-head canonical/node/build gate. The integrated journey, including
+its new gesture checks, passed on macOS WebKit, Linux WebKit and Windows Chromium.
+The new Firefox failure artifact made the earlier intermittent startup issue
+reproducible: a cold start was SUPPORTED, but the first warm reload selected a
+P5_MASS_DOMAIN / UNSUPPORTED world, with no page error or network dependency.
+
+**STARTUP_SELECTION_OWNERSHIP_DEFECT:** the inspector's default canonical address
+uses siteX=8, while the certified rendering preview uses siteX=61. A browser-restored
+Planet selector combined with newly created default address inputs caused the
+inspector to select the former and the preview to follow it. This is not GPU
+startup latency. Injecting the restored selector into the unchanged document
+reproduced the same unsupported target locally.
+
+The bootstrap now establishes an explicit initial selection: the build's exact
+preview planet in rendering builds, or the declared template default in the
+inspector-only build. It verifies the resulting identity. Browser form restoration
+is not a selection authority, while subsequent explicit user queries remain fully
+available. Bootstrap runs at the document event target before dependent preview
+listeners, rather than at the later window bubble phase. Node regression tests
+execute the real bootstrap for all seven restored entity types, both build modes,
+subsequent user queries and malformed/mismatched manifests. Browser production
+retains the unmodified cold and first warm lifecycle, then deliberately injects a
+restored selector on subsequent reloads and checks exact inspector/preview identity.
+
+**RENDERER_ORACLE_SCOPE_DEFECT:** the newly unblocked visual-closure test applied
+the globe's spherical coverage mask after Close had correctly handed off to the
+local Human renderer. The local snapshot has no globe LOD plan. The test now uses
+the actual local camera, terrain session, renderer and budgets for that stage.
+Its independent CPU ray/triangle samples are compared to WebGL framebuffer pixels;
+a CPU-confirmed visible terrain intersection must not be background. No globe
+pixel assertion is removed: Orbit/Approach retain the original spherical mask and
+FV04 checks, and all three historical near-globe probes (1.35R, 1.05R, 1.012R)
+explicitly exercise the hardened globe camera without invoking the newer semantic
+surface handoff. Failures retain renderer-specific state rather than only a log.
+
+The local document-write harness passes both the startup reproducer and desktop /
+390x844 surface entry, reverse handoff, and historical near-globe camera probes.
+The locally available browser has no usable WebGL2, so local framebuffer measurement
+is explicitly NOT_MEASURABLE; it is not claimed as GPU or direct-file certification.
+The required exact-head hosted matrix must establish those results.

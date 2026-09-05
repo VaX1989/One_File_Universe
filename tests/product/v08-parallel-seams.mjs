@@ -1,3 +1,4 @@
+import './startup-selection.mjs';
 import fs from 'node:fs';
 import {composeProductTemplate} from '../../tools/product-template-compose.mjs';
 

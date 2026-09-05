@@ -10,7 +10,7 @@ const build=JSON.parse(fs.readFileSync('dist/rendering-build-manifest.json','utf
 const startupLifecycles=[],consoleDiagnostics=[];
 let lifecyclePhase='cold-start';
 page.on('console',m=>{if(['error','warning'].includes(m.type())&&consoleDiagnostics.length<64)consoleDiagnostics.push({type:m.type(),message:m.text().slice(0,1000)})});
-async function startupSnapshot(){return page.evaluate(()=>{const P=globalThis.__OFU_PLANET_PREVIEW__,canvas=document.getElementById('planet-view'),r=canvas?.getBoundingClientRect();return{documentReadyState:document.readyState,visibility:document.visibilityState,baselineStatus:globalThis.__OFU_BASELINE_REPORT__?.status||null,previewPresent:!!P,targetStatus:P?.targetStatus||null,targetReason:P?.targetReason||null,activePatches:P?.session?.active?.size||0,drawCalls:P?.draw?.drawCalls||0,backend:P?.backend||null,lastFrameTime:P?.lastTime||null,frameSamples:P?.frameTimes?.length||0,canvas:r?{width:r.width,height:r.height,backingWidth:canvas.width,backingHeight:canvas.height}:null}}).catch(e=>({snapshotError:String(e)}))}
+async function startupSnapshot(){return page.evaluate(()=>{const P=globalThis.__OFU_PLANET_PREVIEW__,canvas=document.getElementById('planet-view'),r=canvas?.getBoundingClientRect();return{documentReadyState:document.readyState,visibility:document.visibilityState,baselineStatus:globalThis.__OFU_BASELINE_REPORT__?.status||null,previewPresent:!!P,targetStatus:P?.targetStatus||null,targetReason:P?.targetReason||null,planetId:P?.chosen?.planetId||null,planetKey:P?.chosen?.key?Object.fromEntries(Object.entries(P.chosen.key).map(([k,v])=>[k,String(v)])):null,inspectorType:OFU.inspectorTest?.state?.current?.type||null,inspectorKey:OFU.inspectorTest?.state?.current?.key?Object.fromEntries(Object.entries(OFU.inspectorTest.state.current.key).map(([k,v])=>[k,String(v)])):null,activePatches:P?.session?.active?.size||0,drawCalls:P?.draw?.drawCalls||0,backend:P?.backend||null,lastFrameTime:P?.lastTime||null,frameSamples:P?.frameTimes?.length||0,canvas:r?{width:r.width,height:r.height,backingWidth:canvas.width,backingHeight:canvas.height}:null}}).catch(e=>({snapshotError:String(e)}))}
 async function ready(phase){
  lifecyclePhase=phase;
  // A visible page and timer-polled semantic predicate do not depend on the
@@ -18,14 +18,23 @@ async function ready(phase){
  await page.bringToFront();
  const started=Date.now();
  await page.waitForFunction(()=>globalThis.__OFU_BASELINE_REPORT__?.status==='READY'&&globalThis.__OFU_PLANET_PREVIEW__?.session?.active?.size>0,undefined,{timeout:30000,polling:50});
- startupLifecycles.push({phase,readinessMs:Date.now()-started,...await startupSnapshot()});
+ const startup=await startupSnapshot();
+ const expected=build.previewPlanetId||await page.evaluate(()=>OFU.BASELINE_BUILD.rendering.previewPlanetId);
+ if(startup.targetStatus!=='SUPPORTED'||startup.planetId!==expected||startup.inspectorType!=='Planet'||JSON.stringify(startup.planetKey)!==JSON.stringify(startup.inspectorKey))throw new Error('startup canonical selection divergence: '+JSON.stringify(startup));
+ startupLifecycles.push({phase,readinessMs:Date.now()-started,...startup});
 }
 async function sampleRaf(n=60){return await page.evaluate(async n=>{const a=[];let p=null;for(let i=0;i<n;i++)await new Promise(resolve=>requestAnimationFrame(t=>{if(p!==null)a.push(t-p);p=t;resolve()}));a.sort((x,y)=>x-y);const q=pct=>a[Math.min(a.length-1,Math.floor((a.length-1)*pct))]||0,longFramesOver100=a.filter(x=>x>100).length;return{measurement:'MEASURED',samples:a.length,p50:q(.5),p95:q(.95),p99:q(.99),longFramesOver100,over100:longFramesOver100}},n)}
 function unexpected(){return requests.filter(r=>!(r.navigation&&r.type==='document'&&r.url===url)&&!r.url.startsWith('data:')&&!r.url.startsWith('blob:')&&!r.url.startsWith('about:'))}
 try{
  const coldStart=Date.now();await page.goto(url,{waitUntil:'load'});await ready('cold-start');const coldStartupMs=Date.now()-coldStart;
  const warmStart=Date.now();await page.reload({waitUntil:'load'});await ready('warm-start-1');const warmStartupMs=Date.now()-warmStart;
- for(let i=2;i<=(name==='firefox'?8:3);i++){await page.reload({waitUntil:'load'});await ready('warm-start-'+i)}
+ // Model browser form restoration before application DOMContentLoaded handlers.
+ // This must not replace the unmodified first cold/warm lifecycle above.
+ await page.addInitScript(()=>document.addEventListener('DOMContentLoaded',()=>{
+  const selector=document.getElementById('entity-type');
+  if(selector)selector.value='Planet';
+ },{capture:true,once:true}));
+ for(let i=2;i<=(name==='firefox'?8:3);i++){await page.reload({waitUntil:'load'});await ready('restored-selector-warm-start-'+i)}
  lifecyclePhase='rendering-production';
  const base=await page.evaluate(()=>{const O=OFU,S=__OFU_PLANET_PREVIEW__,P=O.p2,A=O.p3Astronomy,T=O.p4,P5=O.p5Planetology,E=O.p5EnvironmentV2,B=O.p6Biosphere;function p4(){const universe=P.universeIdentity(S.ctx.masterSeed,S.ctx.semanticManifestHash).digest,lineage=T.lineageId(universe,null,'rendering-production-non-interference'),planet=A.resolvePlanet(S.ctx,S.chosen.key),baseline={contract:'ofu-rendering-production-p4-witness-v1',entity:A.canonicalEnvelope(planet)},world=T.createLiveWorld({universeIdentity:universe,lineage,baseline,compactionPolicy:{threshold:8,retainTail:2}}),a=T.replayLiveWorld(world),b=T.replayLiveWorld(world);return{p4Current:P.hex(a.digest),p4Replay:P.hex(b.digest)}}function witness(){const planet=A.resolvePlanet(S.ctx,S.chosen.key),physical=P5.realizePhysicalPlanet(S.ctx,P5.adaptP3PlanetaryInputSnapshot(A.planetaryInputSnapshot(S.ctx,S.chosen.key))),topology=P5.createTerrainTopology(physical),probe=P5.generateTerrainPatch(S.ctx,topology,{face:'PZ',level:2n,x:1n,y:1n}),environment=E.environmentV2Projection(physical,topology),eligibility=B.eligibility(B.adaptEnvironment(environment)),biology=B.renderingProjection(eligibility);return{p3:P.hex(A.digestFact(planet)),p5Physical:P.hex(P5.physicalDigest(physical)),p5Terrain:P.hex(O.sha256.digest(P.encode(probe))),p5Environment:P.hex(E.environmentDigest(environment)),p6Eligibility:P.hex(eligibility.witnessDigest),p6State:eligibility.state,p6BiologyEstablished:biology.biologyEstablished,...p4()}}return{witness:witness(),planetId:S.provider.planetId,radius:Number(S.physical.physical.meanRadiusM),heightSemantic:S.provider.heightSemantic,presentationElevationScale:S.provider.presentationElevationScale}});
  const regimes={coldStartup:{measurement:'MEASURED',durationMs:coldStartupMs},warmStartup:{measurement:'MEASURED',durationMs:warmStartupMs}};
