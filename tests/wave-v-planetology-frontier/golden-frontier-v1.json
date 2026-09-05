@@ -1,0 +1,35 @@
+{
+  "contractId": "ofu-wave-v-planetology-frontier-research-v1",
+  "teqMilliK": "254578",
+  "escapeUpperBoundKg": "96477909412227",
+  "volatileTotals": {
+    "interiorTg": "1150",
+    "atmosphereTg": "380",
+    "surfaceCondensedTg": "250",
+    "lostTg": "20",
+    "accountedInventoryTg": "1800"
+  },
+  "waterAreaPpm": "160000",
+  "geography": {
+    "child2ReliefBasis": "296975084",
+    "child2BasinBasis": "-1169945545",
+    "child2WaterBudgetTg": "144",
+    "projectedWaterBudgetTg": "1001"
+  },
+  "climate": {
+    "globalMeanTemperatureK": 271.399391,
+    "finalTemperatureK": [
+      256.599226,
+      286.526865,
+      286.295435,
+      256.176038
+    ],
+    "closureResidualJm2": 202.9279983639717,
+    "sensitivityEnvelopeK": [
+      269.372029,
+      273.426752
+    ]
+  },
+  "p6Status": "INSUFFICIENT_ENVIRONMENT",
+  "earthLikeColumnPressurePa": "99015"
+}
