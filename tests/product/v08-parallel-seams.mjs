@@ -47,6 +47,8 @@ for(const path of extensions.filter(path=>path.endsWith('.js'))){
 const bridge=read('src/bootstrap/product/selection-bridge.js');
 if(!/authority:'SELECTION_ONLY'/.test(bridge)||!/O\.inspectorTest/.test(bridge)||!/\.retarget\(/.test(bridge))throw new Error('central selection bridge contract drifted');
 if(/realizePhysicalPlanet|environmentV2Projection|p6Biosphere/.test(bridge))throw new Error('selection bridge crossed scientific authority boundary');
+const navigation=read('src/bootstrap/product/explore-navigation.js');
+if(!navigation.includes('O.productUI?.sync?.();state.ready=true'))throw new Error('Explore readiness must follow event-driven human-facing product synchronization');
 
 console.log(JSON.stringify({
  status:'PASS',
@@ -56,5 +58,6 @@ console.log(JSON.stringify({
  extensions:extensions.length,
  singleFileComposition:true,
  selectionBridge:'SELECTION_ONLY',
+ readinessAfterProductSync:true,
  externalRuntimeDependencyIntroduced:false
 }));

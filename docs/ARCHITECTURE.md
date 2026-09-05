@@ -1,203 +1,224 @@
-# Foundational Architecture
+# One File Universe — Long-range Architecture
+
+**Program status:** accepted forward architecture for the [active v1.0 implementation](governance/V1_IMPLEMENTATION_CONTRACT.md). Named contracts below are design requirements until their PX implementation is verified; documentation acceptance is not a runtime capability claim.
 
 ## 1. Architectural thesis
 
-OFU separates **identity**, **canonical state**, **derived simulation**, and **presentation**. The release artifact is one HTML file, but the source repository is modular and independently testable.
+OFU separates **identity**, **canonical procedural state**, **canonical mutable history**, **derived simulation**, and **presentation/product state**. The release artifact is one HTML file, but development remains modular and independently testable.
 
 ```text
-SOURCE REPOSITORY
-  contracts / schemas / kernel / generators / simulation / events
-  persistence / rendering / audio / diagnostics / conformance / build
-                         |
-                         v
-             DETERMINISTIC BUILD PIPELINE
-                         |
-                         v
-                One_File_Universe.html
+VERSIONED CONTRACTS / SCHEMAS
+        |
+        v
+CANONICAL KERNEL + DOMAIN AUTHORITIES
+        |
+        +---- P4 temporal events / checkpoints / lineage
+        |
+        v
+CURRENT CANONICAL WORLD
+        |
+        +---- query context + model regime + resolution/fidelity
+        v
+DERIVED / LATE-MATERIALIZED REPRESENTATIONS
+        |
+        +---- rendering / audio / UX / diagnostics
+        v
+ONE SELF-CONTAINED HTML ARTIFACT
 ```
 
-## 2. Runtime authority model
+Presentation MUST NOT flow backward into canonical state without an explicit versioned deterministic event or domain transition contract.
+
+## 2. Certified foundation preserved
+
+The long-range architecture builds on, and does not silently expand, frozen contracts:
+
+- P2 owns canonical value/address/identity/serialization/derivation semantics for its declared versions.
+- P3 v1 owns sparse astronomical/genesis metadata within its scope.
+- P4 v1 owns canonical time, accepted-event order, replay, checkpointing, compaction, lineage and portable archive semantics.
+- P5 v1 owns its bounded terrestrial physical model and exact cube-sphere topology; its elevation code is stylized and dimensionless.
+- P5 Environment v2 owns its declared atmosphere/pressure/effective-temperature authority and explicit unknown/unsupported states.
+- P6 v1 owns its fail-closed eligibility witness/identity/transition guard scope; current real environments do not establish biology.
+
+Future depth requires successor contracts, not reinterpretation of those versions.
+
+## 3. Sparse query architecture
+
+The semantic universe is a Multiscale Reality Graph. Existence and properties should be queryable without enumerating all siblings or descendants.
+
+A long-range query is conceptually:
 
 ```text
-Universe Identity
-  = MasterSeed256 + GeneratorManifestHash
-                |
-                v
-Canonical Address + Domain Tag + Property Tag
-                |
-                v
-Addressed deterministic derivation
-                |
-                v
-Canonical procedural baseline
-                |
-        + mutable event overlay
-                |
-                v
-Canonical current facts
-                |
-        + derived simulation/cache
-                |
-                v
-Presentation / rendering / audio
+Query({
+  universeIdentity,
+  entityOrAddress,
+  queryContext: { time, spatialContext, resolution, fidelity },
+  modelRegime,
+  propertyOrCapability
+}) -> AuthorityTaggedResult
 ```
 
-Presentation MUST NOT flow backward into canonical state without an explicit deterministic contract.
+`AuthorityTaggedResult` must distinguish canonical, derived, research, unknown/unsupported and presentation-only outputs. A camera position is query context, not identity. A renderer tile is not automatically a canonical surface entity.
 
-## 3. Sparse-addressed world model
+## 4. Cross-scale protocol
 
-The semantic universe may be hierarchical, but existence and properties SHOULD be queryable without enumerating all ancestors or siblings.
+Every cross-scale provider must define:
 
-Canonical queries are conceptually shaped as:
+- `REFINE(coarse, queryContext) -> constrained finer representation`;
+- `PROJECT(fine consequences, significance policy) -> coarser consequence candidate`;
+- `RECONCILE(representations) -> invariant report`.
 
-```text
-Derive(
-  UniverseIdentity,
-  CanonicalAddress,
-  DomainTag,
-  PropertyTag,
-  CounterOrPurpose
-) -> CanonicalValue
-```
+Cross-scale invariants include stable entity identity where the domain defines persistence, preservation of upstream mass/energy/resource/history constraints where applicable, deterministic reconstruction for canonical outputs, explicit uncertainty/fidelity, and no presentation-to-canonical promotion.
 
-Dependencies between facts are permitted and desirable when causal, but dependency depth MUST be bounded and documented. The architecture does not require literal O(1) for every high-level fact; it requires **non-enumerative random access** with predictable cost.
+A planetary surface implementation, for example, should eventually bind a local patch to canonical planetary/regional state. A plausible but unrelated noise patch is permitted only as clearly labeled presentation; it cannot satisfy a future physical-terrain contract.
 
-## 4. Core layers
+## 5. Model regimes
 
-### 4.1 Bootstrap and capability probe
+The architecture does not assume all detail is classical geometric containment.
 
-Responsibilities:
+Representative regime families:
 
-- boot from one HTML file;
-- identify runtime profile/capabilities;
-- initialize embedded payloads;
-- run early integrity and conformance probes;
-- select optional accelerations without changing canonical semantics.
+- `COSMIC_STATISTICAL` / large-scale astronomy;
+- `ASTRONOMICAL_BODY` / systems and bodies;
+- `PLANETARY_CONTINUUM` / bulk, atmosphere, climate and geodynamics;
+- `GEOSPATIAL_SURFACE` / global-to-local surface structure;
+- `ECOLOGICAL_POPULATION` / ecosystem and population state;
+- `ORGANISMAL` / organisms, anatomy and behavior;
+- `CELLULAR` / cells, tissues and microbial systems;
+- `MOLECULAR` / molecules and complexes;
+- `ATOMIC` / future bounded atomic representations;
+- `NONCLASSICAL_RESEARCH` / future quantum-compatible or otherwise non-classical semantics.
 
-### 4.2 Canonical kernel
+These names are architectural categories, not frozen byte vocabulary. Transitions between regimes require explicit adapters that define identity mapping, observables, units/reference frames, uncertainty and compatibility. A future non-classical regime may use state spaces and observables not representable as smaller classical coordinates.
 
-Owns:
+## 6. Domain-provider architecture
 
-- fixed-width integer primitives;
-- deterministic derivation/PRF interface;
-- canonical addressing;
-- deterministic numeric operations required by canonical generators;
-- canonical serialization and hashing;
-- Generator Manifest interpretation;
-- golden-vector execution.
+Each domain authority or research provider should live behind a stable additive provider interface rather than editing a monolithic runtime switch. A provider declares:
 
-The implementation language is intentionally not fixed in P0. JavaScript/TypeScript, Rust/WASM, Zig/WASM or a hybrid implementation must be selected through evidence.
-
-### 4.3 Generator domains
-
-Planned domains include astronomy, planetology, terrain, climate, biosphere, species, civilization, language, economy and history.
-
-Each domain MUST publish:
-
-- namespace/domain tags;
-- version;
+- ID and semantic version;
+- authority/evidence/fidelity class;
+- accepted upstream contracts;
 - canonical inputs and outputs;
-- determinism class;
-- fidelity class;
-- dependency graph;
-- cost/LOD contract;
-- invariants;
-- conformance vectors.
+- derived/presentation outputs;
+- transition/reducer contract if mutable;
+- cost and working-set envelope;
+- `REFINE`/`PROJECT`/`RECONCILE` obligations;
+- conformance vectors/oracle requirements;
+- explicit unsupported states.
 
-### 4.4 Temporal and semantic simulation
+Provider registries, query interfaces and event contracts are shared integration seams with one writer per parallel wave.
 
-Simulation uses semantic levels of detail:
+## 7. Planetary-reality stack
 
-- `COLD`: closed-form/statistical/macroscopic state;
-- `WARM`: populations, ecosystems, economies and factions;
-- `HOT`: regions, settlements, groups and concrete local processes;
-- `IMMEDIATE`: entities directly relevant to gameplay/physics.
+A future planetary stack can be decomposed into independently versioned layers:
 
-Refinement MUST preserve previously committed canonical facts. Detail is generated under constraints, not retroactively allowed to contradict history.
+1. astronomical forcing and body baseline;
+2. bulk composition/interior state;
+3. thermal/geodynamic/tectonic regime where scientifically justified;
+4. crust/provinces, volcanism, impacts and deformation;
+5. physical hypsometry/topography and basin structure;
+6. hydrology/ocean/ice/regolith/soil state;
+7. atmospheric composition and radiative/convective state;
+8. global/regional climate transport and seasonality;
+9. local weather only where the model and runtime budget justify it;
+10. ecology/biology boundary inputs.
 
-### 4.5 Mutable overlay
+Each layer can remain `UNKNOWN` or `UNSUPPORTED` rather than forcing a fake value. Research branches can prototype models without canonical promotion.
+
+## 8. Biological and civilization stack
+
+Biology should progress from governed environment eligibility to bounded ecology/lifecycle models, then to richer evolution and organismal detail. Earth-calibrated biology, generalized constraints, hypothetical exobiology and generative fictional extensions must remain distinguishable.
+
+Civilization should consume environment, resources, biology, population and history. Settlement/city/culture outputs must be causally explainable within their declared fidelity rather than independent decorations. Technology, economy, language, institutions and conflict are separate model families that can share population/resource/history interfaces.
+
+## 9. Temporal architecture and player intervention
+
+P4 remains the reference ownership model for canonical time/history. A future mutable domain publishes a versioned transition contract consumed by the temporal layer. Player intervention follows:
 
 ```text
-CurrentCanonicalWorld
-  = ProceduralBaseline
-  + VersionedEvents
-  + CanonicalCheckpoints
+intent -> authority/precondition check -> canonical event candidate
+       -> P4 ordering/admission -> domain reducer -> new canonical state
+       -> derived consequences -> presentation
 ```
 
-Events are append-oriented, schema-versioned and auditable. Checkpoints MAY compact replay cost but MUST be deterministically derived and verifiable against the event lineage they replace/cover.
+No renderer, scene provider, UI form or debug control has authority to bypass this path.
 
-### 4.6 Persistence
+## 10. Late materialization
 
-The portable save/archive format is authoritative. Browser-local storage is an optional convenience/cache layer.
+COLD/WARM/HOT/IMMEDIATE is a resource and semantic-detail strategy, not a license to change facts.
 
-A save must be able to identify:
+- COLD stores/derives coarse constraints and statistical/macroscopic state.
+- WARM activates populations, regions and aggregate dynamics.
+- HOT materializes local systems and concrete processes.
+- IMMEDIATE materializes interaction-relevant entities and high-resolution derived state.
 
-- Universe Identity;
-- generator lineage;
-- event schema lineage;
-- event/checkpoint state;
-- integrity hashes;
-- compatibility requirements.
+Promotion/demotion between tiers must declare what persists canonically, what can be regenerated, what gets projected upward and what error/approximation bounds apply.
 
-### 4.7 Rendering and audio
+## 11. Rendering architecture
 
-Rendering and audio are consumers of canonical/derived state.
+Rendering is a co-equal product pillar and a consumer of truth, never its silent author.
 
-Baseline architecture:
+Long-range rendering should use an adapter boundary with at least:
 
-- WebGL2 or a documented diagnostic fallback for Strict portability;
-- WebGPU as optional acceleration where supported;
-- Workers and transferable buffers as portable parallelism;
-- SharedArrayBuffer only as optional Enhanced acceleration.
+- **Strict WebGL2 path:** portable baseline, direct-open compatible;
+- **Enhanced WebGPU path:** optional compute/render acceleration when available;
+- capability/quality profiles that can change visual fidelity, dynamic resolution, LOD, antialiasing, shadows, volumetrics and streaming budgets without changing canonical values;
+- scene/representation providers keyed by semantic scale/model regime rather than hard-coded showcase destinations;
+- hierarchical visibility/LOD structures, local/floating origins and patch-relative geometry for large-world precision;
+- bounded caches with explicit CPU/GPU resource ownership and destruction;
+- instancing/batching/streaming or virtualized material/texture concepts where measured useful;
+- renderer-independent canonical selection and identity.
 
-GPU results MUST NOT be authoritative for canonical facts unless a future conformance profile proves deterministic semantics for the exact operation.
+Future atmosphere, water, ice, vegetation, organisms or city lights may only use scientific labels when the corresponding authority exists. Otherwise they must be presentation-labeled approximations or omitted.
 
-## 5. Runtime budgeting
+## 12. Product / UX architecture
 
-OFU MUST use capability probing and explicit runtime budgets rather than assume fixed browser limits.
+The universe viewport should be the primary interface. Product state must be downstream of canonical selection/query state.
 
-Budgets include:
+Stable product seams should include:
 
-- active canonical entities;
-- derived entity/cache count;
-- CPU milliseconds per frame/job class;
-- resident heap target;
-- worker count;
-- GPU buffers/textures;
-- generation queue depth;
-- save/event growth.
+- `SelectionService`: canonical selected entity/address + support state;
+- `ExplorationQueryService`: address/query-driven discovery and target resolution;
+- `ScaleTravelService`: semantic travel intent and cross-regime transitions;
+- `SceneProviderRegistry`: presentation providers by supported regime/band;
+- `InputIntentRouter`: mouse/touch/pen/keyboard intents without duplicate ownership;
+- `InspectionProjection`: human-readable authority-tagged scientific context;
+- `LabProjection`: raw canonical/provenance/diagnostic data;
+- `AccessibilityProjection`: semantic nonvisual alternatives and equivalent controls.
 
-Quality profiles MAY adapt visual and derived detail, but MUST NOT alter canonical results.
+Current v0.8/v0.9 implementations are compatibility evidence, not permanent interface names.
 
-## 6. Build architecture
+## 13. Runtime and precision architecture
 
-The build system must eventually provide:
+Large worlds require layered coordinate/reference-frame strategies. Canonical addresses and high-precision model state should not be forced into GPU Float32 world coordinates. Rendering should use relative-to-eye/floating-origin or equivalent local frames, patch-relative buffers and explicit frame transforms.
 
-1. pinned toolchain inputs;
-2. normalized ordering and canonical manifests;
-3. timestamp/environment neutralization where possible;
-4. deterministic bundling of JS/CSS/WASM/shaders/data/tests;
-5. single HTML output;
-6. external SHA-256 and build report;
-7. internal component manifest and hashes;
-8. independent rebuild comparison.
+Runtime budgets include active canonical/derived entities, worker queues, simulation milliseconds, main-thread frame budget, heap, GPU memory/buffers/textures, material/geometry cache sizes, event tail/checkpoints and startup/decode amplification. Budget violations must degrade derived/presentation quality before changing canonical truth.
 
-Compression, binary embedding format and exact toolchain remain P1 experiments until measured.
+## 14. Persistence and lineage
 
-## 7. Dependency rule
+Portable archives remain authoritative. Future archives must identify Universe Identity, semantic manifest lineage, domain transition versions, event/checkpoint state, migrations and integrity commitments. Deep history may be compacted only through deterministic, authority-preserving rules. Cached late-materialized detail is not automatically portable state.
 
-The release artifact has no application-owned external runtime dependency. The browser platform itself is explicitly part of the declared execution environment.
+## 15. Build and artifact architecture
 
-Source/build dependencies MAY exist but MUST be pinned, auditable and absent from the final runtime dependency graph unless their output is embedded in the artifact.
+The deterministic build embeds modular JS/CSS/WASM/shaders/data/tests/assets into one HTML. Artifact size may grow with useful capability. Startup and runtime working-set budgets remain independent; large embedded payloads should be staged, indexed and decoded/materialized on demand where possible.
 
-## 8. Architectural quality gates
+## 16. Parallel-development seam strategy
 
-No generator domain becomes stable until it has:
+Future concurrency depends on reducing shared-file edits. Central bootstrap/build/runtime files should evolve toward small registries and stable adapters. Science providers, renderer providers, UX projections, audio systems and research models should be additive modules with explicit ownership.
 
-- a canonical input/output contract;
-- versioned domain namespace;
-- conformance vectors;
-- determinism classification;
-- cost and simulation-LOD policy;
-- provenance/fidelity documentation;
-- compatibility policy.
+The canonical rule is **contract first, additive implementation second, single convergence owner third**. See `PARALLEL_DEVELOPMENT_ARCHITECTURE.md` and `frontier/WORKSTREAM_DAG.json`.
+
+## 17. Architectural quality gates
+
+A workstream is not promotion-ready until it has, as applicable:
+
+- versioned input/output and authority contracts;
+- determinism/fidelity/evidence classification;
+- cross-scale and temporal invariants;
+- bounded cost/materialization policy;
+- independent oracle/property/conformance evidence;
+- product journey and accessibility evidence for user-visible work;
+- rendering quality and resource evidence for visual work;
+- compatibility/migration policy;
+- adversarial review appropriate to the claim.
+
+A green test suite alone does not establish product completeness.

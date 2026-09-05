@@ -3,11 +3,15 @@ name: Exact Source Reproduction Bundle
 # Diagnostic source transport, not a certification or release gate.
 # Only tracked public repository objects are archived; no runner files,
 # credentials, caches, or environment values are included.
-# Every repair head on this branch must be reproducible without network access.
+# Every head on the explicitly authorized program branches must be reproducible without network access.
 on:
   push:
     branches:
+      - main
       - integration/wave-iv-massive-convergence-vertical-slice-2026-09-04
+      - docs/founder-vision-multiscale-formalization-2026-09-05
+      - integration/wave-v-parallel-base-enablement-2026-09-05
+      - integration/v1.0-definitive-product-convergence-2026-09-05
 
 permissions:
   contents: read
