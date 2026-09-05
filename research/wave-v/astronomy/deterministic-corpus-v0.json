@@ -1,0 +1,10 @@
+{
+  "status": "RESEARCH_ONLY",
+  "modelVersion": "wv-a-astronomy-depth-r0",
+  "schemaVersion": 0,
+  "generator": "keys corpus-0 through corpus-31; each resolves GALAXY, LOCAL_POPULATION and SYSTEM_BIRTH with deterministic parameter schedule",
+  "records": 32,
+  "fullCorpusDigest": "ed62c4139f3c66329e0a627b3f18e3879aa0d7eb911071d30c93b9ddb94f8ad4",
+  "oracle64Digest": "8a923fb0bde07c7d5b5f461731840d5c668af75883000fbb9dc4be4bfe3446f0",
+  "note": "Descriptor freeze. Regenerate full rows from wv-a-research-provider.mjs before any convergence; this is not canonical corpus authority."
+}
