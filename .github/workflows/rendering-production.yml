@@ -46,6 +46,8 @@ jobs:
         run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
       - name: Product v0.8 composition and lane contracts
         run: |
+          node tests/rendering/local-surface-ray-oracle.mjs
+          node tests/rendering/dual-artifact-seal.mjs
           node tests/product/v08-parallel-seams.mjs
           node tests/product/v08-inspector-product.mjs
           node tests/product/v08-lab-technical.mjs
@@ -86,7 +88,7 @@ jobs:
         run: |
           mkdir -p dist/evidence/rendering-production
           node tests/rendering/run-production-tests.mjs | tee dist/evidence/rendering-production/node.json
-      - name: Reproducible exact-source single file
+      - name: Reproducible foundation and full Wave IV single files
         shell: bash
         run: |
           node tools/build-ofu-rendering-v08.mjs > /tmp/render-build-1.json
@@ -95,9 +97,20 @@ jobs:
           node tools/build-ofu-rendering-v08.mjs > /tmp/render-build-2.json
           cmp /tmp/render-first.html dist/One_File_Universe.html
           cmp /tmp/render-manifest-first.json dist/rendering-build-manifest.json
-          test "$(grep -Eoc '(src|href)=[\"'\'']https?://' dist/One_File_Universe.html)" -eq 0
+          test "$(grep -Eoc '(src|href)=["'\'']https?://' dist/One_File_Universe.html)" -eq 0
           grep -q "connect-src 'none'" dist/One_File_Universe.html
           grep -q 'v08-product-template-fragments-3' dist/rendering-build-manifest.json
+          mkdir -p dist/foundation
+          cp dist/One_File_Universe.html dist/foundation/One_File_Universe-foundation.html
+          cp dist/rendering-build-manifest.json dist/foundation/rendering-foundation-manifest.json
+          node tools/build-ofu-rendering-v09.mjs > /tmp/full-build-1.json
+          cp dist/One_File_Universe.html /tmp/full-first.html
+          cp dist/rendering-build-manifest.json /tmp/full-manifest-first.json
+          node tools/build-ofu-rendering-v09.mjs > /tmp/full-build-2.json
+          cmp /tmp/full-first.html dist/One_File_Universe.html
+          cmp /tmp/full-manifest-first.json dist/rendering-build-manifest.json
+          grep -q 'FRUSTUM_GROUND_FOOTPRINT_BOUNDED' dist/rendering-build-manifest.json
+          grep -q 'ofu-wave-iv-vertical-slice-3' dist/rendering-build-manifest.json
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: rendering-production-build-${{ env.OFU_SOURCE_SHA }}
@@ -105,6 +118,7 @@ jobs:
             dist/One_File_Universe.html
             dist/rendering-build-manifest.json
             dist/evidence/rendering-production/node.json
+            dist/foundation/
 
   browser-linux:
     runs-on: ubuntu-latest
@@ -155,6 +169,8 @@ jobs:
         env:
           BROWSER: ${{ matrix.browser }}
           DPR: ${{ matrix.browser == 'chromium' && '2' || '1' }}
+      - name: Build full Wave IV product for renderer-specific visual closure
+        run: node tools/build-ofu-rendering-v09.mjs
       - name: Founder visual settled camera and framebuffer closure
         run: node tests/product/browser-v08-settled-visual-closure.mjs
         env:
@@ -219,6 +235,8 @@ jobs:
         env:
           BROWSER: ${{ matrix.browser }}
           DPR: '1'
+      - name: Build full Wave IV product for renderer-specific visual closure
+        run: node tools/build-ofu-rendering-v09.mjs
       - name: Founder visual settled camera and framebuffer closure
         run: node tests/product/browser-v08-settled-visual-closure.mjs
         env:
