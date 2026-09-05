@@ -22,6 +22,7 @@ function selectPlanet(key,{announce=true}={}){
  O.productUI?.sync?.();O.v08InspectorProduct?.render?.();O.v08LabTechnical?.sync?.();
  const result=Object.freeze({canonicalStatus:'PRESENT',canonicalDigest:selected.digest,planetId:O.p2?.hex?O.p2.hex(selected.record.id):null,presentationStatus:P.targetStatus,presentationReason:P.targetReason||null,rendered:rendered!==false,presentationRetargeted:!alreadyTargeted});
  O.waveIVScaleRuntime?.setSelection?.(selected.key,{planetId:result.planetId,presentationStatus:result.presentationStatus,source:'canonical-selection'});
+ O.pxProduct?.inspect?.('px.domain.canonical');
  if(announce)O.productUI?.announce?.(P.targetStatus==='SUPPORTED'?'Selected world ready to explore':'Selected canonical world; visualization unavailable');return result;
 }
 const API=Object.freeze({seamVersion:3,contract:'ofu-wave-iv-selection-1',legacyContract:'ofu-product-canonical-planet-selection-1',authority:'SELECTION_ONLY',selectPlanet,sameKey});O.v08SelectionBridge=API;

@@ -1,6 +1,7 @@
 import './startup-selection.mjs';
 import fs from 'node:fs';
 import {composeProductTemplate} from '../../tools/product-template-compose.mjs';
+import {loadComponents} from '../../tools/extensions/components.mjs';
 
 const read=path=>fs.readFileSync(path,'utf8').replace(/\r\n?/g,'\n');
 const count=(source,token)=>source.split(token).length-1;
@@ -36,9 +37,10 @@ if(count(composed,'id="planet-view"')!==1)throw new Error('viewport composition 
 if(count(composed,'data-workspace-panel=')!==3)throw new Error('Explore / Inspect / Lab workspace composition drifted');
 
 const build=read('tools/build-ofu-rendering-v08.mjs');
-for(const path of required)if(!build.includes(path))throw new Error('v0.8 build does not compose declared product source '+path);
+const componentPlan=loadComponents();
+for(const path of required)if(!componentPlan.some(c=>c.source===path&&c.stage==='foundation'))throw new Error('v0.8 build does not compose declared product source '+path);
 if(!/build-ofu-rendering\.mjs/.test(build))throw new Error('v0.8 build must retain the certified rendering build as its canonical runtime foundation');
-if(build.indexOf('selection-bridge.js')>build.indexOf('explore-navigation.js'))throw new Error('selection bridge must initialize before Explore navigation');
+if(componentPlan.findIndex(c=>c.source.endsWith('/selection-bridge.js'))>componentPlan.findIndex(c=>c.source.endsWith('/explore-navigation.js')))throw new Error('selection bridge must initialize before Explore navigation');
 
 for(const path of extensions.filter(path=>path.endsWith('.js'))){
  const source=read(path);

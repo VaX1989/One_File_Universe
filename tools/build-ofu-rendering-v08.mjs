@@ -3,23 +3,20 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {composeProductTemplate} from './product-template-compose.mjs';
+import {loadComponents,addComponents,attachManifest} from './extensions/components.mjs';
 
 const root=process.cwd();
 const read=rel=>fs.readFileSync(path.join(root,rel),'utf8').replace(/\r\n?/g,'\n');
 const artifactPath=path.join(root,'dist','One_File_Universe.html');
 const manifestPath=path.join(root,'dist','rendering-build-manifest.json');
-const fragmentPaths=['src/bootstrap/product/workspace-nav.html','src/bootstrap/product/viewport.html','src/bootstrap/product/explore-panel.html','src/bootstrap/product/inspect-panel.html','src/bootstrap/product/lab-panel.html'];
-const scriptPaths=['src/bootstrap/product/scale-runtime.js','src/bootstrap/product/selection-bridge.js','src/rendering/planet-framing.js','src/bootstrap/product/explore-navigation.js','src/bootstrap/product/input-router.js','src/bootstrap/product/inspector-product.js','src/bootstrap/product/mobile-interaction.js','src/bootstrap/product/lab-technical.js','src/bootstrap/product/explorer-beta-core.js','src/bootstrap/product/explorer-scene-adapter.js','src/bootstrap/product/inspector-beta.js','src/bootstrap/product/explorer-beta.js'];
-const stylePaths=['src/bootstrap/product/mobile.css','src/bootstrap/product/explorer-beta.css'];
-const productSourcePaths=[...fragmentPaths,...scriptPaths,...stylePaths];
+const plan=loadComponents(root);
+const selected=plan.filter(c=>c.stage==='foundation');
+const productSourcePaths=selected.map(c=>c.source);
 
 execFileSync(process.execPath,['tools/build-ofu-rendering.mjs'],{cwd:root,env:process.env,stdio:['ignore','inherit','inherit']});
 const legacy=fs.readFileSync(artifactPath,'utf8').replace(/\r\n?/g,'\n');
 let composed=composeProductTemplate(legacy,read);
-const productCss=stylePaths.map(rel=>read(rel).trimEnd()).filter(Boolean).join('\n');
-if(productCss)composed=composed.replace('</style>',productCss+'\n</style>');
-const extensionScripts=scriptPaths.map(rel=>`<script>${read(rel).trimEnd().replace(/<\/script/gi,'<\\/script')}</script>`).join('');
-composed=composed.replace('</body>',extensionScripts+'</body>');
+composed=addComponents(composed,plan,'foundation');
 fs.writeFileSync(artifactPath,composed,'utf8');
 const bytes=fs.readFileSync(artifactPath);
 const sha256=crypto.createHash('sha256').update(bytes).digest('hex');
@@ -27,6 +24,8 @@ const productSourceFragments=productSourcePaths.map(componentId=>{const source=r
 const manifest=JSON.parse(fs.readFileSync(manifestPath,'utf8'));
 manifest.productSourceComposition='v08-product-template-fragments-3+v09-explorer-beta-fragments-1+wave-iv-runtime-normalization-1';
 manifest.productSourceFragments=productSourceFragments;
+attachManifest(manifest,selected);
+manifest.px={...manifest.px,version:'ofu-px-product-1',scope:'FOUNDATION',authorityContract:'ofu-px-contracts-1',registry:'ofu-px-registry-1',crossScale:'ofu-px-cross-scale-1',renderBackend:'ofu-px-render-backend-1'};
 manifest.artifactBytes=bytes.length;
 manifest.artifactSha256=sha256;
 fs.writeFileSync(manifestPath,JSON.stringify(manifest,null,2)+'\n');

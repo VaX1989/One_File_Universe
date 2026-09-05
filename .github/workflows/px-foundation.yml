@@ -1,0 +1,64 @@
+name: PX Extension Foundation
+on:
+  push:
+    branches:
+      - integration/wave-v-parallel-base-enablement-2026-09-05
+      - main
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: px-foundation-${{ github.event_name }}-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+env:
+  OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+jobs:
+  px-conformance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.20.0'
+      - name: Exact source
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Owner-qualified PX conformance
+        run: node tools/extensions/conformance.mjs INTEGRATION --exact
+      - name: Preserved product ownership and GPU failure oracles
+        run: |
+          node tests/product/v08-parallel-seams.mjs
+          node tests/product/wave-iv-normalization.mjs
+          node tests/product/v09-explorer-beta.mjs
+          node tests/product/v09-product-seams.mjs
+          node tests/wave-iv/convergence-runtime.mjs
+          node tests/rendering/vertex-array-ownership.mjs
+          node tests/wave-iv/preview-terrain-lifecycle.mjs
+          node tests/rendering/dual-artifact-seal.mjs
+      - name: Reproduce full single file
+        run: |
+          node tools/build-ofu-rendering-v09.mjs > /tmp/px-build-first.json
+          cp dist/One_File_Universe.html /tmp/px-first.html
+          cp dist/rendering-build-manifest.json /tmp/px-first-manifest.json
+          node tools/build-ofu-rendering-v09.mjs > /tmp/px-build-second.json
+          cmp /tmp/px-first.html dist/One_File_Universe.html
+          cmp /tmp/px-first-manifest.json dist/rendering-build-manifest.json
+      - name: Install Chromium
+        run: |
+          npm install --no-save playwright@1.62.1
+          npx playwright install --with-deps chromium
+      - name: Actual registered product journey
+        run: node tests/extensions/browser-product.mjs
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: px-foundation-${{ env.OFU_SOURCE_SHA }}
+          path: |
+            dist/One_File_Universe.html
+            dist/rendering-build-manifest.json
+            dist/evidence/px/
+            dist/evidence/rendering-production/px-browser-*.json

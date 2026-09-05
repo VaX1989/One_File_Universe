@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import vm from 'node:vm';
 import assert from 'node:assert/strict';
+import {loadComponents} from '../../tools/extensions/components.mjs';
 const root=new URL('../../',import.meta.url);
 const read=rel=>fs.readFileSync(new URL(rel,root),'utf8');
 const coreSource=read('src/bootstrap/product/explorer-beta-core.js');
@@ -30,5 +31,5 @@ assert.match(panel,/id="beta-first-flight"/);assert.match(panel,/id="beta-breadc
 assert.doesNotMatch(panel,/nearest system/i);assert.match(panel,/not a claim that systems are physically nearest/i);
 assert.match(uiSource,/STORAGE_KEY='ofu:v09:explorer-session:1'/);assert.match(uiSource,/localStorage/);assert.match(uiSource,/O\.v08SelectionBridge/);assert.match(uiSource,/O\.v08MobileInteraction/);
 assert.match(css,/beta-compare-table/);assert.match(css,/max-width:700px/);
-assert.match(build,/explorer-beta-core\.js/);assert.match(build,/explorer-beta\.js/);assert.match(build,/explorer-beta\.css/);assert.match(build,/v09-explorer-beta-fragments-1/);
+const planned=loadComponents().filter(c=>c.stage==='foundation').map(c=>c.source);for(const name of ['explorer-beta-core.js','explorer-beta.js','explorer-beta.css'])assert(planned.includes('src/bootstrap/product/'+name),'additive foundation includes '+name);assert(planned.indexOf('src/bootstrap/product/explorer-beta-core.js')<planned.indexOf('src/bootstrap/product/explorer-beta.js'));assert.match(build,/v09-explorer-beta-fragments-1/);
 console.log('v09 explorer beta product: PASS');
