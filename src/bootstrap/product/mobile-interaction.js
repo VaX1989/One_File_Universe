@@ -61,7 +61,7 @@ function syncWorkspace({preserveFocus=false}={}){
  setSheet(preserveFocus&&focusedInside?'expanded':'peek');
 }
 function snapshot(){
- const vv=root.visualViewport||null,canvas=DOC.getElementById('planet-view'),rect=canvas?.getBoundingClientRect?.(),kind=sourceKind();
+ const vv=root.visualViewport||null,canvas=DOC.getElementById('planet-view'),rect=canvas?.getBoundingClientRect?.(),kind=sourceKind(),ownedInput=O.waveIVInputRouter?.state;
  return Object.freeze({
   seamVersion:state.seamVersion,
   active:state.active,
@@ -70,7 +70,7 @@ function snapshot(){
   diagnosticsOpen:state.diagnosticsOpen,
   source:Object.freeze({kind,localDirect:kind==='file'||kind==='content'}),
   viewport:Object.freeze({layoutWidth:root.innerWidth||0,layoutHeight:root.innerHeight||0,visualWidth:vv?.width??root.innerWidth??0,visualHeight:vv?.height??root.innerHeight??0,visualScale:vv?.scale??1,dpr:root.devicePixelRatio||1,orientation:orientationName()}),
-  input:Object.freeze({coarse:!!coarseQuery?.matches,maxTouchPoints:root.navigator?.maxTouchPoints||0,canvasTouchAction:canvas?root.getComputedStyle(canvas).touchAction:null,lastGesture:state.lastGesture,canvasPointerCancels:state.canvasPointerCancels}),
+  input:Object.freeze({coarse:!!coarseQuery?.matches,maxTouchPoints:root.navigator?.maxTouchPoints||0,canvasTouchAction:canvas?root.getComputedStyle(canvas).touchAction:null,lastGesture:ownedInput?.lastGesture||state.lastGesture,canvasPointerCancels:ownedInput?.pointerCancels??state.canvasPointerCancels,lostPointerCaptures:ownedInput?.lostPointerCaptures??0,pointerResets:ownedInput?.pointerResets??0,gestureOwner:ownedInput?.initialized?'wave-iv-input-router':'legacy-preview'}),
   canvas:rect?Object.freeze({width:Math.round(rect.width),height:Math.round(rect.height),top:Math.round(rect.top),bottom:Math.round(rect.bottom)}):null,
   renderer:Object.freeze({targetStatus:root.__OFU_PLANET_PREVIEW__?.targetStatus||null,pointerActive:root.__OFU_PLANET_PREVIEW__?.pointerActive??null}),
   accessibility:Object.freeze({reducedMotion:!!reducedQuery?.matches,sheetExpanded:state.sheet==='expanded'}),

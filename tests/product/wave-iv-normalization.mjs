@@ -1,0 +1,27 @@
+import fs from 'node:fs';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+
+const source=fs.readFileSync('src/bootstrap/product/scale-runtime.js','utf8');
+const sandbox={OFU:{},performance:{now:()=>1},console};sandbox.globalThis=sandbox;
+vm.runInNewContext(source,sandbox,{filename:'scale-runtime.js'});
+const R=sandbox.OFU.waveIVScaleRuntime;
+assert.equal(R.VERSION,'ofu-wave-iv-scale-runtime-1');
+assert.equal(R.SCENE_PROVIDER_CONTRACT,'ofu-wave-iv-scene-provider-1');
+assert.equal(R.SELECTION_CONTRACT,'ofu-wave-iv-selection-1');
+assert.equal(R.TRANSITION_CONTRACT,'ofu-wave-iv-transition-1');
+assert.deepEqual([...R.CURRENT_BANDS],['system','orbit','approach','close']);
+assert.deepEqual([...R.FUTURE_LADDER],['galaxy','stellar_neighborhood','system','orbit','approach','global_surface','regional_surface','local_surface','human']);
+for(const d of [400,180,40,4,3,1.35,1.02])assert.ok(R.CURRENT_BANDS.includes(R.deriveSemanticScale(d)),'continuous scale must always derive a semantic band');
+let distanceCommands=0,cameraIntents=0,planetActive=null,systemActive=null;
+R.registerSceneProvider({id:'planet-webgl',scales:['orbit','approach','close'],setActive:v=>{planetActive=v},setDistanceRadii:()=>{distanceCommands++},cameraIntent:()=>{cameraIntents++}});
+R.registerSceneProvider({id:'visual-universe-system',scales:['system'],setActive:v=>{systemActive=v}});
+assert.equal(R.snapshot().activeSceneProvider,'visual-universe-system');
+const before=R.snapshot().cameraCommandCount;R.requestStage('orbit',{source:'test-stage'});const orbit=R.snapshot();
+assert.equal(orbit.semanticScale,'orbit');assert.equal(orbit.activeSceneProvider,'planet-webgl');assert.equal(orbit.intentKind,'anchor');assert.equal(orbit.cameraCommandCount,before+1);assert.equal(planetActive,true);assert.equal(systemActive,false);
+R.setContinuousDistance(3,{source:'test-wheel'});assert.notEqual(R.snapshot().semanticScale,null);assert.equal(R.snapshot().intentKind,'continuous');
+R.dispatchCameraIntent({kind:'rotate-step',dx:.1,dy:0},{source:'test-keyboard'});assert.equal(cameraIntents,1);
+const key={galaxyX:1n,galaxyY:2n,galaxyZ:3n,sectorX:0n,sectorY:0n,sectorZ:0n,siteX:4n,siteY:5n,siteZ:6n,orbitSlot:2n};R.setSelection(key,{planetId:'abc',presentationStatus:'SUPPORTED'});const sel=R.snapshot().selectedCanonicalTarget;assert.equal(sel.orbitIndex,2);assert.equal(sel.planetId,'abc');assert.equal(String(sel.canonicalKey.siteX),'4');
+const input=fs.readFileSync('src/bootstrap/product/input-router.js','utf8'),scene=fs.readFileSync('src/bootstrap/product/explorer-scene-adapter.js','utf8'),normalizer=fs.readFileSync('src/bootstrap/product/scene-normalizer.js','utf8');
+assert.match(input,/addEventListener\('wheel',handleWheel,\{passive:false,capture:true\}\)/);assert.match(input,/stopImmediatePropagation/);assert.match(input,/touch|pointerType/);assert.match(input,/refreshFramingAnchors/);assert.doesNotMatch(scene,/setInterval/);assert.match(scene,/scaleChanged/);assert.match(normalizer,/visual-universe-system/);assert.match(normalizer,/planet-webgl/);assert.match(normalizer,/visibility=active\?'visible':'hidden'/);
+console.log(JSON.stringify({status:'PASS',scaleRuntime:R.VERSION,inputIntent:'ofu-wave-iv-input-intent-1',sceneProvider:R.SCENE_PROVIDER_CONTRACT,selection:R.SELECTION_CONTRACT,transition:R.TRANSITION_CONTRACT,semanticScaleAlwaysDefined:true,eventDrivenSceneSeam:true,singlePrimarySceneContract:true,distanceCommands,cameraIntents}));

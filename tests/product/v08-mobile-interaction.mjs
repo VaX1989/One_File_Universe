@@ -9,7 +9,8 @@ for(const [pattern,label] of [
  [/safe-area-inset-top/,'safe-area top handling'],
  [/safe-area-inset-bottom/,'safe-area bottom handling'],
  [/100dvh/,'dynamic viewport units'],
- [/touch-action:\s*pan-y pinch-zoom/,'canvas scroll and pinch arbitration'],
+ [/touch-action:\s*pan-y pinch-zoom/,'legacy fallback scroll and pinch arbitration'],
+ [/data-ofu-touch-owner="wave-iv-input-router".*touch-action:none/,'application-owned canvas gesture boundary'],
  [/max-width:1100px/,'1024-class composition'],
  [/max-width:820px/,'768-class composition'],
  [/max-width:700px/,'390-class mobile composition'],
@@ -41,4 +42,4 @@ if(/O\.(?:p3|p4|p5|p6)|p3Astronomy|p5Planetology|p6Biosphere/.test(js))throw new
 if(/navigateToRadii\s*\(|retarget\s*\(/.test(js))throw new Error('Lane D must not implement independent target navigation');
 if(!/Physical-device status is browser-reported only/.test(js))throw new Error('Lane D diagnostics must not claim physical-device certification');
 
-console.log(JSON.stringify({status:'PASS',lane:'D',mobileArchitecture:'VIEWPORT_FIRST_BOTTOM_SHEET',touchModel:'HORIZONTAL_ROTATE_NATIVE_VERTICAL_SCROLL_NATIVE_PINCH',responsiveModeEntry:'FOCUS_SAFE_PEEK',offline:true,scientificAuthorityWrites:0,physicalDeviceClaim:false}));
+console.log(JSON.stringify({status:'PASS',lane:'D',mobileArchitecture:'VIEWPORT_FIRST_BOTTOM_SHEET',touchModel:'APPLICATION_CANVAS_ROTATE_AND_PINCH_NATIVE_PANEL_SCROLL',responsiveModeEntry:'FOCUS_SAFE_PEEK',offline:true,scientificAuthorityWrites:0,physicalDeviceClaim:false}));

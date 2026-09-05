@@ -1,0 +1,20 @@
+(function(root){
+'use strict';
+const O=root.OFU=root.OFU||{},T=O.planetSurfaceTerrain;if(!T||typeof T.createTerrainSession!=='function')throw new Error('surface relief requires frustum-aware terrain');
+const VERSION='ofu-surface-relief-presentation-2',AUTHORITY='PRESENTATION_ONLY',R=Number(T.PRESENTATION_SPHERE_RADIUS_M)||6400000,baseCreate=T.createTerrainSession,baseHeight=T.presentationHeightM,baseHeightDirection=T.presentationHeightAtDirection,baseMicro=T.microdetailInstances,hash=T.hash32;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),norm=d=>{const q=[Number(d[0]),Number(d[1]),Number(d[2])],m=Math.hypot(...q);if(!(m>0))throw new Error('finite non-zero surface direction required');return q.map(x=>x/m)};
+function planetId(token){const s=String(token),m='/nav-anchor/',i=s.lastIndexOf(m);if(i<1)throw new Error('invalid surface anchor');return s.slice(0,i)}
+function unitFromSeed(seed,salt){let x=(seed^Math.imul(salt+1,0x9e3779b1))>>>0;const next=()=>{x^=x>>>16;x=Math.imul(x,0x7feb352d);x^=x>>>15;x=Math.imul(x,0x846ca68b);x^=x>>>16;return x>>>0},v=[next()/2147483647.5-1,next()/2147483647.5-1,next()/2147483647.5-1],m=Math.hypot(...v)||1;return v.map(q=>q/m)}
+function wave(seed,d,freq,salt){const v=unitFromSeed(seed,salt),phase=((seed>>>((salt%4)*8))&255)/255*Math.PI*2;return Math.sin((d[0]*v[0]+d[1]*v[1]+d[2]*v[2])*freq*Math.PI+phase)}
+// The relief spectrum reuses the differentiable ridge profile: a cusp here
+// remains visible as alternating triangle lighting even when the base is smooth.
+function reliefAtDirection(id,d){d=norm(d);const seed=hash('planet-surface-relief-v1|'+id),a=wave(seed,d,18,0),b=wave(seed,d,43,1),c=wave(seed,d,91,2),r=wave(seed,d,67,3),basin=wave(seed,d,173,4),regional=wave(seed,d,460,5);return a*1450+b*780+c*360+T.ridgeProfile(r)*1250+basin*210+regional*95}
+function heightAtDirection(id,d){d=norm(d);return Number(baseHeightDirection(id,d))+reliefAtDirection(id,d)}
+function height(token,x,y){const id=planetId(token),d=T.surfaceDirectionFromLocal(token,x,y);return heightAtDirection(id,d)}
+function transformMesh(mesh){const v=mesh.vertices,k=mesh.key,size=Number(k.sizeM||T.patchSizeM(k.level)),segments=Number(mesh.segments),x0=Number(mesh.localOriginM[0]),y0=Number(mesh.localOriginM[1]),step=size/segments;let p=0;for(let j=0;j<=segments;j++)for(let i=0;i<=segments;i++){p+=2;v[p++]=height(k.anchorToken,x0+i*step,y0+j*step)}return mesh}
+// Transform each mesh object, not each historical tile ID. Eviction and revisit
+// creates a new object for the same identity; weak membership retains no history.
+function createTerrainSession(...args){const s=baseCreate(...args),rawCache=s.cache?.map instanceof Map?s.cache.map:s.cache;let seen=new WeakSet();function apply(){if(!(rawCache instanceof Map))throw new Error('relief cache contract requires a Map');for(const r of rawCache.values()){if(seen.has(r.mesh))continue;transformMesh(r.mesh);seen.add(r.mesh)}}return Object.freeze({...s,update(camera){const out=s.update(camera);apply();return out},dispose(){seen=new WeakSet();return s.dispose()}})}
+function microdetailInstances(token,s,opts){return Object.freeze(baseMicro(token,s,opts).map(r=>{const x=Number(r.positionM[0]),y=Number(r.positionM[1]);return Object.freeze({...r,positionM:Object.freeze([x,y,height(token,x,y)]),authority:AUTHORITY,geologyClaim:false})}))}
+O.planetSurfaceTerrain=Object.freeze({...T,presentationReliefVersion:VERSION,detailSpectrum:'PLANET_WIDE_TO_HUMAN_SCALE_PRESENTATION_V3',presentationHeightAtDirection:heightAtDirection,presentationHeightM:height,createTerrainSession,microdetailInstances,reliefAtDirection,reliefAuthority:AUTHORITY,reliefPhysicalClaim:false,reliefGeologyClaim:false});
+})(typeof globalThis!=='undefined'?globalThis:this);

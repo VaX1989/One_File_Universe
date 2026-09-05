@@ -1,39 +1,92 @@
 <section class="workspace-panel" data-workspace-panel="explore" tabindex="-1" aria-labelledby="explore-heading">
   <div class="panel-title">
     <div>
-      <p class="eyebrow">Current system</p>
+      <p class="eyebrow">Explorer Beta</p>
       <h2 id="explore-heading">Explore</h2>
-      <p id="explore-orientation">Find your place, choose a world, then move closer.</p>
+      <p id="explore-orientation">Know where you are, choose something interesting, and keep moving.</p>
     </div>
+  </div>
+
+  <aside id="beta-first-flight" class="beta-first-flight" aria-labelledby="beta-first-flight-heading">
+    <div class="beta-first-flight-head">
+      <div><p class="eyebrow">First flight</p><strong id="beta-first-flight-heading">Choose a world. Move closer. Inspect what we actually know.</strong></div>
+      <button class="action-button secondary beta-quiet-button" type="button" data-beta-dismiss-onboarding>Got it</button>
+    </div>
+    <ol class="beta-flight-steps">
+      <li id="beta-step-selected">Choose a world</li>
+      <li id="beta-step-approached">Move to Approach</li>
+      <li id="beta-step-inspected">Open Inspect</li>
+    </ol>
+  </aside>
+
+  <div class="section beta-orientation" aria-labelledby="beta-location-heading">
+    <p class="eyebrow">Where you are</p>
+    <h3 id="beta-location-heading" class="sr-only">Exploration location</h3>
+    <nav class="beta-breadcrumbs" aria-label="Exploration location">
+      <span>Universe</span><span aria-hidden="true">›</span><span>Galaxy context</span><span aria-hidden="true">›</span><strong id="beta-breadcrumb-system">Current system</strong><span aria-hidden="true">›</span><span>Primary star</span><span aria-hidden="true">›</span><strong id="beta-breadcrumb-world">Selected world</strong>
+    </nav>
+    <p id="beta-orientation-copy">Resolving your current system and selected world…</p>
+    <dl class="fact-list beta-orientation-facts"><div class="fact"><dt>System</dt><dd id="beta-current-system">Current system</dd></div><div class="fact"><dt>Host</dt><dd id="beta-host-context">Reading host context…</dd></div><div class="fact"><dt>Selected</dt><dd id="beta-current-world">Selected world</dd></div></dl>
+    <p class="semantic-note">System numbers are session navigation labels, not canonical astronomical names. Raw sparse coordinates remain available in Advanced details and Lab.</p>
   </div>
 
   <div class="section" aria-labelledby="explore-system-heading">
     <div class="panel-title">
       <div>
-        <h3 id="explore-system-heading">System overview</h3>
-        <p id="explore-system-summary">Reading the canonical system…</p>
+        <p class="eyebrow">Discover</p>
+        <h3 id="explore-system-heading">This system</h3>
+        <p id="explore-system-summary">Reading the system…</p>
       </div>
     </div>
-    <p class="semantic-note" id="explore-layout-note">This map shows canonical relationships and orbit order. Spacing is a navigation aid, not a claim about physical orbital geometry.</p>
     <div id="explore-system-map" aria-live="polite">
       <div class="fact"><strong>Primary star</strong><span id="explore-star-summary">Reading host-star context…</span></div>
-      <ol id="explore-target-list" aria-label="Planets in this system"></ol>
+      <ol id="explore-target-list" class="beta-system-worlds" aria-label="Worlds in this system"></ol>
+    </div>
+    <div class="beta-discovery" aria-labelledby="beta-discovery-heading">
+      <h4 id="beta-discovery-heading">Try something different</h4>
+      <p class="semantic-note">Suggestions are bounded to worlds already present in this system and ranked only by supported baseline differences.</p>
+      <ul id="beta-discovery-list" class="beta-card-list"></ul>
     </div>
     <div class="panel-actions" aria-label="Target navigation">
       <button class="action-button secondary" type="button" data-explore-relative="-1">Previous world</button>
       <button class="action-button secondary" type="button" data-explore-relative="1">Next world</button>
-      <button class="action-button secondary" type="button" id="explore-next-system" data-explore-system="1">Explore another system</button>
+      <button class="action-button secondary" type="button" data-beta-back id="beta-back">Back in trail</button>
+      <button class="action-button secondary" type="button" id="explore-next-system" data-explore-system="1">Another system</button>
     </div>
   </div>
 
   <div class="section" aria-labelledby="explore-selected-heading">
     <p class="eyebrow">Selected world</p>
     <h3 id="explore-selected-heading">Finding target…</h3>
-    <p id="explore-selected-context">Canonical identity is being resolved.</p>
+    <p id="explore-selected-context">Identity is being resolved.</p>
+    <p id="beta-why-look" class="beta-why-look">Reading supported baseline differences…</p>
+    <p id="beta-difference-copy" class="semantic-note">Choose another world to compare it with your previous destination.</p>
     <p class="semantic-note" id="explore-selection-status">Visualization status pending.</p>
     <div class="panel-actions">
       <button class="action-button" type="button" id="explore-go" data-explore-action="approach">Approach selected world</button>
       <button class="action-button secondary" type="button" data-open-workspace="inspect">Inspect this world</button>
+      <button class="action-button secondary" type="button" id="beta-bookmark" data-beta-bookmark aria-pressed="false">Bookmark world</button>
+      <button class="action-button secondary" type="button" id="beta-pin" data-beta-pin aria-pressed="false">Pin for compare</button>
+    </div>
+  </div>
+
+  <div class="section beta-compare" aria-labelledby="beta-compare-heading">
+    <div class="panel-title"><div><p class="eyebrow">Compare</p><h3 id="beta-compare-heading">World differences</h3></div></div>
+    <p id="beta-compare-copy">Pin a world, then keep exploring. Compare will use only shared baseline facts.</p>
+    <div class="beta-compare-scroll">
+      <table class="beta-compare-table">
+        <thead><tr><th>Fact</th><th id="beta-compare-current-name">Selected</th><th id="beta-compare-pinned-name">Pinned</th></tr></thead>
+        <tbody id="beta-compare-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section beta-session" aria-labelledby="beta-session-heading">
+    <div class="panel-title"><div><p class="eyebrow">Your exploration</p><h3 id="beta-session-heading">Recent & bookmarked</h3></div></div>
+    <p id="beta-session-note" class="semantic-note">Recent destinations and bookmarks are product state, not astronomical facts.</p>
+    <div class="beta-session-columns">
+      <div><h4>Recent</h4><ul id="beta-recent-list" class="beta-card-list"></ul></div>
+      <div><h4>Bookmarks</h4><ul id="beta-bookmark-list" class="beta-card-list"></ul></div>
     </div>
   </div>
 
@@ -50,9 +103,9 @@
 
   <details class="section">
     <summary>About this view</summary>
-    <p class="semantic-note">Explore reads canonical system and object relationships. It does not create scientific facts. If a world cannot be visualized, the world remains a valid canonical target and the limitation is stated rather than filled with invented atmosphere, oceans, weather, geology, life, or topography.</p>
-    <p class="semantic-note">“Explore another system” follows a bounded canonical site-order navigation rule. It is a product navigation order, not a claim that systems are physically nearest in space.</p>
-    <p class="semantic-note">Close rendering detail is presentation-only unless Inspect identifies a canonical scientific property that supports a stronger claim.</p>
+    <p class="semantic-note">Explore reads canonical system and object relationships but does not create scientific facts. If a world cannot be visualized, it remains a valid target and the limitation is stated instead of being filled with invented atmosphere, oceans, weather, geology, life, or topography.</p>
+    <p class="semantic-note">“Another system” follows a bounded site-order navigation rule. It is a product navigation order, not a claim that systems are physically nearest in space.</p>
+    <p class="semantic-note">Recent destinations, bookmarks, trail position, generated System numbers and the comparison pin are local product state. They never become part of the astronomical record.</p>
   </details>
 
   <span id="render-planet" hidden>pending</span>
