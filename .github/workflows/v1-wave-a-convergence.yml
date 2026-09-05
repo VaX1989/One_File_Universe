@@ -9,6 +9,7 @@ permissions:
   contents: read
 jobs:
   converge:
+    if: contains(github.event.head_commit.message, '[wave-a-run]')
     runs-on: ubuntu-latest
     timeout-minutes: 25
     permissions:
@@ -20,8 +21,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with: {node-version: '24.20.0'}
-      - name: Verify and integrate pinned Wave A inputs
-        id: source
+      - name: Apply verified source transaction on the sole authorized branch
         env:
           EXPECTED_SOURCE: '${{ github.sha }}'
         run: |
@@ -32,62 +32,86 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
+          import path from 'node:path';
+          import {createHash} from 'node:crypto';
+          import {brotliDecompressSync} from 'node:zlib';
           import {execFileSync as run} from 'node:child_process';
           const git=(...args)=>run('git',args,{encoding:'utf8'}).trim();
-          const base='a1a77f66bb617415db956366b295c45d316945b1';
-          const baseTree='1179192337886b9a7c9042b5eb816485eca78153';
-          if(git('rev-parse',`${base}^{tree}`)!==baseTree)throw Error('Frozen base tree mismatch');
-          const inputs=[
-            ['planetology-environment','54c4f64496e111dec092d940414098749ce45fc0'],
-            ['life-evolution','98a35b72ebee2febc9ec1ef6ecb21f2402d1144b'],
-            ['civilization-history','7faeae2780d0413b95f2e7996dc4a9bc5c863553'],
-            ['microscopic-reality','fec8566ea367ab9bf14042d199e8b9cfc82ce20b'],
-            ['universal-exploration','79239193513b582bfa7b2ed37ceca9316bb52417'],
-            ['world-rendering','1f077a706e4b9e3eaceccb82c4a632d623c57b80']
-          ];
-          const lanes=inputs.map(([name,sha])=>{
-            const branch=`parallel/v1-wave-a-${name}-2026-09-05`;
-            git('fetch','origin',branch);
-            const live=git('rev-parse','FETCH_HEAD');
-            if(live!==sha)throw Error(`Lane moved: ${branch} expected ${sha} got ${live}`);
-            git('merge-base','--is-ancestor',base,sha);
-            return {name,branch,sha,tree:git('rev-parse',`${sha}^{tree}`)};
-          });
-          const record={schema:'OFU_WAVE_A_INPUTS_V1',base:{sha:base,tree:baseTree},preservedDefinitiveHead:'9dac1888668fb0a3bafb6fb77c9624a62205f064',lanes};
-          console.log('VERIFIED_INPUTS_BEFORE_INTEGRATION',JSON.stringify(record,null,2));
-          fs.writeFileSync('/tmp/wave-a-inputs.json',JSON.stringify(record,null,2)+'\n');
-          for(const lane of lanes){
-            let included=false;
-            try{git('merge-base','--is-ancestor',lane.sha,'HEAD');included=true;}catch{}
-            if(!included)console.log(git('merge','--no-ff','--no-edit',lane.sha,'-m',`wave-a: integrate ${lane.name} at ${lane.sha}`));
+          const hash=x=>createHash('sha256').update(x).digest('hex');
+          const ready='.wave-a-transfer/READY.json';
+          if(fs.existsSync(ready)){
+            const manifest=JSON.parse(fs.readFileSync(ready,'utf8'));
+            if(manifest.schema!=='OFU_WAVE_A_TRANSFER_MANIFEST_1'||manifest.parts!==4)throw Error('Transfer manifest');
+            const encoded=Array.from({length:manifest.parts},(_,i)=>fs.readFileSync(`.wave-a-transfer/part-${i}.br64`,'utf8').trim()).join('');
+            const raw=brotliDecompressSync(Buffer.from(encoded,'base64'));
+            if(hash(raw)!==manifest.sha256)throw Error('Transfer digest mismatch');
+            const pack=JSON.parse(raw);
+            if(pack.schema!=='OFU_WAVE_A_SOURCE_TRANSFER_2'||pack.base!=='d6ca6c56f69b7692335c8d038e7ea67b546c8580')throw Error('Transfer source mismatch');
+            git('merge-base','--is-ancestor',pack.base,'HEAD');
+            const names=new Set(),writes=[];
+            for(const f of pack.files){
+              if(names.has(f.path)||f.path.includes('..')||f.path.startsWith('/')||!(/^(src\/|config\/|tests\/v1\/|tools\/run-wave-a-development\.mjs$|docs\/integration\/|\.gitignore$)/).test(f.path))throw Error('Source path rejected '+f.path);
+              names.add(f.path);
+              const old=fs.existsSync(f.path)?fs.readFileSync(f.path):null;
+              if((old===null?null:hash(old))!==f.before)throw Error('Concurrent source change '+f.path);
+              let out;
+              if(f.before===null)out=Buffer.from(f.content,'utf8');
+              else{
+                let cursor=0;const chunks=[];
+                for(const [a,b,text] of f.edits){if(!Number.isSafeInteger(a)||!Number.isSafeInteger(b)||a<cursor||b<a||b>old.length)throw Error('Invalid byte edit');chunks.push(old.subarray(cursor,a),Buffer.from(text,'utf8'));cursor=b;}
+                chunks.push(old.subarray(cursor));out=Buffer.concat(chunks);
+              }
+              if(hash(out)!==f.after)throw Error('Source output digest mismatch '+f.path);
+              writes.push([f.path,out]);
+            }
+            for(const [name,out] of writes){fs.mkdirSync(path.dirname(name),{recursive:true});fs.writeFileSync(name,out);}
+            git('add','--',...names);git('rm','-r','--','.wave-a-transfer');
+            git('diff','--cached','--check');
+            git('commit','-m','wave-a: connect living world providers, source-bound exploration and rendering; close causal and browser defects','-m','Replace stale placeholder-positive discovery IDs with stronger P3 regeneration, evolved-intelligence, terrain, negative-world and pagination equivalence oracles. Preserve all six merged lane histories and canonical science. Source transaction verified by input/output SHA-256 per file.');
+            git('push','origin','HEAD:refs/heads/integration/v1-wave-a-world-convergence-2026-09-05');
           }
-          fs.mkdirSync('docs/integration',{recursive:true});
-          fs.copyFileSync('/tmp/wave-a-inputs.json','docs/integration/wave-a-inputs.json');
-          git('add','docs/integration/wave-a-inputs.json');
-          if(git('diff','--cached','--name-only'))git('commit','-m','wave-a: record verified six-lane input provenance');
-          git('push','origin','HEAD:refs/heads/integration/v1-wave-a-world-convergence-2026-09-05');
-          const sha=git('rev-parse','HEAD'),tree=git('rev-parse','HEAD^{tree}');
-          console.log('CONVERGENCE_CHECKPOINT',sha,tree);
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`sha=${sha}\ntree=${tree}\n`);
+          const inputs=JSON.parse(fs.readFileSync('docs/integration/wave-a-inputs.json','utf8'));
+          for(const lane of inputs.lanes){git('merge-base','--is-ancestor',lane.sha,'HEAD');if(git('rev-parse',`${lane.sha}^{tree}`)!==lane.tree)throw Error('Lane tree mismatch');}
+          git('diff','--exit-code',inputs.base.sha,'HEAD','--','src/kernel','src/temporal','src/domains/astronomy','src/domains/planetology','src/domains/biosphere','src/generators');
+          if(git('status','--porcelain'))throw Error('Exact-source worktree must be clean');
+          console.log('CONVERGENCE_SOURCE',git('rev-parse','HEAD'),git('rev-parse','HEAD^{tree}'));
           NODE
-      - name: Build early production single-file artifact
+      - name: Deterministic double production build
         run: |
+          set -euo pipefail
           node tools/build-ofu-rendering-v09.mjs
+          cp dist/One_File_Universe.html /tmp/wave-a-first.html
+          node tools/build-ofu-rendering-v09.mjs
+          cmp /tmp/wave-a-first.html dist/One_File_Universe.html
           cp dist/One_File_Universe.html dist/One_File_Universe-v1-wave-a-playable.html
-          sha256sum dist/One_File_Universe-v1-wave-a-playable.html
-          wc -c dist/One_File_Universe-v1-wave-a-playable.html
-      - name: Run domain and integration development tests
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';import {createHash} from 'node:crypto';import {execFileSync} from 'node:child_process';
+          const file='dist/One_File_Universe-v1-wave-a-playable.html',data=fs.readFileSync(file),git=(...a)=>execFileSync('git',a,{encoding:'utf8'}).trim();
+          const evidence={schema:'OFU_WAVE_A_BUILD_1',sourceSha:git('rev-parse','HEAD'),sourceTree:git('rev-parse','HEAD^{tree}'),artifact:file,bytes:data.length,sha256:createHash('sha256').update(data).digest('hex'),independentBuilds:2,byteIdentical:true};
+          fs.mkdirSync('reports/wave-a',{recursive:true});fs.writeFileSync('reports/wave-a/build.json',JSON.stringify(evidence,null,2)+'\n');console.log(JSON.stringify(evidence));
+          NODE
+      - name: Exact registered integration conformance
+        run: node tools/extensions/conformance.mjs INTEGRATION --exact
+      - name: All v1 domain and lane development tests
+        run: node tools/run-wave-a-development.mjs
+      - name: Install pinned browser harness
+        run: |
+          python3 -m pip install playwright==1.57.0
+          python3 -m playwright install --with-deps chromium
+      - name: Direct-open offline founder and alternative browser journeys
+        env:
+          OFU_BROWSER_MODE: FILE_DIRECT
+          OFU_REQUIRE_GPU: '1'
+        run: python3 -u tests/v1/integration/browser-world-journey.py
+      - name: Bind completion evidence to exact source
         run: |
           node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          import path from 'node:path';
-          import {spawnSync} from 'node:child_process';
-          const walk=d=>fs.readdirSync(d,{withFileTypes:true}).flatMap(e=>e.isDirectory()?walk(path.join(d,e.name)):[path.join(d,e.name)]);
-          const files=walk('tests/v1').filter(f=>f.endsWith('.mjs')&&!path.basename(f).startsWith('browser-')&&path.basename(f)!=='run.mjs').sort();
-          const results=[];
-          for(const file of files){const p=spawnSync(process.execPath,[file],{encoding:'utf8',timeout:120000,maxBuffer:8000000});console.log(`\nTEST ${file}\n${p.stdout||''}${p.stderr||''}`);results.push({file,status:p.status,signal:p.signal,error:p.error?.message});}
-          fs.mkdirSync('reports/wave-a',{recursive:true});fs.writeFileSync('reports/wave-a/development-tests.json',JSON.stringify(results,null,2)+'\n');
-          const failed=results.filter(r=>r.status!==0);console.log('DEVELOPMENT_SUMMARY',JSON.stringify({total:results.length,failed}));if(failed.length)process.exit(1);
+          import fs from 'node:fs';import {execFileSync} from 'node:child_process';
+          const read=p=>JSON.parse(fs.readFileSync(p,'utf8')),build=read('reports/wave-a/build.json'),browser=read('reports/wave-a/browser/journey.json'),tests=read('reports/wave-a/local-tests.json'),conformance=read('dist/evidence/px/conformance-integration.json');
+          const head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+          if(head!==build.sourceSha||browser.status!=='PASS'||!browser.directOpenEvidence||!browser.gpuEvidence||browser.artifactSha256!==build.sha256||tests.some(t=>t.status!==0)||!conformance.exactSource||conformance.sourceSha!==head)throw Error('Incomplete exact-source evidence');
+          const record={status:'WAVE_A_LIVING_UNIVERSE_COMPLETE',...build,browserChecks:browser.checks.length,browserJourneys:browser.journeys,developmentSuites:tests.length,conformanceSuites:conformance.results.length,canonicalMutation:false,mainPromotion:false,releaseVersionDeclared:false};
+          fs.writeFileSync('reports/wave-a/completion.json',JSON.stringify(record,null,2)+'\n');console.log(JSON.stringify(record));
           NODE
       - name: Preserve exact source and diagnostics
         if: always()
@@ -98,7 +122,7 @@ jobs:
           git status --short > wave-a-evidence/worktree-status.txt
           git archive --format=tar.gz -o wave-a-evidence/wave-a-source.tar.gz HEAD
           git bundle create wave-a-evidence/wave-a-history.bundle HEAD
-          cp /tmp/wave-a-inputs.json wave-a-evidence/ 2>/dev/null || true
+          cp docs/integration/wave-a-inputs.json wave-a-evidence/ 2>/dev/null || true
           cp -r dist wave-a-evidence/ 2>/dev/null || true
           cp -r reports/wave-a wave-a-evidence/reports 2>/dev/null || true
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -106,4 +130,4 @@ jobs:
         with:
           name: wave-a-development-${{ github.run_id }}
           path: wave-a-evidence/
-          retention-days: 7
+          retention-days: 14
