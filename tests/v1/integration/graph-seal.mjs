@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import crypto from 'node:crypto';
+import {loadComponents,planComponents} from '../../../tools/extensions/components.mjs';
+import {loadConformance,validateCoverage} from '../../../tools/extensions/conformance.mjs';
+import {load} from './runtime-helper.mjs';
+let cases=0;const ok=(v,m)=>{assert.ok(v,m);cases++;};
+const plan=loadComponents(),tests=loadConformance(),catalogs=plan.filter(c=>c.id.startsWith('px.providers.')).map(c=>JSON.parse(c.content));
+validateCoverage(catalogs,tests);ok(true,'complete owned provider evidence graph');
+const ids=plan.map(c=>c.id);ok(new Set(ids).size===ids.length,'component identity uniqueness');const claims=plan.flatMap(c=>c.provides);ok(new Set(claims).size===claims.length,'unique ownership of component capabilities');
+const required=['v1.life.provider','v1.civilization.runtime','v1.convergence.world-context','v1.micro.pipeline','v1.exploration.living-runtime','v1.rendering.living-renderer','v1.product.living-universe'];for(const id of required)ok(ids.includes(id),'production graph includes '+id);
+const descriptors=plan.map(({id,version,owner,kind,stage,placement,source,dependencies,authority,provenance,provides})=>({id,version,owner,kind,stage,placement,source,dependencies,authority,provenance,provides}));
+assert.throws(()=>planComponents([...descriptors,descriptors[0]]),/duplicate|collision/);cases++;
+const hash=p=>crypto.createHash('sha256').update(JSON.stringify(p.map(c=>({id:c.id,hash:c.sourceSha256,deps:c.dependencies})))).digest('hex');ok(hash(planComponents([...descriptors].reverse()))===hash(plan),'input fragment order does not alter sealed build order');
+const {O}=load(),seal=O.pxProduct.registry.snapshot();ok(seal.sealed&&seal.bindingsSealed,'actual runtime registry metadata and implementations are sealed');ok(seal.entries===seal.bound.length,'no detached unbound providers');
+ok(catalogs.every(c=>c.canonicalAdmissions.length===0),'no model provider self-promotes canonical authority');
+for(const source of ['src/kernel/p2-canonical.js','src/temporal/p4-temporal.js','src/domains/biosphere/p6-canonical.js'])ok(fs.existsSync(source),'frozen authority root remains in assembly');
+console.log(JSON.stringify({status:'PASS',suite:'wave-a-graph-seal',cases,components:plan.length,providers:seal.entries,composition:hash(plan),registryDigest:seal.manifestDigest,canonicalAdmissions:0}));

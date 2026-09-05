@@ -562,10 +562,12 @@
         "model": "v1.microscopic-representation",
         "version": "1.0.0",
         "sources": [
-          "research/wave-v-microscopic-matter-2026-09-05@6aeecf2ccc564d7f0f316711d07710e74e667e27"
+          "docs/integration/wave-a-inputs.json",
+          "src/exploration/v1/living-runtime.js",
+          "src/domains/v1/micro/pipeline.js"
         ],
         "assumptions": [
-          "The microscopic experience refines only an already modeled biological context and never changes canonical P6/P4 truth."
+          "Material-first source-context regimes are the primary v1 path. Tissue/cell remains an explicit legacy biological compatibility path. Canonical P6/P4 are never rewritten."
         ],
         "limitations": [
           "Synthetic atomic coordinates are PRESENTATION_ONLY; source-backed coordinates retain their source descriptor.",
@@ -575,7 +577,7 @@
       },
       "fidelity": {
         "regime": "v1_product",
-        "validity": "Dedicated tissue/cell/molecular/atomic representation metadata for modeled living-world context",
+        "validity": "Actual source material, microstructure, representative molecular chemistry and bounded atomic structure, with exact source-context return",
         "resolution": "At most 512 microscopic nodes per materialization",
         "uncertainty": "Synthetic coordinates remain representational; no geometric atom-zoom or MD/QM claim"
       },
@@ -627,10 +629,12 @@
         "model": "v1.universal-exploration",
         "version": "1.0.0",
         "sources": [
-          "research/wave-v-microscopic-matter-2026-09-05@6aeecf2ccc564d7f0f316711d07710e74e667e27"
+          "docs/integration/wave-a-inputs.json",
+          "src/exploration/v1/living-runtime.js",
+          "src/domains/v1/micro/pipeline.js"
         ],
         "assumptions": [
-          "The microscopic experience refines only an already modeled biological context and never changes canonical P6/P4 truth."
+          "Material-first source-context regimes are the primary v1 path. Tissue/cell remains an explicit legacy biological compatibility path. Canonical P6/P4 are never rewritten."
         ],
         "limitations": [
           "Microscopic descent is a regime handoff, not a literal geometric zoom.",
@@ -640,7 +644,7 @@
       },
       "fidelity": {
         "regime": "v1_product",
-        "validity": "Direct SEE\u2192POINT\u2192SELECT\u2192TRAVEL plus explicit Human\u2192microscopic regime handoff",
+        "validity": "Actual source material, microstructure, representative molecular chemistry and bounded atomic structure, with exact source-context return",
         "resolution": "Ten bounded spatial bands plus tissue/cell/molecular/atomic model regimes",
         "uncertainty": "Navigation changes representation/selection only; world-changing actions require governed P4 admission"
       },
@@ -954,6 +958,502 @@
         },
         {
           "id": "v1.release-model-seal",
+          "tier": "RELEASE"
+        }
+      ],
+      "mandatory": true
+    },
+    {
+      "contract": "ofu-px-contracts-1",
+      "id": "v1.query.environment",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "query",
+      "authority": {
+        "class": "MODEL_DERIVED_SIMULATION",
+        "contract": "ofu-px-contracts-1",
+        "model": "v1.query.environment",
+        "version": "1.0.0",
+        "sources": [
+          "parallel/v1-wave-a-planetology-environment-2026-09-05@54c4f64496e111dec092d940414098749ce45fc0",
+          "parallel/v1-wave-a-life-evolution-2026-09-05@98a35b72ebee2febc9ec1ef6ecb21f2402d1144b",
+          "parallel/v1-wave-a-civilization-history-2026-09-05@7faeae2780d0413b95f2e7996dc4a9bc5c863553",
+          "parallel/v1-wave-a-microscopic-reality-2026-09-05@fec8566ea367ab9bf14042d199e8b9cfc82ce20b",
+          "parallel/v1-wave-a-universal-exploration-2026-09-05@79239193513b582bfa7b2ed37ceca9316bb52417",
+          "parallel/v1-wave-a-world-rendering-2026-09-05@1f077a706e4b9e3eaceccb82c4a632d623c57b80"
+        ],
+        "assumptions": [
+          "Bounded deterministic v1 scenario model consumes preserved canonical identity/facts without promoting new canonical science."
+        ],
+        "limitations": [
+          "Energy-limited escape output is a model-regime estimate, not a mathematical upper bound.",
+          "Model geography does not promote presentation terrain to canonical elevation."
+        ],
+        "evidence": []
+      },
+      "fidelity": {
+        "regime": "v1_product",
+        "validity": "Causal planet formation/environment scenario from P3 baseline inputs",
+        "resolution": "One selected world plus bounded hierarchical surface budgets",
+        "uncertainty": "Climate, geodynamics and relief cues are approximate modeled scenarios"
+      },
+      "lifecycle": "SHIPPING",
+      "requires": [
+        {
+          "id": "v1.domain.modeled-world",
+          "version": "1.0.0",
+          "authority": "MODEL_DERIVED_SIMULATION"
+        }
+      ],
+      "claims": [
+        "world-a.query.environment"
+      ],
+      "operations": [
+        "INSPECT"
+      ],
+      "budget": {
+        "entities": 256,
+        "bytes": 524288,
+        "operations": 10000,
+        "queue": 8
+      },
+      "evidence": [
+        {
+          "id": "v1.wave-a.fast",
+          "tier": "FAST_LOCAL"
+        },
+        {
+          "id": "v1.wave-a.integration",
+          "tier": "INTEGRATION"
+        },
+        {
+          "id": "v1.wave-a.seal",
+          "tier": "RELEASE"
+        }
+      ],
+      "mandatory": true
+    },
+    {
+      "contract": "ofu-px-contracts-1",
+      "id": "v1.query.local-world",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "query",
+      "authority": {
+        "class": "MODEL_DERIVED_SIMULATION",
+        "contract": "ofu-px-contracts-1",
+        "model": "v1.query.local-world",
+        "version": "1.0.0",
+        "sources": [
+          "parallel/v1-wave-a-planetology-environment-2026-09-05@54c4f64496e111dec092d940414098749ce45fc0",
+          "parallel/v1-wave-a-life-evolution-2026-09-05@98a35b72ebee2febc9ec1ef6ecb21f2402d1144b",
+          "parallel/v1-wave-a-civilization-history-2026-09-05@7faeae2780d0413b95f2e7996dc4a9bc5c863553",
+          "parallel/v1-wave-a-microscopic-reality-2026-09-05@fec8566ea367ab9bf14042d199e8b9cfc82ce20b",
+          "parallel/v1-wave-a-universal-exploration-2026-09-05@79239193513b582bfa7b2ed37ceca9316bb52417",
+          "parallel/v1-wave-a-world-rendering-2026-09-05@1f077a706e4b9e3eaceccb82c4a632d623c57b80"
+        ],
+        "assumptions": [
+          "Bounded deterministic v1 scenario model consumes preserved canonical identity/facts without promoting new canonical science."
+        ],
+        "limitations": [
+          "Energy-limited escape output is a model-regime estimate, not a mathematical upper bound.",
+          "Model geography does not promote presentation terrain to canonical elevation."
+        ],
+        "evidence": []
+      },
+      "fidelity": {
+        "regime": "v1_product",
+        "validity": "Causal planet formation/environment scenario from P3 baseline inputs",
+        "resolution": "One selected world plus bounded hierarchical surface budgets",
+        "uncertainty": "Climate, geodynamics and relief cues are approximate modeled scenarios"
+      },
+      "lifecycle": "SHIPPING",
+      "requires": [
+        {
+          "id": "v1.domain.modeled-world",
+          "version": "1.0.0",
+          "authority": "MODEL_DERIVED_SIMULATION"
+        }
+      ],
+      "claims": [
+        "world-a.query.local-world"
+      ],
+      "operations": [
+        "INSPECT"
+      ],
+      "budget": {
+        "entities": 256,
+        "bytes": 524288,
+        "operations": 10000,
+        "queue": 8
+      },
+      "evidence": [
+        {
+          "id": "v1.wave-a.fast",
+          "tier": "FAST_LOCAL"
+        },
+        {
+          "id": "v1.wave-a.integration",
+          "tier": "INTEGRATION"
+        },
+        {
+          "id": "v1.wave-a.seal",
+          "tier": "RELEASE"
+        }
+      ],
+      "mandatory": true
+    },
+    {
+      "contract": "ofu-px-contracts-1",
+      "id": "v1.query.material-source",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "query",
+      "authority": {
+        "class": "MODEL_DERIVED_SIMULATION",
+        "contract": "ofu-px-contracts-1",
+        "model": "v1.query.material-source",
+        "version": "1.0.0",
+        "sources": [
+          "parallel/v1-wave-a-planetology-environment-2026-09-05@54c4f64496e111dec092d940414098749ce45fc0",
+          "parallel/v1-wave-a-life-evolution-2026-09-05@98a35b72ebee2febc9ec1ef6ecb21f2402d1144b",
+          "parallel/v1-wave-a-civilization-history-2026-09-05@7faeae2780d0413b95f2e7996dc4a9bc5c863553",
+          "parallel/v1-wave-a-microscopic-reality-2026-09-05@fec8566ea367ab9bf14042d199e8b9cfc82ce20b",
+          "parallel/v1-wave-a-universal-exploration-2026-09-05@79239193513b582bfa7b2ed37ceca9316bb52417",
+          "parallel/v1-wave-a-world-rendering-2026-09-05@1f077a706e4b9e3eaceccb82c4a632d623c57b80"
+        ],
+        "assumptions": [
+          "Bounded deterministic v1 scenario model consumes preserved canonical identity/facts without promoting new canonical science."
+        ],
+        "limitations": [
+          "Energy-limited escape output is a model-regime estimate, not a mathematical upper bound.",
+          "Model geography does not promote presentation terrain to canonical elevation."
+        ],
+        "evidence": []
+      },
+      "fidelity": {
+        "regime": "v1_product",
+        "validity": "Causal planet formation/environment scenario from P3 baseline inputs",
+        "resolution": "One selected world plus bounded hierarchical surface budgets",
+        "uncertainty": "Climate, geodynamics and relief cues are approximate modeled scenarios"
+      },
+      "lifecycle": "SHIPPING",
+      "requires": [
+        {
+          "id": "v1.domain.modeled-world",
+          "version": "1.0.0",
+          "authority": "MODEL_DERIVED_SIMULATION"
+        }
+      ],
+      "claims": [
+        "world-a.query.material-source"
+      ],
+      "operations": [
+        "INSPECT"
+      ],
+      "budget": {
+        "entities": 256,
+        "bytes": 524288,
+        "operations": 10000,
+        "queue": 8
+      },
+      "evidence": [
+        {
+          "id": "v1.wave-a.fast",
+          "tier": "FAST_LOCAL"
+        },
+        {
+          "id": "v1.wave-a.integration",
+          "tier": "INTEGRATION"
+        },
+        {
+          "id": "v1.wave-a.seal",
+          "tier": "RELEASE"
+        }
+      ],
+      "mandatory": true
+    },
+    {
+      "contract": "ofu-px-contracts-1",
+      "id": "v1.query.model-history",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "query",
+      "authority": {
+        "class": "MODEL_DERIVED_SIMULATION",
+        "contract": "ofu-px-contracts-1",
+        "model": "v1.query.model-history",
+        "version": "1.0.0",
+        "sources": [
+          "parallel/v1-wave-a-planetology-environment-2026-09-05@54c4f64496e111dec092d940414098749ce45fc0",
+          "parallel/v1-wave-a-life-evolution-2026-09-05@98a35b72ebee2febc9ec1ef6ecb21f2402d1144b",
+          "parallel/v1-wave-a-civilization-history-2026-09-05@7faeae2780d0413b95f2e7996dc4a9bc5c863553",
+          "parallel/v1-wave-a-microscopic-reality-2026-09-05@fec8566ea367ab9bf14042d199e8b9cfc82ce20b",
+          "parallel/v1-wave-a-universal-exploration-2026-09-05@79239193513b582bfa7b2ed37ceca9316bb52417",
+          "parallel/v1-wave-a-world-rendering-2026-09-05@1f077a706e4b9e3eaceccb82c4a632d623c57b80"
+        ],
+        "assumptions": [
+          "Bounded deterministic v1 scenario model consumes preserved canonical identity/facts without promoting new canonical science."
+        ],
+        "limitations": [
+          "Energy-limited escape output is a model-regime estimate, not a mathematical upper bound.",
+          "Model geography does not promote presentation terrain to canonical elevation."
+        ],
+        "evidence": []
+      },
+      "fidelity": {
+        "regime": "v1_product",
+        "validity": "Causal planet formation/environment scenario from P3 baseline inputs",
+        "resolution": "One selected world plus bounded hierarchical surface budgets",
+        "uncertainty": "Climate, geodynamics and relief cues are approximate modeled scenarios"
+      },
+      "lifecycle": "SHIPPING",
+      "requires": [
+        {
+          "id": "v1.domain.modeled-world",
+          "version": "1.0.0",
+          "authority": "MODEL_DERIVED_SIMULATION"
+        }
+      ],
+      "claims": [
+        "world-a.query.model-history"
+      ],
+      "operations": [
+        "INSPECT"
+      ],
+      "budget": {
+        "entities": 256,
+        "bytes": 524288,
+        "operations": 10000,
+        "queue": 8
+      },
+      "evidence": [
+        {
+          "id": "v1.wave-a.fast",
+          "tier": "FAST_LOCAL"
+        },
+        {
+          "id": "v1.wave-a.integration",
+          "tier": "INTEGRATION"
+        },
+        {
+          "id": "v1.wave-a.seal",
+          "tier": "RELEASE"
+        }
+      ],
+      "mandatory": true
+    },
+    {
+      "contract": "ofu-px-contracts-1",
+      "id": "v1.query.ecology",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "query",
+      "authority": {
+        "class": "MODEL_DERIVED_SIMULATION",
+        "contract": "ofu-px-contracts-1",
+        "model": "v1.query.ecology",
+        "version": "1.0.0",
+        "sources": [
+          "parallel/v1-wave-a-planetology-environment-2026-09-05@54c4f64496e111dec092d940414098749ce45fc0",
+          "parallel/v1-wave-a-life-evolution-2026-09-05@98a35b72ebee2febc9ec1ef6ecb21f2402d1144b",
+          "parallel/v1-wave-a-civilization-history-2026-09-05@7faeae2780d0413b95f2e7996dc4a9bc5c863553",
+          "parallel/v1-wave-a-microscopic-reality-2026-09-05@fec8566ea367ab9bf14042d199e8b9cfc82ce20b",
+          "parallel/v1-wave-a-universal-exploration-2026-09-05@79239193513b582bfa7b2ed37ceca9316bb52417",
+          "parallel/v1-wave-a-world-rendering-2026-09-05@1f077a706e4b9e3eaceccb82c4a632d623c57b80"
+        ],
+        "assumptions": [
+          "Bounded deterministic v1 scenario model consumes preserved canonical identity/facts without promoting new canonical science."
+        ],
+        "limitations": [
+          "Energy-limited escape output is a model-regime estimate, not a mathematical upper bound.",
+          "Model geography does not promote presentation terrain to canonical elevation."
+        ],
+        "evidence": []
+      },
+      "fidelity": {
+        "regime": "v1_product",
+        "validity": "Causal planet formation/environment scenario from P3 baseline inputs",
+        "resolution": "One selected world plus bounded hierarchical surface budgets",
+        "uncertainty": "Climate, geodynamics and relief cues are approximate modeled scenarios"
+      },
+      "lifecycle": "SHIPPING",
+      "requires": [
+        {
+          "id": "v1.domain.modeled-world",
+          "version": "1.0.0",
+          "authority": "MODEL_DERIVED_SIMULATION"
+        }
+      ],
+      "claims": [
+        "world-a.query.ecology"
+      ],
+      "operations": [
+        "INSPECT"
+      ],
+      "budget": {
+        "entities": 256,
+        "bytes": 524288,
+        "operations": 10000,
+        "queue": 8
+      },
+      "evidence": [
+        {
+          "id": "v1.wave-a.fast",
+          "tier": "FAST_LOCAL"
+        },
+        {
+          "id": "v1.wave-a.integration",
+          "tier": "INTEGRATION"
+        },
+        {
+          "id": "v1.wave-a.seal",
+          "tier": "RELEASE"
+        }
+      ],
+      "mandatory": true
+    },
+    {
+      "contract": "ofu-px-contracts-1",
+      "id": "v1.query.body-world",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "query",
+      "authority": {
+        "class": "MODEL_DERIVED_SIMULATION",
+        "contract": "ofu-px-contracts-1",
+        "model": "v1.query.body-world",
+        "version": "1.0.0",
+        "sources": [
+          "parallel/v1-wave-a-planetology-environment-2026-09-05@54c4f64496e111dec092d940414098749ce45fc0",
+          "parallel/v1-wave-a-life-evolution-2026-09-05@98a35b72ebee2febc9ec1ef6ecb21f2402d1144b",
+          "parallel/v1-wave-a-civilization-history-2026-09-05@7faeae2780d0413b95f2e7996dc4a9bc5c863553",
+          "parallel/v1-wave-a-microscopic-reality-2026-09-05@fec8566ea367ab9bf14042d199e8b9cfc82ce20b",
+          "parallel/v1-wave-a-universal-exploration-2026-09-05@79239193513b582bfa7b2ed37ceca9316bb52417",
+          "parallel/v1-wave-a-world-rendering-2026-09-05@1f077a706e4b9e3eaceccb82c4a632d623c57b80"
+        ],
+        "assumptions": [
+          "Bounded deterministic v1 scenario model consumes preserved canonical identity/facts without promoting new canonical science."
+        ],
+        "limitations": [
+          "Energy-limited escape output is a model-regime estimate, not a mathematical upper bound.",
+          "Model geography does not promote presentation terrain to canonical elevation."
+        ],
+        "evidence": []
+      },
+      "fidelity": {
+        "regime": "v1_product",
+        "validity": "P3 moon identity/mass with explicit parent-orbit forcing and reduced composition/radius assumptions",
+        "resolution": "One selected child body; no eclipse or tidal-history model",
+        "uncertainty": "Satellite composition and radius are model estimates, not canonical facts"
+      },
+      "lifecycle": "SHIPPING",
+      "requires": [
+        {
+          "id": "v1.domain.modeled-world",
+          "version": "1.0.0",
+          "authority": "MODEL_DERIVED_SIMULATION"
+        }
+      ],
+      "claims": [
+        "world-a.query.body-world"
+      ],
+      "operations": [
+        "INSPECT"
+      ],
+      "budget": {
+        "entities": 256,
+        "bytes": 524288,
+        "operations": 10000,
+        "queue": 8
+      },
+      "evidence": [
+        {
+          "id": "v1.wave-a.fast",
+          "tier": "FAST_LOCAL"
+        },
+        {
+          "id": "v1.wave-a.integration",
+          "tier": "INTEGRATION"
+        },
+        {
+          "id": "v1.wave-a.seal",
+          "tier": "RELEASE"
+        }
+      ],
+      "mandatory": true
+    },
+    {
+      "contract": "ofu-px-contracts-1",
+      "id": "v1.scene.living-world",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "scene",
+      "authority": {
+        "class": "PRESENTATION_ONLY",
+        "contract": "ofu-px-contracts-1",
+        "model": "v1.contextual-world-presentation",
+        "version": "1.0.0",
+        "sources": [
+          "parallel/v1-wave-a-planetology-environment-2026-09-05@54c4f64496e111dec092d940414098749ce45fc0",
+          "parallel/v1-wave-a-life-evolution-2026-09-05@98a35b72ebee2febc9ec1ef6ecb21f2402d1144b",
+          "parallel/v1-wave-a-civilization-history-2026-09-05@7faeae2780d0413b95f2e7996dc4a9bc5c863553",
+          "parallel/v1-wave-a-microscopic-reality-2026-09-05@fec8566ea367ab9bf14042d199e8b9cfc82ce20b",
+          "parallel/v1-wave-a-universal-exploration-2026-09-05@79239193513b582bfa7b2ed37ceca9316bb52417",
+          "parallel/v1-wave-a-world-rendering-2026-09-05@1f077a706e4b9e3eaceccb82c4a632d623c57b80"
+        ],
+        "assumptions": [
+          "Scenes are read-only presentations of the actual selected modeled world and local object. No source substitution, canonical authority escalation, or implicit bulk atomic enumeration."
+        ],
+        "limitations": [
+          "Energy-limited escape output is a model-regime estimate, not a mathematical upper bound.",
+          "Model geography does not promote presentation terrain to canonical elevation."
+        ],
+        "evidence": []
+      },
+      "fidelity": {
+        "regime": "v1_product",
+        "validity": "Planet, surface and material-first microscopic scene for the selected body and exact source location",
+        "resolution": "One selected world plus bounded hierarchical surface budgets",
+        "uncertainty": "Climate, geodynamics and relief cues are approximate modeled scenarios"
+      },
+      "lifecycle": "SHIPPING",
+      "requires": [
+        {
+          "id": "v1.query.material-source",
+          "version": "1.0.0",
+          "authority": "MODEL_DERIVED_SIMULATION"
+        }
+      ],
+      "claims": [
+        "scene-id.wave-a-living-world",
+        "world-a.scene.planet",
+        "world-a.scene.surface",
+        "scene.material",
+        "scene.microstructure",
+        "scene.molecular",
+        "scene.atomic"
+      ],
+      "operations": [
+        "REPRESENT"
+      ],
+      "budget": {
+        "entities": 256,
+        "bytes": 524288,
+        "operations": 10000,
+        "queue": 8
+      },
+      "evidence": [
+        {
+          "id": "v1.wave-a.fast",
+          "tier": "FAST_LOCAL"
+        },
+        {
+          "id": "v1.wave-a.integration",
+          "tier": "INTEGRATION"
+        },
+        {
+          "id": "v1.wave-a.seal",
           "tier": "RELEASE"
         }
       ],

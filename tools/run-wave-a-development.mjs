@@ -1,0 +1,5 @@
+import fs from 'node:fs';import path from 'node:path';import {spawnSync} from 'node:child_process';
+const walk=d=>fs.readdirSync(d,{withFileTypes:true}).flatMap(e=>e.isDirectory()?walk(path.join(d,e.name)):[path.join(d,e.name)]);
+const files=walk('tests/v1').filter(f=>f.endsWith('.mjs')&&!path.basename(f).startsWith('browser-')&&!['run.mjs','runtime-helper.mjs'].includes(path.basename(f))).sort(),results=[];
+fs.mkdirSync('reports/wave-a',{recursive:true});for(const file of files){const start=Date.now(),p=spawnSync(process.execPath,[file],{encoding:'utf8',timeout:180000,maxBuffer:12000000});results.push({file,status:p.status,ms:Date.now()-start,error:p.error?.message,output:(p.stdout||'')+(p.stderr||'')});console.log(file,p.status,Date.now()-start);fs.writeFileSync('reports/wave-a/local-tests.json',JSON.stringify(results,null,2)+'\n');}
+const failures=results.filter(r=>r.status!==0);console.log('SUMMARY',files.length,failures.map(r=>({file:r.file,status:r.status,error:r.output.slice(-2500)})));if(failures.length)process.exit(1);

@@ -7,7 +7,7 @@ const key={galaxyX:48n,galaxyY:-50n,galaxyZ:-1n,sectorX:0n,sectorY:0n,sectorZ:0n
 globalThis.__OFU_PLANET_PREVIEW__={ctx:canonicalContext(O.p3Astronomy),chosen:{key},snapshot:()=>({})};
 globalThis.__OFU_PX_TEST_REGIMES__=[JSON.parse(fs.readFileSync('config/extensions/regimes.json','utf8'))];
 globalThis.__OFU_PX_TEST_CATALOGS__=['core','v1'].map(n=>JSON.parse(fs.readFileSync(`config/extensions/${n}.json`,'utf8')));
-for(const f of ['common','astronomy','planetology','biology','civilization','microscopic','world'])vm.runInThisContext(fs.readFileSync(`src/domains/v1/${f}.js`,'utf8'),{filename:f});
+for(const f of ['common','astronomy','planetology','planetology/causal-system','environment/world-system','biology','biology/provider','ecology/query','evolution/history','civilization','society/population','history/system','civilization/foundation','civilization/economy-culture','civilization/politics-conflict','civilization/runtime','microscopic','convergence/world-context','world'])vm.runInThisContext(fs.readFileSync(`src/domains/v1/${f}.js`,'utf8'),{filename:f});
 for(const f of ['src/extensions/product-bindings.js','src/bootstrap/product/scale-runtime.js','src/domains/v1/bindings.js','src/exploration/v1/working-set.js','src/exploration/v1/address-space.js','src/navigation/v1/traversal.js','src/scenes/v1/exploration/interaction.js','src/exploration/v1/product-adapter.js'])vm.runInThisContext(fs.readFileSync(f,'utf8'),{filename:f});
 delete globalThis.__OFU_PX_TEST_CATALOGS__;delete globalThis.__OFU_PX_TEST_REGIMES__;
 const AS=O.v1ExplorationAddressSpace,T=O.v1UniversalTraversal,W=O.v1ExplorationWorkingSet,E=O.v1UniversalExploration,P=O.pxProduct,ctx=__OFU_PLANET_PREVIEW__.ctx;let cases=0;

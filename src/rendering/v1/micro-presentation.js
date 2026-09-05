@@ -1,6 +1,33 @@
 (function(root){
-'use strict';const O=root.OFU,C=O.v1PresentationCore;if(!C)throw new Error('v1 presentation core required');const {SCALES,CAPS,clamp,id,src,object,scene,rand}=C;
-function pos(x,i,n){const a=i/Math.max(1,n)*Math.PI*2+rand(x,i)*.4,r=.18+.11*(i%3);return{x:.5+Math.cos(a)*r,y:.5+Math.sin(a)*r}}
-function micro({world,representation=null,regime=null}={}){const m=representation||world?.microscopic;if(!m)return scene(regime||SCALES.MICROSTRUCTURE,world?.planetIdentity||'micro',[],[],[],{supported:false,reason:'NO_MICROSCOPIC_PROVIDER'});let s=m,k=String(regime||m.regime||'MICROSTRUCTURE').toUpperCase();if(!m.regime){if(k===SCALES.ATOMIC)s=m.atomicPreview||m.atomic;if(k===SCALES.MOLECULAR)s=m.molecular;if(k===SCALES.MICROSTRUCTURE)s=m.tissue||m.cell}const sid=id(s,s?.representationId||m.organismIdentity||'micro'),objects=[];if(k===SCALES.ATOMIC||s?.regime==='atomic'){for(const [i,a] of (s.atoms||[]).slice(0,CAPS.microNodes).entries()){const p=Array.isArray(a.position)?a.position:[0,0,0];objects.push(object('ATOM',sid+':'+i,a,{x:.5+clamp(p[0],-4,4)*.09,y:.5+clamp(p[1],-4,4)*.09,z:clamp(p[2],-4,4),element:String(a.element||'?'),radiusPx:6+(C.hash(a.element||'?')%5),coordinateAuthority:a.coordinateAuthority||'UNSPECIFIED',visualGrammar:'SCHEMATIC_ATOM'},{claims:{literalAtomicPhotography:false,classicalTrajectory:false}}))}k=SCALES.ATOMIC}else if(k===SCALES.MOLECULAR||s?.regime==='molecular'){const rows=(s.complexes||[]).slice(0,128);for(let i=0;i<rows.length;i++){const c=rows[i],x=id(c,sid+':complex:'+i),p=pos(x,i,rows.length);objects.push(object('MOLECULAR_COMPLEX',x,c,{x:p.x,y:p.y,sizePx:10+Math.log10(1+Number(c.compositionUnits||1))*4,shapeClass:c.shapeClass||'UNSPECIFIED',visualGrammar:'MOLECULAR_DIAGRAM'},{claims:{exactMolecularComposition:Boolean(c.sourceBackedComposition)}}))}k=SCALES.MOLECULAR}else{const rows=(s.grains||s.pores||s.fibers||s.cells||s.elements||[]).slice(0,256);for(let i=0;i<rows.length;i++){const c=rows[i],x=id(c,sid+':micro:'+i),p=pos(x,i,rows.length);objects.push(object(s.grains?'MATERIAL_GRAIN':s.pores?'PORE':s.fibers?'FIBER':'MICROSTRUCTURE_ELEMENT',x,c,{x:p.x,y:p.y,sizePx:8+Math.log10(1+Number(c.storeUnits||c.materialUnits||c.volumeUnits||1))*3,phase:c.phase||null,visualGrammar:s.grains?'MATERIAL_GRAIN_FIELD':'BOUNDED_MICROSTRUCTURE'},{claims:{earthCellMorphologyAssumed:false,exactGrainGeometry:Boolean(c.geometryAuthoritative)}}))}k=String(regime||s.regime||'MICROSTRUCTURE').toUpperCase()==='MATERIAL'?SCALES.MATERIAL:SCALES.MICROSTRUCTURE}return scene(k,sid,objects,[],[{kind:'MICRO_AUTHORITY_BOUNDARY',authority:C.AUTHORITY,sourceRepresentationAuthority:s?.visualAuthority||src(s),classicalLimitAcknowledged:k===SCALES.ATOMIC}],{sourceAuthority:src(s),supported:true,representationId:sid,quantumSimulation:false})}
+'use strict';const O=root.OFU,C=O.v1PresentationCore;
+if(!C)throw new Error('v1 presentation core required');
+const {SCALES,object,scene,id,src}=C;
+function micro({world,microscopic=world?.microscopic,representation,regime='MICROSTRUCTURE'}={}){
+ const m=representation||microscopic,k=String(regime).toUpperCase();
+ if(!m)return scene(k,'unresolved',[],[],[],{supported:false,reason:'NO_SOURCE_REPRESENTATION'});
+ let s=m;
+ if(!m.contract?.startsWith('ofu-v1-material')&&!m.regime){
+  s=k==='ATOMIC'?(m.atomicPreview||m.atomic):k==='MOLECULAR'?m.molecular:k==='MATERIAL'?m:(m.tissue||m.cell||m);
+ }
+ if(!s)return scene(k,'unresolved',[],[],[],{supported:false,reason:'REGIME_NOT_MATERIALIZED'});
+ const sid=id(s,s.materialId||s.sourceEntityId||m.organismIdentity||'micro'),objects=[];
+ if(k==='ATOMIC'){
+  const rows=(s.atoms||[]).slice(0,C.CAPS.microNodes);
+  const points=rows.map(a=>a.position||[0,0,0]);
+  const lo=[0,1,2].map(axis=>Math.min(0,...points.map(p=>Number(p[axis])||0))),hi=[0,1,2].map(axis=>Math.max(1,...points.map(p=>Number(p[axis])||0)));
+  const span=Math.max(2,hi[0]-lo[0],hi[1]-lo[1]);
+  for(let i=0;i<rows.length;i++){const a=rows[i],p=points[i];objects.push(object('ATOM',a.atomId||sid+':'+i,a,{x:.5+(p[0]-(lo[0]+hi[0])/2)*.75/span,y:.5+(p[1]-(lo[1]+hi[1])/2)*.75/span,z:p[2],element:a.element||'?',radiusPx:10,coordinateAuthority:a.coordinateAuthority,visualGrammar:'BOUNDED_STRUCTURAL_ATOM'},{claims:{literalAtomicPhotography:false,classicalTrajectory:false,electronOrbit:false}}));}
+ }else if(k==='MOLECULAR'){
+  const rows=(s.units||s.complexes||[]).slice(0,128);
+  for(let i=0;i<rows.length;i++){const x=rows[i];objects.push(object('MOLECULAR_COMPLEX',x.unitId||id(x,sid+':'+i),x,{x:.18+(i%4)*.21,y:.25+Math.floor(i/4)*.19,formula:x.formula||null,label:x.formula||x.shapeClass||'Unresolved unit',sizePx:22,visualGrammar:'REPRESENTATIVE_CHEMISTRY'},{claims:{exactMolecularComposition:false,exactSpatialArrangement:false}}));}
+ }else if(k==='MATERIAL'){
+  let total=0;for(const [i,x] of (s.components||[]).entries()){objects.push(object('MATERIAL_COMPONENT',sid+':'+x.id,x,{x:.14+total/1e6*.72,y:.4,width:x.ppm/1e6*.72,height:.18,ppm:x.ppm,label:x.id,formula:x.formula,visualGrammar:'MODEL_COMPOSITION_FRACTION'},{claims:{measuredComposition:s.exactBulkCompositionClaim===true}}));total+=x.ppm;}
+ }else{
+  const rows=(s.features||s.grains||s.pores||s.fibers||s.cells||s.elements||[]).slice(0,256);
+  for(let i=0;i<rows.length;i++){const x=rows[i],sid2=x.featureId||id(x,sid+':'+i),p=x.positionPpm||[C.rand(sid2,1)*1e6,C.rand(sid2,2)*1e6,0];
+   objects.push(object(x.kind||(s.grains?'MATERIAL_GRAIN':'MICROSTRUCTURE_ELEMENT'),sid2,x,{x:.08+.84*p[0]/1e6,y:.08+.84*p[1]/1e6,sizePx:6+Number(x.extentPpm||60000)/7000,label:x.kind||'Domain',visualGrammar:'REPRESENTATIVE_VOLUME'},{claims:{earthCellMorphologyAssumed:false,exactGrainGeometry:false}}));}
+ }
+ return scene(k,sid,objects,[],[{kind:'MICRO_AUTHORITY_BOUNDARY',authority:C.AUTHORITY,sourceRepresentationAuthority:s.visualAuthority||src(s),classicalLimitAcknowledged:k==='ATOMIC'}],{supported:true,representationId:sid,sourceEntityId:s.sourceEntityId||null,sourceAuthority:src(s),chemistryAuthority:s.chemistryAuthority||null,status:s.status||'READY',quantumSimulation:false,unresolved:objects.length===0,limitations:s.limitations||[],quantumBoundary:s.quantumBoundary||null});
+}
 O.v1MicroPresentation=Object.freeze({micro});
 })(globalThis);

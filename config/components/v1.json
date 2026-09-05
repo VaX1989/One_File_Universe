@@ -132,7 +132,8 @@
         "v1.models.environment.world-system",
         "v1.models.biology",
         "v1.models.civilization",
-        "v1.models.microscopic"
+        "v1.models.microscopic",
+        "v1.convergence.world-context"
       ],
       "authority": "MODEL_DERIVED_SIMULATION",
       "provenance": "Bounded cross-domain modeled-world composition anchored to preserved canonical selection/facts.",
@@ -150,7 +151,10 @@
       "source": "src/domains/v1/bindings.js",
       "dependencies": [
         "ofu.extensions.product-bindings",
-        "v1.models.world"
+        "v1.models.world",
+        "v1.convergence.material-context",
+        "v1.rendering.world-presentation",
+        "v1.micro.pipeline"
       ],
       "authority": "MODEL_DERIVED_SIMULATION",
       "provenance": "Executable v1 providers bound into the sealed PX registry; model-derived state cannot mutate canonical truth.",

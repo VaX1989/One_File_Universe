@@ -1,0 +1,485 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1.life.provider",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/biology/provider.js",
+      "dependencies": [
+        "v1.models.biology"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Wave A six-lane convergence; exact inputs recorded in docs/integration/wave-a-inputs.json. Model state is not canonical evidence; rendering remains presentation.",
+      "provides": [
+        "v1.life.provider"
+      ]
+    },
+    {
+      "id": "v1.ecology.query",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/ecology/query.js",
+      "dependencies": [
+        "v1.models.biology"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Wave A six-lane convergence; exact inputs recorded in docs/integration/wave-a-inputs.json. Model state is not canonical evidence; rendering remains presentation.",
+      "provides": [
+        "v1.ecology.query"
+      ]
+    },
+    {
+      "id": "v1.evolution.history",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/evolution/history.js",
+      "dependencies": [
+        "v1.models.biology"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Wave A six-lane convergence; exact inputs recorded in docs/integration/wave-a-inputs.json. Model state is not canonical evidence; rendering remains presentation.",
+      "provides": [
+        "v1.evolution.history"
+      ]
+    },
+    {
+      "id": "v1.society.population",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/society/population.js",
+      "dependencies": [
+        "v1.models.common"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Wave A six-lane convergence; exact inputs recorded in docs/integration/wave-a-inputs.json. Model state is not canonical evidence; rendering remains presentation.",
+      "provides": [
+        "v1.society.population"
+      ]
+    },
+    {
+      "id": "v1.history.system",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/history/system.js",
+      "dependencies": [
+        "v1.models.common"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Wave A six-lane convergence; exact inputs recorded in docs/integration/wave-a-inputs.json. Model state is not canonical evidence; rendering remains presentation.",
+      "provides": [
+        "v1.history.system"
+      ]
+    },
+    {
+      "id": "v1.civilization.foundation",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/civilization/foundation.js",
+      "dependencies": [
+        "v1.models.common"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Wave A six-lane convergence; exact inputs recorded in docs/integration/wave-a-inputs.json. Model state is not canonical evidence; rendering remains presentation.",
+      "provides": [
+        "v1.civilization.foundation"
+      ]
+    },
+    {
+      "id": "v1.civilization.economy-culture",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/civilization/economy-culture.js",
+      "dependencies": [
+        "v1.models.common"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Wave A six-lane convergence; exact inputs recorded in docs/integration/wave-a-inputs.json. Model state is not canonical evidence; rendering remains presentation.",
+      "provides": [
+        "v1.civilization.economy-culture"
+      ]
+    },
+    {
+      "id": "v1.civilization.politics-conflict",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/civilization/politics-conflict.js",
+      "dependencies": [
+        "v1.models.common"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Wave A six-lane convergence; exact inputs recorded in docs/integration/wave-a-inputs.json. Model state is not canonical evidence; rendering remains presentation.",
+      "provides": [
+        "v1.civilization.politics-conflict"
+      ]
+    },
+    {
+      "id": "v1.civilization.runtime",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/civilization/runtime.js",
+      "dependencies": [
+        "v1.models.civilization",
+        "v1.society.population",
+        "v1.history.system",
+        "v1.civilization.foundation",
+        "v1.civilization.economy-culture",
+        "v1.civilization.politics-conflict"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Wave A six-lane convergence; exact inputs recorded in docs/integration/wave-a-inputs.json. Model state is not canonical evidence; rendering remains presentation.",
+      "provides": [
+        "v1.civilization.runtime"
+      ]
+    },
+    {
+      "id": "v1.convergence.world-context",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/convergence/world-context.js",
+      "dependencies": [
+        "v1.life.provider",
+        "v1.ecology.query",
+        "v1.evolution.history",
+        "v1.civilization.runtime",
+        "v1.models.environment.world-system"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Wave A six-lane convergence; exact inputs recorded in docs/integration/wave-a-inputs.json. Model state is not canonical evidence; rendering remains presentation.",
+      "provides": [
+        "v1.convergence.world-context"
+      ]
+    },
+    {
+      "id": "v1.rendering.presentation-core",
+      "version": "1.0.0",
+      "owner": "rendering",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/rendering/v1/presentation-core.js",
+      "dependencies": [],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Wave A six-lane convergence; exact inputs recorded in docs/integration/wave-a-inputs.json. Model state is not canonical evidence; rendering remains presentation.",
+      "provides": [
+        "v1.rendering.presentation-core"
+      ]
+    },
+    {
+      "id": "v1.rendering.cosmic-presentation",
+      "version": "1.0.0",
+      "owner": "rendering",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/rendering/v1/cosmic-presentation.js",
+      "dependencies": [
+        "v1.rendering.presentation-core"
+      ],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Wave A six-lane convergence; exact inputs recorded in docs/integration/wave-a-inputs.json. Model state is not canonical evidence; rendering remains presentation.",
+      "provides": [
+        "v1.rendering.cosmic-presentation"
+      ]
+    },
+    {
+      "id": "v1.rendering.planet-presentation",
+      "version": "1.0.0",
+      "owner": "rendering",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/rendering/v1/planet-presentation.js",
+      "dependencies": [
+        "v1.rendering.presentation-core"
+      ],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Wave A six-lane convergence; exact inputs recorded in docs/integration/wave-a-inputs.json. Model state is not canonical evidence; rendering remains presentation.",
+      "provides": [
+        "v1.rendering.planet-presentation"
+      ]
+    },
+    {
+      "id": "v1.rendering.biosphere-presentation",
+      "version": "1.0.0",
+      "owner": "rendering",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/rendering/v1/biosphere-presentation.js",
+      "dependencies": [
+        "v1.rendering.presentation-core"
+      ],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Wave A six-lane convergence; exact inputs recorded in docs/integration/wave-a-inputs.json. Model state is not canonical evidence; rendering remains presentation.",
+      "provides": [
+        "v1.rendering.biosphere-presentation"
+      ]
+    },
+    {
+      "id": "v1.rendering.micro-presentation",
+      "version": "1.0.0",
+      "owner": "rendering",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/rendering/v1/micro-presentation.js",
+      "dependencies": [
+        "v1.rendering.presentation-core"
+      ],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Wave A six-lane convergence; exact inputs recorded in docs/integration/wave-a-inputs.json. Model state is not canonical evidence; rendering remains presentation.",
+      "provides": [
+        "v1.rendering.micro-presentation"
+      ]
+    },
+    {
+      "id": "v1.rendering.world-presentation",
+      "version": "1.0.0",
+      "owner": "rendering",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/rendering/v1/world-presentation.js",
+      "dependencies": [
+        "v1.rendering.presentation-core",
+        "v1.rendering.cosmic-presentation",
+        "v1.rendering.planet-presentation",
+        "v1.rendering.biosphere-presentation",
+        "v1.rendering.micro-presentation"
+      ],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Wave A six-lane convergence; exact inputs recorded in docs/integration/wave-a-inputs.json. Model state is not canonical evidence; rendering remains presentation.",
+      "provides": [
+        "v1.rendering.world-presentation"
+      ]
+    },
+    {
+      "id": "v1.rendering.provider-adapter",
+      "version": "1.0.0",
+      "owner": "rendering",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/rendering/v1/provider-adapter.js",
+      "dependencies": [
+        "v1.rendering.world-presentation"
+      ],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Wave A six-lane convergence; exact inputs recorded in docs/integration/wave-a-inputs.json. Model state is not canonical evidence; rendering remains presentation.",
+      "provides": [
+        "v1.rendering.provider-adapter"
+      ]
+    },
+    {
+      "id": "v1.rendering.transition-runtime",
+      "version": "1.0.0",
+      "owner": "rendering",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/rendering/v1/transition-runtime.js",
+      "dependencies": [
+        "v1.rendering.presentation-core"
+      ],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Wave A six-lane convergence; exact inputs recorded in docs/integration/wave-a-inputs.json. Model state is not canonical evidence; rendering remains presentation.",
+      "provides": [
+        "v1.rendering.transition-runtime"
+      ]
+    },
+    {
+      "id": "v1.rendering.lod-budget",
+      "version": "1.0.0",
+      "owner": "rendering",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/rendering/v1/lod-budget.js",
+      "dependencies": [],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Wave A six-lane convergence; exact inputs recorded in docs/integration/wave-a-inputs.json. Model state is not canonical evidence; rendering remains presentation.",
+      "provides": [
+        "v1.rendering.lod-budget"
+      ]
+    },
+    {
+      "id": "v1.rendering.webgl2-world",
+      "version": "1.0.0",
+      "owner": "rendering",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/rendering/v1/webgl2-world.js",
+      "dependencies": [
+        "v1.rendering.lod-budget",
+        "v1.shaders.world"
+      ],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Wave A six-lane convergence; exact inputs recorded in docs/integration/wave-a-inputs.json. Model state is not canonical evidence; rendering remains presentation.",
+      "provides": [
+        "v1.rendering.webgl2-world"
+      ]
+    },
+    {
+      "id": "v1.shaders.world",
+      "version": "1.0.0",
+      "owner": "shaders",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/shaders/v1/world-shaders.js",
+      "dependencies": [],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Wave A six-lane convergence; exact inputs recorded in docs/integration/wave-a-inputs.json. Model state is not canonical evidence; rendering remains presentation.",
+      "provides": [
+        "v1.shaders.world"
+      ]
+    },
+    {
+      "id": "v1.scenes.presentation.world",
+      "version": "1.0.0",
+      "owner": "scenes",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/scenes/v1/presentation/world-scene.js",
+      "dependencies": [
+        "v1.rendering.world-presentation",
+        "v1.rendering.provider-adapter",
+        "v1.rendering.transition-runtime"
+      ],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Wave A six-lane convergence; exact inputs recorded in docs/integration/wave-a-inputs.json. Model state is not canonical evidence; rendering remains presentation.",
+      "provides": [
+        "v1.scenes.presentation.world"
+      ]
+    },
+    {
+      "id": "v1.convergence.material-context",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/convergence/material-context.js",
+      "dependencies": [
+        "v1.convergence.world-context",
+        "v1.micro.source-adapters"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Wave A six-lane convergence; exact inputs recorded in docs/integration/wave-a-inputs.json. Model state is not canonical evidence; rendering remains presentation.",
+      "provides": [
+        "v1.convergence.material-context"
+      ]
+    },
+    {
+      "id": "v1.exploration.living-runtime",
+      "version": "1.0.0",
+      "owner": "exploration",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/exploration/v1/living-runtime.js",
+      "dependencies": [
+        "v1.navigation.universal-traversal",
+        "v1.providers.bindings",
+        "v1.micro.pipeline",
+        "v1.convergence.material-context"
+      ],
+      "authority": "DERIVED",
+      "provenance": "Wave A executable convergence; preserved six-lane ancestry. No canonical promotion.",
+      "provides": [
+        "v1.exploration.living-runtime"
+      ]
+    },
+    {
+      "id": "v1.rendering.living-renderer",
+      "version": "1.0.0",
+      "owner": "rendering",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/rendering/v1/living-renderer.js",
+      "dependencies": [
+        "v1.exploration.living-runtime",
+        "v1.rendering.world-presentation",
+        "v1.rendering.webgl2-world",
+        "v1.rendering.lod-budget"
+      ],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Wave A connected viewport from registered world providers; modeled context and presentation remain distinct from canonical P2-P6 evidence.",
+      "provides": [
+        "v1.rendering.living-renderer"
+      ]
+    },
+    {
+      "id": "v1.product.living-style",
+      "version": "1.0.0",
+      "owner": "product",
+      "kind": "style",
+      "stage": "full",
+      "placement": "style",
+      "source": "src/bootstrap/product/living-universe.css",
+      "dependencies": [
+        "ofu.bootstrap.product.wave-iv-responsive.style"
+      ],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Wave A connected viewport from registered world providers; modeled context and presentation remain distinct from canonical P2-P6 evidence.",
+      "provides": [
+        "v1.product.living-style"
+      ]
+    },
+    {
+      "id": "v1.product.living-universe",
+      "version": "1.0.0",
+      "owner": "product",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/bootstrap/product/living-universe.js",
+      "dependencies": [
+        "v1.rendering.living-renderer",
+        "v1.product.living-style",
+        "v1.product.experience",
+        "v1.exploration.product-adapter",
+        "ofu.bootstrap.product.lab-wave-iv-diagnostics"
+      ],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Wave A connected viewport from registered world providers; modeled context and presentation remain distinct from canonical P2-P6 evidence.",
+      "provides": [
+        "v1.product.living-universe"
+      ]
+    }
+  ]
+}
