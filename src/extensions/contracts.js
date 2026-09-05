@@ -85,7 +85,7 @@ function fidelity(input) {
   const f = data(input); keys(f, ['regime', 'validity', 'resolution', 'uncertainty']); token(f.regime); text(f.validity, 'validity'); text(f.resolution, 'resolution'); text(f.uncertainty, 'uncertainty'); return f;
 }
 function entity(input) {
-  const e = data(input); keys(e, ['universeId', 'entityId', 'parentId', 'kind', 'address']); hash(e.universeId); hash(e.entityId); if (e.parentId !== null) hash(e.parentId); token(e.kind);
+  const e = data(input); keys(e, ['universeId', 'entityId', 'parentId', 'kind', 'address']); hash(e.universeId); hash(e.entityId); if (e.parentId !== null) {hash(e.parentId);assert(e.parentId!==e.entityId,'IDENTITY','self parent');} token(e.kind);
   assert(Array.isArray(e.address) && e.address.length > 0 && e.address.length <= 32, 'IDENTITY', 'bounded hierarchical address');
   for (const part of e.address) text(part, 'address part', 256); return e;
 }
@@ -94,7 +94,7 @@ function time(input) {
 }
 function selection(input) {
   const s = data(input); keys(s, ['contract', 'target', 'context', 'time', 'authority']); assert(s.contract === VERSION, 'CONTRACT', 'selection'); entity(s.target); assert(Array.isArray(s.context) && s.context.length <= 32, 'SELECTION', 'parent context'); s.context.forEach(entity); time(s.time); authority(s.authority);
-  for (const parent of s.context) assert(parent.universeId === s.target.universeId, 'IDENTITY', 'cross-universe parent'); return s;
+  assert(s.target.parentId===null||s.context.length>0,'IDENTITY','immediate parent context required');const seen=new Set([s.target.entityId]);let previous=s.target;for(const parent of s.context){assert(parent.universeId===s.target.universeId&&!seen.has(parent.entityId)&&previous.parentId===parent.entityId,'IDENTITY','invalid parent chain');seen.add(parent.entityId);previous=parent;}return s;
 }
 function provider(input) {
   const p = data(input, {bytes: 65536, nodes: 4096});

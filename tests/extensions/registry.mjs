@@ -1,0 +1,33 @@
+import assert from 'node:assert/strict';
+import {load,descriptor,authority,selection,budget,fidelity} from './helpers.mjs';
+const O=load(['src/extensions/registry.js']),C=O.pxContracts;
+const policy={owners:[{id:'test',prefixes:['test'],kinds:C.KINDS,authorities:C.AUTHORITIES}],canonicalAdmissions:[],maxEntries:32};
+const make=(p=policy)=>O.pxRegistry.create(p);let cases=0;
+const bad=(fn,code)=>{assert.throws(fn,e=>e.code===code);cases++;};
+const a=descriptor('test.a'),b=descriptor('test.b',{requires:[{id:a.id,version:a.version,authority:a.authority.class}]});
+const registry=make();registry.register(b);registry.register(a);registry.seal();
+const other=make();other.register(a);other.register(b);other.seal();assert.equal(registry.snapshot().manifestDigest,other.snapshot().manifestDigest);cases++;
+assert.deepEqual(registry.snapshot().order,['test.a','test.b']);cases++;
+bad(()=>registry.register(a),'REGISTRY_SEALED');bad(()=>make().resolve('test.a'),'REGISTRY_UNSEALED');
+bad(()=>make().register(descriptor('other.a')),'OWNER');bad(()=>make().register(descriptor('test.a',{owner:'impostor'})),'OWNER');
+const dup=make();dup.register(a);bad(()=>dup.register(a),'DUPLICATE');
+const collision=make();collision.register(a);collision.register(descriptor('test.b',{claims:a.claims}));bad(()=>collision.seal(),'COLLISION');
+const missing=make();missing.register(b);bad(()=>missing.seal(),'DEPENDENCY');assert.equal(missing.snapshot().sealed,false);cases++;
+const cycle=make();cycle.register({...a,requires:[{id:b.id,version:b.version,authority:b.authority.class}]});cycle.register(b);bad(()=>cycle.seal(),'DEPENDENCY_CYCLE');
+const wrong=make();wrong.register(a);wrong.register({...b,requires:[{...b.requires[0],version:'2.0.0'}]});bad(()=>wrong.seal(),'DEPENDENCY_VERSION');
+const science=make();science.register({...a,authority:authority('PRESENTATION_ONLY')});science.register({...b,requires:[{...b.requires[0],authority:'PRESENTATION_ONLY'}]});bad(()=>science.seal(),'AUTHORITY');
+const canonical=descriptor('test.canonical',{authority:authority('CANONICAL_PROVEN')});bad(()=>make().register(canonical),'AUTHORITY');
+const admitted=make({...policy,canonicalAdmissions:[{id:canonical.id,owner:canonical.owner,version:canonical.version,authorityDigest:C.digest(canonical.authority)}]});admitted.register(canonical);admitted.seal();cases++;
+bad(()=>registry.bind(a.id,'wrong','1.0.0',{handle(){}}),'OWNER');bad(()=>registry.bind(a.id,'test','1.0.0',{}),'IMPLEMENTATION');
+bad(()=>registry.sealBindings(),'EVIDENCE_MISSING');
+registry.bind(a.id,'test','1.0.0',{handle(q,meter){meter.consume(1,1);return{contract:C.VERSION,provider:a.id,version:a.version,authority:a.authority,selection:q.selection,fidelity,usage:{entities:1,bytes:10,operations:1,queue:0},value:{x:1}}}});
+bad(()=>registry.bind(a.id,'test','1.0.0',{handle(){}}),'DUPLICATE');
+registry.bind(b.id,'test','1.0.0',{handle(q){return{contract:C.VERSION,provider:b.id,version:b.version,authority:authority('CANONICAL_PROVEN'),selection:q.selection,fidelity,usage:{entities:0,bytes:10,operations:1,queue:0},value:{}}}});registry.sealBindings();
+bad(()=>registry.bind(b.id,'test','1.0.0',{handle(){}}),'BINDINGS_SEALED');
+const q={contract:C.VERSION,provider:a.id,operation:'INSPECT',selection:selection(),budget,fidelity,payload:{}};
+assert.equal(registry.invoke(a.id,q).value.x,1);cases++;bad(()=>registry.invoke(b.id,{...q,provider:b.id}),'AUTHORITY');
+const wrongClaim=make();wrongClaim.register({...a,claims:['scene.orbit']});bad(()=>wrongClaim.seal(),'CAPABILITY');
+const bounded=make({...policy,maxEntries:1});bounded.register(a);bad(()=>bounded.register(b),'REGISTRY_BUDGET');
+// Arbitrary insertion permutations preserve the complete dependency ordering.
+for(let k=0;k<64;k++){const r=make(),ds=Array.from({length:12},(_,i)=>descriptor('test.n'+String(i).padStart(2,'0'),{requires:i?[{id:'test.n'+String(i-1).padStart(2,'0'),version:'1.0.0',authority:'MODEL_DERIVED_SIMULATION'}]:[]}));for(const d of [...ds.slice(k%12),...ds.slice(0,k%12)].reverse())r.register(d);r.seal();assert.deepEqual(r.snapshot().order,ds.map(d=>d.id));cases++;}
+console.log(JSON.stringify({status:'PASS',suite:'px-registry',cases}));

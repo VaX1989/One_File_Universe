@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import {validatePXEvidence} from '../../tools/extensions/seal.mjs';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
 
@@ -75,7 +76,9 @@ for(const row of rows){
  }
 }
 
+const pxSeal=fullManifest.px?validatePXEvidence(files.map(f=>JSON.parse(fs.readFileSync(f,'utf8'))).filter(r=>r.schema==='ofu-px-browser-evidence-1'),fullManifest,expectedSource):null;
 console.log(JSON.stringify({
+ pxSeal,
  status:'PASS',
  sourceCommit:[...commits][0],
  artifactSha256:fullManifest.artifactSha256,

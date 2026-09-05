@@ -18,6 +18,7 @@ rejects(() => C.uint('18446744073709551616'), 'UINT');
 rejects(() => C.uint('00'), 'UINT');
 rejects(() => C.time({...selection().time, micros: '1000000'}), 'TIME');
 rejects(() => C.time({...selection().time, protocol: 'private-clock'}), 'TIME');
+rejects(()=>C.selection({...selection(),target:{...selection().target,parentId:'c'.repeat(64)}}),'IDENTITY');
 assert.equal(C.provider(descriptor()).id, 'test.provider'); cases++;
 for (const kind of C.AUTHORITIES) { C.authority(authority(kind)); cases++; }
 rejects(() => C.provider(descriptor('test.research', {lifecycle: 'RESEARCH', authority: authority('CANONICAL_PROVEN')})), 'AUTHORITY');

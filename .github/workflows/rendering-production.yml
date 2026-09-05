@@ -44,6 +44,8 @@ jobs:
       - name: Verify exact source checkout
         shell: bash
         run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: PX additive integration conformance
+        run: node tools/extensions/conformance.mjs INTEGRATION --exact
       - name: Product v0.8 composition and lane contracts
         run: |
           node tests/rendering/vertex-array-ownership.mjs
@@ -174,6 +176,18 @@ jobs:
           DPR: ${{ matrix.browser == 'chromium' && '2' || '1' }}
       - name: Build full Wave IV product for renderer-specific visual closure
         run: node tools/build-ofu-rendering-v09.mjs
+      - name: PX registered product and cross-scale browser conformance
+        shell: bash
+        run: |
+          if [ "$BROWSER" = "chromium" ]; then
+            node tests/extensions/browser-product.mjs
+          else
+            xvfb-run -a node tests/extensions/browser-product.mjs
+          fi
+        env:
+          BROWSER: ${{ matrix.browser }}
+          DPR: ${{ matrix.browser == 'chromium' && '2' || '1' }}
+          HEADED: ${{ matrix.browser == 'chromium' && '0' || '1' }}
       - name: Founder visual settled camera and framebuffer closure
         run: node tests/product/browser-v08-settled-visual-closure.mjs
         env:
@@ -240,6 +254,11 @@ jobs:
           DPR: '1'
       - name: Build full Wave IV product for renderer-specific visual closure
         run: node tools/build-ofu-rendering-v09.mjs
+      - name: PX registered product and cross-scale browser conformance
+        run: node tests/extensions/browser-product.mjs
+        env:
+          BROWSER: ${{ matrix.browser }}
+          DPR: '1'
       - name: Founder visual settled camera and framebuffer closure
         run: node tests/product/browser-v08-settled-visual-closure.mjs
         env:
