@@ -46,6 +46,7 @@ jobs:
         run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
       - name: Product v0.8 composition and lane contracts
         run: |
+          node tests/rendering/vertex-array-ownership.mjs
           node tests/rendering/local-surface-ray-oracle.mjs
           node tests/rendering/dual-artifact-seal.mjs
           node tests/product/v08-parallel-seams.mjs

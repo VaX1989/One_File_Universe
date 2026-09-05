@@ -20,8 +20,8 @@ for(const [platform,arch,browser] of matrix){
   telemetry:{raf:{measurement:'MEASURED'},cpuTerrainBuild:{measurement:'MEASURED'},startup:{measurement:'MEASURED'},cacheCounts:{measurement:'MEASURED'},gpuUpload:{measurement:'MEASURED'},rendererGpuBytes:{measurement:'DERIVED'},physicalDriverVram:{measurement:'NOT MEASURABLE'}},
   performanceRegimes:Object.fromEntries(['steadyStateSurface','lodChurn','originRebasing','referenceFrameTransition','contextLossRecovery'].map(k=>[k,metric])),
   gpu:{liveMeshes:1,maxMeshes:48,liveTrackedBytes:100,maxBytes:1000,deletedBuffers:2,createdBuffers:4,liveBuffers:2,lifecycleAccountingExact:true},contextRecovery:{status:'PASS'},visual:{pixelCheck:'MEASURED',nonBackgroundPixels:30}};
- const frame={orbit:{coverage:{applicable:true,guaranteedPixels:100,clearGuaranteedPixels:0}},approach:{coverage:{applicable:true,guaranteedPixels:100,clearGuaranteedPixels:0}},close:{local:{mode:'LOCAL',framebuffer:{status:'MEASURED',cpuHits:20,cpuHitClear:0}}}};
- const full={status:'PASS',artifactScope:'FULL_WAVE_IV_PRODUCT',exactSourceSha:source,artifactSha256:hash(product),platform,arch,browser,canonicalWitness:witness,canonicalWitnessNonInterference:true,physicalAndroid:'NOT_VERIFIED',legacyCloseProbes:[{},{},{}],repeatedNavigation:Array.from({length:18},()=>({})),desktop:frame,mobile:frame};
+ const frame={orbit:{coverage:{applicable:true,guaranteedPixels:100,clearGuaranteedPixels:0}},approach:{coverage:{applicable:true,guaranteedPixels:100,clearGuaranteedPixels:0}},close:{local:{mode:'LOCAL',passState:{status:'MEASURED',error:0,defaultArrayBound:true,instanceAttributeEnabled:false,gpu:{vertexArrays:{liveArrays:2,lifecycleAccountingExact:true}}},framebuffer:{status:'MEASURED',cpuHits:20,cpuHitClear:0}}}};
+ const full={status:'PASS',artifactScope:'FULL_WAVE_IV_PRODUCT',exactSourceSha:source,artifactSha256:hash(product),platform,arch,browser,canonicalWitness:witness,canonicalWitnessNonInterference:true,physicalAndroid:'NOT_VERIFIED',surfaceContextRecovery:{status:'PASS',framebuffer:{status:'MEASURED',cpuHits:20,cpuHitClear:0}},legacyCloseProbes:[{},{},{}],repeatedNavigation:Array.from({length:18},()=>({})),desktop:frame,mobile:frame};
  records.push([id+'.json',row],[id+'-full.json',full]);
 }
 const manifests=[['rendering-foundation-manifest.json',{sourceCommit:source,componentManifestHash:component,artifactSha256:hash(foundation),artifactBytes:Buffer.byteLength(foundation)}],['rendering-build-manifest.json',{sourceCommit:source,componentManifestHash:component,artifactSha256:hash(product),artifactBytes:Buffer.byteLength(product),waveIVRuntime:{version:'ofu-wave-iv-scale-runtime-3'},surfacePresentation:{coverageArchitecture:'FRUSTUM_GROUND_FOOTPRINT_BOUNDED'}}]];
@@ -42,6 +42,9 @@ try{
   ()=>mutate('linux-x64-chromium-full.json',v=>v.desktop.orbit.coverage.clearGuaranteedPixels=1),
   ()=>mutate('linux-x64-chromium-full.json',v=>v.repeatedNavigation=[]),
   ()=>mutate('linux-x64-chromium-full.json',v=>v.physicalAndroid='PASS'),
+  ()=>mutate('linux-x64-chromium-full.json',v=>delete v.surfaceContextRecovery),
+  ()=>mutate('linux-x64-chromium-full.json',v=>v.surfaceContextRecovery.framebuffer.cpuHitClear=1),
+  ()=>mutate('linux-x64-chromium-full.json',v=>v.desktop.close.local.passState.instanceAttributeEnabled=true),
   ()=>fs.appendFileSync(path.join(dir,'One_File_Universe.html'),'tampered')
  ];
  for(const corrupt of failures){reset();corrupt();assert.notEqual(run().status,0,'corrupted dual-artifact evidence must fail closed');}

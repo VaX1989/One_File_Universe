@@ -60,12 +60,15 @@ for(const row of rows){
  const full=fullRows.find(v=>tuple(v)===tuple(row));
  if(!full||full.status!=='PASS'||full.exactSourceSha!==expectedSource||full.artifactSha256!==fullManifest.artifactSha256||full.canonicalWitnessNonInterference!==true)throw new Error('full-product exact-source visual evidence mismatch '+tuple(row));
  for(const [k,v] of Object.entries(row.canonicalWitness))if(full.canonicalWitness?.[k]!==v)throw new Error('full-product canonical witness mismatch '+k);
+ if(!['PASS','NOT_MEASURABLE'].includes(full.surfaceContextRecovery?.status))throw new Error('surface context recovery evidence missing');
+ if(full.surfaceContextRecovery.status==='PASS'&&(full.surfaceContextRecovery.framebuffer?.status!=='MEASURED'||full.surfaceContextRecovery.framebuffer.cpuHits<8||full.surfaceContextRecovery.framebuffer.cpuHitClear!==0))throw new Error('surface recovery framebuffer coverage invalid');
  if(full.physicalAndroid!=='NOT_VERIFIED')throw new Error('automated evidence cannot assert physical Android verification');
  if(full.legacyCloseProbes?.length!==3||full.repeatedNavigation?.length!==18)throw new Error('historical probes or repeated-navigation evidence incomplete');
  for(const viewport of ['desktop','mobile']){
   const frame=full[viewport];if(!frame?.orbit||!frame?.approach||!frame?.close?.local||frame.close.local.mode!=='LOCAL')throw new Error('renderer-specific visual evidence missing');
   if(row.browser==='chromium'){
    for(const name of ['orbit','approach'])if(frame[name].coverage?.applicable!==true||frame[name].coverage.guaranteedPixels<1||frame[name].coverage.clearGuaranteedPixels!==0)throw new Error('globe framebuffer coverage missing or invalid');
+   const vao=frame.close.local.passState;if(vao?.status!=='MEASURED'||vao.error!==0||!vao.defaultArrayBound||vao.instanceAttributeEnabled!==false||vao.gpu?.vertexArrays?.liveArrays!==2||vao.gpu.vertexArrays.lifecycleAccountingExact!==true)throw new Error('surface GPU pass ownership evidence invalid');
    const local=frame.close.local.framebuffer;
    if(local?.status!=='MEASURED'||local.cpuHits<8||local.cpuHitClear!==0)throw new Error('independent surface framebuffer coverage missing or invalid');
   }

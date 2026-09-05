@@ -37,6 +37,7 @@ jobs:
           node tests/wave-iv/convergence-runtime.mjs
       - name: Surface authority, frustum coverage, unsupported-body, continuity, and relief oracles
         run: |
+          node tests/rendering/vertex-array-ownership.mjs
           node tests/rendering/wave-iv-surface-frame.mjs
           node tests/rendering/wave-iv-surface-terrain.mjs
           node tests/wave-iv/surface-capability.mjs
@@ -61,7 +62,7 @@ jobs:
           grep -q 'applicationOwnsCanvasTouchGestures' dist/rendering-build-manifest.json
           grep -q 'allCanonicalPlanetsVisible' dist/rendering-build-manifest.json
           grep -q 'directPlanetVisit' dist/rendering-build-manifest.json
-          grep -q 'ofu-planet-webgl2-presentation-4' dist/rendering-build-manifest.json
+          grep -q 'ofu-planet-webgl2-presentation-5' dist/rendering-build-manifest.json
           grep -q 'DETERMINISTIC_PLANET_WIDE_MATERIAL_REGIONS_V4' dist/rendering-build-manifest.json
           grep -q 'largeScalePresentationRegions' dist/rendering-build-manifest.json
           grep -q 'canonicalRegionClaim' dist/rendering-build-manifest.json
@@ -71,7 +72,7 @@ jobs:
           grep -q 'globalGlobeHandoffAtomic' dist/rendering-build-manifest.json
           grep -q 'ofu-local-terrain-lod-4' dist/rendering-build-manifest.json
           grep -q 'ofu-surface-relief-presentation-1' dist/rendering-build-manifest.json
-          grep -q 'ofu-local-surface-webgl2-7' dist/rendering-build-manifest.json
+          grep -q 'ofu-local-surface-webgl2-8' dist/rendering-build-manifest.json
           grep -q 'DETERMINISTIC_LOCAL_MATERIAL_REGIONS_V1' dist/rendering-build-manifest.json
           grep -q 'presentationElevationColorRangeM' dist/rendering-build-manifest.json
           grep -q 'FRUSTUM_GROUND_FOOTPRINT_BOUNDED' dist/rendering-build-manifest.json
