@@ -1,0 +1,13 @@
+{
+  "status": "NON_CERTIFYING_LOCAL_BENCHMARK",
+  "node": "v22.16.0",
+  "platform": "linux",
+  "arch": "x64",
+  "lookups": 20000,
+  "totalMs": 17879.864755000002,
+  "lookupsPerSecond": 1118.5766936188436,
+  "checksum": 22834.782640307054,
+  "maxDependencyDepth": 4,
+  "maxDeriveCount": 31,
+  "warning": "Engineering signal only; repository target and full browser/cross-runtime certification were not executed."
+}
