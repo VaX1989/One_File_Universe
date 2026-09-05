@@ -9,10 +9,11 @@ const AUTHORITY=Object.freeze({
   PRESENTATION_ONLY:'PRESENTATION_ONLY',
   DECORATIVE_ONLY:'DECORATIVE_ONLY'
 });
-const SCALE=Object.freeze({GALAXY:'GALAXY',NEIGHBORHOOD:'NEIGHBORHOOD',SYSTEM:'SYSTEM',ORBIT:'ORBIT'});
+const SCALE=Object.freeze({GALAXY:'GALAXY',REGION:'REGION',NEIGHBORHOOD:'NEIGHBORHOOD',SYSTEM:'SYSTEM',ORBIT:'ORBIT'});
 const CAPS=Object.freeze({
   galaxyQueries:64,
   visibleGalaxies:24,
+  regionCells:18,
   neighborhoodQueries:192,
   visibleSystems:24,
   visibleStars:4,
@@ -154,6 +155,13 @@ function galaxyScene(ctx,selectedInput,opts={}){
     semantics:{layout:'CANONICAL_RELATIVE_CENTERS_WITH_PRESENTATION_PROJECTION',galaxyMorphology:'CANONICAL_MODEL_FACT',regionDensity:'CANONICAL_MODEL_FACT_HYPOTHETICAL_STYLIZED'}
   });
 }
+function galacticRegionScene(ctx,selectedInput,opts={}){
+  const A=O.p3Astronomy;if(!A||!ctx||!selectedInput)throw new Error('P3 context and selected canonical key required');
+  const selected=systemKey(selectedInput),gk=galaxyKeyFromProduct(selected),galaxy=A.resolveGalaxy(ctx,gk);if(galaxy?.status!=='PRESENT')return unsupported(SCALE.REGION,'SELECTED_GALAXY_ABSENT');
+  const galaxyId=canonicalId(galaxy,'galaxy-'+[gk.siteCellX,gk.siteCellY,gk.siteCellZ].map(String).join('/')),count=Math.min(CAPS.regionCells,Math.max(6,Number(opts.regionCount||CAPS.regionCells))),selectedOrdinal=Number(floorMod(selected.siteX+selected.siteY*17n+selected.siteZ*31n,BigInt(count))),objects=[];
+  for(let i=0;i<count;i++){const a=i/count*Math.PI*2+(rand01(stableHash(galaxyId),i*3)-.5)*.34,r=.15+.31*Math.sqrt(rand01(stableHash(galaxyId),i*3+1)),selectedPath=i===selectedOrdinal,regionIdentity='modeled-galactic-region:'+galaxyId+':'+i;objects.push(deepFreeze({objectId:'region:'+regionIdentity,kind:'GALACTIC_REGION',role:'MODELED_NAVIGABLE',canonical:false,selectedPath,authority:'MODEL_DERIVED_SIMULATION',geometryAuthority:AUTHORITY.PRESENTATION_ONLY,regionIdentity,parentGalaxyId:galaxyId,canonicalKey:selected,presentationGeometry:{x:.5+Math.cos(a)*r,y:.5+Math.sin(a)*r*.58,depth:rand01(stableHash(regionIdentity),1),glyphRadiusPx:selectedPath?11:7,authority:AUTHORITY.PRESENTATION_ONLY,physicalProjectionClaim:false},canonicalFacts:{stellarComponentCount:1n},interaction:{hitTargetEligible:true,activation:'FOCUS_REGION',selectionAuthority:'NAVIGATION_ONLY',selectable:false,navigable:true},label:selectedPath?'Current galactic region':'Modeled galactic region',claims:{regionBoundaryCanonical:false,screenProjectionPhysical:false}}));}
+  return sceneEnvelope(SCALE.REGION,objects,[],decorativeDepth('region:'+galaxyId),{selectedPath:{galaxyId,regionIdentity:objects[selectedOrdinal].regionIdentity,systemKey:selected},discovery:{visibleCount:objects.length,visibleCap:CAPS.regionCells,enumeratesGalaxy:false},semantics:{regionIdentity:'MODEL_DERIVED_SIMULATION',layout:'BOUNDED_PRESENTATION_OF_GALACTIC_SUBREGIONS',canonicalGalaxyContext:true}});
+}
 function neighborhoodScene(ctx,selectedInput,opts={}){
   const A=O.p3Astronomy;if(!A||!ctx||!selectedInput)throw new Error('P3 context and selected canonical key required');
   const selected=systemKey(selectedInput),origin=A.resolveSystem(ctx,selected);if(origin?.status!=='PRESENT')return unsupported(SCALE.NEIGHBORHOOD,'SELECTED_SYSTEM_ABSENT');
@@ -262,12 +270,12 @@ function orbitScene(ctx,selectedInput,opts={}){
   });
 }
 function transitionDescriptor(from,to,{reducedMotion=false}={}){
-  from=String(from||'').toUpperCase();to=String(to||'').toUpperCase();const allowed=new Set(['GALAXY>NEIGHBORHOOD','NEIGHBORHOOD>SYSTEM','SYSTEM>ORBIT','ORBIT>SYSTEM','SYSTEM>NEIGHBORHOOD','NEIGHBORHOOD>GALAXY']);if(!allowed.has(from+'>'+to))throw new Error('unsupported macro scale transition '+from+' -> '+to);
-  const inward=['GALAXY>NEIGHBORHOOD','NEIGHBORHOOD>SYSTEM','SYSTEM>ORBIT'].includes(from+'>'+to),focus=from==='GALAXY'?'CANONICAL_GALAXY':from==='NEIGHBORHOOD'?'CANONICAL_SYSTEM':from==='SYSTEM'?'SELECTED_CANONICAL_PLANET':'CANONICAL_SYSTEM';
+  from=String(from||'').toUpperCase();to=String(to||'').toUpperCase();const allowed=new Set(['GALAXY>REGION','REGION>NEIGHBORHOOD','NEIGHBORHOOD>SYSTEM','SYSTEM>ORBIT','ORBIT>SYSTEM','SYSTEM>NEIGHBORHOOD','NEIGHBORHOOD>REGION','REGION>GALAXY']);if(!allowed.has(from+'>'+to))throw new Error('unsupported macro scale transition '+from+' -> '+to);
+  const inward=['GALAXY>REGION','REGION>NEIGHBORHOOD','NEIGHBORHOOD>SYSTEM','SYSTEM>ORBIT'].includes(from+'>'+to),focus=from==='GALAXY'?'CANONICAL_GALAXY':from==='REGION'?'MODELED_GALACTIC_REGION':from==='NEIGHBORHOOD'?'CANONICAL_SYSTEM':from==='SYSTEM'?'SELECTED_CANONICAL_PLANET':'CANONICAL_SYSTEM';
   return deepFreeze({version:VERSION,contract:'ofu-macro-scale-transition-1',from,to,durationMs:reducedMotion?0:inward?680:560,reducedMotion:!!reducedMotion,authority:AUTHORITY.PRESENTATION_ONLY,focus,visualModel:inward?'FOCUS_AND_SCALE_IN':'SCALE_OUT_AND_REVEAL',canonicalTime:false,orbitalMotion:false,physicalTravelTimeClaim:false,physicalVelocityClaim:false});
 }
 function buildScene(scale,ctx,selectedKey,opts={}){
-  const s=String(scale||'').toUpperCase();if(s===SCALE.GALAXY)return galaxyScene(ctx,selectedKey,opts);if(s===SCALE.NEIGHBORHOOD)return neighborhoodScene(ctx,selectedKey,opts);if(s===SCALE.SYSTEM)return systemScene(ctx,selectedKey,opts);if(s===SCALE.ORBIT)return orbitScene(ctx,selectedKey,opts);throw new Error('unknown macro scale '+scale);
+  const s=String(scale||'').toUpperCase();if(s===SCALE.GALAXY)return galaxyScene(ctx,selectedKey,opts);if(s===SCALE.REGION)return galacticRegionScene(ctx,selectedKey,opts);if(s===SCALE.NEIGHBORHOOD)return neighborhoodScene(ctx,selectedKey,opts);if(s===SCALE.SYSTEM)return systemScene(ctx,selectedKey,opts);if(s===SCALE.ORBIT)return orbitScene(ctx,selectedKey,opts);throw new Error('unknown macro scale '+scale);
 }
 function validateScene(scene){
   if(!scene||scene.contract!==CONTRACT)throw new Error('invalid macro scene contract');if(scene.status!=='READY')return true;
@@ -276,5 +284,5 @@ function validateScene(scene){
   if(scene.scale===SCALE.ORBIT){const anchors=scene.objects.filter(o=>o.kind==='PLANET_HANDOFF_ANCHOR');if(anchors.length!==1)throw new Error('orbit context requires exactly one selected-world handoff anchor');if(scene.handoff?.macroOwnsPrimarySelectedWorld!==false||scene.handoff?.duplicatePrimaryRendererAllowed!==false)throw new Error('orbit context violates primary renderer ownership')}
   return true;
 }
-O.waveIVMacroScene=Object.freeze({VERSION,CONTRACT,AUTHORITY,SCALE,CAPS,SYSTEM_FIELDS,PLANET_FIELDS,systemKey,planetKey,shiftSystemKey,systemPositionMilliPc,galaxyScene,neighborhoodScene,systemScene,orbitScene,transitionDescriptor,buildScene,validateScene});
+O.waveIVMacroScene=Object.freeze({VERSION,CONTRACT,AUTHORITY,SCALE,CAPS,SYSTEM_FIELDS,PLANET_FIELDS,systemKey,planetKey,shiftSystemKey,systemPositionMilliPc,galaxyScene,galacticRegionScene,neighborhoodScene,systemScene,orbitScene,transitionDescriptor,buildScene,validateScene});
 })(typeof globalThis!=='undefined'?globalThis:this);

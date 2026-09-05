@@ -59,7 +59,7 @@ jobs:
           grep -q 'ofu-wave-iv-input-router-6' dist/rendering-build-manifest.json
           grep -q 'ofu-wave-iv-input-intent-3' dist/rendering-build-manifest.json
           grep -q 'ofu-wave-iv-macro-canvas-4' dist/rendering-build-manifest.json
-          grep -q 'ofu-wave-iv-macro-interaction-3' dist/rendering-build-manifest.json
+          grep -q 'ofu-wave-iv-macro-interaction-4' dist/rendering-build-manifest.json
           grep -q 'ofu-wave-iv-macro-travel-2' dist/rendering-build-manifest.json
           grep -q 'applicationOwnsCanvasTouchGestures' dist/rendering-build-manifest.json
           grep -q 'allCanonicalPlanetsVisible' dist/rendering-build-manifest.json

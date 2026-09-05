@@ -17,9 +17,9 @@ try{
  const journeys=[];
  for(const viewport of [{width:1280,height:800},{width:390,height:844},{width:844,height:390}]){
   await page.setViewportSize(viewport);
-  for(const scale of ['galaxy','stellar_neighborhood','system','orbit','approach','global_surface','regional_surface','local_surface','human','local_surface','global_surface','orbit','system','galaxy']){
+  for(const scale of ['galaxy','galactic_region','stellar_neighborhood','system','orbit','approach','global_surface','regional_surface','local_surface','human','local_surface','global_surface','orbit','system','galaxy']){
    await page.locator('[data-wave-iv-scale="'+scale+'"]').click();await page.waitForFunction(s=>OFU.waveIVScaleRuntime.snapshot().semanticScale===s,scale,{timeout:10000});
-   if(!['galaxy','stellar_neighborhood','system'].includes(scale))await page.waitForFunction(s=>{const p=__OFU_PLANET_PREVIEW__;return ['regional_surface','local_surface','human'].includes(s)?p.backend==='webgl2-local-surface':p.backend==='webgl2';},scale,{timeout:10000});
+   if(!['galaxy','galactic_region','stellar_neighborhood','system'].includes(scale))await page.waitForFunction(s=>{const p=__OFU_PLANET_PREVIEW__;return ['regional_surface','local_surface','human'].includes(s)?p.backend==='webgl2-local-surface':p.backend==='webgl2';},scale,{timeout:10000});
    const record=await page.evaluate(()=>{const x=OFU.pxProduct.snapshot(),r=OFU.waveIVScaleRuntime.snapshot(),p=__OFU_PLANET_PREVIEW__.snapshot();return{scale:r.semanticScale,provider:r.activeSceneProvider,id:r.selectedCanonicalTarget.planetId,backend:p.backend,witness:x.lastWitness,resources:p.gpu?.gpu||null,registry:x.registry};});
    assert.equal(record.id,baseline.selection.target.entityId);assert.equal(record.witness.status,'PASS');assert.equal(record.witness.projection.selectionDigest,await page.evaluate(()=>OFU.pxContracts.digest(OFU.pxProduct.captured().selection)));assert.equal(record.registry.manifestDigest,initial.registry.manifestDigest);journeys.push({viewport,scale,provider:record.provider,backend:record.backend,witness:record.witness.projection.resultDigest});
   }

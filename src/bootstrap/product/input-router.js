@@ -1,7 +1,7 @@
 (function(root){
 'use strict';
 const O=root.OFU=root.OFU||{};if(typeof document==='undefined')return;const R=O.waveIVScaleRuntime,C=O.planetRenderCore;if(!R||!C)throw new Error('Wave IV input router requires scale runtime and camera core');
-const VERSION='ofu-wave-iv-input-router-6',INTENT_CONTRACT='ofu-wave-iv-input-intent-3',LOCAL_SURFACE=new Set(['regional_surface','local_surface','human']),MACRO=new Set(['galaxy','stellar_neighborhood','system']);
+const VERSION='ofu-wave-iv-input-router-6',INTENT_CONTRACT='ofu-wave-iv-input-intent-3',LOCAL_SURFACE=new Set(['regional_surface','local_surface','human']),MACRO=new Set(['galaxy','galactic_region','stellar_neighborhood','system']);
 const state={version:VERSION,contract:INTENT_CONTRACT,initialized:false,providerReady:false,surfaceProviderReady:false,stageCommands:0,wheelCommands:0,pointerIntents:0,pinchIntents:0,keyboardIntents:0,viewportUpdates:0,lastIntent:null,lastStage:null,lastWheelDirection:null,pointerActive:false,activePointers:0,pointerCancels:0,lostPointerCaptures:0,pointerResets:0,lastGesture:'none',globalSurfaceRenderer:'planet-webgl',touchOwnedByApplication:true};
 const canvas=()=>document.getElementById('planet-view'),preview=()=>root.__OFU_PLANET_PREVIEW__,clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 function settle(P){if(P?.camera&&P.reducedMotion){P.camera.distanceM=Math.max(P.camera.minDistanceM,P.camera.targetDistanceM);P.camera.direction=P.camera.targetDirection}}

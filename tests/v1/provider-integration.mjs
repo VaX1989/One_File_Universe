@@ -11,7 +11,7 @@ for(const f of ['common','astronomy','planetology','biology','civilization','mic
 for(const f of ['src/extensions/product-bindings.js','src/bootstrap/product/scale-runtime.js','src/domains/v1/bindings.js'])vm.runInThisContext(fs.readFileSync(f,'utf8'),{filename:f});
 delete globalThis.__OFU_PX_TEST_CATALOGS__;delete globalThis.__OFU_PX_TEST_REGIMES__;
 const P=O.pxProduct,R=O.waveIVScaleRuntime,C=O.pxContracts,selected=P.captured();
-for(const [id,scales] of [['wave-iv-macro',['galaxy','stellar_neighborhood','system']],['planet-webgl',['orbit','approach','global_surface']],['surface-webgl',['regional_surface','local_surface','human']]])R.registerSceneProvider({id,scales,setActive(){}});
+for(const [id,scales] of [['wave-iv-macro',['galaxy','galactic_region','stellar_neighborhood','system']],['planet-webgl',['orbit','approach','global_surface']],['surface-webgl',['regional_surface','local_surface','human']]])R.registerSceneProvider({id,scales,setActive(){}});
 R.setSelection(key,{planetId:selected.selection.target.entityId,presentationStatus:'SUPPORTED'});
 P.seal();
 let cases=0;assert(P.snapshot().registry.bindingsSealed);cases++;
@@ -20,6 +20,8 @@ const before=C.digest(P.captured().selection),world=P.inspect('v1.domain.modeled
 const planets=P.inspect('v1.model.planetology').value;assert.equal(planets.escape.kind,'ENERGY_LIMITED_ESCAPE_MODEL_ESTIMATE');assert.equal(planets.escape.isMathematicalUpperBound,false);cases+=2;
 const bio=P.inspect('v1.model.biology').value;assert.equal(bio.eligibility.redoxRequired,false);assert.equal(bio.eligibility.canonicalP6Authority,false);cases+=2;
 const micro=P.inspect('v1.model.microscopic').value;if(micro.supported)assert(['SOURCE_BACKED_ATOMIC','SYNTHETIC_ATOMIC_REPRESENTATION'].includes(micro.atomicPreview.visualAuthority));else assert.equal(micro.reason,'NO_MODELED_BIOSPHERE_CONTEXT');cases++;
+const rep=P.inspect('v1.representation.microscopic').value;assert.equal(rep.spatialHandoff,'human');assert.equal(rep.geometricZoomClaim,false);assert.deepEqual(rep.regimeOrder,['tissue','cell','molecular','atomic']);assert.deepEqual(Object.keys(rep.regimes).sort(),['atomic','cell','molecular','tissue']);cases+=4;
+const interaction=P.inspect('v1.interaction.universal-exploration').value;assert.equal(interaction.spatialScales[1],'galactic_region');assert.equal(interaction.spatialScales.at(-1),'human');assert.deepEqual(interaction.modelRegimes,['tissue','cell','molecular','atomic']);assert.equal(interaction.reverseTraversal,true);assert.equal(interaction.worldChangesRequireP4Admission,true);cases+=5;
 const discovered=P.inspect('v1.query.galaxies',{address:['local'],cursor:null,limit:7,filters:{}},'DISCOVER').value;assert.equal(discovered.galaxies.length,7);assert.equal(discovered.maxMaterialized,64);assert.equal(new Set(discovered.galaxies.map(g=>g.galaxyIdentity)).size,7);cases+=3;
 assert.equal(C.digest(P.captured().selection),before);cases++;
 const snap=O.v1Providers.snapshot();assert(snap.cacheEntries<=snap.cacheLimit);assert(snap.metrics.invocations>=9);cases+=2;

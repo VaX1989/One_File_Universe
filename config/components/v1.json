@@ -1,14 +1,216 @@
 {
   "schema": "ofu-components-1",
   "components": [
-    {"id":"px.providers.v1","version":"1.0.0","owner":"v1","kind":"data","stage":"foundation","placement":"resource","source":"config/extensions/v1.json","dependencies":[],"authority":"MODEL_DERIVED_SIMULATION","provenance":"Frozen Wave V research heads ported onto the certified PX authority/registry contracts; no canonical promotion.","provides":["px.providers.v1"]},
-    {"id":"v1.models.common","version":"1.0.0","owner":"v1","kind":"code","stage":"foundation","placement":"script","source":"src/domains/v1/common.js","dependencies":["ofu.extensions.contracts"],"authority":"MODEL_DERIVED_SIMULATION","provenance":"Deterministic bounded shared utilities for v1 model-derived domains.","provides":["v1.models.common"]},
-    {"id":"v1.models.astronomy","version":"1.0.0","owner":"v1","kind":"code","stage":"foundation","placement":"script","source":"src/domains/v1/astronomy.js","dependencies":["v1.models.common"],"authority":"MODEL_DERIVED_SIMULATION","provenance":"Port of WV-A astronomy research with separated hierarchy identities and bounded precomputed sampling.","provides":["v1.models.astronomy"]},
-    {"id":"v1.models.planetology","version":"1.0.0","owner":"v1","kind":"code","stage":"foundation","placement":"script","source":"src/domains/v1/planetology.js","dependencies":["v1.models.common"],"authority":"MODEL_DERIVED_SIMULATION","provenance":"Port of WV-B causal planetology with explicit model-regime escape estimate authority.","provides":["v1.models.planetology"]},
-    {"id":"v1.models.biology","version":"1.0.0","owner":"v1","kind":"code","stage":"foundation","placement":"script","source":"src/domains/v1/biology.js","dependencies":["v1.models.common"],"authority":"MODEL_DERIVED_SIMULATION","provenance":"Clean WV-C port with generalized thermodynamic free-energy readiness and bounded ecology/evolution.","provides":["v1.models.biology"]},
-    {"id":"v1.models.civilization","version":"1.0.0","owner":"v1","kind":"code","stage":"foundation","placement":"script","source":"src/domains/v1/civilization.js","dependencies":["v1.models.common"],"authority":"MODEL_DERIVED_SIMULATION","provenance":"WV-D causal civilization/history mechanisms; generated transitions remain proposals until P4 admission.","provides":["v1.models.civilization"]},
-    {"id":"v1.models.microscopic","version":"1.0.0","owner":"v1","kind":"code","stage":"foundation","placement":"script","source":"src/domains/v1/microscopic.js","dependencies":["v1.models.common"],"authority":"MODEL_DERIVED_SIMULATION","provenance":"WV-E port with source-backed and synthetic atomic representation authority separated.","provides":["v1.models.microscopic"]},
-    {"id":"v1.models.world","version":"1.0.0","owner":"v1","kind":"code","stage":"foundation","placement":"script","source":"src/domains/v1/world.js","dependencies":["v1.models.astronomy","v1.models.planetology","v1.models.biology","v1.models.civilization","v1.models.microscopic"],"authority":"MODEL_DERIVED_SIMULATION","provenance":"Bounded cross-domain modeled-world composition anchored to preserved canonical selection/facts.","provides":["v1.models.world"]},
-    {"id":"v1.providers.bindings","version":"1.0.0","owner":"v1","kind":"code","stage":"foundation","placement":"script","source":"src/domains/v1/bindings.js","dependencies":["ofu.extensions.product-bindings","v1.models.world"],"authority":"MODEL_DERIVED_SIMULATION","provenance":"Executable v1 providers bound into the sealed PX registry; model-derived state cannot mutate canonical truth.","provides":["v1.providers.bindings"]}
+    {
+      "id": "px.providers.v1",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "data",
+      "stage": "foundation",
+      "placement": "resource",
+      "source": "config/extensions/v1.json",
+      "dependencies": [],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Frozen Wave V research heads ported onto the certified PX authority/registry contracts; no canonical promotion.",
+      "provides": [
+        "px.providers.v1"
+      ]
+    },
+    {
+      "id": "v1.models.common",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/common.js",
+      "dependencies": [
+        "ofu.extensions.contracts"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Deterministic bounded shared utilities for v1 model-derived domains.",
+      "provides": [
+        "v1.models.common"
+      ]
+    },
+    {
+      "id": "v1.models.astronomy",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/astronomy.js",
+      "dependencies": [
+        "v1.models.common"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Port of WV-A astronomy research with separated hierarchy identities and bounded precomputed sampling.",
+      "provides": [
+        "v1.models.astronomy"
+      ]
+    },
+    {
+      "id": "v1.models.planetology",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/planetology.js",
+      "dependencies": [
+        "v1.models.common"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Port of WV-B causal planetology with explicit model-regime escape estimate authority.",
+      "provides": [
+        "v1.models.planetology"
+      ]
+    },
+    {
+      "id": "v1.models.biology",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/biology.js",
+      "dependencies": [
+        "v1.models.common"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Clean WV-C port with generalized thermodynamic free-energy readiness and bounded ecology/evolution.",
+      "provides": [
+        "v1.models.biology"
+      ]
+    },
+    {
+      "id": "v1.models.civilization",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/civilization.js",
+      "dependencies": [
+        "v1.models.common"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "WV-D causal civilization/history mechanisms; generated transitions remain proposals until P4 admission.",
+      "provides": [
+        "v1.models.civilization"
+      ]
+    },
+    {
+      "id": "v1.models.microscopic",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/microscopic.js",
+      "dependencies": [
+        "v1.models.common"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "WV-E port with source-backed and synthetic atomic representation authority separated.",
+      "provides": [
+        "v1.models.microscopic"
+      ]
+    },
+    {
+      "id": "v1.models.world",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/world.js",
+      "dependencies": [
+        "v1.models.astronomy",
+        "v1.models.planetology",
+        "v1.models.biology",
+        "v1.models.civilization",
+        "v1.models.microscopic"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Bounded cross-domain modeled-world composition anchored to preserved canonical selection/facts.",
+      "provides": [
+        "v1.models.world"
+      ]
+    },
+    {
+      "id": "v1.providers.bindings",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/bindings.js",
+      "dependencies": [
+        "ofu.extensions.product-bindings",
+        "v1.models.world"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Executable v1 providers bound into the sealed PX registry; model-derived state cannot mutate canonical truth.",
+      "provides": [
+        "v1.providers.bindings"
+      ]
+    },
+    {
+      "id": "v1.models.regime-runtime",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/domains/v1/regime-runtime.js",
+      "dependencies": [
+        "v1.providers.bindings",
+        "ofu.bootstrap.product.scale-runtime"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Explicit non-geometric model-regime travel preserving selected world and material commitments.",
+      "provides": [
+        "v1.models.regime-runtime"
+      ]
+    },
+    {
+      "id": "v1.render.micro-canvas",
+      "version": "1.0.0",
+      "owner": "product",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/rendering/micro/micro-canvas.js",
+      "dependencies": [
+        "v1.models.regime-runtime",
+        "ofu.bootstrap.product.viewport.html"
+      ],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Dedicated microscopic presentation renderer; no molecular dynamics or quantum claim.",
+      "provides": [
+        "v1.render.micro-canvas"
+      ]
+    },
+    {
+      "id": "v1.product.experience",
+      "version": "1.0.0",
+      "owner": "product",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/bootstrap/product/v1-experience.js",
+      "dependencies": [
+        "v1.render.micro-canvas",
+        "ofu.bootstrap.product.wave-iv-convergence",
+        "ofu.bootstrap.product.inspector-product"
+      ],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "User-visible modeled-world Inspect projection and reversible Human-to-micro navigation.",
+      "provides": [
+        "v1.product.experience"
+      ]
+    }
   ]
 }

@@ -1,8 +1,103 @@
 {
   "schema": "ofu-conformance-1",
   "tests": [
-    {"id":"v1.domain-models","owner":"v1","tier":"FAST_LOCAL","command":["node","tests/v1/domain-models.mjs"],"providers":["v1.domain.modeled-world","v1.model.astronomy","v1.query.galaxies","v1.model.planetology","v1.model.biology","v1.model.civilization","v1.model.microscopic","v1.inspector.world"],"oracle":"v1-domain-models-oracle-1","timeoutMs":30000},
-    {"id":"v1.provider-integration","owner":"v1","tier":"INTEGRATION","command":["node","tests/v1/provider-integration.mjs"],"providers":["v1.domain.modeled-world","v1.model.astronomy","v1.query.galaxies","v1.model.planetology","v1.model.biology","v1.model.civilization","v1.model.microscopic","v1.inspector.world"],"oracle":"v1-provider-integration-oracle-1","timeoutMs":30000},
-    {"id":"v1.release-model-seal","owner":"v1","tier":"RELEASE","command":["node","tests/v1/release-model-seal.mjs"],"providers":["v1.domain.modeled-world","v1.model.astronomy","v1.query.galaxies","v1.model.planetology","v1.model.biology","v1.model.civilization","v1.model.microscopic","v1.inspector.world"],"oracle":"v1-release-model-seal-oracle-1","timeoutMs":30000}
+    {
+      "id": "v1.domain-models",
+      "owner": "v1",
+      "tier": "FAST_LOCAL",
+      "command": [
+        "node",
+        "tests/v1/domain-models.mjs"
+      ],
+      "providers": [
+        "v1.domain.modeled-world",
+        "v1.model.astronomy",
+        "v1.query.galaxies",
+        "v1.model.planetology",
+        "v1.model.biology",
+        "v1.model.civilization",
+        "v1.model.microscopic",
+        "v1.inspector.world"
+      ],
+      "oracle": "v1-domain-models-oracle-1",
+      "timeoutMs": 30000
+    },
+    {
+      "id": "v1.model-regime-runtime",
+      "owner": "v1",
+      "tier": "FAST_LOCAL",
+      "command": [
+        "node",
+        "tests/v1/model-regime-runtime.mjs"
+      ],
+      "providers": [
+        "v1.representation.microscopic",
+        "v1.interaction.universal-exploration"
+      ],
+      "oracle": "v1-model-regime-runtime-oracle-1",
+      "timeoutMs": 30000
+    },
+    {
+      "id": "v1.world-discovery",
+      "owner": "v1",
+      "tier": "FAST_LOCAL",
+      "command": [
+        "node",
+        "tests/v1/world-discovery.mjs"
+      ],
+      "providers": [
+        "v1.query.world-candidates"
+      ],
+      "oracle": "v1-world-discovery-oracle-1",
+      "timeoutMs": 60000
+    },
+    {
+      "id": "v1.provider-integration",
+      "owner": "v1",
+      "tier": "INTEGRATION",
+      "command": [
+        "node",
+        "tests/v1/provider-integration.mjs"
+      ],
+      "providers": [
+        "v1.domain.modeled-world",
+        "v1.model.astronomy",
+        "v1.query.galaxies",
+        "v1.model.planetology",
+        "v1.model.biology",
+        "v1.model.civilization",
+        "v1.model.microscopic",
+        "v1.inspector.world",
+        "v1.representation.microscopic",
+        "v1.interaction.universal-exploration",
+        "v1.query.world-candidates"
+      ],
+      "oracle": "v1-provider-integration-oracle-1",
+      "timeoutMs": 30000
+    },
+    {
+      "id": "v1.release-model-seal",
+      "owner": "v1",
+      "tier": "RELEASE",
+      "command": [
+        "node",
+        "tests/v1/release-model-seal.mjs"
+      ],
+      "providers": [
+        "v1.domain.modeled-world",
+        "v1.model.astronomy",
+        "v1.query.galaxies",
+        "v1.model.planetology",
+        "v1.model.biology",
+        "v1.model.civilization",
+        "v1.model.microscopic",
+        "v1.inspector.world",
+        "v1.representation.microscopic",
+        "v1.interaction.universal-exploration",
+        "v1.query.world-candidates"
+      ],
+      "oracle": "v1-release-model-seal-oracle-1",
+      "timeoutMs": 30000
+    }
   ]
 }

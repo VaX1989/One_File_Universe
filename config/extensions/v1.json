@@ -549,6 +549,209 @@
         }
       ],
       "mandatory": true
+    },
+    {
+      "contract": "ofu-px-contracts-1",
+      "id": "v1.representation.microscopic",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "representation",
+      "authority": {
+        "class": "PRESENTATION_ONLY",
+        "contract": "ofu-px-contracts-1",
+        "model": "v1.microscopic-representation",
+        "version": "1.0.0",
+        "sources": [
+          "research/wave-v-microscopic-matter-2026-09-05@6aeecf2ccc564d7f0f316711d07710e74e667e27"
+        ],
+        "assumptions": [
+          "The microscopic experience refines only an already modeled biological context and never changes canonical P6/P4 truth."
+        ],
+        "limitations": [
+          "Synthetic atomic coordinates are PRESENTATION_ONLY; source-backed coordinates retain their source descriptor.",
+          "This provider exposes representation metadata, not scientific state mutation."
+        ],
+        "evidence": []
+      },
+      "fidelity": {
+        "regime": "v1_product",
+        "validity": "Dedicated tissue/cell/molecular/atomic representation metadata for modeled living-world context",
+        "resolution": "At most 512 microscopic nodes per materialization",
+        "uncertainty": "Synthetic coordinates remain representational; no geometric atom-zoom or MD/QM claim"
+      },
+      "lifecycle": "SHIPPING",
+      "requires": [
+        {
+          "id": "v1.model.microscopic",
+          "version": "1.0.0",
+          "authority": "MODEL_DERIVED_SIMULATION"
+        }
+      ],
+      "claims": [
+        "representation.v1-microscopic"
+      ],
+      "operations": [
+        "INSPECT"
+      ],
+      "budget": {
+        "entities": 256,
+        "bytes": 262144,
+        "operations": 10000,
+        "queue": 32
+      },
+      "evidence": [
+        {
+          "id": "v1.model-regime-runtime",
+          "tier": "FAST_LOCAL"
+        },
+        {
+          "id": "v1.provider-integration",
+          "tier": "INTEGRATION"
+        },
+        {
+          "id": "v1.release-model-seal",
+          "tier": "RELEASE"
+        }
+      ],
+      "mandatory": true
+    },
+    {
+      "contract": "ofu-px-contracts-1",
+      "id": "v1.interaction.universal-exploration",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "interaction",
+      "authority": {
+        "class": "PRESENTATION_ONLY",
+        "contract": "ofu-px-contracts-1",
+        "model": "v1.universal-exploration",
+        "version": "1.0.0",
+        "sources": [
+          "research/wave-v-microscopic-matter-2026-09-05@6aeecf2ccc564d7f0f316711d07710e74e667e27"
+        ],
+        "assumptions": [
+          "The microscopic experience refines only an already modeled biological context and never changes canonical P6/P4 truth."
+        ],
+        "limitations": [
+          "Microscopic descent is a regime handoff, not a literal geometric zoom.",
+          "Interaction authority is presentational and cannot mutate scientific truth."
+        ],
+        "evidence": []
+      },
+      "fidelity": {
+        "regime": "v1_product",
+        "validity": "Direct SEE\u2192POINT\u2192SELECT\u2192TRAVEL plus explicit Human\u2192microscopic regime handoff",
+        "resolution": "Ten bounded spatial bands plus tissue/cell/molecular/atomic model regimes",
+        "uncertainty": "Navigation changes representation/selection only; world-changing actions require governed P4 admission"
+      },
+      "lifecycle": "SHIPPING",
+      "requires": [
+        {
+          "id": "px.scene.macro",
+          "version": "1.0.0",
+          "authority": "PRESENTATION_ONLY"
+        },
+        {
+          "id": "v1.representation.microscopic",
+          "version": "1.0.0",
+          "authority": "PRESENTATION_ONLY"
+        }
+      ],
+      "claims": [
+        "interaction.v1-universal-exploration"
+      ],
+      "operations": [
+        "INSPECT"
+      ],
+      "budget": {
+        "entities": 256,
+        "bytes": 262144,
+        "operations": 10000,
+        "queue": 32
+      },
+      "evidence": [
+        {
+          "id": "v1.model-regime-runtime",
+          "tier": "FAST_LOCAL"
+        },
+        {
+          "id": "v1.provider-integration",
+          "tier": "INTEGRATION"
+        },
+        {
+          "id": "v1.release-model-seal",
+          "tier": "RELEASE"
+        }
+      ],
+      "mandatory": true
+    },
+    {
+      "contract": "ofu-px-contracts-1",
+      "id": "v1.query.world-candidates",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "query",
+      "authority": {
+        "class": "MODEL_DERIVED_SIMULATION",
+        "contract": "ofu-px-contracts-1",
+        "model": "v1.world-candidate-discovery",
+        "version": "1.0.0",
+        "sources": [
+          "parallel/wave-v-astronomy-depth-2026-09-05@a4feefde0fcc4df1b257b7126f95c4bbcaf779d3",
+          "research/wave-v-planetology-frontier-2026-09-05@3e102e26c2adfcc8cb461193f821e10d9c374e24",
+          "research/wave-v-biology-evolution-2026-09-05@ccc1f91d5c6cd26e7b89b74433e4712755073e5a",
+          "research/wave-v-civilization-history-2026-09-05@082d8c558ad56c36a894a4ca381d01b10c5697d4"
+        ],
+        "assumptions": [
+          "Search evaluates existing deterministic v1 world scenarios over a bounded neighborhood of canonical P3 systems; it does not create or promote life/civilization."
+        ],
+        "limitations": [
+          "A bounded search may return no candidate even when a farther modeled candidate exists.",
+          "Candidate classification is MODEL_DERIVED_SIMULATION and leaves canonical P6/P4 unchanged."
+        ],
+        "evidence": []
+      },
+      "fidelity": {
+        "regime": "v1_product",
+        "validity": "Bounded deterministic search over canonical P3 system addresses and v1 modeled-world outcomes",
+        "resolution": "At most 2048 system probes, 128 modeled worlds and 16 returned candidates per request",
+        "uncertainty": "Absence from a bounded search is not a universal absence claim"
+      },
+      "lifecycle": "SHIPPING",
+      "requires": [
+        {
+          "id": "v1.domain.modeled-world",
+          "version": "1.0.0",
+          "authority": "MODEL_DERIVED_SIMULATION"
+        }
+      ],
+      "claims": [
+        "query.v1-world-candidates"
+      ],
+      "operations": [
+        "DISCOVER"
+      ],
+      "budget": {
+        "entities": 32,
+        "bytes": 262144,
+        "operations": 4096,
+        "queue": 8
+      },
+      "evidence": [
+        {
+          "id": "v1.world-discovery",
+          "tier": "FAST_LOCAL"
+        },
+        {
+          "id": "v1.provider-integration",
+          "tier": "INTEGRATION"
+        },
+        {
+          "id": "v1.release-model-seal",
+          "tier": "RELEASE"
+        }
+      ],
+      "mandatory": true
     }
   ]
 }
