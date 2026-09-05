@@ -1,0 +1,39 @@
+{
+  "schema": "ofu.wve.reconciliation-corpus.v0",
+  "status": "RESEARCH_ONLY",
+  "fixtures": [
+    {
+      "id": "closed-tissue-mass-like-conservation-001",
+      "input": {
+        "grid": [24, 24],
+        "dtSeconds": 0.25,
+        "diffusivityM2PerS": 1e-10,
+        "dxMetres": 2e-5,
+        "initialConcentration": 1,
+        "cellSeed": "corpus-a",
+        "cellCount": 32,
+        "uptakePerSecond": 0.001,
+        "steps": 200
+      },
+      "requiredInvariants": {
+        "nonNegativeField": true,
+        "totalMassLikeRelativeTolerance": 2e-12,
+        "queryOrderIndependent": true
+      }
+    },
+    {
+      "id": "synthetic-backmap-authority-001",
+      "input": {
+        "complexId": "M1",
+        "atomsPerBead": 4,
+        "beadCount": 2
+      },
+      "requiredInvariants": {
+        "deterministic": true,
+        "evidenceClass": "FICTIONAL",
+        "visualAuthority": "REPRESENTATIONAL",
+        "dynamicalAuthority": "NONE"
+      }
+    }
+  ]
+}
