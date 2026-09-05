@@ -1,0 +1,77 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1.exploration.working-set",
+      "version": "1.0.0",
+      "owner": "exploration",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/exploration/v1/working-set.js",
+      "dependencies": ["v1.models.common"],
+      "authority": "DERIVED",
+      "provenance": "Wave A universal exploration bounded lifecycle/cache runtime. Identity never depends on cache residency and no canonical mutation is permitted.",
+      "provides": ["v1.exploration.working-set"]
+    },
+    {
+      "id": "v1.exploration.address-space",
+      "version": "1.0.0",
+      "owner": "exploration",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/exploration/v1/address-space.js",
+      "dependencies": ["v1.models.astronomy", "v1.exploration.working-set"],
+      "authority": "DERIVED",
+      "provenance": "Wave A provider-backed sparse address hierarchy over frozen P3 identities plus explicitly model-derived region/surface navigation addresses.",
+      "provides": ["v1.exploration.address-space"]
+    },
+    {
+      "id": "v1.navigation.universal-traversal",
+      "version": "1.0.0",
+      "owner": "navigation",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/navigation/v1/traversal.js",
+      "dependencies": ["v1.exploration.address-space", "ofu.bootstrap.product.scale-runtime"],
+      "authority": "DERIVED",
+      "provenance": "Wave A reversible identity-preserving traversal state with explicit retarget/cancellation and REFINE/PROJECT/RECONCILE navigation witnesses.",
+      "provides": ["v1.navigation.universal-traversal"]
+    },
+    {
+      "id": "v1.scenes.exploration.interaction",
+      "version": "1.0.0",
+      "owner": "scenes",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/scenes/v1/exploration/interaction.js",
+      "dependencies": ["v1.exploration.address-space", "ofu.rendering.macro.macro-interaction"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Wave A deterministic selectable-object registry and pointer/touch/keyboard activation semantics; decorative objects cannot enter the pick registry.",
+      "provides": ["v1.scenes.exploration.interaction"]
+    },
+    {
+      "id": "v1.exploration.product-adapter",
+      "version": "1.0.0",
+      "owner": "exploration",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/exploration/v1/product-adapter.js",
+      "dependencies": [
+        "v1.navigation.universal-traversal",
+        "v1.scenes.exploration.interaction",
+        "v1.providers.bindings",
+        "ofu.rendering.macro.macro-provider",
+        "ofu.rendering.macro.macro-canvas",
+        "ofu.bootstrap.product.wave-iv-convergence"
+      ],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Wave A executable integration seam: actual P3 discovery, Wave IV direct macro picking, canonical planet selection bridge, scale runtime, stable surface anchors and micro handoff request.",
+      "provides": ["v1.exploration.product-adapter"]
+    }
+  ]
+}
