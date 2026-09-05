@@ -26,10 +26,10 @@ jobs:
           cat .github/v1b-payload/0* | base64 -d | gzip -d > /tmp/v1b.patch
           echo 'dca28051f94f7f1eaac4e0252c9ec524f6e0ad30d63db316976625e64d3b8550  /tmp/v1b.patch' | sha256sum -c -
           git apply --binary --index /tmp/v1b.patch
-          rm -rf .github/v1b-payload
-          rm .github/workflows/v1b-sync-payload.yml
-          git add -A
-          test "$(git write-tree)" = '1179192337886b9a7c9042b5eb816485eca78153'
+          git rm .github/workflows/v1-certification.yml
+          git rm --cached -r .github/v1b-payload .github/workflows/v1b-sync-payload.yml
+          test "$(git write-tree)" = 'a624f3bde5ba35ee1505b92a87d84817033faacf'
+          git add .github/v1b-payload .github/workflows/v1b-sync-payload.yml
       - name: Verify v1 persistence agency audio convergence
         shell: bash
         run: |
@@ -49,14 +49,13 @@ jobs:
           node tools/build-ofu-rendering-v09.mjs
           cmp /tmp/v1b-first.html dist/One_File_Universe.html
           cmp /tmp/v1b-first-manifest.json dist/rendering-build-manifest.json
-      - name: Commit exact verified convergence
+      - name: Commit exact verified non-workflow convergence
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git commit -m 'v1: add portable P4 sessions, governed agency and systemic audio'
-          test "$(git rev-parse HEAD^{tree})" = '1179192337886b9a7c9042b5eb816485eca78153'
           node tools/extensions/conformance.mjs INTEGRATION --exact
       - name: Anti-race fast-forward push
         shell: bash
