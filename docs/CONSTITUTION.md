@@ -1,6 +1,6 @@
 # One File Universe Constitution
 
-**Status:** P0 normative draft  
+**Status:** P0 normative foundation with forward product-principle amendment candidate  
 **Normative language:** MUST, MUST NOT, SHOULD, SHOULD NOT and MAY are used as requirements terms.
 
 ## 1. Mission
@@ -28,6 +28,16 @@ OFU MAY also pursue large-artifact records, but raw byte size is never the prima
 13. **No artificial payload inflation.** Padding, deliberately duplicated payload and unreachable data MUST NOT count as certified functional payload.
 14. **Reproducibility is a product property.** Release artifacts SHOULD be reproducibly buildable byte-for-byte from a pinned source commit and toolchain manifest.
 15. **Failure must be explicit.** Unsupported capabilities, incompatible saves, invalid manifests and failed conformance checks MUST fail closed or degrade transparently; silent semantic fallback is prohibited.
+
+### 2.1 Forward constitutional product principles — founder-review amendment candidate
+
+The following principles extend product governance without changing any frozen P0–P6 canonical bytes or retroactively invalidating earlier phase closure. Their durable adoption is recorded as a proposed decision in ADR-023.
+
+16. **Universal exploration freedom.** Within a supported domain, the architecture SHOULD make discoverable canonical entities and supported spatial targets address/query driven rather than permanently limited to curated showcase destinations. Release-stage menus and anchor targets MAY exist for accessibility, fast travel, onboarding or debugging, but MUST NOT be mistaken for the long-range exploration contract.
+17. **Cross-scale continuity.** A finer canonical or derived representation MUST satisfy its declared upstream constraints. Cross-scale systems MUST define how `REFINE`, `PROJECT` and `RECONCILE` preserve identity, committed facts and significant consequences. A new detail level MUST NOT silently replace a previously committed world with unrelated content.
+18. **Universe-first product quality.** Scientific/model integrity, meaningful player freedom, graphics quality and UX quality are co-equal product concerns. Presentation MUST remain scientifically honest, but semantic correctness alone is not sufficient to call a visibly broken, inaccessible or unusable primary journey product-complete.
+19. **Governed intervention.** User or gameplay actions that change world truth MUST enter through a versioned canonical event/transition contract under P4 temporal authority or an explicit successor. UI, renderer and debug controls MUST NOT directly rewrite canonical facts.
+20. **Progressive disclosure of technical truth.** A normal user SHOULD be able to explore without exposure to hashes or protocol internals, while an expert MUST be able to reach the exact canonical identity, lineage, provenance and certification evidence supporting the visible world.
 
 ## 3. Runtime profiles
 
@@ -86,39 +96,25 @@ Unsupported precision MUST NOT be implied in the UI or documentation.
 
 ## 7. Evolution policy
 
-OFU distinguishes:
-
-- application version;
-- canonical kernel version;
-- Generator Manifest version/hash;
-- subsystem generator versions;
-- event schema version;
-- save/archive schema version;
-- record/conformance protocol version.
+OFU distinguishes application version, canonical kernel version, Generator Manifest version/hash, subsystem generator versions, event schema version, save/archive schema version, and record/conformance protocol version.
 
 Backward compatibility is a deliberate policy, not an assumption. Historical artifacts MAY remain the authoritative executor for old lineages. Migration MUST be explicit and auditable.
 
-## 8. Record philosophy
+## 8. Record and artifact philosophy
 
 OFU rejects a single scalar claim such as "largest HTML" as sufficient evidence of technical merit. Certification MUST report a multidimensional record vector including artifact bytes, certified functional payload, executable extent, conformance, reproducibility, verification coverage, runtime budgets and procedural-quality evidence.
 
-Raw artifact size MAY be celebrated, but MUST be reported separately from certified functional payload.
+A mature one-file artifact MAY be tens or hundreds of megabytes, or larger, when those bytes represent useful governed capability, embedded reference data, assets or conformance machinery. Distribution artifact size and runtime working set are different budgets. Large distribution size never waives the bounded-working-set invariant, and artificial inflation remains prohibited.
 
 ## 9. Governance of irreversible decisions
 
-Architecture decisions with long-lived semantic consequences MUST be recorded as ADRs before dependent generators are stabilized. Implementation choices that are reversible — language, compressor, exact renderer optimization, allocator, specific fixed-point format — SHOULD remain open until measured prototypes provide evidence.
+Architecture decisions with long-lived semantic consequences MUST be recorded as ADRs before dependent generators are stabilized. Implementation choices that are reversible SHOULD remain open until measured prototypes provide evidence.
 
-## 10. P0 exit gate
+Certified historical contracts are not rewritten merely because the future vision expands. A future domain successor creates a new versioned contract and explicit promotion path.
 
-P0 is complete only when:
+## 10. P0 exit gate and historical scope
 
-- Constitution, Vision, Architecture, Determinism, Record Specification, Conformance Model, Roadmap and Risk Register exist;
-- foundational ADRs are accepted or explicitly marked experimental;
-- repository structure and automated foundation validation exist;
-- claims are separated into normative requirements, hypotheses and future targets;
-- P1 has a falsifiable acceptance plan.
-
-No production procedural universe generator should be treated as stable before this gate.
+P0 completed after the foundational documents, foundation validation, ADR set, claim taxonomy and falsifiable P1 plan existed. Later documentation may clarify the long-range product destination without retroactively changing what P0 certification meant. No new product principle in this document silently changes frozen P2 serialization or P3–P6 canonical semantics.
 
 ## 11. Project Language Policy
 

@@ -1,355 +1,116 @@
 # One File Universe Roadmap
 
-**Roadmap style:** evidence-gated, not calendar-gated.  
-A phase closes when its exit criteria are demonstrated, not because a date has elapsed.
+**Roadmap style:** evidence-gated, not calendar-gated. A capability closes when its declared exit criteria are demonstrated, not because a date has elapsed.
+
+## Roadmap architecture: certified history + forward frontier
+
+The project now maintains two complementary planning layers:
+
+- **Layer A — Certified Development History:** preserves what versioned phases/releases actually established.
+- **Layer B — Forward Frontier DAG:** describes future capability dependencies and safe parallelization without rewriting historical completion.
+
+The machine-readable Layer B source is `docs/frontier/WORKSTREAM_DAG.json`; the human contract is `docs/FRONTIER_WORKSTREAMS.md`. This planning metadata is not canonical universe state.
+
+A phase marked COMPLETE means its **declared, evidence-gated scope** was completed. It does not mean its entire scientific domain or the final product is permanently complete. Detailed frozen contracts and evidence records remain authoritative where this summary is less specific.
+
+---
+
+# Layer A — Certified development history
 
 ## P0 — Constitution & Foundation
 
-### Objective
-Freeze the semantic rules that would be expensive to change after worlds and saves exist.
+**Status: COMPLETE within declared scope.**
 
-### Deliverables
-- Project Constitution
-- Vision and non-goals
-- Foundational Architecture
-- Determinism Contract
-- Record & Certification Specification
-- Conformance Model
-- Risk Register
-- ADR set for irreversible semantics
-- foundation validator and CI
-- initial source/test/tool structure
-
-### Exit gate
-All constitutional documents exist, foundation CI passes, unresolved implementation choices are explicitly classified as experiments rather than silently decided.
-
----
+Established the Constitution, Vision, Architecture, Determinism, Record/Conformance model, risk governance, ADR discipline and foundation validation needed before stable procedural semantics.
 
 ## P1 — Constitutional Prototype
 
-### Objective
-Attempt to break the project architecture before building valuable procedural content.
+**Status: COMPLETE within declared scope.**
 
-### Build the smallest end-to-end OFU artifact that demonstrates:
-- modular source → deterministic build → one HTML;
-- Strict direct-open bootstrap;
-- zero required runtime network IO;
-- component manifest and internal verification;
-- candidate embedded WASM path without committing the entire architecture to WASM;
-- Worker + transferable-buffer compute path;
-- WebGL2 baseline scene or diagnostic renderer;
-- WebGPU capability detection as optional acceleration;
-- portable save/export/import round-trip;
-- basic addressed derivation and canonical serialization;
-- artifact/build reproducibility experiment.
-
-### Adversarial questions
-- Does `file://` break any required API on target browsers?
-- Can the same HTML work in Strict and Enhanced profiles?
-- Are worker/blob policies portable enough?
-- Does embedded binary decoding cause unacceptable startup/RAM amplification?
-- Can build outputs be byte-stable?
-
-### Exit gate
-A P1 artifact and evidence report demonstrating every mandatory item or documenting an architecture-changing failure.
-
----
+Falsified and demonstrated the modular-source → deterministic-build → one-file Strict Direct-Open architecture, portable save experiment, Worker path, baseline rendering and optional Enhanced capability probing.
 
 ## P2 — Deterministic Kernel
 
-**P2 — COMPLETE**
+**Status: COMPLETE / versioned canonical contracts.**
 
-### Objective
-Create the portable authority oracle for all future generators.
-
-### Deliverables
-- canonical address schema;
-- Universe Identity schema;
-- Generator Manifest schema;
-- domain-separated PRF/derivation implementation;
-- deterministic numeric kernel selected by measured domain needs;
-- canonical byte serialization;
-- hash/digest layer;
-- Golden Universe Corpus v1;
-- concurrency/order-independence tests;
-- cross-engine conformance harness.
-
-### Exit gate
-The same corpus produces the same normative digest across the declared executed runtime matrix. Any unavailable target is explicitly unverified.
-
----
+Froze OFU-CBV-1, Unicode profile, canonical address/identity/manifest semantics, domain-separated HMAC-SHA-256 derivation, deterministic numeric scope and Golden/cross-runtime conformance evidence.
 
 ## P3 — Universe Skeleton
 
-**P3 — COMPLETE**  
-Canonical schema v1 / astronomy model `p3-astronomy-1` is merged on `main`. The P1–P4 baseline executes real sparse random-access Region/Galaxy/Sector/System/Star/Planet/Moon queries from the shipped single-file artifact, with exact Entity Identity and query-order invariance covered by executable conformance.
+**Status: COMPLETE within P3 schema-v1 / `p3-astronomy-1` scope.**
 
-### Objective
-Prove sparse random access across astronomical scales without materializing the universe.
-
-### Domains
-Universe regions, galaxies, sectors, systems, stars, planets and moons as metadata/facts only.
-
-### Requirements
-- non-enumerative random access;
-- bounded dependency depth;
-- stable addressing;
-- plausible distributions under an explicit fidelity class;
-- no rendering dependency in canonical generation;
-- statistical distribution tests and invariants.
-
-### Exit gate
-Large deterministic address samples satisfy invariants, distribution expectations and working-set budgets.
-
----
+Established sparse random-access Region/Galaxy/Sector/System/Star/Planet/Moon metadata/facts with stable identities and bounded lookups. It did not establish detailed planet physics, environment, biology, civilization or final astronomical realism.
 
 ## P4 — Temporal Kernel & Mutable World
 
-**P4 — COMPLETE**  
-Canonical protocol `ofu-p4-temporal-v1` and transition contract `ofu.p4.core-transition@1.0.0` are merged on `main`. Full replay, checkpoints, bounded-tail deterministic compaction, lineage, portable archives and executable P3→P4 invariants are certified in the P1–P4 baseline.
+**Status: COMPLETE within `ofu-p4-temporal-v1` scope.**
 
-### Objective
-Define time before civilization/history depend on it.
+Established canonical time/order, versioned events, replay, checkpoints, bounded-tail deterministic compaction, lineage, portable archives and transition-contract binding. Domain physics remains owned by versioned domain reducers.
 
-### Deliverables
-- canonical time/epoch model;
-- event ordering semantics;
-- event schema versioning;
-- replay;
-- checkpoints;
-- deterministic compaction;
-- save/archive format;
-- migration/lineage hooks;
-- hot/warm/cold/immediate simulation scheduler skeleton.
+## P5 — Planetology, Terrain & Environment
 
-### Exit gate
-Baseline + events → current state is deterministic; checkpointed and full replay resolve to the same canonical digest.
+**P5 v1: COMPLETE / CANONICAL / FROZEN within scope.**
 
----
+Established the bounded terrestrial physical realization and exact cube-sphere topology. The terrain elevation signal is dimensionless `FICTIONAL / STYLIZED`, not physical metres.
 
-## P5 — Planetology, Terrain & Climate
+**Environment v2: COMPLETE / CANONICAL / FROZEN within scope.**
 
-**P5 v1 CANONICAL CORE — COMPLETE / CANONICAL / FROZEN**  
-The controlled v1 promotion deliberately closes only the smallest scientifically honest planetary authority that can be frozen without pretending research is settled. The reference P1–P4 release `v0.4.0-preview.1` remains unchanged.
+Established explicit epistemic status/provenance, conserved absolute atmosphere mass representation, fail-closed `NO_CANONICAL_GENESIS`, global column pressure when governed mass exists and a Tier-0 radiative effective-temperature relation. It does **not** establish mean surface temperature, greenhouse climate, canonical oceans, XUV escape evolution, geology/geochemical energy or physical terrain elevation.
 
-### Canonical v1 scope
-- strict consumption of the real P3 `ofu-p3-p5-planetary-input-v1` producer at P3 schema v1 / `P4_T0`;
-- exact preservation of P3-owned planet/system/star identity, orbit, insolation, baseline mass, bulk prior and solid-budget facts as canonical bytes / `BigInt` values;
-- P2 Canonical Address and addressed derivation for promoted procedural semantics;
-- bounded `TERRESTRIAL` realization for 1–8 Mearth only;
-- deterministic integer/fixed-point composition refinement, radius, surface gravity and mean density;
-- explicit evidence/fidelity classification and explicit `UNSUPPORTED` behavior outside the promoted model family;
-- exact P2-addressed cube-sphere terrain topology with shared vertex identity, seams, refinement, `PROJECT` and `RECONCILE` invariants;
-- sparse/direct-random-access terrain generation with bounded operation working set and no global planet heightmap;
-- compact `ofu-p5-p6-environment-v1` downstream boundary exposing only promoted environmental constraints;
-- P4-owned replay/checkpoint/compaction binding for static P5 genesis facts.
+Deferred research remains versioned and separate. Issues #29, #30 and #31 continue to represent greenhouse/surface-climate, XUV/escape and geology/geochemical-energy frontiers.
 
-### Advanced P5 Environment v2 canonical successor
+## P6 — Biosphere & Evolution v1
 
-**Environment v2 — COMPLETE / CANONICAL / FROZEN.** PR #32 promoted the additive successor `ofu-p5-p6-environment-v2` / `p5-environment-2` without modifying frozen P5 v1 physical, terrain or v1 P5→P6 semantics.
+**Status: COMPLETE / CANONICAL / FROZEN within declared fail-closed scope.**
 
-Environment v2 canonically adds:
+P6 v1 consumes only the frozen Environment v2 boundary, binds a complete eligibility witness and deterministic biological identity semantics, and refuses forged or insufficient genesis. The current real Environment v2 path is `INSUFFICIENT_ENVIRONMENT / canGenerateBiosphere=false`. Test/research fixtures do not create canonical biology.
 
-- explicit epistemic authority/provenance (`KNOWN`, `DERIVED`, `HYPOTHETICAL_MODEL_VALUE`, `UNKNOWN`, `UNSUPPORTED`);
-- `ofu-p5-atmosphere-state-v2` with absolute teragram storage and exact volatile mass conservation;
-- explicit `NO_CANONICAL_GENESIS` rather than promotion of the research volatile prior;
-- deterministic `GLOBAL_SURFACE_COLUMN_PRESSURE` derived from governed retained atmosphere mass plus frozen P5 v1 gravity/radius;
-- corrected Tier-0 radiative effective-temperature law `T_eff=[S(1-A)/(4 sigma)]^(1/4)` with integer/rational canonical numerics and Earth anchor `254.578 K` at Earth-normalized forcing and Bond albedo 0.3;
-- a dedicated P2-validated Environment v2 Semantic Generator Manifest;
-- independent Python oracle, versioned Golden corpus, Worker/query-order invariance, sparse working-set evidence, reproducible build and five-runtime canonical seal.
+A future positive biology successor requires separately promoted environmental authority and scientific/generative contracts.
 
-Frozen Environment v2 evidence:
+## Rendering and product lineage
 
-- Semantic Manifest hash `f35801f9cc4f2d44633a39013e135553f10c29cd62308d34b4da31c59a473d3f`;
-- Golden corpus `golden-p5-environment-v2-corpus-v1` digest `ac33ba776976d1381a841426fb7e0fbb0276877e98565261bfdec2bca598d7a4`;
-- promotion merge `ace38aac27b9098a9c01b390eeaa82933077f4be`, tree `838fc20d0028e77e33f8d54ac5c495e6422a5950`;
-- first exact-main Environment v2 seal run `33737515944` — SUCCESS.
+- **v0.5.0-preview.1:** first P1–P6 production rendering vertical slice; presentation only.
+- **Product Polish / v0.7:** Explore / Inspect / Lab information hierarchy, scientific communication and accessibility/product hardening without changing P1–P6 authority.
+- **v0.8 Founder Visual Closure:** promoted to current `main` at `44f6e068d7d513c8746f23fb7580572758dc2ece` after founder physical Android acceptance of its certified candidate.
+- **Wave IV / v0.9 convergence:** CURRENT DEVELOPMENT, not certified history. PR #48 head `0563b5ccfdc19c072e1cee42751471186b6d0b90` passes Foundation/P1–P6 and Wave IV development checks but required Rendering Production is failing. It remains independent from this vision-formalization work.
 
-Environment v2 does **not** claim mean surface temperature. Actual Bond albedo remains `UNKNOWN`; greenhouse response, surface temperature, water phase/EOS, XUV evolution, endogenous atmospheric escape, geology/geochemical energy, actual ocean area and physical terrain elevation remain `UNSUPPORTED`. P4 remains sole owner of canonical time, events, replay, checkpoints, compaction and lineage. Future greenhouse/XUV/geology research is routed separately in issues #29, #30 and #31.
+## Historical forward labels P7–P12
 
-Governance closure PR #33 merged as signed commit
-`58d4cbbc3ff8412ddd29a2fa628746b4d8d0557d`; exact-main Environment v2 run
-`33760167600` passed its complete five-runtime aggregate seal. Environment v2 uses
-unique ADR-019, repository ADR hygiene is executable, and Issue #28 is closed.
+The original mostly linear roadmap remains useful historical planning vocabulary but is no longer the sole dependency model:
 
-### Scientific disposition
-The canonical v1 rocky mass-radius realization is an **EMPIRICALLY_CONSTRAINED / APPROXIMATE** bounded model. The deterministic terrestrial composition refinement is **HYPOTHETICAL / STYLIZED** and is not presented as inferred mineralogy. Gravity/density relationships are **ESTABLISHED / APPROXIMATE** under quantized inputs. Cube-sphere topology is **ESTABLISHED / FORMAL**. The current terrain elevation signal is **FICTIONAL / STYLIZED**, dimensionless and never represented as physical metres.
+- **P7 — Civilization, Culture & Economy:** societies as consequences of environment, history, resources and interaction.
+- **P8 — History & Late Materialization:** deep macro/meso/micro history without universal individual simulation.
+- **P9 — Exploration & Gameplay:** meaningful discovery, navigation, intervention and persistent consequences.
+- **P10 — Rendering, Audio & Product Maturity:** portable/Enhanced rendering, audio, accessibility and quality adaptation.
+- **P11 — Certification Candidate:** reproducible artifact, source/toolchain identity, independent conformance and claim evidence.
+- **P12 — Scale Campaign:** useful capability growth only after correctness/meaning, never artificial payload inflation.
 
-Environment v2 atmosphere conservation is **ESTABLISHED / FORMAL**; global spherical column pressure and the declared Tier-0 radiative law are **ESTABLISHED / APPROXIMATE** under their explicit assumptions. The rejected volatile genesis prior remains **HYPOTHETICAL / STYLIZED** and is not canonical world fact.
-
-### Explicitly deferred research
-The following are not silently approximated into canonical truth and remain future versioned research:
-- water-rich / high-pressure EOS;
-- sub-Neptune, ice-giant and gas-giant radius/evolution families;
-- volatile genesis/partition calibration;
-- atmosphere composition and greenhouse response;
-- mean surface temperature and regional climate transport;
-- XUV history/efficiency and calibrated escape evolution;
-- detailed geodynamics/rheology and geochemical energy;
-- physical terrain elevation scaling, oceans, plates, craters and erosion.
-
-P5 v1 promotes no mutable physical transition contract. Environment v2 likewise promotes no endogenous atmospheric-loss transition generator. P4 remains the only canonical time, event ordering, replay, checkpoint, compaction, lineage and archive authority. A future mutable P5 model must introduce a versioned P5 reducer consumed by P4 and independently pass replay/checkpoint/repeated-compaction equivalence before promotion.
-
-### Exit gate
-P5 v1 closed after its actual candidate and exact main passed all frozen upstream, P3→P5, P4 binding, Golden, evidence, reproducible-build and cross-runtime gates. Environment v2 closed only after the same preservation discipline plus corrected scientific references, dedicated manifest lineage, independent oracle, Golden Environment corpus, Worker scheduling invariance and the five-runtime Environment seal passed on exact main. Unsupported research families do not block closure because they remain explicitly outside frozen scope.
+These labels are **not deleted or declared wrong**. Future work should map them to the more precise Layer B workstreams and explicit dependencies instead of assuming P7→P8→P9 is the only legal execution order.
 
 ---
 
-## P6 — Biosphere & Evolution
+# Layer B — Forward Frontier DAG
 
-**P6 v1 — COMPLETE / CANONICAL / FROZEN WITHIN DECLARED SCOPE.** PR #34
-promoted candidate `b5d0850d46184700e2764a413db59e314ba6ce83` as signed merge
-`79d1817abc446f01825a66db93a2dc16aa379d7b`; both share tree
-`f41cb6b18e6af2289f05e898c44320833366b2c8`. Exact-main P1–P6 run
-`33762589274` passed the complete five-runtime aggregate seal, and Issue #24 is
-closed.
+The forward frontier is defined in:
 
-P6 v1 consumes only frozen `ofu-p5-p6-environment-v2` / schema `2` /
-`p5-environment-2` / `P5_CANONICAL`. A domain-separated eligibility witness binds
-the complete canonical P5 projection, planet identity, P5 environment digest,
-P5 and P6 Semantic Manifests, P6 eligibility semantics and Model A identity
-policy. A bare `BIOSPHERE_SUPPORTED` label has no authority.
+- `docs/FRONTIER_WORKSTREAMS.md` — workstream contracts, current-state gap map and promotion gates;
+- `docs/PARALLEL_DEVELOPMENT_ARCHITECTURE.md` — exact-base, ownership and convergence rules;
+- `docs/frontier/WORKSTREAM_DAG.json` — machine-readable orchestration metadata;
+- `docs/frontier/WORKSTREAM_DAG.schema.json` — planning schema;
+- `docs/STATE_OF_THE_ART_RESEARCH_2026.md` — non-normative research rationale.
 
-The current real P5 Environment v2 path is honestly
-`INSUFFICIENT_ENVIRONMENT / canGenerateBiosphere=false`. Positive
-`P6_CONFORMANCE_ONLY` fixtures exist only under `tests/p6/`; they are excluded
-from the shipped runtime and cannot create canonical entities, events, saves or
-rendering truth.
+The frontier separates governance/kernel, exploration/query, astronomy, planetology, life, civilization, history, gameplay, visual rendering, UX/accessibility, runtime/portability, persistence/lineage, microscopic biology, matter representations, non-classical research, audio and certification.
 
-P6 v1 freezes:
+## Immediate critical path
 
-- deterministic integer energy/productivity/biomass/trophic ceilings;
-- PHOTOTROPHIC / CHEMOTROPHIC / MIXED / UNKNOWN source distinctions;
-- Model A P2 identity derivation for biosphere, lineage and species semantic IDs;
-- MACRO → MESO → MICRO refinement invariants without persistent individuals;
-- a P4-owned genesis guard whose current upstream preconditions accept no event;
-- fail-closed replay/checkpoint/compaction/save semantics for the no-biology state.
+1. preserve certified P0–P6 contracts and explicitly freeze new shared extension/query/event/provider seams;
+2. reduce central bootstrap/build/runtime edit pressure so later lanes can add providers rather than all editing the same files;
+3. establish universal exploration query/selection/scale-travel contracts independent of release-specific stage buttons;
+4. continue governed P5 environment/planetary science until a positive biological environment can be evaluated honestly;
+5. only then consider canonical positive Biology successors, followed by civilization/history domains that depend on them.
 
-Persistent lineage/speciation/extinction transitions are deliberately deferred.
-P6 v1 does not freeze an orphanable pseudo-lineage contract merely to preserve a
-pre-promotion candidate shape. Future positive biology and lineage lifecycle
-semantics require separately versioned scientific authority and a new promotion.
-
-### Exit gate
-
-**PASSED.** Material blocker count zero; exact candidate and exact merged `main` both pass
-Foundation, P1–P5, P6 authority/identity/replay, Golden/oracle, deterministic
-single-file build, bounded working-set, Worker-order and five-runtime browser
-certification. Real Safari/iOS remains `NOT_VERIFIED`.
-
-## First P1–P6 production rendering vertical slice
-
-The `v0.5.0-preview.1` integration owns presentation only. It consumes the
-frozen P1–P6 stack, materializes bounded P5 cube-sphere terrain through WebGL2
-with a Canvas2D fallback, and exposes the real P6 result without inventing life:
-`INSUFFICIENT_ENVIRONMENT / canonical biosphere established: NO`.
-
-Its production gate requires outward indexed terrain, same/cross-face and cube
-corner traversal, mixed LOD with presentation-only skirts, exact local-origin
-rebasing, bounded CPU/GPU caches, explicit buffer destruction, context-generation
-recovery, canonical non-interference, deterministic single-file output, direct
-`file://`, offline/zero-required-network execution and five-runtime evidence.
-Timing telemetry is measured evidence, not a byte-deterministic semantic gate.
-
----
-
-## P7 — Civilization, Culture & Economy
-
-### Objective
-Generate societies as consequences of environment, history, resources and interaction.
-
-### Domains
-Population, settlement, institutions, technology, trade, language, culture, economy, factions, diplomacy/conflict.
-
-### Exit gate
-Civilizations exhibit causally explainable differences and can move between COLD/WARM/HOT states without semantic discontinuity.
-
----
-
-## P8 — History & Late Materialization
-
-### Objective
-Create deep history without simulating every individual across cosmic time.
-
-### Model
-- macro history: aggregated/closed-form or coarse stochastic-deterministic transitions;
-- meso history: states/events for regions, polities and settlements;
-- micro history: constrained late materialization of people, artifacts, ruins, texts and local causal chains.
-
-### Exit gate
-Refinement property tests demonstrate that generated detail obeys previously committed facts and constraints.
-
----
-
-## P9 — Exploration & Gameplay
-
-### Objective
-Convert systems engineering into a meaningful player experience.
-
-### Candidate loops
-Discovery, navigation, observation, survival/resource interaction, trade, intervention, archaeology/history reconstruction, diplomacy, construction and consequences.
-
-Gameplay scope is validated against procedural-system strengths rather than added as disconnected mechanics.
-
-### Exit gate
-A repeatable end-to-end play loop changes canonical world state, survives save/export/import and reveals meaningful systemic diversity.
-
----
-
-## P10 — Rendering, Audio & Product Maturity
-
-Rendering evolves throughout earlier phases, but P10 focuses on product-level quality:
-- WebGL2 portable renderer maturity;
-- optional WebGPU accelerated path;
-- procedural materials and atmosphere;
-- scalable LOD/streaming;
-- procedural/modular AudioWorklet path where supported;
-- accessibility and control profiles;
-- profiling and quality adaptation.
-
-### Exit gate
-Named quality profiles meet documented performance budgets without altering canonical state.
-
----
-
-## P11 — Certification Candidate
-
-### Objective
-Make extraordinary claims independently auditable.
-
-### Deliverables
-- release manifest;
-- artifact SHA-256;
-- source commit/tree identity;
-- pinned build/toolchain manifest;
-- independent rebuild comparison;
-- cross-runtime conformance report;
-- record vector;
-- certified functional payload inventory;
-- benchmark data;
-- internal self-test dashboard;
-- security/offline audit.
-
-### Exit gate
-Every public claim maps to evidence and the claim taxonomy.
-
----
-
-## P12 — Scale Campaign
-
-Only after correctness, portability and meaning are established do we deliberately grow the artifact.
-
-Growth is admitted through useful capability:
-- richer deterministic models;
-- generator families;
-- scientific/static reference tables with provenance;
-- additional shaders/material grammars;
-- deeper self-tests and diagnostics;
-- accessibility/localization;
-- optional high-value embedded assets.
-
-Raw size is measured, but artificial inflation remains excluded from Certified Functional Payload.
+Rendering, UX, runtime performance, audio research, astronomy depth and non-canonical biology/civilization/microscopic research can advance in parallel where their authority boundaries are explicit.
 
 ## Roadmap rule
 
-A later phase MAY prototype earlier to reduce risk, but no prototype silently overrides an upstream constitutional contract. Discoveries that invalidate an ADR must update the ADR and compatibility story before dependent stable generators proceed.
+Research is not promotion. Presentation is not science. A later capability may prototype early, but no prototype silently overrides an upstream frozen contract. Discoveries requiring a semantic break create a new version/ADR/compatibility story before dependent canonical work stabilizes.

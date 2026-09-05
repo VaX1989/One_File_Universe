@@ -1,6 +1,6 @@
 # Architecture Decision Records
 
-ADRs capture decisions with durable semantic consequences. `Accepted` means the semantic contract is frozen enough for dependent work; it does not freeze every implementation detail.
+ADRs capture decisions with durable semantic consequences. `Accepted` means the semantic contract is frozen enough for dependent work; it does not freeze every implementation detail. `Proposed` records a decision candidate that still requires the relevant governance/founder ratification before dependent canonical assumptions may rely on it.
 
 | ADR | Decision | Status |
 |---|---|---|
@@ -26,11 +26,16 @@ ADRs capture decisions with durable semantic consequences. `Accepted` means the 
 | [020](ADR-020-p6-biological-identity-policy-v1.md) | P6 biological identity policy v1 | Accepted |
 | [021](ADR-021-p6-environment-witness-and-transition-scope.md) | P6 environment witness and transition scope | Accepted |
 | [022](ADR-022-production-rendering-authority-and-resource-lifecycle.md) | Production rendering authority and resource lifecycle | Accepted |
+| [023](ADR-023-universal-exploration-and-product-continuity.md) | Universal exploration and product continuity | Proposed |
+| [024](ADR-024-certified-history-and-frontier-dag.md) | Certified history and forward frontier DAG | Proposed |
+| [025](ADR-025-parallel-development-ownership.md) | Exact-base ownership and additive parallel development | Proposed |
+| [026](ADR-026-artifact-size-and-bounded-working-set.md) | Large distribution artifact and bounded runtime working set | Proposed |
 
 ## ADR policy
 
 - Superseded decisions are never silently rewritten out of history.
 - A breaking semantic change creates a new ADR or explicitly supersedes an old one.
-- Languages, compressors, allocators, exact PRFs and global numeric formats are not frozen merely for architectural neatness; they require P1/P2 evidence.
-- ADR-015 constrains P2 identity/address/query semantics without authorizing production multiscale simulation.
+- Languages, compressors, allocators, exact renderer optimizations and global numeric formats are not frozen merely for architectural neatness; they require evidence.
+- ADR-015 already reserves model-regime semantics, including future non-classical compatibility; the founder-vision formalization does not duplicate that decision.
+- ADR-023 through ADR-026 are proposals in this documentation transaction and do not become Accepted merely because the draft PR exists.
 - ADR filenames and headings use a unique three-digit identifier. `tests/governance/adr-hygiene.mjs` enforces identifier uniqueness, index coverage, heading alignment, explicit status and valid index links.

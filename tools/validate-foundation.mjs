@@ -7,6 +7,12 @@ const required = [
   'docs/CONSTITUTION.md',
   'docs/VISION.md',
   'docs/ARCHITECTURE.md',
+  'docs/MULTISCALE_REALITY.md',
+  'docs/PRODUCT_EXPERIENCE_VISION.md',
+  'docs/PARALLEL_DEVELOPMENT_ARCHITECTURE.md',
+  'docs/FRONTIER_WORKSTREAMS.md',
+  'docs/frontier/WORKSTREAM_DAG.json',
+  'docs/frontier/WORKSTREAM_DAG.schema.json',
   'docs/DETERMINISM.md',
   'docs/RECORD_SPEC.md',
   'docs/CONFORMANCE.md',
@@ -29,17 +35,23 @@ if (!failures.length) {
   const determinism = read('docs/DETERMINISM.md');
   const record = read('docs/RECORD_SPEC.md');
   const roadmap = read('docs/ROADMAP.md');
+  const vision = read('docs/VISION.md');
 
   const clauses = [
     [constitution, 'Strict Direct-Open', 'Constitution must define Strict Direct-Open'],
     [constitution, 'Canonical / derived / presentation boundary', 'Constitution must define authority boundary'],
     [constitution, 'English is the normative language of One File Universe.', 'Constitution must define the normative Project Language Policy'],
     [constitution, 'translations are non-normative', 'Constitution must keep localization non-normative'],
+    [constitution, 'Universal exploration freedom', 'Constitution must preserve the founder-review universal exploration principle'],
     [determinism, 'generatorManifestHash', 'Determinism contract must bind generator manifest'],
     [determinism, 'domain separation', 'Determinism contract must require domain separation'],
     [architecture, 'COLD', 'Architecture must define semantic simulation LOD'],
+    [architecture, 'REFINE', 'Architecture must preserve cross-scale refinement semantics'],
+    [vision, 'UNIVERSAL_EXPLORATION_FREEDOM', 'Vision must define universal exploration freedom'],
     [record, 'Certified Functional Payload', 'Record spec must define CFP'],
-    [roadmap, 'P1 — Constitutional Prototype', 'Roadmap must retain P1 falsification prototype']
+    [roadmap, 'P1 — Constitutional Prototype', 'Roadmap must retain P1 falsification prototype'],
+    [roadmap, 'Layer A — Certified development history', 'Roadmap must preserve certified-history layer'],
+    [roadmap, 'Layer B — Forward Frontier DAG', 'Roadmap must define the forward frontier layer']
   ];
 
   for (const [text, needle, message] of clauses) {
@@ -76,6 +88,7 @@ if (!failures.length) {
 
   notes.push(`${adrs.length} foundational ADRs discovered`);
   notes.push(`${docs.length} Markdown foundation documents inspected`);
+  notes.push('founder vision and forward frontier documentation present');
   notes.push('normative English project-language policy present');
 }
 
