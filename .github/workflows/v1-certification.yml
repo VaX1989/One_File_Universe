@@ -1,0 +1,110 @@
+name: V1 Definitive Certification
+on:
+  push:
+    branches:
+      - integration/v1.0-definitive-product-convergence-2026-09-05
+      - main
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+concurrency:
+  group: v1-certification-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: true
+env:
+  OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+permissions:
+  contents: read
+jobs:
+  exact-head:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with: {ref: '${{ env.OFU_SOURCE_SHA }}'}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with: {node-version: '24.20.0'}
+      - name: Verify exact source
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: V1 scientific, persistence and PX conformance
+        run: |
+          node tests/v1/domain-models.mjs
+          node tests/v1/world-discovery.mjs
+          node tests/v1/model-regime-runtime.mjs
+          node tests/v1/session-persistence.mjs
+          node tests/v1/audio-context.mjs
+          node tests/v1/provider-integration.mjs
+          node tests/v1/release-model-seal.mjs
+          node tools/extensions/conformance.mjs RELEASE --exact
+      - name: Frozen foundation and Wave IV regression
+        run: |
+          node tests/rendering/run-production-tests.mjs
+          node tests/wave-iv/convergence-runtime.mjs
+          node tests/wave-iv/macro/macro-oracles.mjs
+      - name: Deterministic final single-file build
+        shell: bash
+        run: |
+          node tools/build-ofu-rendering-v09.mjs
+          cp dist/One_File_Universe.html /tmp/v1-first.html
+          cp dist/rendering-build-manifest.json /tmp/v1-first-manifest.json
+          node tools/build-ofu-rendering-v09.mjs
+          cmp /tmp/v1-first.html dist/One_File_Universe.html
+          cmp /tmp/v1-first-manifest.json dist/rendering-build-manifest.json
+          test "$(grep -Eoc '(src|href)=["'"'][^"'"']*https?://' dist/One_File_Universe.html)" -eq 0
+          grep -q "connect-src 'none'" dist/One_File_Universe.html
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v1-candidate-${{ env.OFU_SOURCE_SHA }}
+          path: |
+            dist/One_File_Universe.html
+            dist/rendering-build-manifest.json
+  browser-linux:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: {browser: [chromium, firefox, webkit]}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with: {ref: '${{ env.OFU_SOURCE_SHA }}'}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with: {node-version: '24.20.0'}
+      - run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - run: node tools/build-ofu-rendering-v09.mjs
+      - run: npm install --no-save playwright@1.62.1
+      - run: npx playwright install --with-deps ${{ matrix.browser }}
+      - name: V1 direct-file product journey
+        run: node tests/v1/browser-v1-product.mjs
+        env: {BROWSER: '${{ matrix.browser }}'}
+      - name: V1 bounded soak
+        if: matrix.browser == 'chromium'
+        run: node tests/v1/browser-v1-soak.mjs
+  browser-platform:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {os: windows-latest, browser: chromium}
+          - {os: macos-latest, browser: webkit}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with: {ref: '${{ env.OFU_SOURCE_SHA }}'}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with: {node-version: '24.20.0'}
+      - shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - run: node tools/build-ofu-rendering-v09.mjs
+      - run: npm install --no-save playwright@1.62.1
+      - run: npx playwright install ${{ matrix.browser }}
+      - name: V1 direct-file product journey
+        run: node tests/v1/browser-v1-product.mjs
+        env: {BROWSER: '${{ matrix.browser }}'}
+  seal:
+    if: always()
+    needs: [exact-head, browser-linux, browser-platform]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require exact v1 candidate matrix
+        shell: bash
+        run: |
+          test '${{ needs.exact-head.result }}' = success
+          test '${{ needs.browser-linux.result }}' = success
+          test '${{ needs.browser-platform.result }}' = success
