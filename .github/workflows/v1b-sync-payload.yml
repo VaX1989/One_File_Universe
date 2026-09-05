@@ -26,7 +26,7 @@ jobs:
           cat .github/v1b-payload/0* | base64 -d | gzip -d > /tmp/v1b.patch
           echo 'dca28051f94f7f1eaac4e0252c9ec524f6e0ad30d63db316976625e64d3b8550  /tmp/v1b.patch' | sha256sum -c -
           git apply --binary --index /tmp/v1b.patch
-          git rm .github/workflows/v1-certification.yml
+          git rm -f .github/workflows/v1-certification.yml
           git rm --cached -r .github/v1b-payload .github/workflows/v1b-sync-payload.yml
           test "$(git write-tree)" = 'a624f3bde5ba35ee1505b92a87d84817033faacf'
           git add .github/v1b-payload .github/workflows/v1b-sync-payload.yml
