@@ -1,0 +1,7 @@
+import * as C from './civilization-history-prototype.mjs';
+const fixtures=[
+{fixtureId:'river-valley',authority:'SYNTHETIC_TEST_ONLY',population:2400,environment:{status:'SUPPORTED_SYNTHETIC',carryingCapacityProxy:9000,resources:{food:20000,material:12000,energy:8000}},biology:{status:'LIFE_SUPPORTED_SYNTHETIC'}},
+{fixtureId:'island-chain',authority:'SYNTHETIC_TEST_ONLY',population:700,environment:{status:'SUPPORTED_SYNTHETIC',carryingCapacityProxy:2200,resources:{food:6000,material:3000,energy:2500}},biology:{status:'LIFE_SUPPORTED_SYNTHETIC'}},
+{fixtureId:'dry-interior',authority:'SYNTHETIC_TEST_ONLY',population:380,environment:{status:'SUPPORTED_SYNTHETIC',carryingCapacityProxy:800,resources:{food:2200,material:5000,energy:1800}},biology:{status:'LIFE_SUPPORTED_SYNTHETIC'}}];
+const corpus=fixtures.map((upstream,i)=>{const cold=C.createColdState({seed:`wv-d-corpus-${i}`,upstream}),warm=C.refineWarm(cold,{settlementCount:3+i,factionCount:2+i}),hot=C.refineHot(warm,0),immediate=C.refineImmediate(hot,{requestedAgents:12});C.reconcile(immediate);return{fixtureId:upstream.fixtureId,cold:C.snapshotDigest(cold),warm:C.snapshotDigest(warm),hot:C.snapshotDigest(hot),immediate:C.snapshotDigest(immediate),population:cold.population,settlements:warm.settlements.length,factions:warm.factions.length}});
+console.log(JSON.stringify({contract:C.RESEARCH_CONTRACT,authority:C.REQUIRED_UPSTREAM_AUTHORITY,corpus},null,2));
