@@ -24,6 +24,10 @@ jobs:
         with: {node-version: '24.20.0'}
       - name: Verify exact source
         run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Install RELEASE browser oracle runtime
+        run: |
+          npm install --no-save playwright@1.62.1
+          npx playwright install --with-deps chromium
       - name: V1 scientific, persistence and PX conformance
         run: |
           node tests/v1/domain-models.mjs
@@ -71,8 +75,18 @@ jobs:
       - run: npm install --no-save playwright@1.62.1
       - run: npx playwright install --with-deps ${{ matrix.browser }}
       - name: V1 direct-file product journey
-        run: node tests/v1/browser-v1-product.mjs
+        shell: bash
+        run: |
+          set -o pipefail
+          node tests/v1/browser-v1-product.mjs 2>&1 | tee v1-browser-${{ matrix.browser }}.log
         env: {BROWSER: '${{ matrix.browser }}'}
+      - name: Preserve V1 browser diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v1-browser-log-${{ runner.os }}-${{ matrix.browser }}-${{ env.OFU_SOURCE_SHA }}
+          path: v1-browser-${{ matrix.browser }}.log
+          if-no-files-found: ignore
       - name: V1 bounded soak
         if: matrix.browser == 'chromium'
         run: node tests/v1/browser-v1-soak.mjs
@@ -95,8 +109,18 @@ jobs:
       - run: npm install --no-save playwright@1.62.1
       - run: npx playwright install ${{ matrix.browser }}
       - name: V1 direct-file product journey
-        run: node tests/v1/browser-v1-product.mjs
+        shell: bash
+        run: |
+          set -o pipefail
+          node tests/v1/browser-v1-product.mjs 2>&1 | tee v1-browser-${{ matrix.browser }}.log
         env: {BROWSER: '${{ matrix.browser }}'}
+      - name: Preserve V1 browser diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v1-browser-log-${{ runner.os }}-${{ matrix.browser }}-${{ env.OFU_SOURCE_SHA }}
+          path: v1-browser-${{ matrix.browser }}.log
+          if-no-files-found: ignore
   seal:
     if: always()
     needs: [exact-head, browser-linux, browser-platform]
