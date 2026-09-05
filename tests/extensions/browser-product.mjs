@@ -6,7 +6,7 @@ import {pathToFileURL} from 'node:url';
 import {chromium,firefox,webkit} from 'playwright';
 const name=process.env.BROWSER||'chromium',engine={chromium,firefox,webkit}[name];assert(engine,'known browser required');
 const file=path.resolve('dist/One_File_Universe.html'),build=JSON.parse(fs.readFileSync('dist/rendering-build-manifest.json','utf8')),source=process.env.OFU_SOURCE_SHA;
-assert.equal(build.sourceCommit,source);assert.equal(build.px?.scope,'FULL_WAVE_IV_PRODUCT');assert.equal(createHash('sha256').update(fs.readFileSync(file)).digest('hex'),build.artifactSha256);
+assert.equal(build.sourceCommit,source);assert.equal(build.px?.scope,'FULL_V1_WAVE_A_PRODUCT');assert.equal(createHash('sha256').update(fs.readFileSync(file)).digest('hex'),build.artifactSha256);
 const headed=process.env.HEADED==='1',browser=await engine.launch({headless:!headed,...(name==='firefox'?{firefoxUserPrefs:{'webgl.disabled':false,'webgl.force-enabled':true,'webgl.forbid-software':false}}:{})}),context=await browser.newContext({viewport:{width:1280,height:800},deviceScaleFactor:Number(process.env.DPR||1)}),page=await context.newPage(),errors=[],requests=[];
 page.on('pageerror',e=>errors.push(String(e.message||e)));page.on('request',r=>requests.push({url:r.url(),type:r.resourceType(),nav:r.isNavigationRequest()}));const url=pathToFileURL(file).href;
 try{
