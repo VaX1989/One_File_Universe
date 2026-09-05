@@ -47,6 +47,8 @@ jobs:
       - name: Product v0.8 composition and lane contracts
         run: |
           node tests/rendering/vertex-array-ownership.mjs
+          node tests/wave-iv/relief-lifecycle.mjs
+          node tests/wave-iv/preview-terrain-lifecycle.mjs
           node tests/rendering/local-surface-ray-oracle.mjs
           node tests/rendering/dual-artifact-seal.mjs
           node tests/product/v08-parallel-seams.mjs

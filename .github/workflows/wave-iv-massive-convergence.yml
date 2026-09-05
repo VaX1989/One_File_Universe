@@ -38,12 +38,14 @@ jobs:
       - name: Surface authority, frustum coverage, unsupported-body, continuity, and relief oracles
         run: |
           node tests/rendering/vertex-array-ownership.mjs
+          node tests/wave-iv/preview-terrain-lifecycle.mjs
           node tests/rendering/wave-iv-surface-frame.mjs
           node tests/rendering/wave-iv-surface-terrain.mjs
           node tests/wave-iv/surface-capability.mjs
           node tests/wave-iv/terrain-continuity.mjs
           node tests/wave-iv/surface-frustum-coverage.mjs
           node tests/wave-iv/surface-relief-presentation.mjs
+          node tests/wave-iv/relief-lifecycle.mjs
       - name: Reproducible exact-head Wave IV single file
         shell: bash
         run: |
@@ -71,7 +73,7 @@ jobs:
           grep -q 'globalSurfaceGlobeDistanceRadii' dist/rendering-build-manifest.json
           grep -q 'globalGlobeHandoffAtomic' dist/rendering-build-manifest.json
           grep -q 'ofu-local-terrain-lod-4' dist/rendering-build-manifest.json
-          grep -q 'ofu-surface-relief-presentation-1' dist/rendering-build-manifest.json
+          grep -q 'ofu-surface-relief-presentation-2' dist/rendering-build-manifest.json
           grep -q 'ofu-local-surface-webgl2-8' dist/rendering-build-manifest.json
           grep -q 'DETERMINISTIC_LOCAL_MATERIAL_REGIONS_V1' dist/rendering-build-manifest.json
           grep -q 'presentationElevationColorRangeM' dist/rendering-build-manifest.json

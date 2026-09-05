@@ -85,7 +85,12 @@ export async function localSurfaceEvidence(page, {requireWebGL = false, sampleFr
   for(const v of [...e.camera.absolutePresentationPositionM,...e.camera.cameraRelativePositionM,e.camera.headingRad,e.camera.pitchRad])assert(Number.isFinite(v),'local pose must be finite');
   assert(e.camera.presentationAltitudeM>=2);
   for(const claim of ['physicalTerrainElevationClaim','canonicalGeodesyClaim','geologyClaim','hydrologyClaim','vegetationClaim','biosphereClaim'])assert.equal(e.claims[claim],false);
-  if(e.resources)assertSurfaceResources(e.resources);
+  if(e.resources){
+    assertSurfaceResources(e.resources);
+    assert.equal(e.coveragePlan.coverageMode,'FRUSTUM_GROUND_FOOTPRINT_BOUNDED','every surface lifecycle must preserve the assembled frustum planner');
+    assert.equal(e.coveragePlan.coverageComplete,true,'surface frustum coverage cannot be truncated');
+    assert.equal(e.coveragePlan.footprintContained,true,'the active patch set must contain the visible footprint');
+  }
   if(e.framebuffer.status==='MEASURED'){assert(e.framebuffer.cpuHits>=8,'local oracle must sample actual terrain: '+JSON.stringify(e.framebuffer));assert.equal(e.framebuffer.cpuHitClear,0,'local terrain is missing at independently confirmed visible mesh intersections: '+JSON.stringify(e.framebuffer));}
   return e;
 }
