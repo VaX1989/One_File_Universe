@@ -1,0 +1,46 @@
+{
+  "schema": "OFU_WAVE_A_INPUTS_V1",
+  "base": {
+    "sha": "a1a77f66bb617415db956366b295c45d316945b1",
+    "tree": "1179192337886b9a7c9042b5eb816485eca78153"
+  },
+  "preservedDefinitiveHead": "9dac1888668fb0a3bafb6fb77c9624a62205f064",
+  "lanes": [
+    {
+      "name": "planetology-environment",
+      "branch": "parallel/v1-wave-a-planetology-environment-2026-09-05",
+      "sha": "54c4f64496e111dec092d940414098749ce45fc0",
+      "tree": "81ccd3b45faf0ff0ad38eaf6f7971309ead61ffb"
+    },
+    {
+      "name": "life-evolution",
+      "branch": "parallel/v1-wave-a-life-evolution-2026-09-05",
+      "sha": "98a35b72ebee2febc9ec1ef6ecb21f2402d1144b",
+      "tree": "3bcf6f3673fffcc812c15f464a2f6c378b20beb0"
+    },
+    {
+      "name": "civilization-history",
+      "branch": "parallel/v1-wave-a-civilization-history-2026-09-05",
+      "sha": "7faeae2780d0413b95f2e7996dc4a9bc5c863553",
+      "tree": "9c0358d9006ff9c72150674f63fba39669b02360"
+    },
+    {
+      "name": "microscopic-reality",
+      "branch": "parallel/v1-wave-a-microscopic-reality-2026-09-05",
+      "sha": "fec8566ea367ab9bf14042d199e8b9cfc82ce20b",
+      "tree": "fbdb0d31912118267fb8a133509471c03d5e55aa"
+    },
+    {
+      "name": "universal-exploration",
+      "branch": "parallel/v1-wave-a-universal-exploration-2026-09-05",
+      "sha": "79239193513b582bfa7b2ed37ceca9316bb52417",
+      "tree": "12d2b9098ea76cbfec743917adafe9c42bbb30ff"
+    },
+    {
+      "name": "world-rendering",
+      "branch": "parallel/v1-wave-a-world-rendering-2026-09-05",
+      "sha": "1f077a706e4b9e3eaceccb82c4a632d623c57b80",
+      "tree": "f2aa955a5731624352f49accd5028d0a6efb7a33"
+    }
+  ]
+}
