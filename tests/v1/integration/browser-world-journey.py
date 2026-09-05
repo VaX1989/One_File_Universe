@@ -144,6 +144,7 @@ try:
         attach(page)
         roots = js(page, 's.rows.map(n=>({id:n.canonicalId,kind:n.kind}))')
         check(len(roots) >= 3, 'Multiple real galaxies visible at launch')
+        check(not js(page, "document.documentElement.hasAttribute('aria-selected')||document.documentElement.hasAttribute('tabindex')"), 'Workspace handlers do not turn the document root into a tab')
         picture(page, '01-universe')
         selected_galaxy = roots[2]['id']
         entity(page, selected_galaxy, 'GALAXY')
@@ -266,8 +267,10 @@ try:
         mobile.locator('.mobile-sheet-toggle').tap()
         check(mobile.locator('.mobile-sheet-toggle').get_attribute('aria-expanded') == 'true', 'Touch expands the actual mobile exploration sheet')
         entity(mobile, mobile_roots[1], 'GALAXY')
+        check(mobile.locator('.mobile-sheet-toggle').get_attribute('aria-expanded') == 'true', 'Entity selection does not spuriously collapse the mobile sheet')
         check(js(mobile, 'document.documentElement.scrollWidth<=window.innerWidth+2'), 'Mobile page has no horizontal overflow')
         mobile.locator('.mobile-sheet-toggle').tap()
+        check(mobile.locator('.mobile-sheet-toggle').get_attribute('aria-expanded') == 'false', 'Touch deliberately collapses the mobile sheet')
         mobile.locator('#living-view').focus()
         mobile.keyboard.press('Home')
         ready(mobile, 'UNIVERSE')

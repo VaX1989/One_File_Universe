@@ -89,6 +89,16 @@ same ordered results without duplicates or skipped orbit slots. Canonical P6
 and selection authority remain independently checked. No red scientific oracle
 was relaxed to manufacture life or civilization.
 
+## Mobile input defect closure
+
+The direct touch journey exposed an inherited workspace selector collision:
+`closest("[data-workspace]")` matched the document root on every click, so both
+the product shell and mobile controller treated sheet toggles and entity picks
+as workspace-tab activation. Both owners now select `button[data-workspace]`
+only. The browser gate proves real touch expansion, entity selection without
+spurious collapse, deliberate collapse, and keyboard return to the universe.
+The document root must never acquire tab roles or selection attributes.
+
 ## Bounds
 
 Discovery is paginated, at most 128 system queries and 12 modeled worlds per
