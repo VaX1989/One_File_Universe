@@ -10,4 +10,15 @@ for(const scale of R.LADDER){R.requestStage(scale,{source:'oracle',driveCamera:f
 const key={galaxyX:48n,galaxyY:-50n,galaxyZ:-1n,sectorX:0n,sectorY:0n,sectorZ:0n,siteX:61n,siteY:0n,siteZ:0n,orbitSlot:0n};R.setSelection(key,{planetId:'p',presentationStatus:'SUPPORTED'});const before=R.snapshot().selectedCanonicalTarget;R.requestStage('galaxy',{driveCamera:false});R.requestStage('human',{driveCamera:false});assert.deepEqual(R.snapshot().selectedCanonicalTarget,before);
 R.requestStage('orbit',{driveCamera:false});const a=R.snapshot().anchors,threshold=Math.sqrt(a.orbit*a.approach);R.setContinuousDistance(threshold*1.01,{driveCamera:false});assert.equal(R.snapshot().semanticScale,'orbit','hysteresis must retain previous band near boundary');R.setContinuousDistance(threshold*.85,{driveCamera:false});assert.equal(R.snapshot().semanticScale,'approach');
 for(let i=0;i<R.LADDER.length-1;i++)assert.equal(R.adjacent(R.LADDER[i],R.LADDER[i+1]),true);assert.equal(R.adjacent('galaxy','system'),false);
+// Anchored framing is resized by the scale owner; continuous travel is not snapped.
+R.requestStage('approach',{driveCamera:false});
+const framed=R.snapshot().anchors.approach*1.1;
+R.configureAnchor('approach',framed,{source:'resize-oracle'});
+assert.equal(R.snapshot().distanceIntentRadii,framed,'resize must synchronize anchored scale intent');
+assert.equal(R.snapshot().intentKind,'anchor');
+R.setContinuousDistance(framed*.97,{driveCamera:false});
+const continuous=R.snapshot().distanceIntentRadii;
+R.configureAnchor('approach',framed*1.05,{source:'resize-oracle'});
+assert.equal(R.snapshot().distanceIntentRadii,continuous,'resize must not snap continuous travel');
+assert.equal(R.snapshot().intentKind,'continuous');
 console.log(JSON.stringify({status:'PASS',version:R.VERSION,scales:R.LADDER,activations:activations.length,selectionContinuity:true,hysteresis:R.snapshot().hysteresisFraction,parsedBrowserSourceRoots:parseRoots}));
