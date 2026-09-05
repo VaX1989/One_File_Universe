@@ -1,0 +1,37 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+import {chromium} from 'playwright';
+
+const artifact=path.resolve('dist/One_File_Universe.html');
+assert(fs.existsSync(artifact),'build artifact required');
+const browser=await chromium.launch({headless:true});
+const page=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:2,hasTouch:true,isMobile:true});
+const errors=[];page.on('pageerror',e=>errors.push(String(e)));page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
+await page.goto('file://'+artifact,{waitUntil:'load'});
+await page.waitForFunction(()=>globalThis.OFU?.waveIVVerticalSlice?.snapshot?.().semanticScale,{timeout:15000});
+
+const snap=()=>page.evaluate(()=>({runtime:OFU.waveIVScaleRuntime.snapshot(),vertical:OFU.waveIVVerticalSlice.snapshot(),input:OFU.waveIVInputRouter.snapshot(),macro:OFU.waveIVMacroCanvas.snapshot()}));
+async function stage(name){await page.evaluate(n=>OFU.waveIVScaleRuntime.requestStage(n,{source:'founder-browser-oracle'}),name);await page.waitForFunction(n=>OFU.waveIVScaleRuntime.snapshot().semanticScale===n,name);await page.waitForTimeout(120)}
+async function pointer(canvasSelector,type,id,x,y){await page.evaluate(({canvasSelector,type,id,x,y})=>{const c=document.querySelector(canvasSelector),r=c.getBoundingClientRect();c.dispatchEvent(new PointerEvent(type,{pointerId:id,pointerType:'touch',isPrimary:id===1,clientX:r.left+x,clientY:r.top+y,bubbles:true,cancelable:true,buttons:type==='pointerup'?0:1}));},{canvasSelector,type,id,x,y})}
+async function pinch(canvasSelector,ratio=1.8){const box=await page.locator(canvasSelector).boundingBox();assert(box);const cx=box.width/2,cy=box.height/2,start=34,end=start*ratio;await pointer(canvasSelector,'pointerdown',1,cx-start,cy);await pointer(canvasSelector,'pointerdown',2,cx+start,cy);await pointer(canvasSelector,'pointermove',1,cx-end,cy);await pointer(canvasSelector,'pointermove',2,cx+end,cy);await pointer(canvasSelector,'pointerup',1,cx-end,cy);await pointer(canvasSelector,'pointerup',2,cx+end,cy);await page.waitForTimeout(90)}
+
+await stage('galaxy');
+let s=await snap();assert.equal(s.macro.touchAction,'none');assert.equal(s.vertical.activeSceneProvider,'wave-iv-macro');
+const beforePan=s.macro.gesturePans,beforeTaps=s.macro.taps,macroBox=await page.locator('#wave-iv-macro-view').boundingBox();assert(macroBox);
+await pointer('#wave-iv-macro-view','pointerdown',11,macroBox.width*.2,macroBox.height*.22);await pointer('#wave-iv-macro-view','pointermove',11,macroBox.width*.46,macroBox.height*.39);await pointer('#wave-iv-macro-view','pointerup',11,macroBox.width*.46,macroBox.height*.39);await page.waitForTimeout(80);s=await snap();assert(s.macro.gesturePans>beforePan,'macro drag must pan');assert.equal(s.macro.taps,beforeTaps,'drag must not activate a tap');
+
+const observed=new Set([s.runtime.semanticScale]);for(let i=0;i<7&&s.runtime.semanticScale!=='system';i++){await pinch('#wave-iv-macro-view',2);s=await snap();observed.add(s.runtime.semanticScale)}assert(observed.has('stellar_neighborhood'),'pinch traversal must resolve stellar neighborhood');assert.equal(s.runtime.semanticScale,'system','continued pinch must reach system without scale buttons');assert(s.vertical.scaleGestures>0);
+
+const target=await page.evaluate(()=>{const R=OFU.waveIVScaleRuntime.snapshot(),P=globalThis.__OFU_PLANET_PREVIEW__,key=R.selectedCanonicalTarget.canonicalKey,scene=OFU.waveIVMacroProvider.getScene({scale:'SYSTEM',ctx:P.ctx,canonicalKey:key,selectedOrbitSlot:key.orbitSlot}),c=document.getElementById('wave-iv-macro-view'),r=c.getBoundingClientRect(),layout=OFU.waveIVMacroInteraction.layout(scene,{width:r.width,height:r.height,mobile:r.width<640}),planets=scene.objects.filter(o=>o.kind==='PLANET'),planetHits=layout.hits.filter(h=>h.kind==='PLANET'),current=Number(key.orbitSlot),candidate=planetHits.find(h=>Number(h.canonicalKey.orbitSlot)!==current)||planetHits[0];return{planetCount:planets.length,hitCount:planetHits.length,current,target:Number(candidate.canonicalKey.orbitSlot),x:r.left+candidate.x,y:r.top+candidate.y,minTarget:Math.min(...planetHits.map(h=>Math.min(h.width,h.height)))}});
+assert(target.planetCount>0);assert.equal(target.hitCount,target.planetCount,'every canonical planet shown in System must have a hit target');assert(target.minTarget>=48,'planet touch targets must be at least 48 CSS px');await page.mouse.click(target.x,target.y);await page.waitForFunction(t=>{const s=OFU.waveIVScaleRuntime.snapshot();return s.semanticScale==='orbit'&&s.selectedCanonicalTarget?.orbitIndex===t},target.target);s=await snap();assert.equal(s.runtime.semanticScale,'orbit');assert.equal(s.runtime.selectedCanonicalTarget.orbitIndex,target.target);
+
+const pinchBefore=s.input.pinchIntents,distBefore=s.runtime.distanceIntentRadii;await pinch('#planet-view',1.18);s=await snap();assert(s.input.pinchIntents>pinchBefore,'planet pinch must be owned by Wave IV input router');assert.notEqual(s.runtime.distanceIntentRadii,distBefore,'planet pinch must change continuous scale intent');
+
+await stage('global_surface');await page.waitForFunction(()=>__OFU_PLANET_PREVIEW__.snapshot().surfaceMode==='GLOBE');await page.waitForTimeout(300);const globe=await page.evaluate(()=>{const preview=globalThis.__OFU_PLANET_PREVIEW__.snapshot(),c=document.getElementById('planet-view'),gl=c.getContext('webgl2');return{backend:preview.backend||'none',glAvailable:!!gl,rendererVersion:OFU.planetWebGL2?.VERSION||null,surfaceMode:preview.surfaceMode,canvasWidth:c.width,canvasHeight:c.height}});assert.equal(globe.backend,'webgl2');assert.equal(globe.glAvailable,true);assert.equal(globe.rendererVersion,'ofu-planet-webgl2-presentation-5');assert.equal(globe.surfaceMode,'GLOBE');assert(globe.canvasWidth>0&&globe.canvasHeight>0);
+
+await page.setViewportSize({width:320,height:700});await page.waitForTimeout(150);const responsive=await page.evaluate(()=>{const p=document.getElementById('planet-view').getBoundingClientRect(),rail=document.getElementById('wave-iv-scale-rail').getBoundingClientRect(),sheet=document.querySelector('.experience > .panel')?.getBoundingClientRect(),mobile=OFU.v08MobileInteraction?.snapshot?.();return{innerWidth,scrollWidth:document.documentElement.scrollWidth,planet:{left:p.left,right:p.right,width:p.width},rail:{left:rail.left,right:rail.right,width:rail.width,top:rail.top,bottom:rail.bottom},sheet:sheet?{top:sheet.top,bottom:sheet.bottom}:null,sheetState:mobile?.sheet||null,touch:getComputedStyle(document.getElementById('planet-view')).touchAction}});assert(responsive.scrollWidth<=responsive.innerWidth+1,'mobile layout must not overflow horizontally');assert(responsive.planet.left>=-1&&responsive.planet.right<=responsive.innerWidth+1,'planet canvas must fit mobile viewport');assert(responsive.rail.left>=-1&&responsive.rail.right<=responsive.innerWidth+1,'scale rail must fit mobile viewport');if(responsive.sheet&&responsive.sheetState==='peek')assert(responsive.rail.bottom<=responsive.sheet.top-2,'collapsed mobile details sheet must not obscure scale rail');assert.equal(responsive.touch,'none');
+
+assert.deepEqual(errors,[],'browser console/page errors');
+console.log(JSON.stringify({status:'PASS',observedMacroScales:[...observed],systemPlanets:target.planetCount,directVisitedOrbitSlot:target.target,globe,responsive,macroGestures:{pans:s.macro.gesturePans,zooms:s.macro.gestureZooms},input:{pinches:s.input.pinchIntents}},null,2));
+await browser.close();

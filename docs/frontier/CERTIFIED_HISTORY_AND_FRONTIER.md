@@ -71,8 +71,8 @@ A future positive biology successor requires separately promoted environmental a
 
 - **v0.5.0-preview.1:** first P1–P6 production rendering vertical slice; presentation only.
 - **Product Polish / v0.7:** Explore / Inspect / Lab information hierarchy, scientific communication and accessibility/product hardening without changing P1–P6 authority.
-- **v0.8 Founder Visual Closure:** promoted to current `main` at `44f6e068d7d513c8746f23fb7580572758dc2ece` after founder physical Android acceptance of its certified candidate.
-- **Wave IV / v0.9 convergence:** CURRENT DEVELOPMENT, not certified history. PR #48 head `0563b5ccfdc19c072e1cee42751471186b6d0b90` passes Foundation/P1–P6 and Wave IV development checks but required Rendering Production is failing. It remains independent from this vision-formalization work.
+- **v0.8 Founder Visual Closure:** historically promoted to `main` at `44f6e068d7d513c8746f23fb7580572758dc2ece` after founder physical Android acceptance of its certified candidate.
+- **Wave IV technical convergence:** PR #48 candidate `f4df1452529cb5f121e4065f567b4a3da52d2b75` passed Rendering Production `33959845666`, Wave IV convergence `33959845605` and all frozen upstream gates. Normal protected merge `e33156ee8ed9c6e906d0d4e0b8142fa235a833c7` preserves its tree `5d46fd5e346fd6440cc1efd8cbc67fa13a9390c4`. Earlier failing heads remain historical evidence, not current blockers. No fresh physical-device PASS is inferred.
 
 ## Historical forward labels P7–P12
 
@@ -101,15 +101,23 @@ The forward frontier is defined in:
 
 The frontier separates governance/kernel, exploration/query, astronomy, planetology, life, civilization, history, gameplay, visual rendering, UX/accessibility, runtime/portability, persistence/lineage, microscopic biology, matter representations, non-classical research, audio and certification.
 
-## Immediate critical path
+## Active implementation path
 
-1. preserve certified P0–P6 contracts and explicitly freeze new shared extension/query/event/provider seams;
-2. reduce central bootstrap/build/runtime edit pressure so later lanes can add providers rather than all editing the same files;
-3. establish universal exploration query/selection/scale-travel contracts independent of release-specific stage buttons;
-4. continue governed P5 environment/planetary science until a positive biological environment can be evaluated honestly;
-5. only then consider canonical positive Biology successors, followed by civilization/history domains that depend on them.
+The [founder-ratified v1.0 contract](../governance/V1_IMPLEMENTATION_CONTRACT.md)
+authorizes a continuous implementation program: Wave IV technical closure,
+vision reconciliation, real PX-01 through PX-06, then the complete v1.0 product.
+These are successive transactions, not endpoints at which development pauses.
 
-Rendering, UX, runtime performance, audio research, astronomy depth and non-canonical biology/civilization/microscopic research can advance in parallel where their authority boundaries are explicit.
+Canonical scientific promotion and shipping model-derived simulation are distinct
+paths. A positive canonical Biology successor still needs sufficient upstream
+canonical evidence. Rich causal life, ecology, evolution and civilization models
+may instead ship as `MODEL_DERIVED_SIMULATION`, with assumptions, applicability,
+provenance, deterministic transitions and cross-scale witnesses. They must not
+mutate P6 v1's fail-closed eligibility or claim experimental validation they lack.
+
+The current maturity fields remain evidence statements; authorization does not
+turn `NOT_IMPLEMENTED` into `DONE`. Update them only with implementation and
+exact-source acceptance evidence.
 
 ## Roadmap rule
 

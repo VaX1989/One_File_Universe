@@ -1,7 +1,26 @@
 {
   "schemaVersion": 1,
   "authority": "PLANNING_METADATA_ONLY",
-  "baseMainSha": "44f6e068d7d513c8746f23fb7580572758dc2ece",
+  "baseMainSha": "e33156ee8ed9c6e906d0d4e0b8142fa235a833c7",
+  "implementationProgram": {
+    "id": "OFU-V1-2026-09-05",
+    "state": "AUTHORIZED_IN_PROGRESS",
+    "authorityDocument": "docs/governance/V1_IMPLEMENTATION_CONTRACT.md",
+    "ratifiedAdrs": [
+      "ADR-023",
+      "ADR-024",
+      "ADR-025",
+      "ADR-026"
+    ],
+    "phaseOrder": [
+      "WAVE_IV_CLOSURE",
+      "VISION_RECONCILIATION",
+      "PX_IMPLEMENTATION",
+      "V1_PRODUCT_AND_RELEASE"
+    ],
+    "releaseTag": "v1.0.0",
+    "releaseArtifact": "One_File_Universe-v1.0.0.html"
+  },
   "workstreams": [
     {
       "id": "F-GOV",
@@ -455,12 +474,12 @@
       "performanceEnvelope": "Certification itself may be expensive; release runtime budgets are workstream-defined and independently measured.",
       "evidenceRequirements": ["exact-head source/tree", "foundation/ADR/DAG validation", "canonical conformance", "scientific review", "visual/UX/device evidence", "resource/performance evidence", "reproducible artifact"],
       "promotionGate": "Every release claim has matching exact-candidate evidence and no unresolved material blocker across co-equal product dimensions.",
-      "knownUnsupportedAreas": ["Current Wave IV candidate is not release-ready while required Rendering Production fails."],
+      "knownUnsupportedAreas": ["Wave IV is technically certified; the expanded v1.0 models and product remain subject to actual implementation and release evidence."],
       "parallelizationGroup": "G-CERT",
       "criticalPath": true,
       "ownedModules": ["tests", ".github/workflows", "docs/evidence", "release manifests"],
       "sharedIntegrationSurfaces": ["evidence manifest", "exact-head required-check policy", "release gate"],
-      "promotionPrerequisites": ["selected release workstreams meet their own gates", "founder acceptance where required"]
+      "promotionPrerequisites": ["selected release workstreams meet their own gates", "physical-device evidence stays explicit; current v1.0 mandate permits engineering and release without another physical ceremony"]
     }
   ]
 }

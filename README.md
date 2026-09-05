@@ -6,7 +6,7 @@ One File Universe (OFU) is a deterministic, causal, persistent, mutable and deep
 
 ## Founder north star
 
-OFU ultimately aims to feel like entering a universe rather than opening an engineering application. Within supported model domains, a player should be able to choose what to explore, move from cosmic structure toward arbitrary supported worlds and locations, encounter progressively refined geography, environments, life, history and civilization where those models are authoritative, descend toward microscopic reality as future model regimes mature, change the world only through governed canonical events, return later to the same causal reality, and inspect why the universe is what it is.
+The active v1.0 program aims to feel like entering a universe rather than opening an engineering application. Within supported model domains, a player should be able to choose what to explore, move from cosmic structure toward arbitrary supported worlds and locations, encounter progressively refined geography, environments, life, history and civilization where those models are authoritative, descend toward bounded microscopic model regimes with explicit evidence and fidelity, change the world only through governed, versioned temporal events, return later to the same causal reality, and inspect why the universe is what it is.
 
 The target is a **progressively extensible, sparse, query-driven multiscale reality with bounded materialized working sets**. OFU does not claim literal infinite simulation or one classical Euclidean hierarchy down to quantum scales.
 
@@ -19,10 +19,10 @@ The repository preserves versioned certified history rather than redefining old 
 - **P2 — Deterministic Kernel:** complete; canonical addressing, identity, serialization and addressed derivation are frozen by their versioned contracts.
 - **P3 — Universe Skeleton:** complete within the P3 astronomy/schema-v1 sparse metadata scope.
 - **P4 — Temporal Kernel & Mutable World:** complete within the v1 event/replay/checkpoint/archive scope.
-- **P5 — Planetology / Terrain / Environment:** P5 v1 and Environment v2 are canonical and frozen within their declared scopes. Physical terrain elevation, real geology, oceans, greenhouse surface climate, XUV escape and related deferred science remain unsupported or research.
-- **P6 — Biosphere & Evolution v1:** canonical and frozen within its declared fail-closed scope. Current real P5 Environment v2 evidence remains insufficient to establish a biosphere; positive biology is not a current product claim.
-- **Product baseline on `main`:** v0.8 Founder Visual Closure is the promoted product baseline.
-- **Current Wave IV / v0.9 work:** independent development evidence in PR #48; it is not part of this documentation baseline and is not release-ready while its required Rendering Production gate fails.
+- **P5 — Planetology / Terrain / Environment:** P5 v1 and Environment v2 are canonical and frozen within their declared scopes. Physical terrain elevation, real geology, oceans, greenhouse surface climate and XUV escape remain outside those frozen canonical contracts. Versioned model-derived successors are authorized for the active v1.0 product and must disclose their assumptions and limits.
+- **P6 — Biosphere & Evolution v1:** canonical and frozen within its declared fail-closed scope. Current real P5 Environment v2 evidence remains insufficient to establish a biosphere; positive biology is not a claim of that canonical baseline. Model-derived positive-life simulations may ship under their own versioned evidence/fidelity without relabeling P6 v1.
+- **Wave IV technical product baseline:** PR #48 merged as `e33156ee8ed9c6e906d0d4e0b8142fa235a833c7`, preserving the certified candidate tree `5d46fd5e346fd6440cc1efd8cbc67fa13a9390c4`. Rendering Production `33959845666`, all five required platforms, Wave IV convergence and frozen upstream gates passed on candidate `f4df1452529cb5f121e4065f567b4a3da52d2b75`.
+- **Active destination:** the [v1.0 implementation program](docs/governance/V1_IMPLEMENTATION_CONTRACT.md), not another preparation/research-only wave. PX seams and the expanded product are implementation obligations; this documentation does not claim they are already complete. Physical Android/iOS remain `NOT_VERIFIED`.
 
 A phase marked complete means its **declared, evidence-gated, versioned scope** was completed. It never means the entire scientific domain or final product vision is finished forever.
 
@@ -38,11 +38,11 @@ Universe Identity + versioned semantic manifests
         -> presentation, rendering, audio and product experience
 ```
 
-The semantic universe is a **Multiscale Reality Graph**, not a permanently instantiated object tree. Query context, current location, camera state and presentation LOD do not silently become entity identity. `REFINE`, `PROJECT` and `RECONCILE` are the cross-scale operations reserved for constraint-safe multiscale evolution.
+The semantic universe is a **Multiscale Reality Graph**, not a permanently instantiated object tree. Query context, current location, camera state and presentation LOD do not silently become entity identity. `REFINE`, `PROJECT` and `RECONCILE` are required enforceable cross-scale operations for the PX implementation; naming them in architecture does not implement them.
 
 ## Product pillars
 
-Future capability is judged across co-equal dimensions: scientific/model authority, systemic depth, player freedom, cross-scale continuity, graphics quality, UX quality, performance, portability, determinism, persistence, accessibility and certification. Automated tests are necessary but not sufficient for product completeness.
+Shipping v1.0 capability is judged across co-equal dimensions: scientific/model authority, systemic depth, player freedom, cross-scale continuity, graphics quality, UX quality, performance, portability, determinism, persistence, accessibility and certification. Automated tests are necessary but not sufficient for product completeness.
 
 Rendering may beautify, interpolate and approximate under explicit presentation authority. It may not turn an unmodeled ocean, atmosphere, biome, city or terrain signal into scientific fact. UX should be universe-first: **Explore** is viewport-dominant direct manipulation, **Inspect** provides contextual scientific meaning, and **Lab** exposes raw addresses, hashes, manifests, replay, provenance and diagnostics for experts.
 
@@ -54,6 +54,7 @@ The distribution artifact may legitimately grow to tens or hundreds of megabytes
 
 ## Key documents
 
+- [Active v1.0 Implementation Contract](docs/governance/V1_IMPLEMENTATION_CONTRACT.md)
 - [Project Constitution](docs/CONSTITUTION.md)
 - [Founder Vision](docs/VISION.md)
 - [Long-range Architecture](docs/ARCHITECTURE.md)

@@ -1,5 +1,7 @@
 # One File Universe — Long-range Architecture
 
+**Program status:** accepted forward architecture for the [active v1.0 implementation](governance/V1_IMPLEMENTATION_CONTRACT.md). Named contracts below are design requirements until their PX implementation is verified; documentation acceptance is not a runtime capability claim.
+
 ## 1. Architectural thesis
 
 OFU separates **identity**, **canonical procedural state**, **canonical mutable history**, **derived simulation**, and **presentation/product state**. The release artifact is one HTML file, but development remains modular and independently testable.

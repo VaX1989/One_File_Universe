@@ -1,6 +1,8 @@
 # One File Universe — Founder Vision
 
-**Status:** long-range product destination; capability claims remain governed by current versioned contracts and evidence.
+**Status:** founder-ratified active v1.0 implementation destination, with separately reserved future research. Capability claims remain governed by versioned contracts and actual evidence.
+
+The [v1.0 implementation contract](governance/V1_IMPLEMENTATION_CONTRACT.md) makes supported macro-to-micro exploration, model-derived life/civilization, persistent intervention and a complete direct-open product current engineering obligations. They are not deferred merely because canonical P5/P6 successors remain unpromoted. Their implementation must disclose model authority; this statement does not claim they are already built.
 
 ## One file. One universe. Verifiable by construction.
 

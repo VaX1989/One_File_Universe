@@ -1,6 +1,6 @@
 # Multiscale Reality Architecture
 
-**Status:** P2 compatibility constraints preserved and expanded with long-range target semantics. This document does not authorize production science that has not been separately promoted.
+**Status:** accepted forward architecture with P2 compatibility constraints preserved. The founder has authorized v1.0 model-derived implementation through the [active program contract](governance/V1_IMPLEMENTATION_CONTRACT.md). This does not authorize an unpromoted model to claim canonical scientific certification.
 
 ## 1. Progressive, bounded refinement
 

@@ -1,6 +1,12 @@
 # ADR-026 — Large distribution artifact and bounded runtime working set
 
-**Status:** Proposed
+**Status:** Accepted
+
+**Ratified:** 2026-09-05 under the founder's Absolute Completion Mission; see
+[program execution authority](../governance/V1_PROGRAM_EXECUTION_AUTHORITY.md)
+and [v1.0 implementation contract](../governance/V1_IMPLEMENTATION_CONTRACT.md).
+Acceptance is a forward architecture decision, not certification of unbuilt
+capabilities or a change to frozen P0-P6 semantics.
 
 ## Context
 

@@ -1,6 +1,12 @@
 # ADR-025 — Exact-base ownership and additive parallel development
 
-**Status:** Proposed
+**Status:** Accepted
+
+**Ratified:** 2026-09-05 under the founder's Absolute Completion Mission; see
+[program execution authority](../governance/V1_PROGRAM_EXECUTION_AUTHORITY.md)
+and [v1.0 implementation contract](../governance/V1_IMPLEMENTATION_CONTRACT.md).
+Acceptance is a forward architecture decision, not certification of unbuilt
+capabilities or a change to frozen P0-P6 semantics.
 
 ## Context
 
@@ -8,7 +14,7 @@ Recent product waves reduced conflict by freezing shared surfaces and assigning 
 
 ## Decision
 
-Future high-concurrency development should follow these rules:
+The active program and subsequent high-concurrency development follow these rules:
 
 1. shared interfaces are frozen before large parallel implementation waves;
 2. each wave names an exact common SHA/tree, with stacking explicit when required;

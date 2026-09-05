@@ -1,0 +1,13 @@
+import fs from 'node:fs';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+globalThis.OFU={planetRenderCore:{}};vm.runInThisContext(fs.readFileSync('src/rendering/planet-surface.js','utf8'));vm.runInThisContext(fs.readFileSync('src/rendering/planet-surface-terrain.js','utf8'));
+const S=OFU.planetSurface,T=OFU.planetSurfaceTerrain,anchor=S.createAnchor({planetId:'p',radiusM:6371000,viewDirection:[0.2,0.3,0.93]});
+for(const [alt,band,level] of [[100,'HUMAN',12],[1000,'LOCAL_SURFACE',9],[10000,'REGIONAL_SURFACE',6],[100000,'GLOBAL_SURFACE',3]]){const c=S.createLocalCamera(anchor,{presentationAltitudeM:alt}),snap=S.localCameraSnapshot(c),plan=T.planLocalPatches(snap);assert.equal(snap.currentBand,band);assert.equal(plan.level,level);assert.ok(plan.activePatchCount<=T.BOUNDS.maxActivePatches);assert.equal(plan.mixed,false);assert.equal(plan.seamPolicy,'UNIFORM_LOCAL_RING_SHARED_GLOBAL_SAMPLE_COORDINATES')}
+const c=S.createLocalCamera(anchor,{presentationAltitudeM:90}),snap=S.localCameraSnapshot(c),plan=T.planLocalPatches(snap),session=T.createTerrainSession(),u=session.update(snap);assert.ok(u.stats.activePatches<=25);assert.ok(u.stats.cpuMeshes<=64);assert.ok(u.stats.cpuBytes<=T.BOUNDS.maxCpuBytes);assert.equal(u.stats.uniformActiveLevel,true);
+const center=plan.keys.find(k=>k.x===plan.center.x&&k.y===plan.center.y),right=plan.keys.find(k=>k.x===plan.center.x+1&&k.y===plan.center.y);assert.ok(center&&right);const a=T.meshPatch(center),b=T.meshPatch(right),edgeError=T.sharedEdgeError(a,b);assert.equal(edgeError,0);assert.equal(a.coordinateStrategy,'PATCH_RELATIVE_FLOAT32_PLUS_FLOATING_ORIGIN');assert.equal(a.physicalElevationMeaning,'UNSUPPORTED');assert.equal(a.claims.geologyClaim,false);assert.equal(a.claims.physicalTerrainElevationClaim,false);
+const sampleA=T.presentationHeightM(anchor.token,123.25,-450.5),sampleB=T.presentationHeightM(anchor.token,123.25,-450.5);assert.equal(sampleA,sampleB);
+const micro=T.microdetailInstances(anchor.token,snap,{maxBoulders:500});assert.equal(micro.length,T.BOUNDS.maxBoulders);assert.ok(micro.every(x=>x.authority==='PRESENTATION_ONLY'&&x.geologyClaim===false&&x.kind==='ROCK_LIKE_PRESENTATION_FORM'));
+for(let i=0;i<30;i++){S.applyLocalIntent(c,{type:'MOVE_RIGHT',amount:5},{moveStepM:40});session.update(S.localCameraSnapshot(c));const st=session.stats();assert.ok(st.activePatches<=25);assert.ok(st.cpuMeshes<=64);assert.ok(st.cpuBytes<=T.BOUNDS.maxCpuBytes)}
+const disposed=session.dispose();assert.equal(disposed.activePatches,0);assert.equal(disposed.cpuMeshes,0);
+console.log(JSON.stringify({status:'PASS',version:T.VERSION,bounds:T.BOUNDS,humanPatchSizeM:T.patchSizeM(12),edgeError,coordinateStrategy:a.coordinateStrategy,claims:T.CLAIMS}));

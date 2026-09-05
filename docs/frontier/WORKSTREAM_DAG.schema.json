@@ -3,45 +3,248 @@
   "$id": "ofu-frontier-workstream-dag-schema-v1",
   "title": "One File Universe forward frontier DAG",
   "type": "object",
-  "required": ["schemaVersion", "authority", "baseMainSha", "workstreams"],
+  "required": [
+    "schemaVersion",
+    "authority",
+    "baseMainSha",
+    "workstreams",
+    "implementationProgram"
+  ],
   "additionalProperties": false,
   "properties": {
-    "schemaVersion": {"const": 1},
-    "authority": {"const": "PLANNING_METADATA_ONLY"},
-    "baseMainSha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "schemaVersion": {
+      "const": 1
+    },
+    "authority": {
+      "const": "PLANNING_METADATA_ONLY"
+    },
+    "baseMainSha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
     "workstreams": {
       "type": "array",
       "minItems": 1,
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["id","name","mission","userVisibleOutcome","currentMaturity","authorityClass","canonicalInputs","canonicalOutputs","derivedOutputs","presentationOutputs","dependencies","downstreamConsumers","parallelSafeSublanes","sharedFileRisks","crossScaleInvariants","scientificStatus","performanceEnvelope","evidenceRequirements","promotionGate","knownUnsupportedAreas","parallelizationGroup","criticalPath","ownedModules","sharedIntegrationSurfaces","promotionPrerequisites"],
+        "required": [
+          "id",
+          "name",
+          "mission",
+          "userVisibleOutcome",
+          "currentMaturity",
+          "authorityClass",
+          "canonicalInputs",
+          "canonicalOutputs",
+          "derivedOutputs",
+          "presentationOutputs",
+          "dependencies",
+          "downstreamConsumers",
+          "parallelSafeSublanes",
+          "sharedFileRisks",
+          "crossScaleInvariants",
+          "scientificStatus",
+          "performanceEnvelope",
+          "evidenceRequirements",
+          "promotionGate",
+          "knownUnsupportedAreas",
+          "parallelizationGroup",
+          "criticalPath",
+          "ownedModules",
+          "sharedIntegrationSurfaces",
+          "promotionPrerequisites"
+        ],
         "properties": {
-          "id": {"type":"string","pattern":"^F-[A-Z0-9-]+$"},
-          "name": {"type":"string","minLength":1},
-          "mission": {"type":"string","minLength":1},
-          "userVisibleOutcome": {"type":"string","minLength":1},
-          "currentMaturity": {"enum":["DONE_WITHIN_DECLARED_SCOPE","PARTIAL","PROTOTYPED","RESEARCH_ONLY","PLANNED","NOT_IMPLEMENTED","ARCHITECTURALLY_RESERVED"]},
-          "authorityClass": {"enum":["CANONICAL","DERIVED","PRESENTATION","MIXED","RESEARCH","GOVERNANCE"]},
-          "canonicalInputs": {"type":"array","items":{"type":"string"}},
-          "canonicalOutputs": {"type":"array","items":{"type":"string"}},
-          "derivedOutputs": {"type":"array","items":{"type":"string"}},
-          "presentationOutputs": {"type":"array","items":{"type":"string"}},
-          "dependencies": {"type":"array","items":{"type":"string","pattern":"^F-[A-Z0-9-]+$"},"uniqueItems":true},
-          "downstreamConsumers": {"type":"array","items":{"type":"string"}},
-          "parallelSafeSublanes": {"type":"array","items":{"type":"string"}},
-          "sharedFileRisks": {"type":"array","items":{"type":"string"}},
-          "crossScaleInvariants": {"type":"array","items":{"type":"string"}},
-          "scientificStatus": {"type":"string","minLength":1},
-          "performanceEnvelope": {"type":"string","minLength":1},
-          "evidenceRequirements": {"type":"array","minItems":1,"items":{"type":"string"}},
-          "promotionGate": {"type":"string","minLength":1},
-          "knownUnsupportedAreas": {"type":"array","items":{"type":"string"}},
-          "parallelizationGroup": {"type":"string","minLength":1},
-          "criticalPath": {"type":"boolean"},
-          "ownedModules": {"type":"array","items":{"type":"string"}},
-          "sharedIntegrationSurfaces": {"type":"array","items":{"type":"string"}},
-          "promotionPrerequisites": {"type":"array","items":{"type":"string"}}
+          "id": {
+            "type": "string",
+            "pattern": "^F-[A-Z0-9-]+$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "mission": {
+            "type": "string",
+            "minLength": 1
+          },
+          "userVisibleOutcome": {
+            "type": "string",
+            "minLength": 1
+          },
+          "currentMaturity": {
+            "enum": [
+              "DONE_WITHIN_DECLARED_SCOPE",
+              "PARTIAL",
+              "PROTOTYPED",
+              "RESEARCH_ONLY",
+              "PLANNED",
+              "NOT_IMPLEMENTED",
+              "ARCHITECTURALLY_RESERVED"
+            ]
+          },
+          "authorityClass": {
+            "enum": [
+              "CANONICAL",
+              "DERIVED",
+              "PRESENTATION",
+              "MIXED",
+              "RESEARCH",
+              "GOVERNANCE"
+            ]
+          },
+          "canonicalInputs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "canonicalOutputs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "derivedOutputs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "presentationOutputs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "dependencies": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^F-[A-Z0-9-]+$"
+            },
+            "uniqueItems": true
+          },
+          "downstreamConsumers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "parallelSafeSublanes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "sharedFileRisks": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "crossScaleInvariants": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "scientificStatus": {
+            "type": "string",
+            "minLength": 1
+          },
+          "performanceEnvelope": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidenceRequirements": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            }
+          },
+          "promotionGate": {
+            "type": "string",
+            "minLength": 1
+          },
+          "knownUnsupportedAreas": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "parallelizationGroup": {
+            "type": "string",
+            "minLength": 1
+          },
+          "criticalPath": {
+            "type": "boolean"
+          },
+          "ownedModules": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "sharedIntegrationSurfaces": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "promotionPrerequisites": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "implementationProgram": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "state",
+        "authorityDocument",
+        "ratifiedAdrs",
+        "phaseOrder",
+        "releaseTag",
+        "releaseArtifact"
+      ],
+      "properties": {
+        "id": {
+          "const": "OFU-V1-2026-09-05"
+        },
+        "state": {
+          "const": "AUTHORIZED_IN_PROGRESS"
+        },
+        "authorityDocument": {
+          "const": "docs/governance/V1_IMPLEMENTATION_CONTRACT.md"
+        },
+        "ratifiedAdrs": {
+          "const": [
+            "ADR-023",
+            "ADR-024",
+            "ADR-025",
+            "ADR-026"
+          ]
+        },
+        "phaseOrder": {
+          "const": [
+            "WAVE_IV_CLOSURE",
+            "VISION_RECONCILIATION",
+            "PX_IMPLEMENTATION",
+            "V1_PRODUCT_AND_RELEASE"
+          ]
+        },
+        "releaseTag": {
+          "const": "v1.0.0"
+        },
+        "releaseArtifact": {
+          "const": "One_File_Universe-v1.0.0.html"
         }
       }
     }

@@ -26,10 +26,10 @@ ADRs capture decisions with durable semantic consequences. `Accepted` means the 
 | [020](ADR-020-p6-biological-identity-policy-v1.md) | P6 biological identity policy v1 | Accepted |
 | [021](ADR-021-p6-environment-witness-and-transition-scope.md) | P6 environment witness and transition scope | Accepted |
 | [022](ADR-022-production-rendering-authority-and-resource-lifecycle.md) | Production rendering authority and resource lifecycle | Accepted |
-| [023](ADR-023-universal-exploration-and-product-continuity.md) | Universal exploration and product continuity | Proposed |
-| [024](ADR-024-certified-history-and-frontier-dag.md) | Certified history and forward frontier DAG | Proposed |
-| [025](ADR-025-parallel-development-ownership.md) | Exact-base ownership and additive parallel development | Proposed |
-| [026](ADR-026-artifact-size-and-bounded-working-set.md) | Large distribution artifact and bounded runtime working set | Proposed |
+| [023](ADR-023-universal-exploration-and-product-continuity.md) | Universal exploration and product continuity | Accepted |
+| [024](ADR-024-certified-history-and-frontier-dag.md) | Certified history and forward frontier DAG | Accepted |
+| [025](ADR-025-parallel-development-ownership.md) | Exact-base ownership and additive parallel development | Accepted |
+| [026](ADR-026-artifact-size-and-bounded-working-set.md) | Large distribution artifact and bounded runtime working set | Accepted |
 
 ## ADR policy
 
@@ -37,5 +37,7 @@ ADRs capture decisions with durable semantic consequences. `Accepted` means the 
 - A breaking semantic change creates a new ADR or explicitly supersedes an old one.
 - Languages, compressors, allocators, exact renderer optimizations and global numeric formats are not frozen merely for architectural neatness; they require evidence.
 - ADR-015 already reserves model-regime semantics, including future non-classical compatibility; the founder-vision formalization does not duplicate that decision.
-- ADR-023 through ADR-026 are proposals in this documentation transaction and do not become Accepted merely because the draft PR exists.
+- ADR-023 through ADR-026 are accepted by explicit founder ratification on 2026-09-05, not merely because a PR exists. Their implementation and promotion still require evidence and normal protected integration.
 - ADR filenames and headings use a unique three-digit identifier. `tests/governance/adr-hygiene.mjs` enforces identifier uniqueness, index coverage, heading alignment, explicit status and valid index links.
+
+ADR-023 through ADR-026 were ratified by the founder's 2026-09-05 Absolute Completion Mission. Their acceptance governs forward implementation and does not rewrite earlier canonical evidence or historical ADR statuses. See [the active v1.0 contract](../governance/V1_IMPLEMENTATION_CONTRACT.md).

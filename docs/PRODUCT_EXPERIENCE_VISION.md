@@ -1,6 +1,6 @@
 # Product Experience Vision
 
-**Status:** TARGET / product north star. Current release implementations are evidence, not permanent UI contracts.
+**Status:** active v1.0 acceptance target, ratified 2026-09-05. Current release implementations are evidence, not permanent UI contracts. The [implementation contract](governance/V1_IMPLEMENTATION_CONTRACT.md) requires shipping macro, world, life, civilization and bounded microscopic journeys rather than accumulating stand-alone prototypes.
 
 ## 1. Experience thesis
 

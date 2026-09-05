@@ -25,19 +25,20 @@ This document records integration status and authority boundaries. It preserves 
 | P6 v1 | renderer/product | eligibility witness + `biologyEstablished=false` on current real path | CANONICAL_FROZEN | Test fixtures are not production authority. |
 | P1–P6 | v0.8 product/rendering | read-only canonical projections | CURRENT_PRODUCT | UI/renderer cannot change canonical truth. |
 
-## Current Wave IV development evidence
+## Current Wave IV technical baseline
 
-| Surface | Status | Authority | Disposition |
-|---|---|---|---|
-| normalized input intent | CURRENT_DEVELOPMENT | presentation/runtime | useful precursor to future semantic input router |
-| one semantic scale owner | CURRENT_DEVELOPMENT | presentation/runtime | useful precursor; release bands are not final universal scale taxonomy |
-| canonical selection bridge | CURRENT_DEVELOPMENT | canonical selection projected read-only | preserve concept, not necessarily API name |
-| scene provider registry | CURRENT_DEVELOPMENT | presentation/runtime | strong additive-module direction |
-| galaxy→human traversal | CURRENT_DEVELOPMENT | product/presentation | not certified/released while Rendering Production fails |
-| local tangent/floating origin | CURRENT_DEVELOPMENT | presentation | no canonical geodesy claim |
-| local terrain | CURRENT_DEVELOPMENT | PRESENTATION_ONLY | explicitly not physical geology/hydrology/topography |
+PR #48 was merged normally as `e33156ee8ed9c6e906d0d4e0b8142fa235a833c7`
+after the exact `f4df1452529cb5f121e4065f567b4a3da52d2b75` candidate passed
+Rendering Production `33959845666`, Wave IV `33959845605` and all frozen upstream
+gates. This formalization incorporates that history, not the earlier failed
+candidate. Surface and macro rendering remain `PRESENTATION_ONLY` under their
+existing contracts. This is a technical baseline, not evidence of unbuilt v1.0
+science, microscopic models or physical mobile verification.
 
-PR #48 remains independent and is not modified by the founder-vision formalization branch.
+The [active v1.0 contract](../governance/V1_IMPLEMENTATION_CONTRACT.md) authorizes
+shipping model-derived astronomy, planet, life, civilization and microscopic
+successors through the actual PX seams. Their integration status changes only
+when real code and acceptance evidence exist.
 
 ## Future integration surfaces
 

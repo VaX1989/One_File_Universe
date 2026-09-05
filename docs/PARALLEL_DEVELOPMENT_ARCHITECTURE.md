@@ -1,6 +1,6 @@
 # Parallel Development Architecture
 
-**Status:** PLANNED governance architecture for future waves. It does not activate any implementation lane.
+**Status:** ACCEPTED ownership architecture. The [v1.0 program](governance/V1_IMPLEMENTATION_CONTRACT.md) authorizes one convergence owner to implement PX-01 through PX-06, then the definitive product. Named future parallel lanes are examples, not automatically activated branches.
 
 ## 1. Objective
 
@@ -20,7 +20,7 @@ Repository history shows repeated concentration of product/runtime changes in sh
 - selection, scale, scene and input state represented across compatibility layers;
 - release-specific tests touching the same runtime paths.
 
-The v0.8 parallel architecture mitigated this with frozen shared surfaces and lane-owned modules. Wave IV improved the situation further by introducing explicit scale/input/selection/scene-provider contracts, but its own documentation records legacy listeners and polling compatibility debt. PR #48 still changes a broad set of bootstrap/product/render/build/test files, demonstrating that the integration surface remains wider than the desired long-range topology.
+The v0.8 parallel architecture mitigated this with frozen shared surfaces and lane-owned modules. Wave IV improved the situation further by introducing explicit scale/input/selection/scene-provider contracts, but its own documentation records legacy listeners and polling compatibility debt. PR #48 changed a broad set of bootstrap/product/render/build/test files, demonstrating that the integration surface remains wider than the desired long-range topology.
 
 The lesson is not "never touch shared files." It is: **one owner changes a shared contract; other lanes consume it additively.**
 
@@ -56,7 +56,7 @@ Independent reviewers should cover scientific validity, UX/product quality, rend
 
 ## 4. Target stable integration seams
 
-Future refactoring should converge toward narrow registries/interfaces. Names below are architectural roles, not frozen APIs.
+The authorized PX implementation converges toward narrow registries/interfaces. Names below are architectural roles, not frozen APIs.
 
 | Seam | Purpose | Shared owner |
 |---|---|---|
@@ -107,7 +107,7 @@ A lane that cannot state ownership precisely is not ready to run in a massive pa
 
 ## 7. Recommended directory direction
 
-This mission does not refactor code, but future decomposition should favor structures such as:
+This formalization does not itself refactor code. The subsequent authorized PX implementation should favor structures such as:
 
 ```text
 src/
@@ -182,9 +182,11 @@ One integration owner composes only accepted candidates in dependency order, re-
 
 ## 9. Critical path versus parallel research
 
-Critical implementation path:
+Canonical scientific-promotion path:
 
 `shared seams → universal exploration/query → governed planetary/environment authority → positive biology successor → civilization/history canonicalization → gameplay consequences`.
+
+The active v1.0 product also has an authorized model-derived path: explicit versioned causal models may ship as `MODEL_DERIVED_SIMULATION` without relabeling frozen P5/P6 evidence. Their environment, life, society and microscopic dependencies still require real implemented contracts, provenance and reconciliation; this is not permission to populate an unsupported canonical field.
 
 Parallelizable earlier work:
 
@@ -236,4 +238,4 @@ Each implementation lane supplies targeted deterministic/unit/browser/resource e
 
 ## 13. Relationship to current Wave IV
 
-PR #48 is an independently progressing release candidate and is not a base for this architecture transaction. Its provider/input/selection/scale normalization is useful evidence, but its release-specific compatibility layers and current defects remain owned by the Wave IV release mission. This document authorizes no Wave IV changes.
+PR #48 was technically certified and merged as `e33156ee8ed9c6e906d0d4e0b8142fa235a833c7` (tree `5d46fd5e346fd6440cc1efd8cbc67fa13a9390c4`). This formalization is reconciled onto that exact history. Its provider/input/selection/scale work is the preserved product baseline; the actual PX transaction must replace shared integration contention with enforceable additive seams without regressing that baseline. No independent Wave IV release ceremony is required before the authorized v1.0 program continues.

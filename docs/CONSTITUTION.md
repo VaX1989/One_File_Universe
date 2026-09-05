@@ -1,6 +1,6 @@
 # One File Universe Constitution
 
-**Status:** P0 normative foundation with forward product-principle amendment candidate  
+**Status:** P0 normative foundation with founder-ratified forward product principles (2026-09-05)
 **Normative language:** MUST, MUST NOT, SHOULD, SHOULD NOT and MAY are used as requirements terms.
 
 ## 1. Mission
@@ -29,9 +29,9 @@ OFU MAY also pursue large-artifact records, but raw byte size is never the prima
 14. **Reproducibility is a product property.** Release artifacts SHOULD be reproducibly buildable byte-for-byte from a pinned source commit and toolchain manifest.
 15. **Failure must be explicit.** Unsupported capabilities, incompatible saves, invalid manifests and failed conformance checks MUST fail closed or degrade transparently; silent semantic fallback is prohibited.
 
-### 2.1 Forward constitutional product principles — founder-review amendment candidate
+### 2.1 Forward Constitutional product principles — ratified forward amendment
 
-The following principles extend product governance without changing any frozen P0–P6 canonical bytes or retroactively invalidating earlier phase closure. Their durable adoption is recorded as a proposed decision in ADR-023.
+The following principles extend product governance without changing any frozen P0–P6 canonical bytes or retroactively invalidating earlier phase closure. Their durable adoption is recorded in accepted ADR-023 under the founder's 2026-09-05 mandate. The [active v1.0 contract](governance/V1_IMPLEMENTATION_CONTRACT.md) separates implementation authority from evidence of completed capability.
 
 16. **Universal exploration freedom.** Within a supported domain, the architecture SHOULD make discoverable canonical entities and supported spatial targets address/query driven rather than permanently limited to curated showcase destinations. Release-stage menus and anchor targets MAY exist for accessibility, fast travel, onboarding or debugging, but MUST NOT be mistaken for the long-range exploration contract.
 17. **Cross-scale continuity.** A finer canonical or derived representation MUST satisfy its declared upstream constraints. Cross-scale systems MUST define how `REFINE`, `PROJECT` and `RECONCILE` preserve identity, committed facts and significant consequences. A new detail level MUST NOT silently replace a previously committed world with unrelated content.

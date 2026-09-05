@@ -1,6 +1,12 @@
 # ADR-023 — Universal exploration and product continuity
 
-**Status:** Proposed
+**Status:** Accepted
+
+**Ratified:** 2026-09-05 under the founder's Absolute Completion Mission; see
+[program execution authority](../governance/V1_PROGRAM_EXECUTION_AUTHORITY.md)
+and [v1.0 implementation contract](../governance/V1_IMPLEMENTATION_CONTRACT.md).
+Acceptance is a forward architecture decision, not certification of unbuilt
+capabilities or a change to frozen P0-P6 semantics.
 
 ## Context
 
@@ -10,7 +16,7 @@ The founder vision requires a stronger repository-level statement: supported rea
 
 ## Decision
 
-Propose the following durable product principles for founder ratification:
+Adopt the following durable product principles for the active v1.0 program:
 
 1. `UNIVERSAL_EXPLORATION_FREEDOM`: within supported model domains, discoverable entities and supported spatial targets should be address/query driven rather than permanently restricted to curated destinations.
 2. `CROSS_SCALE_CONTINUITY`: finer canonical/derived representations must satisfy declared upstream constraints through explicit `REFINE`, `PROJECT` and `RECONCILE` semantics.
@@ -24,4 +30,4 @@ Propose the following durable product principles for founder ratification:
 - Surface/local providers that claim continuity must bind to upstream geography/state rather than generate unrelated authoritative detail.
 - Rendering and UX defects can block product completion even when semantic conformance is green.
 - Presentation-only approximations remain allowed when explicitly labeled and scientifically non-authoritative.
-- Adoption of this ADR requires founder/governance review because it elevates product principles; it is not accepted merely by this documentation PR.
+- The founder explicitly authorized these principles on 2026-09-05. Implementations remain subject to exact-source evidence and normal protected integration; accepting a principle does not certify an implementation.

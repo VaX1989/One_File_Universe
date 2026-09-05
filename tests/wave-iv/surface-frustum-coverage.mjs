@@ -1,0 +1,13 @@
+import fs from 'node:fs';import vm from 'node:vm';import assert from 'node:assert/strict';
+globalThis.OFU={planetRenderCore:{},planetWebGL2:{}};vm.runInThisContext(fs.readFileSync('src/rendering/planet-surface.js','utf8'));vm.runInThisContext(fs.readFileSync('src/rendering/planet-surface-terrain.js','utf8'));vm.runInThisContext(fs.readFileSync('src/rendering/planet-surface-continuity.js','utf8'));vm.runInThisContext(fs.readFileSync('src/rendering/planet-surface-webgl2.js','utf8'));
+const S=OFU.planetSurface,T=OFU.planetSurfaceTerrain,W=OFU.planetSurfaceWebGL2,a=S.createAnchor({planetId:'frustum-planet',radiusM:6371000,viewDirection:[.2,.3,.9327379]});
+const fixtures=[
+ {band:'GLOBAL_SURFACE',alt:120000,pitch:-1.2566370614359172,aspect:1280/800,maxLevel:1},
+ {band:'REGIONAL_SURFACE',alt:15000,pitch:-.9075712110370514,aspect:1280/800,maxLevel:3},
+ {band:'LOCAL_SURFACE',alt:1200,pitch:-.7330382858376184,aspect:1280/800,maxLevel:6},
+ {band:'HUMAN',alt:65,pitch:-.41887902047863906,aspect:390/844,maxLevel:11}
+];
+const results=[];for(const f of fixtures){const cam=S.createLocalCamera(a,{presentationAltitudeM:f.alt,pitchRad:f.pitch}),snap=Object.freeze({...S.localCameraSnapshot(cam),viewportAspect:f.aspect,verticalFovRad:T.VERTICAL_FOV_RAD}),fp=T.surfaceVisibleFootprint(snap),p=T.planLocalPatches(snap);assert.equal(snap.currentBand,f.band);assert.equal(fp.centerGroundHit,true);assert.ok(fp.groundHitCount>=5);assert.equal(p.coverageComplete,true);assert.equal(p.footprintContained,true);assert.ok(p.activePatchCount<=T.BOUNDS.maxActivePatches);assert.ok(p.level<=f.maxLevel,`${f.band} selected too-fine level ${p.level}`);assert.equal(p.coverageMode,'FRUSTUM_GROUND_FOOTPRINT_BOUNDED');assert.ok(p.frustumFootprint.maxGroundRayDistanceM>f.alt);results.push({band:f.band,altitudeM:f.alt,pitchRad:f.pitch,groundHits:fp.groundHitCount,level:p.level,patchSizeM:p.patchSizeM,active:p.activePatchCount,footprint:p.frustumFootprint.expandedBounds})}
+for(const pitch of [-Math.PI/2,-1.5533,-1.4,-.9,-.45]){const m=W.lookAt([0,0,0],[0,Math.cos(pitch),Math.sin(pitch)]);assert.equal(m.length,16);for(const v of m)assert.ok(Number.isFinite(v),`non-finite view matrix at ${pitch}`)}
+const global=results[0],regional=results[1],local=results[2],human=results[3];assert.ok(global.patchSizeM>regional.patchSizeM&&regional.patchSizeM>local.patchSizeM&&local.patchSizeM>human.patchSizeM,'LOD must refine with descent');
+console.log(JSON.stringify({status:'PASS',terrainVersion:T.VERSION,rendererVersion:W.VERSION,coverageMode:'FRUSTUM_GROUND_FOOTPRINT_BOUNDED',maxActive:T.BOUNDS.maxActivePatches,fixtures:results,claims:T.CLAIMS}));
