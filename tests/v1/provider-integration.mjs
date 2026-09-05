@@ -1,0 +1,26 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';import vm from 'node:vm';
+import {loadP5Runtime,canonicalContext} from '../p5/p5-test-helpers.mjs';
+globalThis.OFU={};const O=loadP5Runtime();
+for(const f of ['src/rendering/planet-core.js','src/rendering/planet-webgl2.js','src/rendering/planet-surface.js','src/rendering/planet-surface-terrain.js','src/rendering/planet-surface-webgl2.js','src/extensions/contracts.js','src/extensions/registry.js','src/extensions/cross-scale.js','src/extensions/render-backend.js'])vm.runInThisContext(fs.readFileSync(f,'utf8'),{filename:f});
+const key={galaxyX:48n,galaxyY:-50n,galaxyZ:-1n,sectorX:0n,sectorY:0n,sectorZ:0n,siteX:61n,siteY:0n,siteZ:0n,orbitSlot:0n};
+globalThis.__OFU_PLANET_PREVIEW__={ctx:canonicalContext(O.p3Astronomy),chosen:{key},snapshot:()=>({})};
+globalThis.__OFU_PX_TEST_REGIMES__=[JSON.parse(fs.readFileSync('config/extensions/regimes.json','utf8'))];
+globalThis.__OFU_PX_TEST_CATALOGS__=['core','v1'].map(n=>JSON.parse(fs.readFileSync(`config/extensions/${n}.json`,'utf8')));
+for(const f of ['common','astronomy','planetology','biology','civilization','microscopic','world'])vm.runInThisContext(fs.readFileSync(`src/domains/v1/${f}.js`,'utf8'),{filename:f});
+for(const f of ['src/extensions/product-bindings.js','src/bootstrap/product/scale-runtime.js','src/domains/v1/bindings.js'])vm.runInThisContext(fs.readFileSync(f,'utf8'),{filename:f});
+delete globalThis.__OFU_PX_TEST_CATALOGS__;delete globalThis.__OFU_PX_TEST_REGIMES__;
+const P=O.pxProduct,R=O.waveIVScaleRuntime,C=O.pxContracts,selected=P.captured();
+for(const [id,scales] of [['wave-iv-macro',['galaxy','stellar_neighborhood','system']],['planet-webgl',['orbit','approach','global_surface']],['surface-webgl',['regional_surface','local_surface','human']]])R.registerSceneProvider({id,scales,setActive(){}});
+R.setSelection(key,{planetId:selected.selection.target.entityId,presentationStatus:'SUPPORTED'});
+P.seal();
+let cases=0;assert(P.snapshot().registry.bindingsSealed);cases++;
+for(const id of ['v1.domain.modeled-world','v1.model.astronomy','v1.model.planetology','v1.model.biology','v1.model.civilization','v1.model.microscopic','v1.inspector.world']){const result=P.inspect(id);assert.equal(result.provider,id);assert.equal(result.authority.class,'MODEL_DERIVED_SIMULATION');assert.equal(result.selection.target.entityId,selected.selection.target.entityId);cases+=3;}
+const before=C.digest(P.captured().selection),world=P.inspect('v1.domain.modeled-world').value;assert.equal(world.canonicalPromotion,false);assert(['MODELED_BIOSPHERE','STERILE_MODEL_OUTCOME'].includes(world.biologyState));cases+=2;
+const planets=P.inspect('v1.model.planetology').value;assert.equal(planets.escape.kind,'ENERGY_LIMITED_ESCAPE_MODEL_ESTIMATE');assert.equal(planets.escape.isMathematicalUpperBound,false);cases+=2;
+const bio=P.inspect('v1.model.biology').value;assert.equal(bio.eligibility.redoxRequired,false);assert.equal(bio.eligibility.canonicalP6Authority,false);cases+=2;
+const micro=P.inspect('v1.model.microscopic').value;if(micro.supported)assert(['SOURCE_BACKED_ATOMIC','SYNTHETIC_ATOMIC_REPRESENTATION'].includes(micro.atomicPreview.visualAuthority));else assert.equal(micro.reason,'NO_MODELED_BIOSPHERE_CONTEXT');cases++;
+const discovered=P.inspect('v1.query.galaxies',{address:['local'],cursor:null,limit:7,filters:{}},'DISCOVER').value;assert.equal(discovered.galaxies.length,7);assert.equal(discovered.maxMaterialized,64);assert.equal(new Set(discovered.galaxies.map(g=>g.galaxyIdentity)).size,7);cases+=3;
+assert.equal(C.digest(P.captured().selection),before);cases++;
+const snap=O.v1Providers.snapshot();assert(snap.cacheEntries<=snap.cacheLimit);assert(snap.metrics.invocations>=9);cases+=2;
+console.log(JSON.stringify({status:'PASS',suite:'v1-provider-integration',cases,registry:P.snapshot().registry,worldState:world,providerMetrics:snap.metrics,gpuEvidence:false}));

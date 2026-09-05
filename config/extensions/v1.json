@@ -1,0 +1,554 @@
+{
+  "schema": "ofu-provider-catalog-1",
+  "owners": [
+    {
+      "id": "v1",
+      "prefixes": [
+        "v1"
+      ],
+      "kinds": [
+        "domain",
+        "model",
+        "query",
+        "inspector",
+        "representation",
+        "scene",
+        "renderer",
+        "interaction",
+        "persistence",
+        "test"
+      ],
+      "authorities": [
+        "DERIVED",
+        "MODEL_DERIVED_SIMULATION",
+        "PRESENTATION_ONLY"
+      ]
+    }
+  ],
+  "canonicalAdmissions": [],
+  "providers": [
+    {
+      "contract": "ofu-px-contracts-1",
+      "id": "v1.domain.modeled-world",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "domain",
+      "authority": {
+        "class": "MODEL_DERIVED_SIMULATION",
+        "contract": "ofu-px-contracts-1",
+        "model": "v1.modeled-world",
+        "version": "1.0.0",
+        "sources": [
+          "parallel/wave-v-astronomy-depth-2026-09-05@a4feefde0fcc4df1b257b7126f95c4bbcaf779d3",
+          "research/wave-v-planetology-frontier-2026-09-05@3e102e26c2adfcc8cb461193f821e10d9c374e24",
+          "research/wave-v-biology-evolution-2026-09-05@ccc1f91d5c6cd26e7b89b74433e4712755073e5a",
+          "research/wave-v-civilization-history-2026-09-05@082d8c558ad56c36a894a4ca381d01b10c5697d4",
+          "research/wave-v-microscopic-matter-2026-09-05@6aeecf2ccc564d7f0f316711d07710e74e667e27"
+        ],
+        "assumptions": [
+          "Bounded deterministic v1 scenario model consumes preserved canonical identity/facts without promoting new canonical science."
+        ],
+        "limitations": [
+          "World state is modeled, not observed; player/model events require P4 admission before becoming committed history."
+        ],
+        "evidence": []
+      },
+      "fidelity": {
+        "regime": "v1_product",
+        "validity": "P3/P4-selected worlds with bounded v1 model applicability",
+        "resolution": "One selected world and its bounded modeled state",
+        "uncertainty": "Scenario uncertainty is explicit and canonical P6 remains independent"
+      },
+      "lifecycle": "SHIPPING",
+      "requires": [
+        {
+          "id": "px.domain.canonical",
+          "version": "1.0.0",
+          "authority": "DERIVED"
+        }
+      ],
+      "claims": [
+        "domain.v1-modeled-world"
+      ],
+      "operations": [
+        "INSPECT"
+      ],
+      "budget": {
+        "entities": 256,
+        "bytes": 262144,
+        "operations": 10000,
+        "queue": 32
+      },
+      "evidence": [
+        {
+          "id": "v1.domain-models",
+          "tier": "FAST_LOCAL"
+        },
+        {
+          "id": "v1.provider-integration",
+          "tier": "INTEGRATION"
+        },
+        {
+          "id": "v1.release-model-seal",
+          "tier": "RELEASE"
+        }
+      ],
+      "mandatory": true
+    },
+    {
+      "contract": "ofu-px-contracts-1",
+      "id": "v1.model.astronomy",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "model",
+      "authority": {
+        "class": "MODEL_DERIVED_SIMULATION",
+        "contract": "ofu-px-contracts-1",
+        "model": "v1.astronomy",
+        "version": "1.0.0",
+        "sources": [
+          "parallel/wave-v-astronomy-depth-2026-09-05@a4feefde0fcc4df1b257b7126f95c4bbcaf779d3"
+        ],
+        "assumptions": [
+          "Bounded deterministic v1 scenario model consumes preserved canonical identity/facts without promoting new canonical science."
+        ],
+        "limitations": [
+          "Galaxy population and stellar context are bounded approximations; no whole-universe enumeration."
+        ],
+        "evidence": []
+      },
+      "fidelity": {
+        "regime": "v1_product",
+        "validity": "Sparse modeled cosmic hierarchy layered on P3 identity/facts",
+        "resolution": "Selected hierarchy or at most 64 discovered galaxies",
+        "uncertainty": "Population relations are approximate/stylized and do not replace P3"
+      },
+      "lifecycle": "SHIPPING",
+      "requires": [
+        {
+          "id": "px.domain.canonical",
+          "version": "1.0.0",
+          "authority": "DERIVED"
+        }
+      ],
+      "claims": [
+        "model.v1-astronomy"
+      ],
+      "operations": [
+        "INSPECT"
+      ],
+      "budget": {
+        "entities": 256,
+        "bytes": 262144,
+        "operations": 10000,
+        "queue": 32
+      },
+      "evidence": [
+        {
+          "id": "v1.domain-models",
+          "tier": "FAST_LOCAL"
+        },
+        {
+          "id": "v1.provider-integration",
+          "tier": "INTEGRATION"
+        },
+        {
+          "id": "v1.release-model-seal",
+          "tier": "RELEASE"
+        }
+      ],
+      "mandatory": true
+    },
+    {
+      "contract": "ofu-px-contracts-1",
+      "id": "v1.query.galaxies",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "query",
+      "authority": {
+        "class": "MODEL_DERIVED_SIMULATION",
+        "contract": "ofu-px-contracts-1",
+        "model": "v1.astronomy",
+        "version": "1.0.0",
+        "sources": [
+          "parallel/wave-v-astronomy-depth-2026-09-05@a4feefde0fcc4df1b257b7126f95c4bbcaf779d3"
+        ],
+        "assumptions": [
+          "Bounded deterministic v1 scenario model consumes preserved canonical identity/facts without promoting new canonical science."
+        ],
+        "limitations": [
+          "Generated galaxies are MODEL_DERIVED_SIMULATION, not measured astronomical objects."
+        ],
+        "evidence": []
+      },
+      "fidelity": {
+        "regime": "v1_product",
+        "validity": "Sparse addressable modeled galaxy discovery within the selected universe",
+        "resolution": "At most 64 galaxies per invocation",
+        "uncertainty": "Discovery is deterministic modeled context, not a catalog of observed galaxies"
+      },
+      "lifecycle": "SHIPPING",
+      "requires": [
+        {
+          "id": "px.domain.canonical",
+          "version": "1.0.0",
+          "authority": "DERIVED"
+        }
+      ],
+      "claims": [
+        "query.v1-galaxies"
+      ],
+      "operations": [
+        "DISCOVER"
+      ],
+      "budget": {
+        "entities": 256,
+        "bytes": 262144,
+        "operations": 10000,
+        "queue": 32
+      },
+      "evidence": [
+        {
+          "id": "v1.domain-models",
+          "tier": "FAST_LOCAL"
+        },
+        {
+          "id": "v1.provider-integration",
+          "tier": "INTEGRATION"
+        },
+        {
+          "id": "v1.release-model-seal",
+          "tier": "RELEASE"
+        }
+      ],
+      "mandatory": true
+    },
+    {
+      "contract": "ofu-px-contracts-1",
+      "id": "v1.model.planetology",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "model",
+      "authority": {
+        "class": "MODEL_DERIVED_SIMULATION",
+        "contract": "ofu-px-contracts-1",
+        "model": "v1.planetology",
+        "version": "1.0.0",
+        "sources": [
+          "research/wave-v-planetology-frontier-2026-09-05@3e102e26c2adfcc8cb461193f821e10d9c374e24"
+        ],
+        "assumptions": [
+          "Bounded deterministic v1 scenario model consumes preserved canonical identity/facts without promoting new canonical science."
+        ],
+        "limitations": [
+          "Energy-limited escape output is a model-regime estimate, not a mathematical upper bound.",
+          "Model geography does not promote presentation terrain to canonical elevation."
+        ],
+        "evidence": []
+      },
+      "fidelity": {
+        "regime": "v1_product",
+        "validity": "Causal planet formation/environment scenario from P3 baseline inputs",
+        "resolution": "One selected world plus bounded hierarchical surface budgets",
+        "uncertainty": "Climate, geodynamics and relief cues are approximate modeled scenarios"
+      },
+      "lifecycle": "SHIPPING",
+      "requires": [
+        {
+          "id": "px.domain.canonical",
+          "version": "1.0.0",
+          "authority": "DERIVED"
+        }
+      ],
+      "claims": [
+        "model.v1-planetology"
+      ],
+      "operations": [
+        "INSPECT"
+      ],
+      "budget": {
+        "entities": 256,
+        "bytes": 262144,
+        "operations": 10000,
+        "queue": 32
+      },
+      "evidence": [
+        {
+          "id": "v1.domain-models",
+          "tier": "FAST_LOCAL"
+        },
+        {
+          "id": "v1.provider-integration",
+          "tier": "INTEGRATION"
+        },
+        {
+          "id": "v1.release-model-seal",
+          "tier": "RELEASE"
+        }
+      ],
+      "mandatory": true
+    },
+    {
+      "contract": "ofu-px-contracts-1",
+      "id": "v1.model.biology",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "model",
+      "authority": {
+        "class": "MODEL_DERIVED_SIMULATION",
+        "contract": "ofu-px-contracts-1",
+        "model": "v1.biology",
+        "version": "1.0.0",
+        "sources": [
+          "research/wave-v-biology-evolution-2026-09-05@ccc1f91d5c6cd26e7b89b74433e4712755073e5a"
+        ],
+        "assumptions": [
+          "Bounded deterministic v1 scenario model consumes preserved canonical identity/facts without promoting new canonical science."
+        ],
+        "limitations": [
+          "Canonical P6 remains unchanged; modeled biology may be sterile, extinct, microbial-only or more complex.",
+          "Redox is one possible free-energy pathway, not a universal prerequisite."
+        ],
+        "evidence": []
+      },
+      "fidelity": {
+        "regime": "v1_product",
+        "validity": "Separate modeled biosphere pathway only after explicit environment readiness",
+        "resolution": "At most 96 populations and 192 ecological interactions",
+        "uncertainty": "No universal abiogenesis probability or universal alien evolutionary law"
+      },
+      "lifecycle": "SHIPPING",
+      "requires": [
+        {
+          "id": "px.domain.canonical",
+          "version": "1.0.0",
+          "authority": "DERIVED"
+        }
+      ],
+      "claims": [
+        "model.v1-biology"
+      ],
+      "operations": [
+        "INSPECT"
+      ],
+      "budget": {
+        "entities": 256,
+        "bytes": 262144,
+        "operations": 10000,
+        "queue": 32
+      },
+      "evidence": [
+        {
+          "id": "v1.domain-models",
+          "tier": "FAST_LOCAL"
+        },
+        {
+          "id": "v1.provider-integration",
+          "tier": "INTEGRATION"
+        },
+        {
+          "id": "v1.release-model-seal",
+          "tier": "RELEASE"
+        }
+      ],
+      "mandatory": true
+    },
+    {
+      "contract": "ofu-px-contracts-1",
+      "id": "v1.model.civilization",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "model",
+      "authority": {
+        "class": "MODEL_DERIVED_SIMULATION",
+        "contract": "ofu-px-contracts-1",
+        "model": "v1.civilization",
+        "version": "1.0.0",
+        "sources": [
+          "research/wave-v-civilization-history-2026-09-05@082d8c558ad56c36a894a4ca381d01b10c5697d4"
+        ],
+        "assumptions": [
+          "Bounded deterministic v1 scenario model consumes preserved canonical identity/facts without promoting new canonical science."
+        ],
+        "limitations": [
+          "Civilization requires modeled biological eligibility and explicit scenario gates.",
+          "Archaeology derives only from causal event proposals/history witnesses."
+        ],
+        "evidence": []
+      },
+      "fidelity": {
+        "regime": "v1_product",
+        "validity": "Causal bounded civilization scenario for explicitly eligible modeled lineages",
+        "resolution": "At most 48 settlements and 512 pending event proposals",
+        "uncertainty": "Synthetic mechanisms are not universal sociology; proposals are not committed P4 history"
+      },
+      "lifecycle": "SHIPPING",
+      "requires": [
+        {
+          "id": "px.domain.canonical",
+          "version": "1.0.0",
+          "authority": "DERIVED"
+        }
+      ],
+      "claims": [
+        "model.v1-civilization"
+      ],
+      "operations": [
+        "INSPECT"
+      ],
+      "budget": {
+        "entities": 256,
+        "bytes": 262144,
+        "operations": 10000,
+        "queue": 32
+      },
+      "evidence": [
+        {
+          "id": "v1.domain-models",
+          "tier": "FAST_LOCAL"
+        },
+        {
+          "id": "v1.provider-integration",
+          "tier": "INTEGRATION"
+        },
+        {
+          "id": "v1.release-model-seal",
+          "tier": "RELEASE"
+        }
+      ],
+      "mandatory": true
+    },
+    {
+      "contract": "ofu-px-contracts-1",
+      "id": "v1.model.microscopic",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "model",
+      "authority": {
+        "class": "MODEL_DERIVED_SIMULATION",
+        "contract": "ofu-px-contracts-1",
+        "model": "v1.microscopic",
+        "version": "1.0.0",
+        "sources": [
+          "research/wave-v-microscopic-matter-2026-09-05@6aeecf2ccc564d7f0f316711d07710e74e667e27"
+        ],
+        "assumptions": [
+          "Bounded deterministic v1 scenario model consumes preserved canonical identity/facts without promoting new canonical science."
+        ],
+        "limitations": [
+          "SOURCE_BACKED_ATOMIC and SYNTHETIC_ATOMIC_REPRESENTATION authority are never conflated."
+        ],
+        "evidence": []
+      },
+      "fidelity": {
+        "regime": "v1_product",
+        "validity": "Explicit model-regime descent from a modeled organism context",
+        "resolution": "At most 512 microscopic nodes per materialization",
+        "uncertainty": "No molecular dynamics or quantum simulation; synthetic atoms are presentation-only"
+      },
+      "lifecycle": "SHIPPING",
+      "requires": [
+        {
+          "id": "px.domain.canonical",
+          "version": "1.0.0",
+          "authority": "DERIVED"
+        }
+      ],
+      "claims": [
+        "model.v1-microscopic"
+      ],
+      "operations": [
+        "INSPECT"
+      ],
+      "budget": {
+        "entities": 256,
+        "bytes": 262144,
+        "operations": 10000,
+        "queue": 32
+      },
+      "evidence": [
+        {
+          "id": "v1.domain-models",
+          "tier": "FAST_LOCAL"
+        },
+        {
+          "id": "v1.provider-integration",
+          "tier": "INTEGRATION"
+        },
+        {
+          "id": "v1.release-model-seal",
+          "tier": "RELEASE"
+        }
+      ],
+      "mandatory": true
+    },
+    {
+      "contract": "ofu-px-contracts-1",
+      "id": "v1.inspector.world",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "inspector",
+      "authority": {
+        "class": "MODEL_DERIVED_SIMULATION",
+        "contract": "ofu-px-contracts-1",
+        "model": "v1.world-inspector",
+        "version": "1.0.0",
+        "sources": [
+          "parallel/wave-v-astronomy-depth-2026-09-05@a4feefde0fcc4df1b257b7126f95c4bbcaf779d3",
+          "research/wave-v-planetology-frontier-2026-09-05@3e102e26c2adfcc8cb461193f821e10d9c374e24",
+          "research/wave-v-biology-evolution-2026-09-05@ccc1f91d5c6cd26e7b89b74433e4712755073e5a",
+          "research/wave-v-civilization-history-2026-09-05@082d8c558ad56c36a894a4ca381d01b10c5697d4",
+          "research/wave-v-microscopic-matter-2026-09-05@6aeecf2ccc564d7f0f316711d07710e74e667e27"
+        ],
+        "assumptions": [
+          "Bounded deterministic v1 scenario model consumes preserved canonical identity/facts without promoting new canonical science."
+        ],
+        "limitations": [
+          "Inspector output is a model-derived summary and does not promote modeled fields to canonical facts."
+        ],
+        "evidence": []
+      },
+      "fidelity": {
+        "regime": "v1_product",
+        "validity": "Human-readable projection of v1 modeled state anchored to preserved selection",
+        "resolution": "One selected world summary",
+        "uncertainty": "Inspector summarizes authority; Lab-level exact provenance remains separate"
+      },
+      "lifecycle": "SHIPPING",
+      "requires": [
+        {
+          "id": "px.domain.canonical",
+          "version": "1.0.0",
+          "authority": "DERIVED"
+        }
+      ],
+      "claims": [
+        "inspector.v1-world"
+      ],
+      "operations": [
+        "INSPECT"
+      ],
+      "budget": {
+        "entities": 256,
+        "bytes": 262144,
+        "operations": 10000,
+        "queue": 32
+      },
+      "evidence": [
+        {
+          "id": "v1.domain-models",
+          "tier": "FAST_LOCAL"
+        },
+        {
+          "id": "v1.provider-integration",
+          "tier": "INTEGRATION"
+        },
+        {
+          "id": "v1.release-model-seal",
+          "tier": "RELEASE"
+        }
+      ],
+      "mandatory": true
+    }
+  ]
+}
