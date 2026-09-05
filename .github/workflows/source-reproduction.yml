@@ -3,12 +3,11 @@ name: Exact Source Reproduction Bundle
 # Diagnostic source transport, not a certification or release gate.
 # Only tracked public repository objects are archived; no runner files,
 # credentials, caches, or environment values are included.
+# Every repair head on this branch must be reproducible without network access.
 on:
   push:
     branches:
       - integration/wave-iv-massive-convergence-vertical-slice-2026-09-04
-    paths:
-      - .github/workflows/source-reproduction.yml
 
 permissions:
   contents: read
@@ -36,7 +35,7 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           mkdir -p dist/source-reproduction
           git archive --format=tar.gz --output=dist/source-reproduction/exact-source.tar.gz HEAD
-          git bundle create dist/source-reproduction/source.bundle --all
+          git bundle create dist/source-reproduction/source.bundle --all HEAD
           git bundle verify dist/source-reproduction/source.bundle
           git for-each-ref --format='%(refname) %(objectname)' > dist/source-reproduction/refs.txt
           printf 'SOURCE_SHA=%s\nSOURCE_TREE=%s\nPURPOSE=DIAGNOSTIC_NOT_CERTIFICATION\n' "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})" > dist/source-reproduction/source.txt
