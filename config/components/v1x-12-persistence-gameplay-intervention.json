@@ -1,0 +1,31 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1x12.temporal.session-bridge",
+      "version": "1.0.0",
+      "owner": "v1x-12-persistence-gameplay-intervention",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/v1x-12-persistence-gameplay-intervention/temporal-adapters/session-bridge.js",
+      "dependencies": ["v1.session.runtime"],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Additive V1X-12 adapter over the frozen P4-backed V1 session codec; delegates all mutation, replay, checkpoint and portable persistence authority to the existing session runtime.",
+      "provides": ["v1x12.temporal.session-bridge"]
+    },
+    {
+      "id": "v1x12.actions.intent-adapter",
+      "version": "1.0.0",
+      "owner": "v1x-12-persistence-gameplay-intervention",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/v1x-12-persistence-gameplay-intervention/actions/intent-adapter.js",
+      "dependencies": ["v1x12.temporal.session-bridge", "v1.providers.bindings", "ofu.bootstrap.product.scale-runtime"],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "V1X-12 governed player-intent facade bound to the existing V1 agency provider, Wave IV selection/scale runtime and DERIVED session persistence provider; creates no canonical scientific facts.",
+      "provides": ["v1x12.actions.governed-intent-api"]
+    }
+  ]
+}
