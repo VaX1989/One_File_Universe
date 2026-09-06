@@ -211,6 +211,7 @@ for (const mutate of [
   x => { x[0].registry.bound = x[0].registry.bound.filter(id => id !== 'v1.model.astronomy'); },
   x => { x[0].registry.bound = x[0].registry.bound.filter(id => id !== 'v1.scene.living-world'); },
   x => { x[0].journeys = x[0].journeys.filter(j => !(j.viewport.width === 390 && j.stage === 'SYSTEM')); },
+  x => { x[0].journeys = x[0].journeys.filter(j => !(j.viewport.width === 844 && j.stage === 'SYSTEM')); },
 ]) {
   const changed = structuredClone(v1Rows);
   mutate(changed);
