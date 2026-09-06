@@ -10,7 +10,7 @@ export function load(){
  globalThis.__OFU_PLANET_PREVIEW__={ctx,chosen:{key:DEFAULT_KEY},snapshot:()=>({})};
  const plan=loadComponents(),byId=new Map(plan.map(c=>[c.id,c])),ids=new Set();
  function include(id){if(ids.has(id))return;const c=byId.get(id);if(!c)throw new Error('Unregistered test dependency '+id);ids.add(id);c.dependencies.forEach(include);}
- include('v1.exploration.living-runtime');include('v1.rendering.world-presentation');include('v1.rendering.lod-budget');
+ include('v1.exploration.living-runtime');include('v1.rendering.world-presentation');include('v1.rendering.lod-budget');include('v1x.shipping.bindings');
  globalThis.__OFU_PX_TEST_CATALOGS__=plan.filter(c=>c.id.startsWith('px.providers.')).map(c=>JSON.parse(c.content));
  globalThis.__OFU_PX_TEST_REGIMES__=plan.filter(c=>c.id.startsWith('px.regimes.')).map(c=>JSON.parse(c.content));
  for(const c of plan)if(ids.has(c.id)&&c.kind==='code')read(c.source);

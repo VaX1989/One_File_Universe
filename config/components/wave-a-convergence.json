@@ -435,12 +435,39 @@
         "v1.exploration.living-runtime",
         "v1.rendering.world-presentation",
         "v1.rendering.webgl2-world",
-        "v1.rendering.lod-budget"
+        "v1.rendering.lod-budget",
+        "v1x02.spatial-universe.runtime",
+        "v1x04.system.provider"
       ],
       "authority": "PRESENTATION_ONLY",
       "provenance": "Wave A connected viewport from registered world providers; modeled context and presentation remain distinct from canonical P2-P6 evidence.",
       "provides": [
         "v1.rendering.living-renderer"
+      ]
+    },
+    {
+      "id": "v1x.shipping.bindings",
+      "version": "1.0.0",
+      "owner": "px",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/extensions/v1x-shipping-bindings.js",
+      "dependencies": [
+        "ofu.extensions.product-bindings",
+        "v1.providers.bindings",
+        "v1x02.spatial-universe.runtime",
+        "v1x04.system.provider",
+        "v1x-05.planet-approach.provider",
+        "v1x-06.surface.provider",
+        "v1x-07.organism-selection-handoff",
+        "v1x09.micro.presentation-provider",
+        "v1x13.audio.runtime"
+      ],
+      "authority": "DERIVED",
+      "provenance": "Final convergence binding of already-shipped V1X provider APIs to their declared PX descriptors; no provider authority, camera, selection, scale, persistence, or canonical state is promoted.",
+      "provides": [
+        "v1x.shipping.bindings"
       ]
     },
     {
@@ -470,6 +497,7 @@
       "source": "src/bootstrap/product/living-universe.js",
       "dependencies": [
         "v1.rendering.living-renderer",
+        "v1x.shipping.bindings",
         "v1.product.living-style",
         "v1.product.experience",
         "v1.exploration.product-adapter",
