@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
-import {validatePXEvidence} from '../../tools/extensions/seal.mjs';
+import {validatePXV1Evidence} from '../../tools/extensions/seal.mjs';
 
 const root=process.argv[2]||'evidence',files=[];
 function walk(directory){for(const entry of fs.readdirSync(directory,{withFileTypes:true})){const file=path.join(directory,entry.name);if(entry.isDirectory())walk(file);else if(entry.name.endsWith('.json'))files.push(file)}}
@@ -65,6 +65,6 @@ if(!living.some(r=>r.platform==='win32'&&r.browser==='chromium'))throw new Error
 for(const browser of ['chromium','firefox','webkit'])if(!living.some(r=>r.platform==='linux'&&r.browser===browser))throw new Error('Linux '+browser+' Living evidence missing');
 if(new Set(living.map(r=>r.sourceCommit)).size!==1||new Set(living.map(r=>r.artifactSha256)).size!==1)throw new Error('Living cross-runtime source/artifact drift');
 
-const pxEvidence=json.map(x=>x.value).filter(r=>r.schema==='ofu-px-browser-evidence-1');
-const pxSeal=fullManifest.px?validatePXEvidence(pxEvidence,fullManifest,expectedSource):null;
+const pxEvidence=json.map(x=>x.value).filter(r=>r.schema==='ofu-px-browser-evidence-2');
+const pxSeal=fullManifest.px?validatePXV1Evidence(pxEvidence,fullManifest,expectedSource):null;
 console.log(JSON.stringify({status:'PASS',sourceCommit:expectedSource,artifactSha256:fullManifest.artifactSha256,foundationArtifactSha256:[...artifacts][0],artifactScope:'V1_LIVING_PRODUCT_WITH_SEPARATE_FOUNDATION_RENDERING_REGRESSION',foregroundProvider:fullManifest.visualUniverse.primarySceneProvider,releaseLine:fullManifest.releaseLine,pxSeal,foundationBrowsers:rows.map(r=>({browser:r.browser,platform:r.platform,arch:r.arch,backend:r.backend})),livingBrowsers:living.map(r=>({browser:r.browser,platform:r.platform,arch:r.arch,cases:r.cases,selected:r.selected})),componentManifestHash:[...manifests][0],canonicalWitness:rows[0].canonicalWitness,timingPolicy:'MEASURED_EVIDENCE_NOT_CROSS_MACHINE_DETERMINISTIC_GATE'},null,2));
