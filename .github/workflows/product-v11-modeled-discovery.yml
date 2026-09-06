@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - 'src/bootstrap/product/explorer-beta.js'
+      - 'src/bootstrap/product/modeled-discovery-readiness.js'
+      - 'config/components/v11-product-modeled-discovery.json'
       - 'tests/product/v09-explorer-beta.mjs'
       - 'tests/product/browser-v11-modeled-discovery.mjs'
       - '.github/workflows/product-v11-modeled-discovery.yml'
@@ -12,6 +14,8 @@ on:
       - 'development/v1.*'
     paths:
       - 'src/bootstrap/product/explorer-beta.js'
+      - 'src/bootstrap/product/modeled-discovery-readiness.js'
+      - 'config/components/v11-product-modeled-discovery.json'
       - 'tests/product/v09-explorer-beta.mjs'
       - 'tests/product/browser-v11-modeled-discovery.mjs'
       - '.github/workflows/product-v11-modeled-discovery.yml'
