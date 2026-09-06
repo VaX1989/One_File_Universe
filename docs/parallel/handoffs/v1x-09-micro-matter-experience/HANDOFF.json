@@ -38,32 +38,32 @@
     {
       "command": "GitHub Actions V1X Lane Ownership run 34031832183 / job 101482658631",
       "status": "PASS",
-      "evidencePath": "reports/v1x/v1x-09/IMPLEMENTATION_EVIDENCE.md"
+      "evidencePath": "reports/v1x-09-micro-matter-experience/IMPLEMENTATION_EVIDENCE.md"
     },
     {
       "command": "node tests/v1x-09-micro-matter-experience/journey.mjs",
       "status": "NOT_RUN",
-      "evidencePath": "reports/v1x/v1x-09/IMPLEMENTATION_EVIDENCE.md"
+      "evidencePath": "reports/v1x-09-micro-matter-experience/IMPLEMENTATION_EVIDENCE.md"
     },
     {
       "command": "node tests/v1x-09-micro-matter-experience/bounds-authority.mjs",
       "status": "NOT_RUN",
-      "evidencePath": "reports/v1x/v1x-09/IMPLEMENTATION_EVIDENCE.md"
+      "evidencePath": "reports/v1x-09-micro-matter-experience/IMPLEMENTATION_EVIDENCE.md"
     },
     {
       "command": "node tools/extensions/conformance.mjs INTEGRATION --exact",
       "status": "NOT_RUN",
-      "evidencePath": "reports/v1x/v1x-09/IMPLEMENTATION_EVIDENCE.md"
+      "evidencePath": "reports/v1x-09-micro-matter-experience/IMPLEMENTATION_EVIDENCE.md"
     }
   ],
   "evidence": [
     {
-      "path": "reports/v1x/v1x-09/IMPLEMENTATION_EVIDENCE.md",
+      "path": "reports/v1x-09-micro-matter-experience/IMPLEMENTATION_EVIDENCE.md",
       "sha256": "9a635c691308440b4ed323a8d950a9f5cbf491e0fb6766cb15131aa0d185be28",
       "claim": "Implementation, ownership, authority, resource and certification-state evidence."
     },
     {
-      "path": "reports/v1x/v1x-09/journey-contract-witness.json",
+      "path": "reports/v1x-09-micro-matter-experience/journey-contract-witness.json",
       "sha256": "515ee86580795f3cb0776786b8036b4b85e572e7ecbdab557327ae34180797e8",
       "claim": "Deterministic journey and reconciliation oracle specification; not measured runtime evidence."
     }
@@ -125,5 +125,5 @@
     "android": "NOT_VERIFIED",
     "ios": "NOT_VERIFIED"
   },
-  "integrationNotes": "Checkpoint 2 is the immutable implementation checkpoint. V1X-06, V1X-07 and V1X-11 had no post-base checkpoint available when consumed, so the handoff records the frozen base SHA for those dependencies. Final evidence-only commits do not imply accepted integration."
+  "integrationNotes": "Checkpoint 2 is the immutable implementation checkpoint. V1X-06, V1X-07 and V1X-11 had no post-base checkpoint available when consumed, so the handoff records the frozen base SHA for those dependencies. Final evidence-only commits do not imply accepted integration. Evidence locations follow the authoritative Prompt-0 ownerNamespace paths enforced by the ownership validator."
 }
