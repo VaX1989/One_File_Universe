@@ -6,7 +6,7 @@
       "version": "1.0.0",
       "owner": "product",
       "kind": "code",
-      "stage": "foundation",
+      "stage": "full",
       "placement": "script",
       "source": "src/bootstrap/product/living-survey-ux.js",
       "dependencies": ["v1.product.living-universe"],
