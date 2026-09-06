@@ -353,3 +353,37 @@ Raw size is measured, but artificial inflation remains excluded from Certified F
 ## Roadmap rule
 
 A later phase MAY prototype earlier to reduce risk, but no prototype silently overrides an upstream constitutional contract. Discoveries that invalidate an ADR must update the ADR and compatibility story before dependent stable generators proceed.
+
+---
+
+## Post-v1 successor direction — Local AI & Ultimate Complexity
+
+This section is an **additive planning pointer**, not a new historical P13 and not a change to the certified scope/status of P0-P12. Per ADR-024, future orchestration lives in the Forward Frontier layer rather than rewriting certified development history.
+
+The reviewed founder proposal `OFU-AI-ULTIMATE-SPEC` is adopted as a long-range successor direction through:
+
+- [`docs/frontier/AI_AND_ULTIMATE_COMPLEXITY.md`](frontier/AI_AND_ULTIMATE_COMPLEXITY.md) — human-readable adjudication, corrected architecture and sequencing;
+- [`docs/frontier/AI_ULTIMATE_SUCCESSOR_PROGRAM.json`](frontier/AI_ULTIMATE_SUCCESSOR_PROGRAM.json) — machine-readable reserved successor metadata.
+
+### Current priority remains v1 closure
+
+AI does **not** become a v1.0.0 completion criterion. The immediate critical path remains P9/P10/P11 product work expressed by the current frontier program:
+
+1. replace grid/schematic primary cosmic presentation with genuinely spatial viewport-first exploration;
+2. deliver continuous camera/semantic-scale travel through galaxy → region → system → planet → surface while preserving identity/context;
+3. materially improve surface/life/civilization visual embodiment without scientific overclaim;
+4. stabilize persistence/resources/accessibility and real user journeys;
+5. restore exact-head certification and preserve deterministic source reproduction;
+6. obtain appropriate device evidence before mature mobile claims.
+
+### AI successor activation
+
+- `AI-F0` is reserved for local-inference feasibility and may be authorized as a separate research lane once it does not compete with the v1 founder-experience critical path.
+- `AI-F1+` require explicit activation after the applicable v1 experience and certification gates are evidenced.
+- model size, quantization, embedded-weight packaging and inference backend remain measured feasibility choices rather than frozen requirements.
+- WebGPU is optional acceleration, never a required truth/runtime authority.
+- any future AI edition must retain a fully functional non-AI standard edition and must never allow generated tokens to directly author canonical state.
+
+### Ultimate complexity sequencing
+
+The proposal's U1-U9 labels do not create a second competing linear roadmap. U1 maps to current v1 closure; U2-U9 map onto the existing frontier owners for planetary causality, life/evolution, civilization/history, individuals, microscopic/material continuity, cross-domain causality and long-range convergence. The authoritative mapping is maintained in the successor roadmap document and its machine-readable companion.
