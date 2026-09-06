@@ -1,0 +1,59 @@
+{
+  "schema":"ofu-v1x-handoff-1",
+  "laneId":"V1X-17",
+  "branch":"research/v1x-17-life-evolution-2026-09-06",
+  "status":"IMPLEMENTED_UNCERTIFIED",
+  "authorityClass":"MODEL_DERIVED_SIMULATION",
+  "contractSet":"OFU-V1X-CONTRACT-SET-2026-09-06.1",
+  "base":{"sha":"760c0c70bccb6afd7c7b07600c0f5be3f80e7b19","tree":"3324e6354b5ff1b90156d1693e6051595b6f1219"},
+  "checkpoint":{"sha":"461c0407cc0a52e741b1d465177f6c38430a7348","tree":"848ff47fb3e14105498902839b7076fb57f337ad"},
+  "changedPaths":[
+    "docs/evidence/v1x-17-life-evolution/RESEARCH_EVIDENCE.md",
+    "reports/v1x-17-life-evolution/RESEARCH_REPORT.md",
+    "research/v1x-17-life-evolution/README.md",
+    "research/v1x-17-life-evolution/ecology.mjs",
+    "research/v1x-17-life-evolution/evolution.mjs",
+    "research/v1x-17-life-evolution/frontier.mjs",
+    "research/v1x-17-life-evolution/golden-frontier.json",
+    "research/v1x-17-life-evolution/kernel.mjs",
+    "research/v1x-17-life-evolution/model-contract.json",
+    "research/v1x-17-life-evolution/oracle-frontier.py",
+    "research/v1x-17-life-evolution/source-ledger.json",
+    "research/v1x-17-life-evolution/test-frontier.mjs"
+  ],
+  "ownershipValidation":{"command":"GitHub compare 760c0c70bccb6afd7c7b07600c0f5be3f80e7b19..461c0407cc0a52e741b1d465177f6c38430a7348; verify every changed path against V1X_OWNERSHIP_MATRIX.json@2026-09-06.1 RESEARCH policy","status":"PASS","matrixVersion":"2026-09-06.1"},
+  "dependencies":[],
+  "tests":[
+    {"command":"node research/v1x-17-life-evolution/test-frontier.mjs","status":"PASS","evidencePath":"docs/evidence/v1x-17-life-evolution/RESEARCH_EVIDENCE.md"},
+    {"command":"python3 research/v1x-17-life-evolution/oracle-frontier.py","status":"PASS","evidencePath":"docs/evidence/v1x-17-life-evolution/RESEARCH_EVIDENCE.md"},
+    {"command":"official tools/validate-v1x-ownership.mjs in full local clone","status":"NOT_RUN","evidencePath":"docs/evidence/v1x-17-life-evolution/RESEARCH_EVIDENCE.md"}
+  ],
+  "evidence":[
+    {"path":"research/v1x-17-life-evolution/test-frontier.mjs","sha256":"ceaab822d509c70d66df58eb3cacd896b57402afe8ce447e2ef8f7c81d20cc83","claim":"Executable adversarial research fixture"},
+    {"path":"research/v1x-17-life-evolution/golden-frontier.json","sha256":"6961d72e74e7a3ba9090d4fdcae486291d6256b697f037e3b3f35961651d197e","claim":"Frozen deterministic model/replay witnesses"},
+    {"path":"research/v1x-17-life-evolution/oracle-frontier.py","sha256":"076ac13e0cc204bb6e8716da2cad2150985e1a223bbab893940479a7f1e60a07","claim":"Independent Python arithmetic/hash oracle"}
+  ],
+  "knownDefects":[
+    {"priority":"P2","summary":"Research kernel uses Node createHash; browser/promotion path must use the existing OFU browser-safe hash seam while preserving golden identities.","status":"PROMOTION_BLOCKER_ONLY"},
+    {"priority":"P2","summary":"Ecology/evolution parameters are explicit research inputs and are not calibrated as general Earth or extraterrestrial predictive models.","status":"EXPECTED_RESEARCH_LIMITATION"},
+    {"priority":"P3","summary":"Research r17 identifiers are not canonical P2 identifiers and require an explicit successor migration/mapping policy before promotion.","status":"EXPECTED_RESEARCH_LIMITATION"}
+  ],
+  "adversarialFindings":[
+    "A fixed universal trophic transfer efficiency is scientifically unsupported; retained as explicit edge input.",
+    "Ecological network topology is not granted stability, specialization, coextinction or causal authority.",
+    "Environment readiness is not occupancy, habitability proof or abiogenesis inference.",
+    "Speciation requires an explicit criterion witness; universal trait-distance and branching-rate thresholds are rejected.",
+    "Fine organism materialization is ephemeral and cannot override aggregate population state.",
+    "Biology-to-environment feedback is proposal-only and cannot mutate canonical environment state privately."
+  ],
+  "requestedSharedContractChanges":[],
+  "scientificAuthorityClaims":[
+    {"claim":"Energy, nutrient and redox constraints are explicit profile-bound Earth-informed inputs, not universal life laws.","authorityClass":"MODEL_DERIVED_SIMULATION","source":"research/v1x-17-life-evolution/source-ledger.json"},
+    {"claim":"Stage demography and trophic/ecological dynamics are approximate parameterized abstractions with bounded conservation semantics.","authorityClass":"MODEL_DERIVED_SIMULATION","source":"research/v1x-17-life-evolution/model-contract.json"},
+    {"claim":"Replay identities, bounds and REFINE/PROJECT/RECONCILE guards are formal properties of the research model only.","authorityClass":"MODEL_DERIVED_SIMULATION","source":"research/v1x-17-life-evolution/golden-frontier.json"}
+  ],
+  "resourceEvidence":{"boundedActiveSet":{"maxPopulations":64,"maxLineages":128,"maxEdges":256,"maxTraitsPerLineage":16,"maxImmediateOrganisms":128,"maxReplayEventsPerInvocation":1024},"floatingPointBiologicalState":false,"sparseMaterialization":"bounded ephemeral organism samples only"},
+  "browserEvidence":{"status":"NOT_APPLICABLE_RESEARCH_NODE_PROTOTYPE","promotionRequirement":"Use OFU browser-safe SHA-256 seam and preserve golden identities before any browser/shipping extraction."},
+  "physicalDeviceEvidence":{"android":"NOT_VERIFIED","ios":"NOT_VERIFIED","reason":"Research-only deterministic model; no device UI/runtime claim."},
+  "integrationNotes":"Checkpoint identifies the immutable research content commit immediately before this metadata-only handoff commit, avoiding self-referential commit identity. Frozen P6 and central registries remain unchanged; no merge or promotion is requested."
+}
