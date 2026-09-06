@@ -4,8 +4,11 @@ import assert from 'node:assert/strict';
 const workflowDir='.github/workflows';
 const coreWorkflows=[
   `${workflowDir}/foundation.yml`,
+  `${workflowDir}/p1-conformance.yml`,
   `${workflowDir}/p1-p4-baseline.yml`,
+  `${workflowDir}/p2-conformance.yml`,
   `${workflowDir}/p3-conformance.yml`,
+  `${workflowDir}/p4-conformance.yml`,
   `${workflowDir}/p5-conformance.yml`,
   `${workflowDir}/p5-environment-v2-canonical.yml`,
   `${workflowDir}/p6-v1-conformance.yml`,
