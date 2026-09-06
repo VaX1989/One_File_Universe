@@ -1,0 +1,14 @@
+{
+  "schema": "ofu-conformance-1",
+  "tests": [
+    {
+      "id": "v1x10.ux-contracts",
+      "owner": "v1x-10-ux-mobile-accessibility",
+      "tier": "LANE_TARGETED",
+      "command": ["node", "tests/v1x-10-ux-mobile-accessibility/contracts.mjs"],
+      "providers": ["v1.interaction.universal-exploration"],
+      "oracle": "ofu-v1x10-contract-oracle-1",
+      "timeoutMs": 30000
+    }
+  ]
+}
