@@ -1,0 +1,14 @@
+{
+  "cases": [
+    {"expected":{"DISK":42536,"IRREGULAR":18000,"SPHEROID":5000},"input":{"environmentDensityQ16":0,"massLog10MilliDex":7000},"kind":"morphology"},
+    {"expected":{"DISK":34064,"IRREGULAR":14177,"SPHEROID":17295},"input":{"environmentDensityQ16":12000,"massLog10MilliDex":8500},"kind":"morphology"},
+    {"expected":{"DISK":23786,"IRREGULAR":9750,"SPHEROID":32000},"input":{"environmentDensityQ16":32768,"massLog10MilliDex":10000},"kind":"morphology"},
+    {"expected":{"DISK":16236,"IRREGULAR":6567,"SPHEROID":42733},"input":{"environmentDensityQ16":50000,"massLog10MilliDex":11000},"kind":"morphology"},
+    {"expected":{"DISK":12036,"IRREGULAR":3500,"SPHEROID":50000},"input":{"environmentDensityQ16":65535,"massLog10MilliDex":12000},"kind":"morphology"},
+    {"expected":{"detectabilityScoreQ16":65470,"parallaxMicroArcsec":100000,"relativeFluxAt10pcPpm":1000000},"input":{"crowdingQ16":0,"distanceMilliPc":10000,"luminosityMilliSolar":1000},"kind":"observability"},
+    {"expected":{"detectabilityScoreQ16":59578,"parallaxMicroArcsec":10000,"relativeFluxAt10pcPpm":10000},"input":{"crowdingQ16":0,"distanceMilliPc":100000,"luminosityMilliSolar":1000},"kind":"observability"},
+    {"expected":{"detectabilityScoreQ16":37236,"parallaxMicroArcsec":10000,"relativeFluxAt10pcPpm":10000},"input":{"crowdingQ16":32768,"distanceMilliPc":100000,"luminosityMilliSolar":1000},"kind":"observability"},
+    {"expected":{"detectabilityScoreQ16":49744,"parallaxMicroArcsec":1000,"relativeFluxAt10pcPpm":6000},"input":{"crowdingQ16":10000,"distanceMilliPc":1000000,"luminosityMilliSolar":60000},"kind":"observability"}
+  ],
+  "schema":"rd15-oracle-fixture-1"
+}
