@@ -1,0 +1,27 @@
+{
+  "schema": "ofu-v1x-02-spatial-golden-1",
+  "version": "ofu-v1x-02-spatial-universe-1",
+  "contract": "ofu-v1x-02-spatial-consumer-1",
+  "cases": {
+    "universeSeedA": [
+      {"identity":"canonicalId:galaxy:alpha","position":{"x":524.765915461,"y":145.430398512,"z":592.555022993,"authority":"PRESENTATION_ONLY","space":"V1X02_PRESENTATION_3D"}},
+      {"identity":"canonicalId:galaxy:beta","position":{"x":-78.031521994,"y":106.795163215,"z":-592.47503256,"authority":"PRESENTATION_ONLY","space":"V1X02_PRESENTATION_3D"}},
+      {"identity":"canonicalId:galaxy:delta","position":{"x":-8.823928525,"y":-28.469325402,"z":-196.054044554,"authority":"PRESENTATION_ONLY","space":"V1X02_PRESENTATION_3D"}},
+      {"identity":"canonicalId:galaxy:epsilon","position":{"x":-642.296187484,"y":-134.728180316,"z":86.020315725,"authority":"PRESENTATION_ONLY","space":"V1X02_PRESENTATION_3D"}},
+      {"identity":"canonicalId:galaxy:gamma","position":{"x":17.197204827,"y":-33.690397463,"z":196.568500765,"authority":"PRESENTATION_ONLY","space":"V1X02_PRESENTATION_3D"}}
+    ],
+    "spiralGalaxySeedB": [
+      {"identity":"canonicalId:region:0","position":{"x":1.785850901,"y":-6.734617726,"z":-29.872445626,"authority":"PRESENTATION_ONLY","space":"V1X02_PRESENTATION_3D"}},
+      {"identity":"canonicalId:region:1","position":{"x":45.53594104,"y":337.784432944,"z":-116.195548844,"authority":"PRESENTATION_ONLY","space":"V1X02_PRESENTATION_3D"}},
+      {"identity":"canonicalId:region:2","position":{"x":-0.780283672,"y":6.73940864,"z":-32.391954542,"authority":"PRESENTATION_ONLY","space":"V1X02_PRESENTATION_3D"}},
+      {"identity":"canonicalId:region:3","position":{"x":-25.434392639,"y":-44.226809269,"z":-14.330744049,"authority":"PRESENTATION_ONLY","space":"V1X02_PRESENTATION_3D"}}
+    ],
+    "irregularRegionSeedC": [
+      {"identity":"canonicalId:neighborhood:0","position":{"x":40.239642449,"y":-27.586758261,"z":-28.572148578,"authority":"PRESENTATION_ONLY","space":"V1X02_PRESENTATION_3D"}},
+      {"identity":"canonicalId:neighborhood:1","position":{"x":30.709608976,"y":52.565708828,"z":63.739973552,"authority":"PRESENTATION_ONLY","space":"V1X02_PRESENTATION_3D"}},
+      {"identity":"canonicalId:neighborhood:2","position":{"x":58.677356499,"y":37.276283927,"z":-16.350630837,"authority":"PRESENTATION_ONLY","space":"V1X02_PRESENTATION_3D"}},
+      {"identity":"canonicalId:neighborhood:3","position":{"x":22.663126613,"y":85.897637856,"z":16.385710872,"authority":"PRESENTATION_ONLY","space":"V1X02_PRESENTATION_3D"}}
+    ],
+    "parallax": {"depthSpread":1185.030055553,"shiftSpread":0.003118633,"nearShift":0.012612525,"farShift":0.009493892,"depthDependent":true}
+  }
+}

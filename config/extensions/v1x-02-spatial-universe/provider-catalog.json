@@ -1,0 +1,30 @@
+{
+  "schema": "ofu-provider-catalog-1",
+  "owners": [{"id":"v1x-02-spatial-universe","prefixes":["v1x02"],"kinds":["representation"],"authorities":["PRESENTATION_ONLY"]}],
+  "canonicalAdmissions": [],
+  "providers": [{
+    "contract":"ofu-px-contracts-1",
+    "id":"v1x02.representation.spatial-universe",
+    "version":"1.0.0",
+    "owner":"v1x-02-spatial-universe",
+    "kind":"representation",
+    "authority":{
+      "class":"PRESENTATION_ONLY",
+      "contract":"ofu-px-contracts-1",
+      "model":"v1x02.spatial-universe",
+      "version":"1.0.0",
+      "sources":["src/v1x-02-spatial-universe/spatial-universe.js","src/exploration/v1/address-space.js","src/domains/astronomy/p3-canonical.js"],
+      "assumptions":["Stable canonical or exploration identity is supplied by an upstream governed provider.","Morphology and density inputs are presentation hints unless their source separately carries stronger authority."],
+      "limitations":["Identity-hashed presentation coordinates are not physical coordinates and do not promote P3 astronomy claims.","The provider owns no camera, selection, input, persistence, temporal admission, or central scene registration authority.","Bounded presentation probe slots are not canonical discovery results and are never selectable or navigable."],
+      "evidence":[{"id":"v1x02.spatial-golden","kind":"PRESENTATION_TEST","digest":"28f64cabf4fc46de83938e5bcb5ddd94b1c0ed04cfe879853976e64c6cf5c31f"}]
+    },
+    "fidelity":{"regime":"product","validity":"Deterministic presentation geometry keyed by stable identity within the declared context, scope and presentation seed.","resolution":"At most 64 projected entities plus a separately bounded 96-slot presentation neighborhood probe pattern per request.","uncertainty":"Synthesized coordinates have PRESENTATION_ONLY authority; separately carried source coordinates retain their declared upstream authority without promotion."},
+    "lifecycle":"SHIPPING",
+    "requires":[{"id":"px.query.discovery","version":"1.0.0","authority":"DERIVED"},{"id":"px.interaction.camera","version":"1.0.0","authority":"PRESENTATION_ONLY"}],
+    "claims":["representation.spatial-3d","representation.identity-stable","representation.presentation-neighborhood-bounded"],
+    "operations":["DISCOVER","REPRESENT","PROJECT"],
+    "budget":{"entities":64,"bytes":262144,"operations":4096,"queue":96},
+    "evidence":[{"id":"v1x02.spatial.determinism","tier":"FAST_LOCAL"},{"id":"v1x02.spatial.no-planar-index","tier":"LANE_TARGETED"},{"id":"v1x02.spatial.resource-envelope","tier":"LANE_TARGETED"}],
+    "mandatory":false
+  }]
+}

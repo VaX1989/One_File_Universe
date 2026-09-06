@@ -1,0 +1,8 @@
+{
+  "schema": "ofu-conformance-1",
+  "tests": [
+    {"id":"v1x02.spatial.determinism","owner":"v1x-02-spatial-universe","tier":"FAST_LOCAL","command":["node","tests/v1x-02-spatial-universe/spatial-universe.test.mjs"],"providers":["v1x02.representation.spatial-universe"],"oracle":"v1x02-deterministic-3d-spatial-universe","timeoutMs":30000},
+    {"id":"v1x02.spatial.no-planar-index","owner":"v1x-02-spatial-universe","tier":"LANE_TARGETED","command":["node","tests/v1x-02-spatial-universe/no-grid-oracle.test.mjs"],"providers":["v1x02.representation.spatial-universe"],"oracle":"v1x02-no-primary-planar-index-layout","timeoutMs":30000},
+    {"id":"v1x02.spatial.resource-envelope","owner":"v1x-02-spatial-universe","tier":"LANE_TARGETED","command":["node","tests/v1x-02-spatial-universe/resource-evidence.test.mjs"],"providers":["v1x02.representation.spatial-universe"],"oracle":"v1x02-bounded-resource-envelope","timeoutMs":30000}
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1x02.spatial-universe.runtime",
+      "version": "1.0.0",
+      "owner": "v1x-02-spatial-universe",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/v1x-02-spatial-universe/spatial-universe.js",
+      "dependencies": [],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "V1X-02 deterministic identity-keyed three-dimensional presentation geometry; no canonical mutation and no physical-coordinate promotion.",
+      "provides": ["v1x02.spatial-universe", "ofu-v1x-02-spatial-consumer-1"]
+    },
+    {
+      "id": "px.providers.v1x02-spatial-universe",
+      "version": "1.0.0",
+      "owner": "v1x-02-spatial-universe",
+      "kind": "data",
+      "stage": "foundation",
+      "placement": "resource",
+      "source": "config/extensions/v1x-02-spatial-universe/provider-catalog.json",
+      "dependencies": ["v1x02.spatial-universe.runtime"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Lane-owned additive PX provider catalog for the V1X-02 presentation-only spatial representation contract.",
+      "provides": ["v1x02.spatial-provider-catalog"]
+    }
+  ]
+}
