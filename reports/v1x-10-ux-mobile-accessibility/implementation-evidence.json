@@ -1,0 +1,47 @@
+{
+  "schema": "ofu-v1x10-implementation-evidence-1",
+  "laneId": "PROMPT 10 / V1X-10",
+  "branch": "parallel/v1x-10-ux-mobile-accessibility-2026-09-06",
+  "base": {
+    "sha": "760c0c70bccb6afd7c7b07600c0f5be3f80e7b19",
+    "tree": "3324e6354b5ff1b90156d1693e6051595b6f1219"
+  },
+  "implementationCheckpoint": {
+    "sha": "23b0954cc614c856e31e458cb7d47ed932ab0243",
+    "tree": "43451847eaf5b47e7cd308cd5336bfc45fd7000f"
+  },
+  "checkpoints": [
+    {
+      "sha": "fd574c2510083c7638a767ceaa10aadb04406100",
+      "tree": "5b9048435ff46ceb9e5d8e3f035aa8c201d1f3bc",
+      "summary": "Viewport-first interaction, contextual inspection and accessibility production adapters"
+    },
+    {
+      "sha": "23b0954cc614c856e31e458cb7d47ed932ab0243",
+      "tree": "43451847eaf5b47e7cd308cd5336bfc45fd7000f",
+      "summary": "Lane contract oracle and exact-source browser journey harness"
+    }
+  ],
+  "productionDelta": [
+    "Explore receives a viewport-first presentation ratio on desktop while preserving the existing workspace and bootstrap owners.",
+    "A contextual viewport dock exposes Inspect selection and Evidence / Lab without making panels the sole journey.",
+    "Pointer, tap, wheel, pinch and keyboard observations are traced around the frozen input router; the lane does not consume or reroute native input.",
+    "Keyboard I opens contextual Inspect and Escape returns focus to the Explore viewport.",
+    "Compact layout exports measured bottom-sheet safe space so contextual and semantic-scale controls can settle above the fixed sheet.",
+    "Skip links, focus visibility, roving workspace tabs, active-panel accessibility state, reduced motion, increased contrast, forced colors and text scaling are additive presentation behavior."
+  ],
+  "authority": {
+    "class": "PRESENTATION_ONLY",
+    "inputOwner": "ofu-wave-iv-input-router-6",
+    "inputIntent": "ofu-wave-iv-input-intent-3",
+    "scaleOwner": "ofu-wave-iv-scale-runtime-3",
+    "selectionOwner": "ofu-wave-iv-selection-1",
+    "secondInputAuthority": false,
+    "newScientificClaims": false
+  },
+  "beforeAfter": {
+    "before": "Frozen base had the shared direct-input/scale/selection owners and mobile sheet, but no V1X-10 contextual viewport dock, lane-level no-occlusion telemetry, skip-link layer, or V1X-10 bounded modality trace.",
+    "after": "V1X-10 adds those presentation and accessibility layers through additive component discovery without modifying the central bootstrap, camera, scale, selection, scene, rendering or scientific-provider authorities."
+  },
+  "uncommittedLocalReliance": false
+}
