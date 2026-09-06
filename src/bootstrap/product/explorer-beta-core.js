@@ -77,17 +77,32 @@ function comparisonRows(left,right){
  ]);
 }
 const uniqueTokens=(items,max)=>{const out=[];for(const token of items||[]){if(typeof token!=='string'||!token||out.includes(token))continue;try{parsePlanetKey(token)}catch{continue}out.push(token);if(out.length>=max)break}return out};
+const trailTokens=(items,max)=>{const out=[];for(const token of items||[]){const normalized=safePlanetToken(token);if(!normalized)continue;out.push(normalized);if(out.length>=max)break}return out};
 const uniqueSystems=(items,max)=>{const out=[];for(const token of items||[]){if(typeof token!=='string'||!token||out.includes(token))continue;try{parseSystemKey(token)}catch{continue}out.push(token);if(out.length>=max)break}return out};
 function normalizeSession(raw={}){
  const current=typeof raw.current==='string'?safePlanetToken(raw.current):null,previous=typeof raw.previous==='string'?safePlanetToken(raw.previous):null,pinned=typeof raw.pinned==='string'?safePlanetToken(raw.pinned):null;
  const progress=raw.progress&&typeof raw.progress==='object'?raw.progress:{};
- return Object.freeze({version:1,current,previous,pinned,recent:Object.freeze(uniqueTokens(raw.recent,MAX_RECENT)),trail:Object.freeze(uniqueTokens(raw.trail,MAX_TRAIL)),bookmarks:Object.freeze(uniqueTokens(raw.bookmarks,MAX_BOOKMARKS)),systems:Object.freeze(uniqueSystems(raw.systems,MAX_SYSTEMS)),onboardingDismissed:raw.onboardingDismissed===true,progress:Object.freeze({selected:progress.selected===true,approached:progress.approached===true,inspected:progress.inspected===true})});
+ let trail=trailTokens(raw.trail,MAX_TRAIL),trailCursor=-1;
+ if(current){
+  const requested=Number(raw.trailCursor);
+  if(Number.isSafeInteger(requested)&&requested>=0&&requested<trail.length&&trail[requested]===current)trailCursor=requested;else trailCursor=trail.lastIndexOf(current);
+  if(trailCursor<0){trail=[...trail,current].slice(-MAX_TRAIL);trailCursor=trail.length-1}
+ }else if(trail.length){const requested=Number(raw.trailCursor);trailCursor=Number.isSafeInteger(requested)?Math.max(0,Math.min(trail.length-1,requested)):trail.length-1}
+ return Object.freeze({version:2,current,previous,pinned,recent:Object.freeze(uniqueTokens(raw.recent,MAX_RECENT)),trail:Object.freeze(trail),trailCursor,bookmarks:Object.freeze(uniqueTokens(raw.bookmarks,MAX_BOOKMARKS)),systems:Object.freeze(uniqueSystems(raw.systems,MAX_SYSTEMS)),onboardingDismissed:raw.onboardingDismissed===true,progress:Object.freeze({selected:progress.selected===true,approached:progress.approached===true,inspected:progress.inspected===true})});
 }
 function safePlanetToken(token){try{return serializePlanetKey(parsePlanetKey(token))}catch{return null}}
 function recordVisit(sessionInput,token){
  const session=normalizeSession(sessionInput),normalized=safePlanetToken(token);if(!normalized)return session;
- const systemToken=systemTokenFromPlanetToken(normalized),changed=session.current&&session.current!==normalized,trail=session.trail.filter(item=>item!==normalized);trail.push(normalized);
- return normalizeSession({...session,current:normalized,previous:changed?session.current:session.previous,recent:[normalized,...session.recent.filter(item=>item!==normalized)],trail:trail.slice(-MAX_TRAIL),systems:session.systems.includes(systemToken)?session.systems:[...session.systems,systemToken]});
+ if(session.current===normalized)return session;
+ const systemToken=systemTokenFromPlanetToken(normalized),base=session.trailCursor>=0?session.trail.slice(0,session.trailCursor+1):[],trail=[...base,normalized].slice(-MAX_TRAIL);
+ return normalizeSession({...session,current:normalized,previous:session.current||session.previous,recent:[normalized,...session.recent.filter(item=>item!==normalized)],trail,trailCursor:trail.length-1,systems:session.systems.includes(systemToken)?session.systems:[...session.systems,systemToken]});
+}
+function trailState(sessionInput){const session=normalizeSession(sessionInput),cursor=session.trailCursor,depth=session.trail.length;return Object.freeze({cursor,depth,canBack:cursor>0,canForward:cursor>=0&&cursor<depth-1,backToken:cursor>0?session.trail[cursor-1]:null,forwardToken:cursor>=0&&cursor<depth-1?session.trail[cursor+1]:null})}
+function moveTrail(sessionInput,delta){
+ const session=normalizeSession(sessionInput),step=Number(delta)<0?-1:Number(delta)>0?1:0,nav=trailState(session);if(!step)return Object.freeze({moved:false,token:session.current,session,trail:nav});
+ const next=nav.cursor+step;if(next<0||next>=nav.depth)return Object.freeze({moved:false,token:session.current,session,trail:nav});
+ const token=session.trail[next],systemToken=systemTokenFromPlanetToken(token),moved=normalizeSession({...session,current:token,previous:session.current&&session.current!==token?session.current:session.previous,recent:[token,...session.recent.filter(item=>item!==token)],trailCursor:next,systems:session.systems.includes(systemToken)?session.systems:[...session.systems,systemToken]});
+ return Object.freeze({moved:true,token,session:moved,trail:trailState(moved)});
 }
 function toggleBookmark(sessionInput,token){const session=normalizeSession(sessionInput),normalized=safePlanetToken(token);if(!normalized)return session;const has=session.bookmarks.includes(normalized),bookmarks=has?session.bookmarks.filter(item=>item!==normalized):[normalized,...session.bookmarks];return normalizeSession({...session,bookmarks})}
 function togglePin(sessionInput,token){const session=normalizeSession(sessionInput),normalized=safePlanetToken(token);if(!normalized)return session;return normalizeSession({...session,pinned:session.pinned===normalized?null:normalized})}
@@ -97,6 +112,6 @@ function systemLabel(sessionInput,systemToken){const session=normalizeSession(se
 function differenceScore(a,b){
  if(!a||!b||a.token===b.token)return-1;let score=0;if(a.systemToken!==b.systemToken)score+=4;if(a.bulkClass!==b.bulkClass)score+=4;if(a.moonCount!==null&&b.moonCount!==null&&a.moonCount!==b.moonCount)score+=2;if(a.baselineMassMilliEarth!==null&&b.baselineMassMilliEarth!==null&&a.baselineMassMilliEarth!==b.baselineMassMilliEarth)score+=2;if(a.baselineInsolationPpm!==null&&b.baselineInsolationPpm!==null&&a.baselineInsolationPpm!==b.baselineInsolationPpm)score+=2;score+=Math.min(3,Math.abs(a.orbitIndex-b.orbitIndex));return score;
 }
-const api=Object.freeze({seamVersion:1,PLANET_FIELDS,SYSTEM_FIELDS,serializePlanetKey,serializeSystemKey,parsePlanetKey,parseSystemKey,samePlanetKey,systemTokenFromPlanetToken,formatMass,formatAu,formatRatioPpm,moonLabel,orbitBand,planetSnapshot,differenceSummary,comparisonRows,normalizeSession,recordVisit,toggleBookmark,togglePin,markProgress,dismissOnboarding,systemLabel,differenceScore});
+const api=Object.freeze({seamVersion:2,PLANET_FIELDS,SYSTEM_FIELDS,serializePlanetKey,serializeSystemKey,parsePlanetKey,parseSystemKey,samePlanetKey,systemTokenFromPlanetToken,formatMass,formatAu,formatRatioPpm,moonLabel,orbitBand,planetSnapshot,differenceSummary,comparisonRows,normalizeSession,recordVisit,trailState,moveTrail,toggleBookmark,togglePin,markProgress,dismissOnboarding,systemLabel,differenceScore});
 O.v09ExplorerCore=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

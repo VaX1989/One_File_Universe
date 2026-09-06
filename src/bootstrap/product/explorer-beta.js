@@ -5,7 +5,7 @@ if(typeof document==='undefined')return;
 const C=O.v09ExplorerCore;if(!C)throw new Error('v0.9 explorer core unavailable');
 const q=id=>document.getElementById(id),STORAGE_KEY='ofu:v09:explorer-session:1',DISCOVERY_LIMIT=3,RECENT_LIMIT=5,BOOKMARK_LIMIT=6;
 let session=loadSession(),lastToken=null,lastStamp='',syncTimer=null;
-const state={seamVersion:1,ready:false,lastSelectionToken:null,lastAction:null,storage:'memory',syncs:0};
+const state={seamVersion:2,ready:false,lastSelectionToken:null,lastAction:null,storage:'memory',syncs:0};
 function storage(){try{const s=root.localStorage,k='__ofu_v09_probe__';s.setItem(k,'1');s.removeItem(k);state.storage='localStorage';return s}catch{state.storage='memory';return null}}
 const store=storage();
 function loadSession(){try{const raw=root.localStorage?.getItem(STORAGE_KEY);return C.normalizeSession(raw?JSON.parse(raw):{})}catch{return C.normalizeSession()}}
@@ -20,9 +20,7 @@ function resolveSnapshot(token){
 function selectedSnapshot(){const nav=O.v08ExploreNavigation,target=nav?.state?.targets?.[nav.state.selectedIndex];if(!target?.key)return null;try{return resolveSnapshot(C.serializePlanetKey(target.key))}catch{return null}}
 function systemDisplay(snapshot){return snapshot?C.systemLabel(session,snapshot.systemToken):'Current system'}
 function worldDisplay(snapshot){return snapshot?systemDisplay(snapshot)+' · '+snapshot.title:'Saved world'}
-function currentSystemSnapshots(){
- const targets=O.v08ExploreNavigation?.state?.targets||[],out=[];for(const target of targets){try{const snap=resolveSnapshot(C.serializePlanetKey(target.key));if(snap)out.push(snap)}catch{}}return out;
-}
+function currentSystemSnapshots(){const targets=O.v08ExploreNavigation?.state?.targets||[],out=[];for(const target of targets){try{const snap=resolveSnapshot(C.serializePlanetKey(target.key));if(snap)out.push(snap)}catch{}}return out}
 function makeButton(snapshot,{reason='',className='beta-world-card'}={}){const button=document.createElement('button');button.type='button';button.className=className;button.dataset.betaOpen=snapshot.token;const title=document.createElement('strong');title.textContent=worldDisplay(snapshot);const copy=document.createElement('span');copy.textContent=reason||snapshot.summary;button.append(title,copy);return button}
 function renderList(id,tokens,limit,emptyCopy){const list=q(id);if(!list)return;list.textContent='';let shown=0;for(const token of tokens){if(shown>=limit)break;const snap=resolveSnapshot(token);if(!snap)continue;const li=document.createElement('li');li.append(makeButton(snap));list.append(li);shown++}if(!shown){const li=document.createElement('li');li.className='beta-empty';li.textContent=emptyCopy;list.append(li)}}
 function renderOrientation(snapshot){
@@ -35,7 +33,11 @@ function renderOrientation(snapshot){
 function renderDiscovery(snapshot){const list=q('beta-discovery-list');if(!list)return;list.textContent='';const candidates=currentSystemSnapshots().filter(item=>item.token!==snapshot.token).sort((a,b)=>C.differenceScore(b,snapshot)-C.differenceScore(a,snapshot)).slice(0,DISCOVERY_LIMIT);if(!candidates.length){const li=document.createElement('li');li.className='beta-empty';li.textContent='No other world is present in this system.';list.append(li);return}for(const candidate of candidates){const li=document.createElement('li'),reason=C.differenceSummary(candidate,snapshot);li.append(makeButton(candidate,{reason}));list.append(li)}}
 function renderSelected(snapshot){
  setText('beta-why-look',snapshot.summary+'.');const previous=resolveSnapshot(session.previous);setText('beta-difference-copy',previous&&previous.token!==snapshot.token?'Compared with your previous world: '+C.differenceSummary(snapshot,previous):'Choose another world and this space will explain the strongest supported differences.');
- const bookmark=q('beta-bookmark'),pin=q('beta-pin'),back=q('beta-back');if(bookmark){const active=session.bookmarks.includes(snapshot.token);bookmark.setAttribute('aria-pressed',active?'true':'false');bookmark.textContent=active?'Bookmarked':'Bookmark world'}if(pin){const active=session.pinned===snapshot.token;pin.setAttribute('aria-pressed',active?'true':'false');pin.textContent=active?'Pinned for compare':'Pin for compare'}if(back)back.disabled=!session.previous||session.previous===snapshot.token;
+ const bookmark=q('beta-bookmark'),pin=q('beta-pin'),back=q('beta-back'),forward=q('beta-forward'),trail=C.trailState(session);
+ if(bookmark){const active=session.bookmarks.includes(snapshot.token);bookmark.setAttribute('aria-pressed',active?'true':'false');bookmark.textContent=active?'Bookmarked':'Bookmark world'}
+ if(pin){const active=session.pinned===snapshot.token;pin.setAttribute('aria-pressed',active?'true':'false');pin.textContent=active?'Pinned for compare':'Pin for compare'}
+ if(back){back.disabled=!trail.canBack;back.setAttribute('aria-label',trail.canBack?'Back to previous destination':'No previous destination in trail')}
+ if(forward){forward.disabled=!trail.canForward;forward.setAttribute('aria-label',trail.canForward?'Forward to next destination':'No forward destination in trail')}
 }
 function renderComparison(snapshot){
  const pinned=resolveSnapshot(session.pinned),body=q('beta-compare-body');if(!body)return;body.textContent='';
@@ -47,19 +49,28 @@ function renderComparison(snapshot){
 }
 function renderSession(){renderList('beta-recent-list',session.recent.filter(token=>token!==session.current),RECENT_LIMIT,'Your recent destinations will appear here as you explore.');renderList('beta-bookmark-list',session.bookmarks,BOOKMARK_LIMIT,'Bookmark a world to keep it available in this local exploration session.')}
 function renderOnboarding(){const box=q('beta-first-flight');if(!box)return;const complete=session.progress.selected&&session.progress.approached&&session.progress.inspected;box.hidden=session.onboardingDismissed||complete;for(const name of ['selected','approached','inspected']){const item=q('beta-step-'+name);if(item){const done=session.progress[name];item.dataset.complete=done?'true':'false';item.setAttribute('aria-label',(done?'Completed: ':'Not completed: ')+item.textContent.trim())}}}
-function render(snapshot){renderOrientation(snapshot);renderDiscovery(snapshot);renderSelected(snapshot);renderComparison(snapshot);renderSession();renderOnboarding();setText('beta-session-note',state.storage==='localStorage'?'Recent destinations, bookmarks and comparison pin stay on this device. They are product state, not astronomical facts.':'Session state is temporary in this browser context and never becomes astronomical data.');state.ready=true}
+function render(snapshot){renderOrientation(snapshot);renderDiscovery(snapshot);renderSelected(snapshot);renderComparison(snapshot);renderSession();renderOnboarding();setText('beta-session-note',state.storage==='localStorage'?'Recent destinations, trail position, bookmarks and comparison pin stay on this device. They are product state, not astronomical facts.':'Session state is temporary in this browser context and never becomes astronomical data.');state.ready=true}
 function sync(){
- const snapshot=selectedSnapshot();if(!snapshot)return;const stamp=[snapshot.token,session.previous,session.pinned,session.bookmarks.join('|'),session.recent.join('|'),JSON.stringify(session.progress),session.onboardingDismissed,state.storage].join('::');
+ const snapshot=selectedSnapshot();if(!snapshot)return;
  if(snapshot.token!==lastToken){session=C.recordVisit(session,snapshot.token);lastToken=snapshot.token;state.lastSelectionToken=snapshot.token;save()}
- const nextStamp=[snapshot.token,session.previous,session.pinned,session.bookmarks.join('|'),session.recent.join('|'),JSON.stringify(session.progress),session.onboardingDismissed,state.storage].join('::');if(nextStamp===lastStamp)return;lastStamp=nextStamp;state.syncs++;render(snapshot)
+ const nextStamp=[snapshot.token,session.previous,session.pinned,session.bookmarks.join('|'),session.recent.join('|'),session.trail.join('|'),session.trailCursor,JSON.stringify(session.progress),session.onboardingDismissed,state.storage].join('::');if(nextStamp===lastStamp)return;lastStamp=nextStamp;state.syncs++;render(snapshot)
 }
-function openToken(token,{collapse=true}={}){
- try{const key=C.parsePlanetKey(token),bridge=O.v08SelectionBridge;if(!bridge?.selectPlanet)throw new Error('selection bridge unavailable');bridge.selectPlanet(key,{announce:false});session=C.markProgress(session,'selected');save();state.lastAction='open-saved-target';O.v08ExploreNavigation?.sync?.();sync();O.productUI?.announce?.('Opened '+worldDisplay(resolveSnapshot(token)));if(collapse&&O.v08MobileInteraction?.state?.active)O.v08MobileInteraction.collapse();return true}catch(error){O.productUI?.announce?.('Saved destination could not be opened safely');state.lastAction='open-failed:'+String(error?.message||error);return false}
+function openToken(token,{collapse=true,action='open-saved-target',preserveTrail=false}={}){
+ const priorLastToken=lastToken;
+ try{const key=C.parsePlanetKey(token),bridge=O.v08SelectionBridge;if(!bridge?.selectPlanet)throw new Error('selection bridge unavailable');if(preserveTrail)lastToken=token;bridge.selectPlanet(key,{announce:false});session=C.markProgress(session,'selected');save();state.lastAction=action;O.v08ExploreNavigation?.sync?.();sync();O.productUI?.announce?.('Opened '+worldDisplay(resolveSnapshot(token)));if(collapse&&O.v08MobileInteraction?.state?.active)O.v08MobileInteraction.collapse();return true}catch(error){if(preserveTrail)lastToken=priorLastToken;O.productUI?.announce?.('Saved destination could not be opened safely');state.lastAction='open-failed:'+String(error?.message||error);return false}
+}
+function navigateTrail(delta){
+ const moved=C.moveTrail(session,delta);if(!moved.moved)return false;
+ const priorSession=session,priorLastToken=lastToken;session=moved.session;lastStamp='';
+ const opened=openToken(moved.token,{collapse:false,action:delta<0?'trail-back':'trail-forward',preserveTrail:true});
+ if(opened){save();return true}
+ session=priorSession;lastToken=priorLastToken;save();lastStamp='';sync();return false;
 }
 function mark(name){session=C.markProgress(session,name);save();lastStamp='';sync()}
 function onClick(event){
  const open=event.target.closest?.('[data-beta-open]');if(open){openToken(open.dataset.betaOpen);return}
- if(event.target.closest?.('[data-beta-back]')){if(session.previous)openToken(session.previous);return}
+ if(event.target.closest?.('[data-beta-back]')){navigateTrail(-1);return}
+ if(event.target.closest?.('[data-beta-forward]')){navigateTrail(1);return}
  if(event.target.closest?.('[data-beta-bookmark]')){const snap=selectedSnapshot();if(snap){session=C.toggleBookmark(session,snap.token);save();lastStamp='';sync();O.productUI?.announce?.(session.bookmarks.includes(snap.token)?'World bookmarked':'Bookmark removed')}return}
  if(event.target.closest?.('[data-beta-pin]')){const snap=selectedSnapshot();if(snap){session=C.togglePin(session,snap.token);save();lastStamp='';sync();O.productUI?.announce?.(session.pinned===snap.token?'World pinned for comparison':'Comparison pin removed')}return}
  if(event.target.closest?.('[data-beta-dismiss-onboarding]')){session=C.dismissOnboarding(session);save();lastStamp='';sync();return}
@@ -67,8 +78,9 @@ function onClick(event){
  if(event.target.closest?.('[data-explore-stage="approach"],[data-explore-action="approach"]')){mark('approached');return}
  if(event.target.closest?.('[data-open-workspace="inspect"],[data-workspace="inspect"]')){mark('inspected');return}
 }
-function init(){document.addEventListener('click',onClick,false);syncTimer=root.setInterval(sync,300);sync();root.__OFU_EXPLORER_BETA__=api}
-const api=Object.freeze({seamVersion:1,state,get session(){return session},snapshot:()=>Object.freeze({state:{...state},session}),sync,openToken});
+function onKeydown(event){if(event.defaultPrevented||event.altKey||event.ctrlKey||event.metaKey||event.shiftKey)return;const tag=event.target?.tagName;if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'||event.target?.isContentEditable)return;if(event.key==='['&&C.trailState(session).canBack){navigateTrail(-1);event.preventDefault()}else if(event.key===']'&&C.trailState(session).canForward){navigateTrail(1);event.preventDefault()}}
+function init(){document.addEventListener('click',onClick,false);document.addEventListener('keydown',onKeydown,false);syncTimer=root.setInterval(sync,300);sync();root.__OFU_EXPLORER_BETA__=api}
+const api=Object.freeze({seamVersion:2,state,get session(){return session},snapshot:()=>Object.freeze({state:{...state},session,trail:C.trailState(session)}),sync,openToken,navigateTrail});
 O.v09ExplorerBeta=api;
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })(typeof globalThis!=='undefined'?globalThis:this);
