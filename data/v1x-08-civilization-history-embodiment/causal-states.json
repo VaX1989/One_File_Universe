@@ -1,0 +1,71 @@
+{
+  "schema": "ofu-v1x-08-causal-history-fixtures-1",
+  "authority": "MODEL_DERIVED_SIMULATION",
+  "fixtureOnly": true,
+  "claims": {
+    "canonical": false,
+    "scientificMeasurement": false,
+    "purpose": "Deterministic conformance fixtures matching the frozen v1 civilization/history model shape."
+  },
+  "before": {
+    "state": "MODELED_CIVILIZATION",
+    "worldIdentity": "world-fixture",
+    "epoch": 2,
+    "authority": {"class": "MODEL_DERIVED_SIMULATION"},
+    "regions": [
+      {"regionId": "region-a", "location": {"latMicroDeg": 42000000, "lonMicroDeg": 12000000}, "authority": {"class": "MODEL_DERIVED_SIMULATION"}},
+      {"regionId": "region-b", "location": {"latMicroDeg": 43000000, "lonMicroDeg": 13000000}, "authority": {"class": "MODEL_DERIVED_SIMULATION"}}
+    ],
+    "settlements": [
+      {"settlementId": "s-alpha", "regionId": "region-a", "population": 8000, "type": "TOWN", "status": "ACTIVE", "infrastructurePpm": 640000},
+      {"settlementId": "s-beta", "regionId": "region-b", "population": 500, "type": "VILLAGE", "status": "ACTIVE", "infrastructurePpm": 220000}
+    ],
+    "tradeEdges": [
+      {"edgeId": "edge-alpha-beta", "from": "s-alpha", "to": "s-beta", "flowUnits": 18, "mode": "REGIONAL_ROUTE", "status": "ACTIVE"}
+    ],
+    "infrastructure": [
+      {"infrastructureId": "infra-alpha-beta", "kind": "ROUTE_CORRIDOR", "fromSettlementId": "s-alpha", "toSettlementId": "s-beta", "status": "ACTIVE", "builtEpoch": 1, "lastActiveEpoch": 2}
+    ],
+    "events": [
+      {"eventProposalId": "fake-flat-event", "epoch": 99, "type": "COLLAPSE", "targetIds": ["s-alpha"], "payload": {}, "authority": "MODEL_DERIVED_SIMULATION", "canonical": false}
+    ],
+    "history": {"proposals": [
+      {"eventProposalId": "ev-found-alpha", "epoch": 0, "type": "SETTLEMENT_FOUNDATION", "targetIds": ["s-alpha"], "payload": {}, "authority": "MODEL_DERIVED_SIMULATION", "canonical": false},
+      {"eventProposalId": "ev-found-beta", "epoch": 0, "type": "SETTLEMENT_FOUNDATION", "targetIds": ["s-beta"], "payload": {}, "authority": "MODEL_DERIVED_SIMULATION", "canonical": false},
+      {"eventProposalId": "ev-infra", "epoch": 1, "type": "INFRASTRUCTURE_BUILT", "targetIds": ["s-alpha", "s-beta", "infra-alpha-beta"], "payload": {"edgeId": "edge-alpha-beta"}, "authority": "MODEL_DERIVED_SIMULATION", "canonical": false},
+      {"eventProposalId": "ev-trade", "epoch": 2, "type": "TRADE_EXPANSION", "targetIds": ["s-alpha", "s-beta"], "payload": {}, "authority": "MODEL_DERIVED_SIMULATION", "canonical": false}
+    ]}
+  },
+  "after": {
+    "state": "MODELED_CIVILIZATION",
+    "worldIdentity": "world-fixture",
+    "epoch": 5,
+    "authority": {"class": "MODEL_DERIVED_SIMULATION"},
+    "regions": [
+      {"regionId": "region-a", "location": {"latMicroDeg": 42000000, "lonMicroDeg": 12000000}, "authority": {"class": "MODEL_DERIVED_SIMULATION"}},
+      {"regionId": "region-b", "location": {"latMicroDeg": 43000000, "lonMicroDeg": 13000000}, "authority": {"class": "MODEL_DERIVED_SIMULATION"}}
+    ],
+    "settlements": [
+      {"settlementId": "s-alpha", "regionId": "region-a", "population": 3200, "type": "TOWN", "status": "ABANDONED", "infrastructurePpm": 180000, "lastActiveEpoch": 4},
+      {"settlementId": "s-beta", "regionId": "region-b", "population": 1400, "type": "VILLAGE", "status": "ACTIVE", "infrastructurePpm": 420000}
+    ],
+    "tradeEdges": [
+      {"edgeId": "edge-alpha-beta", "from": "s-alpha", "to": "s-beta", "flowUnits": 18, "mode": "REGIONAL_ROUTE", "status": "ACTIVE"}
+    ],
+    "infrastructure": [
+      {"infrastructureId": "infra-alpha-beta", "kind": "ROUTE_CORRIDOR", "fromSettlementId": "s-alpha", "toSettlementId": "s-beta", "status": "RUINED", "builtEpoch": 1, "lastActiveEpoch": 4}
+    ],
+    "events": [
+      {"eventProposalId": "fake-flat-event", "epoch": 99, "type": "COLLAPSE", "targetIds": ["s-alpha"], "payload": {}, "authority": "MODEL_DERIVED_SIMULATION", "canonical": false}
+    ],
+    "history": {"proposals": [
+      {"eventProposalId": "ev-found-alpha", "epoch": 0, "type": "SETTLEMENT_FOUNDATION", "targetIds": ["s-alpha"], "payload": {}, "authority": "MODEL_DERIVED_SIMULATION", "canonical": false},
+      {"eventProposalId": "ev-found-beta", "epoch": 0, "type": "SETTLEMENT_FOUNDATION", "targetIds": ["s-beta"], "payload": {}, "authority": "MODEL_DERIVED_SIMULATION", "canonical": false},
+      {"eventProposalId": "ev-infra", "epoch": 1, "type": "INFRASTRUCTURE_BUILT", "targetIds": ["s-alpha", "s-beta", "infra-alpha-beta"], "payload": {"edgeId": "edge-alpha-beta"}, "authority": "MODEL_DERIVED_SIMULATION", "canonical": false},
+      {"eventProposalId": "ev-trade", "epoch": 2, "type": "TRADE_EXPANSION", "targetIds": ["s-alpha", "s-beta"], "payload": {}, "authority": "MODEL_DERIVED_SIMULATION", "canonical": false},
+      {"eventProposalId": "ev-migration", "epoch": 3, "type": "MIGRATION", "targetIds": ["s-alpha", "s-beta"], "payload": {"moved": 1200}, "authority": "MODEL_DERIVED_SIMULATION", "canonical": false},
+      {"eventProposalId": "ev-conflict", "epoch": 4, "type": "CONFLICT", "targetIds": ["s-alpha"], "payload": {"intensityPpm": 700000}, "authority": "MODEL_DERIVED_SIMULATION", "canonical": false},
+      {"eventProposalId": "ev-abandon", "epoch": 5, "type": "ABANDONMENT", "targetIds": ["s-alpha"], "payload": {}, "authority": "MODEL_DERIVED_SIMULATION", "canonical": false}
+    ]}
+  }
+}
