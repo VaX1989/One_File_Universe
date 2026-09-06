@@ -1,0 +1,14 @@
+{
+  "schema": "ofu-conformance-1",
+  "tests": [
+    {
+      "id": "v1x-06.surface-human-rendering",
+      "owner": "v1x-06-surface-human-rendering",
+      "tier": "LANE_TARGETED",
+      "command": ["node", "tests/v1x-06-surface-human-rendering/surface-human-rendering.mjs"],
+      "providers": ["v1x-06.scene.surface-human", "v1x-06.renderer.surface-human", "v1x-06.interaction.surface-local-travel"],
+      "oracle": "v1x-06-surface-human-rendering-oracle-1",
+      "timeoutMs": 30000
+    }
+  ]
+}

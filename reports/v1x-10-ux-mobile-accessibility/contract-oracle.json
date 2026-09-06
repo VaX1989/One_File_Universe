@@ -1,0 +1,32 @@
+{
+  "schema": "ofu-v1x10-contract-oracle-evidence-1",
+  "implementationCheckpoint": "23b0954cc614c856e31e458cb7d47ed932ab0243",
+  "status": "PASS",
+  "command": "node tests/v1x-10-ux-mobile-accessibility/contracts.mjs",
+  "executionEnvironment": {
+    "node": "v22.16.0",
+    "classification": "LOCAL_TARGETED_ORACLE",
+    "canonicalRepositoryNodeVersionClaimed": false
+  },
+  "result": {
+    "schema": "ofu-v1x10-contract-oracle-1",
+    "inputOwner": "ofu-wave-iv-input-router-6",
+    "inputIntent": "ofu-wave-iv-input-intent-3",
+    "scaleOwner": "ofu-wave-iv-scale-runtime-3",
+    "selectionOwner": "ofu-wave-iv-selection-1",
+    "secondInputAuthority": false,
+    "nativeInputConsumedByLane": false,
+    "authority": "PRESENTATION_ONLY",
+    "directModalities": ["pointer", "tap", "wheel", "touch-pinch", "keyboard"],
+    "compactReachabilityTelemetry": true,
+    "accessibility": {
+      "keyboardPrimaryJourney": true,
+      "screenReaderPrimaryJourney": true,
+      "reducedMotion": true,
+      "contrast": true,
+      "textScaling": true,
+      "aiRequired": false
+    }
+  },
+  "scopeNote": "This is a deterministic source/contract oracle, not browser visual certification and not cumulative v1 certification."
+}

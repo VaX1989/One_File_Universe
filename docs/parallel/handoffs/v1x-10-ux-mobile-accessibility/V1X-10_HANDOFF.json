@@ -1,0 +1,97 @@
+{
+  "schema": "ofu-v1x-handoff-1",
+  "laneId": "PROMPT 10 / V1X-10",
+  "branch": "parallel/v1x-10-ux-mobile-accessibility-2026-09-06",
+  "status": "IMPLEMENTED_UNCERTIFIED",
+  "authorityClass": "PRESENTATION_ONLY",
+  "contractSet": "OFU-V1X-CONTRACT-SET-2026-09-06.1",
+  "base": {
+    "sha": "760c0c70bccb6afd7c7b07600c0f5be3f80e7b19",
+    "tree": "3324e6354b5ff1b90156d1693e6051595b6f1219"
+  },
+  "checkpoint": {
+    "sha": "23b0954cc614c856e31e458cb7d47ed932ab0243",
+    "tree": "43451847eaf5b47e7cd308cd5336bfc45fd7000f"
+  },
+  "changedPaths": [
+    "config/components/v1x-10-ux-mobile-accessibility.json",
+    "config/conformance/v1x-10-ux-mobile-accessibility.json",
+    "src/v1x-10-ux-mobile-accessibility/accessibility.js",
+    "src/v1x-10-ux-mobile-accessibility/direct-manipulation.js",
+    "src/v1x-10-ux-mobile-accessibility/viewport-first.css",
+    "src/v1x-10-ux-mobile-accessibility/viewport-ux.js",
+    "tests/v1x-10-ux-mobile-accessibility/browser-journeys.mjs",
+    "tests/v1x-10-ux-mobile-accessibility/contracts.mjs"
+  ],
+  "ownershipValidation": {
+    "command": "node tools/validate-v1x-ownership.mjs --source 23b0954cc614c856e31e458cb7d47ed932ab0243 --base integration/v1.0-definitive-product-convergence-2026-09-05",
+    "status": "PASS",
+    "matrixVersion": "2026-09-06.1"
+  },
+  "dependencies": [],
+  "tests": [
+    {
+      "command": "node tools/validate-v1x-ownership.mjs --source 23b0954cc614c856e31e458cb7d47ed932ab0243 --base integration/v1.0-definitive-product-convergence-2026-09-05",
+      "status": "PASS",
+      "evidencePath": "GitHub Actions V1X Lane Ownership run 34032093610"
+    },
+    {
+      "command": "node tests/v1x-10-ux-mobile-accessibility/contracts.mjs",
+      "status": "PASS",
+      "evidencePath": "reports/v1x-10-ux-mobile-accessibility/contract-oracle.json"
+    },
+    {
+      "command": "OFU_SOURCE_SHA=23b0954cc614c856e31e458cb7d47ed932ab0243 BROWSER=chromium node tests/v1x-10-ux-mobile-accessibility/browser-journeys.mjs",
+      "status": "NOT_RUN",
+      "evidencePath": "reports/v1x-10-ux-mobile-accessibility/browser-evidence.json"
+    }
+  ],
+  "evidence": [
+    {
+      "path": "reports/v1x-10-ux-mobile-accessibility/implementation-evidence.json",
+      "sha256": "8e2f397cfd213281e013ad07c3d1ab7687843564b474aa8f92261332dac93ed6",
+      "claim": "Material production delta, exact base/checkpoints, authority and before/after source evidence"
+    },
+    {
+      "path": "reports/v1x-10-ux-mobile-accessibility/contract-oracle.json",
+      "sha256": "b160d3510023d7643155bef1ec9589ba1fce8df7d2b06784a83346032f4a4c78",
+      "claim": "Targeted deterministic contract oracle PASS; not browser or cumulative certification"
+    },
+    {
+      "path": "reports/v1x-10-ux-mobile-accessibility/browser-evidence.json",
+      "sha256": "8dfeb81fa254eb6bcf95b62b3154d0424a01a85c50cbce797a20192dccc49352",
+      "claim": "Explicit browser, touch-emulation and physical-device verification status without fabricated results"
+    }
+  ],
+  "knownDefects": [],
+  "adversarialFindings": [
+    "No second input, camera, scale, selection, scene, persistence, provider or resource authority is introduced.",
+    "The V1X-10 native-input observer does not call preventDefault or stopImmediatePropagation and does not mutate canonical selection/scale/camera APIs.",
+    "Browser journey and screenshot evidence remains unexecuted, so the lane is not CI_CERTIFIED.",
+    "Physical Android and iOS evidence remains NOT_VERIFIED."
+  ],
+  "requestedSharedContractChanges": [],
+  "scientificAuthorityClaims": [],
+  "resourceEvidence": {
+    "measuredRuntimeEvidence": false,
+    "resourceClaim": "NONE",
+    "boundedState": {
+      "journeyTraceMaxEntries": 96
+    },
+    "note": "No performance, memory or energy improvement claim is made; measured resource evidence is not used to close this presentation lane."
+  },
+  "browserEvidence": {
+    "desktop": "NOT_RUN",
+    "compactMobile": "NOT_RUN",
+    "keyboardOnly": "NOT_RUN_IN_BROWSER",
+    "touchPinchMethod": "BROWSER_POINTER_EVENT_EMULATION",
+    "touchPinchStatus": "NOT_RUN",
+    "noOcclusionScreenshots": "NOT_PRODUCED",
+    "harnessCommitted": true
+  },
+  "physicalDeviceEvidence": {
+    "android": "NOT_VERIFIED",
+    "ios": "NOT_VERIFIED"
+  },
+  "integrationNotes": "Implementation checkpoint 23b0954cc614c856e31e458cb7d47ed932ab0243 is immutable and two commits above the exact Prompt-0 base. The final lane head may add only this handoff/evidence package. Convergence owner should run the committed exact-source Playwright browser journeys after additive composition and before treating the founder-visible UX requirements as CI_CERTIFIED."
+}

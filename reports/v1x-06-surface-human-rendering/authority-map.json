@@ -1,0 +1,17 @@
+{
+  "schema": "ofu-v1x-06-authority-map-1",
+  "laneAuthority": "PRESENTATION_ONLY",
+  "features": [
+    {"feature":"cube-sphere tile address and seam topology","displayAuthority":"PRESENTATION_ONLY","source":"frozen P5 topology / V1X-05 target where available","claimBoundary":"Tile boundaries and skirts are not physical terrain measurements."},
+    {"feature":"procedural relief cue","displayAuthority":"PRESENTATION_ONLY","source":"deterministic tile seed + bounded upstream relief cue","claimBoundary":"Never emitted as elevation meters."},
+    {"feature":"source elevation field","displayAuthority":"PRESENTATION_ONLY","source":"upstream cell","claimBoundary":"Only marked physical when upstream explicitly sets physicalElevationCanonical=true; lane never creates that flag."},
+    {"feature":"water cue","displayAuthority":"PRESENTATION_ONLY","source":"upstream hydrosphere authority","claimBoundary":"Coverage may guide visual prevalence; shoreline and water level are not canonical."},
+    {"feature":"ice cue","displayAuthority":"PRESENTATION_ONLY","source":"upstream hydrosphere authority","claimBoundary":"Ice boundaries are not canonical."},
+    {"feature":"atmosphere haze / sky gradient","displayAuthority":"PRESENTATION_ONLY","source":"upstream atmosphere authority","claimBoundary":"Opacity and color are not measured atmospheric radiative transfer."},
+    {"feature":"horizon","displayAuthority":"PRESENTATION_ONLY","source":"surface frame and scale state","claimBoundary":"Curvature cue is not a geodetic measurement."},
+    {"feature":"material palette","displayAuthority":"PRESENTATION_ONLY","source":"upstream material family when present; deterministic fallback otherwise","claimBoundary":"Color is not spectral/material measurement."},
+    {"feature":"life/civilization overlay","displayAuthority":"PRESENTATION_ONLY","source":"overlay provider authority preserved","claimBoundary":"Overlay cannot mutate or own base terrain truth."},
+    {"feature":"local movement/floating origin","displayAuthority":"PRESENTATION_ONLY","source":"input intent consumed by future central binding","claimBoundary":"Does not own canonical camera, selection, reference frame, persistence, or P4 history."},
+    {"feature":"precision/cache/seam test witnesses","displayAuthority":"MEASURED_RUNTIME_EVIDENCE","source":"lane targeted Node tests","claimBoundary":"Applies only to exercised test process, not browser/GPU/device performance."}
+  ]
+}
