@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ofu-v1x14-evidence-manifest-1",
+  "title": "V1X-14 exact-head evidence manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "laneId", "branch", "contractSet", "base", "checkpoint", "artifacts", "productionDelta", "claims", "browserMatrix", "physicalDevices", "founderAcceptance"],
+  "properties": {
+    "schema": {"const": "ofu-v1x14-evidence-manifest-1"},
+    "laneId": {"const": "V1X-14"},
+    "branch": {"const": "parallel/v1x-14-certification-evidence-2026-09-06"},
+    "contractSet": {"const": "OFU-V1X-CONTRACT-SET-2026-09-06.1"},
+    "base": {"$ref": "#/$defs/gitIdentity"},
+    "checkpoint": {"$ref": "#/$defs/gitIdentity"},
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "sha256", "kind", "authorityClass", "claim"],
+        "properties": {
+          "path": {"type": "string", "minLength": 1},
+          "sha256": {"$ref": "#/$defs/sha256"},
+          "kind": {"enum": ["STATE_TRACE", "FRAME", "SCREENSHOT", "RESOURCE_SAMPLE", "BROWSER_LOG", "TEST_RESULT", "MANIFEST"]},
+          "authorityClass": {"$ref": "#/$defs/authority"},
+          "claim": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "productionDelta": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "claims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["id", "status"],
+        "properties": {
+          "id": {"enum": ["experience.no-primary-grid", "experience.true-3d-system", "experience.one-camera-scale-authority", "experience.continuous-travel", "experience.identity-reference-frame-continuity", "experience.model-correlated-surface-life-civ", "experience.micro-return", "resource.bounded"]},
+          "status": {"enum": ["PASS", "FAIL", "NOT_RUN"]},
+          "implementationEvidence": {"type": "string"},
+          "semanticEvidence": {"type": "string"},
+          "journeyEvidence": {"type": "string"},
+          "resourceEvidence": {"type": "string"}
+        }
+      }
+    },
+    "browserMatrix": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["chromium", "firefox", "webkit", "directFile", "requiredNetwork"],
+      "properties": {
+        "chromium": {"enum": ["PASS", "FAIL", "NOT_RUN"]},
+        "firefox": {"enum": ["PASS", "FAIL", "NOT_RUN"]},
+        "webkit": {"enum": ["PASS", "FAIL", "NOT_RUN"]},
+        "directFile": {"const": true},
+        "requiredNetwork": {"const": false}
+      }
+    },
+    "physicalDevices": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["android", "ios"],
+      "properties": {
+        "android": {"const": "NOT_VERIFIED"},
+        "ios": {"const": "NOT_VERIFIED"}
+      }
+    },
+    "founderAcceptance": {"const": "NOT_GRANTED"}
+  },
+  "$defs": {
+    "sha40": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "gitIdentity": {"type": "object", "additionalProperties": false, "required": ["sha", "tree"], "properties": {"sha": {"$ref": "#/$defs/sha40"}, "tree": {"$ref": "#/$defs/sha40"}}},
+    "authority": {"enum": ["CANONICAL_PROVEN", "DERIVED", "MODEL_DERIVED_SIMULATION", "PRESENTATION_ONLY", "MEASURED_RUNTIME_EVIDENCE"]}
+  }
+}
