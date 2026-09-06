@@ -64,7 +64,7 @@ export function routeHistoricalPhases({baseRef='development/v1.1-quality-explora
     const [phase,reason]=classifyPath(path);
     earliest=minPhase(earliest,phase);
     if(reason.includes('fail-closed')||reason==='cross-cutting-v1-domain'||reason==='cross-phase-integration'||reason==='generic-config'||reason==='governance-foundation')failClosed=true;
-    reasons.push(path+':'+reason+(phase?':'+phase:'':));
+    reasons.push(path+':'+reason+(phase?':'+phase:''));
   }
   const required=phaseClosure(earliest);
   return Object.freeze({schema:'ofu-phase-route-1',mode:'LANE_TARGETED',baseRef,changedPaths:paths,earliestHistoricalPhase:earliest,requiredHistoricalPhases:Object.freeze(required),postV1:true,failClosed,reasons:Object.freeze(reasons)});
