@@ -7,8 +7,11 @@ const VERSION='ofu-wave-a-living-runtime-1',MAX_HISTORY=64,MAX_ROWS=24;
 const SURFACE=['GLOBAL_SURFACE','REGIONAL_SURFACE','LOCAL_SURFACE','HUMAN'];
 const REGIMES=['MATERIAL','MICROSTRUCTURE','MOLECULAR','ATOMIC'];
 const stages=['UNIVERSE','GALAXY','REGION','NEIGHBORHOOD','SYSTEM','ORBIT','APPROACH',...SURFACE,...REGIMES];
-const SCALE_FOR_STAGE=Object.freeze({UNIVERSE:'galaxy',GALAXY:'galaxy',REGION:'galactic_region',NEIGHBORHOOD:'stellar_neighborhood',SYSTEM:'system',ORBIT:'orbit',APPROACH:'approach',GLOBAL_SURFACE:'global_surface',REGIONAL_SURFACE:'regional_surface',LOCAL_SURFACE:'local_surface',HUMAN:'human'});
+const NAVIGATION_STAGES=Object.freeze(stages.slice(0,stages.indexOf('MATERIAL')));
+const SCALE_FOR_STAGE=Object.freeze({UNIVERSE:'galaxy',GALAXY:'galaxy',REGION:'galactic_region',NEIGHBORHOOD:'stellar_neighborhood',SYSTEM:'system',ORBIT:'orbit',APPROACH:'approach',GLOBAL_SURFACE:'global_surface',REGIONAL_SURFACE:'regional_surface',LOCAL_SURFACE:'local_surface',HUMAN:'human',MATERIAL:'human',MICROSTRUCTURE:'human',MOLECULAR:'human',ATOMIC:'human'});
+const STAGE_FOR_SCALE=Object.freeze({galaxy:'GALAXY',galactic_region:'REGION',stellar_neighborhood:'NEIGHBORHOOD',system:'SYSTEM',orbit:'ORBIT',approach:'APPROACH',global_surface:'GLOBAL_SURFACE',regional_surface:'REGIONAL_SURFACE',local_surface:'LOCAL_SURFACE',human:'HUMAN'});
 const sameKey=(a,b)=>!!a&&!!b&&AS.SYSTEM_FIELDS.every(k=>String(a[k])===String(b[k]));
+const sameBodyKey=(a,b)=>sameKey(a,b)&&String(a.orbitSlot)===String(b.orbitSlot);
 const keyCopy=k=>Object.freeze(Object.fromEntries(Object.entries(k).map(([n,v])=>[n,BigInt(v)])));
 function create({ctx,key,universeId=null,onCanonicalSelection=null,galaxySource=null}={}){
  V.assert(ctx&&key,'living universe requires canonical context and seed key');
@@ -53,6 +56,7 @@ function create({ctx,key,universeId=null,onCanonicalSelection=null,galaxySource=
  const regimeContract=P.registry.invoke(regimeDescriptor.id,{contract:O.pxContracts.VERSION,provider:regimeDescriptor.id,operation:'INSPECT',selection:P.captured(seed).selection,fidelity:regimeDescriptor.fidelity,budget:regimeDescriptor.budget,payload:{}}).value;
  V.assert(regimeContract.regimeOrder.join(',')===REGIMES.map(x=>x.toLowerCase()).join(','),'sealed regime graph and runtime disagree');
  const seedGraph=graphForKey(seed);
+ let retained={galaxy:seedGraph.galaxy,region:seedGraph.region,hood:seedGraph.hood,system:seedGraph.system,body:seedGraph.body,point:null,epoch:null,objectId:null};
  function remember(nodes){for(const n of nodes){V.assert(n?.version===AS.VERSION,'navigation node');traversal.remember(n,'WARM');}}
  remember([seedGraph.galaxy,seedGraph.region,seedGraph.hood,seedGraph.system,seedGraph.body]);
  function putCache(k,v){if(cache.has(k))cache.delete(k);cache.set(k,v);while(cache.size>12)cache.delete(cache.keys().next().value);return v;}
@@ -101,16 +105,54 @@ function create({ctx,key,universeId=null,onCanonicalSelection=null,galaxySource=
    }
   }
  }
- function apply(next,{push=true,syncScale=true}={}){
+ function contextFor(targetStage){
+  const targetIndex=NAVIGATION_STAGES.indexOf(targetStage);V.assert(targetIndex>=0,'spatial navigation stage');
+  const galaxy=retained.galaxy||seedGraph.galaxy;if(targetIndex===0)return{};
+  let region=retained.region?.parentId===galaxy.entityId?retained.region:null;
+  if(!region){if(galaxy.entityId===seedGraph.galaxy.entityId)region=seedGraph.region;else{const found=AS.discoverRegions({ctx,galaxy,cursor:0,limit:1,maxProbes:512,window:{x:0n,y:0n,z:0n}});metrics.discoveryProbes+=found.probes;region=found.regions[0]||null;}}
+  if(targetIndex>=2)V.assert(region,'No deterministic region is available for this galaxy');
+  let hood=region&&(retained.hood?.parentId===region.entityId?retained.hood:region.entityId===seedGraph.region.entityId?seedGraph.hood:AS.neighborhood(region,{x:0n,y:0n,z:0n}));
+  let system=hood&&(retained.system?.parentId===hood.entityId?retained.system:null);
+  if(targetIndex>=4&&!system){const found=AS.discoverSystems({ctx,neighborhood:hood,cursor:0,limit:1,maxProbes:1024});metrics.discoveryProbes+=found.probes;system=found.systems[0]||null;if(!system&&hood.entityId===seedGraph.hood.entityId)system=seedGraph.system;}
+  if(targetIndex>=4)V.assert(system,'No deterministic system is available for this neighborhood');
+  let body=system&&(retained.body&&sameKey(retained.body.canonicalKey,system.canonicalKey)?retained.body:null),children=null;
+  if(targetIndex>=5&&!body){children=AS.systemChildren({ctx,system});body=children.planets[0]||children.stars[0]||null;}
+  if(targetIndex>=5)V.assert(body,'No deterministic body is available for this system');
+  if(targetIndex>=6&&body.kind==='star'){children=children||AS.systemChildren({ctx,system});body=children.planets[0]||null;V.assert(body,'This system has no world that supports approach navigation');}
+  return{galaxy,region,hood,system,body};
+ }
+ function frameForStage(targetStage){
+  const context=contextFor(targetStage),base={stage:targetStage,node:universe,galaxy:null,region:null,hood:null,system:null,body:null,point:null,epoch:null,objectId:null,cursor:0,window:null};
+  if(targetStage==='UNIVERSE')return base;
+  Object.assign(base,{galaxy:context.galaxy,node:context.galaxy});if(targetStage==='GALAXY')return base;
+  Object.assign(base,{region:context.region,hood:context.hood,node:targetStage==='REGION'?context.region:context.hood});if(['REGION','NEIGHBORHOOD'].includes(targetStage))return base;
+  Object.assign(base,{system:context.system,node:context.system});if(targetStage==='SYSTEM')return base;
+  Object.assign(base,{body:context.body,node:context.body});if(targetStage==='ORBIT')return base;
+  if(targetStage==='APPROACH'){base.node=AS.approach(context.body);return base;}
+  const candidateWorld=worldFor(context.body);V.assert(!['GAS_GIANT','ICE_GIANT'].includes(candidateWorld.planetology.bulkPriorClass),'No solid surface: use atmosphere inspection');
+  const savedPoint=retained.body&&sameKey(retained.body.canonicalKey,context.body.canonicalKey)?retained.point:null,point=savedPoint||W.location(candidateWorld.planetIdentity,0,0),hierarchy=AS.surfaceHierarchy(context.body,{latitudeMicroDeg:BigInt(point.latMicroDeg),longitudeMicroDeg:BigInt(point.lonMicroDeg)});
+  base.point=point;base.epoch=retained.epoch;base.objectId=['LOCAL_SURFACE','HUMAN'].includes(targetStage)?retained.objectId:null;base.node=hierarchy.nodes[SURFACE.indexOf(targetStage)];return base;
+ }
+ function stageDistance(targetStage){const anchors=R.snapshot().anchors;return targetStage==='UNIVERSE'?anchors.galaxy*1.08:anchors[SCALE_FOR_STAGE[targetStage]];}
+ function navigationAnchors(){return NAVIGATION_STAGES.map(stageDistance)}
+ function navigationCoordinate(distanceRadii){const d=Number(distanceRadii),anchors=navigationAnchors();V.assert(Number.isFinite(d)&&d>0,'navigation distance must be positive finite');if(d>=anchors[0])return 0;for(let i=0;i<anchors.length-1;i++)if(d<=anchors[i]&&d>=anchors[i+1])return i+Math.log(anchors[i]/d)/Math.log(anchors[i]/anchors[i+1]);return anchors.length-1;}
+ function distanceForCoordinate(coordinate){const anchors=navigationAnchors(),c=Math.max(0,Math.min(anchors.length-1,Number(coordinate)));V.assert(Number.isFinite(c),'navigation coordinate must be finite');const i=Math.min(anchors.length-2,Math.floor(c)),t=c-i;return anchors[i]*Math.pow(anchors[i+1]/anchors[i],t);}
+ function navigationAvailability(targetStage){targetStage=String(targetStage||'').toUpperCase();if(!NAVIGATION_STAGES.includes(targetStage))return Object.freeze({enabled:false,reason:'Select a local material before entering microscopic regimes.'});if(SURFACE.includes(targetStage)&&retained.body&&['GAS_GIANT','ICE_GIANT'].includes(retained.body.metadata?.facts?.bulkPriorClass))return Object.freeze({enabled:false,reason:'This selected world has no solid surface; use atmosphere inspection.'});return Object.freeze({enabled:true,reason:null});}
+ function apply(next,{push=true,syncScale=true,distanceRadii=null,source='living-navigation'}={}){
   V.assert(stages.includes(next.stage),'unknown living-universe stage');
-  const prior={frame,world,local,micro,page,rows},priorBody=frame.body,priorScale=R.snapshot();
-  try{if(syncScale&&SCALE_FOR_STAGE[next.stage])R.requestStage(SCALE_FOR_STAGE[next.stage],{source:'living-derived-representation',driveCamera:false});frame={...next};world=currentWorld();discover();
+  const prior={frame,world,local,micro,page,rows,retained},priorBody=frame.body,priorScale=R.snapshot();
+  try{frame={...next};world=currentWorld();discover();const galaxy=frame.galaxy||retained.galaxy,region=frame.region||(retained.region?.parentId===galaxy?.entityId?retained.region:null),hood=frame.hood||(retained.hood?.parentId===region?.entityId?retained.hood:null),system=frame.system||(retained.system?.parentId===hood?.entityId?retained.system:null),body=frame.body||(retained.body&&sameKey(retained.body.canonicalKey,system?.canonicalKey)?retained.body:null),sameRetainedBody=body&&retained.body&&sameBodyKey(body.canonicalKey,retained.body.canonicalKey);retained={galaxy,region,hood,system,body,point:frame.point||(sameRetainedBody?retained.point:null),epoch:frame.epoch??(sameRetainedBody?retained.epoch:null),objectId:frame.objectId||(sameRetainedBody?retained.objectId:null)};if(syncScale){const semanticScale=SCALE_FOR_STAGE[next.stage];R.commitNavigationState({distanceRadii:distanceRadii??stageDistance(next.stage),semanticScale,intentKind:distanceRadii===null?'anchor':'continuous',source,driveCamera:false,authorityCommit:true});V.assert(R.snapshot().semanticScale===semanticScale,'Living stage and semantic scale diverged');}
    if(frame.body&&frame.body.kind!=='star'&&(!sameKey(priorBody?.canonicalKey,frame.body.canonicalKey)||String(priorBody?.canonicalKey?.orbitSlot)!==String(frame.body.canonicalKey.orbitSlot)))onCanonicalSelection?.(frame.body.canonicalKey);
    traversal.retarget(frame.node||universe,{push:false,source:'wave-a-living-universe'});
-  }catch(error){frame=prior.frame;world=prior.world;local=prior.local;micro=prior.micro;page=prior.page;rows=prior.rows;try{R.setContinuousDistance(priorScale.distanceIntentRadii,{source:'living-rollback',driveCamera:false})}catch{}lastError=String(error.message);throw error;}
+  }catch(error){frame=prior.frame;world=prior.world;local=prior.local;micro=prior.micro;page=prior.page;rows=prior.rows;retained=prior.retained;try{R.commitNavigationState({distanceRadii:priorScale.distanceIntentRadii,semanticScale:priorScale.semanticScale,intentKind:priorScale.intentKind,source:'living-rollback',driveCamera:false,authorityCommit:true})}catch{}lastError=String(error.message);throw error;}
   if(push){history.push(Object.freeze({...prior.frame}));if(history.length>MAX_HISTORY)history.shift();}
   lastError=null;metrics.navigations++;return emit();
  }
+ function navigate(targetStage,{distanceRadii=null,source='living-navigation',push=true}={}){targetStage=String(targetStage||'').toUpperCase();const availability=navigationAvailability(targetStage);V.assert(availability.enabled,availability.reason);return apply(frameForStage(targetStage),{push,distanceRadii,source});}
+ function setContinuousDistance(distanceRadii,{source='living-continuous'}={}){const coordinate=navigationCoordinate(distanceRadii),targetStage=NAVIGATION_STAGES[Math.round(coordinate)],semanticScale=SCALE_FOR_STAGE[targetStage];if(targetStage===frame.stage){R.commitNavigationState({distanceRadii,semanticScale,intentKind:'continuous',source,driveCamera:false,authorityCommit:true});lastError=null;metrics.navigations++;return emit()}return navigate(targetStage,{distanceRadii,source});}
+ function setNavigationCoordinate(coordinate,{source='living-continuous'}={}){return setContinuousDistance(distanceForCoordinate(coordinate),{source})}
+ function travelBy(deltaInward,{source='living-continuous'}={}){const delta=Number(deltaInward);V.assert(Number.isFinite(delta),'navigation delta must be finite');return setNavigationCoordinate(navigationCoordinate(R.snapshot().distanceIntentRadii)+delta,{source})}
+ function setCanonicalSelection(key,{planetId=null,presentationStatus=null,source='canonical-selection'}={}){const canonicalKey=keyCopy(key),alreadyCurrent=sameBodyKey(retained.body?.canonicalKey,canonicalKey);R.setSelection(canonicalKey,{planetId,presentationStatus,source,authorityCommit:true});if(alreadyCurrent)return snapshot();const graph=graphForKey(canonicalKey);remember([graph.galaxy,graph.region,graph.hood,graph.system,graph.body]);retained={...retained,galaxy:graph.galaxy,region:graph.region,hood:graph.hood,system:graph.system,body:graph.body,point:null,epoch:null,objectId:null};let target=frame.stage;if(SURFACE.includes(target)&&!navigationAvailability(target).enabled)target='ORBIT';return navigate(target,{distanceRadii:target===frame.stage?R.snapshot().distanceIntentRadii:null,source,push:false});}
  function enterGalaxy(galaxy){V.assert(galaxy?.kind==='galaxy','galaxy');return apply({stage:'GALAXY',node:galaxy,galaxy,region:null,hood:null,system:null,body:null,point:null,epoch:null,objectId:null,cursor:0,window:null});}
  function enterRegion(region,{siteWindow=null}={}){
   V.assert(region?.kind==='galactic_region'&&region.parentId===frame.galaxy?.entityId,'region belongs to selected galaxy');
@@ -141,19 +183,8 @@ function create({ctx,key,universeId=null,onCanonicalSelection=null,galaxySource=
   return apply({...frame,stage,point,node,objectId:null},{push});
  }
  function inspectAtmosphere(){V.assert(world,'world required');const point=W.location(world.planetIdentity,0,0),h=AS.surfaceHierarchy(frame.body,{});return apply({...frame,stage:'LOCAL_SURFACE',point,node:h.localSurface,objectId:null});}
- function scale(stage){
-  stage=String(stage).toUpperCase();
-  if(stage==='UNIVERSE')return apply({stage,node:universe,galaxy:null,region:null,hood:null,system:null,body:null,point:null,epoch:null,objectId:null,cursor:0,window:null});
-  if(stage==='GALAXY'){V.assert(frame.galaxy,'galaxy context');return enterGalaxy(frame.galaxy);}
-  if(stage==='REGION'){V.assert(frame.region,'region context');return enterRegion(frame.region,{siteWindow:frame.hood.metadata.siteWindow});}
-  if(stage==='NEIGHBORHOOD')return enterNeighborhood();
-  if(stage==='SYSTEM'){V.assert(frame.system,'system context');return enterSystem(frame.system);}
-  if(stage==='ORBIT'){V.assert(frame.body,'body context');return apply({...frame,stage,node:frame.body});}
-  if(stage==='APPROACH')return approach();
-  if(SURFACE.includes(stage))return at(frame.point?.latMicroDeg||0,frame.point?.lonMicroDeg||0,{stage});
-  throw new Error('Use selected material for microscopic regimes');
- }
- function selectObject(id){V.assert(local,'local world context required');V.assert(local.objects.some(o=>o.entityId===id),'unknown local object');frame={...frame,objectId:id};return emit();}
+ function scale(stage){return navigate(stage,{source:'living-scale-selector'})}
+ function selectObject(id){V.assert(local,'local world context required');V.assert(local.objects.some(o=>o.entityId===id),'unknown local object');frame={...frame,objectId:id};retained={...retained,body:frame.body,point:frame.point,objectId:id};return emit();}
  function enterMicro(id=frame.objectId){
   V.assert(local&&id,'select a local material or organism first');
   const source=query('v1.query.material-source',{...frame.point,historyEpoch:frame.epoch,objectId:id}),handoff=AS.microscopicHandoff(frame.node.kind==='global_surface'?AS.surfaceHierarchy(frame.body,{latitudeMicroDeg:BigInt(frame.point.latMicroDeg),longitudeMicroDeg:BigInt(frame.point.lonMicroDeg)}).human:frame.node,{sourceObjectId:id,sourceKind:source.kind});
@@ -181,10 +212,10 @@ function create({ctx,key,universeId=null,onCanonicalSelection=null,galaxySource=
   V.assert(body,'choose a system with a planet before modeled-world survey');
   return query('v1.query.world-candidates',{address:[],cursor,limit,filters:{goal,maxWorlds,maxSystemQueries}},body);
  }
- function snapshot(){const scale=R.snapshot();return Object.freeze({version:VERSION,revision,stage:frame.stage,stageAuthority:'DERIVED_REPRESENTATION',semanticScale:scale.semanticScale,continuousDistanceRadii:scale.distanceIntentRadii,scaleAuthority:R.VERSION,node:frame.node,galaxy:frame.galaxy,region:frame.region,neighborhood:frame.hood,system:frame.system,body:frame.body,point:frame.point,selectedObjectId:frame.objectId,world,local,micro:micro?.snapshot()||null,rows:Object.freeze([...rows]),page,historyDepth:history.length,maxHistory:MAX_HISTORY,discoveryCacheEntries:cache.size,discoveryCacheLimit:12,traversal:traversal.snapshot(),metrics:Object.freeze({...metrics}),lastError,authority:'DERIVED',modelAuthority:'MODEL_DERIVED_SIMULATION',canonicalMutation:false});}
+ function snapshot(){const scale=R.snapshot(),expectedScale=SCALE_FOR_STAGE[frame.stage];V.assert(scale.semanticScale===expectedScale,'Living stage and semantic scale diverged');return Object.freeze({version:VERSION,revision,stage:frame.stage,stageAuthority:'DERIVED_REPRESENTATION',semanticScale:scale.semanticScale,continuousDistanceRadii:scale.distanceIntentRadii,navigationCoordinate:navigationCoordinate(scale.distanceIntentRadii),activeSceneProvider:scale.activeSceneProvider,scaleAuthority:R.VERSION,navigationTransitionAuthority:'OFU.v1LivingRuntime',navigationCoherent:true,node:frame.node,galaxy:frame.galaxy,region:frame.region,neighborhood:frame.hood,system:frame.system,body:frame.body,point:frame.point,selectedObjectId:frame.objectId,world,local,micro:micro?.snapshot()||null,rows:Object.freeze([...rows]),page,historyDepth:history.length,maxHistory:MAX_HISTORY,discoveryCacheEntries:cache.size,discoveryCacheLimit:12,traversal:traversal.snapshot(),metrics:Object.freeze({...metrics}),lastError,authority:'DERIVED',modelAuthority:'MODEL_DERIVED_SIMULATION',canonicalMutation:false});}
  function activate(node){if(node.kind==='galaxy')return enterGalaxy(node);if(node.kind==='galactic_region')return enterRegion(node);if(node.kind==='system')return enterSystem(node);return enterBody(node);}
- discover();
- return Object.freeze({VERSION,ctx,universe,seed,seedGraph,traversal,SURFACE,REGIMES,stages,snapshot,query,graphForKey,activate,enterGalaxy,enterRegion,enterNeighborhood,enterSystem,enterBody,enterKey,approach,at,inspectAtmosphere,scale,selectObject,enterMicro,deeper,back,nextPage,nextWindow,time,searchWorlds,onChange(fn){V.assert(typeof fn==='function','listener');listeners.add(fn);return()=>listeners.delete(fn);}});
+ discover();R.commitNavigationState({distanceRadii:stageDistance('UNIVERSE'),semanticScale:'galaxy',intentKind:'continuous',source:'living-initial-navigation',driveCamera:false,authorityCommit:true});R.bindNavigationAuthority({requestStage(band,options={}){navigate(STAGE_FOR_SCALE[band],{source:options.source||'canonical-scale-request'})},setContinuousDistance(distance,options={}){setContinuousDistance(distance,{source:options.source||'canonical-continuous-scale'})},stepTravel(direction,options={}){travelBy(-Math.sign(Number(direction)),{source:options.source||'canonical-continuous-step'})},setSelection(key,options={}){setCanonicalSelection(key,options)}});
+ return Object.freeze({VERSION,ctx,universe,seed,seedGraph,traversal,SURFACE,REGIMES,stages,NAVIGATION_STAGES,SCALE_FOR_STAGE,STAGE_FOR_SCALE,snapshot,query,graphForKey,navigationAvailability,navigationCoordinate,distanceForCoordinate,navigate,setContinuousDistance,setNavigationCoordinate,travelBy,setCanonicalSelection,activate,enterGalaxy,enterRegion,enterNeighborhood,enterSystem,enterBody,enterKey,approach,at,inspectAtmosphere,scale,selectObject,enterMicro,deeper,back,nextPage,nextWindow,time,searchWorlds,onChange(fn){V.assert(typeof fn==='function','listener');listeners.add(fn);return()=>listeners.delete(fn);}});
 }
-O.v1LivingRuntime=Object.freeze({VERSION,MAX_HISTORY,MAX_ROWS,SURFACE,REGIMES,stages,create});
+O.v1LivingRuntime=Object.freeze({VERSION,MAX_HISTORY,MAX_ROWS,SURFACE,REGIMES,stages,NAVIGATION_STAGES,SCALE_FOR_STAGE,STAGE_FOR_SCALE,create});
 })(globalThis);

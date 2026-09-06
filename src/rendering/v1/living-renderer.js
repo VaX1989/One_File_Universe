@@ -9,6 +9,19 @@ const mix=(a,b,t)=>a.map((v,i)=>v+(b[i]-v)*Math.max(0,Math.min(1,t)));
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const short=x=>String(x||'').slice(0,8);
 const title=x=>String(x||'').toLowerCase().replaceAll('_',' ');
+function finiteCameraNumber(value,label){const number=Number(value);if(!Number.isFinite(number))throw new TypeError(label+' must be finite');return number;}
+function cameraArray(value,label){if(!Array.isArray(value)||value.length!==3)throw new TypeError(label+' must be [x,y,z]');return Object.freeze(value.map((coordinate,index)=>finiteCameraNumber(coordinate,label+'['+index+']')));}
+function cameraObject(value,label){const vector=cameraArray(value,label);return Object.freeze({x:vector[0],y:vector[1],z:vector[2]});}
+function adaptPresentationCamera(input){
+ if(!input||typeof input!=='object')throw new TypeError('renderer camera required');
+ const position=cameraArray(input.position??input.origin,'camera.position'),origin=cameraArray(input.origin??input.position,'camera.origin'),target=cameraArray(input.target,'camera.target'),right=cameraArray(input.right,'camera.right'),up=cameraArray(input.up,'camera.up'),forward=cameraArray(input.forward,'camera.forward');
+ const focalLength=finiteCameraNumber(input.focalLength,'camera.focalLength'),near=finiteCameraNumber(input.near,'camera.near'),fovYRadians=finiteCameraNumber(input.fovYRadians,'camera.fovYRadians'),aspect=finiteCameraNumber(input.aspect,'camera.aspect'),far=finiteCameraNumber(input.far,'camera.far');
+ if(!(focalLength>0&&near>0&&fovYRadians>0&&fovYRadians<Math.PI&&aspect>0&&far>near))throw new RangeError('renderer camera projection parameters are invalid');
+ return Object.freeze({
+  spatialFrame:Object.freeze({origin:cameraObject(origin,'camera.origin'),right:cameraObject(right,'camera.right'),up:cameraObject(up,'camera.up'),forward:cameraObject(forward,'camera.forward'),focalLength,near}),
+  systemFrame:Object.freeze({position,target,up,fovYRadians,aspect,near,far})
+ });
+}
 function sampleColor(s,world){
  const p=world.planetology,water=s.hydrology.surfaceLiquid,ice=s.hydrology.surfaceState==='ICE_OR_GLACIER';
  if(water){const depth=Math.max(0,p.hydrology.seaLevelDatumMeters-s.topography.elevationMeters);return mix([25,116,147],[10,47,83],Math.min(1,depth/2500));}
@@ -35,17 +48,17 @@ function create(canvas,glCanvas,{onActivate=null,onPoint=null,onObject=null}={})
  function galaxyGlyph(x,y,r,node){const m=node.metadata.modelProfile,morph=m?.morphology||'UNKNOWN',seed=C.hash(node.canonicalId);g.save();g.translate(x,y);g.rotate(seed%628/100);g.scale(1,.62);glow(0,0,r*2.2,'rgba(113,171,218,.16)');if(morph.includes('SPIRAL')||morph.includes('DISK')){for(let arm=0;arm<3;arm++){g.beginPath();for(let j=0;j<=40;j++){const t=j/40,a=arm*Math.PI*2/3+t*5.7,rr=t*r;const xx=Math.cos(a)*rr,yy=Math.sin(a)*rr;if(j===0)g.moveTo(xx,yy);else g.lineTo(xx,yy);}g.strokeStyle='rgba(152,187,206,.70)';g.lineWidth=2.5;g.stroke();}}else{g.beginPath();g.ellipse(0,0,r,r*.6,0,0,Math.PI*2);g.fillStyle='rgba(162,175,188,.22)';g.fill();}glow(0,0,r*.7,'rgba(243,209,160,.85)');g.restore();}
  function norm3(v){const n=Math.hypot(v[0],v[1],v[2])||1;return v.map(x=>x/n)}
  function cross3(a,b){return[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]]}
- function cameraFor(scale,{system=false}={}){const anchor=O.waveIVScaleRuntime?.snapshot?.().anchors?.[travelBand]||null,ratio=anchor&&travelDistanceRadii?clamp(travelDistanceRadii/anchor,.45,2.4):1,d=scale*(system?2.8:2.05)*ratio,cp=Math.cos(pitch),pos=[Math.sin(yaw)*cp*d,Math.sin(pitch)*d,Math.cos(yaw)*cp*d],forward=norm3(pos.map(x=>-x)),right=norm3(cross3(forward,[0,1,0])),up=norm3(cross3(right,forward));return{position:pos,origin:pos,target:[0,0,0],right,up,forward,focalLength:1.18,near:scale*.01,fovYRadians:Math.PI/3,aspect:width/height,far:scale*20};}
+ function cameraFor(scale,{system=false}={}){const anchor=O.waveIVScaleRuntime?.snapshot?.().anchors?.[travelBand]||null,ratio=anchor&&travelDistanceRadii?clamp(travelDistanceRadii/anchor,.45,2.4):1,d=scale*(system?2.8:2.05)*ratio,cp=Math.cos(pitch),pos=[Math.sin(yaw)*cp*d,Math.sin(pitch)*d,Math.cos(yaw)*cp*d],forward=norm3(pos.map(x=>-x)),right=norm3(cross3(forward,[0,1,0])),up=norm3(cross3(right,forward));return adaptPresentationCamera({position:pos,origin:pos,target:[0,0,0],right,up,forward,focalLength:1.18,near:scale*.01,fovYRadians:Math.PI/3,aspect:width/height,far:scale*20});}
  function macro(s){
   background();
   if(s.stage==='SYSTEM'&&O.v1x04SystemProvider){
    const system={id:s.system.canonicalId,facts:s.system.metadata?.facts||{}},stars=s.rows.filter(n=>n.kind==='star').map(n=>({id:n.canonicalId||n.entityId,facts:n.metadata?.facts||{}})),planets=s.rows.filter(n=>n.kind==='planet').map(n=>({id:n.canonicalId||n.entityId,facts:n.metadata?.facts||{}}));
-   const rendered=O.v1x04SystemProvider.render({system,stars,planets},{camera:cameraFor(28,{system:true}),viewport:{width,height}});scene={kind:'SYSTEM_3D',objects:rendered.hitTargets};
+   const camera=cameraFor(28,{system:true}),rendered=O.v1x04SystemProvider.render({system,stars,planets},{camera:camera.systemFrame,viewport:{width,height}});scene={kind:'SYSTEM_3D',scale:'SYSTEM',objects:rendered.hitTargets};
    for(const orbit of rendered.projectedOrbits){if(orbit.points.length<2)continue;g.beginPath();orbit.points.forEach((p,i)=>i?g.lineTo(p.x,p.y):g.moveTo(p.x,p.y));g.strokeStyle='rgba(154,189,209,.25)';g.lineWidth=1;g.stroke();}
    for(const h of rendered.hitTargets){if(!h.visible)continue;const node=s.rows.find(n=>String(n.canonicalId||n.entityId)===String(h.canonicalEntityId));if(!node)continue;const r=node.kind==='star'?11:7,c=node.kind==='star'?[255,213,151]:[107,179,199];glow(h.x,h.y,r*3,'rgba('+c.join(',')+',.23)');g.beginPath();g.arc(h.x,h.y,r,0,Math.PI*2);g.fillStyle=rgb(c);g.fill();const name=(node.kind==='star'?'Star ':'World ')+short(h.canonicalEntityId);label(name,h.x,h.y+r+17,{align:'center',color:'#c0d1de',size:10});pick(h.x,h.y,Math.max(18,r+7),{node},name);}
    label('P3 identities / true 3D perspective / orbit geometry is presentation-only',22,height-20,{size:10});return;
   }
-  const context=s.stage==='UNIVERSE'?'UNIVERSE':s.stage==='GALAXY'?'GALAXY':s.stage==='REGION'?'REGION':'NEIGHBORHOOD',scopeId=s.stage==='UNIVERSE'?s.node.entityId:s.stage==='GALAXY'?s.galaxy.entityId:s.stage==='REGION'?s.region.entityId:s.neighborhood.entityId,sp=O.v1x02SpatialUniverse,profile=sp.profile({context}),camera=cameraFor(profile.scaleUnits),rep=sp.representation({context,scopeId,entities:s.rows,cameraFrame:camera,limit:64});scene={kind:'SPATIAL_3D',objects:rep.objects};
+  const context=s.stage==='UNIVERSE'?'UNIVERSE':s.stage==='GALAXY'?'GALAXY':s.stage==='REGION'?'REGION':'NEIGHBORHOOD',scopeId=s.stage==='UNIVERSE'?s.node.entityId:s.stage==='GALAXY'?s.galaxy.entityId:s.stage==='REGION'?s.region.entityId:s.neighborhood.entityId,sp=O.v1x02SpatialUniverse,profile=sp.profile({context}),camera=cameraFor(profile.scaleUnits),rep=sp.representation({context,scopeId,entities:s.rows,cameraFrame:camera.spatialFrame,limit:64});scene={kind:'SPATIAL_3D',scale:s.stage,objects:rep.objects};
   if(s.stage==='GALAXY'){g.save();g.globalAlpha=.18;galaxyGlyph(width*.5,height*.48,Math.min(width,height)*.35,s.galaxy);g.restore();}
   for(const o of rep.objects){if(!o.view?.visible)continue;const node=s.rows.find(n=>String(n.canonicalId||n.entityId)===String(o.canonicalId||o.entityId||o.identity));if(!node)continue;const x=width*.5+o.view.x*Math.min(width,height)*.46,y=height*.5-o.view.y*Math.min(width,height)*.46,depthScale=clamp(profile.scaleUnits/o.view.depth,.35,1.6),r=(node.kind==='galaxy'?18:node.kind==='star'?12:node.kind==='planet'?9:7)*depthScale;
    if(node.kind==='galaxy')galaxyGlyph(x,y,r,node);else{const c=node.kind==='star'?[255,214,151]:node.kind==='planet'?[107,179,199]:[161,204,227];glow(x,y,r*2.7,'rgba('+c.join(',')+',.22)');g.beginPath();g.arc(x,y,r,0,Math.PI*2);g.fillStyle=rgb(c);g.fill();}
@@ -184,5 +197,5 @@ function create(canvas,glCanvas,{onActivate=null,onPoint=null,onObject=null}={})
  function dispose(){disposed=true;token++;maps.clear();picks=[];terrain=[];gpu?.dispose();budget.clear('dispose');}
  return Object.freeze({VERSION,render,rotate,setTravelDistance,activateAt,keyboard,state,dispose,resize,sampleColor});
 }
-O.v1LivingRenderer=Object.freeze({VERSION,MAP_W,MAP_H,MAX_MAPS,MAX_TERRAIN,sampleColor,create});
+O.v1LivingRenderer=Object.freeze({VERSION,MAP_W,MAP_H,MAX_MAPS,MAX_TERRAIN,sampleColor,adaptPresentationCamera,create});
 })(globalThis);

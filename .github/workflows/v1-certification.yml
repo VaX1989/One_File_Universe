@@ -40,6 +40,8 @@ jobs:
         run: node tools/build-ofu-rendering-v09.mjs
       - name: V1 scientific, persistence and PX conformance
         run: |
+          node tests/v1/camera-adapter.mjs
+          node tests/v1/navigation-authority.mjs
           node tests/v1/domain-models.mjs
           node tests/v1/world-discovery.mjs
           node tests/v1/model-regime-runtime.mjs
