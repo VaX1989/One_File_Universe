@@ -4,8 +4,8 @@ const O=root.OFU=root.OFU||{};
 if(typeof document==='undefined')return;
 const C=O.v09ExplorerCore;if(!C)throw new Error('v0.9 explorer core unavailable');
 const q=id=>document.getElementById(id),STORAGE_KEY='ofu:v09:explorer-session:1',DISCOVERY_LIMIT=3,RECENT_LIMIT=5,BOOKMARK_LIMIT=6;
-let session=loadSession(),lastToken=null,lastStamp='',syncTimer=null;
-const state={seamVersion:2,ready:false,lastSelectionToken:null,lastAction:null,storage:'memory',syncs:0};
+let session=loadSession(),startupResumeToken=session.current,lastToken=null,lastStamp='',syncTimer=null;
+const state={seamVersion:3,ready:false,lastSelectionToken:null,lastAction:null,storage:'memory',syncs:0,resumeStatus:startupResumeToken?'pending':'none',resumedToken:null};
 function storage(){try{const s=root.localStorage,k='__ofu_v09_probe__';s.setItem(k,'1');s.removeItem(k);state.storage='localStorage';return s}catch{state.storage='memory';return null}}
 const store=storage();
 function loadSession(){try{const raw=root.localStorage?.getItem(STORAGE_KEY);return C.normalizeSession(raw?JSON.parse(raw):{})}catch{return C.normalizeSession()}}
@@ -49,11 +49,26 @@ function renderComparison(snapshot){
 }
 function renderSession(){renderList('beta-recent-list',session.recent.filter(token=>token!==session.current),RECENT_LIMIT,'Your recent destinations will appear here as you explore.');renderList('beta-bookmark-list',session.bookmarks,BOOKMARK_LIMIT,'Bookmark a world to keep it available in this local exploration session.')}
 function renderOnboarding(){const box=q('beta-first-flight');if(!box)return;const complete=session.progress.selected&&session.progress.approached&&session.progress.inspected;box.hidden=session.onboardingDismissed||complete;for(const name of ['selected','approached','inspected']){const item=q('beta-step-'+name);if(item){const done=session.progress[name];item.dataset.complete=done?'true':'false';item.setAttribute('aria-label',(done?'Completed: ':'Not completed: ')+item.textContent.trim())}}}
-function render(snapshot){renderOrientation(snapshot);renderDiscovery(snapshot);renderSelected(snapshot);renderComparison(snapshot);renderSession();renderOnboarding();setText('beta-session-note',state.storage==='localStorage'?'Recent destinations, trail position, bookmarks and comparison pin stay on this device. They are product state, not astronomical facts.':'Session state is temporary in this browser context and never becomes astronomical data.');state.ready=true}
+function sessionNote(){
+ const persistence=state.storage==='localStorage'?'Recent destinations, trail position, bookmarks and comparison pin stay on this device. They are product state, not astronomical facts.':'Session state is temporary in this browser context and never becomes astronomical data.';
+ if(state.resumeStatus==='restored')return'Resumed your last explored destination. '+persistence;
+ if(state.resumeStatus==='unavailable')return'Your previous destination could not be restored safely, so exploration started from the current available world. '+persistence;
+ return persistence;
+}
+function render(snapshot){renderOrientation(snapshot);renderDiscovery(snapshot);renderSelected(snapshot);renderComparison(snapshot);renderSession();renderOnboarding();setText('beta-session-note',sessionNote());state.ready=true}
+function attemptStartupResume(){
+ if(state.resumeStatus!=='pending')return state.resumeStatus==='restored';
+ const token=startupResumeToken;if(!token){state.resumeStatus='none';return false}
+ const bridge=O.v08SelectionBridge,nav=O.v08ExploreNavigation;if(!bridge?.selectPlanet||!nav?.sync||!currentContext())return null;
+ const saved=resolveSnapshot(token);if(!saved){state.resumeStatus='unavailable';startupResumeToken=null;state.lastAction='startup-resume-unavailable';return false}
+ const priorLastToken=lastToken;
+ try{lastToken=token;bridge.selectPlanet(C.parsePlanetKey(token),{announce:false});nav.sync();state.resumeStatus='restored';state.resumedToken=token;state.lastSelectionToken=token;state.lastAction='startup-resume';startupResumeToken=null;save();return true}catch(error){lastToken=priorLastToken;state.resumeStatus='unavailable';state.lastAction='startup-resume-failed:'+String(error?.message||error);startupResumeToken=null;return false}
+}
 function sync(){
+ if(state.resumeStatus==='pending'&&attemptStartupResume()===null)return;
  const snapshot=selectedSnapshot();if(!snapshot)return;
  if(snapshot.token!==lastToken){session=C.recordVisit(session,snapshot.token);lastToken=snapshot.token;state.lastSelectionToken=snapshot.token;save()}
- const nextStamp=[snapshot.token,session.previous,session.pinned,session.bookmarks.join('|'),session.recent.join('|'),session.trail.join('|'),session.trailCursor,JSON.stringify(session.progress),session.onboardingDismissed,state.storage].join('::');if(nextStamp===lastStamp)return;lastStamp=nextStamp;state.syncs++;render(snapshot)
+ const nextStamp=[snapshot.token,session.previous,session.pinned,session.bookmarks.join('|'),session.recent.join('|'),session.trail.join('|'),session.trailCursor,JSON.stringify(session.progress),session.onboardingDismissed,state.storage,state.resumeStatus,state.resumedToken||''].join('::');if(nextStamp===lastStamp)return;lastStamp=nextStamp;state.syncs++;render(snapshot)
 }
 function openToken(token,{collapse=true,action='open-saved-target',preserveTrail=false}={}){
  const priorLastToken=lastToken;
@@ -80,7 +95,7 @@ function onClick(event){
 }
 function onKeydown(event){if(event.defaultPrevented||event.altKey||event.ctrlKey||event.metaKey||event.shiftKey)return;const tag=event.target?.tagName;if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'||event.target?.isContentEditable)return;if(event.key==='['&&C.trailState(session).canBack){navigateTrail(-1);event.preventDefault()}else if(event.key===']'&&C.trailState(session).canForward){navigateTrail(1);event.preventDefault()}}
 function init(){document.addEventListener('click',onClick,false);document.addEventListener('keydown',onKeydown,false);syncTimer=root.setInterval(sync,300);sync();root.__OFU_EXPLORER_BETA__=api}
-const api=Object.freeze({seamVersion:2,state,get session(){return session},snapshot:()=>Object.freeze({state:{...state},session,trail:C.trailState(session)}),sync,openToken,navigateTrail});
+const api=Object.freeze({seamVersion:3,state,get session(){return session},snapshot:()=>Object.freeze({state:{...state},session,trail:C.trailState(session)}),sync,openToken,navigateTrail,attemptStartupResume});
 O.v09ExplorerBeta=api;
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })(typeof globalThis!=='undefined'?globalThis:this);
