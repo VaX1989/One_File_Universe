@@ -17,6 +17,7 @@ try{
  for(const phrase of ['Explorer Beta','Where you are','Discover','Try something different','World differences','Recent & bookmarked'])if(!initial.text.includes(phrase))throw new Error('missing Explorer Beta hierarchy: '+phrase);
  if(/galaxyX|sectorX|siteX|[0-9a-f]{40,}/i.test(initial.text))throw new Error('technical identity leaked into Explore');
  if(initial.scene.bodies.length!==initial.targets||!initial.scene.selection)throw new Error('scene seam target mismatch');
+ if(initial.beta.trail.canBack||initial.beta.trail.canForward)throw new Error('fresh exploration trail must start at one stable destination');
  await shot('desktop-explore');
  if(initial.targets>1){
   const first=await page.evaluate(()=>OFU.v09ExplorerBeta.snapshot().session.current);
@@ -25,17 +26,25 @@ try{
   const pinned=await page.evaluate(()=>OFU.v09ExplorerBeta.snapshot().session.pinned);if(!pinned)throw new Error('comparison pin not stored');
   await page.click('[data-explore-target="0"]');await page.waitForFunction(pinned=>OFU.v09ExplorerBeta.snapshot().session.current!==pinned,pinned);
   await page.waitForFunction(()=>document.querySelectorAll('#beta-compare-body tr').length>=6);
-  const compare=await page.evaluate(()=>({rows:document.querySelectorAll('#beta-compare-body tr').length,copy:document.getElementById('beta-compare-copy')?.textContent,recent:document.querySelectorAll('#beta-recent-list .beta-world-card').length,bookmarks:document.querySelectorAll('#beta-bookmark-list .beta-world-card').length}));
-  if(compare.rows<6||compare.recent<1||compare.bookmarks<1||!/compared with pinned/i.test(compare.copy||''))throw new Error('comparison/session flow incomplete '+JSON.stringify(compare));
+  const forwardDestination=await page.evaluate(()=>OFU.v09ExplorerBeta.snapshot().session.current);
+  await page.click('#beta-back');await page.waitForFunction(pinned=>OFU.v09ExplorerBeta.snapshot().session.current===pinned,pinned);
+  const backed=await page.evaluate(()=>({beta:OFU.v09ExplorerBeta.snapshot(),backDisabled:document.getElementById('beta-back').disabled,forwardDisabled:document.getElementById('beta-forward').disabled}));
+  if(backed.beta.state.lastAction!=='trail-back'||backed.forwardDisabled||!backed.beta.trail.canForward)throw new Error('back trail did not preserve forward destination '+JSON.stringify(backed));
+  await page.click('#beta-forward');await page.waitForFunction(token=>OFU.v09ExplorerBeta.snapshot().session.current===token,forwardDestination);
+  const forwarded=await page.evaluate(()=>({beta:OFU.v09ExplorerBeta.snapshot(),forwardDisabled:document.getElementById('beta-forward').disabled}));
+  if(forwarded.beta.state.lastAction!=='trail-forward'||forwarded.beta.trail.canForward||!forwarded.forwardDisabled)throw new Error('forward trail did not restore tip '+JSON.stringify(forwarded));
+  await page.keyboard.press('[');await page.waitForFunction(pinned=>OFU.v09ExplorerBeta.snapshot().session.current===pinned,pinned);await page.keyboard.press(']');await page.waitForFunction(token=>OFU.v09ExplorerBeta.snapshot().session.current===token,forwardDestination);
+  const compare=await page.evaluate(()=>({rows:document.querySelectorAll('#beta-compare-body tr').length,copy:document.getElementById('beta-compare-copy')?.textContent,recent:document.querySelectorAll('#beta-recent-list .beta-world-card').length,bookmarks:document.querySelectorAll('#beta-bookmark-list .beta-world-card').length,trail:OFU.v09ExplorerBeta.snapshot().trail}));
+  if(compare.rows<6||compare.recent<1||compare.bookmarks<1||!/compared with pinned/i.test(compare.copy||'')||!compare.trail.canBack)throw new Error('comparison/session/trail flow incomplete '+JSON.stringify(compare));
  }
  await page.click('[data-open-workspace="inspect"]');await page.waitForFunction(()=>OFU.productUI.state.workspace==='inspect');await page.waitForFunction(()=>/sections below separate|outside the range|selected world is changing|part of the generated universe/i.test(document.getElementById('inspector-overview-copy')?.textContent||''));
  const inspect=await page.evaluate(()=>({overview:document.getElementById('inspector-overview-copy')?.textContent,environment:document.getElementById('inspector-environment-copy')?.textContent,biology:document.getElementById('inspector-biology-copy')?.textContent,technical:document.querySelector('.raw-details')?.open===true}));
  if(inspect.technical)throw new Error('advanced technical details opened by default');if(!/world|object/i.test(inspect.overview||'')||!/environment|forcing|waiting/i.test(inspect.environment||''))throw new Error('plain-language Inspector missing '+JSON.stringify(inspect));
  await shot('desktop-inspect');
  await page.click('[data-workspace="explore"]');await page.setViewportSize({width:390,height:844});await page.waitForFunction(()=>document.documentElement.dataset.ofuMobile==='true'&&__OFU_MOBILE_INTERACTION__?.snapshot().active===true);await page.waitForFunction(()=>__OFU_MOBILE_INTERACTION__.snapshot().sheet==='peek');
- const mobile=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,sheet:__OFU_MOBILE_INTERACTION__.snapshot().sheet,breadcrumb:getComputedStyle(document.querySelector('.beta-breadcrumbs')).overflowX,scene:OFU.v09ExplorerScene.snapshot()}));
- if(mobile.overflow>2||mobile.sheet!=='peek'||mobile.scene.ready!==true)throw new Error('mobile Explorer Beta composition failed '+JSON.stringify(mobile));
+ const mobile=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,sheet:__OFU_MOBILE_INTERACTION__.snapshot().sheet,breadcrumb:getComputedStyle(document.querySelector('.beta-breadcrumbs')).overflowX,scene:OFU.v09ExplorerScene.snapshot(),forwardPresent:!!document.getElementById('beta-forward')}));
+ if(mobile.overflow>2||mobile.sheet!=='peek'||mobile.scene.ready!==true||!mobile.forwardPresent)throw new Error('mobile Explorer Beta composition failed '+JSON.stringify(mobile));
  await shot('mobile-explore');
  const unexpected=requests.filter(r=>!(r.nav&&r.type==='document'&&r.url===url)&&!r.url.startsWith('data:')&&!r.url.startsWith('blob:')&&!r.url.startsWith('about:'));if(unexpected.length)throw new Error('unexpected network requests '+JSON.stringify(unexpected));if(errors.length)throw new Error('page errors '+JSON.stringify(errors));
- const evidence={status:'PASS',exactSourceSha:sourceSha,product:'Explorer Beta',orientation:true,boundedDiscovery:true,comparison:true,sessionState:true,plainLanguageInspector:true,laneBSceneSeam:true,mobileViewportFirst:true,offline:true,screenshots:shots};fs.writeFileSync(path.join(evidenceDir,'v09-explorer-beta.json'),JSON.stringify(evidence,null,2)+'\n');console.log(JSON.stringify(evidence));
+ const evidence={status:'PASS',exactSourceSha:sourceSha,product:'Explorer Beta',orientation:true,boundedDiscovery:true,comparison:true,sessionState:true,reversibleTrail:true,keyboardTrail:true,plainLanguageInspector:true,laneBSceneSeam:true,mobileViewportFirst:true,offline:true,screenshots:shots};fs.writeFileSync(path.join(evidenceDir,'v09-explorer-beta.json'),JSON.stringify(evidence,null,2)+'\n');console.log(JSON.stringify(evidence));
 }finally{await context.close();await browser.close()}

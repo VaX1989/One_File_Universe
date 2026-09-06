@@ -50,7 +50,7 @@ function importBytes(bytes){
   if(rollbackErrors.length)throw new AggregateError([importError,...rollbackErrors],'session import failed and rollback was incomplete',{cause:importError});throw importError;
  }
 }
-function hex(bytes){return P.hex(bytes)}function unhex(text){if(typeof text!=='string'||text.length%2||!/^[0-9a-f]+$/i.test(text))fail('hex session required');return P.unhex(text.toLowerCase())}
+function hex(bytes){return P.hex(bytes)}function unhex(text){if(typeof text!=='string'||text.length===0||text.length%2)fail('hex session required');if(text.length>2*MAX_BYTES)fail('hex session exceeds byte limit');if(!/^[0-9a-f]+$/i.test(text))fail('hex session required');return P.unhex(text.toLowerCase())}
 function storeBrowser(){const text=hex(exportBytes());if(text.length>2*MAX_BYTES)fail('browser convenience payload too large');root.localStorage?.setItem('ofu.v1.session',text);return{textBytes:text.length,portableAuthoritative:true}}
 function loadBrowser(){const text=root.localStorage?.getItem('ofu.v1.session');if(!text)fail('no browser convenience save');return importBytes(unhex(text))}
 function snapshot(){const world=state.world,live=world?T.replayLiveWorld(world,TRANSITION):null;return Object.freeze({version:VERSION,format:FORMAT,schemaVersion:Number(SCHEMA),actions:state.actions,exports:state.exports,imports:state.imports,lastAction:state.lastAction,lastImport:state.lastImport,p4Protocol:T.VERSION,p4Transition:T.transitionContractDigest(TRANSITION.descriptor),p4StateDigest:live?P.hex(live.digest):null,portableAuthoritative:true,importTrustPolicy:'PORTABLE_ARCHIVE_INTEGRITY_ONLY',historicalAdmissionAttested:false,browserStorageConvenience:true,canonicalMutation:false,canonicalP6Mutation:false});}
