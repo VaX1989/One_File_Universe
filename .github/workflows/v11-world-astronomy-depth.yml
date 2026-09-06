@@ -1,0 +1,38 @@
+name: V1.1 World Astronomy Depth
+on:
+  push:
+    branches:
+      - automation/ofu-world-astronomy-depth-2026-09-06
+      - development/v1.1-quality-exploration
+  pull_request:
+    paths:
+      - 'src/domains/v1/astronomy/depth.js'
+      - 'src/domains/v1/astronomy.js'
+      - 'tests/v1/astronomy/depth.mjs'
+      - 'config/components/v11-astronomy-depth.json'
+jobs:
+  astronomy-depth:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.20.0'
+      - name: Syntax
+        run: |
+          node --check src/domains/v1/astronomy/depth.js
+          node --check tests/v1/astronomy/depth.mjs
+      - name: Astronomy depth oracle
+        run: node tests/v1/astronomy/depth.mjs
+      - name: Component descriptor integration
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {planComponents} from './tools/extensions/components.mjs';
+          const actual=JSON.parse(fs.readFileSync('config/components/v11-astronomy-depth.json','utf8')).components[0];
+          const dep={id:'v1.models.astronomy',version:'1.0.0',owner:'v1',kind:'code',stage:'foundation',placement:'script',source:'src/domains/v1/astronomy.js',dependencies:[],authority:'MODEL_DERIVED_SIMULATION',provenance:'validation dependency',provides:['v1.models.astronomy']};
+          const plan=planComponents([dep,actual]);
+          if(!plan.some(x=>x.id==='v1.models.astronomy.depth'))throw new Error('astronomy depth component missing');
+          console.log(JSON.stringify({status:'PASS',component:'v1.models.astronomy.depth',planned:plan.length}));
+          NODE

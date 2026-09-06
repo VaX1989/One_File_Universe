@@ -1,0 +1,22 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1.models.astronomy.depth",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/astronomy/depth.js",
+      "dependencies": [
+        "v1.models.astronomy"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Selective post-v1 implementation harvest from V1X-15: qualitative stellar-population context, narrow-domain lifetime proxy and companion-orbit classification layered over existing modeled astronomy; no P3 promotion or survey-calibration claim.",
+      "provides": [
+        "v1.models.astronomy.depth"
+      ]
+    }
+  ]
+}
