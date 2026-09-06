@@ -1,0 +1,66 @@
+name: V1 Publish Recovery
+
+on:
+  push:
+    branches:
+      - release/v1.0.0-publish-recovery-2026-09-06
+
+permissions:
+  contents: write
+
+env:
+  GH_TOKEN: ${{ github.token }}
+  RELEASE_ID: '383702944'
+  RELEASE_TAG: v1.0.0
+  RELEASE_SHA: 38dd0d7c0ccc4a100dc3b75d3d159c6933bc4c16
+  RELEASE_TREE: b7576ebe21b3448b69e35c9cd8d279f51e4332fb
+  HTML_SHA256: 013d4277da9acebcbb739275c27f6e05ccbc838840738cd2f9b03bb8f5def61a
+  HTML_BYTES: '1512784'
+
+jobs:
+  publish-recovery:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify certified main and draft release identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          MAIN_SHA="$(gh api repos/$GITHUB_REPOSITORY/commits/main --jq .sha)"
+          test "$MAIN_SHA" = "$RELEASE_SHA"
+          RELEASE_JSON="$(gh api repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID)"
+          test "$(jq -r .draft <<<"$RELEASE_JSON")" = true
+          test "$(jq -r .prerelease <<<"$RELEASE_JSON")" = false
+          test "$(jq -r .tag_name <<<"$RELEASE_JSON")" = "$RELEASE_TAG"
+          test "$(jq -r .target_commitish <<<"$RELEASE_JSON")" = "$RELEASE_SHA"
+          test "$(jq -r '.assets | length' <<<"$RELEASE_JSON")" = 1
+          test "$(jq -r '.assets[0].name' <<<"$RELEASE_JSON")" = One_File_Universe.html
+          test "$(jq -r '.assets[0].size' <<<"$RELEASE_JSON")" = "$HTML_BYTES"
+          test "$(jq -r '.assets[0].digest' <<<"$RELEASE_JSON")" = "sha256:$HTML_SHA256"
+
+      - name: Publish stable v1.0.0 release
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID -X PATCH -F draft=false -F prerelease=false > /tmp/published.json
+          test "$(jq -r .draft /tmp/published.json)" = false
+          test "$(jq -r .prerelease /tmp/published.json)" = false
+          test "$(jq -r .tag_name /tmp/published.json)" = "$RELEASE_TAG"
+          test "$(jq -r .target_commitish /tmp/published.json)" = "$RELEASE_SHA"
+
+      - name: Final immutable release read-back
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG_SHA="$(gh api repos/$GITHUB_REPOSITORY/git/ref/tags/$RELEASE_TAG --jq .object.sha)"
+          test "$TAG_SHA" = "$RELEASE_SHA"
+          RELEASE_JSON="$(gh api repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE_TAG)"
+          test "$(jq -r .draft <<<"$RELEASE_JSON")" = false
+          test "$(jq -r .prerelease <<<"$RELEASE_JSON")" = false
+          test "$(jq -r .tag_name <<<"$RELEASE_JSON")" = "$RELEASE_TAG"
+          test "$(jq -r .target_commitish <<<"$RELEASE_JSON")" = "$RELEASE_SHA"
+          test "$(jq -r '.assets[0].name' <<<"$RELEASE_JSON")" = One_File_Universe.html
+          test "$(jq -r '.assets[0].size' <<<"$RELEASE_JSON")" = "$HTML_BYTES"
+          test "$(jq -r '.assets[0].digest' <<<"$RELEASE_JSON")" = "sha256:$HTML_SHA256"
+          test "$(gh api repos/$GITHUB_REPOSITORY/commits/$RELEASE_SHA --jq .commit.tree.sha)" = "$RELEASE_TREE"
+          test "$(gh api repos/$GITHUB_REPOSITORY/commits/main --jq .sha)" = "$RELEASE_SHA"
+          echo "RELEASED v1.0.0 $RELEASE_SHA $HTML_SHA256 $HTML_BYTES"
