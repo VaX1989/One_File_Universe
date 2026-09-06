@@ -26,17 +26,17 @@ function create(options={}){
  function historyWasPushed(name,args,before,after){if(after.revision===before.revision)return false;if(HISTORY_METHODS.has(name))return true;if(name==='navigate'||name==='at')return args[1]?.push!==false;if(CONDITIONAL_HISTORY_METHODS.has(name))return after.stage!==before.stage;return false}
  function invoke(name,args){
   const fn=raw[name];if(typeof fn!=='function')throw new Error('Living forward navigation missing runtime method '+name);
-  const before=raw.snapshot();suppress++;let result;
-  try{result=fn(...args)}finally{suppress--}
-  const after=raw.snapshot();
+  const before=raw.snapshot();suppress++;
+  try{fn(...args)}finally{suppress--}
+  const after=raw.snapshot(),changed=after.revision!==before.revision,explicitNoPush=(name==='navigate'||name==='at')&&args[1]?.push===false;
   if(historyWasPushed(name,args,before,after))record(name,args,after);
-  else if(after.revision!==before.revision&&NON_HISTORY_MUTATIONS.has(name)||after.revision!==before.revision&&CONDITIONAL_HISTORY_METHODS.has(name))invalidate();
+  else if(changed&&(NON_HISTORY_MUTATIONS.has(name)||CONDITIONAL_HISTORY_METHODS.has(name)||explicitNoPush))invalidate();
   return notify();
  }
  function back(){
   const before=raw.snapshot();if(!before.historyDepth)return decorated();
   const descriptor=known.length?known.pop():null,priorForward=[...forward];
-  if(descriptor){forward.push(descriptor);trim(forward)}else forward.length=0;
+  if(descriptor){forward.push(descriptor);trim(forward)}else{if(forward.length)invalidations++;forward.length=0}
   suppress++;
   try{raw.back()}catch(error){if(descriptor)known.push(descriptor);forward.splice(0,forward.length,...priorForward);throw error}finally{suppress--}
   return notify();
