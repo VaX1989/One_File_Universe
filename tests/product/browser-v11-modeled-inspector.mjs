@@ -31,7 +31,10 @@ try{
   await page.click(`[data-explore-target="${index}"]`);
   await page.waitForFunction(old=>OFU.inspectorTest?.state?.current?.type==='Planet'&&OFU.p2.hex(OFU.inspectorTest.state.current.r.id)!==old,old,{timeout:20000});
   await page.evaluate(()=>OFU.productUI.workspace('inspect',{focus:false,announceChange:false}));
-  await page.waitForFunction(old=>document.getElementById('inspector-modeled-state')?.textContent==='model-derived'&&OFU.pxProduct.inspect('v1.inspector.world').selection.target.entityId!==old,old,{timeout:20000});
+  await page.waitForFunction(old=>{
+   const I=OFU.inspectorTest?.state?.current,id=I?.type==='Planet'&&I.r?.id?OFU.p2.hex(I.r.id):null,key=OFU.v09InspectorLanguage?.state?.modeledKey;
+   return !!id&&id!==old&&document.getElementById('inspector-modeled-state')?.textContent==='model-derived'&&typeof key==='string'&&key.startsWith(id+'|');
+  },old,{timeout:20000});
   const second=await page.evaluate(()=>{const I=OFU.inspectorTest.state.current,r=OFU.pxProduct.inspect('v1.inspector.world');return{inspectorId:OFU.p2.hex(I.r.id),providerSelection:r.selection.target.entityId,authority:r.authority.class,state:document.getElementById('inspector-modeled-state')?.textContent,modeledKey:OFU.v09InspectorLanguage.state.modeledKey}});
   assert.equal(second.providerSelection,second.inspectorId);assert.equal(second.authority,'MODEL_DERIVED_SIMULATION');assert.equal(second.state,'model-derived');assert(second.modeledKey?.startsWith(second.inspectorId+'|'),'modeled Inspector cache key must move with canonical selection');selectionUpdate='verified';
  }
