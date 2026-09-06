@@ -1,0 +1,14 @@
+{
+  "schema": "ofu-conformance-1",
+  "tests": [
+    {
+      "id": "v1x14.anti-regression",
+      "owner": "v1x-14-certification-evidence",
+      "tier": "FAST_LOCAL",
+      "command": ["node", "tests/v1x-14-certification-evidence/anti-regression.mjs"],
+      "providers": ["v1.interaction.universal-exploration"],
+      "oracle": "v1x14-anti-regression-oracle-1",
+      "timeoutMs": 30000
+    }
+  ]
+}
