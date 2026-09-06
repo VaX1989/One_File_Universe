@@ -1,0 +1,18 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "ofu.bootstrap.product.modeled-discovery-readiness",
+      "version": "1.0.0",
+      "owner": "product",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/bootstrap/product/modeled-discovery-readiness.js",
+      "dependencies": ["ofu.bootstrap.product.explorer-beta", "ofu.extensions.product-bindings"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Post-v1 product readiness synchronization for the bounded modeled-discovery surface; no canonical or model authority is created.",
+      "provides": ["ofu.bootstrap.product.modeled-discovery-readiness"]
+    }
+  ]
+}
