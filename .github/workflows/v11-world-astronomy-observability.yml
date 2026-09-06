@@ -9,15 +9,30 @@ on:
       - 'tests/v1/astronomy/observability.mjs'
       - 'config/components/v11-astronomy-observability.json'
       - '.github/workflows/v11-world-astronomy-observability.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v11-world-astronomy-observability-${{ github.event_name }}-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
 jobs:
   astronomy-observability:
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '24.20.0'
+      - name: Verify exact source
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
       - name: Syntax
         run: |
           node --check src/domains/v1/astronomy/observability.js
