@@ -1,0 +1,123 @@
+{
+  "schema": "ofu-v1x-handoff-1",
+  "laneId": "V1X-18",
+  "branch": "research/v1x-18-civilization-individuals-2026-09-06",
+  "status": "IMPLEMENTED_UNCERTIFIED",
+  "authorityClass": "RESEARCH_ONLY",
+  "contractSet": "OFU-V1X-CONTRACT-SET-2026-09-06.1",
+  "base": {
+    "sha": "760c0c70bccb6afd7c7b07600c0f5be3f80e7b19",
+    "tree": "3324e6354b5ff1b90156d1693e6051595b6f1219"
+  },
+  "checkpoint": {
+    "sha": "9a1d16254e9f519c7d4c6c4ad0ad46ee8cc4fdf8",
+    "tree": "d6b5b532928cf50f2c0d21166b79a890c10555fa"
+  },
+  "changedPaths": [
+    "research/v1x-18-civilization-individuals/civilization-model.mjs",
+    "research/v1x-18-civilization-individuals/individual-refinement.mjs",
+    "research/v1x-18-civilization-individuals/p4-bridge.mjs",
+    "research/v1x-18-civilization-individuals/fixtures/causal-oracle.json",
+    "research/v1x-18-civilization-individuals/tests/run.mjs",
+    "research/v1x-18-civilization-individuals/tests/ownership-paths.mjs",
+    "docs/evidence/v1x-18-civilization-individuals/SCIENTIFIC_MODEL_NOTES.md",
+    "reports/v1x-18-civilization-individuals/RESEARCH_REPORT.md",
+    "reports/v1x-18-civilization-individuals/test-evidence.json"
+  ],
+  "ownershipValidation": {
+    "command": "node research/v1x-18-civilization-individuals/tests/ownership-paths.mjs",
+    "status": "PASS",
+    "matrixVersion": "2026-09-06.1"
+  },
+  "dependencies": [
+    {
+      "laneId": "V1X-17",
+      "checkpointSha": "760c0c70bccb6afd7c7b07600c0f5be3f80e7b19"
+    }
+  ],
+  "tests": [
+    {
+      "command": "node research/v1x-18-civilization-individuals/tests/run.mjs",
+      "status": "PASS",
+      "evidencePath": "reports/v1x-18-civilization-individuals/test-evidence.json"
+    },
+    {
+      "command": "node research/v1x-18-civilization-individuals/tests/ownership-paths.mjs",
+      "status": "PASS",
+      "evidencePath": null
+    },
+    {
+      "command": "node tools/validate-v1x-ownership.mjs --branch research/v1x-18-civilization-individuals-2026-09-06",
+      "status": "NOT_RUN",
+      "evidencePath": null
+    },
+    {
+      "command": "Node 24.20.x exact-runtime research suite",
+      "status": "NOT_RUN",
+      "evidencePath": null
+    }
+  ],
+  "evidence": [],
+  "knownDefects": [
+    {
+      "priority": "P1",
+      "summary": "Canonical Node 24.20.x execution evidence is absent; diagnostic execution used Node 22.16.0.",
+      "status": "OPEN_RESEARCH_PROMOTION_BLOCKER"
+    },
+    {
+      "priority": "P1",
+      "summary": "P4 compatibility is structural only; exact frozen P4 checkpoint/replay/archive execution has not been run.",
+      "status": "OPEN_RESEARCH_PROMOTION_BLOCKER"
+    },
+    {
+      "priority": "P2",
+      "summary": "V1X-17 dependency had no advanced checkpoint at research start, so ecology is supplied through explicit exogenous PPM drivers.",
+      "status": "WAITING_ON_RESEARCH_DEPENDENCY"
+    },
+    {
+      "priority": "P2",
+      "summary": "Birth ledger overflow currently fails closed and structural history rolls at 1024 events; promoted archival compaction is not implemented.",
+      "status": "KNOWN_RESEARCH_LIMIT"
+    }
+  ],
+  "adversarialFindings": [
+    "Empirical literature motivates mechanism classes but does not calibrate prototype coefficients; all such coefficients are explicitly stylized or hypothetical.",
+    "Selected-person genealogy is deterministic synthetic model state, not historical reconstruction.",
+    "Aggregate simulation remains AI-independent; AI enrichment has no authority over reproducible state.",
+    "The 300-year stress fixture observed 110 slices per settlement but does not prove the 256-slice cap is unreachable under every migration graph; the hard cap fails closed."
+  ],
+  "requestedSharedContractChanges": [],
+  "scientificAuthorityClaims": [
+    {
+      "claim": "Age-structured cohort bookkeeping follows a Leslie-style formal structure but uses uncalibrated prototype rates.",
+      "authorityClass": "RESEARCH_ONLY",
+      "source": "Leslie 1945, Biometrika 33(3), doi:10.1093/biomet/33.3.183"
+    },
+    {
+      "claim": "Trade uses a stylized mass-distance/friction analogy, not a calibrated structural gravity implementation.",
+      "authorityClass": "RESEARCH_ONLY",
+      "source": "Anderson & van Wincoop 2003, American Economic Review 93(1), doi:10.1257/000282803321455214"
+    },
+    {
+      "claim": "Route and settlement legacy mechanisms are empirically motivated but transferred only as stylized path-dependence channels.",
+      "authorityClass": "RESEARCH_ONLY",
+      "source": "van Lanen et al. 2018 doi:10.1007/s12520-016-0431-z; Smith et al. 2021 doi:10.1073/pnas.2018155118; Crawford et al. 2023 doi:10.15184/aqy.2022.175"
+    }
+  ],
+  "resourceEvidence": {
+    "hardSettlementCap": 64,
+    "hardSlicesPerSettlementCap": 256,
+    "hardMaterializedPersonsPerRequest": 128,
+    "stressFixtureYears": 300,
+    "stressFixtureMaxObservedSlicesPerSettlement": 110
+  },
+  "browserEvidence": {
+    "status": "NOT_VERIFIED",
+    "reason": "Research modules were diagnostically executed under local Node only."
+  },
+  "physicalDeviceEvidence": {
+    "android": "NOT_VERIFIED",
+    "ios": "NOT_VERIFIED"
+  },
+  "integrationNotes": "Research checkpoint only. Do not merge implicitly. Extract mechanisms through centrally owned PX/P4 seams after V1X-17 binding, exact Node 24 execution, and promotion adjudication."
+}
