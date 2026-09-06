@@ -8,6 +8,8 @@
 
 **One file. One universe. Verifiable by construction.**
 
+**Historical release baseline: v1.0.0**
+
 [**What OFU is**](#what-one-file-universe-is) · [**Explore the universe**](#one-continuous-multiscale-reality) · [**Why it is different**](#why-it-is-different) · [**Architecture**](#architecture-at-a-glance) · [**V1 convergence**](#the-v1-massive-parallel-convergence) · [**Run it**](#build-and-open-the-universe) · [**Evidence & boundaries**](#where-the-project-stands-now)
 
 </div>
@@ -244,12 +246,14 @@ The release certification path builds the artifact twice and requires byte-for-b
 
 ## Where the project stands now
 
-> **OFU has reached a clean v1 founder-test candidate. Formal `v1.0.0` promotion, tag and release have not yet been performed.**
+> **The founder has approved OFU v1.0.0 as an immutable historical baseline. Promotion to `main`, tagging, publication and creation of a GitHub Release have not been performed.**
 
-The current convergence line is substantially beyond the older Wave IV / pre-V1X state that the previous README described.
+The v1.0.0 identity preserves the certified functionality rooted at commit `6d1c8bcc18557eb654e3259bf419890b761acfa9` and tree `ac6d9444453704fb27ea437a879d8b6e7370762c`. It is a stable historical starting point for later work, not a claim that One File Universe has reached its final intended quality or depth.
 
 | Surface | Current state |
 |---|---|
+| Product identity | **v1.0.0 historical baseline** |
+| Functional base | `6d1c8bcc18557eb654e3259bf419890b761acfa9` / `ac6d9444453704fb27ea437a879d8b6e7370762c` |
 | V1X shipping lanes | **V1X-01–V1X-14 integrated** |
 | Product composition | **Living multiscale runtime with shipped provider bindings** |
 | Distribution target | **Single self-contained HTML** |
@@ -264,11 +268,22 @@ The current convergence line is substantially beyond the older Wave IV / pre-V1X
 | Physical iOS | `NOT_VERIFIED_PHYSICAL_DEVICE` |
 | `main` promotion | **Not performed** |
 | `v1.0.0` tag / release | **Not created** |
-| Founder acceptance | **Required before formal release** |
+| Founder historical-freeze decision | **Approved** |
 
 The definitive workflow is [`.github/workflows/v1-certification.yml`](.github/workflows/v1-certification.yml). It verifies the exact checked-out source, frozen foundation, V1 scientific/persistence/PX conformance, V1X authority and bounded-resource closure, deterministic double-build reproduction, direct-file product journeys and the release browser matrix.
 
 A green workflow is evidence for the requirements it actually executes; it is not treated as proof of unmeasured scientific validity, physical-device usability or unlimited simulation fidelity.
+
+### Known v1.0.0 historical-baseline limitations
+
+- Visual quality and UX remain early and uneven in places.
+- Camera behavior and exploration fluidity remain limited despite the certified functional navigation path.
+- Planetary richness and variety remain limited.
+- Local, human and microscopic scale depth remain limited.
+- Physical Android and physical iOS operation have not been verified.
+- Scientific and model limitations remain explicitly disclosed by the artifact's authority and provenance metadata.
+
+These accepted limitations define the historical baseline; they do not weaken the v1.0.0 identity and must not be read as the target quality bar for a later release.
 
 ---
 
@@ -358,7 +373,8 @@ One File Universe does **not** currently claim:
 - that research V1X-15–19 or AI-F0 are already shipping v1 authority;
 - physical Android or iOS validation;
 - production-scale security certification or an external scientific audit;
-- formal public `v1.0.0` release before founder acceptance and promotion.
+- that the v1.0.0 historical baseline is the final intended quality or depth of One File Universe;
+- that promotion to `main`, a tag, a GitHub Release or publication has already occurred.
 
 The project **does** claim an engineering architecture designed to make those distinctions inspectable rather than implicit.
 
