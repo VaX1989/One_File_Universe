@@ -2,8 +2,8 @@
 'use strict';
 const O=root.OFU=root.OFU||{};
 if(typeof document==='undefined')return;
-const VERSION='ofu-v11-living-survey-ux-1';
-const state={version:VERSION,ready:false,decorations:0,resultActivations:0,verifiedActivations:0,identityMismatches:0,lastExpectedIdentity:null,lastVerifiedIdentity:null};
+const VERSION='ofu-v11-living-survey-ux-1',MAX_ATTACH_ATTEMPTS=120;
+const state={version:VERSION,ready:false,attachStatus:'waiting',attachAttempts:0,maxAttachAttempts:MAX_ATTACH_ATTEMPTS,decorations:0,resultActivations:0,verifiedActivations:0,identityMismatches:0,lastExpectedIdentity:null,lastVerifiedIdentity:null};
 let panel=null,observer=null,scheduled=false;
 function authorityCopy(){return 'Survey results are bounded MODEL_DERIVED_SIMULATION outcomes anchored to canonical world identities. Opening a result changes the selected canonical identity only after explicit activation; modeled life or civilization never becomes canonical P6 evidence.'}
 function schedule(){if(scheduled)return;scheduled=true;(root.requestAnimationFrame||((fn)=>root.setTimeout(fn,0)))(()=>{scheduled=false;decorate()})}
@@ -40,8 +40,8 @@ function verifyActivation(expected){
 }
 function bind(){
  document.addEventListener('click',event=>{const button=event.target.closest?.('#living-search-results [data-living-entity]');if(!button)return;const expected=String(button.dataset.livingEntity||'');if(!expected)return;state.resultActivations++;state.lastExpectedIdentity=expected;root.setTimeout(()=>verifyActivation(expected),0)},true);
- const attach=()=>{const next=document.getElementById('living-panel');if(!next){root.setTimeout(attach,50);return}panel=next;observer=new MutationObserver(schedule);observer.observe(panel,{childList:true,subtree:true});decorate()};attach();
+ const attach=()=>{state.attachAttempts++;const next=document.getElementById('living-panel');if(!next){if(state.attachAttempts>=MAX_ATTACH_ATTEMPTS){state.attachStatus='timeout';return}root.setTimeout(attach,50);return}panel=next;state.attachStatus='attached';observer=new MutationObserver(schedule);observer.observe(panel,{childList:true,subtree:true});decorate()};attach();
 }
-const api=Object.freeze({VERSION,state,decorate,verifyActivation,snapshot:()=>Object.freeze({...state})});
+const api=Object.freeze({VERSION,MAX_ATTACH_ATTEMPTS,state,decorate,verifyActivation,snapshot:()=>Object.freeze({...state})});
 O.v11LivingSurveyUX=api;root.__OFU_LIVING_SURVEY_UX__=api;bind();
 })(typeof globalThis!=='undefined'?globalThis:this);
