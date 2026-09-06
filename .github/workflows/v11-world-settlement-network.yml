@@ -1,0 +1,60 @@
+name: V1.1 World Settlement Network Context
+on:
+  push:
+    branches:
+      - development/v1.1-quality-exploration
+  pull_request:
+    paths:
+      - 'src/domains/v1/civilization/network-context.js'
+      - 'tests/v1/civilization/network-context.mjs'
+      - 'config/components/v11-settlement-network-context.json'
+      - '.github/workflows/v11-world-settlement-network.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v11-world-settlement-network-${{ github.event_name }}-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+jobs:
+  settlement-network:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.20.0'
+      - name: Verify exact source
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Syntax
+        run: |
+          node --check src/domains/v1/civilization/network-context.js
+          node --check tests/v1/civilization/network-context.mjs
+      - name: Existing civilization systemic oracle
+        run: node tests/v1/civilization/systemic-civilization.mjs
+      - name: Existing settlement history oracle
+        run: node tests/v1/civilization/settlement-history-context.mjs
+      - name: Settlement network oracle
+        run: node tests/v1/civilization/network-context.mjs
+      - name: Component descriptor integration
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {planComponents} from './tools/extensions/components.mjs';
+          const actual=JSON.parse(fs.readFileSync('config/components/v11-settlement-network-context.json','utf8')).components[0];
+          const world={id:'v1.convergence.world-context',version:'1.0.0',owner:'v1',kind:'code',stage:'foundation',placement:'script',source:'src/domains/v1/convergence/world-context.js',dependencies:[],authority:'MODEL_DERIVED_SIMULATION',provenance:'validation dependency',provides:['v1.convergence.world-context']};
+          const runtime={id:'v1.civilization.runtime',version:'1.0.0',owner:'v1',kind:'code',stage:'foundation',placement:'script',source:'src/domains/v1/civilization/runtime.js',dependencies:[],authority:'MODEL_DERIVED_SIMULATION',provenance:'validation dependency',provides:['v1.civilization.runtime']};
+          const plan=planComponents([world,runtime,actual]);
+          if(!plan.some(x=>x.id==='v1.civilization.network-context'))throw new Error('settlement network component missing');
+          console.log(JSON.stringify({status:'PASS',component:'v1.civilization.network-context',planned:plan.length}));
+          NODE
+      - name: Workflow reproducibility guard
+        run: node tests/governance/workflow-reproducibility.mjs
