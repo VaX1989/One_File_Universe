@@ -11,6 +11,7 @@ on:
       - 'tests/v1/ecology/causal-niche.mjs'
       - 'config/components/v11-world-life-causality.json'
       - 'src/domains/v1/convergence/world-context.js'
+      - '.github/workflows/v11-world-life-causality.yml'
 
 permissions:
   contents: read
