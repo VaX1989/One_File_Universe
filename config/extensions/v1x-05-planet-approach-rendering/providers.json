@@ -1,0 +1,66 @@
+{
+  "schema": "ofu-provider-catalog-1",
+  "owners": [
+    {
+      "id": "v1x-05-planet-approach-rendering",
+      "prefixes": ["v1x-05"],
+      "kinds": ["renderer"],
+      "authorities": ["PRESENTATION_ONLY"]
+    }
+  ],
+  "canonicalAdmissions": [],
+  "providers": [
+    {
+      "contract": "ofu-px-contracts-1",
+      "id": "v1x-05.planet-approach",
+      "version": "1.0.0",
+      "owner": "v1x-05-planet-approach-rendering",
+      "kind": "renderer",
+      "authority": {
+        "class": "PRESENTATION_ONLY",
+        "contract": "ofu-v1x05-planet-approach-provider-1",
+        "model": "v1x-05.planet-approach-presentation",
+        "version": "1.0.0",
+        "sources": [
+          "src/v1x-05-planet-approach-rendering/planet-approach-provider.js",
+          "src/domains/planetology/p5-canonical.js",
+          "src/domains/planetology/p5-environment-v2.js",
+          "src/rendering/planet-surface-continuity.js"
+        ],
+        "assumptions": [
+          "The upstream scale/reference-frame authority supplies an already transformed planet-local camera vector and stable selected planet identity."
+        ],
+        "limitations": [
+          "Globe, atmosphere, water, ice and material output is presentation only and never scientific evidence.",
+          "The global surface target is a mean-radius geocentric presentation projection, not canonical geodesy or elevation.",
+          "No central renderer, camera, scale, selection or scene state is mutated by this provider."
+        ],
+        "evidence": []
+      },
+      "fidelity": {
+        "regime": "planet-approach",
+        "validity": "Selected planets with supported P5 physical radius and gravity plus an upstream planet-local frame handoff",
+        "resolution": "One selected planet, one bounded approach trace and one global surface target per projection",
+        "uncertainty": "Unsupported or unknown atmosphere/surface material cues remain visually disabled; local terrain/elevation is delegated downstream"
+      },
+      "lifecycle": "SHIPPING",
+      "requires": [],
+      "claims": [
+        "planet.approach.presentation",
+        "surface.target.projection",
+        "reverse.exit.context"
+      ],
+      "operations": ["PROJECT"],
+      "budget": {
+        "entities": 1025,
+        "bytes": 1048576,
+        "operations": 8192,
+        "queue": 8
+      },
+      "evidence": [
+        {"id": "v1x-05.continuity", "tier": "LANE_TARGETED"}
+      ],
+      "mandatory": false
+    }
+  ]
+}
