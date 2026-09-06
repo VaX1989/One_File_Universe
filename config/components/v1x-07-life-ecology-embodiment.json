@@ -1,0 +1,44 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1x-07.life-field",
+      "version": "1.0.0",
+      "owner": "v1x-07-life-ecology-embodiment",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/v1x-07-life-ecology-embodiment/deterministic-life-field.js",
+      "dependencies": [],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Deterministic bounded ecology display field; derives layout only and creates no scientific evidence.",
+      "provides": ["v1x-07.life-field"]
+    },
+    {
+      "id": "v1x-07.life-ecology-presentation",
+      "version": "1.0.0",
+      "owner": "v1x-07-life-ecology-embodiment",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/v1x-07-life-ecology-embodiment/life-ecology-presentation-provider.js",
+      "dependencies": ["v1x-07.life-field", "v1.models.biology"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Authority-gated projection of shipping MODEL_DERIVED_SIMULATION biology rendererSnapshot fields with frozen P6 disclosure and no canonical promotion.",
+      "provides": ["v1x-07.life-ecology-presentation"]
+    },
+    {
+      "id": "v1x-07.organism-selection-handoff",
+      "version": "1.0.0",
+      "owner": "v1x-07-life-ecology-embodiment",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/v1x-07-life-ecology-embodiment/organism-selection-handoff.js",
+      "dependencies": ["v1x-07.life-ecology-presentation"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Non-mutating REFINE envelope for modeled organism population selection toward V1X-09; canonical selection ownership remains external.",
+      "provides": ["v1x-07.organism-selection-handoff"]
+    }
+  ]
+}

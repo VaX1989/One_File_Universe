@@ -1,0 +1,14 @@
+{
+  "schema": "ofu-conformance-1",
+  "tests": [
+    {
+      "id": "v1x-07.life-ecology-projection",
+      "owner": "v1x-07-life-ecology-embodiment",
+      "tier": "FAST_LOCAL",
+      "command": ["node", "tests/v1x-07-life-ecology-embodiment/life-ecology-projection.mjs"],
+      "providers": ["v1x-07.life-ecology-presentation", "v1x-07.organism-selection-handoff"],
+      "oracle": "ofu-v1x-07-life-ecology-oracle-1",
+      "timeoutMs": 30000
+    }
+  ]
+}

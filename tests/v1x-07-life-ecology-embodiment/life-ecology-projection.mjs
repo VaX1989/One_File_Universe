@@ -1,0 +1,85 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+const here=path.dirname(fileURLToPath(import.meta.url));
+const root=path.resolve(here,'../..');
+for(const file of ['deterministic-life-field.js','life-ecology-presentation-provider.js','organism-selection-handoff.js']){
+ const source=fs.readFileSync(path.join(root,'src/v1x-07-life-ecology-embodiment',file),'utf8');
+ vm.runInThisContext(source,{filename:file});
+}
+const P=globalThis.OFU.v1x07LifeEcologyPresentation,H=globalThis.OFU.v1x07OrganismHandoff,D=globalThis.OFU.v1x07LifeField;
+const canonical={state:'INSUFFICIENT_ENVIRONMENT',authority:{class:'CANONICAL_PROVEN'}};
+const organisms=[
+ {populationId:'pop-alpha',lineageId:'lin-alpha',bodyPlan:'MOBILE_MULTICELLULAR',movement:'HIGHLY_MOBILE',sizeClass:'SMALL',pigmentFamilies:['STRUCTURAL_OR_SIGNAL_PIGMENTS'],surfacePattern:'BANDED',activityCycle:'PERIODIC',authority:'MODEL_DERIVED_SIMULATION'},
+ {populationId:'pop-beta',lineageId:'lin-beta',bodyPlan:'SESSILE_MULTICELLULAR',movement:'SESSILE_OR_DRIFTING',sizeClass:'MEDIUM',pigmentFamilies:['BROADBAND_ENERGY_CAPTURE'],surfacePattern:'MOTTLED',activityCycle:'CONDITION_DRIVEN',authority:'MODEL_DERIVED_SIMULATION'}
+];
+function snapshot(overrides={}){return {biosphereState:'MODELED_BIOSPHERE',biome:'TEMPERATE_SOLVENT_RICH',productivityPpm:680000,biomassUnits:450000,densityPpm:760000,dominantStrategies:['PRIMARY_PRODUCER','CONSUMER'],organisms,authority:'MODEL_DERIVED_SIMULATION',canonicalP6Unchanged:true,...overrides}}
+function project(overrides={}){return P.project({worldIdentity:'world:test-7',regionIdentity:'region:temperate-1',locationIdentity:'local:shore-4',canonicalP6:canonical,modelSnapshot:snapshot(),maxInstances:200,...overrides})}
+const modeled=project();
+assert.equal(modeled.canonical.state,'INSUFFICIENT_ENVIRONMENT');
+assert.equal(modeled.canonical.unchanged,true);
+assert.equal(modeled.model.authority,'MODEL_DERIVED_SIMULATION');
+assert.equal(modeled.visual.mode,'MODELED_LIFE');
+assert.equal(modeled.visual.lifeVisible,true);
+assert.ok(modeled.visual.organismInstances.length>0);
+assert.equal(modeled.claims.canonicalP6Mutated,false);
+assert.equal(modeled.claims.canonicalP6Promoted,false);
+assert.equal(modeled.claims.modelScenarioIsScientificEvidence,false);
+assert.deepEqual(modeled.disclosure.rows.map(x=>x.authority),['CANONICAL_PROVEN','MODEL_DERIVED_SIMULATION','PRESENTATION_ONLY']);
+assert.match(modeled.disclosure.rows[1].claim,/not observation or canonical P6 evidence/i);
+const repeat=project();
+assert.deepEqual(P.visualWitness(repeat),P.visualWitness(modeled));
+assert.deepEqual(repeat.visual.organismInstances,modeled.visual.organismInstances);
+const lowDensity=project({modelSnapshot:snapshot({densityPpm:150000})});
+const highDensity=project({modelSnapshot:snapshot({densityPpm:900000})});
+assert.ok(highDensity.resources.candidateCount>lowDensity.resources.candidateCount,'density must explainably increase bounded instance count');
+assert.equal(highDensity.model.densityPpm,900000);
+const cold=project({modelSnapshot:snapshot({biome:'COLD_LIMITED'})});
+assert.notEqual(cold.visual.biomeGrammar.grammar,modeled.visual.biomeGrammar.grammar,'biome field must change the presentation grammar');
+assert.equal(cold.visual.biomeGrammar.sourceBiome,'COLD_LIMITED');
+const moving=modeled.visual.organismInstances.find(x=>x.populationId==='pop-alpha');
+const sessile=modeled.visual.organismInstances.find(x=>x.populationId==='pop-beta');
+assert.ok(moving&&sessile,'both source populations must be represented at this density');
+assert.ok(moving.visual.motionAmplitudePpm>sessile.visual.motionAmplitudePpm,'source movement class must explain motion encoding');
+assert.equal(moving.claims.literalKinematics,false);
+const sterile=project({modelSnapshot:snapshot({biosphereState:'STERILE',densityPpm:0,organisms:[]})});
+assert.equal(sterile.visual.mode,'MODELED_STERILE');
+assert.equal(sterile.visual.organismInstances.length,0);
+assert.ok(sterile.visual.abioticMarkers.length>0,'sterile worlds retain a meaningful non-life field');
+assert.ok(sterile.visual.abioticMarkers.every(x=>x.scientificMeasurement===false));
+const unavailable=project({modelSnapshot:{...snapshot(),authority:'DERIVED'}});
+assert.equal(unavailable.visual.mode,'UNSUPPORTED_OR_UNKNOWN');
+assert.equal(unavailable.visual.organismInstances.length,0);
+assert.equal(unavailable.model.reason,'MODEL_AUTHORITY_NOT_ADMISSIBLE');
+const separationFailure=project({modelSnapshot:{...snapshot(),canonicalP6Unchanged:false}});
+assert.equal(separationFailure.visual.mode,'UNSUPPORTED_OR_UNKNOWN');
+assert.equal(separationFailure.model.reason,'CANONICAL_P6_SEPARATION_NOT_ASSERTED');
+const capped=project({maxInstances:999999,modelSnapshot:snapshot({densityPpm:1000000})});
+assert.equal(capped.resources.effectiveMaxInstances,D.HARD_MAX_INSTANCES);
+assert.ok(capped.resources.candidateCount<=D.HARD_MAX_INSTANCES);
+const culled=project({viewport:{minXPpm:0,maxXPpm:250000,minYPpm:0,maxYPpm:250000}});
+assert.ok(culled.resources.visibleCount<culled.resources.candidateCount);
+assert.equal(culled.resources.culledCount,culled.resources.candidateCount-culled.resources.visibleCount);
+const handoff=H.refine({projection:modeled,populationId:'pop-alpha',selectionState:{selectedId:'terrain-cell:4'},referenceFrame:{frameId:'local-frame:4'},cameraState:{poseId:'camera:stable'},historyToken:{cursor:18},provenance:{source:'v1.life.provider'}});
+assert.equal(handoff.eligible,true);
+assert.equal(handoff.operation,'REFINE');
+assert.equal(handoff.consumerLane,'V1X-09');
+assert.equal(handoff.target.populationId,'pop-alpha');
+assert.equal(handoff.target.authority,'MODEL_DERIVED_SIMULATION');
+assert.equal(handoff.continuity.previousSelectionId,'terrain-cell:4');
+assert.equal(handoff.continuity.requestedSelectionId,'pop-alpha');
+assert.equal(handoff.continuity.selectionMutationPerformed,false);
+assert.equal(handoff.continuity.selectionOwnerAdmissionRequired,true);
+assert.deepEqual(handoff.continuity.referenceFrame,{frameId:'local-frame:4'});
+assert.equal(handoff.canonicalP6State,'INSUFFICIENT_ENVIRONMENT');
+assert.equal(handoff.canonicalMutation,false);
+assert.equal(handoff.microClaim,false);
+const blockedHandoff=H.refine({projection:sterile,populationId:'pop-alpha'});
+assert.equal(blockedHandoff.eligible,false);
+assert.equal(blockedHandoff.reason,'NO_MODELED_LIFE_TARGET');
+const modeledWitness=P.visualWitness(modeled),sterileWitness=P.visualWitness(sterile),lowWitness=P.visualWitness(lowDensity),highWitness=P.visualWitness(highDensity);
+assert.notEqual(modeledWitness.digest,sterileWitness.digest);
+assert.notEqual(lowWitness.digest,highWitness.digest);
+console.log(JSON.stringify({schema:'ofu-v1x-07-test-result-1',status:'PASS',tests:39,canonicalP6State:modeled.canonical.state,modeled:{mode:modeled.visual.mode,biome:modeled.model.biome,densityPpm:modeled.model.densityPpm,candidateCount:modeled.resources.candidateCount,visibleCount:modeled.resources.visibleCount,witness:modeledWitness.digest},sterile:{mode:sterile.visual.mode,organismInstances:sterile.visual.organismInstances.length,abioticMarkers:sterile.visual.abioticMarkers.length,witness:sterileWitness.digest},correlation:{lowDensityCandidates:lowDensity.resources.candidateCount,highDensityCandidates:highDensity.resources.candidateCount,coldGrammar:cold.visual.biomeGrammar.grammar,mobileMotionPpm:moving.visual.motionAmplitudePpm,sessileMotionPpm:sessile.visual.motionAmplitudePpm},handoff:{eligible:handoff.eligible,consumerLane:handoff.consumerLane,populationId:handoff.target.populationId,selectionMutationPerformed:handoff.continuity.selectionMutationPerformed},limits:{hardMaxInstances:D.HARD_MAX_INSTANCES,cappedCandidates:capped.resources.candidateCount,culledVisible:culled.resources.visibleCount,culledCandidates:culled.resources.candidateCount},authority:modeled.disclosure.rows.map(x=>x.authority)}));
