@@ -1,0 +1,101 @@
+{
+  "schema": "ofu-v1x-08-evidence-1",
+  "laneId": "V1X-08",
+  "status": "IMPLEMENTED_UNCERTIFIED",
+  "authorityClass": "PRESENTATION_ONLY",
+  "contractSet": "OFU-V1X-CONTRACT-SET-2026-09-06.1",
+  "base": {
+    "sha": "760c0c70bccb6afd7c7b07600c0f5be3f80e7b19",
+    "tree": "3324e6354b5ff1b90156d1693e6051595b6f1219"
+  },
+  "checkpoint": {
+    "sha": "4137da278829e4f8fb5d9304b258454c80725bd6",
+    "tree": "ed2a390940656fc14ff7673bf137ce3d4d86cf60"
+  },
+  "ancestry": {
+    "remoteCompareStatus": "ahead",
+    "aheadBy": 6,
+    "behindBy": 0,
+    "mergeBaseSha": "760c0c70bccb6afd7c7b07600c0f5be3f80e7b19",
+    "statement": "GitHub compare reports the frozen Prompt-0 base as the exact merge base; the lane is strictly ahead with no foreign merge history observed in the checkpoint chain."
+  },
+  "implementation": {
+    "provider": "ofu-v1x-08-civilization-history-overlay-1",
+    "localOverlayHandoff": "ofu-v1x-08-local-overlay-handoff-1",
+    "supportedScales": ["REGIONAL_SURFACE", "LOCAL_SURFACE", "HUMAN", "CIVILIZATION"],
+    "temporalModes": ["CURRENT_ONLY", "HISTORY_ONLY", "CURRENT_PLUS_HISTORY"],
+    "sourceHistoryField": "history.proposals",
+    "ignoredDecorativeOrLegacyHistoryField": "events",
+    "selectionMutation": false,
+    "sharedSceneMutation": false
+  },
+  "exactByteOracle": {
+    "runtime": "node v22.16.0",
+    "status": "PASS",
+    "cases": 22,
+    "sourceGitBlob": "fff59afd4e9d64d6e6003c0e18e88d0e5537c1ac",
+    "testGitBlob": "26785184f89fcb2566ae64e113b18caae32692cd",
+    "fixtureGitBlob": "1b0a2f843984df2315bda7fe02ec43815bda21ec",
+    "sourceSha256": "06e5f138b5256948d029948893bd8289ad4c655a16ba5ce65bdd88d8f044c0e4",
+    "testSha256": "e266daf6343546a70a966dc3c5359fbd64bfc859abdf89e20c844fe5f8b8a36e",
+    "fixtureSha256": "9e4151ddd8b48198b932d20eaa8bb374b6040633aba78f99cf672bba071683d8",
+    "witness": {
+      "absent": {"objects": 0, "historyTraces": 0},
+      "before": {"objects": 3, "links": 1, "historyTraces": 4, "alphaKind": "SETTLEMENT", "infrastructureKind": "INFRASTRUCTURE"},
+      "after": {"objects": 3, "links": 1, "historyTraces": 7, "alphaKind": "RUIN", "infrastructureKind": "INFRASTRUCTURE_RUIN"},
+      "addedHistoricalTraceIds": ["v1x08:history:ev-abandon", "v1x08:history:ev-conflict", "v1x08:history:ev-migration"],
+      "deterministicRepeat": true,
+      "historyCanonical": false
+    }
+  },
+  "authorityAndFidelity": {
+    "sourceCivilization": "MODEL_DERIVED_SIMULATION when supplied by the v1 civilization model; per-entity authority remains UNSPECIFIED if the source does not carry an authority field",
+    "projection": "PRESENTATION_ONLY",
+    "comparativeDelta": "DERIVED",
+    "landUse": "PRESENTATION_ONLY proxy derived only from population and infrastructurePpm; not measured area and not canonical land use",
+    "settlementPlacement": "PRESENTATION_ONLY deterministic schematic placement within a model region; no physical point claim",
+    "tradeAndInfrastructurePaths": "PRESENTATION_ONLY cues; no literal path geometry claim",
+    "history": "Only structured history.proposals create traces. Proposal canonical=false remains non-canonical; no P4 admission is performed.",
+    "freeFormNarrative": false
+  },
+  "visualJourneyEvidence": {
+    "comparativeFixture": "reports/v1x-08-civilization-history-embodiment/comparative-state.svg",
+    "before": "s-alpha and s-beta active; active infrastructure/trade cue; four structured proposal traces",
+    "after": "s-alpha abandoned and rendered as RUIN; infrastructure rendered as INFRASTRUCTURE_RUIN; migration, conflict and abandonment traces added",
+    "localOverlayWitness": {"objects": 2, "links": 1, "historyTraces": 6, "sharedSceneMutation": false},
+    "productBrowserJourney": "NOT_VERIFIED_PENDING_CONVERGENCE_OWNER_WIRING"
+  },
+  "resourceEvidence": {
+    "measured": false,
+    "status": "BOUNDED_NOT_MEASURED",
+    "limits": {
+      "REGIONAL_SURFACE": {"settlements": 36, "infrastructure": 48, "trade": 56, "history": 40},
+      "LOCAL_SURFACE": {"settlements": 28, "infrastructure": 40, "trade": 32, "history": 48},
+      "HUMAN": {"settlements": 18, "infrastructure": 28, "trade": 20, "history": 40},
+      "CIVILIZATION": {"settlements": 128, "infrastructure": 128, "trade": 192, "history": 96}
+    },
+    "sharedBudgetWitness": "Injected SETTLEMENT object limit 10 produced no more than 10 current objects in the exact-byte oracle."
+  },
+  "verificationLimits": {
+    "hostedChecks": "NO_WORKFLOW_RUNS_OR_COMMIT_STATUSES observed on checkpoint d231b0716e9783abca2527e8047ea9258e7345f1",
+    "fullRepositoryLocalDiscovery": "NOT_RUN because the execution container could not resolve github.com for a clean clone; this is not classified as a product test pass or failure",
+    "physicalAndroid": "NOT_VERIFIED",
+    "physicalIos": "NOT_VERIFIED"
+  },
+  "integrationDependencies": [
+    {"laneId": "V1X-06", "observedHead": "7a49b16ae9318aabfa8313a5d840a65f36e3ff32", "need": "convergence-owner wiring of localSceneOverlay into the shared regional/local/human scene composition seam"},
+    {"laneId": "V1X-07", "observedHead": "6195fb6619415b3c353db24664662bcf9bfda2f7", "need": "preserve civilization eligibility/life context without taking biosphere ownership"},
+    {"laneId": "V1X-11", "observedHead": "ff6ec7871398cd93d0a42c96fe627f56a2446bc0", "need": "pass shared resource-budget semantics to the overlay at integration"}
+  ],
+  "requestedSharedContractChanges": [
+    {
+      "surface": "V1X-06 local scene / shared src/rendering/v1 composition",
+      "reason": "Invoke the lane localSceneOverlay payload at REGIONAL_SURFACE, LOCAL_SURFACE and HUMAN scales without transferring scene authority."
+    },
+    {
+      "surface": "ofu-wave-iv-selection-1 bridge",
+      "reason": "Translate lane selection requests into the canonical shared selection context; the lane deliberately performs no selection mutation itself."
+    }
+  ],
+  "founderAcceptance": "NOT_GRANTED"
+}
