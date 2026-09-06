@@ -1,0 +1,22 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1.models.planetology.volatile-ledger",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/planetology/volatile-ledger.js",
+      "dependencies": [
+        "v1.models.planetology.causality-trace"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Selective V1X-16 extraction of the formal volatile conservation kernel: exact closure witness over the already modeled volatile partition, attached to modeled planetology and local-world context without promoting physical accuracy, units, genesis or P4 history.",
+      "provides": [
+        "v1.models.planetology.volatile-ledger"
+      ]
+    }
+  ]
+}
