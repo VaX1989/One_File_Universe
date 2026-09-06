@@ -13,8 +13,21 @@ concurrency:
 env:
   OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 permissions:
-  contents: read
+  contents: write
 jobs:
+  convergence-repair:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/integration/v1.0-definitive-product-convergence-2026-09-05'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: '${{ env.OFU_SOURCE_SHA }}'
+          fetch-depth: 0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with: {node-version: '24.20.0'}
+      - name: Apply exact locally-tested convergence repair
+        shell: bash
+        run: bash tools/apply-v1x-convergence-patch.sh
   exact-head:
     runs-on: ubuntu-latest
     steps:
