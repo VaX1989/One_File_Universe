@@ -1,0 +1,68 @@
+{
+  "schema": "ofu-v1x-handoff-1",
+  "laneId": "V1X-15",
+  "branch": "research/v1x-15-astronomy-depth-2026-09-06",
+  "status": "IMPLEMENTED_UNCERTIFIED",
+  "authorityClass": "RESEARCH_ONLY",
+  "contractSet": "OFU-V1X-CONTRACT-SET-2026-09-06.1",
+  "base": {
+    "sha": "760c0c70bccb6afd7c7b07600c0f5be3f80e7b19",
+    "tree": "3324e6354b5ff1b90156d1693e6051595b6f1219"
+  },
+  "checkpoint": {
+    "sha": "64808daa3d5a1517f59635f61871f3ab526ee7b5",
+    "tree": "8c83b9f30f02dd3fc445002c607797a1ce7ec68d"
+  },
+  "changedPaths": [
+    "docs/evidence/v1x-15-astronomy-depth/RESEARCH_EVIDENCE.md",
+    "reports/v1x-15-astronomy-depth/RESEARCH_REPORT.md",
+    "research/v1x-15-astronomy-depth/README.md",
+    "research/v1x-15-astronomy-depth/fixtures/oracle-v1.json",
+    "research/v1x-15-astronomy-depth/model.mjs",
+    "research/v1x-15-astronomy-depth/oracle.py",
+    "research/v1x-15-astronomy-depth/p3-compat-smoke.mjs",
+    "research/v1x-15-astronomy-depth/run-tests.mjs"
+  ],
+  "ownershipValidation": {
+    "command": "compare base 760c0c70... to checkpoint 64808daa... and verify every changed path against V1X_OWNERSHIP_MATRIX.json RESEARCH policy",
+    "status": "PASS",
+    "matrixVersion": "2026-09-06.1"
+  },
+  "dependencies": [],
+  "tests": [
+    {"command": "node research/v1x-15-astronomy-depth/run-tests.mjs", "status": "PASS", "evidencePath": "docs/evidence/v1x-15-astronomy-depth/RESEARCH_EVIDENCE.md"},
+    {"command": "python3 research/v1x-15-astronomy-depth/oracle.py | cmp - research/v1x-15-astronomy-depth/fixtures/oracle-v1.json", "status": "PASS", "evidencePath": "docs/evidence/v1x-15-astronomy-depth/RESEARCH_EVIDENCE.md"},
+    {"command": "node research/v1x-15-astronomy-depth/p3-compat-smoke.mjs", "status": "NOT_RUN", "evidencePath": "docs/evidence/v1x-15-astronomy-depth/RESEARCH_EVIDENCE.md"}
+  ],
+  "evidence": [
+    {"path": "research/v1x-15-astronomy-depth/model.mjs", "sha256": "58ee70fb4e557a50a019f6c056e39e3b822b93057b29ad70b7d161378a6f4c57", "claim": "deterministic bounded astronomy depth prototype"},
+    {"path": "research/v1x-15-astronomy-depth/run-tests.mjs", "sha256": "7339b65cc7c077a7e1e0b74d877eadf9a934d6cba8b330d1ac5022aac59dc533", "claim": "diagnostic invariant and distribution test suite"},
+    {"path": "research/v1x-15-astronomy-depth/oracle.py", "sha256": "c02a1aaf44867b05191a5bf15b46aaf6cde2b0dd057b46a9c1e22c7a10ae6dcb", "claim": "independent integer oracle"},
+    {"path": "research/v1x-15-astronomy-depth/p3-compat-smoke.mjs", "sha256": "3a0592e54a7c1f797a9c81068effe43b46f893188dbe428f3d5c717f5c9ea370", "claim": "frozen P2/P3 compatibility smoke, pending exact-checkout execution"}
+  ],
+  "knownDefects": [
+    {"priority": "P2", "summary": "Canonical Node 24.20.x and browser cross-runtime execution not performed for research prototype.", "status": "OPEN_PROMOTION_PREREQUISITE"},
+    {"priority": "P2", "summary": "Morphology and multiplicity coefficients are stylized, not statistically calibrated to cited surveys/fitted joint distributions.", "status": "EXPECTED_RESEARCH_LIMITATION"},
+    {"priority": "P3", "summary": "Real-P3 compatibility smoke is committed but not executed in this tool environment because no repository checkout was available.", "status": "OPEN_EVIDENCE_GAP"}
+  ],
+  "adversarialFindings": [
+    "Hierarchy flooring originally could move a period beyond its sampled bin; final implementation reclassifies period before q/e bounds.",
+    "Observability score could be mistaken for survey completeness; API explicitly marks it survey-neutral heuristic only.",
+    "Procedural density gradient could be mistaken for physical cosmic-web geometry; API explicitly carries no coordinate authority or physical truth claim.",
+    "Research derivation semantics are versioned so coefficient changes cannot silently reuse the same deterministic stream.",
+    "Existing P3 identity is surfaced unchanged and observer/query context is not identity input."
+  ],
+  "requestedSharedContractChanges": [],
+  "scientificAuthorityClaims": [
+    {"claim": "Inverse-square flux scaling and geometric parallax are established relationships; the final observability score remains stylized.", "authorityClass": "RESEARCH_ONLY", "source": "research/v1x-15-astronomy-depth/README.md"},
+    {"claim": "Morphology mass/environment and stellar multiplicity trends are empirical directions represented approximately rather than as fitted likelihoods.", "authorityClass": "RESEARCH_ONLY", "source": "research/v1x-15-astronomy-depth/README.md"},
+    {"claim": "P3 density-gradient orientation is hypothetical/model-derived and is not a physical coordinate claim.", "authorityClass": "RESEARCH_ONLY", "source": "research/v1x-15-astronomy-depth/README.md"}
+  ],
+  "resourceEvidence": {
+    "model": "bounded random-access sidecar; six local density samples per galaxy; at most four stars and three companions per system; no global materialization",
+    "runtime": "Node 22.16.0 diagnostic only; canonical Node 24.20.x not executed"
+  },
+  "browserEvidence": {"status": "NOT_VERIFIED"},
+  "physicalDeviceEvidence": {"android": "NOT_VERIFIED", "ios": "NOT_VERIFIED"},
+  "integrationNotes": "Research checkpoint only. Do not blind-merge. Canonical-successor candidates require calibration, versioned semantic migration, cross-runtime vectors and explicit central promotion; model-derived ideas should be reimplemented in shipping-owned additive providers."
+}
