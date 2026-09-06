@@ -1,0 +1,23 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1.civilization.settlement-history-context",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/civilization/settlement-history-context.js",
+      "dependencies": [
+        "v1.civilization.representatives",
+        "v1.history.system"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Selective V1X-18 harvest of settlement locality/legacy querying over the shipping proposal ledger and modeled archaeological consequences. Exposes bounded exact-location timeline/evidence context without P4 admission, empirical archaeology, persistent-person claims, or the research routeLegacy stock model.",
+      "provides": [
+        "v1.civilization.settlement-history-context"
+      ]
+    }
+  ]
+}
