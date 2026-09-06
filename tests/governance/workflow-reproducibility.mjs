@@ -17,7 +17,8 @@ const featureWorkflowNames=fs.readdirSync(workflowDir)
 const featureWorkflows=featureWorkflowNames.map(name=>`${workflowDir}/${name}`);
 const v11WorldWorkflows=featureWorkflows.filter(file=>/\/v11-world-/.test(file));
 assert(v11WorldWorkflows.length>0,'expected at least one canonical v1.1 world workflow');
-const workflows=[...coreWorkflows,...featureWorkflows,`${workflowDir}/source-reproduction.yml`];
+const sourceReproductionFile=`${workflowDir}/source-reproduction.yml`;
+const workflows=[...coreWorkflows,...featureWorkflows,sourceReproductionFile];
 const immutableAction=/uses:\s+[^\s@]+@[0-9a-f]{40}(?:\s+#.*)?$/;
 let checks=1;
 for(const file of workflows){
@@ -36,11 +37,12 @@ for(const file of workflows){
     checks++;
   }
 }
-for(const file of [...coreWorkflows,...featureWorkflows]){
+const exactHeadWorkflows=[...coreWorkflows,...featureWorkflows,sourceReproductionFile];
+for(const file of exactHeadWorkflows){
   const text=fs.readFileSync(file,'utf8');
   assert(text.includes('OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}'),`${file}: exact PR-head source identity is required`);
   assert(/ref:\s*['"]?\$\{\{\s*env\.OFU_SOURCE_SHA\s*\}\}/.test(text),`${file}: checkout must explicitly target OFU_SOURCE_SHA`);
-  assert(/git rev-parse HEAD[^\n]*OFU_SOURCE_SHA/.test(text),`${file}: exact source checkout must be verified before evidence`);
+  assert(/git rev-parse HEAD[^\n]*(?:OFU_SOURCE_SHA|EXPECTED_SHA)/.test(text),`${file}: exact source checkout must be verified before evidence`);
   assert(/concurrency:[\s\S]*?cancel-in-progress:\s*true/.test(text),`${file}: superseded exact-head runs must be cancellable`);
   checks+=4;
 }
@@ -49,7 +51,9 @@ for(const file of featureWorkflows){
   assert(text.includes(`'${file}'`),`${file}: pull-request paths must include the workflow itself so CI changes are exercised`);
   checks++;
 }
-const sourceReproduction=fs.readFileSync(`${workflowDir}/source-reproduction.yml`,'utf8');
-assert(/-\s+['"]development\/v1\.\*['"]/.test(sourceReproduction),'source reproduction must cover canonical post-v1 development heads');
-checks++;
+const sourceReproduction=fs.readFileSync(sourceReproductionFile,'utf8');
+assert(/push:[\s\S]*?-\s+['"]development\/v1\.\*['"]/.test(sourceReproduction),'source reproduction must cover canonical post-v1 development heads');
+assert(/pull_request:[\s\S]*?-\s+['"]development\/v1\.\*['"]/.test(sourceReproduction),'source reproduction must cover proposed post-v1 heads');
+assert(/name:\s+source-reproduction-\$\{\{\s*env\.OFU_SOURCE_SHA\s*\}\}/.test(sourceReproduction),'source reproduction artifact must be named by exact source SHA');
+checks+=3;
 console.log(JSON.stringify({status:'PASS',suite:'workflow-reproducibility',workflows:workflows.length,featureWorkflows:featureWorkflows.length,v11WorldWorkflows:v11WorldWorkflows.length,checks}));
