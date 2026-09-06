@@ -1,0 +1,24 @@
+{
+  "schema": "ofu-rd16-independent-oracle-1",
+  "numericAuthority": "NON_CANONICAL_TEST_ORACLE",
+  "method": "Python Decimal(90 digits); no production-code import",
+  "rockyCases": [
+    {"massMilliEarth": 500, "corePermille": 200, "radiusM": 5430518},
+    {"massMilliEarth": 1000, "corePermille": 320, "radiusM": 6388839},
+    {"massMilliEarth": 2000, "corePermille": 300, "radiusM": 7737426},
+    {"massMilliEarth": 5000, "corePermille": 350, "radiusM": 9808345},
+    {"massMilliEarth": 8000, "corePermille": 400, "radiusM": 11019526}
+  ],
+  "greyCases": [
+    {"effectiveTemperatureMilliK": 254578, "opticalDepthPpm": 0, "temperatureMilliK": 214074},
+    {"effectiveTemperatureMilliK": 254578, "opticalDepthPpm": 666667, "temperatureMilliK": 254578},
+    {"effectiveTemperatureMilliK": 254578, "opticalDepthPpm": 1000000, "temperatureMilliK": 269183},
+    {"effectiveTemperatureMilliK": 254578, "opticalDepthPpm": 4000000, "temperatureMilliK": 348207},
+    {"effectiveTemperatureMilliK": 180000, "opticalDepthPpm": 10000000, "temperatureMilliK": 302723}
+  ],
+  "escapeCases": [
+    {"efficiencyPpm": 150000, "xuvFluxMilliWm2": 4640, "xuvRadiusM": 6371000, "massMilliEarth": 1000, "rocheFactorPpm": 1000000, "dtKyr": 1, "escapeTg": 44765750},
+    {"efficiencyPpm": 100000, "xuvFluxMilliWm2": 500000, "xuvRadiusM": 8000000, "massMilliEarth": 2000, "rocheFactorPpm": 900000, "dtKyr": 10, "escapeTg": 35373763674},
+    {"efficiencyPpm": 300000, "xuvFluxMilliWm2": 10000000, "xuvRadiusM": 10000000, "massMilliEarth": 5000, "rocheFactorPpm": 500000, "dtKyr": 100, "escapeTg": 29846613099628}
+  ]
+}
