@@ -1,0 +1,35 @@
+name: V1X Lane Ownership
+on:
+  push:
+    branches:
+      - 'parallel/v1x-*'
+      - 'research/v1x-*'
+      - 'research/ai-f0-*'
+  pull_request:
+    branches:
+      - integration/v1.0-definitive-product-convergence-2026-09-05
+  workflow_dispatch:
+permissions:
+  contents: read
+env:
+  OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  V1X_BRANCH: ${{ github.head_ref || github.ref_name }}
+jobs:
+  ownership:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: '${{ env.OFU_SOURCE_SHA }}'
+          fetch-depth: 0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with: {node-version: '24.20.0'}
+      - name: Verify exact lane source
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Fetch definitive integration ref
+        shell: bash
+        run: git fetch --no-tags origin '+refs/heads/integration/v1.0-definitive-product-convergence-2026-09-05:refs/remotes/origin/integration/v1.0-definitive-product-convergence-2026-09-05'
+      - name: Enforce V1X ownership and exact common base
+        shell: bash
+        run: node tools/validate-v1x-ownership.mjs --branch "$V1X_BRANCH" --head "$OFU_SOURCE_SHA" --integration-ref refs/remotes/origin/integration/v1.0-definitive-product-convergence-2026-09-05

@@ -1,0 +1,38 @@
+{
+  "schema": "ofu-v1x-lanes-1",
+  "version": "2026-09-06.1",
+  "integrationBranch": "integration/v1.0-definitive-product-convergence-2026-09-05",
+  "baseMarkerCommitSubject": "V1X: freeze massive parallel base",
+  "baseRule": "Every branch is created from the one marker commit. Dependencies are logical integration dependencies and do not authorize rebases.",
+  "trains": {
+    "T0": ["V1X-01","V1X-02","V1X-11"],
+    "T1": ["V1X-03","V1X-04","V1X-05"],
+    "T2": ["V1X-06","V1X-10"],
+    "T3": ["V1X-07","V1X-08","V1X-09"],
+    "T4": ["V1X-12","V1X-13"],
+    "T5": ["V1X-14"]
+  },
+  "lanes": [
+    {"id":"V1X-01","branch":"parallel/v1x-01-camera-scale-frames-2026-09-06","role":"camera/reference-frame and continuous-scale additive owner","authorityClass":"PRESENTATION_ONLY","train":"T0","dependencies":[]},
+    {"id":"V1X-02","branch":"parallel/v1x-02-spatial-universe-2026-09-06","role":"spatial-universe representation","authorityClass":"PRESENTATION_ONLY","train":"T0","dependencies":[]},
+    {"id":"V1X-03","branch":"parallel/v1x-03-macrocosm-rendering-2026-09-06","role":"macrocosm rendering provider","authorityClass":"PRESENTATION_ONLY","train":"T1","dependencies":["V1X-01","V1X-02","V1X-11"]},
+    {"id":"V1X-04","branch":"parallel/v1x-04-stellar-system-rendering-2026-09-06","role":"stellar/system rendering provider","authorityClass":"PRESENTATION_ONLY","train":"T1","dependencies":["V1X-01","V1X-02","V1X-11"]},
+    {"id":"V1X-05","branch":"parallel/v1x-05-planet-approach-rendering-2026-09-06","role":"planet approach rendering provider","authorityClass":"PRESENTATION_ONLY","train":"T1","dependencies":["V1X-01","V1X-02","V1X-11"]},
+    {"id":"V1X-06","branch":"parallel/v1x-06-surface-human-rendering-2026-09-06","role":"surface/human rendering provider","authorityClass":"PRESENTATION_ONLY","train":"T2","dependencies":["V1X-03","V1X-04","V1X-05","V1X-11"]},
+    {"id":"V1X-07","branch":"parallel/v1x-07-life-ecology-embodiment-2026-09-06","role":"life/ecology embodiment using admitted/model-derived inputs","authorityClass":"PRESENTATION_ONLY","train":"T3","dependencies":["V1X-06","V1X-11"]},
+    {"id":"V1X-08","branch":"parallel/v1x-08-civilization-history-embodiment-2026-09-06","role":"civilization/history embodiment","authorityClass":"PRESENTATION_ONLY","train":"T3","dependencies":["V1X-06","V1X-07","V1X-11"]},
+    {"id":"V1X-09","branch":"parallel/v1x-09-micro-matter-experience-2026-09-06","role":"micro/matter experience","authorityClass":"PRESENTATION_ONLY","train":"T3","dependencies":["V1X-06","V1X-11"]},
+    {"id":"V1X-10","branch":"parallel/v1x-10-ux-mobile-accessibility-2026-09-06","role":"UX/mobile/accessibility additive adapters","authorityClass":"PRESENTATION_ONLY","train":"T2","dependencies":["V1X-01","V1X-02","V1X-11"]},
+    {"id":"V1X-11","branch":"parallel/v1x-11-runtime-streaming-resources-2026-09-06","role":"runtime/streaming/resource isolated platform work","authorityClass":"MEASURED_RUNTIME_EVIDENCE","train":"T0","dependencies":[]},
+    {"id":"V1X-12","branch":"parallel/v1x-12-persistence-gameplay-intervention-2026-09-06","role":"P4-compatible persistence/gameplay/intervention model work","authorityClass":"MODEL_DERIVED_SIMULATION","train":"T4","dependencies":["V1X-07","V1X-08","V1X-09","V1X-10","V1X-11"]},
+    {"id":"V1X-13","branch":"parallel/v1x-13-systemic-audio-2026-09-06","role":"systemic audio presentation","authorityClass":"PRESENTATION_ONLY","train":"T4","dependencies":["V1X-10","V1X-11"]},
+    {"id":"V1X-14","branch":"parallel/v1x-14-certification-evidence-2026-09-06","role":"certification/evidence extensions only","authorityClass":"MEASURED_RUNTIME_EVIDENCE","train":"T5","dependencies":["V1X-01","V1X-02","V1X-03","V1X-04","V1X-05","V1X-06","V1X-07","V1X-08","V1X-09","V1X-10","V1X-11","V1X-12","V1X-13"]},
+    {"id":"V1X-15","branch":"research/v1x-15-astronomy-depth-2026-09-06","role":"astronomy depth research","authorityClass":"RESEARCH_ONLY","train":"RESEARCH","dependencies":[]},
+    {"id":"V1X-16","branch":"research/v1x-16-planetary-causality-2026-09-06","role":"planetary causality research","authorityClass":"RESEARCH_ONLY","train":"RESEARCH","dependencies":[]},
+    {"id":"V1X-17","branch":"research/v1x-17-life-evolution-2026-09-06","role":"life/evolution research","authorityClass":"RESEARCH_ONLY","train":"RESEARCH","dependencies":["V1X-16"]},
+    {"id":"V1X-18","branch":"research/v1x-18-civilization-individuals-2026-09-06","role":"civilization/individuals research","authorityClass":"RESEARCH_ONLY","train":"RESEARCH","dependencies":["V1X-17"]},
+    {"id":"V1X-19","branch":"research/v1x-19-matter-microphysics-2026-09-06","role":"matter/microphysics research","authorityClass":"RESEARCH_ONLY","train":"RESEARCH","dependencies":[]},
+    {"id":"AI-F0","branch":"research/ai-f0-local-inference-feasibility-2026-09-06","role":"local inference feasibility research only","authorityClass":"RESEARCH_ONLY","train":"RESEARCH","dependencies":[]}
+  ],
+  "reviewers": {"writeAccess":"READ_ONLY","branchesRequired":false}
+}

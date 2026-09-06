@@ -24,6 +24,8 @@ jobs:
         with: {node-version: '24.20.0'}
       - name: Verify exact source
         run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Validate V1X governance control plane
+        run: node tools/validate-v1x-ownership.mjs --self-test
       - name: Install RELEASE browser oracle runtime
         run: |
           npm install --no-save playwright@1.62.1
@@ -54,7 +56,7 @@ jobs:
           node tools/build-ofu-rendering-v09.mjs
           cmp /tmp/v1-first.html dist/One_File_Universe.html
           cmp /tmp/v1-first-manifest.json dist/rendering-build-manifest.json
-          test "$(grep -Eoc '(src|href)=["'"'][^"'"']*https?://' dist/One_File_Universe.html)" -eq 0
+          ! grep -Eiq "(src|href)=[\"'][^\"']*https?://" dist/One_File_Universe.html
           grep -q "connect-src 'none'" dist/One_File_Universe.html
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ofu-v1x-handoff-1",
+  "title": "One File Universe V1X immutable checkpoint handoff",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema","laneId","branch","status","authorityClass","contractSet","base","checkpoint","changedPaths","ownershipValidation","dependencies","tests","evidence","knownDefects","adversarialFindings","requestedSharedContractChanges","resourceEvidence","browserEvidence","physicalDeviceEvidence"],
+  "properties": {
+    "schema": {"const":"ofu-v1x-handoff-1"},
+    "laneId": {"type":"string","minLength":1},
+    "branch": {"type":"string","minLength":1},
+    "status": {"enum":["NOT_STARTED","IMPLEMENTATION_IN_PROGRESS","IMPLEMENTED_UNCERTIFIED","CI_CERTIFIED","FOUNDER_ACCEPTED"]},
+    "authorityClass": {"enum":["CANONICAL_PROVEN","DERIVED","MODEL_DERIVED_SIMULATION","PRESENTATION_ONLY","MEASURED_RUNTIME_EVIDENCE","RESEARCH_ONLY"]},
+    "contractSet": {"const":"OFU-V1X-CONTRACT-SET-2026-09-06.1"},
+    "base": {"$ref":"#/$defs/gitIdentity"},
+    "checkpoint": {"$ref":"#/$defs/gitIdentity"},
+    "changedPaths": {"type":"array","items":{"type":"string"},"uniqueItems":true},
+    "ownershipValidation": {"type":"object","additionalProperties":false,"required":["command","status","matrixVersion"],"properties":{"command":{"type":"string"},"status":{"const":"PASS"},"matrixVersion":{"const":"2026-09-06.1"}}},
+    "dependencies": {"type":"array","items":{"type":"object","additionalProperties":false,"required":["laneId","checkpointSha"],"properties":{"laneId":{"type":"string"},"checkpointSha":{"$ref":"#/$defs/sha"}}}},
+    "tests": {"type":"array","items":{"type":"object","additionalProperties":false,"required":["command","status"],"properties":{"command":{"type":"string"},"status":{"enum":["PASS","FAIL","NOT_RUN"]},"evidencePath":{"type":["string","null"]}}}},
+    "evidence": {"type":"array","items":{"type":"object","additionalProperties":false,"required":["path","sha256"],"properties":{"path":{"type":"string"},"sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"claim":{"type":["string","null"]}}}},
+    "knownDefects": {"type":"array","items":{"type":"object","required":["priority","summary","status"],"properties":{"priority":{"enum":["P0","P1","P2","P3"]},"summary":{"type":"string"},"status":{"type":"string"}},"additionalProperties":true}},
+    "adversarialFindings": {"type":"array","items":{"type":"string"}},
+    "requestedSharedContractChanges": {"type":"array","items":{"type":"object","required":["surface","reason"],"properties":{"surface":{"type":"string"},"reason":{"type":"string"}},"additionalProperties":false}},
+    "scientificAuthorityClaims": {"type":"array","items":{"type":"object","required":["claim","authorityClass","source"],"properties":{"claim":{"type":"string"},"authorityClass":{"type":"string"},"source":{"type":"string"}},"additionalProperties":false},"default":[]},
+    "resourceEvidence": {"type":"object"},
+    "browserEvidence": {"type":"object"},
+    "physicalDeviceEvidence": {"type":"object","required":["android","ios"],"properties":{"android":{"enum":["NOT_VERIFIED","VERIFIED"]},"ios":{"enum":["NOT_VERIFIED","VERIFIED"]}},"additionalProperties":true},
+    "integrationNotes": {"type":"string","default":""}
+  },
+  "$defs": {
+    "sha": {"type":"string","pattern":"^[0-9a-f]{40}$"},
+    "gitIdentity": {"type":"object","additionalProperties":false,"required":["sha","tree"],"properties":{"sha":{"$ref":"#/$defs/sha"},"tree":{"$ref":"#/$defs/sha"}}}
+  }
+}

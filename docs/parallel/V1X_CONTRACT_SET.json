@@ -1,0 +1,32 @@
+{
+  "schema": "ofu-v1x-contract-set-1",
+  "id": "OFU-V1X-CONTRACT-SET-2026-09-06.1",
+  "auditedAtSourceSha": "bd10aecc11ba9c5077a522f6843a813073e8463b",
+  "rule": "Prompt-0 normalization does not alter these runtime/canonical semantics. Lanes consume them read-only and request centrally adjudicated changes rather than forking them.",
+  "px": {
+    "contracts": {"version":"ofu-px-contracts-1","source":"src/extensions/contracts.js","sourceBlob":"034949f5cca2a15c85c2b0f4cb4c808a70d98c6f"},
+    "registry": {"version":"ofu-px-registry-1","source":"src/extensions/registry.js","sourceBlob":"b3da9bdab18df0879854b9f9ae99cb3bb52cc344"},
+    "crossScale": {"version":"ofu-px-cross-scale-1","source":"src/extensions/cross-scale.js","sourceBlob":"d463bd1365171063aa890d4796b1083e9a4e6ee1"},
+    "resources": {"version":"ofu-px-resources-1","source":"src/extensions/resources.js","sourceBlob":"2f72319da25dd489d4980f9609c962e20a7fa1fc"},
+    "authorityClasses": ["CANONICAL_PROVEN","DERIVED","MODEL_DERIVED_SIMULATION","PRESENTATION_ONLY","MEASURED_RUNTIME_EVIDENCE"],
+    "providerManifestDigestObserved": "3bfa17c632e246b632d742d45901943ae335e5e3001750ed6cee5df53524b018"
+  },
+  "selection": {"contract":"ofu-wave-iv-selection-1","seamVersion":3,"source":"src/bootstrap/product/selection-bridge.js","sourceBlob":"4c64257d5b0b1fc93808323e99dae3c34263778c"},
+  "scaleRegimeTravel": {"contract":"ofu-wave-iv-scale-runtime-3","sceneProviderContract":"ofu-wave-iv-scene-provider-1","rendererLifecycleContract":"ofu-wave-iv-renderer-lifecycle-2","transitionContract":"ofu-wave-iv-transition-2","source":"src/bootstrap/product/scale-runtime.js","sourceBlob":"d67e3ff388aaf98e5a8c0406b8d97d2123f47e75","crossScaleOperations":["REFINE","PROJECT","RECONCILE"]},
+  "inputIntent": {"routerVersion":"ofu-wave-iv-input-router-6","contract":"ofu-wave-iv-input-intent-3","source":"src/bootstrap/product/input-router.js","sourceBlob":"415fef60782b39b85868b70e195ef460d707d859"},
+  "sceneRepresentationRegistration": {"registryContract":"ofu-px-registry-1","explorerSceneSeam":"ofu-wave-iv-explorer-scene-seam-1","providerAdapterVersion":"ofu-v1-render-provider-adapter-1","providerAdapterAuthority":"PRESENTATION_ONLY","explorerSourceBlob":"820b0e9fb36020420f9a30b2cec8e4a70b2bdb00","adapterSourceBlob":"bea2d4370f6aa3ef82035aff6218c5a7248ab0df"},
+  "authorityFidelity": {"schema":"ofu-px-contracts-1","canonicalPromotionByAdditiveLane":false,"presentationMayMutateCanonical":false,"researchShippingAuthority":false},
+  "budgetCapability": {"resourceContract":"ofu-px-resources-1","maxEmbeddedResourceCount":512,"maxDecodedResourceBytes":67108864,"renderBackendBaseline":"WEBGL2_STRICT","measuredRuntimeAuthority":"MEASURED_RUNTIME_EVIDENCE"},
+  "p4TemporalEventBoundary": {"protocol":"ofu-p4-temporal-v1","eventSchema":1,"checkpointSchema":2,"archiveSchema":2,"source":"src/temporal/p4-temporal.js","sourceBlob":"49be5f5c9a97726711a935ef559785e8ed78a81a","rule":"renderers/providers do not receive canonical scientific mutation authority; transition/admission remains P4-governed"},
+  "buildComponentRegistration": {"mechanism":"deterministic discovery of config/components/*.json","tool":"tools/extensions/components.mjs","toolBlob":"bf48c01baeb70bf1702411b37a68310d9521c70a","centralProductManifest":"config/components/product.json","centralManifestBlob":"1e55c6ebf3f6c8e9271424db8e13e71c1518363b","laneRule":"one unique config/components/<ownerNamespace>.json; no edits to existing central manifests"},
+  "testExtensionRegistration": {"mechanism":"deterministic discovery of config/conformance/*.json","tool":"tools/extensions/conformance.mjs","toolBlob":"eb629bf9472eb746b83e4e7618c4ecda4ab6520f","laneRule":"one unique config/conformance/<ownerNamespace>.json; no edits to existing shared harness/manifests"},
+  "frozenCanonical": {
+    "canonicalBytes":"OFU-CBV-1",
+    "unicodeProfile":"ofu-unicode-15.1.0-v1",
+    "p3Model":"p3-astronomy-1",
+    "p4Temporal":"ofu-p4-temporal-v1",
+    "p5Physical":"ofu-p5-planet-physical-v1",
+    "p5Environment":"ofu-p5-p6-environment-v2",
+    "p6Biosphere":"ofu-p6-biosphere-v1"
+  }
+}
