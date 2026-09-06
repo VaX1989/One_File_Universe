@@ -26,5 +26,18 @@ jobs:
           node --check tests/v1/ecology/causal-niche.mjs
       - name: Causal niche oracle
         run: node tests/v1/ecology/causal-niche.mjs
-      - name: Component graph integration
-        run: node --input-type=module -e "import {loadComponents} from './tools/extensions/components.mjs'; const p=loadComponents(); if(!p.some(x=>x.id==='v1.ecology.causal-niche')) throw new Error('causal niche component missing'); console.log(JSON.stringify({status:'PASS',components:p.length}));"
+      - name: Component descriptor integration
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {planComponents} from './tools/extensions/components.mjs';
+          const actual=JSON.parse(fs.readFileSync('config/components/v11-world-life-causality.json','utf8')).components[0];
+          const dep=(id,source)=>({id,version:'1.0.0',owner:'v1',kind:'code',stage:'foundation',placement:'script',source,dependencies:[],authority:'MODEL_DERIVED_SIMULATION',provenance:'validation dependency',provides:[id]});
+          const plan=planComponents([
+            dep('v1.convergence.world-context','src/domains/v1/convergence/world-context.js'),
+            dep('v1.models.planetology.causality-trace','src/domains/v1/planetology/causality-trace.js'),
+            actual
+          ]);
+          if(!plan.some(x=>x.id==='v1.ecology.causal-niche'))throw new Error('causal niche component missing');
+          console.log(JSON.stringify({status:'PASS',component:'v1.ecology.causal-niche',planned:plan.length}));
+          NODE
