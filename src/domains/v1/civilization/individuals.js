@@ -11,12 +11,15 @@ const AUTH=V.authority('v1.civilization.representatives','1.0.0',[SOURCE],
     'Generated representative identities are scoped to the current modeled civilization epoch and must not be interpreted as canonical P4 actors.'
   ]);
 const MAX_REPRESENTATIVES=8;
+const MAX_CAPABILITY_LEVEL=8;
+const TECHNOLOGY_CAPABILITIES=Object.freeze(['production','transport','materials','energy','communication','medicine','construction','conflict']);
 const ROLES=Object.freeze(['FOOD_PROVISION','CRAFT_AND_MAINTENANCE','TRADE_AND_LOGISTICS','CARE_AND_HOUSEHOLD','CONSTRUCTION','ADMINISTRATION']);
 const clamp=(x,a=0,b=1000000)=>Math.max(a,Math.min(b,Math.round(Number.isFinite(Number(x))?Number(x):0)));
 function technologyLevel(technology){
   if(!technology||typeof technology!=='object')return 0;
-  const values=Object.values(technology).filter(x=>Number.isFinite(Number(x))).map(Number);
-  return values.length?clamp(values.reduce((a,x)=>a+x,0)/values.length):0;
+  const levels=TECHNOLOGY_CAPABILITIES.map(key=>clamp(technology[key]??0,0,MAX_CAPABILITY_LEVEL));
+  const average=levels.reduce((sum,value)=>sum+value,0)/levels.length;
+  return clamp(average*1000000/MAX_CAPABILITY_LEVEL);
 }
 function contextualPressures(state,settlement){
   const trade=(state?.tradeEdges||[]).filter(e=>e.from===settlement.settlementId||e.to===settlement.settlementId).length;
@@ -65,5 +68,5 @@ function localContext(world,point,options){
   return V.freezeDeep({...base,civilizationRepresentatives});
 }
 O.v1WorldContext=Object.freeze({...W,localContext});
-O.v1CivilizationIndividuals=Object.freeze({VERSION,AUTHORITY:AUTH,MAX_REPRESENTATIVES,ROLES,technologyLevel,contextualPressures,knowledgeDomains,representative,materialize,fromLocalContext});
+O.v1CivilizationIndividuals=Object.freeze({VERSION,AUTHORITY:AUTH,MAX_REPRESENTATIVES,MAX_CAPABILITY_LEVEL,TECHNOLOGY_CAPABILITIES,ROLES,technologyLevel,contextualPressures,knowledgeDomains,representative,materialize,fromLocalContext});
 })(globalThis);
