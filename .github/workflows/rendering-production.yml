@@ -44,6 +44,10 @@ jobs:
       - name: Verify exact source checkout
         shell: bash
         run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Install Chromium for PX browser conformance
+        run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium
       - name: PX additive integration conformance
         run: node tools/extensions/conformance.mjs INTEGRATION --exact
       - name: Product v0.8 composition and lane contracts
@@ -93,7 +97,7 @@ jobs:
         run: |
           mkdir -p dist/evidence/rendering-production
           node tests/rendering/run-production-tests.mjs | tee dist/evidence/rendering-production/node.json
-      - name: Reproducible foundation and full Wave IV single files
+      - name: Reproducible foundation and full v1 single files
         shell: bash
         run: |
           node tools/build-ofu-rendering-v08.mjs > /tmp/render-build-1.json
@@ -115,7 +119,8 @@ jobs:
           cmp /tmp/full-first.html dist/One_File_Universe.html
           cmp /tmp/full-manifest-first.json dist/rendering-build-manifest.json
           grep -q 'FRUSTUM_GROUND_FOOTPRINT_BOUNDED' dist/rendering-build-manifest.json
-          grep -q 'ofu-wave-iv-vertical-slice-3' dist/rendering-build-manifest.json
+          grep -q 'v1.scene.living-world' dist/rendering-build-manifest.json
+          grep -q '"releaseLine": "v1.0.0"' dist/rendering-build-manifest.json
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: rendering-production-build-${{ env.OFU_SOURCE_SHA }}
@@ -142,7 +147,7 @@ jobs:
         shell: bash
         run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
       - run: node tools/build-ofu-rendering-v08.mjs
-      - run: npm install --no-save playwright@1.62.1
+      - run: npm install --no-save --package-lock=false playwright@1.62.1
       - run: npx playwright install --with-deps ${{ matrix.browser }}
       - name: Direct file navigation, performance and non-interference
         run: node tests/rendering/browser-production.mjs
@@ -174,7 +179,7 @@ jobs:
         env:
           BROWSER: ${{ matrix.browser }}
           DPR: ${{ matrix.browser == 'chromium' && '2' || '1' }}
-      - name: Build full Wave IV product for renderer-specific visual closure
+      - name: Build full v1 Living product for active-foreground visual closure
         run: node tools/build-ofu-rendering-v09.mjs
       - name: PX registered product and cross-scale browser conformance
         shell: bash
@@ -188,11 +193,12 @@ jobs:
           BROWSER: ${{ matrix.browser }}
           DPR: ${{ matrix.browser == 'chromium' && '2' || '1' }}
           HEADED: ${{ matrix.browser == 'chromium' && '0' || '1' }}
-      - name: Founder visual settled camera and framebuffer closure
-        run: node tests/product/browser-v08-settled-visual-closure.mjs
+      - name: V1 Living founder journey and visual closure
+        run: node tests/v1/rendering-production-living-evidence.mjs
         env:
           BROWSER: ${{ matrix.browser }}
           DPR: ${{ matrix.browser == 'chromium' && '2' || '1' }}
+          OFU_RENDER_EVIDENCE_DIR: dist/evidence/rendering-production
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
@@ -220,7 +226,7 @@ jobs:
         shell: bash
         run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
       - run: node tools/build-ofu-rendering-v08.mjs
-      - run: npm install --no-save playwright@1.62.1
+      - run: npm install --no-save --package-lock=false playwright@1.62.1
       - run: npx playwright install ${{ matrix.browser }}
       - name: Direct file navigation and non-interference
         run: node tests/rendering/browser-production.mjs
@@ -252,18 +258,19 @@ jobs:
         env:
           BROWSER: ${{ matrix.browser }}
           DPR: '1'
-      - name: Build full Wave IV product for renderer-specific visual closure
+      - name: Build full v1 Living product for active-foreground visual closure
         run: node tools/build-ofu-rendering-v09.mjs
       - name: PX registered product and cross-scale browser conformance
         run: node tests/extensions/browser-product.mjs
         env:
           BROWSER: ${{ matrix.browser }}
           DPR: '1'
-      - name: Founder visual settled camera and framebuffer closure
-        run: node tests/product/browser-v08-settled-visual-closure.mjs
+      - name: V1 Living founder journey and visual closure
+        run: node tests/v1/rendering-production-living-evidence.mjs
         env:
           BROWSER: ${{ matrix.browser }}
           DPR: '1'
+          OFU_RENDER_EVIDENCE_DIR: dist/evidence/rendering-production
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
@@ -293,5 +300,5 @@ jobs:
           pattern: rendering-production-*-${{ env.OFU_SOURCE_SHA }}
           path: evidence
           merge-multiple: true
-      - name: Exact cross-runtime production seal
-        run: node tests/rendering/seal-production-evidence.mjs evidence
+      - name: Exact v1 cross-runtime production seal
+        run: node tests/rendering/seal-v1-production-evidence.mjs evidence
