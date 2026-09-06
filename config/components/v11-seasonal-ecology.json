@@ -1,0 +1,23 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1.ecology.seasonal-opportunity",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/ecology/seasonal-opportunity.js",
+      "dependencies": [
+        "v1.ecology.causal-niche",
+        "v1.environment.seasonal-envelope"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Selective V1X-17 harvest: bounded role-sensitive seasonal opportunity projection for already modeled local populations, consuming the post-v1 seasonal environment envelope and causal-niche support. No fitness/abundance/survival measurement, P4 admission, or P6 canonical promotion.",
+      "provides": [
+        "v1.ecology.seasonal-opportunity"
+      ]
+    }
+  ]
+}
