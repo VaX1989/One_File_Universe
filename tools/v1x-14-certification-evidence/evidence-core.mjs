@@ -61,12 +61,17 @@ export function stableJson(value) {
   if (value && typeof value === 'object') {
     return `{${Object.keys(value).sort().map(key => `${JSON.stringify(key)}:${stableJson(value[key])}`).join(',')}}`;
   }
+  if (typeof value === 'bigint') return JSON.stringify(value.toString());
   return JSON.stringify(value);
+}
+
+export function evidenceJson(value, space = 2) {
+  return JSON.stringify(value, (_key, item) => typeof item === 'bigint' ? item.toString() : item, space);
 }
 
 export function writeJson(file, value) {
   fs.mkdirSync(path.dirname(file), {recursive: true});
-  fs.writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`);
+  fs.writeFileSync(file, `${evidenceJson(value)}\n`);
 }
 
 export function git(args, {cwd = process.cwd(), allowFailure = false} = {}) {

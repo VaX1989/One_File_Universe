@@ -14,13 +14,18 @@ import {
   assertResourceEvidence,
   assertResponsibleProductionDelta,
   assertSingleRuntimeAuthority,
+  evidenceJson,
   responsibleProductionDelta,
+  stableJson,
   validateEvidenceManifest
 } from '../../tools/v1x-14-certification-evidence/evidence-core.mjs';
 
 const fail = (fn, rx) => assert.throws(fn, rx);
 const ID = {sha: '1'.repeat(40), tree: '2'.repeat(40)};
 const FRAME_A = 'a'.repeat(64), FRAME_B = 'b'.repeat(64);
+
+assert.deepEqual(JSON.parse(evidenceJson({signed: -1n, unsigned: 18446744073709551615n})), {signed: '-1', unsigned: '18446744073709551615'});
+assert.equal(stableJson({value: 18446744073709551615n}), '{"value":"18446744073709551615"}');
 
 for (const authority of AUTHORITY_CLASSES) assert.equal(assertAuthorityClass(authority), authority);
 fail(() => assertAuthorityClass('CONFIDENCE_HIGH'), /ungoverned authority class/);
