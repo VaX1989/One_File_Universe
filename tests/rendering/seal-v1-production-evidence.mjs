@@ -1,3 +1,4 @@
+// V1 production aggregation seals the shipping Living scope while retaining separate frozen Foundation rendering evidence.
 import fs from 'node:fs';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
