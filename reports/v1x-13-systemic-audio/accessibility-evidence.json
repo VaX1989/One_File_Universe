@@ -1,0 +1,15 @@
+{
+  "schema": "ofu-v1x13-accessibility-evidence-1",
+  "authority": "PRESENTATION_ONLY",
+  "status": "IMPLEMENTED_UNCERTIFIED",
+  "controls": ["enabled", "volume", "muted", "reducedSensory"],
+  "audioOptional": true,
+  "navigationRequiresAudio": false,
+  "accessibilityRequiresAudio": false,
+  "reducedSensorySuppressesPulseCue": true,
+  "reducedSensoryMaxRetainedLayerGain": 0.035,
+  "muteTearsDownRenderNodes": true,
+  "disableTearsDownRenderNodes": true,
+  "physicalDeviceEvidence": "NOT_VERIFIED",
+  "productMountedJourneyEvidence": "NOT_VERIFIED"
+}

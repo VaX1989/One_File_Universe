@@ -1,0 +1,14 @@
+{
+  "schema": "ofu-conformance-1",
+  "tests": [
+    {
+      "id": "v1x13.audio.fast",
+      "owner": "v1x-13-systemic-audio",
+      "tier": "FAST_LOCAL",
+      "command": ["node", "tests/v1x-13-systemic-audio/run.mjs"],
+      "providers": ["v1x13.representation.systemic-audio"],
+      "oracle": "v1x13-systemic-audio-fast-1",
+      "timeoutMs": 30000
+    }
+  ]
+}

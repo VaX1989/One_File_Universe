@@ -1,0 +1,22 @@
+{
+  "schema": "ofu-v1x13-resource-evidence-1",
+  "authority": "MEASURED_RUNTIME_EVIDENCE",
+  "measurementScope": "lane-local deterministic fake Web Audio lifecycle harness",
+  "productionAuthority": "PRESENTATION_ONLY",
+  "command": ["node", "tests/v1x-13-systemic-audio/run.mjs"],
+  "status": "PASS",
+  "cases": 17,
+  "peakFallbackLiveNodes": 9,
+  "peakWorkletLiveNodes": 2,
+  "hardMaxLiveNodes": 13,
+  "hardMaxFallbackVoices": 6,
+  "hardMaxWorkletNodes": 1,
+  "hardMaxAudioContexts": 1,
+  "allocatedAudioBufferBytes": 0,
+  "worldStateBeforeSha256": "e2747cb94e00e193ee01c049c14a92ed35d8cec593507f6cd224d9d0786bc2a1",
+  "worldStateAfterSha256": "e2747cb94e00e193ee01c049c14a92ed35d8cec593507f6cd224d9d0786bc2a1",
+  "worldStateUnchanged": true,
+  "vacuumLiteralSoundClaim": false,
+  "physicalDeviceEvidence": "NOT_VERIFIED",
+  "browserJourneyEvidence": "NOT_VERIFIED"
+}
