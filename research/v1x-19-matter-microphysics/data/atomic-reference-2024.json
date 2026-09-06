@@ -1,0 +1,48 @@
+{
+  "schema": "ofu-v1x-19-atomic-reference-1",
+  "version": "2026-09-06.1",
+  "scale": 1000000000,
+  "unit": "u",
+  "authority": "SOURCE_BACKED_REFERENCE",
+  "primarySource": {
+    "sourceId": "CIAAW-SAW-2024",
+    "title": "Standard Atomic Weights 2024",
+    "organization": "Commission on Isotopic Abundances and Atomic Weights (CIAAW)",
+    "uri": "https://ciaaw.org/atomic-weights.htm",
+    "accessedOn": "2026-09-06",
+    "relationship": "CRITICALLY_EVALUATED_STANDARD_ATOMIC_WEIGHT_REFERENCE",
+    "limitations": [
+      "Standard atomic weights apply to normal materials and may be intervals because isotopic composition varies.",
+      "A standard atomic weight does not identify a specific isotope or isotopologue.",
+      "The 2024 table is based on the Atomic Weights 2021 report with selected 2024 revisions."
+    ]
+  },
+  "crossCheckSource": {
+    "sourceId": "NIST-AWIC",
+    "title": "Atomic Weights and Isotopic Compositions with Relative Atomic Masses",
+    "organization": "NIST Physical Measurement Laboratory",
+    "uri": "https://www.nist.gov/pml/atomic-weights-and-isotopic-compositions-relative-atomic-masses",
+    "accessedOn": "2026-09-06",
+    "relationship": "REFERENCE_AND_DEFINITION_CROSS_CHECK",
+    "limitations": [
+      "NIST states that the database compiles published sources for convenience and is not a fresh critical evaluation by NIST PML.",
+      "The online data set has legacy evaluation dates; CIAAW 2024 is the primary standard-atomic-weight authority used here."
+    ]
+  },
+  "elements": [
+    {"z":1,"symbol":"H","lowerQ9":"1007840000","upperQ9":"1008110000","kind":"INTERVAL","notes":["m"]},
+    {"z":6,"symbol":"C","lowerQ9":"12009600000","upperQ9":"12011600000","kind":"INTERVAL","notes":[]},
+    {"z":7,"symbol":"N","lowerQ9":"14006430000","upperQ9":"14007280000","kind":"INTERVAL","notes":["m"]},
+    {"z":8,"symbol":"O","lowerQ9":"15999030000","upperQ9":"15999770000","kind":"INTERVAL","notes":["m"]},
+    {"z":11,"symbol":"Na","lowerQ9":"22989769260","upperQ9":"22989769300","kind":"VALUE_PLUS_MINUS_UNCERTAINTY","centralQ9":"22989769280","uncertaintyQ9":"20","notes":[]},
+    {"z":12,"symbol":"Mg","lowerQ9":"24304000000","upperQ9":"24307000000","kind":"INTERVAL","notes":[]},
+    {"z":13,"symbol":"Al","lowerQ9":"26981538100","upperQ9":"26981538700","kind":"VALUE_PLUS_MINUS_UNCERTAINTY","centralQ9":"26981538400","uncertaintyQ9":"300","notes":[]},
+    {"z":14,"symbol":"Si","lowerQ9":"28084000000","upperQ9":"28086000000","kind":"INTERVAL","notes":[]},
+    {"z":15,"symbol":"P","lowerQ9":"30973761993","upperQ9":"30973762003","kind":"VALUE_PLUS_MINUS_UNCERTAINTY","centralQ9":"30973761998","uncertaintyQ9":"5","notes":[]},
+    {"z":16,"symbol":"S","lowerQ9":"32059000000","upperQ9":"32076000000","kind":"INTERVAL","notes":[]},
+    {"z":17,"symbol":"Cl","lowerQ9":"35446000000","upperQ9":"35457000000","kind":"INTERVAL","notes":["m"]},
+    {"z":19,"symbol":"K","lowerQ9":"39098200000","upperQ9":"39098400000","kind":"VALUE_PLUS_MINUS_UNCERTAINTY","centralQ9":"39098300000","uncertaintyQ9":"100000","notes":[]},
+    {"z":20,"symbol":"Ca","lowerQ9":"40074000000","upperQ9":"40082000000","kind":"VALUE_PLUS_MINUS_UNCERTAINTY","centralQ9":"40078000000","uncertaintyQ9":"4000000","notes":["g"]},
+    {"z":26,"symbol":"Fe","lowerQ9":"55843000000","upperQ9":"55847000000","kind":"VALUE_PLUS_MINUS_UNCERTAINTY","centralQ9":"55845000000","uncertaintyQ9":"2000000","notes":[]}
+  ]
+}
