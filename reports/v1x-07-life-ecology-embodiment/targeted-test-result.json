@@ -1,0 +1,15 @@
+{
+  "schema": "ofu-v1x-07-evidence-1",
+  "baseSha": "760c0c70bccb6afd7c7b07600c0f5be3f80e7b19",
+  "baseTree": "3324e6354b5ff1b90156d1693e6051595b6f1219",
+  "testCommand": "node tests/v1x-07-life-ecology-embodiment/life-ecology-projection.mjs",
+  "status": "PASS",
+  "assertionCount": 39,
+  "canonicalP6FixtureState": "INSUFFICIENT_ENVIRONMENT",
+  "modeledLife": {"mode":"MODELED_LIFE","biome":"TEMPERATE_SOLVENT_RICH","densityPpm":760000,"candidateCount":152,"visibleCount":152,"witness":"f4f8998d"},
+  "modeledSterile": {"mode":"MODELED_STERILE","organismInstances":0,"abioticMarkers":24,"witness":"c93ab3f8"},
+  "correlation": {"lowDensityCandidates":30,"highDensityCandidates":180,"coldGrammar":"SPARSE_CLUSTER_ECOLOGY_FIELD","mobileMotionPpm":780000,"sessileMotionPpm":90000},
+  "resource": {"hardMaxInstances":1536,"cappedCandidates":1536,"culledVisible":7,"culledCandidates":152},
+  "authority": ["CANONICAL_PROVEN","MODEL_DERIVED_SIMULATION","PRESENTATION_ONLY"],
+  "claims": {"canonicalP6Mutated":false,"canonicalP6Promoted":false,"presentationIsScientificEvidence":false,"physicalDeviceVerified":false}
+}

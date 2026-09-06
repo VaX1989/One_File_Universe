@@ -1,0 +1,136 @@
+{
+  "schema": "ofu-v1x-handoff-1",
+  "laneId": "V1X-08",
+  "branch": "parallel/v1x-08-civilization-history-embodiment-2026-09-06",
+  "status": "IMPLEMENTED_UNCERTIFIED",
+  "authorityClass": "PRESENTATION_ONLY",
+  "contractSet": "OFU-V1X-CONTRACT-SET-2026-09-06.1",
+  "base": {
+    "sha": "760c0c70bccb6afd7c7b07600c0f5be3f80e7b19",
+    "tree": "3324e6354b5ff1b90156d1693e6051595b6f1219"
+  },
+  "checkpoint": {
+    "sha": "e0d0dac2b3d3fd2f0a592ea110f6b9f18c62612e",
+    "tree": "7c7d3a35859df24106255852cdfd302898302c5b"
+  },
+  "changedPaths": [
+    "config/components/v1x-08-civilization-history-embodiment.json",
+    "config/conformance/v1x-08-civilization-history-embodiment.json",
+    "data/v1x-08-civilization-history-embodiment/causal-states.json",
+    "reports/v1x-08-civilization-history-embodiment/comparative-state.svg",
+    "reports/v1x-08-civilization-history-embodiment/evidence.json",
+    "src/v1x-08-civilization-history-embodiment/index.js",
+    "tests/v1x-08-civilization-history-embodiment/civilization-history-embodiment.mjs"
+  ],
+  "ownershipValidation": {
+    "command": "GitHub compare 760c0c70bccb6afd7c7b07600c0f5be3f80e7b19..e0d0dac2b3d3fd2f0a592ea110f6b9f18c62612e + V1X_OWNERSHIP_MATRIX.json@2026-09-06.1 DENY_BEFORE_ALLOW path adjudication",
+    "status": "PASS",
+    "matrixVersion": "2026-09-06.1"
+  },
+  "dependencies": [
+    {"laneId": "V1X-06", "checkpointSha": "7a49b16ae9318aabfa8313a5d840a65f36e3ff32"},
+    {"laneId": "V1X-07", "checkpointSha": "6195fb6619415b3c353db24664662bcf9bfda2f7"},
+    {"laneId": "V1X-11", "checkpointSha": "ff6ec7871398cd93d0a42c96fe627f56a2446bc0"}
+  ],
+  "tests": [
+    {
+      "command": "node tests/v1x-08-civilization-history-embodiment/civilization-history-embodiment.mjs (byte-identical reconstruction from Git blobs fff59afd4e9d64d6e6003c0e18e88d0e5537c1ac / 26785184f89fcb2566ae64e113b18caae32692cd / 1b0a2f843984df2315bda7fe02ec43815bda21ec)",
+      "status": "PASS",
+      "evidencePath": "reports/v1x-08-civilization-history-embodiment/evidence.json"
+    },
+    {
+      "command": "node tools/validate-v1x-ownership.mjs --branch parallel/v1x-08-civilization-history-embodiment-2026-09-06 --head HEAD --integration-ref origin/integration/v1.0-definitive-product-convergence-2026-09-05",
+      "status": "NOT_RUN",
+      "evidencePath": "reports/v1x-08-civilization-history-embodiment/evidence.json"
+    },
+    {
+      "command": "node tests/extensions/components.mjs && node tests/extensions/conformance.mjs",
+      "status": "NOT_RUN",
+      "evidencePath": "reports/v1x-08-civilization-history-embodiment/evidence.json"
+    }
+  ],
+  "evidence": [
+    {
+      "path": "src/v1x-08-civilization-history-embodiment/index.js",
+      "sha256": "06e5f138b5256948d029948893bd8289ad4c655a16ba5ce65bdd88d8f044c0e4",
+      "claim": "PRESENTATION_ONLY structured civilization/history overlay provider and local-scene handoff"
+    },
+    {
+      "path": "tests/v1x-08-civilization-history-embodiment/civilization-history-embodiment.mjs",
+      "sha256": "e266daf6343546a70a966dc3c5359fbd64bfc859abdf89e20c844fe5f8b8a36e",
+      "claim": "22-case deterministic exact-byte lane oracle"
+    },
+    {
+      "path": "data/v1x-08-civilization-history-embodiment/causal-states.json",
+      "sha256": "9e4151ddd8b48198b932d20eaa8bb374b6040633aba78f99cf672bba071683d8",
+      "claim": "Fixture-only causal before/after model states; canonical=false"
+    }
+  ],
+  "knownDefects": [
+    {
+      "priority": "P1",
+      "summary": "Shared regional/local/human scene composition has not yet invoked the V1X-08 local overlay handoff because src/rendering/v1/** is convergence-owner-only.",
+      "status": "WAITING_FOR_CONVERGENCE_INTEGRATION"
+    },
+    {
+      "priority": "P2",
+      "summary": "No exact-HEAD hosted browser or full-repository additive-discovery run exists for this lane checkpoint.",
+      "status": "UNCERTIFIED"
+    },
+    {
+      "priority": "P2",
+      "summary": "Resource counts are deterministically bounded but not measured runtime evidence.",
+      "status": "MEASUREMENT_PENDING_V1X_11_INTEGRATION"
+    }
+  ],
+  "adversarialFindings": [
+    "Frozen ownership precedence denies direct V1X-08 mutation of src/rendering/v1/** despite the lane prompt's illustrative owned-path list; implementation was therefore placed in the Prompt-0 shipping namespace.",
+    "The existing shared civilization presentation counts civilization.events, while structured causal history is held in history.proposals; V1X-08 intentionally ignores flat events so unsupported/decorative event data cannot become history evidence.",
+    "Settlement point placement and route geometry are not supplied as canonical physical geometry by the modeled state; deterministic schematic placement and route cues are explicitly marked PRESENTATION_ONLY.",
+    "P4 event admission is never invoked or emulated; proposal canonical=false remains non-canonical.",
+    "Canonical selection is not mutated by this lane; select() emits a bridge request only."
+  ],
+  "requestedSharedContractChanges": [
+    {
+      "surface": "V1X-06 local scene / shared src/rendering/v1 composition",
+      "reason": "Invoke localSceneOverlay at REGIONAL_SURFACE, LOCAL_SURFACE and HUMAN scales while retaining shared scene authority."
+    },
+    {
+      "surface": "ofu-wave-iv-selection-1",
+      "reason": "Translate V1X-08 selection requests into the canonical shared selection context rather than introducing a second selection authority."
+    }
+  ],
+  "scientificAuthorityClaims": [
+    {
+      "claim": "Civilization and structured history source state consumed by this lane is model-derived rather than observed/canonical unless the supplied source explicitly says otherwise.",
+      "authorityClass": "MODEL_DERIVED_SIMULATION",
+      "source": "v1.model.civilization and src/domains/v1/history/system.js frozen inputs"
+    },
+    {
+      "claim": "All settlement glyphs, land-use bands, historical traces, route cues and schematic placements emitted by V1X-08 are presentation encodings, not scientific measurements or canonical geometry.",
+      "authorityClass": "PRESENTATION_ONLY",
+      "source": "src/v1x-08-civilization-history-embodiment/index.js"
+    },
+    {
+      "claim": "The comparative before/after delta is a deterministic derivation over fixture state and does not promote fixture history to canonical truth.",
+      "authorityClass": "DERIVED",
+      "source": "reports/v1x-08-civilization-history-embodiment/comparative-state.svg and compare() witness"
+    }
+  ],
+  "resourceEvidence": {
+    "status": "BOUNDED_NOT_MEASURED",
+    "authority": "DERIVED",
+    "measuredRuntimeEvidence": false,
+    "humanScaleHardBounds": {"settlements": 18, "infrastructure": 28, "trade": 20, "history": 40},
+    "sharedBudgetTest": "SETTLEMENT.objects=10 was respected by the exact-byte oracle"
+  },
+  "browserEvidence": {
+    "status": "NOT_VERIFIED",
+    "reason": "No exact-HEAD hosted browser run; shared local-scene wiring is a convergence-owner dependency."
+  },
+  "physicalDeviceEvidence": {
+    "android": "NOT_VERIFIED",
+    "ios": "NOT_VERIFIED"
+  },
+  "integrationNotes": "Additive component/conformance descriptors are present. Container DNS prevented a clean full-repository clone, so official ownership/components/conformance commands were not falsely reported as executed. Remote GitHub ancestry/path comparison passed; exact provider/test/fixture Git blob identities were reconstructed and the 22-case oracle passed on those exact bytes. Founder acceptance is not granted."
+}

@@ -1,0 +1,14 @@
+{
+  "schema": "ofu-conformance-1",
+  "tests": [
+    {
+      "id": "v1x08.civilization-history",
+      "owner": "v1x-08-civilization-history-embodiment",
+      "tier": "LANE_TARGETED",
+      "command": ["node", "tests/v1x-08-civilization-history-embodiment/civilization-history-embodiment.mjs"],
+      "providers": ["v1.model.civilization"],
+      "oracle": "ofu-v1x-08-civilization-history-oracle-1",
+      "timeoutMs": 30000
+    }
+  ]
+}
