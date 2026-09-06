@@ -1,0 +1,11 @@
+<!doctype html><html><body><main id="host"></main><pre id="result">PENDING</pre>
+<script src="../../src/v1x-13-systemic-audio/context-map.js"></script>
+<script src="../../src/v1x-13-systemic-audio/worklet-source.js"></script>
+<script src="../../src/v1x-13-systemic-audio/systemic-audio.js"></script>
+<script src="../../src/v1x-13-systemic-audio/controls.js"></script>
+<script>
+const applied=[];const mock={setControls(value){applied.push(value);}};
+const mounted=OFU.systemicAudioControlsV1.mount(document.getElementById('host'),mock,{initial:{volume:.4,reducedSensory:true}});
+const plan=OFU.systemicAudioContextV1.plan({regime:'galaxy',medium:{vacuum:true},motion:{travelIntensity:.8}},{volume:.4,reducedSensory:true});
+document.getElementById('result').textContent=JSON.stringify({status:'PASS',controls:mounted.element.querySelectorAll('input').length,note:mounted.element.textContent.includes('never required for navigation or accessibility'),authority:plan.authority,vacuumLiteralSound:plan.claims.soundInVacuumLiteral,layers:plan.layers.map(x=>x.id),applied:applied.length});
+</script></body></html>

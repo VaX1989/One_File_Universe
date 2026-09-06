@@ -1,0 +1,65 @@
+{
+  "schema": "ofu-provider-catalog-1",
+  "owners": [
+    {
+      "id": "v1x-13-systemic-audio",
+      "prefixes": ["v1x13"],
+      "kinds": ["representation"],
+      "authorities": ["PRESENTATION_ONLY"]
+    }
+  ],
+  "canonicalAdmissions": [],
+  "providers": [
+    {
+      "contract": "ofu-px-contracts-1",
+      "id": "v1x13.representation.systemic-audio",
+      "version": "1.0.0",
+      "owner": "v1x-13-systemic-audio",
+      "kind": "representation",
+      "authority": {
+        "class": "PRESENTATION_ONLY",
+        "contract": "ofu-px-contracts-1",
+        "model": "v1x13.systemic-audio",
+        "version": "1.0.0",
+        "sources": [
+          "docs/parallel/V1X_CONTRACT_SET.json",
+          "config/extensions/regimes.json",
+          "src/v1x-13-systemic-audio/context-map.js",
+          "src/v1x-13-systemic-audio/systemic-audio.js"
+        ],
+        "assumptions": [
+          "Audio consumes read-only scale, selection and presentation projections supplied by the integration owner.",
+          "Audio is optional presentation and is never required to navigate, select, inspect or preserve state."
+        ],
+        "limitations": [
+          "All cues are presentation-only and do not establish scientific, historical, biological or environmental evidence.",
+          "Vacuum regimes never present environmental audio as literal propagating sound; only explicitly non-diegetic sonification may remain.",
+          "Physical-device acoustic output and platform-specific latency are not verified by the lane-local deterministic harness."
+        ],
+        "evidence": [
+          {
+            "id": "v1x13.audio.fast",
+            "kind": "PRESENTATION_TEST",
+            "digest": "30d5e0679100c4e8d680e292914e2fea6f5c20f729356cf02242d2408b0144db"
+          }
+        ]
+      },
+      "fidelity": {
+        "regime": "product",
+        "validity": "Read-only contextual mapping from admitted scale/scene/environment presentation context into optional procedural audio.",
+        "resolution": "At most six simultaneous presentation layers with one AudioContext and bounded nodes.",
+        "uncertainty": "Mappings are qualitative product sonification and intentionally non-evidentiary."
+      },
+      "lifecycle": "SHIPPING",
+      "requires": [
+        {"id": "px.scale.context", "version": "1.0.0", "authority": "PRESENTATION_ONLY"},
+        {"id": "px.representation.context", "version": "1.0.0", "authority": "PRESENTATION_ONLY"}
+      ],
+      "claims": ["representation.systemic-audio"],
+      "operations": ["REPRESENT"],
+      "budget": {"entities": 1, "bytes": 32768, "operations": 4096, "queue": 16},
+      "evidence": [{"id": "v1x13.audio.fast", "tier": "FAST_LOCAL"}],
+      "mandatory": false
+    }
+  ]
+}
