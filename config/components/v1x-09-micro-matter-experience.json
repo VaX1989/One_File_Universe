@@ -1,44 +1,9 @@
 {
   "schema": "ofu-components-1",
   "components": [
-    {
-      "id": "v1x09.micro.source-anchor",
-      "version": "1.0.0",
-      "owner": "v1x-09-micro-matter-experience",
-      "kind": "code",
-      "stage": "product",
-      "placement": "script",
-      "source": "src/v1x-09-micro-matter-experience/source-anchor.js",
-      "dependencies": ["v1.micro.regime-adapter"],
-      "authority": "DERIVED",
-      "provenance": "V1X-09 exact bounded JSON local-context anchor layered over the frozen v1 micro regime adapter.",
-      "provides": ["v1x09.micro.source-anchor"]
-    },
-    {
-      "id": "v1x09.micro.experience",
-      "version": "1.0.0",
-      "owner": "v1x-09-micro-matter-experience",
-      "kind": "code",
-      "stage": "product",
-      "placement": "script",
-      "source": "src/v1x-09-micro-matter-experience/experience.js",
-      "dependencies": ["v1x09.micro.source-anchor"],
-      "authority": "DERIVED",
-      "provenance": "V1X-09 source-anchored semantic refinement, exact-return reconciliation and bounded resource witnesses delegated to frozen v1 micro materialization.",
-      "provides": ["v1x09.micro.experience"]
-    },
-    {
-      "id": "v1x09.micro.presentation-provider",
-      "version": "1.0.0",
-      "owner": "v1x-09-micro-matter-experience",
-      "kind": "code",
-      "stage": "product",
-      "placement": "script",
-      "source": "src/v1x-09-micro-matter-experience/presentation-provider.js",
-      "dependencies": ["v1x09.micro.experience"],
-      "authority": "PRESENTATION_ONLY",
-      "provenance": "V1X-09 semantic magnification, source-vs-representative fidelity, exact-return and non-classical limitation presentation seam.",
-      "provides": ["v1x09.micro.presentation-provider"]
-    }
+    {"id":"v1x09.micro.source-anchor","version":"1.0.0","owner":"v1x-09-micro-matter-experience","kind":"code","stage":"full","placement":"script","source":"src/v1x-09-micro-matter-experience/source-anchor.js","dependencies":["v1.micro.regime-adapter"],"authority":"DERIVED","provenance":"V1X-09 exact bounded JSON local-context anchor layered over the frozen v1 micro regime adapter.","provides":["v1x09.micro.source-anchor"]},
+    {"id":"v1x09.micro.experience","version":"1.0.0","owner":"v1x-09-micro-matter-experience","kind":"code","stage":"full","placement":"script","source":"src/v1x-09-micro-matter-experience/experience.js","dependencies":["v1x09.micro.source-anchor"],"authority":"DERIVED","provenance":"V1X-09 source-anchored semantic refinement, exact-return reconciliation and bounded resource witnesses delegated to frozen v1 micro materialization.","provides":["v1x09.micro.experience"]},
+    {"id":"v1x09.micro.presentation-provider","version":"1.0.0","owner":"v1x-09-micro-matter-experience","kind":"code","stage":"full","placement":"script","source":"src/v1x-09-micro-matter-experience/presentation-provider.js","dependencies":["v1x09.micro.experience"],"authority":"PRESENTATION_ONLY","provenance":"V1X-09 semantic magnification, source-vs-representative fidelity, exact-return and non-classical limitation presentation seam.","provides":["v1x09.micro.presentation-provider"]},
+    {"id":"px.providers.v1x09-micro-matter-experience","version":"1.0.0","owner":"v1x-09-micro-matter-experience","kind":"data","stage":"full","placement":"resource","source":"config/extensions/v1x-09-micro-matter-experience/providers.json","dependencies":[],"authority":"DERIVED","provenance":"V1X-09 provider catalog declaring non-canonical model and presentation capabilities with explicit authority and evidence links.","provides":["v1x09.micro.provider-catalog"]}
   ]
 }
