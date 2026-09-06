@@ -1,1 +1,68 @@
-import path from 'node:path';import assert from 'node:assert/strict';import {pathToFileURL} from 'node:url';import {chromium,firefox,webkit} from 'playwright';const name=process.env.BROWSER||'chromium',engine={chromium,firefox,webkit}[name],headed=process.env.HEADED==='1';if(!engine)throw new Error('unsupported BROWSER '+name);const launchOptions={headless:!headed,...(name==='firefox'?{firefoxUserPrefs:{'webgl.disabled':false,'webgl.force-enabled':true,'webgl.forbid-software':false}}:{})},browser=await engine.launch(launchOptions),ctx=await browser.newContext({viewport:{width:1280,height:800},deviceScaleFactor:Number(process.env.DPR||1)}),page=await ctx.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e.message||e)));await page.goto(pathToFileURL(path.resolve('dist/One_File_Universe.html')).href,{waitUntil:'load'});await page.waitForFunction(()=>OFU?.waveIVVerticalSlice?.state?.initialized&&__OFU_PLANET_PREVIEW__?.targetStatus==='SUPPORTED',{timeout:30000});const capability=await page.evaluate(()=>{const probe=document.createElement('canvas'),gl=probe.getContext('webgl2');return{webgl2:!!gl,renderer:gl?String(gl.getParameter(gl.RENDERER)||''):null,vendor:gl?String(gl.getParameter(gl.VENDOR)||''):null}});assert.equal(capability.webgl2,true,`${name} certification runtime must expose WebGL2`);const id0=await page.evaluate(()=>OFU.waveIVScaleRuntime.snapshot().selectedCanonicalTarget?.planetId),surface=[];for(const scale of ['galaxy','galactic_region','stellar_neighborhood','system','orbit','approach','global_surface','regional_surface','local_surface','human','local_surface','regional_surface','global_surface','approach','orbit','system','stellar_neighborhood','galactic_region','galaxy']){await page.evaluate(s=>OFU.waveIVScaleRuntime.requestStage(s,{source:'cross-browser'}),scale);await page.waitForFunction(s=>OFU.waveIVScaleRuntime.snapshot().semanticScale===s,scale,{timeout:10000});await page.waitForTimeout(140);const snap=await page.evaluate(()=>({r:OFU.waveIVScaleRuntime.snapshot(),p:__OFU_PLANET_PREVIEW__.snapshot(),v:OFU.waveIVVerticalSlice.snapshot()}));assert.ok(snap.r.semanticScale);if(['galaxy','galactic_region','stellar_neighborhood','system'].includes(scale))assert.equal(snap.r.activeSceneProvider,'wave-iv-macro');else if(['orbit','approach','global_surface'].includes(scale))assert.equal(snap.r.activeSceneProvider,'planet-webgl');else assert.equal(snap.r.activeSceneProvider,'surface-webgl');if(scale==='galaxy'){assert.equal(snap.v.macroCanvas.galaxyPresentation.authority,'PRESENTATION_ONLY');assert.equal(snap.v.macroCanvas.galaxyPresentation.decorativeParticlesSelectable,false);assert.ok(snap.v.macroCanvas.galaxyPresentation.selectedViewportWidthFraction>=.45)}if(scale==='global_surface'){assert.equal(snap.p.surfaceMode,'GLOBE');assert.equal(snap.p.backend,'webgl2');const meanRadiusM=Number(snap.p.presentationBounds?.meanRadiusM),distanceRadii=snap.p.camera.distanceM/meanRadiusM;assert.ok(Number.isFinite(meanRadiusM)&&meanRadiusM>0&&distanceRadii>2);surface.push({scale,provider:snap.r.activeSceneProvider,surfaceMode:snap.p.surfaceMode,distanceRadii})}if(['regional_surface','local_surface','human'].includes(scale)){const e=await page.evaluate(()=>OFU.planetSurfaceWebGL2.stats(document.getElementById('planet-view')));assert.equal(e.backend,'webgl2-local-surface');assert.equal(e.coverage.coverageComplete,true);assert.equal(e.coverage.footprintContained,true);assert.ok(e.coverage.activePatchCount>0&&e.coverage.activePatchCount<=25);assert.equal(e.glError,0);assert.ok(e.drawCalls>0);assert.ok(e.framebuffer.nonClearFraction>.08);assert.ok(e.framebuffer.lowerNonClearFraction>.10);assert.equal(e.presentationReliefExaggerationIsPhysical,false);surface.push({scale,level:e.coverage.level,patchSizeM:e.coverage.patchSizeM,nonClearFraction:e.framebuffer.nonClearFraction})}}const id1=await page.evaluate(()=>OFU.waveIVScaleRuntime.snapshot().selectedCanonicalTarget?.planetId);assert.equal(id1,id0);assert.equal((await page.evaluate(()=>OFU.waveIVSceneNormalizer.snapshot().duplicatePrimaryVisible)),false);assert.equal(errors.length,0,errors.join('\n'));console.log(JSON.stringify({status:'PASS',browser:name,headed,capability,selectedPlanet:id1,physicalDevice:false,finalScale:'galaxy',surface}));await ctx.close();await browser.close();
+import assert from 'node:assert/strict';
+import { chromium, firefox, webkit } from 'playwright';
+
+const name = process.env.BROWSER || 'chromium';
+const engine = { chromium, firefox, webkit }[name];
+if (!engine) throw new Error('unsupported BROWSER ' + name);
+
+// Preserve the Wave IV WebGL2 baseline capability requirement on every matrix
+// browser/platform, but evaluate product behavior through the shipping v1 Living
+// foreground rather than retired #wave-iv-macro-view / #planet-view backends.
+const headed = process.env.HEADED === '1';
+const launchOptions = {
+  headless: !headed,
+  ...(name === 'firefox'
+    ? { firefoxUserPrefs: { 'webgl.disabled': false, 'webgl.force-enabled': true, 'webgl.forbid-software': false } }
+    : {}),
+};
+const browser = await engine.launch(launchOptions);
+const context = await browser.newContext({
+  viewport: { width: 1280, height: 800 },
+  deviceScaleFactor: Number(process.env.DPR || 1),
+});
+const page = await context.newPage();
+const errors = [];
+page.on('pageerror', error => errors.push(String(error.message || error)));
+await page.goto(new URL('../../dist/One_File_Universe.html', import.meta.url).href, { waitUntil: 'load' });
+await page.waitForFunction(
+  () => globalThis.OFU?.v1LivingProduct?.snapshot?.().initialized && globalThis.OFU?.waveIVScaleRuntime?.snapshot?.().semanticScale,
+  { timeout: 30000 },
+);
+const capability = await page.evaluate(() => {
+  const probe = document.createElement('canvas');
+  const gl = probe.getContext('webgl2');
+  const product = OFU.v1LivingProduct.snapshot();
+  const living = OFU.v1LivingProduct.runtime.snapshot();
+  const scale = OFU.waveIVScaleRuntime.snapshot();
+  const canvas = document.getElementById('living-view');
+  const box = canvas?.getBoundingClientRect();
+  return {
+    webgl2: !!gl,
+    renderer: gl ? String(gl.getParameter(gl.RENDERER) || '') : null,
+    vendor: gl ? String(gl.getParameter(gl.VENDOR) || '') : null,
+    uiError: product.uiError,
+    navigationCoherent: living.navigationCoherent,
+    livingStage: living.stage,
+    semanticScale: living.semanticScale,
+    scaleAuthority: scale.semanticScale,
+    frames: product.render?.metrics?.frames || 0,
+    canvasVisible: !!box && box.width > 0 && box.height > 0,
+  };
+});
+assert.equal(capability.webgl2, true, `${name} certification runtime must expose WebGL2`);
+assert.equal(capability.uiError, null, `${name} shipping Living product must boot without UI error`);
+assert.equal(capability.navigationCoherent, true, `${name} shipping Living navigation must be coherent`);
+assert.equal(capability.semanticScale, capability.scaleAuthority, `${name} must expose one semantic scale authority`);
+assert.ok(capability.frames > 0, `${name} shipping Living renderer must draw frames`);
+assert.equal(capability.canvasVisible, true, `${name} shipping Living canvas must be visible`);
+assert.equal(errors.length, 0, errors.join('\n'));
+await context.close();
+await browser.close();
+
+// The definitive v1 browser oracle performs the full Galaxy-to-Human and return
+// journey, visible canvas-delta checks, selector/wheel/pinch traversal, pickability,
+// identity continuity, persistence/replay, responsive/mobile checks, offline
+// direct-file enforcement and zero-error assertions. Running it here keeps this
+// historical Wave IV matrix at least as strict as the shipping release oracle.
+process.env.BROWSER = name;
+await import('../v1/browser-v1-product.mjs');
