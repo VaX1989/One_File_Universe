@@ -9,6 +9,7 @@ const workflows=[
   '.github/workflows/p5-environment-v2-canonical.yml',
   '.github/workflows/p6-v1-conformance.yml',
   '.github/workflows/post-v1-development.yml',
+  '.github/workflows/source-reproduction.yml',
 ];
 const immutableAction=/uses:\s+[^\s@]+@[0-9a-f]{40}(?:\s+#.*)?$/;
 let checks=0;
@@ -28,4 +29,7 @@ for(const file of workflows){
     checks++;
   }
 }
+const sourceReproduction=fs.readFileSync('.github/workflows/source-reproduction.yml','utf8');
+assert(/-\s+['"]development\/v1\.\*['"]/.test(sourceReproduction),'source reproduction must cover canonical post-v1 development heads');
+checks++;
 console.log(JSON.stringify({status:'PASS',suite:'workflow-reproducibility',workflows:workflows.length,checks}));
