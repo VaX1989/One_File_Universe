@@ -1,0 +1,23 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1.micro.molecular-reference",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/molecular/reference-mass.js",
+      "dependencies": [
+        "v1.micro.molecular",
+        "v1.material.reference-properties"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Selective V1X-19 harvest: propagates source-backed standard atomic-weight formula-unit mass intervals into the representative molecular ladder while preserving original world chemistry authority and denying bulk molar-mass/isotope/canonical claims.",
+      "provides": [
+        "v1.micro.molecular-reference"
+      ]
+    }
+  ]
+}
