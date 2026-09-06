@@ -1,0 +1,44 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "ofu.v1x11.runtime.lifecycle",
+      "version": "1.0.0",
+      "owner": "v1x-11-runtime-streaming-resources",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/v1x-11-runtime-streaming-resources/lifecycle.js",
+      "dependencies": ["ofu.extensions.contracts"],
+      "authority": "MEASURED_RUNTIME_EVIDENCE",
+      "provenance": "V1X-11 additive working-set lifecycle contract; cache state is runtime evidence only and never canonical world meaning.",
+      "provides": ["ofu.v1x11.runtime.lifecycle"]
+    },
+    {
+      "id": "ofu.v1x11.runtime.scheduler",
+      "version": "1.0.0",
+      "owner": "v1x-11-runtime-streaming-resources",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/v1x-11-runtime-streaming-resources/scheduler.js",
+      "dependencies": ["ofu.v1x11.runtime.lifecycle"],
+      "authority": "MEASURED_RUNTIME_EVIDENCE",
+      "provenance": "V1X-11 bounded worker-slot scheduler with explicit queue capacity, cancellation and backpressure; scheduling never changes semantic results.",
+      "provides": ["ofu.v1x11.runtime.scheduler"]
+    },
+    {
+      "id": "ofu.v1x11.runtime.resources",
+      "version": "1.0.0",
+      "owner": "v1x-11-runtime-streaming-resources",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/v1x-11-runtime-streaming-resources/resource-manager.js",
+      "dependencies": ["ofu.extensions.product-bindings", "ofu.v1x11.runtime.scheduler"],
+      "authority": "MEASURED_RUNTIME_EVIDENCE",
+      "provenance": "V1X-11 bounded late-materialization/cache owner layered over the admitted PX provider registry; quality is presentation-only and semantic digests are independently invariant.",
+      "provides": ["ofu.v1x11.runtime.resources"]
+    }
+  ]
+}
