@@ -2,7 +2,7 @@
 'use strict';
 const O=root.OFU=root.OFU||{},P=O.p2,T=O.p4,C=O.pxContracts,X=O.pxProduct,R=O.waveIVScaleRuntime,MR=O.v1ModelRegimeRuntime;
 if(!P||!T||!C||!X||!R||!MR)throw new Error('v1 session prerequisites missing');
-const VERSION='ofu-v1-session-runtime-1',FORMAT='OFU-V1-SESSION',SCHEMA=1n,MAX_BYTES=1024*1024;
+const VERSION='ofu-v1-session-runtime-1',FORMAT='OFU-V1-SESSION',SCHEMA=1n,MAX_BYTES=1024*1024,BROWSER_KEY='ofu.v1.session';
 const ACTIONS=Object.freeze(['MEASURE','SAMPLE','EXPERIMENT','ECOLOGY_INTERVENTION','BIOLOGICAL_SEEDING']);
 const LIVING_SPATIAL=Object.freeze({GALAXY:'galaxy',REGION:'galactic_region',NEIGHBORHOOD:'stellar_neighborhood',SYSTEM:'system',ORBIT:'orbit',APPROACH:'approach',GLOBAL_SURFACE:'global_surface',REGIONAL_SURFACE:'regional_surface',LOCAL_SURFACE:'local_surface',HUMAN:'human'});
 const SPATIAL_LIVING=Object.freeze(Object.fromEntries(Object.entries(LIVING_SPATIAL).map(([stage,scale])=>[scale,stage])));
@@ -51,8 +51,10 @@ function importBytes(bytes){
  }
 }
 function hex(bytes){return P.hex(bytes)}function unhex(text){if(typeof text!=='string'||text.length===0||text.length%2)fail('hex session required');if(text.length>2*MAX_BYTES)fail('hex session exceeds byte limit');if(!/^[0-9a-f]+$/i.test(text))fail('hex session required');return P.unhex(text.toLowerCase())}
-function storeBrowser(){const text=hex(exportBytes());if(text.length>2*MAX_BYTES)fail('browser convenience payload too large');root.localStorage?.setItem('ofu.v1.session',text);return{textBytes:text.length,portableAuthoritative:true}}
-function loadBrowser(){const text=root.localStorage?.getItem('ofu.v1.session');if(!text)fail('no browser convenience save');return importBytes(unhex(text))}
+function browserStorage(){let storage;try{storage=root.localStorage}catch(error){fail('browser storage unavailable: '+String(error?.message||error))}if(!storage||typeof storage.getItem!=='function'||typeof storage.setItem!=='function'||typeof storage.removeItem!=='function')fail('browser storage unavailable');return storage}
+function storageRead(storage){let value;try{value=storage.getItem(BROWSER_KEY)}catch(error){fail('browser storage read failed: '+String(error?.message||error))}if(value!==null&&typeof value!=='string')fail('browser storage returned invalid value');return value}
+function storeBrowser(){const storage=browserStorage(),previous=storageRead(storage),text=hex(exportBytes());if(text.length>2*MAX_BYTES)fail('browser convenience payload too large');try{storage.setItem(BROWSER_KEY,text);if(storageRead(storage)!==text)throw new Error('browser storage write verification failed')}catch(writeError){const rollbackErrors=[];try{if(previous===null)storage.removeItem(BROWSER_KEY);else storage.setItem(BROWSER_KEY,previous);if(storageRead(storage)!==previous)throw new Error('browser storage rollback verification failed')}catch(error){rollbackErrors.push(error)}if(rollbackErrors.length)throw new AggregateError([writeError,...rollbackErrors],'OFU v1 session: browser save failed and rollback was incomplete',{cause:writeError});fail('browser save failed: '+String(writeError?.message||writeError))}return{textBytes:text.length,portableAuthoritative:true,verified:true}}
+function loadBrowser(){const storage=browserStorage(),text=storageRead(storage);if(!text)fail('no browser convenience save');return importBytes(unhex(text))}
 function snapshot(){const world=state.world,live=world?T.replayLiveWorld(world,TRANSITION):null;return Object.freeze({version:VERSION,format:FORMAT,schemaVersion:Number(SCHEMA),actions:state.actions,exports:state.exports,imports:state.imports,lastAction:state.lastAction,lastImport:state.lastImport,p4Protocol:T.VERSION,p4Transition:T.transitionContractDigest(TRANSITION.descriptor),p4StateDigest:live?P.hex(live.digest):null,portableAuthoritative:true,importTrustPolicy:'PORTABLE_ARCHIVE_INTEGRITY_ONLY',historicalAdmissionAttested:false,browserStorageConvenience:true,canonicalMutation:false,canonicalP6Mutation:false});}
 O.v1Session=Object.freeze({VERSION,FORMAT,SCHEMA,MAX_BYTES,ACTIONS,TRANSITION,LIVING_SPATIAL,SPATIAL_LIVING,initWorld,validateAction,submit,exportBytes,validateBytes,importBytes,storeBrowser,loadBrowser,hex,unhex,snapshot});
 })(globalThis);
