@@ -13,7 +13,7 @@ body.wave-a-active [data-workspace-panel="explore"]>:not(#living-panel):not(#v1-
 #living-breadcrumbs button{background:none;border:none;color:#9fc0cf;padding:3px 0;min-height:24px;font:inherit;cursor:pointer}
 #living-breadcrumbs button:hover{color:#f3d69e}
 #living-rail{display:flex;gap:4px;overflow-x:auto;padding:10px 12px;background:#0b1a27;border-top:1px solid #1c3444;scrollbar-width:thin}
-#living-rail button{flex:0 0 auto;border:1px solid #294152;border-radius:8px;background:#122633;color:#b2c5d0;padding:10px 9px;min-height:42px;font:500 10px system-ui;cursor:pointer}
+#living-rail button{flex:0 0 auto;border:1px solid #294152;border-radius:8px;background:#122633;color:#b2c5d0;padding:10px 9px;min-height:44px;font:500 10px system-ui;cursor:pointer}
 #living-rail button[aria-pressed="true"]{color:#ffe0a2;background:#2b302f;border-color:#958461}
 #living-rail button:disabled{opacity:.35;cursor:default}
 #living-panel{padding:0 1px 14px;color:#b6c9d4;font:13px/1.5 system-ui}

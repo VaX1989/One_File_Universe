@@ -10,6 +10,7 @@ const AUTH=V.authority('v1.planetology.causal-system','2.0.0',[SOURCE_BRANCH],
  'The model is intended for internally coherent world differentiation, not precision planetary forecasting.'
 ]);
 const BULK=Object.freeze(['TERRESTRIAL','VOLATILE_RICH','ICE_GIANT','GAS_GIANT','UNKNOWN']);
+const HEURISTIC_UNCERTAINTY_SEMANTICS=Object.freeze({heuristic:true,calibrated:false,empirical:false,probability:false,errorBar:false,meaning:'Deterministic reduced-order model adequacy diagnostic; not an empirical uncertainty interval.'});
 const PRIOR=Object.freeze({
  TERRESTRIAL:[315000,625000,35000,25000],
  VOLATILE_RICH:[185000,485000,220000,110000],
@@ -66,9 +67,9 @@ function volatileAtmosphere(i,formation,composition,gravity,interior){
  return Object.freeze({initialInventoryUnits,retainedUnits,escapedUnits,interiorUnits,surfaceCondensedUnits,atmosphereUnits,conserved:escapedUnits+interiorUnits+surfaceCondensedUnits+atmosphereUnits===initialInventoryUnits,escape:Object.freeze({xuvMilliWm2:xuv,escapePpm,kind:'BOUNDED_THERMAL_XUV_ESCAPE_SCENARIO',isMeasurement:false}),outgassingPpm,pressureProxyPpm,compositionFamily,meanMolecularMassMilliAmu,collapsePotentialPpm,cloudCondensatePotentialPpm,greenhouseDeltaMilliK,canonicalAtmosphereClaim:false});
 }
 function build(input){
- const i=normalizeInput(input),formation=formationContext(i),composition=bulkComposition(i,formation),gravity=gravityContext(i,composition),interior=interiorState(i,formation,composition,gravity),atmosphere=volatileAtmosphere(i,formation,composition,gravity,interior),uncertaintyPpm=V.clamp(310000+(composition.densityConsistency==='OUTSIDE_REDUCED_MIXTURE_REGIME'?230000:0)+(i.bulkPriorClass==='UNKNOWN'?120000:0),180000,780000);
- return V.freezeDeep({version:VERSION,planetIdentity:i.planetIdentity,inputs:i,formation,composition,gravity,interior,atmosphere,regime:Object.freeze({bulk:i.bulkPriorClass,formation:formation.formationZone,interior:interior.tectonicRegime,atmosphere:atmosphere.compositionFamily}),fidelity:Object.freeze({class:'REDUCED_ORDER_CAUSAL_MODEL',uncertaintyPpm,canonicalMeasurementsPromoted:false}),authority:AUTH,provenance:V.provenance('v1.planetology.causal-system','2.0.0',[SOURCE_BRANCH])});
+ const i=normalizeInput(input),formation=formationContext(i),composition=bulkComposition(i,formation),gravity=gravityContext(i,composition),interior=interiorState(i,formation,composition,gravity),atmosphere=volatileAtmosphere(i,formation,composition,gravity,interior),heuristicUncertaintyPpm=V.clamp(310000+(composition.densityConsistency==='OUTSIDE_REDUCED_MIXTURE_REGIME'?230000:0)+(i.bulkPriorClass==='UNKNOWN'?120000:0),180000,780000);
+ return V.freezeDeep({version:VERSION,planetIdentity:i.planetIdentity,inputs:i,formation,composition,gravity,interior,atmosphere,regime:Object.freeze({bulk:i.bulkPriorClass,formation:formation.formationZone,interior:interior.tectonicRegime,atmosphere:atmosphere.compositionFamily}),fidelity:Object.freeze({class:'REDUCED_ORDER_CAUSAL_MODEL',heuristicUncertaintyPpm,uncertaintySemantics:HEURISTIC_UNCERTAINTY_SEMANTICS,canonicalMeasurementsPromoted:false}),authority:AUTH,provenance:V.provenance('v1.planetology.causal-system','2.0.0',[SOURCE_BRANCH])});
 }
 function atAge(modelOrInput,ageMyr){V.int(ageMyr,'ageMyr',1,20000);const i=modelOrInput.inputs?modelOrInput.inputs:modelOrInput;return build({...i,ageMyr});}
-O.v1PlanetologyCausal=Object.freeze({VERSION,AUTHORITY:AUTH,BULK,normalizeInput,formationContext,bulkComposition,gravityContext,interiorState,volatileAtmosphere,build,atAge});
+O.v1PlanetologyCausal=Object.freeze({VERSION,AUTHORITY:AUTH,BULK,HEURISTIC_UNCERTAINTY_SEMANTICS,normalizeInput,formationContext,bulkComposition,gravityContext,interiorState,volatileAtmosphere,build,atAge});
 })(globalThis);

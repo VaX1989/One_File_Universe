@@ -53,7 +53,7 @@ function coordinateForm(s){
 }
 function renderPanel(s){
  if(!panel||!s)return;const previous=document.activeElement,focusAction=previous?.dataset?.livingAction,hadFocus=panel.contains(previous);panel.replaceChildren();
- panel.append(el('div','WAVE A / DEVELOPMENT CANDIDATE',{class:'living-eyebrow'}));
+ panel.append(el('div','MODEL-DERIVED EXPLORATION',{class:'living-eyebrow'}));
  panel.append(el('h2',s.world?title(s.world.planetology.bulkPriorClass)+' world':s.body?.kind==='star'?'Stellar context':s.stage==='UNIVERSE'?'Choose a galaxy':title(s.stage)));
  panel.append(el('span','MODEL-DERIVED WORLD / CANONICAL IDENTITIES',{class:'living-inline-authority'}));
  if(uiError)panel.append(el('p',uiError,{class:'living-error',role:'alert'}));
@@ -147,7 +147,7 @@ function bindInputs(){
  const R=O.waveIVScaleRuntime,pointers=new Map();let drag=null,pinch=null;
  const clampDistance=d=>{const a=R.snapshot().anchors;return Math.max(a.human*.96,Math.min(a.galaxy*1.1,d));};
  const visibleScale=source=>{const scale=R.snapshot();renderer.setTravelDistance?.(scale.distanceIntentRadii,scale.semanticScale);pending=renderer.render(runtime.snapshot()).catch(fail);R.viewportChanged({width:canvas.clientWidth,height:canvas.clientHeight,inputSurface:'living-view'},{source});};
- canvas.addEventListener('pointerdown',e=>{e.stopPropagation();canvas.focus({preventScroll:true});pointers.set(e.pointerId,{x:e.offsetX,y:e.offsetY});canvas.setPointerCapture(e.pointerId);if(pointers.size===1)drag={x:e.offsetX,y:e.offsetY,lastX:e.offsetX,lastY:e.offsetY,moved:false,pointer:e.pointerId};if(pointers.size===2){const pts=[...pointers.values()],span=Math.hypot(pts[0].x-pts[1].x,pts[0].y-pts[1].y);pinch={span,distance:R.snapshot().distanceIntentRadii};drag=null;}});
+  canvas.addEventListener('pointerdown',e=>{e.stopPropagation();canvas.focus({preventScroll:true});pointers.set(e.pointerId,{x:e.offsetX,y:e.offsetY});try{canvas.setPointerCapture(e.pointerId)}catch{/* Pointer may already have been cancelled by the host. */}if(pointers.size===1)drag={x:e.offsetX,y:e.offsetY,lastX:e.offsetX,lastY:e.offsetY,moved:false,pointer:e.pointerId};if(pointers.size===2){const pts=[...pointers.values()],span=Math.hypot(pts[0].x-pts[1].x,pts[0].y-pts[1].y);pinch={span,distance:R.snapshot().distanceIntentRadii};drag=null;}});
  canvas.addEventListener('pointermove',e=>{if(!pointers.has(e.pointerId))return;e.stopPropagation();pointers.set(e.pointerId,{x:e.offsetX,y:e.offsetY});if(pointers.size>=2&&pinch){const pts=[...pointers.values()].slice(0,2),span=Math.max(1,Math.hypot(pts[0].x-pts[1].x,pts[0].y-pts[1].y)),next=clampDistance(pinch.distance*pinch.span/span);R.setContinuousDistance(next,{source:'living-active-pinch',driveCamera:false});visibleScale('living-active-pinch');return;}if(!drag||drag.pointer!==e.pointerId)return;const dx=e.offsetX-drag.lastX,dy=e.offsetY-drag.lastY;if(Math.hypot(e.offsetX-drag.x,e.offsetY-drag.y)>5)drag.moved=true;if(drag.moved)renderer.rotate(dx,dy);drag.lastX=e.offsetX;drag.lastY=e.offsetY;});
  const finish=e=>{const wasDrag=drag&&drag.pointer===e.pointerId, moved=wasDrag&&drag.moved;pointers.delete(e.pointerId);if(canvas.hasPointerCapture(e.pointerId))canvas.releasePointerCapture(e.pointerId);if(pointers.size<2)pinch=null;if(wasDrag){drag=null;if(!moved)act(()=>renderer.activateAt(e.offsetX,e.offsetY));}};
  canvas.addEventListener('pointerup',e=>{e.stopPropagation();finish(e)});canvas.addEventListener('pointercancel',finish);
@@ -170,7 +170,7 @@ function init(){
  initialized=true;document.body.classList.add('wave-a-active');
  panel=el('section',null,{id:'living-panel','aria-label':'Living universe exploration'});explore.prepend(panel);
  stage=el('section',null,{id:'living-stage','aria-label':'Living universe viewport'});frame.append(stage);
- const top=el('header',null,{id:'living-titlebar'}),info=el('div');info.append(el('div','ONE FILE UNIVERSE / WAVE A',{class:'living-eyebrow'}));heading=el('h2','One living universe',{id:'living-heading'});location=el('div','',{id:'living-location'});info.append(heading,location);top.append(info);stage.append(top);
+ const top=el('header',null,{id:'living-titlebar'}),info=el('div');info.append(el('div','ONE FILE UNIVERSE / LIVE EXPLORATION',{class:'living-eyebrow'}));heading=el('h2','One living universe',{id:'living-heading'});location=el('div','',{id:'living-location'});info.append(heading,location);top.append(info);stage.append(top);
  breadcrumbs=el('nav',null,{id:'living-breadcrumbs','aria-label':'Current universe context'});stage.append(breadcrumbs);
  const wrap=el('div',null,{id:'living-canvas-wrap'}),gl=el('canvas',null,{id:'living-gl','aria-hidden':'true'});gl.hidden=true;canvas=el('canvas','Use the adjacent controls to explore without canvas.',{id:'living-view',tabindex:0,'aria-label':'Interactive living universe. Select objects, drag worlds, or use adjacent controls.'});wrap.append(gl,canvas);stage.append(wrap);
  rail=el('nav',null,{id:'living-rail','aria-label':'Cross-scale exploration'});stage.append(rail);frame.closest('.viewport-shell').setAttribute('aria-labelledby','living-heading');

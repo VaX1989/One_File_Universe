@@ -37,7 +37,7 @@ function importBytes(bytes){
  try{
   MR.exit();
   if(O.v08SelectionBridge?.selectPlanet)O.v08SelectionBridge.selectPlanet(v.key,{announce:false});else R.setSelection(v.key,{planetId:v.captured.selection.target.entityId,presentationStatus:'SUPPORTED'});
-  R.requestStage(v.body.spatialScale,{source:'v1-session-import'});enterRegime(v.body.modelRegime);const livingSpatialRestored=restoreLivingSpatial(v.key,v.body.spatialScale);
+   const livingSpatialRestored=restoreLivingSpatial(v.key,v.body.spatialScale);if(R.snapshot().semanticScale!==v.body.spatialScale)R.requestStage(v.body.spatialScale,{source:livingSpatialRestored?'living-derived-representation':'v1-session-import'});enterRegime(v.body.modelRegime);
   state.world=v.world;state.universe=new Uint8Array(v.body.universeIdentity);state.lineage=new Uint8Array(v.world.lineageId);state.nextSeconds=frontierSeconds(v.world)+1n;state.imports++;
   state.lastImport=Object.freeze({status:'IMPORTED_INTEGRITY_VERIFIED',trustClass:'PORTABLE_ARCHIVE_INTEGRITY_ONLY',historicalAdmissionAttested:false,planetId:v.captured.selection.target.entityId,spatialScale:v.body.spatialScale,modelRegime:v.body.modelRegime,livingSpatialRestored,stateDigest:P.hex(v.replayed.digest),canonicalP6Unchanged:true});return state.lastImport;
  }catch(importError){
