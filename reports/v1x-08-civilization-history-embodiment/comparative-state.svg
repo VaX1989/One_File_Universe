@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640" role="img" aria-labelledby="title desc">
+  <title id="title">V1X-08 causal civilization history comparative witness</title>
+  <desc id="desc">Fixture-only schematic comparison. Before: two active settlements and an active corridor with four structured history traces. After: settlement alpha is abandoned, the corridor is ruined, and migration, conflict, and abandonment traces are added. No geometry or history shown here is canonical evidence.</desc>
+  <rect width="1200" height="640" fill="#0b0e14"/>
+  <text x="40" y="48" fill="#f2f4f8" font-family="system-ui,sans-serif" font-size="26" font-weight="700">V1X-08 — causal history → present-state visual witness</text>
+  <text x="40" y="78" fill="#aab2c0" font-family="system-ui,sans-serif" font-size="15">MODEL_DERIVED_SIMULATION fixture → PRESENTATION_ONLY schematic • NOT CANONICAL • NOT A SCIENTIFIC MEASUREMENT</text>
+
+  <g transform="translate(40,112)">
+    <rect width="530" height="430" rx="12" fill="#151a24" stroke="#4a5568"/>
+    <text x="24" y="38" fill="#f2f4f8" font-family="system-ui,sans-serif" font-size="20" font-weight="700">BEFORE · epoch 2</text>
+    <text x="24" y="66" fill="#aab2c0" font-family="system-ui,sans-serif" font-size="14">4 structured history proposals</text>
+    <line x1="155" y1="205" x2="380" y2="280" stroke="#79c2ff" stroke-width="9" stroke-linecap="round" opacity="0.8"/>
+    <circle cx="155" cy="205" r="38" fill="#7bd88f"/>
+    <circle cx="380" cy="280" r="25" fill="#7bd88f"/>
+    <text x="110" y="265" fill="#f2f4f8" font-family="system-ui,sans-serif" font-size="15">s-alpha · ACTIVE · pop 8000</text>
+    <text x="330" y="330" fill="#f2f4f8" font-family="system-ui,sans-serif" font-size="15">s-beta · ACTIVE · pop 500</text>
+    <text x="190" y="180" fill="#a9d6ff" font-family="system-ui,sans-serif" font-size="13">active infrastructure / trade cue</text>
+    <text x="24" y="385" fill="#cbd5e1" font-family="ui-monospace,monospace" font-size="13">FOUNDING ×2 · INFRASTRUCTURE_BUILT · TRADE_EXPANSION</text>
+  </g>
+
+  <g transform="translate(630,112)">
+    <rect width="530" height="430" rx="12" fill="#151a24" stroke="#4a5568"/>
+    <text x="24" y="38" fill="#f2f4f8" font-family="system-ui,sans-serif" font-size="20" font-weight="700">AFTER · epoch 5</text>
+    <text x="24" y="66" fill="#aab2c0" font-family="system-ui,sans-serif" font-size="14">7 structured history proposals</text>
+    <line x1="155" y1="205" x2="380" y2="280" stroke="#8b93a1" stroke-width="9" stroke-linecap="round" stroke-dasharray="18 12" opacity="0.8"/>
+    <circle cx="155" cy="205" r="30" fill="none" stroke="#d38b8b" stroke-width="8"/>
+    <path d="M132 182 L178 228 M178 182 L132 228" stroke="#d38b8b" stroke-width="7"/>
+    <circle cx="380" cy="280" r="30" fill="#7bd88f"/>
+    <text x="88" y="265" fill="#f2f4f8" font-family="system-ui,sans-serif" font-size="15">s-alpha · ABANDONED · pop 3200</text>
+    <text x="322" y="338" fill="#f2f4f8" font-family="system-ui,sans-serif" font-size="15">s-beta · ACTIVE · pop 1400</text>
+    <text x="190" y="180" fill="#c3c8d2" font-family="system-ui,sans-serif" font-size="13">ruined infrastructure cue</text>
+    <text x="24" y="375" fill="#f0b7b7" font-family="ui-monospace,monospace" font-size="13">+ MIGRATION · + CONFLICT · + ABANDONMENT</text>
+    <text x="24" y="402" fill="#cbd5e1" font-family="ui-monospace,monospace" font-size="13">present encoding: RUIN + INFRASTRUCTURE_RUIN</text>
+  </g>
+
+  <text x="40" y="584" fill="#aab2c0" font-family="system-ui,sans-serif" font-size="14">Source-event linkage: ev-found-alpha, ev-found-beta, ev-infra, ev-trade, ev-migration, ev-conflict, ev-abandon.</text>
+  <text x="40" y="610" fill="#aab2c0" font-family="system-ui,sans-serif" font-size="14">The flat fixture field “events: fake-flat-event” is intentionally ignored; only structured history.proposals drives historical traces.</text>
+</svg>
