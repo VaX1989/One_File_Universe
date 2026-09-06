@@ -26,7 +26,7 @@ r.back();eq(r.snapshot().forwardDepth,1,'Back creates redo before branch replace
 r.back();eq(r.snapshot().forwardDepth,1,'redo becomes available again after another Back');
 const coordinate=r.snapshot().navigationCoordinate;r.setNavigationCoordinate(coordinate+0.05,{source:'forward-oracle-same-stage'});eq(r.snapshot().forwardDepth,0,'non-history continuous adjustment invalidates redo rather than guessing continuity');eq(r.snapshot().forwardKnownDepth,0,'fail-closed invalidation also drops unknown prior command chain');ok(r.snapshot().forwardInvalidations>=1,'forward invalidation is observable');
 
-for(let i=0;i<90;i++){r.scale(i%2?'GALAXY':'UNIVERSE')}
+r.enterKey(r.seedGraph.body.canonicalKey);const epoch=r.snapshot().world.civilization.epoch;for(let i=0;i<90;i++)r.time(epoch);
 ok(r.snapshot().historyDepth<=r.snapshot().maxHistory,'base Living history remains bounded');ok(r.snapshot().forwardKnownDepth<=r.snapshot().maxHistory&&r.snapshot().forwardDepth<=r.snapshot().maxHistory,'forward controller stacks remain bounded to Living history limit');eq(r.snapshot().canonicalMutation,false,'forward navigation never gains canonical mutation authority');
 
 const controls=fs.readFileSync('src/bootstrap/product/living-forward-controls.js','utf8');
