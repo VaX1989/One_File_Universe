@@ -7,6 +7,7 @@ const workflows=[
   '.github/workflows/p3-conformance.yml',
   '.github/workflows/p5-conformance.yml',
   '.github/workflows/p5-environment-v2-canonical.yml',
+  '.github/workflows/p6-v1-conformance.yml',
   '.github/workflows/post-v1-development.yml',
 ];
 const immutableAction=/uses:\s+[^\s@]+@[0-9a-f]{40}(?:\s+#.*)?$/;
