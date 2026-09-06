@@ -11,12 +11,13 @@ const coreWorkflows=[
   `${workflowDir}/p6-v1-conformance.yml`,
   `${workflowDir}/post-v1-development.yml`,
 ];
-const v11WorldWorkflows=fs.readdirSync(workflowDir)
-  .filter(name=>/^v11-world-.*\.yml$/.test(name))
-  .sort()
-  .map(name=>`${workflowDir}/${name}`);
+const featureWorkflowNames=fs.readdirSync(workflowDir)
+  .filter(name=>/^v11-world-.*\.yml$/.test(name)||/^product-v11-.*\.yml$/.test(name))
+  .sort();
+const featureWorkflows=featureWorkflowNames.map(name=>`${workflowDir}/${name}`);
+const v11WorldWorkflows=featureWorkflows.filter(file=>/\/v11-world-/.test(file));
 assert(v11WorldWorkflows.length>0,'expected at least one canonical v1.1 world workflow');
-const workflows=[...coreWorkflows,...v11WorldWorkflows,`${workflowDir}/source-reproduction.yml`];
+const workflows=[...coreWorkflows,...featureWorkflows,`${workflowDir}/source-reproduction.yml`];
 const immutableAction=/uses:\s+[^\s@]+@[0-9a-f]{40}(?:\s+#.*)?$/;
 let checks=1;
 for(const file of workflows){
@@ -35,7 +36,7 @@ for(const file of workflows){
     checks++;
   }
 }
-for(const file of [...coreWorkflows,...v11WorldWorkflows]){
+for(const file of [...coreWorkflows,...featureWorkflows]){
   const text=fs.readFileSync(file,'utf8');
   assert(text.includes('OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}'),`${file}: exact PR-head source identity is required`);
   assert(/ref:\s*['"]?\$\{\{\s*env\.OFU_SOURCE_SHA\s*\}\}/.test(text),`${file}: checkout must explicitly target OFU_SOURCE_SHA`);
@@ -43,7 +44,7 @@ for(const file of [...coreWorkflows,...v11WorldWorkflows]){
   assert(/concurrency:[\s\S]*?cancel-in-progress:\s*true/.test(text),`${file}: superseded exact-head runs must be cancellable`);
   checks+=4;
 }
-for(const file of v11WorldWorkflows){
+for(const file of featureWorkflows){
   const text=fs.readFileSync(file,'utf8');
   assert(text.includes(`'${file}'`),`${file}: pull-request paths must include the workflow itself so CI changes are exercised`);
   checks++;
@@ -51,4 +52,4 @@ for(const file of v11WorldWorkflows){
 const sourceReproduction=fs.readFileSync(`${workflowDir}/source-reproduction.yml`,'utf8');
 assert(/-\s+['"]development\/v1\.\*['"]/.test(sourceReproduction),'source reproduction must cover canonical post-v1 development heads');
 checks++;
-console.log(JSON.stringify({status:'PASS',suite:'workflow-reproducibility',workflows:workflows.length,v11WorldWorkflows:v11WorldWorkflows.length,checks}));
+console.log(JSON.stringify({status:'PASS',suite:'workflow-reproducibility',workflows:workflows.length,featureWorkflows:featureWorkflows.length,v11WorldWorkflows:v11WorldWorkflows.length,checks}));
