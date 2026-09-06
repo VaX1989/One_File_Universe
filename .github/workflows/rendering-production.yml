@@ -49,6 +49,8 @@ jobs:
         run: |
           npm install --no-save --package-lock=false playwright@1.62.1
           npx playwright install --with-deps chromium
+      - name: Build full v1 oracle fixture
+        run: node tools/build-ofu-rendering-v09.mjs
       - name: PX additive integration conformance
         run: node tools/extensions/conformance.mjs INTEGRATION --exact
       - name: Product v0.8 composition and lane contracts
