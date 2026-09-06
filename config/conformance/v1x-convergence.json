@@ -1,0 +1,14 @@
+{
+  "schema": "ofu-conformance-1",
+  "tests": [
+    {
+      "id": "convergence.active-authorities",
+      "owner": "convergence-owner",
+      "tier": "INTEGRATION",
+      "command": ["node", "tests/v1x-convergence/active-authorities.mjs"],
+      "providers": ["v1x02.representation.spatial-universe"],
+      "oracle": "Active viewport uses 3D providers, continuous input, one scale owner, and explicit import trust.",
+      "timeoutMs": 30000
+    }
+  ]
+}

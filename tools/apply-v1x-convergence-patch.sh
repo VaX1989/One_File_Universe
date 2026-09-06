@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [[ -f tests/v1x-convergence/active-authorities.mjs ]] && grep -q 'ACTIVE_CONTINUOUS_REALITY_AUTHORITIES' tests/v1x-convergence/active-authorities.mjs; then
+if grep -q 'function setTravelDistance(distanceRadii,band)' src/rendering/v1/living-renderer.js 2>/dev/null; then
   echo 'convergence patch already applied'
   exit 0
 fi
@@ -15,6 +15,9 @@ git apply /tmp/convergence.patch
 
 node tests/v1x-convergence/active-authorities.mjs
 node tests/v1/session-persistence.mjs
+node tests/v1x-04-stellar-system-rendering/static-system-3d-oracle.mjs
+node tests/v1x-04-stellar-system-rendering/system-rendering-oracle.mjs
+node tests/v1x-04-stellar-system-rendering/continuity.mjs
 node tests/v1x-11-runtime-streaming-resources/runtime-resources.mjs
 node tests/v1x-12-persistence-gameplay-intervention/governed-action-journey.mjs
 npm test
