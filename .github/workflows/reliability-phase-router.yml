@@ -1,0 +1,50 @@
+name: Reliability Phase Router
+
+on:
+  push:
+    branches:
+      - 'development/v1.*'
+    paths:
+      - 'tools/ci/phase-router.mjs'
+      - 'tests/governance/phase-router.mjs'
+      - '.github/workflows/reliability-phase-router.yml'
+  pull_request:
+    branches:
+      - 'development/v1.*'
+    paths:
+      - 'tools/ci/phase-router.mjs'
+      - 'tests/governance/phase-router.mjs'
+      - '.github/workflows/reliability-phase-router.yml'
+
+concurrency:
+  group: reliability-phase-router-${{ github.event_name }}-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+permissions:
+  contents: read
+
+jobs:
+  exact-head:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5 / Node 24 runtime
+        with:
+          ref: '${{ env.OFU_SOURCE_SHA }}'
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5 / Node 24 runtime
+        with:
+          node-version: '24.20.0'
+      - name: Verify exact source
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Phase router adversarial regression
+        run: node tests/governance/phase-router.mjs
+      - name: Exercise fail-closed CLI examples
+        shell: bash
+        run: |
+          node tools/ci/phase-router.mjs --base-ref development/v1.1-quality-exploration src/rendering/living-scene.js
+          node tools/ci/phase-router.mjs --base-ref development/v1.1-quality-exploration src/domains/planetology/volatile-ledger.js
+          node tools/ci/phase-router.mjs --base-ref main src/rendering/living-scene.js
