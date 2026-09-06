@@ -52,14 +52,14 @@ export function attachWaveAProduct(manifest, plan) {
     resourceBounds: {maxGlobePrograms: 2, maxGlobeBuffers: 1, maxGlobeTextures: 1}
   };
   manifest.worldConvergence = {
-    version: 'ofu-wave-a-world-convergence-1', developmentCandidate: true,
+    version: 'ofu-wave-a-world-convergence-1', developmentCandidate: false,
     inputProvenance: 'docs/integration/wave-a-inputs.json',
     runtimeVersion: 'ofu-wave-a-living-runtime-1',
     canonicalAuthority: ['P2_IDENTITY', 'P3_ASTRONOMY', 'P4_COMMITTED_HISTORY', 'P6_ELIGIBILITY'],
     modelAuthority: 'MODEL_DERIVED_SIMULATION', renderAuthority: 'PRESENTATION_ONLY',
     modelHistoryCommitsCanonicalEvents: false, canonicalP6Changed: false,
     historyFrames: 64, cacheBounds: {discovery: 12, worlds: 16, bodies: 8, candidates: 32},
-    releaseVersionDeclared: false
+    releaseVersionDeclared: true
   };
   manifest.px.scope = 'FULL_V1_WAVE_A_PRODUCT';
   manifest.productSourceComposition += '+v1-wave-a-world-convergence-1';
