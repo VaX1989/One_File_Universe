@@ -1,0 +1,50 @@
+name: V1X Convergence Run Tested Applicator
+on:
+  push:
+    branches:
+      - integration/v1.0-definitive-product-convergence-2026-09-05
+    paths:
+      - .github/workflows/v1x-convergence-run-applicator.yml
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+      - name: Verify convergence ancestry
+        shell: bash
+        run: |
+          git merge-base --is-ancestor 5b199df901086ed520ee46cfe73f192ec5253398 HEAD
+      - name: Recover and verify tested patch
+        shell: bash
+        run: |
+          python - <<'PY'
+          import base64,re,pathlib
+          p=pathlib.Path('.github/workflows/v1x-convergence-apply-tested-patch.yml').read_text()
+          m=re.search(r'PATCH_TGZ_B64:\s*([A-Za-z0-9+/=]+)',p)
+          if not m: raise SystemExit('patch payload not found')
+          pathlib.Path('/tmp/convergence-patch.tgz').write_bytes(base64.b64decode(m.group(1)))
+          PY
+          tar -xzf /tmp/convergence-patch.tgz -C /tmp
+          echo '362b267f65cc860490b137b39ba389415c5e417f140aa3b82906bb9435d969fc  /tmp/convergence.patch' | sha256sum -c -
+          git apply --check /tmp/convergence.patch
+          git apply /tmp/convergence.patch
+      - name: Run focused and frozen regression tests
+        shell: bash
+        run: |
+          node tests/v1x-convergence/active-authorities.mjs
+          node tests/v1/session-persistence.mjs
+          node tests/v1x-11-runtime-streaming-resources/runtime-resources.mjs
+          node tests/v1x-12-persistence-gameplay-intervention/governed-action-journey.mjs
+          npm test
+      - name: Commit tested convergence repairs
+        shell: bash
+        run: |
+          git config user.name 'VaX1989'
+          git config user.email 'Pietrocorona89@gmail.com'
+          git add -A
+          git commit -m 'convergence: activate continuous reality and repair shared authorities'
+          git push origin HEAD:integration/v1.0-definitive-product-convergence-2026-09-05
