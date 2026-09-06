@@ -6,6 +6,9 @@
 }
 .mobile-sheet-bar,.mobile-device-diagnostics{display:none}
 .mobile-sheet-body{display:contents}
+/* Runtime mobile state and CSS media state use the same contract. Keep the primary sheet affordance visible as soon as the runtime commits mobile mode, including resize/orientation transitions. */
+html[data-ofu-mobile="true"] .mobile-sheet-bar{display:grid}
+html[data-ofu-mobile="true"] .mobile-sheet-toggle{display:flex}
 /* Legacy fallback permits browser gestures; an installed runtime owns canvas travel. */
 #planet-view{touch-action:pan-y pinch-zoom}
 #planet-view[data-ofu-touch-owner="wave-iv-input-router"]{touch-action:none;overscroll-behavior:contain}
