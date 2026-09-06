@@ -31,7 +31,7 @@ function canonicalGraph(state){
     if(!allIds.has(e.from)||!allIds.has(e.to))return {error:'DANGLING_MODELED_TRADE_EDGE',settlements,nodes,ignoredInactiveEdges};
     if(!activeIds.has(e.from)||!activeIds.has(e.to)||e.status==='INACTIVE'){ignoredInactiveEdges++;continue;}
     const key=pairKey(e.from,e.to);V.assert(!seenPairs.has(key),'duplicate settlement network edge');seenPairs.add(key);
-    const cost=Number(e.costPpm||0),flow=Number(e.flowUnits||0);V.ppm(cost,'trade costPpm');V.int(flow,'trade flowUnits',0,1000000000);
+    const cost=Number(e.costPpm||0),flow=Number(e.flowUnits||0);V.ppm(cost,'trade costPpm');V.int(flow,'trade flowUnits',0,Number.MAX_SAFE_INTEGER);
     usable.push(Object.freeze({...e,costPpm:cost,flowUnits:flow}));
   }
   usable.sort((a,b)=>pairKey(a.from,a.to).localeCompare(pairKey(b.from,b.to))||String(a.edgeId||'').localeCompare(String(b.edgeId||'')));
@@ -66,6 +66,7 @@ function topology(state,settlementId){
     inactiveSettlementKnown:true,routeContinuityClass:'INACTIVE_CURRENT_SNAPSHOT'});
   const distance=bfs(graph,settlementId),componentIds=[...distance.keys()].sort(),incident=(graph.adjacency.get(settlementId)||[]),incidentEdges=incident.map(x=>x.edge),neighborIds=[...new Set(incident.map(x=>x.id))].sort();
   const incidentFlowUnits=incidentEdges.reduce((n,e)=>n+e.flowUnits,0),meanIncidentCostPpm=incidentEdges.length?Math.floor(incidentEdges.reduce((n,e)=>n+e.costPpm,0)/incidentEdges.length):0;
+  V.assert(Number.isSafeInteger(incidentFlowUnits),'settlement network incident flow overflow');
   const remaining=componentIds.filter(id=>id!==settlementId),after=componentsAmong(graph,remaining,settlementId),connectedPairsAfter=after.reduce((n,c)=>n+pairs(c.length),0),lostPairCount=pairs(remaining.length)-connectedPairsAfter;
   const maxHopDistance=Math.max(0,...distance.values()),routeContinuityClass=neighborIds.length===0?'ISOLATED':neighborIds.length===1?'LEAF':lostPairCount>0?'ARTICULATION_CONNECTOR':'MESHED_NODE';
   const distances=Object.freeze([...distance.entries()].sort((a,b)=>a[1]-b[1]||a[0].localeCompare(b[0])).slice(0,MAX_DISTANCE_ROWS).map(([id,hops])=>Object.freeze({settlementId:id,hops})));
