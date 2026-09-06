@@ -6,6 +6,10 @@ on:
       - feature/p4-temporal-kernel
   pull_request:
 
+concurrency:
+  group: p4-conformance-${{ github.event_name }}-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
 env:
   OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 
@@ -16,10 +20,10 @@ jobs:
   node-replay:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: ${{ env.OFU_SOURCE_SHA }}
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '24.20.0'
       - name: Verify exact source checkout
@@ -43,7 +47,7 @@ jobs:
           cmp /tmp/ofu-first-manifest.json dist/build-manifest.json
       - run: node tools/p4-benchmark.mjs
       - run: node tests/integration/evidence-isolation-generic.mjs
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: p4-node
           path: dist/evidence/p4/
@@ -55,10 +59,10 @@ jobs:
       matrix:
         browser: [chromium, firefox, webkit]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: ${{ env.OFU_SOURCE_SHA }}
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '24.20.0'
       - name: Verify exact source checkout
@@ -71,7 +75,7 @@ jobs:
           BROWSER: ${{ matrix.browser }}
           EXPECTED_PLATFORM: linux
           EXPECTED_ARCH: x64
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: p4-linux-x64-${{ matrix.browser }}
           path: dist/evidence/p4/
@@ -91,10 +95,10 @@ jobs:
             arch: arm64
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: ${{ env.OFU_SOURCE_SHA }}
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '24.20.0'
       - name: Verify exact source checkout
@@ -107,7 +111,7 @@ jobs:
           BROWSER: ${{ matrix.browser }}
           EXPECTED_PLATFORM: ${{ matrix.platform }}
           EXPECTED_ARCH: ${{ matrix.arch }}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: p4-${{ matrix.platform }}-${{ matrix.arch }}-${{ matrix.browser }}
           path: dist/evidence/p4/
@@ -117,10 +121,10 @@ jobs:
     needs: [node-replay, browser-linux, browser-platform]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: ${{ env.OFU_SOURCE_SHA }}
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '24.20.0'
       - name: Verify exact source checkout
@@ -132,12 +136,12 @@ jobs:
           test '${{ needs.node-replay.result }}' = success
           test '${{ needs.browser-linux.result }}' = success
           test '${{ needs.browser-platform.result }}' = success
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           pattern: p4-*
           path: collected
       - run: node tools/aggregate-p4-evidence.mjs collected
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
           name: p4-aggregate
