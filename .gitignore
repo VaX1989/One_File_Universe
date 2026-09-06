@@ -26,3 +26,6 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
+
+# Generated Wave A convergence and browser evidence
+reports/wave-a/

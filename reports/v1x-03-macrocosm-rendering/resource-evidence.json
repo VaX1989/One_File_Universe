@@ -1,0 +1,120 @@
+{
+  "contract": "ofu-v1x-03-resource-evidence-1",
+  "authority": "MEASURED_RUNTIME_EVIDENCE",
+  "canonicalPromotion": false,
+  "scope": "NODE_CPU_FRAME_PREPARATION_ONLY",
+  "environment": {
+    "node": "v22.16.0",
+    "platform": "linux",
+    "arch": "x64",
+    "cpuModel": "AMD EPYC 9V74 80-Core Processor",
+    "logicalCpuCount": 5
+  },
+  "limitations": [
+    "Does not measure browser GPU time or GPU memory.",
+    "Node process memory deltas include runtime allocator noise.",
+    "Synthetic fixture coordinates are PRESENTATION_ONLY and are not astronomy facts."
+  ],
+  "measurements": [
+    {
+      "inputCount": 128,
+      "quality": "low",
+      "iterations": 25,
+      "minMs": 3.549226,
+      "medianMs": 4.02246,
+      "p95Ms": 5.133043,
+      "maxMs": 5.329779,
+      "heapUsedDeltaBytes": 837800,
+      "rssDeltaBytes": 5758976,
+      "frameHash": "83b6c365",
+      "counters": {
+        "inputCount": 128,
+        "lodRejected": 0,
+        "frustumRejected": 0,
+        "budgetRejected": 0,
+        "visibleCount": 128,
+        "pickableCount": 0,
+        "maxInstances": 512,
+        "maxPickCandidates": 128,
+        "drawCallsPlanned": 1,
+        "gpuVertexBytesPlanned": 4096,
+        "cpuProjectionRecords": 128
+      }
+    },
+    {
+      "inputCount": 1200,
+      "quality": "balanced",
+      "iterations": 25,
+      "minMs": 32.869055,
+      "medianMs": 34.452261,
+      "p95Ms": 39.245701,
+      "maxMs": 41.233146,
+      "heapUsedDeltaBytes": 15403744,
+      "rssDeltaBytes": 22863872,
+      "frameHash": "165673fd",
+      "counters": {
+        "inputCount": 1200,
+        "lodRejected": 0,
+        "frustumRejected": 0,
+        "budgetRejected": 0,
+        "visibleCount": 1200,
+        "pickableCount": 0,
+        "maxInstances": 2048,
+        "maxPickCandidates": 384,
+        "drawCallsPlanned": 1,
+        "gpuVertexBytesPlanned": 38400,
+        "cpuProjectionRecords": 1200
+      }
+    },
+    {
+      "inputCount": 5000,
+      "quality": "balanced",
+      "iterations": 25,
+      "minMs": 71.960554,
+      "medianMs": 77.578447,
+      "p95Ms": 87.449917,
+      "maxMs": 89.689751,
+      "heapUsedDeltaBytes": 26264304,
+      "rssDeltaBytes": 23871488,
+      "frameHash": "ed98ef8d",
+      "counters": {
+        "inputCount": 5000,
+        "lodRejected": 0,
+        "frustumRejected": 0,
+        "budgetRejected": 2952,
+        "visibleCount": 2048,
+        "pickableCount": 0,
+        "maxInstances": 2048,
+        "maxPickCandidates": 384,
+        "drawCallsPlanned": 1,
+        "gpuVertexBytesPlanned": 65536,
+        "cpuProjectionRecords": 2048
+      }
+    },
+    {
+      "inputCount": 5000,
+      "quality": "high",
+      "iterations": 25,
+      "minMs": 115.271999,
+      "medianMs": 117.512274,
+      "p95Ms": 125.090961,
+      "maxMs": 130.927253,
+      "heapUsedDeltaBytes": 11741008,
+      "rssDeltaBytes": 9748480,
+      "frameHash": "4997b609",
+      "counters": {
+        "inputCount": 5000,
+        "lodRejected": 0,
+        "frustumRejected": 0,
+        "budgetRejected": 904,
+        "visibleCount": 4096,
+        "pickableCount": 0,
+        "maxInstances": 4096,
+        "maxPickCandidates": 768,
+        "drawCallsPlanned": 1,
+        "gpuVertexBytesPlanned": 131072,
+        "cpuProjectionRecords": 4096
+      }
+    }
+  ]
+}

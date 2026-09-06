@@ -1,0 +1,23 @@
+{
+  "schema": "ofu-v1x-lane-handoff-1",
+  "laneId": "V1X-07",
+  "branch": "parallel/v1x-07-life-ecology-embodiment-2026-09-06",
+  "status": "IMPLEMENTED_UNCERTIFIED",
+  "authorityClass": "PRESENTATION_ONLY",
+  "baseSha": "760c0c70bccb6afd7c7b07600c0f5be3f80e7b19",
+  "baseTree": "3324e6354b5ff1b90156d1693e6051595b6f1219",
+  "canonicalP6Mutation": false,
+  "founderAccepted": false,
+  "integrationDependencies": [
+    "Convergence owner: additive component discovery/composition",
+    "V1X-06: local surface overlay context at integration",
+    "V1X-09: consume modeled organism REFINE handoff",
+    "V1X-11: authoritative measured runtime/resource certification if promoted"
+  ],
+  "limitations": [
+    "Lane does not mutate central renderer/bootstrap/selection authority.",
+    "Visual geometry, motion, pigment/layout are presentation encodings, not observations.",
+    "Physical Android/iOS evidence is NOT_VERIFIED.",
+    "Targeted local oracle is not cumulative v1 CI certification."
+  ]
+}

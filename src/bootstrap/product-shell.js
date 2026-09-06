@@ -12,7 +12,7 @@ function announce(message){if(!message||message===state.lastAnnouncement)return;
 function workspace(name,{focus=false,announceChange=true}={}){
  if(!['explore','inspect','lab'].includes(name))return;
  state.workspace=name;
- for(const button of document.querySelectorAll('[data-workspace]')){const active=button.dataset.workspace===name;button.setAttribute('aria-selected',active?'true':'false');button.tabIndex=active?0:-1}
+ for(const button of document.querySelectorAll('button[data-workspace]')){const active=button.dataset.workspace===name;button.setAttribute('aria-selected',active?'true':'false');button.tabIndex=active?0:-1}
  for(const panel of document.querySelectorAll('[data-workspace-panel]'))panel.hidden=panel.dataset.workspacePanel!==name;
  document.documentElement.dataset.workspace=name;
  if(focus){const panel=document.querySelector(`[data-workspace-panel="${name}"]`);panel?.focus({preventScroll:false})}
@@ -58,9 +58,9 @@ function validateQuery(event){const button=event.target.closest?.('#query');if(!
 function validateArchive(event){const button=event.target.closest?.('#archive-import');if(!button)return;const raw=q('archive')?.value.trim()||'';if(!/^(?:[0-9a-fA-F]{2})*$/.test(raw)){event.preventDefault();event.stopImmediatePropagation();text('archive-output','Import not applied: archive must be even-length hexadecimal.');announce('Archive import rejected: invalid hexadecimal');q('archive')?.focus();return}try{const bytes=new Uint8Array(raw.length/2);for(let i=0;i<bytes.length;i++)bytes[i]=parseInt(raw.slice(i*2,i*2+2),16);O.p4?.importArchive(bytes)}catch(e){event.preventDefault();event.stopImmediatePropagation();text('archive-output','Import not applied: '+String(e?.message||e));announce('Archive import rejected by deterministic validation');q('archive')?.focus()}}
 function init(){
  document.documentElement.dataset.reducedMotion=state.reducedMotion?'reduce':'full';workspace('explore',{announceChange:false});
- document.addEventListener('click',e=>{const open=e.target.closest?.('[data-open-workspace]');if(open){workspace(open.dataset.openWorkspace,{focus:true});return}const tab=e.target.closest?.('[data-workspace]');if(tab){workspace(tab.dataset.workspace,{focus:false});return}},false);
+ document.addEventListener('click',e=>{const open=e.target.closest?.('[data-open-workspace]');if(open){workspace(open.dataset.openWorkspace,{focus:true});return}const tab=e.target.closest?.('button[data-workspace]');if(tab){workspace(tab.dataset.workspace,{focus:false});return}},false);
  document.addEventListener('click',validateQuery,true);document.addEventListener('click',validateArchive,true);
- document.addEventListener('keydown',e=>{const tab=e.target.closest?.('[data-workspace]');if(tab&&(e.key==='ArrowLeft'||e.key==='ArrowRight')){e.preventDefault();const tabs=[...document.querySelectorAll('[data-workspace]')],i=tabs.indexOf(tab),next=tabs[(i+(e.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length];workspace(next.dataset.workspace,{focus:false});next.focus()}else if(e.key==='Escape'&&state.workspace!=='explore'){workspace('explore',{focus:false});q('workspace-explore-tab')?.focus()}});
+ document.addEventListener('keydown',e=>{const tab=e.target.closest?.('button[data-workspace]');if(tab&&(e.key==='ArrowLeft'||e.key==='ArrowRight')){e.preventDefault();const tabs=[...document.querySelectorAll('button[data-workspace]')],i=tabs.indexOf(tab),next=tabs[(i+(e.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length];workspace(next.dataset.workspace,{focus:false});next.focus()}else if(e.key==='Escape'&&state.workspace!=='explore'){workspace('explore',{focus:false});q('workspace-explore-tab')?.focus()}});
  const mq=typeof matchMedia==='function'?matchMedia('(prefers-reduced-motion: reduce)'):null;mq?.addEventListener?.('change',e=>{state.reducedMotion=e.matches;document.documentElement.dataset.reducedMotion=e.matches?'reduce':'full';announce(e.matches?'Reduced motion enabled':'Standard motion enabled')});
  for(const el of document.querySelectorAll('pre,textarea,.mono-value'))el.setAttribute('data-copy-safe','true');
  setInterval(sync,250);sync();

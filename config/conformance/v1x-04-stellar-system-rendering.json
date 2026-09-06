@@ -1,0 +1,47 @@
+{
+  "schema": "ofu-conformance-1",
+  "tests": [
+    {
+      "id": "v1x04.system-rendering.3d",
+      "owner": "v1x-04-stellar-system-rendering",
+      "tier": "LANE_TARGETED",
+      "command": [
+        "node",
+        "tests/v1x-04-stellar-system-rendering/system-rendering-oracle.mjs"
+      ],
+      "providers": [
+        "v1x04.system.renderer"
+      ],
+      "oracle": "True xyz system geometry remains pick-stable under arbitrary external perspective cameras.",
+      "timeoutMs": 30000
+    },
+    {
+      "id": "v1x04.system-rendering.static-oracle",
+      "owner": "v1x-04-stellar-system-rendering",
+      "tier": "LANE_TARGETED",
+      "command": [
+        "node",
+        "tests/v1x-04-stellar-system-rendering/static-system-3d-oracle.mjs"
+      ],
+      "providers": [
+        "v1x04.system.renderer"
+      ],
+      "oracle": "Reject screen-space ellipse pseudo-3D; require xyz scene coordinates plus perspective projection.",
+      "timeoutMs": 30000
+    },
+    {
+      "id": "v1x04.system-rendering.continuity",
+      "owner": "v1x-04-stellar-system-rendering",
+      "tier": "LANE_TARGETED",
+      "command": [
+        "node",
+        "tests/v1x-04-stellar-system-rendering/continuity.mjs"
+      ],
+      "providers": [
+        "v1x04.system.renderer"
+      ],
+      "oracle": "System and planet identity plus frame token survive refine/project reverse traversal.",
+      "timeoutMs": 30000
+    }
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1x-06.surface.frame",
+      "version": "1.0.0",
+      "owner": "v1x-06-surface-human-rendering",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/v1x-06-surface-human-rendering/math-frame.js",
+      "dependencies": [],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "V1X-06 lane-owned cube-sphere mapping and local tangent/floating-origin presentation frame. Does not supersede V1X-01 reference-frame authority.",
+      "provides": [
+        "v1x-06.surface.frame"
+      ]
+    },
+    {
+      "id": "v1x-06.surface.terrain-lod",
+      "version": "1.0.0",
+      "owner": "v1x-06-surface-human-rendering",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/v1x-06-surface-human-rendering/terrain-lod.js",
+      "dependencies": [
+        "v1x-06.surface.frame"
+      ],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "V1X-06 bounded terrain LOD, culling, seam/skirt descriptors and tile cache. Procedural relief is explicitly non-physical presentation.",
+      "provides": [
+        "v1x-06.surface.terrain-lod"
+      ]
+    },
+    {
+      "id": "v1x-06.surface.journey",
+      "version": "1.0.0",
+      "owner": "v1x-06-surface-human-rendering",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/v1x-06-surface-human-rendering/journey.js",
+      "dependencies": [
+        "v1x-06.surface.frame"
+      ],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "V1X-06 global-to-human presentation journey consuming V1X-05 handoff data while preserving upstream camera, selection, reference-frame and P4 authority boundaries.",
+      "provides": [
+        "v1x-06.surface.journey"
+      ]
+    },
+    {
+      "id": "v1x-06.surface.provider",
+      "version": "1.0.0",
+      "owner": "v1x-06-surface-human-rendering",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/v1x-06-surface-human-rendering/surface-provider.js",
+      "dependencies": [
+        "v1x-06.surface.frame",
+        "v1x-06.surface.terrain-lod",
+        "v1x-06.surface.journey"
+      ],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "V1X-06 embodied surface provider and Canvas2D renderer with authority-labeled environment cues and non-owning life/civilization overlay hooks.",
+      "provides": [
+        "v1x-06.surface.provider"
+      ]
+    },
+    {
+      "id": "px.providers.v1x-06-surface-human-rendering",
+      "version": "1.0.0",
+      "owner": "v1x-06-surface-human-rendering",
+      "kind": "data",
+      "stage": "foundation",
+      "placement": "resource",
+      "source": "config/extensions/v1x-06-surface-human-rendering/catalog.json",
+      "dependencies": [],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Prompt-0 additive provider catalog for V1X-06 scene, renderer and surface-local interaction capability discovery.",
+      "provides": [
+        "v1x-06.providers.catalog"
+      ]
+    }
+  ]
+}

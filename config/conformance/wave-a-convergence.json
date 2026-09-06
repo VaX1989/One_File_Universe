@@ -1,0 +1,65 @@
+{
+  "schema": "ofu-conformance-1",
+  "tests": [
+    {
+      "id": "v1.wave-a.fast",
+      "owner": "v1",
+      "tier": "FAST_LOCAL",
+      "command": [
+        "node",
+        "tests/v1/integration/causal-contracts.mjs"
+      ],
+      "providers": [
+        "v1.query.environment",
+        "v1.query.local-world",
+        "v1.query.material-source",
+        "v1.query.model-history",
+        "v1.query.ecology",
+        "v1.query.body-world",
+        "v1.scene.living-world"
+      ],
+      "oracle": "wave-a-fast-1",
+      "timeoutMs": 180000
+    },
+    {
+      "id": "v1.wave-a.integration",
+      "owner": "v1",
+      "tier": "INTEGRATION",
+      "command": [
+        "node",
+        "tests/v1/integration/world-journey.mjs"
+      ],
+      "providers": [
+        "v1.query.environment",
+        "v1.query.local-world",
+        "v1.query.material-source",
+        "v1.query.model-history",
+        "v1.query.ecology",
+        "v1.query.body-world",
+        "v1.scene.living-world"
+      ],
+      "oracle": "wave-a-integration-1",
+      "timeoutMs": 180000
+    },
+    {
+      "id": "v1.wave-a.seal",
+      "owner": "v1",
+      "tier": "RELEASE",
+      "command": [
+        "node",
+        "tests/v1/integration/graph-seal.mjs"
+      ],
+      "providers": [
+        "v1.query.environment",
+        "v1.query.local-world",
+        "v1.query.material-source",
+        "v1.query.model-history",
+        "v1.query.ecology",
+        "v1.query.body-world",
+        "v1.scene.living-world"
+      ],
+      "oracle": "wave-a-seal-1",
+      "timeoutMs": 180000
+    }
+  ]
+}

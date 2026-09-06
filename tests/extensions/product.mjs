@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';import {loadProduct} from './product-helpers.mjs';
 const {O,key}=loadProduct(),P=O.pxProduct,C=O.pxContracts,R=O.waveIVScaleRuntime;let cases=0;
 const chosen=P.captured(Object.fromEntries(Object.entries(key).reverse()));assert.deepEqual(chosen.selection.target.address,Object.entries(key).map(([k,v])=>k+'='+v));cases++;assert.equal(chosen.selection.target.entityId,'9e2041b4c8550e86edc574c42cba1bb31224a2ac7a9e8ffaea232310ce24d98e');assert.equal(chosen.canonicalDigest,'72b9bf78636609e176e6988bc5fbb54fbd0aab461a7a609462d12d79c74ae697');assert.equal(chosen.p4Digest,'397828e674c60009e2ac643c6e90b5c75b505d7b44212c58d841503d6a4b16c3');cases++;
-for(const [id,scales] of [['wave-iv-macro',['galaxy','stellar_neighborhood','system']],['planet-webgl',['orbit','approach','global_surface']],['surface-webgl',['regional_surface','local_surface','human']]])R.registerSceneProvider({id,scales,setActive(){}});
+for(const [id,scales] of [['wave-iv-macro',['galaxy','galactic_region','stellar_neighborhood','system']],['planet-webgl',['orbit','approach','global_surface']],['surface-webgl',['regional_surface','local_surface','human']]])R.registerSceneProvider({id,scales,setActive(){}});
 R.setSelection(key,{planetId:chosen.selection.target.entityId,presentationStatus:'SUPPORTED'});
 const selectedBefore=R.snapshot().selectedCanonicalTarget;assert.throws(()=>R.setSelection(key,{planetId:'f'.repeat(64)}),/identity does not match/);assert.deepEqual(R.snapshot().selectedCanonicalTarget,selectedBefore);cases++;
 P.seal();assert(P.snapshot().registry.bindingsSealed);cases++;

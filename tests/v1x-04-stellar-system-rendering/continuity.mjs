@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+for (const rel of ['src/v1x-04-stellar-system-rendering/system-math.js','src/v1x-04-stellar-system-rendering/orbit-presentation.js','src/v1x-04-stellar-system-rendering/system-scene.js','src/v1x-04-stellar-system-rendering/system-provider.js']) vm.runInThisContext(fs.readFileSync(rel,'utf8'),{filename:rel});
+const p=globalThis.OFU.v1x04SystemProvider,hex=n=>n.toString(16).padStart(64,'0');
+const w=p.continuityWitness({regionCanonicalEntityId:hex(9),systemCanonicalEntityId:hex(1),planetCanonicalEntityId:hex(2),referenceFrameId:'frame-a',scaleStateToken:'scale-a'});
+assert.equal(w.identityInvariant.reversibleWithoutIdentitySubstitution,true);
+assert.deepEqual(w.steps.map(x=>x.operation),['REFINE','REFINE','PROJECT','PROJECT']);
+assert(w.steps.every(x=>x.referenceFrameId==='frame-a'&&x.scaleStateToken==='scale-a'));
+console.log(JSON.stringify({status:'PASS',suite:'v1x04-continuity',steps:w.steps.length,identityStable:true}));

@@ -21,12 +21,19 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           ref: ${{ env.OFU_SOURCE_SHA }}
+          fetch-depth: 0
           persist-credentials: false
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '24.20.0'
       - name: Exact source
         run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Install browsers for owner-qualified browser conformance
+        run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium firefox webkit
+      - name: Build full v1 oracle fixture
+        run: node tools/build-ofu-rendering-v09.mjs
       - name: Owner-qualified PX conformance
         run: node tools/extensions/conformance.mjs INTEGRATION --exact
       - name: Preserved product ownership and GPU failure oracles
@@ -47,10 +54,6 @@ jobs:
           node tools/build-ofu-rendering-v09.mjs > /tmp/px-build-second.json
           cmp /tmp/px-first.html dist/One_File_Universe.html
           cmp /tmp/px-first-manifest.json dist/rendering-build-manifest.json
-      - name: Install Chromium
-        run: |
-          npm install --no-save playwright@1.62.1
-          npx playwright install --with-deps chromium
       - name: Actual registered product journey
         run: node tests/extensions/browser-product.mjs
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

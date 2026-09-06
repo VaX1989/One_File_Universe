@@ -1,0 +1,21 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1x08.civilization-history.overlay",
+      "version": "1.0.0",
+      "owner": "v1x-08-civilization-history-embodiment",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/v1x-08-civilization-history-embodiment/index.js",
+      "dependencies": [],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "V1X-08 structured civilization/history presentation over admitted MODEL_DERIVED_SIMULATION state. The component creates no canonical history, no scientific geometry, and no second selection, scene, camera, persistence, provider, or resource authority.",
+      "provides": [
+        "v1x08.civilization-history.overlay",
+        "v1x08.civilization-history.local-overlay-handoff"
+      ]
+    }
+  ]
+}

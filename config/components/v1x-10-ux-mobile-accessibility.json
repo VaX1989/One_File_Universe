@@ -1,0 +1,57 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1x10.ux.direct-manipulation",
+      "version": "1.0.0",
+      "owner": "v1x-10-ux-mobile-accessibility",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/v1x-10-ux-mobile-accessibility/direct-manipulation.js",
+      "dependencies": ["ofu.bootstrap.product.input-router"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "V1X-10 additive observer and assistive presentation adapter. Native input remains owned by ofu-wave-iv-input-router-6; this component records bounded deterministic journey observations and adds no scientific authority.",
+      "provides": ["v1x10.ux.direct-manipulation"]
+    },
+    {
+      "id": "v1x10.ux.viewport",
+      "version": "1.0.0",
+      "owner": "v1x-10-ux-mobile-accessibility",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/v1x-10-ux-mobile-accessibility/viewport-ux.js",
+      "dependencies": ["v1x10.ux.direct-manipulation", "ofu.bootstrap.product.mobile-interaction"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "V1X-10 contextual viewport actions and compact-layout geometry telemetry. Selection, camera, scale, scene, evidence and scientific state remain external governed authorities.",
+      "provides": ["v1x10.ux.viewport"]
+    },
+    {
+      "id": "v1x10.ux.accessibility",
+      "version": "1.0.0",
+      "owner": "v1x-10-ux-mobile-accessibility",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/v1x-10-ux-mobile-accessibility/accessibility.js",
+      "dependencies": ["v1x10.ux.viewport"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "V1X-10 focus, keyboard, skip-link and user-preference presentation semantics. Accessibility behavior requires neither AI nor hidden developer panels and creates no canonical claim.",
+      "provides": ["v1x10.ux.accessibility"]
+    },
+    {
+      "id": "v1x10.ux.viewport-first-style",
+      "version": "1.0.0",
+      "owner": "v1x-10-ux-mobile-accessibility",
+      "kind": "style",
+      "stage": "full",
+      "placement": "style",
+      "source": "src/v1x-10-ux-mobile-accessibility/viewport-first.css",
+      "dependencies": ["ofu.bootstrap.product.explorer-beta.style"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "V1X-10 responsive viewport-first layout, compact control reachability, focus visibility, reduced-motion, contrast and text-scaling presentation rules.",
+      "provides": ["v1x10.ux.viewport-first-style"]
+    }
+  ]
+}

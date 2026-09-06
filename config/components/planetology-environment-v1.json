@@ -1,0 +1,31 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1.models.planetology.causal-system",
+      "version": "2.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/planetology/causal-system.js",
+      "dependencies": ["v1.models.common"],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Wave A shipping reduced-order formation, composition, differentiation, interior heat, volatile retention and atmosphere-evolution model; no canonical P5/P6 promotion.",
+      "provides": ["v1.models.planetology.causal-system"]
+    },
+    {
+      "id": "v1.models.environment.world-system",
+      "version": "2.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/environment/world-system.js",
+      "dependencies": ["v1.models.planetology", "v1.models.planetology.causal-system"],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Wave A shipping bounded geology, climate, hydrology, cryosphere, causal multiscale topography, materials, location/time queries and P4-admission proposals; no canonical P5/P6 promotion.",
+      "provides": ["v1.models.environment.world-system"]
+    }
+  ]
+}

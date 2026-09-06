@@ -1,0 +1,70 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "px.providers.v1x13-systemic-audio",
+      "version": "1.0.0",
+      "owner": "v1x-13-systemic-audio",
+      "kind": "data",
+      "stage": "foundation",
+      "placement": "resource",
+      "source": "src/v1x-13-systemic-audio/provider-catalog.json",
+      "dependencies": [],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "V1X-13 additive provider catalog. Optional systemic audio remains PRESENTATION_ONLY and consumes shared read-only context; no canonical admissions.",
+      "provides": ["v1x13.provider-catalog"]
+    },
+    {
+      "id": "v1x13.audio.context-map",
+      "version": "1.0.0",
+      "owner": "v1x-13-systemic-audio",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/v1x-13-systemic-audio/context-map.js",
+      "dependencies": [],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "V1X-13 qualitative presentation mapping for scale/environment/life/civilization/micro context. It explicitly forbids literal sound-in-vacuum and evidence claims.",
+      "provides": ["v1x13.audio.context-map"]
+    },
+    {
+      "id": "v1x13.audio.worklet-source",
+      "version": "1.0.0",
+      "owner": "v1x-13-systemic-audio",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/v1x-13-systemic-audio/worklet-source.js",
+      "dependencies": ["v1x13.audio.context-map"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "V1X-13 bounded procedural AudioWorklet source. It allocates no AudioBuffer resources and is presentation-only.",
+      "provides": ["v1x13.audio.worklet-source"]
+    },
+    {
+      "id": "v1x13.audio.runtime",
+      "version": "1.0.0",
+      "owner": "v1x-13-systemic-audio",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/v1x-13-systemic-audio/systemic-audio.js",
+      "dependencies": ["v1x13.audio.context-map", "v1x13.audio.worklet-source"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "V1X-13 optional systemic audio runtime with one AudioContext, bounded worklet/fallback nodes, explicit resume/suspend/dispose and zero canonical mutation authority.",
+      "provides": ["v1x13.audio.runtime"]
+    },
+    {
+      "id": "v1x13.audio.controls",
+      "version": "1.0.0",
+      "owner": "v1x-13-systemic-audio",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/v1x-13-systemic-audio/controls.js",
+      "dependencies": ["v1x13.audio.context-map", "v1x13.audio.runtime"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "V1X-13 mountable semantic controls for enable, volume, mute and reduced-sensory audio. Audio is explicitly optional and non-navigational.",
+      "provides": ["v1x13.audio.controls"]
+    }
+  ]
+}

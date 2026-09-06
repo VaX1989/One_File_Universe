@@ -1,0 +1,10 @@
+(function(root){
+'use strict';
+const O=root.OFU=root.OFU||{},V=O.v1Common,B=O.v1Biology;if(!V||!B)throw new Error('v1 ecology query prerequisites missing');
+const VERSION='ofu-v1-ecology-query-1';
+function trophicNetwork(state,{limit=96}={}){V.int(limit,'limit',1,96);const populations=(state.populations||[]).slice(0,limit),ids=new Set(populations.map(x=>x.populationId)),edges=(state.interactions||[]).filter(x=>ids.has(x.fromPopulationId)&&ids.has(x.toPopulationId)).slice(0,192);const levels={};for(const x of populations){const k=String(x.trophicLevel||1);levels[k]=(levels[k]||0)+x.energyUnits;}return Object.freeze({worldIdentity:state.worldIdentity,generation:state.generation,nodes:populations.map(x=>Object.freeze({populationId:x.populationId,lineageId:x.lineageId,role:x.role,trophicLevel:x.trophicLevel,individuals:x.individuals,biomassUnits:x.biomassUnits,energyUnits:x.energyUnits})),edges,trophicEnergyUnits:levels,energyPyramidConsistent:(levels['2']||0)<=(levels['1']||0)&&(levels['3']||0)<=(levels['2']||0),bounded:true,authority:'MODEL_DERIVED_SIMULATION'});}
+function ecoregion(state,{regionIdentity,environment=null,capacity=24}){return B.biogeographicRefine(state,{regionIdentity,environment,capacity});}
+function localAssemblage(region,{locationIdentity,capacity=12}){return B.localLifeQuery(region,{locationIdentity,capacity});}
+function answers(region,local){return Object.freeze({whatIsHere:(local.populations||[]).map(x=>Object.freeze({populationId:x.populationId,lineageId:x.lineageId,role:x.role,morphology:B.morphologyHints(x)})),abundant:local.abundant||[],rare:local.rare||[],potentiallyHazardous:local.potentiallyHazardous||[],stressed:local.stressed||[],biome:local.biome||region.biome,productivityPpm:region.productivityPpm||0,biomassUnits:region.biomassUnits||0,dominantStrategies:region.dominantStrategies||[],succession:region.succession||null,authority:'MODEL_DERIVED_SIMULATION'});}
+O.v1Ecology=Object.freeze({VERSION,trophicNetwork,ecoregion,localAssemblage,answers});
+})(globalThis);

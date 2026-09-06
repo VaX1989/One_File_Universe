@@ -1,0 +1,55 @@
+name: V1 Wave A Universal Exploration
+on:
+  push:
+    branches:
+      - parallel/v1-wave-a-universal-exploration-2026-09-05
+  workflow_dispatch:
+concurrency:
+  group: v1-wave-a-exploration-${{ github.sha }}
+  cancel-in-progress: true
+env:
+  OFU_SOURCE_SHA: ${{ github.sha }}
+permissions:
+  contents: read
+jobs:
+  fast-local:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with: {ref: '${{ env.OFU_SOURCE_SHA }}'}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with: {node-version: '24.20.0'}
+      - name: Verify exact Wave A source
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Universal exploration FAST_LOCAL
+        run: |
+          node tests/v1/exploration/universal-exploration.mjs
+          node tests/v1/world-discovery.mjs
+          node tests/wave-iv/macro/macro-oracles.mjs
+      - name: Compose strict single-file product with additive lane manifest
+        run: node tools/build-ofu-rendering-v09.mjs
+  browser:
+    needs: fast-local
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with: {ref: '${{ env.OFU_SOURCE_SHA }}'}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with: {node-version: '24.20.0'}
+      - run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - run: node tools/build-ofu-rendering-v09.mjs
+      - run: npm install --no-save playwright@1.62.1
+      - run: npx playwright install --with-deps chromium
+      - name: Provider-backed universal exploration browser journey
+        run: node tests/v1/exploration/browser-universal-exploration.mjs
+        env: {BROWSER: chromium}
+  seal:
+    if: always()
+    needs: [fast-local, browser]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require Wave A lane evidence
+        shell: bash
+        run: |
+          test '${{ needs.fast-local.result }}' = success
+          test '${{ needs.browser.result }}' = success

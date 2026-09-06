@@ -144,10 +144,10 @@ function buildSheet(){
  return true;
 }
 function bind(){
- DOC.addEventListener('click',e=>{const open=e.target.closest?.('[data-open-workspace]');if(open){syncWorkspace({preserveFocus:true});return}if(e.target.closest?.('[data-workspace]'))syncWorkspace({preserveFocus:false})},false);
+ DOC.addEventListener('click',e=>{const open=e.target.closest?.('[data-open-workspace]');if(open){syncWorkspace({preserveFocus:true});return}if(e.target.closest?.('button[data-workspace]'))syncWorkspace({preserveFocus:false})},false);
  DOC.addEventListener('keydown',e=>{
   if(e.key==='Escape'&&state.active&&workspaceName()==='explore'&&state.sheet==='expanded'){setSheet('peek',{announce:true});toggle?.focus({preventScroll:true});return}
-  if(e.target.closest?.('[data-workspace]')&&(e.key==='ArrowLeft'||e.key==='ArrowRight'))syncWorkspace({preserveFocus:false});
+  if(e.target.closest?.('button[data-workspace]')&&(e.key==='ArrowLeft'||e.key==='ArrowRight'))syncWorkspace({preserveFocus:false});
  },false);
  DOC.addEventListener('focusin',e=>{if(state.active&&state.sheet==='peek'&&body?.contains(e.target))setSheet('expanded')});
  const canvas=DOC.getElementById('planet-view');

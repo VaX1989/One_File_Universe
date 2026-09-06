@@ -1,0 +1,96 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1.micro.materials",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/materials/material-model.js",
+      "dependencies": ["v1.models.common"],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Wave A Prompt 5 source-backed material descriptors with explicit chemistry authority and bounded composition.",
+      "provides": ["v1.micro.materials"]
+    },
+    {
+      "id": "v1.micro.source-adapters",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/micro/source-adapters.js",
+      "dependencies": ["v1.micro.materials"],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Narrow source adapters for planetology, biology, manufactured materials and legacy microscopic contexts.",
+      "provides": ["v1.micro.source-adapters"]
+    },
+    {
+      "id": "v1.micro.microstructure",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/micro/microstructure.js",
+      "dependencies": ["v1.micro.materials"],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Deterministic representative-volume microstructure with bounded grains, pores, boundaries and provider-gated biological domains.",
+      "provides": ["v1.micro.microstructure"]
+    },
+    {
+      "id": "v1.micro.molecular",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/molecular/representative.js",
+      "dependencies": ["v1.micro.materials", "v1.micro.microstructure"],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Representative molecular/formula-unit regime that fails closed when chemistry is unresolved and never claims exact bulk inventory.",
+      "provides": ["v1.micro.molecular"]
+    },
+    {
+      "id": "v1.micro.atomic",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/atomic/representative.js",
+      "dependencies": ["v1.micro.materials", "v1.micro.molecular"],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Bounded representative atomic structures with source-coordinate authority separation and an explicit non-classical boundary.",
+      "provides": ["v1.micro.atomic"]
+    },
+    {
+      "id": "v1.micro.pipeline",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/micro/pipeline.js",
+      "dependencies": ["v1.micro.materials", "v1.micro.microstructure", "v1.micro.molecular", "v1.micro.atomic"],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Late-materialized LOCAL to MATERIAL to MICROSTRUCTURE to MOLECULAR to ATOMIC semantic transitions with REFINE/PROJECT/RECONCILE witnesses.",
+      "provides": ["v1.micro.pipeline"]
+    },
+    {
+      "id": "v1.micro.regime-adapter",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/micro/regime-adapter.js",
+      "dependencies": ["v1.micro.pipeline", "v1.micro.source-adapters", "v1.models.microscopic"],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Compatibility seam preserving the legacy tissue/cell runtime while exposing the Wave A material-first microscopic ladder.",
+      "provides": ["v1.micro.regime-adapter"]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "schema": "ofu-conformance-1",
+  "tests": [
+    {
+      "id": "v1x12.governed-action-persistence-replay",
+      "owner": "v1x-12-persistence-gameplay-intervention",
+      "tier": "LANE_TARGETED",
+      "command": ["node", "tests/v1x-12-persistence-gameplay-intervention/governed-action-journey.mjs"],
+      "providers": ["v1.interaction.player-agency", "v1.persistence.session"],
+      "oracle": "v1x12-governed-action-persistence-replay-v1",
+      "timeoutMs": 120000
+    }
+  ]
+}

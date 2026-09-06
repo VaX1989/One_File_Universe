@@ -1,0 +1,8 @@
+{
+  "schema": "ofu-conformance-1",
+  "tests": [
+    {"id":"v1x-01.reference-frames","owner":"v1x-01-camera-scale-frames","tier":"LANE_TARGETED","command":["node","tests/v1x-01-camera-scale-frames/reference-frames.mjs"],"providers":["px.interaction.camera","px.scale.context"],"oracle":"v1x01-reference-frames-oracle-1","timeoutMs":30000},
+    {"id":"v1x-01.semantic-travel","owner":"v1x-01-camera-scale-frames","tier":"LANE_TARGETED","command":["node","tests/v1x-01-camera-scale-frames/semantic-travel.mjs"],"providers":["px.interaction.camera","px.scale.context"],"oracle":"v1x01-semantic-travel-oracle-1","timeoutMs":30000},
+    {"id":"v1x-01.adapter-trace","owner":"v1x-01-camera-scale-frames","tier":"LANE_TARGETED","command":["node","tests/v1x-01-camera-scale-frames/adapter-trace.mjs"],"providers":["px.interaction.camera","px.scale.context"],"oracle":"v1x01-adapter-trace-oracle-1","timeoutMs":30000}
+  ]
+}

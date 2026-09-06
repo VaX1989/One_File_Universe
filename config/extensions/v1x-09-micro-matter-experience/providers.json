@@ -1,0 +1,21 @@
+{
+  "schema":"ofu-provider-catalog-1",
+  "owners":[{"id":"v1x-09-micro-matter-experience","prefixes":["v1x09"],"kinds":["model","representation"],"authorities":["DERIVED","PRESENTATION_ONLY"]}],
+  "canonicalAdmissions":[],
+  "providers":[
+    {
+      "contract":"ofu-px-contracts-1","id":"v1x09.model.micro-journey","version":"1.0.0","owner":"v1x-09-micro-matter-experience","kind":"model",
+      "authority":{"class":"DERIVED","contract":"ofu-px-contracts-1","model":"v1x09.model.micro-journey","version":"1.0.0","sources":["src/v1x-09-micro-matter-experience/source-anchor.js","src/v1x-09-micro-matter-experience/experience.js","src/domains/v1/micro/regime-adapter.js"],"assumptions":["Cross-regime continuity is semantic and source-anchored rather than literal Euclidean geometry."],"limitations":["Exact return covers the captured bounded JSON local context, not external process state.","Material, molecular and atomic truth remains governed by the frozen v1 micro providers."],"evidence":[]},
+      "fidelity":{"regime":"micro-matter","validity":"Bounded source-anchored refinement over frozen v1 material and micro providers.","resolution":"LOCAL through MATERIAL, MICROSTRUCTURE, MOLECULAR and ATOMIC semantic regimes.","uncertainty":"Inherited source and model uncertainty is preserved in every transition witness."},
+      "lifecycle":"SHIPPING","requires":[],"claims":["model.micro-source-anchored-journey"],"operations":["INSPECT","REFINE","PROJECT","RECONCILE"],"budget":{"entities":512,"bytes":262144,"operations":4096,"queue":64},
+      "evidence":[{"id":"v1x09.micro.bounds-authority","tier":"FAST_LOCAL"},{"id":"v1x09.micro.journey","tier":"INTEGRATION"}],"mandatory":false
+    },
+    {
+      "contract":"ofu-px-contracts-1","id":"v1x09.representation.micro-matter","version":"1.0.0","owner":"v1x-09-micro-matter-experience","kind":"representation",
+      "authority":{"class":"PRESENTATION_ONLY","contract":"ofu-px-contracts-1","model":"v1x09.representation.micro-matter","version":"1.0.0","sources":["src/v1x-09-micro-matter-experience/presentation-provider.js","src/domains/v1/atomic/representative.js"],"assumptions":["Semantic magnification cues can communicate model-regime changes without asserting literal geometric continuity."],"limitations":["Rendering and labels are presentation only and never promote model-derived structures to scientific evidence.","No electron orbit, exact wavefunction or quantum-dynamics claim is made."],"evidence":[]},
+      "fidelity":{"regime":"micro-matter","validity":"Presentation of frozen material, microstructure, molecular and atomic representations with explicit source fidelity labels.","resolution":"One bounded current representation plus source-anchor and return cues.","uncertainty":"Unresolved chemistry remains unresolved; representative coordinates are labeled separately from source-backed coordinates."},
+      "lifecycle":"SHIPPING","requires":[],"claims":["representation.micro-matter"],"operations":["INSPECT","REPRESENT"],"budget":{"entities":512,"bytes":262144,"operations":4096,"queue":64},
+      "evidence":[{"id":"v1x09.micro.bounds-authority","tier":"FAST_LOCAL"},{"id":"v1x09.micro.journey","tier":"INTEGRATION"}],"mandatory":false
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const renderer=fs.readFileSync('src/rendering/v1/living-renderer.js','utf8');
+const input=fs.readFileSync('src/bootstrap/product/living-universe.js','utf8');
+const session=fs.readFileSync('src/domains/v1/session.js','utf8');
+assert(!/macroRow|macroRows|Math\.floor\(i\s*\/\s*cols\)|i\s*%\s*cols/.test(renderer),'active macro renderer must not be grid-primary');
+assert(renderer.includes('v1x02SpatialUniverse')&&renderer.includes('v1x04SystemProvider'),'active viewport must consume true 3D providers');
+assert(input.includes("source:'living-active-wheel'")&&input.includes("source:'living-active-pinch'"),'active living viewport must route wheel and pinch continuously');
+assert(!/deltaY>0\)runtime\.back/.test(input),'wheel must not be discrete back/stage navigation');
+assert(/function primarySpatialScale\(\)\{return R\.snapshot\(\)\.semanticScale;\}/.test(session),'session must serialize canonical scale runtime only');
+assert(session.includes('PORTABLE_ARCHIVE_INTEGRITY_ONLY')&&session.includes('historicalAdmissionAttested:false'),'import trust must distinguish integrity from prior admission');
+assert(session.includes('AggregateError')&&!session.includes('catch{}state.world=priorWorld'),'rollback errors must not be swallowed');
+console.log(JSON.stringify({status:'PASS',oracle:'ACTIVE_CONTINUOUS_REALITY_AUTHORITIES',checks:7}));

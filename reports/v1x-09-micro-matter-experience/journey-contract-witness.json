@@ -1,0 +1,68 @@
+{
+  "schema": "ofu-v1x-09-journey-contract-witness-1",
+  "evidenceClass": "IMPLEMENTATION_SPECIFICATION",
+  "measuredRuntimeEvidence": false,
+  "implementationCheckpoint": {
+    "sha": "32339fafa42a4802a339d2162fc57598be4ca672",
+    "tree": "85a809b2bf31fa29c64b0ba17b6f34ab6ec72013"
+  },
+  "sourceAnchor": {
+    "contract": "ofu-v1x-09-source-anchor-1",
+    "continuity": "EXACT_JSON_SOURCE_CONTEXT",
+    "maxDepth": 16,
+    "maxNodes": 4096,
+    "maxBytes": 65536,
+    "authority": "DERIVED"
+  },
+  "journey": [
+    "LOCAL",
+    "MATERIAL",
+    "MICROSTRUCTURE",
+    "MOLECULAR",
+    "ATOMIC",
+    "MOLECULAR",
+    "MICROSTRUCTURE",
+    "MATERIAL",
+    "LOCAL"
+  ],
+  "transitionSemantics": {
+    "forward": ["PROJECT", "REFINE"],
+    "reverse": ["RECONCILE"],
+    "semanticMagnification": true,
+    "geometricZoomClaim": false,
+    "sourceIdentityPreservedRequired": true
+  },
+  "exactReturn": {
+    "boundedReverseSteps": 4,
+    "requiresFrozenMicroReconcilePass": true,
+    "requiresSourceAnchorDigestMatch": true
+  },
+  "regeneration": {
+    "deepestRepresentationDigestBeforeEviction": "COMPUTED_AT_RUNTIME",
+    "cacheEviction": "DELEGATED_TO_FROZEN_V1_MICRO_RUNTIME",
+    "regeneratedRepresentationDigest": "COMPUTED_AT_RUNTIME",
+    "equalityRequired": true,
+    "runtimeResult": "NOT_RUN_EXACT_HEAD"
+  },
+  "resourceBounds": {
+    "microFeatures": 128,
+    "molecularUnits": 64,
+    "atoms": 256,
+    "cacheEntries": 4,
+    "transitionHistory": 128
+  },
+  "authorityBoundary": {
+    "sourceAnchorAndReconciliation": "DERIVED",
+    "presentation": "PRESENTATION_ONLY",
+    "canonicalPromotion": false,
+    "quantumDynamicsClaim": false,
+    "electronOrbitClaim": false,
+    "exactWavefunctionClaim": false,
+    "unknownRemainsUnknown": true
+  },
+  "visualEvidence": "NOT_VERIFIED",
+  "physicalDeviceEvidence": {
+    "android": "NOT_VERIFIED",
+    "ios": "NOT_VERIFIED"
+  }
+}

@@ -1,0 +1,14 @@
+import fs from 'node:fs';
+import {assert,camera,O,RADIUS_M,close} from './support.mjs';
+const {camera:c,adapter,model}=camera({band:'system',selectionToken:'planet:stable'});
+const waveSnapshot={version:'ofu-wave-iv-scale-runtime-3',distanceIntentRadii:180,selectedCanonicalTarget:{planetId:'stable'},semanticScale:'system'};
+adapter.adoptSnapshot(waveSnapshot);const adopted=c.snapshot();close(adopted.distanceRadii,180,1e-9);assert.equal(adopted.selectionToken,'planet:stable');
+const command=adapter.toScaleCommand();assert.equal(command.contract,'ofu-wave-iv-scale-runtime-3');assert.equal(command.derivedFrom,'logDistanceM');assert.equal(command.semanticScale,c.snapshot().semanticScale);
+adapter.cameraIntent({contract:'ofu-wave-iv-input-intent-3',kind:'rotate-step',dx:.05,dy:-.02});assert.ok(c.snapshot().pose.orientation.every(Number.isFinite));
+const fixture=JSON.parse(fs.readFileSync(new URL('../../reports/v1x-01-camera-scale-frames/fixtures/macro-surface-micro-reverse.json',import.meta.url),'utf8'));
+const traceCamera=camera({band:fixture.initialBand,selectionToken:fixture.selectionToken}).camera,initial=traceCamera.snapshot();
+const operations=fixture.operations;
+const trace=O.v1xCameraTrace.runTrace(traceCamera,operations,{id:'macro-surface-micro-reverse'});assert.equal(O.v1xCameraTrace.finiteTrace(trace),true);assert.equal(trace.final.selectionToken,trace.initial.selectionToken);assert.equal(trace.final.frameId,initial.pose.frameId);assert.ok(trace.steps.some(s=>s.after.frameId==='micro'));assert.match(trace.digest,/^[0-9a-f]{8}$/);assert.equal(trace.digest,fixture.expected.digest);assert.equal(trace.final.frameId,fixture.expected.finalFrame);
+const second=camera({band:'orbit',selectionToken:'planet:trace'}).camera,trace2=O.v1xCameraTrace.runTrace(second,operations,{id:'macro-surface-micro-reverse'});assert.equal(trace2.digest,trace.digest,'trace digest deterministic');
+assert.ok(model.anchorLogM.human>Math.log10(1e-9));assert.equal(RADIUS_M,6371000);
+console.log(JSON.stringify({status:'PASS',oracle:'v1x01-adapter-trace-oracle-1',traceDigest:trace.digest,deterministic:true,authority:'MEASURED_RUNTIME_EVIDENCE'}));

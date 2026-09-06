@@ -1,0 +1,20 @@
+{
+  "schema": "ofu-v1x10-browser-evidence-1",
+  "implementationCheckpoint": "23b0954cc614c856e31e458cb7d47ed932ab0243",
+  "desktopJourney": "NOT_RUN",
+  "compactMobileJourney": "NOT_RUN",
+  "keyboardOnlyJourney": "NOT_RUN_IN_BROWSER",
+  "touchPinch": {
+    "method": "BROWSER_POINTER_EVENT_EMULATION",
+    "status": "NOT_RUN",
+    "physicalDeviceEvidence": false
+  },
+  "noOcclusionScreenshots": [],
+  "harness": "tests/v1x-10-ux-mobile-accessibility/browser-journeys.mjs",
+  "exactSourceGuard": "OFU_SOURCE_SHA must match dist/rendering-build-manifest.json sourceCommit",
+  "reason": "The current execution environment has Chromium but does not have the Playwright package required by the committed harness; browser results are therefore not fabricated or inferred.",
+  "physicalDevices": {
+    "android": "NOT_VERIFIED",
+    "ios": "NOT_VERIFIED"
+  }
+}

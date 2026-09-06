@@ -1,0 +1,222 @@
+{
+  "schemaVersion": 1,
+  "authority": "PLANNING_METADATA_ONLY",
+  "status": "RESERVED_POST_V1",
+  "sourceProposal": {
+    "id": "OFU-AI-ULTIMATE-SPEC",
+    "version": "1.0.0-draft",
+    "reviewDate": "2026-09-06"
+  },
+  "currentV1CriticalPathUnchanged": true,
+  "activationPolicy": {
+    "aiShippingPriorityBlockedUntil": [
+      "V1_GATE_A_FOUNDER_EXPERIENCE_ARCHITECTURE",
+      "V1_GATE_B_PRODUCT_AND_CERTIFICATION_STABILITY"
+    ],
+    "physicalDeviceEvidenceRequiredBeforeMatureAiRelease": true,
+    "readOnlyFeasibilityResearchMayStartEarlier": true,
+    "requiresExplicitActivationForAiF1Plus": true
+  },
+  "invariants": [
+    "AI_NEVER_DIRECTLY_AUTHORS_CANONICAL_PROVEN_STATE",
+    "UNKNOWN_AND_UNSUPPORTED_REMAIN_UNCHANGED",
+    "GENERATED_TEXT_IS_NOT_EXECUTABLE",
+    "ALL_AI_TOOL_USE_PASSES_TYPED_FAIL_CLOSED_GATEWAY",
+    "DETERMINISTIC_OFU_OWNS_TOOL_RESULTS_ADMISSION_AND_CONSEQUENCES",
+    "AUTHORITY_CLASSES_ARE_NOT_CONFIDENCE_RANKINGS",
+    "AI_DOES_NOT_INVENT_SCIENTIFIC_CONFIDENCE",
+    "AI_PROSE_IS_NOT_REQUIRED_TO_BE_CROSS_BACKEND_BYTE_DETERMINISTIC",
+    "CORE_SIMULATION_AND_EXPLORATION_HAVE_NON_AI_FALLBACK",
+    "STANDARD_NON_AI_EDITION_REMAINS_FIRST_CLASS",
+    "IN_UNIVERSE_TEXT_IS_UNTRUSTED_DATA"
+  ],
+  "conditionalDecisions": {
+    "dualEditionTarget": true,
+    "standardArtifact": "One_File_Universe.html",
+    "aiArtifactTarget": "One_File_Universe-AI.html",
+    "officialSuccessorVersion": null,
+    "embeddedWeights": "TARGET_CONDITIONAL_ON_AI_F0",
+    "modelParameterEnvelope": "EXPERIMENTAL_NOT_NORMATIVE",
+    "originalCandidateRange": "100M-400M",
+    "webGpuBaselineRequired": false,
+    "capabilityAdaptiveBackendRequired": true,
+    "localOfflineOperationTarget": true
+  },
+  "v1Gates": [
+    {
+      "id": "V1_GATE_A_FOUNDER_EXPERIENCE_ARCHITECTURE",
+      "requires": [
+        "NON_GRID_PRIMARY_COSMIC_PRESENTATION",
+        "GENUINELY_SPATIAL_VIEWPORT_FIRST_MACRO_AND_SYSTEM_EXPLORATION",
+        "CONTINUOUS_CAMERA_AND_SEMANTIC_SCALE_TRAVEL",
+        "PLANET_APPROACH_DESCENT_IDENTITY_CONTINUITY",
+        "VISIBLY_EMBODIED_SURFACE_EXPLORATION",
+        "AUTHORITY_HONEST_LIFE_AND_CIVILIZATION_MANIFESTATION"
+      ]
+    },
+    {
+      "id": "V1_GATE_B_PRODUCT_AND_CERTIFICATION_STABILITY",
+      "requires": [
+        "EXACT_HEAD_V1_CERTIFICATION_GREEN",
+        "SOURCE_REPRODUCTION_GREEN",
+        "NO_P0_P1_FOUNDER_VISIBLE_JOURNEY_BLOCKER",
+        "ACCEPTABLE_RESOURCE_PERSISTENCE_SOAK_EVIDENCE",
+        "REQUIRED_ACCESSIBILITY_AND_BROWSER_MATRIX_GREEN"
+      ]
+    },
+    {
+      "id": "V1_GATE_C_DEVICE_BASELINE",
+      "requiresBeforeMatureAiRelease": [
+        "PHYSICAL_DEVICE_MEMORY_EVIDENCE",
+        "PHYSICAL_DEVICE_PERFORMANCE_EVIDENCE",
+        "PHYSICAL_TOUCH_EVIDENCE_FOR_SUPPORTED_DEVICE_CLASSES"
+      ]
+    }
+  ],
+  "aiPhases": [
+    {
+      "id": "AI-F0",
+      "name": "Local inference feasibility",
+      "state": "RESERVED",
+      "dependencies": [],
+      "shipping": false,
+      "goals": [
+        "DIRECT_FILE_OFFLINE_RUNTIME_BENCHMARKS",
+        "MULTIPLE_COMPACT_MODEL_CLASS_BENCHMARKS",
+        "EMBEDDED_TOKENIZER_RUNTIME_MODEL_PROTOTYPE",
+        "STARTUP_PEAK_MEMORY_FIRST_TOKEN_AND_THROUGHPUT_MEASUREMENT",
+        "AI_UNAVAILABLE_FALLBACK"
+      ]
+    },
+    {
+      "id": "AI-F1",
+      "name": "Cognition context and gateway",
+      "state": "BLOCKED_PENDING_ACTIVATION",
+      "dependencies": ["AI-F0", "F-GOV", "F-ENGINE"],
+      "goals": [
+        "V1_COGNITION_CONTEXT",
+        "TYPED_TOOL_PROPOSAL_CONTRACT",
+        "ALLOWLIST_INSPECT_DISCOVER_TRAVEL",
+        "AUTHORITY_FIDELITY_SOURCE_PROPAGATION",
+        "BOUNDED_CONTEXT_OUTPUT_TOOL_RETRY_BUDGETS",
+        "PROMPT_INJECTION_AND_INVALID_OUTPUT_TESTS"
+      ]
+    },
+    {
+      "id": "AI-F2",
+      "name": "Local Scientist",
+      "state": "BLOCKED_PENDING_AI_F1",
+      "dependencies": ["AI-F1", "F-EXP", "F-UX"],
+      "goals": [
+        "EVIDENCE_GROUNDED_EXPLANATION",
+        "SEARCH_COMPARE_INSPECT",
+        "NATURAL_LANGUAGE_NAVIGATION_VIA_PUBLIC_TRAVERSAL",
+        "MACHINE_READABLE_CLAIM_SOURCE_EVIDENCE"
+      ]
+    },
+    {
+      "id": "AI-F3",
+      "name": "Natural-language control hardening",
+      "state": "BLOCKED_PENDING_AI_F2",
+      "dependencies": ["AI-F2", "F-EXP", "F-UX"],
+      "goals": [
+        "BROADER_INTENT_INTERPRETATION",
+        "DETERMINISTIC_TARGET_AMBIGUITY_HANDLING",
+        "ACCESSIBILITY_PARITY",
+        "NO_HIDDEN_TELEPORT_OR_MUTATION_PATH"
+      ]
+    },
+    {
+      "id": "AI-F4",
+      "name": "NPC dialogue and bounded knowledge",
+      "state": "LONG_RANGE",
+      "dependencies": ["AI-F3", "F-CIV", "F-HISTORY", "F-STATE"]
+    },
+    {
+      "id": "AI-F5",
+      "name": "Structured persistent memory",
+      "state": "LONG_RANGE",
+      "dependencies": ["AI-F4", "F-STATE"]
+    },
+    {
+      "id": "AI-F6",
+      "name": "Bounded agent proposals",
+      "state": "LONG_RANGE",
+      "dependencies": ["AI-F5", "F-CIV", "F-HISTORY", "F-STATE"]
+    },
+    {
+      "id": "AI-F7",
+      "name": "Cultural and historical narration",
+      "state": "LONG_RANGE",
+      "dependencies": ["AI-F4", "F-HISTORY"]
+    }
+  ],
+  "ultimateMapping": [
+    {
+      "proposal": "U1_CERTIFIED_LIVING_UNIVERSE_CORE",
+      "owners": ["F-EXP", "F-VIS", "F-UX", "F-ENGINE", "F-CERT"],
+      "disposition": "CURRENT_V1_CRITICAL_PATH"
+    },
+    {
+      "proposal": "U2_DEEP_PLANETARY_CAUSALITY",
+      "owners": ["F-PLANET", "F-STATE", "F-ASTRO"],
+      "disposition": "SUCCESSOR_FRONTIER"
+    },
+    {
+      "proposal": "U3_DEEP_ECOLOGY_AND_EVOLUTION",
+      "owners": ["F-LIFE", "F-PLANET", "F-HISTORY"],
+      "disposition": "SUCCESSOR_FRONTIER"
+    },
+    {
+      "proposal": "U4_CIVILIZATIONS_WITH_CONSEQUENCES",
+      "owners": ["F-CIV", "F-HISTORY", "F-STATE"],
+      "disposition": "SUCCESSOR_FRONTIER"
+    },
+    {
+      "proposal": "U5_PERSISTENT_INDIVIDUALS",
+      "owners": ["F-CIV", "F-HISTORY", "F-STATE"],
+      "disposition": "FUTURE_INDIVIDUAL_REFINEMENT_SUBPROGRAM"
+    },
+    {
+      "proposal": "U6_MULTI_SCALE_MATERIAL_CONTINUITY",
+      "owners": ["F-MICRO", "F-MATTER", "F-EXP"],
+      "disposition": "EXISTING_FRONTIER_RESERVATION"
+    },
+    {
+      "proposal": "U7_CAUSAL_CROSS_DOMAIN_ENGINE",
+      "owners": ["F-GOV", "F-STATE"],
+      "disposition": "FUTURE_CROSS_DOMAIN_CONTRACT_LAYER_AFTER_DOMAIN_SEAMS_STABILIZE"
+    },
+    {
+      "proposal": "U8_SELF_CONSISTENT_HISTORICAL_UNIVERSE",
+      "owners": ["F-HISTORY", "F-ENGINE", "F-STATE"],
+      "disposition": "LONG_RANGE_CONVERGENCE"
+    },
+    {
+      "proposal": "U9_COMPUTATIONAL_UNIVERSE_ENGINE",
+      "owners": ["ALL_SELECTED_FRONTIER_WORKSTREAMS", "FUTURE_F_AI"],
+      "disposition": "ULTIMATE_CONVERGENCE_OUTCOME"
+    }
+  ],
+  "futureAiQualityGoals": {
+    "directCanonicalMutationsFromAi": 0,
+    "untypedExecutableAiPaths": 0,
+    "unsupportedFactUpgradesInDefinedCorpus": 0,
+    "factualClaimEvidenceLinkCoverage": "100%",
+    "deterministicFallbackAvailability": "100%",
+    "aiTextRequiredForStateReconstruction": 0,
+    "providerAuthorityCollisions": 0,
+    "crossScaleIdentityMismatchesFromAiNavigation": 0
+  },
+  "nonGoals": [
+    "AI_AS_COMPENSATION_FOR_WEAK_V1_RENDERING_OR_NAVIGATION",
+    "MANDATORY_CLOUD_INFERENCE",
+    "LLM_REPLACEMENT_OF_DETERMINISTIC_WORLD_GENERATORS_OR_REDUCERS",
+    "OMNISCIENT_NPCS",
+    "RAW_GENERATED_PROSE_AS_HISTORY_WITHOUT_STRUCTURED_ADMISSION",
+    "CONTINUOUS_GLOBAL_SIMULATION_OF_ALL_INDIVIDUALS_MOLECULES_OR_ATOMS",
+    "UNVERIFIED_EXACT_PHYSICAL_CLIMATE_EVOLUTIONARY_MOLECULAR_OR_QUANTUM_CLAIMS",
+    "MODEL_GROWTH_FOR_PRESTIGE_ONLY",
+    "DELAYING_V1_FOUNDER_EXPERIENCE_CLOSURE_TO_START_NPC_OR_AGENT_WORK"
+  ]
+}

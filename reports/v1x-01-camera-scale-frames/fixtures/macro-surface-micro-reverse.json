@@ -1,0 +1,22 @@
+{
+  "schema": "ofu-v1x-camera-trace-fixture-1",
+  "authority": "PRESENTATION_ONLY",
+  "referenceRadiusM": 6371000,
+  "initialBand": "orbit",
+  "selectionToken": "planet:trace",
+  "operations": [
+    {"action":"distance-delta","deltaLog10M":-0.22,"source":"trace-in-1"},
+    {"action":"distance-delta","deltaLog10M":-0.22,"source":"trace-in-2"},
+    {"action":"frame-handoff","frameId":"micro","source":"explicit-micro-presentation"},
+    {"action":"frame-handoff","frameId":"human","source":"reverse-micro-presentation"},
+    {"action":"distance-delta","deltaLog10M":0.22,"source":"trace-out-1"},
+    {"action":"distance-delta","deltaLog10M":0.22,"source":"trace-out-2"}
+  ],
+  "expected": {
+    "digest": "750e10d3",
+    "finite": true,
+    "selectionInvariant": true,
+    "finalFrame": "planet"
+  },
+  "fidelity": "Deterministic presentation fixture only; the radius and frame hierarchy are test values, not a canonical scientific planet claim."
+}

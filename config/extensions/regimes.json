@@ -2,13 +2,14 @@
   "schema": "ofu-regimes-1",
   "regimes": [
     {"id":"galaxy","order":10,"anchorRadii":1000000000000.0,"mode":"SPATIAL_PRESENTATION","parent":null},
-    {"id":"stellar_neighborhood","order":20,"anchorRadii":10000000.0,"mode":"SPATIAL_PRESENTATION","parent":"galaxy"},
-    {"id":"system","order":30,"anchorRadii":180,"mode":"SPATIAL_PRESENTATION","parent":"stellar_neighborhood"},
-    {"id":"orbit","order":40,"anchorRadii":4,"mode":"SPATIAL_PRESENTATION","parent":"system"},
-    {"id":"approach","order":50,"anchorRadii":1.35,"mode":"SPATIAL_PRESENTATION","parent":"orbit"},
-    {"id":"global_surface","order":60,"anchorRadii":1.02,"mode":"SPATIAL_PRESENTATION","parent":"approach"},
-    {"id":"regional_surface","order":70,"anchorRadii":1.006,"mode":"SPATIAL_PRESENTATION","parent":"global_surface"},
-    {"id":"local_surface","order":80,"anchorRadii":1.0007,"mode":"SPATIAL_PRESENTATION","parent":"regional_surface"},
-    {"id":"human","order":90,"anchorRadii":1.00008,"mode":"SPATIAL_PRESENTATION","parent":"local_surface"}
+    {"id":"galactic_region","order":20,"anchorRadii":2500000000.0,"mode":"SPATIAL_PRESENTATION","parent":"galaxy"},
+    {"id":"stellar_neighborhood","order":30,"anchorRadii":10000000.0,"mode":"SPATIAL_PRESENTATION","parent":"galactic_region"},
+    {"id":"system","order":40,"anchorRadii":180,"mode":"SPATIAL_PRESENTATION","parent":"stellar_neighborhood"},
+    {"id":"orbit","order":50,"anchorRadii":4,"mode":"SPATIAL_PRESENTATION","parent":"system"},
+    {"id":"approach","order":60,"anchorRadii":1.35,"mode":"SPATIAL_PRESENTATION","parent":"orbit"},
+    {"id":"global_surface","order":70,"anchorRadii":1.02,"mode":"SPATIAL_PRESENTATION","parent":"approach"},
+    {"id":"regional_surface","order":80,"anchorRadii":1.006,"mode":"SPATIAL_PRESENTATION","parent":"global_surface"},
+    {"id":"local_surface","order":90,"anchorRadii":1.0007,"mode":"SPATIAL_PRESENTATION","parent":"regional_surface"},
+    {"id":"human","order":100,"anchorRadii":1.00008,"mode":"SPATIAL_PRESENTATION","parent":"local_surface"}
   ]
 }

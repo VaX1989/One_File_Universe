@@ -99,3 +99,65 @@ The ten-lane proposal is documented in `PARALLEL_DEVELOPMENT_ARCHITECTURE.md`. I
 Every future workstream must pass its own domain gate plus cross-domain integration. Scientific work needs provenance, evidence/fidelity, independent falsification/oracle where appropriate and explicit unknown/unsupported states. Rendering needs visual correctness, resource/lifecycle and canonical non-interference. UX needs journey, input, accessibility and device evidence. Runtime needs bounded resource and Strict/Enhanced behavior. Persistence needs replay/lineage/migration equivalence.
 
 No green CI aggregate may override a material founder-visible visual defect, scientific overclaim or broken primary journey.
+
+## 8. Reserved successor overlay — Local AI and Ultimate Complexity
+
+The reviewed `OFU-AI-ULTIMATE-SPEC` proposal is accepted as long-range direction, but **not inserted into the active v1 `WORKSTREAM_DAG.json` as if it were already an authorized/shipping workstream**. This avoids distorting current v1 priorities and preserves ADR-024's distinction between certified history, active frontier planning and future successor programs.
+
+The reconciled plan lives in:
+
+- `docs/frontier/AI_AND_ULTIMATE_COMPLEXITY.md`;
+- `docs/frontier/AI_ULTIMATE_SUCCESSOR_PROGRAM.json`.
+
+### 8.1 Why it is reserved rather than active
+
+The founder-visible v1 gaps remain upstream of AI value. Local cognition must not become a sophisticated interface over an exploration experience that still feels grid/panel driven or a surface renderer that still lacks sufficient visual embodiment.
+
+Therefore the immediate critical path remains:
+
+`F-EXP + F-VIS + F-UX + F-ENGINE + F-CERT → founder-visible Continuous Reality closure → exact-head v1 certification`.
+
+No AI milestone may be counted as compensation for an unresolved rendering/navigation defect.
+
+### 8.2 Successor AI sequence
+
+The reserved sequence is:
+
+`AI-F0 feasibility → AI-F1 context/gateway → AI-F2 Local Scientist → AI-F3 NL control → AI-F4 NPC dialogue → AI-F5 structured memory → AI-F6 bounded agent proposals → AI-F7 cultural/historical narration`.
+
+`AI-F0` may be authorized later as an isolated read-only feasibility/research lane once it no longer competes with v1 experience convergence. `AI-F1+` require explicit activation and the applicable v1 gates.
+
+### 8.3 Durable AI boundaries already accepted for planning
+
+- generated tokens never directly author `CANONICAL_PROVEN` state;
+- unknown/unsupported states remain unknown/unsupported;
+- free-form text is never executable;
+- all AI tool requests pass typed schema/capability/authority/budget validation;
+- deterministic OFU tools and reducers own execution and consequences;
+- authority classes are categories, not confidence rankings;
+- AI text is not required to be cross-GPU/browser byte deterministic;
+- state replay must never require raw generated prose;
+- OFU_STANDARD remains fully functional without AI;
+- in-universe text is untrusted data, not system policy.
+
+### 8.4 Backend/model decisions remain experiments
+
+The source proposal's 100M-400M model range, quantization, embedded-weight packaging and artifact-size classes are useful feasibility hypotheses, not frozen architecture. AI-F0 must measure direct-file/offline startup, peak memory, first-token latency, throughput, artifact size and device coverage before a model/backend is promoted.
+
+WebGPU is optional acceleration only. The eventual AI capability profile must fail gracefully where local inference is unavailable and must not weaken deterministic OFU operation.
+
+### 8.5 Ultimate-complexity mapping
+
+The proposal's U1-U9 ladder does not create duplicate owners:
+
+- U1 → current `F-EXP/F-VIS/F-UX/F-ENGINE/F-CERT` v1 closure;
+- U2 → `F-PLANET/F-STATE/F-ASTRO`;
+- U3 → `F-LIFE/F-PLANET/F-HISTORY`;
+- U4 → `F-CIV/F-HISTORY/F-STATE`;
+- U5 → future individual-refinement subprogram under `F-CIV/F-HISTORY/F-STATE`;
+- U6 → `F-MICRO/F-MATTER/F-EXP`;
+- U7 → future cross-domain causal contract layer under `F-GOV/F-STATE` after domain seams stabilize;
+- U8 → `F-HISTORY/F-ENGINE/F-STATE` plus mature domains;
+- U9 → long-range convergence across selected frontier workstreams plus future local cognition.
+
+The organizing principle remains: **infinite semantic universe, finite active working set, stable identity/history across refinement and eviction**.

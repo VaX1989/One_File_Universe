@@ -1,0 +1,50 @@
+{
+  "schema": "ofu-conformance-1",
+  "tests": [
+    {
+      "id": "v1x14.anti-regression",
+      "owner": "v1x-14-certification-evidence",
+      "tier": "FAST_LOCAL",
+      "command": ["node", "tests/v1x-14-certification-evidence/anti-regression.mjs"],
+      "providers": ["v1.interaction.universal-exploration"],
+      "oracle": "v1x14-anti-regression-oracle-1",
+      "timeoutMs": 30000
+    },
+    {
+      "id": "v1x14.browser-chromium",
+      "owner": "v1x-14-certification-evidence",
+      "tier": "LANE_TARGETED",
+      "command": ["node", "tests/v1x-14-certification-evidence/browser-evidence.mjs", "--browser=chromium"],
+      "providers": ["v1.interaction.universal-exploration"],
+      "oracle": "v1x14-browser-chromium-oracle-1",
+      "timeoutMs": 180000
+    },
+    {
+      "id": "v1x14.browser-firefox",
+      "owner": "v1x-14-certification-evidence",
+      "tier": "LANE_TARGETED",
+      "command": ["node", "tests/v1x-14-certification-evidence/browser-evidence.mjs", "--browser=firefox"],
+      "providers": ["v1.interaction.universal-exploration"],
+      "oracle": "v1x14-browser-firefox-oracle-1",
+      "timeoutMs": 180000
+    },
+    {
+      "id": "v1x14.browser-webkit",
+      "owner": "v1x-14-certification-evidence",
+      "tier": "LANE_TARGETED",
+      "command": ["node", "tests/v1x-14-certification-evidence/browser-evidence.mjs", "--browser=webkit"],
+      "providers": ["v1.interaction.universal-exploration"],
+      "oracle": "v1x14-browser-webkit-oracle-1",
+      "timeoutMs": 180000
+    },
+    {
+      "id": "v1x14.soak-revisit",
+      "owner": "v1x-14-certification-evidence",
+      "tier": "INTEGRATION",
+      "command": ["node", "tests/v1x-14-certification-evidence/soak-revisit.mjs"],
+      "providers": ["v1.interaction.universal-exploration"],
+      "oracle": "v1x14-soak-revisit-oracle-1",
+      "timeoutMs": 900000
+    }
+  ]
+}
