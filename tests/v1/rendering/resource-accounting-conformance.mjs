@@ -60,7 +60,7 @@ const gl={
   createProgram:()=>({}),attachShader:()=>{},linkProgram:()=>{},getProgramParameter:()=>true,getProgramInfoLog:()=>'',deleteProgram:()=>{},
   createBuffer:()=>({}),createTexture:()=>({}),bindTexture:()=>{},texImage2D:(...args)=>calls.texImage2D.push(args),texParameteri:()=>{},
   enable:()=>{},blendFunc:()=>{},viewport:()=>{},useProgram:()=>{},bindBuffer:()=>{},
-  bufferData:(_target,data)=>calls.bufferData.push(data?.byteLength??data?.length??Number(data)||0),
+  bufferData:(_target,data)=>calls.bufferData.push(typeof data==='number'?data:(data?.byteLength??data?.length??0)),
   getAttribLocation:()=>-1,enableVertexAttribArray:()=>{},vertexAttribPointer:()=>{},
   drawArrays:(mode,_first,count)=>calls.draws.push({mode,count}),
   getUniformLocation:()=>({}),uniform3fv:()=>{},uniform1f:()=>{},activeTexture:()=>{},uniform1i:()=>{},
