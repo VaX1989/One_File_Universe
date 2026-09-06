@@ -10,6 +10,7 @@ on:
       - 'tests/v1/civilization/individuals.mjs'
       - 'config/components/v11-civilization-representatives.json'
       - 'src/domains/v1/convergence/world-context.js'
+      - '.github/workflows/v11-world-civilization-representatives.yml'
 
 permissions:
   contents: read
