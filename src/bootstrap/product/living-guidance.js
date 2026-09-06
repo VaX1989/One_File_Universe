@@ -2,7 +2,7 @@
 'use strict';
 const O=root.OFU=root.OFU||{};if(typeof document==='undefined')return;
 const VERSION='ofu-v11-living-guidance-1',STORAGE_KEY='ofu:v11:living-guidance:1',MAX_ATTACH_ATTEMPTS=120;
-const state={version:VERSION,ready:false,attachStatus:'waiting',attachAttempts:0,storage:'memory',dismissed:false,completed:false,guideOpen:false,decorations:0,progressUpdates:0,guideOpens:0};
+const state={version:VERSION,ready:false,attachStatus:'waiting',attachAttempts:0,storage:'memory',dismissed:false,completed:false,guideOpen:false,decorations:0,progressUpdates:0,guideOpens:0,mobileExpands:0};
 let runtime=null,panel=null,observer=null,scheduled=false,lastProgress='';
 function storageProbe(){try{const s=root.localStorage,k='__ofu_living_guidance_probe__';s.setItem(k,'1');s.removeItem(k);state.storage='localStorage';return s}catch{return null}}
 const storage=storageProbe();
@@ -14,7 +14,8 @@ function makeStep(id,text,done){const li=document.createElement('li');li.dataset
 function primaryActions(){return panel?[...panel.children].find(node=>node.classList?.contains('living-actions'))||null:null}
 function removeFirstFlight(){document.getElementById('living-first-flight')?.remove()}
 function dismiss(){state.dismissed=true;save();removeFirstFlight();O.productUI?.announce?.('First flight guide dismissed');schedule()}
-function toggleGuide(force){const next=typeof force==='boolean'?force:!state.guideOpen;if(next===state.guideOpen)return;state.guideOpen=next;if(next)state.guideOpens++;schedule();O.productUI?.announce?.(next?'Exploration controls opened':'Exploration controls closed')}
+function ensureGuideVisible(){const mobile=O.v08MobileInteraction;if(!state.guideOpen||!mobile?.state?.active||mobile.state.sheet==='expanded'||typeof mobile.expand!=='function')return false;mobile.expand();state.mobileExpands++;return true}
+function toggleGuide(force){const next=typeof force==='boolean'?force:!state.guideOpen;if(next===state.guideOpen){if(next)ensureGuideVisible();return}state.guideOpen=next;if(next){state.guideOpens++;ensureGuideVisible()}schedule();O.productUI?.announce?.(next?'Exploration controls opened':'Exploration controls closed')}
 function ensureControlButton(){
  const actions=primaryActions();if(!actions)return null;let button=actions.querySelector('[data-living-guidance-toggle]');
  if(!button){button=document.createElement('button');button.type='button';button.className='living-button';button.textContent='Controls';button.dataset.livingGuidanceToggle='';button.setAttribute('aria-controls','living-controls-guide');button.setAttribute('aria-keyshortcuts','?');button.addEventListener('click',()=>toggleGuide());actions.append(button);state.decorations++}
@@ -35,7 +36,7 @@ function renderGuide(anchor){
 function render(){
  if(!runtime||!panel)return false;const s=runtime.snapshot(),p=progress(s),stamp=JSON.stringify(p);if(stamp!==lastProgress){lastProgress=stamp;state.progressUpdates++}
  if(p.started&&p.world&&p.surface&&!state.completed){state.completed=true;save();removeFirstFlight();O.productUI?.announce?.('First flight complete')}
- const control=ensureControlButton(),anchor=control?.closest('.living-actions')||primaryActions();renderFirstFlight(p,stamp,anchor);renderGuide(anchor);state.ready=true;return true
+ if(state.guideOpen)ensureGuideVisible();const control=ensureControlButton(),anchor=control?.closest('.living-actions')||primaryActions();renderFirstFlight(p,stamp,anchor);renderGuide(anchor);state.ready=true;return true
 }
 function schedule(){if(scheduled)return;scheduled=true;(root.requestAnimationFrame||((fn)=>root.setTimeout(fn,0)))(()=>{scheduled=false;render()})}
 function onKeydown(event){if(event.defaultPrevented||event.altKey||event.ctrlKey||event.metaKey)return;const tag=event.target?.tagName;if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'||event.target?.isContentEditable)return;if(event.key==='?'){event.preventDefault();toggleGuide()}}
