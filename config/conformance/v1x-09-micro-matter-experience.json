@@ -1,0 +1,23 @@
+{
+  "schema": "ofu-conformance-1",
+  "tests": [
+    {
+      "id": "v1x09.micro.journey",
+      "owner": "v1x-09-micro-matter-experience",
+      "tier": "INTEGRATION",
+      "command": ["node", "tests/v1x-09-micro-matter-experience/journey.mjs"],
+      "providers": ["v1x09.micro.source-anchor", "v1x09.micro.experience", "v1x09.micro.presentation-provider"],
+      "oracle": "v1x09-micro-source-anchored-journey-1",
+      "timeoutMs": 180000
+    },
+    {
+      "id": "v1x09.micro.bounds-authority",
+      "owner": "v1x-09-micro-matter-experience",
+      "tier": "FAST_LOCAL",
+      "command": ["node", "tests/v1x-09-micro-matter-experience/bounds-authority.mjs"],
+      "providers": ["v1x09.micro.experience", "v1x09.micro.presentation-provider"],
+      "oracle": "v1x09-micro-bounds-authority-1",
+      "timeoutMs": 180000
+    }
+  ]
+}
