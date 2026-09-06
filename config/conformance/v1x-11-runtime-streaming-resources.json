@@ -1,0 +1,23 @@
+{
+  "schema": "ofu-conformance-1",
+  "tests": [
+    {
+      "id": "v1x11.runtime.bounds",
+      "owner": "v1x-11-runtime-streaming-resources",
+      "tier": "FAST_LOCAL",
+      "command": ["node", "tests/v1x-11-runtime-streaming-resources/runtime-resources.mjs"],
+      "providers": ["px.test.conformance"],
+      "oracle": "V1X11_RESOURCE_BOUNDS_AND_SEMANTIC_INVARIANCE",
+      "timeoutMs": 60000
+    },
+    {
+      "id": "v1x11.runtime.soak",
+      "owner": "v1x-11-runtime-streaming-resources",
+      "tier": "LANE_TARGETED",
+      "command": ["node", "tests/v1x-11-runtime-streaming-resources/soak.mjs"],
+      "providers": ["px.test.conformance"],
+      "oracle": "V1X11_LONG_TRAVERSAL_REVISIT_EVICTION_CONTEXT_RELOAD",
+      "timeoutMs": 120000
+    }
+  ]
+}

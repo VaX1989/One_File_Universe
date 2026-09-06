@@ -1,0 +1,81 @@
+{
+  "schema": "ofu-v1x-handoff-1",
+  "laneId": "V1X-11",
+  "branch": "parallel/v1x-11-runtime-streaming-resources-2026-09-06",
+  "status": "IMPLEMENTED_UNCERTIFIED",
+  "authorityClass": "MEASURED_RUNTIME_EVIDENCE",
+  "contractSet": "OFU-V1X-CONTRACT-SET-2026-09-06.1",
+  "base": {
+    "sha": "760c0c70bccb6afd7c7b07600c0f5be3f80e7b19",
+    "tree": "3324e6354b5ff1b90156d1693e6051595b6f1219"
+  },
+  "checkpoint": {
+    "sha": "47d4157882d8ea8c3b28c6f5cad57bb0fcc128a2",
+    "tree": "86023dab3fce0aea25a9cc0a12285c546c148b5e"
+  },
+  "changedPaths": [
+    "config/components/v1x-11-runtime-streaming-resources.json",
+    "config/conformance/v1x-11-runtime-streaming-resources.json",
+    "src/v1x-11-runtime-streaming-resources/lifecycle.js",
+    "src/v1x-11-runtime-streaming-resources/resource-manager.js",
+    "src/v1x-11-runtime-streaming-resources/scheduler.js",
+    "tests/v1x-11-runtime-streaming-resources/runtime-resources.mjs",
+    "tests/v1x-11-runtime-streaming-resources/soak.mjs"
+  ],
+  "ownershipValidation": {
+    "command": "V1X Lane Ownership run 34032120195 on 47d4157882d8ea8c3b28c6f5cad57bb0fcc128a2",
+    "status": "PASS",
+    "matrixVersion": "2026-09-06.1"
+  },
+  "dependencies": [],
+  "tests": [
+    {
+      "command": "node tools/validate-v1x-ownership.mjs --branch parallel/v1x-11-runtime-streaming-resources-2026-09-06 --head 47d4157882d8ea8c3b28c6f5cad57bb0fcc128a2 --integration-ref refs/remotes/origin/integration/v1.0-definitive-product-convergence-2026-09-05",
+      "status": "PASS",
+      "evidencePath": "https://github.com/VaX1989/One_File_Universe/actions/runs/34032120195"
+    },
+    {
+      "command": "node tests/v1x-11-runtime-streaming-resources/runtime-resources.mjs",
+      "status": "NOT_RUN",
+      "evidencePath": null
+    },
+    {
+      "command": "node tests/v1x-11-runtime-streaming-resources/soak.mjs",
+      "status": "NOT_RUN",
+      "evidencePath": null
+    }
+  ],
+  "evidence": [],
+  "knownDefects": [
+    {
+      "priority": "P2",
+      "summary": "Exact-lane targeted and long-soak tests are committed but no existing automatic workflow executes them on parallel branch push.",
+      "status": "CERTIFICATION_PENDING"
+    },
+    {
+      "priority": "P2",
+      "summary": "Provider-specific production adapters must be bound by convergence/domain owners after their V1X provider checkpoints are selected.",
+      "status": "INTEGRATION_DEPENDENCY"
+    }
+  ],
+  "adversarialFindings": [
+    "A scheduler dispatch edge could temporarily count a runnable job as queued and reject context-recovery work; fixed by claiming available worker slots synchronously.",
+    "Rejected materialization results must release returned CPU/GPU handles; cleanup was made fail-closed before checkpoint 1."
+  ],
+  "requestedSharedContractChanges": [],
+  "scientificAuthorityClaims": [],
+  "resourceEvidence": {
+    "design": "Explicit CPU/GPU/entity/draw/entry/worker/queue/job ceilings with reservation-before-work, bounded eviction, cancellation and backpressure.",
+    "semanticInvariant": "Adaptive quality is presentation input only; materializers must echo an independently computed semantic digest and unchanged identity or are rejected.",
+    "localSmoke": "PASS on Node 22.16.0 against a contract-compatible harness; peak configured byte/resource limits remained bounded and context recovery drained all jobs. This is diagnostic only, not exact-source certification."
+  },
+  "browserEvidence": {
+    "status": "NOT_RUN",
+    "contextHooks": "webglcontextlost/webglcontextrestored binding implemented; exact browser recovery remains pending."
+  },
+  "physicalDeviceEvidence": {
+    "android": "NOT_VERIFIED",
+    "ios": "NOT_VERIFIED"
+  },
+  "integrationNotes": "No main/integration writes. Shared PX contracts, registry, renderer, bootstrap and frozen P0-P6 surfaces remain untouched. Prompt prose named reports/v1x/v1x-11, but Prompt-0 deny-before-allow ownership permits reports/v1x-11-runtime-streaming-resources and docs/parallel/handoffs/v1x-11-runtime-streaming-resources instead; the frozen matrix takes precedence."
+}
