@@ -14,9 +14,10 @@ function ensureAuthority(select){
  select.setAttribute('aria-describedby','living-search-authority living-search-progress');
  return note;
 }
-function decorateResults(results){
+function decorateResults(results,running){
  results.setAttribute('aria-label','Bounded model-derived world survey results');
  results.setAttribute('data-living-survey-authority','MODEL_DERIVED_SIMULATION');
+ results.setAttribute('aria-busy',running?'true':'false');
  for(const button of results.querySelectorAll('[data-living-entity]')){
   button.dataset.livingModelAuthority='MODEL_DERIVED_SIMULATION';
   if(!button.querySelector('[data-living-model-authority]')){
@@ -30,7 +31,8 @@ function decorate(){
  panel=document.getElementById('living-panel');if(!panel)return false;
  const select=document.getElementById('living-search-goal'),progress=document.getElementById('living-search-progress'),results=document.getElementById('living-search-results');
  if(!select||!progress||!results)return false;
- ensureAuthority(select);progress.setAttribute('aria-live','polite');progress.setAttribute('aria-atomic','true');progress.dataset.livingSurveyAuthority='MODEL_DERIVED_SIMULATION';decorateResults(results);state.ready=true;return true;
+ const running=O.v1LivingProduct?.snapshot?.().search?.running===true;
+ ensureAuthority(select);select.disabled=running;select.setAttribute('aria-busy',running?'true':'false');progress.setAttribute('aria-live','polite');progress.setAttribute('aria-atomic','true');progress.dataset.livingSurveyAuthority='MODEL_DERIVED_SIMULATION';decorateResults(results,running);state.ready=true;return true;
 }
 function verifyActivation(expected){
  const living=O.v1LivingProduct?.runtime?.snapshot?.(),actual=String(living?.body?.canonicalId||living?.world?.planetIdentity||'');
