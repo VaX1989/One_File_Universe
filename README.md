@@ -1,80 +1,391 @@
-# One File Universe
+<div align="center">
+
+# ONE FILE UNIVERSE
+
+### A persistent, explorable universe — delivered as one deterministic HTML file.
+
+**Cosmos · Worlds · Life · Civilization · Matter · Causality**
 
 **One file. One universe. Verifiable by construction.**
 
-One File Universe (OFU) is a deterministic, causal, persistent, mutable and deeply explorable procedural-universe project whose canonical release artifact is one self-contained HTML file. The source repository remains modular, evidence-gated and versioned; the one-file artifact is a deterministic build product rather than the source architecture.
+[**What OFU is**](#what-one-file-universe-is) · [**Explore the universe**](#one-continuous-multiscale-reality) · [**Why it is different**](#why-it-is-different) · [**Architecture**](#architecture-at-a-glance) · [**V1 convergence**](#the-v1-massive-parallel-convergence) · [**Run it**](#build-and-open-the-universe) · [**Evidence & boundaries**](#where-the-project-stands-now)
 
-## Founder north star
+</div>
 
-The active v1.0 program aims to feel like entering a universe rather than opening an engineering application. Within supported model domains, a player should be able to choose what to explore, move from cosmic structure toward arbitrary supported worlds and locations, encounter progressively refined geography, environments, life, history and civilization where those models are authoritative, descend toward bounded microscopic model regimes with explicit evidence and fidelity, change the world only through governed, versioned temporal events, return later to the same causal reality, and inspect why the universe is what it is.
+---
 
-The target is a **progressively extensible, sparse, query-driven multiscale reality with bounded materialized working sets**. OFU does not claim literal infinite simulation or one classical Euclidean hierarchy down to quantum scales.
+## What One File Universe is
 
-## Current certified baseline
+**One File Universe (OFU)** is an engineering and research project for building a persistent procedural reality that can be explored continuously across radically different scales while preserving identity, causality, provenance and scientific/model authority.
 
-The repository preserves versioned certified history rather than redefining old phases when the long-range vision expands:
+The canonical distribution target is intentionally extreme:
 
-- **P0 — Constitution & Foundation:** complete within declared scope.
-- **P1 — Constitutional Prototype:** complete within declared scope.
-- **P2 — Deterministic Kernel:** complete; canonical addressing, identity, serialization and addressed derivation are frozen by their versioned contracts.
-- **P3 — Universe Skeleton:** complete within the P3 astronomy/schema-v1 sparse metadata scope.
-- **P4 — Temporal Kernel & Mutable World:** complete within the v1 event/replay/checkpoint/archive scope.
-- **P5 — Planetology / Terrain / Environment:** P5 v1 and Environment v2 are canonical and frozen within their declared scopes. Physical terrain elevation, real geology, oceans, greenhouse surface climate and XUV escape remain outside those frozen canonical contracts. Versioned model-derived successors are authorized for the active v1.0 product and must disclose their assumptions and limits.
-- **P6 — Biosphere & Evolution v1:** canonical and frozen within its declared fail-closed scope. Current real P5 Environment v2 evidence remains insufficient to establish a biosphere; positive biology is not a claim of that canonical baseline. Model-derived positive-life simulations may ship under their own versioned evidence/fidelity without relabeling P6 v1.
-- **Wave IV technical product baseline:** PR #48 merged as `e33156ee8ed9c6e906d0d4e0b8142fa235a833c7`, preserving the certified candidate tree `5d46fd5e346fd6440cc1efd8cbc67fa13a9390c4`. Rendering Production `33959845666`, all five required platforms, Wave IV convergence and frozen upstream gates passed on candidate `f4df1452529cb5f121e4065f567b4a3da52d2b75`.
-- **Active destination:** the [v1.0 implementation program](docs/governance/V1_IMPLEMENTATION_CONTRACT.md), not another preparation/research-only wave. PX seams and the expanded product are implementation obligations; this documentation does not claim they are already complete. Physical Android/iOS remain `NOT_VERIFIED`.
+> **a complete offline universe experience in one self-contained HTML file.**
 
-A phase marked complete means its **declared, evidence-gated, versioned scope** was completed. It never means the entire scientific domain or final product vision is finished forever.
+The source repository remains modular, testable and evidence-gated. The single-file artifact is a deterministic build product, not the source architecture collapsed into one unmaintainable file.
 
-## Architectural identity
+OFU is designed around a simple product question:
+
+**What if opening one local file felt less like launching an application and more like entering a universe that already has structure, history and consequences?**
+
+The player should be able to move from cosmic structure toward a star system, approach a world, descend through planetary and local scales, encounter environments, life and civilization where the active models support them, inspect why a state exists, intervene through governed events, leave, and later return to the same causal reality.
+
+The project does **not** claim literal infinite simulation, perfect physical fidelity at every scale, or one classical Euclidean model extending unchanged from galaxies to quantum mechanics. OFU instead uses a **sparse, query-driven Multiscale Reality Graph** with explicit model regimes, bounded materialization and authority-aware transitions.
+
+---
+
+## One continuous multiscale reality
+
+The v1 product is organized around a continuous exploration ladder rather than a collection of disconnected demos:
 
 ```text
-Universe Identity + versioned semantic manifests
-        -> sparse canonical addresses / entity identities
-        -> canonical procedural facts
-        +  P4-owned versioned canonical history
-        -> current canonical world
-        -> derived simulation / late materialization
-        -> presentation, rendering, audio and product experience
+Galaxy
+  ↓
+Region
+  ↓
+Stellar Neighborhood
+  ↓
+System
+  ↓
+Orbit / Planet Approach
+  ↓
+Planet
+  ↓
+Global
+  ↓
+Regional
+  ↓
+Local
+  ↓
+Human Scale
+  ↓
+Microscopic Matter
 ```
 
-The semantic universe is a **Multiscale Reality Graph**, not a permanently instantiated object tree. Query context, current location, camera state and presentation LOD do not silently become entity identity. `REFINE`, `PROJECT` and `RECONCILE` are required enforceable cross-scale operations for the PX implementation; naming them in architecture does not implement them.
+Movement across these scales is not supposed to replace one unrelated scene with another. The runtime preserves semantic scale, selected identity, location context, camera intent, history and provenance as the universe is refined or projected into a different representation.
 
-## Product pillars
+The product has three complementary ways of engaging with the same reality:
 
-Shipping v1.0 capability is judged across co-equal dimensions: scientific/model authority, systemic depth, player freedom, cross-scale continuity, graphics quality, UX quality, performance, portability, determinism, persistence, accessibility and certification. Automated tests are necessary but not sufficient for product completeness.
+- **Explore** — viewport-first direct manipulation of the universe.
+- **Inspect** — contextual scientific/model meaning, provenance and causal explanation.
+- **Lab** — addresses, hashes, manifests, replay, evidence and diagnostics for expert inspection.
 
-Rendering may beautify, interpolate and approximate under explicit presentation authority. It may not turn an unmodeled ocean, atmosphere, biome, city or terrain signal into scientific fact. UX should be universe-first: **Explore** is viewport-dominant direct manipulation, **Inspect** provides contextual scientific meaning, and **Lab** exposes raw addresses, hashes, manifests, replay, provenance and diagnostics for experts.
+Mouse, keyboard, wheel, pointer, touch and mobile-oriented interactions are part of the product contract. Reduced-motion and accessibility behavior are treated as product requirements, not optional decoration.
 
-## Runtime profiles
+---
 
-**Strict Direct-Open** remains the portability baseline: one local HTML file, no required runtime network resource and no canonical dependence on origin-bound browser storage. **Enhanced** execution may opportunistically use capabilities such as WebGPU, additional workers or higher rendering quality, but Enhanced execution must not change canonical world meaning.
+## Why it is different
 
-The distribution artifact may legitimately grow to tens or hundreds of megabytes, or beyond, when those bytes provide useful governed capability, embedded reference data, tests, shaders or assets. Artificial padding, duplicated unreachable payload and meaningless inflation remain forbidden. Distribution bytes and runtime working set are separate budgets.
+| Conventional pattern | One File Universe constraint |
+|---|---|
+| A universe as a server-backed application | The strict baseline is one local HTML file with no required runtime network dependency. |
+| Procedural generation as disposable scenery | Generated state has stable identity, provenance and deterministic derivation. |
+| A zoom slider that swaps unrelated levels | Cross-scale travel preserves semantic context and selection across representations. |
+| Scientific-looking graphics imply scientific truth | Canonical truth, derived state, model simulation, empirical relation and presentation-only geometry remain distinguishable. |
+| The whole world must exist in memory | OFU materializes bounded working sets from a sparse reality graph. |
+| Saving means serializing UI state | Persistence is tied to deterministic world identity, canonical history, replay and governed mutation. |
+| A simulation can silently rewrite its own truth | Canonical mutation passes through explicit authority and versioned events. |
+| Rendering quality defines the world | Rendering may approximate or beautify presentation, but it cannot manufacture canonical facts. |
+| Reproducibility is “same enough” | The release path requires deterministic source reproduction and repeatable single-file builds. |
+| Research automatically becomes product truth | Research remains non-canonical until deliberately promoted under an explicit authority contract. |
 
-## Key documents
+The result is neither a conventional space game, a static scientific visualization, a generic procedural sandbox, nor a collection of scale demos. OFU is an attempt to make **continuity itself** the core product primitive.
 
-- [Active v1.0 Implementation Contract](docs/governance/V1_IMPLEMENTATION_CONTRACT.md)
-- [Project Constitution](docs/CONSTITUTION.md)
+---
+
+## Architecture at a glance
+
+```mermaid
+flowchart TD
+    U["Universe identity + versioned semantic manifests"]
+    A["Sparse canonical addresses + entity identity"]
+    C["Canonical procedural facts"]
+    H["Versioned canonical history"]
+    W["Current causal world"]
+    Q["Multiscale query / refine / project / reconcile"]
+    M["Derived models + bounded materialization"]
+    P["Presentation + rendering + systemic audio"]
+    X["Explore / Inspect / Lab"]
+    S["Save / import / replay / provenance"]
+
+    U --> A
+    A --> C
+    C --> W
+    H --> W
+    W --> Q
+    Q --> M
+    M --> P
+    P --> X
+    W --> S
+    S --> H
+```
+
+The central separation is intentional:
+
+```text
+CANONICAL_TRUTH
+  != DERIVED_CANONICAL_STATE
+  != MODEL_DERIVED_SIMULATION
+  != EMPIRICAL_RELATION
+  != PRESENTATION_ONLY
+  != MEASURED_RUNTIME_EVIDENCE
+  != USER_AUTHORED / USER_EVENT
+```
+
+A renderer, heuristic, research model or imported archive does not acquire canonical authority merely because it is useful or visually convincing.
+
+### Reality is a graph, not an object tree
+
+OFU does not permanently instantiate every galaxy, planet, organism, city and molecule. Stable identity and semantic relationships exist independently of what is currently materialized. Runtime providers produce bounded representations for the active query context, and those representations can be discarded without deleting the universe they represent.
+
+That separation is what makes an offline single-file universe technically plausible without pretending that finite hardware contains an actually infinite simulation.
+
+---
+
+## The v1 massive-parallel convergence
+
+The current v1 convergence is the result of a large parallel development program built from one exact common base and harvested into a single product line.
+
+**V1X-01 through V1X-14 are shipping convergence work.** Their implementations, provider/catalog surfaces, tests and conformance material are represented in the v1 product line rather than remaining isolated development branches.
+
+| Lane | Shipping system | Product responsibility |
+|---|---|---|
+| **V1X-01** | Camera / Scale / Reference Frames | Continuous semantic travel and frame authority |
+| **V1X-02** | Spatial Universe | Deterministic spatial structure and 3D projection |
+| **V1X-03** | Macrocosm Rendering | Large-scale universe presentation |
+| **V1X-04** | Stellar / System Rendering | Stellar-system structure, perspective and continuity |
+| **V1X-05** | Planet Approach | Orbit-to-planet transition and planetary presentation |
+| **V1X-06** | Surface / Local / Human | Surface frames, terrain LOD and local-scale embodiment |
+| **V1X-07** | Life / Ecology | Authority-gated ecological and organism presentation |
+| **V1X-08** | Civilization / History | Causal civilization/history embodiment and consequences |
+| **V1X-09** | Microscopic Matter | Bounded microscopic experience and authority boundaries |
+| **V1X-10** | UX / Mobile / Accessibility | Direct manipulation, viewport UX and accessibility |
+| **V1X-11** | Runtime / Streaming / Resources | Scheduling, lifecycle, bounded resources and recovery |
+| **V1X-12** | Persistence / Gameplay / Intervention | Save, import, replay and governed world actions |
+| **V1X-13** | Systemic Audio | Contextual audio, controls and accessibility behavior |
+| **V1X-14** | Certification / Evidence | Anti-regression, evidence manifests and release proof |
+
+The convergence also closed shared defects that only became visible when the lanes were exercised as one system: active renderer/provider binding, continuous wheel/pinch scale authority, session/import atomicity, replay semantics, resource reservation and context recovery, scientific uncertainty disclosure, history/civilization provenance and final runtime-graph bindings.
+
+The authoritative integration record is [`docs/integration/V1_MASTER_CONVERGENCE_LEDGER.md`](docs/integration/V1_MASTER_CONVERGENCE_LEDGER.md).
+
+---
+
+## Research frontier beyond the shipping v1
+
+The massive parallel program also produced deeper research lanes. They are deliberately preserved as **research/future capability**, not silently relabeled as shipping truth.
+
+| Research line | Frontier |
+|---|---|
+| **V1X-15** | Astronomy / cosmic depth |
+| **V1X-16** | Deep planetary causality |
+| **V1X-17** | Life / ecology / evolution depth |
+| **V1X-18** | Civilization / history / individuals depth |
+| **V1X-19** | Material / molecular / atomic depth |
+| **AI-F0** | Local inference feasibility / embedded small-model research |
+
+These lines form a reserve of future scientific and systemic depth. Their useful findings may be promoted incrementally when they satisfy the relevant authority, determinism, resource and product constraints. Their existence alone does not make their outputs canonical v1 reality.
+
+This distinction is central to OFU: **the project can research aggressively without weakening the epistemic meaning of what ships.**
+
+---
+
+## Persistent causality and player intervention
+
+OFU is not intended to be a read-only universe viewer.
+
+Canonical world change is governed through versioned events and replayable history. A player action, imported archive, model proposal or presentation effect cannot silently mutate canonical state. The intended causal path is explicit:
+
+```mermaid
+flowchart LR
+    I["Player intent / system proposal"]
+    V["Validation + authority"]
+    E["Accepted versioned event"]
+    H["Canonical history"]
+    W["Current world"]
+    D["Derived consequences"]
+    R["Rendering / audio / inspection"]
+
+    I --> V
+    V --> E
+    E --> H
+    H --> W
+    W --> D
+    D --> R
+```
+
+Save/import is therefore more than convenience serialization. Portable archives are integrity-checked containers; they do not become historical admission or canonical authority merely because their bytes are valid.
+
+---
+
+## Determinism, portability and the one-file artifact
+
+The strict runtime profile is **Direct Open**:
+
+- one self-contained HTML artifact;
+- offline execution;
+- no required runtime network resource;
+- no canonical dependence on origin-bound browser storage;
+- deterministic build inputs and source identity;
+- bounded runtime materialization;
+- browser execution through the local `file:` path.
+
+Enhanced execution may opportunistically use additional browser capabilities, workers or rendering quality, but enhancements are not allowed to change canonical world meaning.
+
+The final artifact is built from the modular repository with:
+
+```bash
+node tools/build-ofu-rendering-v09.mjs
+```
+
+The release certification path builds the artifact twice and requires byte-for-byte equality of both the HTML and rendering build manifest for the same exact source commit.
+
+---
+
+## Where the project stands now
+
+> **OFU has reached a clean v1 founder-test candidate. Formal `v1.0.0` promotion, tag and release have not yet been performed.**
+
+The current convergence line is substantially beyond the older Wave IV / pre-V1X state that the previous README described.
+
+| Surface | Current state |
+|---|---|
+| V1X shipping lanes | **V1X-01–V1X-14 integrated** |
+| Product composition | **Living multiscale runtime with shipped provider bindings** |
+| Distribution target | **Single self-contained HTML** |
+| Strict portability | **Offline direct-file baseline** |
+| Semantic scale authority | **Single mutable authority** |
+| Persistence / replay | **Deterministic and governed** |
+| Resource model | **Bounded scheduling/materialization with recovery paths** |
+| Scientific/model disclosure | **Authority and limitation classes preserved** |
+| Exact source reproduction | **Required and exercised by definitive certification** |
+| Browser release matrix | **Chromium / Firefox / WebKit + Windows Chromium + macOS WebKit** |
+| Physical Android | `NOT_VERIFIED_PHYSICAL_DEVICE` |
+| Physical iOS | `NOT_VERIFIED_PHYSICAL_DEVICE` |
+| `main` promotion | **Not performed** |
+| `v1.0.0` tag / release | **Not created** |
+| Founder acceptance | **Required before formal release** |
+
+The definitive workflow is [`.github/workflows/v1-certification.yml`](.github/workflows/v1-certification.yml). It verifies the exact checked-out source, frozen foundation, V1 scientific/persistence/PX conformance, V1X authority and bounded-resource closure, deterministic double-build reproduction, direct-file product journeys and the release browser matrix.
+
+A green workflow is evidence for the requirements it actually executes; it is not treated as proof of unmeasured scientific validity, physical-device usability or unlimited simulation fidelity.
+
+---
+
+## Build and open the universe
+
+### Requirements
+
+- Node.js `24.20.x`
+- a modern browser for the generated HTML
+
+The core repository has no normal runtime service requirement.
+
+### Build
+
+```bash
+git clone https://github.com/VaX1989/One_File_Universe.git
+cd One_File_Universe
+node tools/build-ofu-rendering-v09.mjs
+```
+
+Then open:
+
+```text
+dist/One_File_Universe.html
+```
+
+directly in a browser. No local server is required for the strict direct-open product path.
+
+### Verify the foundation
+
+```bash
+npm test
+```
+
+The definitive release workflow runs additional V1/V1X conformance, browser and bounded-soak stages beyond the base `npm test` command.
+
+---
+
+## Repository map
+
+| Path | Purpose |
+|---|---|
+| [`src/`](src/) | Modular runtime, domains, rendering, exploration and shipping implementations |
+| [`src/extensions/v1x-shipping-bindings.js`](src/extensions/v1x-shipping-bindings.js) | Runtime graph bindings for shipped V1X providers |
+| [`config/components/`](config/components/) | Versioned component declarations |
+| [`config/conformance/`](config/conformance/) | Conformance requirements and lane-level release contracts |
+| [`data/`](data/) | Governed embedded data used by supported model domains |
+| [`tests/`](tests/) | Foundation, domain, product, browser, V1X, resource and anti-regression tests |
+| [`tools/`](tools/) | Validation, deterministic build and evidence tooling |
+| [`reports/`](reports/) | Lane evidence, witnesses and measured/visual reports |
+| [`docs/`](docs/) | Constitution, architecture, vision, authority, roadmap, ADRs and research |
+| [`docs/integration/V1_MASTER_CONVERGENCE_LEDGER.md`](docs/integration/V1_MASTER_CONVERGENCE_LEDGER.md) | Authoritative v1 integration-status record |
+
+---
+
+## Project authority and key documents
+
+OFU keeps product vision, architecture, scientific authority and integration evidence separate so one document cannot silently redefine another layer.
+
 - [Founder Vision](docs/VISION.md)
+- [Project Constitution](docs/CONSTITUTION.md)
+- [V1 Implementation Contract](docs/governance/V1_IMPLEMENTATION_CONTRACT.md)
+- [V1 Master Convergence Ledger](docs/integration/V1_MASTER_CONVERGENCE_LEDGER.md)
 - [Long-range Architecture](docs/ARCHITECTURE.md)
 - [Multiscale Reality](docs/MULTISCALE_REALITY.md)
 - [Product Experience Vision](docs/PRODUCT_EXPERIENCE_VISION.md)
-- [Certified-history Roadmap + Frontier link](docs/ROADMAP.md)
-- [Frontier Workstreams and Current Gap Map](docs/FRONTIER_WORKSTREAMS.md)
+- [Roadmap](docs/ROADMAP.md)
+- [Frontier Workstreams](docs/FRONTIER_WORKSTREAMS.md)
 - [Parallel Development Architecture](docs/PARALLEL_DEVELOPMENT_ARCHITECTURE.md)
-- [Machine-readable Workstream DAG](docs/frontier/WORKSTREAM_DAG.json)
-- [Non-normative State-of-the-Art Research](docs/STATE_OF_THE_ART_RESEARCH_2026.md)
+- [State-of-the-Art Research](docs/STATE_OF_THE_ART_RESEARCH_2026.md)
 - [Determinism Contract](docs/DETERMINISM.md)
-- [Record & Certification Specification](docs/RECORD_SPEC.md)
 - [Conformance Model](docs/CONFORMANCE.md)
+- [Record & Certification Specification](docs/RECORD_SPEC.md)
 - [Risk Register](docs/RISK_REGISTER.md)
 - [Architecture Decision Records](docs/adr/README.md)
 
-## Repository policy
+---
 
-`main` remains a coherent evidence-backed baseline. Substantial work proceeds through exact-base branches, explicit ownership and review. Research can advance aggressively but does not become canonical world truth without a versioned promotion transaction and evidence. The forward frontier DAG is planning metadata only; it is not canonical universe state.
+## Current claim boundaries
+
+One File Universe does **not** currently claim:
+
+- literal infinite computation or complete materialization of the universe;
+- first-principles physical fidelity across every spatial and temporal scale;
+- that presentation geometry is canonical scientific fact;
+- that model-derived simulations are observations or empirical truth;
+- that research V1X-15–19 or AI-F0 are already shipping v1 authority;
+- physical Android or iOS validation;
+- production-scale security certification or an external scientific audit;
+- formal public `v1.0.0` release before founder acceptance and promotion.
+
+The project **does** claim an engineering architecture designed to make those distinctions inspectable rather than implicit.
+
+That is part of the product thesis: a universe becomes more credible when the system can say not only **what it is showing**, but also **why it exists, which model produced it, what authority that model has, what changed it, and what the system does not know.**
+
+---
+
+## Development and research policy
+
+Shipping work advances through exact source identities, explicit ownership, deterministic build inputs, conformance evidence and controlled convergence. Research may move faster and explore more speculative depth, but it does not become canonical universe truth through proximity, ancestry or presentation quality.
+
+Material defects are fixed at the layer that owns them; requirements are not weakened to make a gate green.
+
+The long-range destination remains larger than v1: deeper astronomy, planetary causality, ecology/evolution, civilization/history, microscopic matter and carefully bounded local inference can all extend the same universe without replacing its identity or rewriting certified history.
+
+---
 
 ## License
 
 No project license has been selected yet. Until a license is explicitly added, do not assume permission beyond applicable copyright law.
+
+---
+
+<div align="center">
+
+### One file is the distribution constraint. The universe is the architecture.
+
+**One File Universe**
+
+</div>
