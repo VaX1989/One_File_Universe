@@ -43,6 +43,7 @@ for (const viewport of [{ width: 390, height: 844 }, { width: 360, height: 800 }
         stage: living.stage,
         semanticScale: living.semanticScale,
         scaleAuthority: scale.semanticScale,
+        continuousDistanceRadii: living.continuousDistanceRadii,
         navigationCoherent: living.navigationCoherent,
         uiError: product.uiError,
         frames: product.render.metrics.frames,
@@ -142,7 +143,7 @@ for (const viewport of [{ width: 390, height: 844 }, { width: 360, height: 800 }
   assert.equal(pinch.input.pinchActive, false);
   assert.equal(pinch.mobile.canvas?.id, 'living-view');
   assert.equal(pinch.mobile.input.gestureOwner, 'v1-living-product');
-  await healthy(pinch.stage);
+  const pinchHealth = await healthy(pinch.stage);
 
   const portrait = await layoutMetrics();
   assertLayout(portrait, `${viewport.width}x${viewport.height}`);
@@ -154,6 +155,7 @@ for (const viewport of [{ width: 390, height: 844 }, { width: 360, height: 800 }
   await page.waitForTimeout(120);
   const landscapeHealth = await healthy(pinch.stage);
   assert.ok(landscapeHealth.pickCount > 0, `${viewport.width}: stage must remain pickable after landscape resize`);
+  assert.equal(landscapeHealth.continuousDistanceRadii, pinchHealth.continuousDistanceRadii, `${viewport.width}: presentation resize must not mutate continuous travel authority`);
   const landscapeLayout = await layoutMetrics();
   assertLayout(landscapeLayout, `${landscape.width}x${landscape.height}`);
   assert.ok(landscapeLayout.resizeEvents > portrait.resizeEvents, `${viewport.width}: resize must reach mobile runtime`);
@@ -163,6 +165,7 @@ for (const viewport of [{ width: 390, height: 844 }, { width: 360, height: 800 }
   await page.waitForTimeout(120);
   const returned = await healthy(pinch.stage);
   assert.ok(returned.pickCount > 0, `${viewport.width}: stage must remain pickable after portrait return`);
+  assert.equal(returned.continuousDistanceRadii, pinchHealth.continuousDistanceRadii, `${viewport.width}: portrait return must preserve continuous travel authority`);
   const returnedLayout = await layoutMetrics();
   assertLayout(returnedLayout, `${viewport.width}x${viewport.height}-return`);
   assert.ok(returnedLayout.resizeEvents > landscapeLayout.resizeEvents, `${viewport.width}: portrait return must reach mobile runtime`);
@@ -174,6 +177,7 @@ for (const viewport of [{ width: 390, height: 844 }, { width: 360, height: 800 }
   results.push({
     viewport: `${viewport.width}x${viewport.height}@2`,
     stageAfterPinch: pinch.stage,
+    continuousDistanceRadii: pinchHealth.continuousDistanceRadii,
     minRailButtonHeight: portrait.minRailButtonHeight,
     landscape: `${landscape.width}x${landscape.height}`,
     resizeEvents: returnedLayout.resizeEvents,
