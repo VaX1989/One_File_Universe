@@ -1,0 +1,165 @@
+/* V1X-10 viewport-first UX, compact reachability and accessibility presentation.
+   Authority: PRESENTATION_ONLY. This stylesheet does not alter input, selection,
+   camera, scale, scientific state, or evidence authority. */
+:root{
+  --v1x10-panel-safe-bottom:0px;
+  --v1x10-focus-ring:3px;
+  --v1x10-context-gap:.55rem;
+}
+
+.v1x10-visually-hidden{
+  position:absolute!important;
+  width:1px!important;
+  height:1px!important;
+  padding:0!important;
+  margin:-1px!important;
+  overflow:hidden!important;
+  clip:rect(0,0,0,0)!important;
+  white-space:nowrap!important;
+  border:0!important;
+}
+
+.v1x10-skip-links{
+  position:fixed;
+  inset:.4rem auto auto .4rem;
+  z-index:1000;
+  display:flex;
+  gap:.35rem;
+  pointer-events:none;
+}
+.v1x10-skip-links a{
+  pointer-events:auto;
+  transform:translateY(-180%);
+  padding:.55rem .7rem;
+  border:1px solid currentColor;
+  border-radius:.55rem;
+  background:Canvas;
+  color:CanvasText;
+  font-weight:700;
+  text-decoration:none;
+}
+.v1x10-skip-links a:focus{transform:translateY(0)}
+
+/* Explore remains visually viewport-first; the existing panel remains contextual. */
+html[data-workspace="explore"] .experience{
+  grid-template-columns:minmax(0,2.15fr) minmax(18rem,.72fr);
+  align-items:start;
+}
+html[data-workspace="explore"] .viewport-shell{min-width:0}
+html[data-workspace="explore"] .experience>.panel{min-width:0}
+
+.v1x10-context-dock{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--v1x10-context-gap);
+  padding:.6rem .7rem;
+  border-top:1px solid var(--border);
+  background:color-mix(in srgb,var(--surface, #0c1219) 92%, transparent);
+}
+.v1x10-context-text{min-width:0;display:grid;gap:.12rem}
+.v1x10-context-text strong{font-size:clamp(.88rem,.84rem + .16vw,1rem)}
+.v1x10-context-text span{font-size:clamp(.76rem,.73rem + .14vw,.88rem);color:var(--muted)}
+.v1x10-context-actions{display:flex;flex:0 0 auto;gap:.4rem;align-items:center}
+.v1x10-context-actions button{
+  min-height:44px;
+  min-width:44px;
+  padding:.48rem .68rem;
+  border:1px solid var(--border-strong);
+  border-radius:.65rem;
+  background:var(--surface-2);
+  color:inherit;
+  cursor:pointer;
+  font:inherit;
+  font-weight:650;
+}
+
+#planet-view:focus-visible,
+.v1x10-context-actions button:focus-visible,
+.workspace-nav [role="tab"]:focus-visible,
+.v1x10-skip-links a:focus-visible{
+  outline:var(--v1x10-focus-ring) solid currentColor;
+  outline-offset:3px;
+}
+
+/* Make pointer targets resilient to coarse input without changing the canvas owner. */
+@media (pointer:coarse){
+  .v1x10-context-actions button,
+  .scale-controls button,
+  .workspace-nav button{min-height:48px;min-width:48px}
+}
+
+@media (max-width:980px){
+  html[data-workspace="explore"] .experience{
+    grid-template-columns:minmax(0,1.7fr) minmax(17rem,.8fr);
+  }
+}
+
+@media (max-width:820px){
+  html[data-workspace="explore"] .experience{grid-template-columns:1fr}
+  .v1x10-context-dock{flex-wrap:wrap}
+  .v1x10-context-actions{width:100%}
+  .v1x10-context-actions button{flex:1 1 10rem}
+}
+
+/* Compact/mobile: sheet height is measured by viewport-ux.js and exported through
+   --v1x10-panel-safe-bottom. Sticky controls therefore settle above, not behind,
+   the fixed details sheet when the user scrolls them into reach. */
+@media (max-width:700px), (max-height:520px) and (pointer:coarse){
+  html[data-ofu-mobile="true"] .viewport-shell{
+    contain:layout paint;
+    overflow:clip;
+  }
+  html[data-ofu-mobile="true"] .v1x10-context-dock{
+    position:sticky;
+    bottom:calc(var(--v1x10-panel-safe-bottom) + 3.9rem + env(safe-area-inset-bottom));
+    z-index:35;
+    padding:.48rem .55rem;
+    backdrop-filter:blur(14px);
+  }
+  html[data-ofu-mobile="true"] .scale-bar{
+    position:sticky;
+    bottom:calc(var(--v1x10-panel-safe-bottom) + env(safe-area-inset-bottom));
+    z-index:36;
+    background:color-mix(in srgb,var(--surface, #0c1219) 96%, transparent);
+    backdrop-filter:blur(14px);
+  }
+  html[data-ofu-mobile="true"] .v1x10-context-text{flex:1 1 100%}
+  html[data-ofu-mobile="true"] .v1x10-context-actions{display:grid;grid-template-columns:1fr 1fr;width:100%}
+  html[data-ofu-mobile="true"] .v1x10-context-actions button{min-width:0}
+  html[data-ofu-mobile="true"] .viewport-help{scroll-margin-bottom:calc(var(--v1x10-panel-safe-bottom) + 5rem)}
+  html[data-ofu-mobile="true"] .workspace-nav{scroll-margin-top:max(3.5rem,env(safe-area-inset-top))}
+}
+
+@media (max-width:390px){
+  .v1x10-context-dock{gap:.38rem;padding:.42rem .48rem}
+  .v1x10-context-text span{font-size:.74rem}
+  .v1x10-context-actions{gap:.3rem}
+  .v1x10-context-actions button{padding:.42rem .48rem;font-size:.82rem}
+}
+
+/* User preferences are presentation constraints, not optional modes. */
+@media (prefers-reduced-motion:reduce){
+  html:focus-within{scroll-behavior:auto}
+  *,*::before,*::after{
+    animation-duration:.001ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.001ms!important;
+    scroll-behavior:auto!important;
+  }
+}
+@media (prefers-contrast:more){
+  .v1x10-context-dock,.v1x10-context-actions button{border-color:currentColor}
+  .v1x10-context-text span{color:inherit}
+}
+@media (forced-colors:active){
+  .v1x10-context-dock,.v1x10-context-actions button{forced-color-adjust:auto;background:Canvas;color:CanvasText}
+  #planet-view{outline:1px solid CanvasText}
+}
+
+/* Browser text zoom must be able to grow without clipping contextual controls. */
+@supports (font-size:clamp(1rem,2vw,2rem)){
+  @media (min-resolution:1dppx){
+    .v1x10-context-dock{min-block-size:3.25rem}
+  }
+}
