@@ -10,6 +10,7 @@ on:
       - 'src/domains/v1/astronomy.js'
       - 'tests/v1/astronomy/depth.mjs'
       - 'config/components/v11-astronomy-depth.json'
+      - '.github/workflows/v11-world-astronomy-depth.yml'
 
 permissions:
   contents: read
