@@ -302,6 +302,6 @@ jobs:
         with:
           pattern: rendering-production-*-${{ env.OFU_SOURCE_SHA }}
           path: evidence
-          merge-multiple: true
+          merge-multiple: false
       - name: Exact v1 cross-runtime production seal
         run: node tests/rendering/seal-v1-production-evidence.mjs evidence
