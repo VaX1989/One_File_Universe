@@ -1,0 +1,18 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1.product.living-guidance",
+      "version": "1.0.0",
+      "owner": "product",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/bootstrap/product/living-guidance.js",
+      "dependencies": ["v1.product.living-universe", "v1.product.living-forward-controls", "v1.product.living-survey-ux"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Post-v1 first-run and persistent controls guidance for the shipping Living foreground. Guidance tracks local product progress only and never creates canonical, scientific, navigation or model authority.",
+      "provides": ["v1.product.living-guidance"]
+    }
+  ]
+}
