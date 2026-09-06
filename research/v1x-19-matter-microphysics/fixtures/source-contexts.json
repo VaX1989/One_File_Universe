@@ -1,0 +1,62 @@
+{
+  "schema": "ofu-v1x-19-fixtures-1",
+  "fixtures": {
+    "cellWater": {
+      "sourceEntityId": "bio:organism-7/tissue-2/cell-41/material-water-sample-0",
+      "sampleIndex": 0,
+      "materialClass": "CELLULAR_AQUEOUS_PHASE",
+      "phase": "LIQUID",
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "fidelity": "SOURCE_CONTEXT_PLUS_REFERENCE_CHEMISTRY",
+      "context": [
+        {"kind":"ORGANISM","entityId":"bio:organism-7","authority":"MODEL_DERIVED_SIMULATION","provider":"v1x-17-life-evolution"},
+        {"kind":"TISSUE","entityId":"bio:organism-7/tissue-2","authority":"MODEL_DERIVED_SIMULATION","provider":"v1x-17-life-evolution"},
+        {"kind":"CELL","entityId":"bio:organism-7/tissue-2/cell-41","authority":"MODEL_DERIVED_SIMULATION","provider":"v1x-17-life-evolution"}
+      ],
+      "sourceRefs": [
+        {"sourceId":"CIAAW-SAW-2024","sourceKind":"CIAAW_STANDARD_ATOMIC_WEIGHTS","authority":"SOURCE_BACKED_REFERENCE","uri":"https://ciaaw.org/atomic-weights.htm","accessedOn":"2026-09-06","method":"standard atomic weights"}
+      ],
+      "composition": [
+        {"componentId":"H2O","formula":"H2O","elementCounts":{"H":2,"O":1},"fractionPpm":900000,"authority":"SOURCE_BACKED_REFERENCE","sourceRef":"CIAAW-SAW-2024"}
+      ],
+      "conditions": {"temperatureMilliK":310150,"pressurePa":101325}
+    },
+    "quartzComputedStructure": {
+      "sourceEntityId": "material:quartz-sample-3",
+      "sampleIndex": 3,
+      "materialClass": "SILICA_CRYSTAL",
+      "phase": "SOLID",
+      "authority": "MODEL_DERIVED_COMPUTED_STRUCTURE",
+      "fidelity": "COMPUTED_STRUCTURE_NORMALIZED_ATOM_SITES",
+      "context": [
+        {"kind":"MATERIAL_SAMPLE","entityId":"material:quartz-sample-3","authority":"MODEL_DERIVED_COMPUTED_STRUCTURE","provider":"research-fixture"}
+      ],
+      "sourceRefs": [
+        {"sourceId":"MP-EXAMPLE-QUARTZ","sourceKind":"MATERIALS_PROJECT_DFT","authority":"MODEL_DERIVED_COMPUTED_STRUCTURE","uri":"https://docs.materialsproject.org/methodology/materials-methodology/calculation-details","accessedOn":"2026-09-06","method":"DFT-derived structure class fixture","limitations":["Fixture coordinates below are synthetic normalized test values and are not copied from a Materials Project record."]}
+      ],
+      "composition": [
+        {"componentId":"SiO2","formula":"SiO2","elementCounts":{"O":2,"Si":1},"fractionPpm":1000000,"authority":"MODEL_DERIVED_COMPUTED_STRUCTURE","sourceRef":"MP-EXAMPLE-QUARTZ"}
+      ],
+      "conditions": {"temperatureMilliK":293150,"pressurePa":101325},
+      "atomSites": [
+        {"label":"Si1","element":"Si","positionFm":[0,0,0],"sourceRef":"MP-EXAMPLE-QUARTZ"},
+        {"label":"O1","element":"O","positionFm":[160000,0,0],"sourceRef":"MP-EXAMPLE-QUARTZ"},
+        {"label":"O2","element":"O","positionFm":[-160000,0,0],"sourceRef":"MP-EXAMPLE-QUARTZ"}
+      ]
+    },
+    "unresolvedRock": {
+      "sourceEntityId": "planet:demo/surface-cell-9/material-0",
+      "sampleIndex": 0,
+      "materialClass": "UNRESOLVED_ROCK",
+      "phase": "SOLID",
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "fidelity": "BULK_CLASS_ONLY",
+      "context": [
+        {"kind":"OBJECT","entityId":"planet:demo/surface-cell-9","authority":"MODEL_DERIVED_SIMULATION","provider":"v1.planetology"}
+      ],
+      "sourceRefs": [],
+      "composition": [],
+      "conditions": {"temperatureMilliK":280000,"pressurePa":93000}
+    }
+  }
+}
