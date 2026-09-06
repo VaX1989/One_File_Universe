@@ -1,0 +1,23 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1.micro.molecular-stoichiometry",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/molecular/stoichiometric-reference.js",
+      "dependencies": [
+        "v1.micro.molecular-reference",
+        "v1.material.reference-properties"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Selective V1X-19 harvest: bounded formula-unit atom-count fractions and source-backed standard-atomic-weight contribution closure layered onto the existing molecular reference-mass seam. No bulk composition, isotope inventory, measurement or canonical promotion.",
+      "provides": [
+        "v1.micro.molecular-stoichiometry"
+      ]
+    }
+  ]
+}
