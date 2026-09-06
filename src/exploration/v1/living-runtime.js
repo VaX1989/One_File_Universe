@@ -1,12 +1,13 @@
 (function(root){
 'use strict';
-const O=root.OFU,V=O.v1Common,AS=O.v1ExplorationAddressSpace,T=O.v1UniversalTraversal;
+const O=root.OFU,V=O.v1Common,AS=O.v1ExplorationAddressSpace,T=O.v1UniversalTraversal,R=O.waveIVScaleRuntime;
 const W=O.v1WorldContext,MP=O.v1MicroPipeline;
-if(!V||!AS||!T||!W||!MP||!O.v1Providers)throw new Error('Living-universe dependencies required');
+if(!V||!AS||!T||!R||!W||!MP||!O.v1Providers)throw new Error('Living-universe dependencies required');
 const VERSION='ofu-wave-a-living-runtime-1',MAX_HISTORY=64,MAX_ROWS=24;
 const SURFACE=['GLOBAL_SURFACE','REGIONAL_SURFACE','LOCAL_SURFACE','HUMAN'];
 const REGIMES=['MATERIAL','MICROSTRUCTURE','MOLECULAR','ATOMIC'];
 const stages=['UNIVERSE','GALAXY','REGION','NEIGHBORHOOD','SYSTEM','ORBIT','APPROACH',...SURFACE,...REGIMES];
+const SCALE_FOR_STAGE=Object.freeze({UNIVERSE:'galaxy',GALAXY:'galaxy',REGION:'galactic_region',NEIGHBORHOOD:'stellar_neighborhood',SYSTEM:'system',ORBIT:'orbit',APPROACH:'approach',GLOBAL_SURFACE:'global_surface',REGIONAL_SURFACE:'regional_surface',LOCAL_SURFACE:'local_surface',HUMAN:'human'});
 const sameKey=(a,b)=>!!a&&!!b&&AS.SYSTEM_FIELDS.every(k=>String(a[k])===String(b[k]));
 const keyCopy=k=>Object.freeze(Object.fromEntries(Object.entries(k).map(([n,v])=>[n,BigInt(v)])));
 function create({ctx,key,universeId=null,onCanonicalSelection=null,galaxySource=null}={}){
@@ -100,13 +101,13 @@ function create({ctx,key,universeId=null,onCanonicalSelection=null,galaxySource=
    }
   }
  }
- function apply(next,{push=true}={}){
+ function apply(next,{push=true,syncScale=true}={}){
   V.assert(stages.includes(next.stage),'unknown living-universe stage');
-  const prior={frame,world,local,micro,page,rows},priorBody=frame.body;
-  try{frame={...next};world=currentWorld();discover();
+  const prior={frame,world,local,micro,page,rows},priorBody=frame.body,priorScale=R.snapshot();
+  try{if(syncScale&&SCALE_FOR_STAGE[next.stage])R.requestStage(SCALE_FOR_STAGE[next.stage],{source:'living-derived-representation',driveCamera:false});frame={...next};world=currentWorld();discover();
    if(frame.body&&frame.body.kind!=='star'&&(!sameKey(priorBody?.canonicalKey,frame.body.canonicalKey)||String(priorBody?.canonicalKey?.orbitSlot)!==String(frame.body.canonicalKey.orbitSlot)))onCanonicalSelection?.(frame.body.canonicalKey);
    traversal.retarget(frame.node||universe,{push:false,source:'wave-a-living-universe'});
-  }catch(error){frame=prior.frame;world=prior.world;local=prior.local;micro=prior.micro;page=prior.page;rows=prior.rows;lastError=String(error.message);throw error;}
+  }catch(error){frame=prior.frame;world=prior.world;local=prior.local;micro=prior.micro;page=prior.page;rows=prior.rows;try{R.setContinuousDistance(priorScale.distanceIntentRadii,{source:'living-rollback',driveCamera:false})}catch{}lastError=String(error.message);throw error;}
   if(push){history.push(Object.freeze({...prior.frame}));if(history.length>MAX_HISTORY)history.shift();}
   lastError=null;metrics.navigations++;return emit();
  }
@@ -180,7 +181,7 @@ function create({ctx,key,universeId=null,onCanonicalSelection=null,galaxySource=
   V.assert(body,'choose a system with a planet before modeled-world survey');
   return query('v1.query.world-candidates',{address:[],cursor,limit,filters:{goal,maxWorlds,maxSystemQueries}},body);
  }
- function snapshot(){return Object.freeze({version:VERSION,revision,stage:frame.stage,node:frame.node,galaxy:frame.galaxy,region:frame.region,neighborhood:frame.hood,system:frame.system,body:frame.body,point:frame.point,selectedObjectId:frame.objectId,world,local,micro:micro?.snapshot()||null,rows:Object.freeze([...rows]),page,historyDepth:history.length,maxHistory:MAX_HISTORY,discoveryCacheEntries:cache.size,discoveryCacheLimit:12,traversal:traversal.snapshot(),metrics:Object.freeze({...metrics}),lastError,authority:'DERIVED',modelAuthority:'MODEL_DERIVED_SIMULATION',canonicalMutation:false});}
+ function snapshot(){const scale=R.snapshot();return Object.freeze({version:VERSION,revision,stage:frame.stage,stageAuthority:'DERIVED_REPRESENTATION',semanticScale:scale.semanticScale,continuousDistanceRadii:scale.distanceIntentRadii,scaleAuthority:R.VERSION,node:frame.node,galaxy:frame.galaxy,region:frame.region,neighborhood:frame.hood,system:frame.system,body:frame.body,point:frame.point,selectedObjectId:frame.objectId,world,local,micro:micro?.snapshot()||null,rows:Object.freeze([...rows]),page,historyDepth:history.length,maxHistory:MAX_HISTORY,discoveryCacheEntries:cache.size,discoveryCacheLimit:12,traversal:traversal.snapshot(),metrics:Object.freeze({...metrics}),lastError,authority:'DERIVED',modelAuthority:'MODEL_DERIVED_SIMULATION',canonicalMutation:false});}
  function activate(node){if(node.kind==='galaxy')return enterGalaxy(node);if(node.kind==='galactic_region')return enterRegion(node);if(node.kind==='system')return enterSystem(node);return enterBody(node);}
  discover();
  return Object.freeze({VERSION,ctx,universe,seed,seedGraph,traversal,SURFACE,REGIMES,stages,snapshot,query,graphForKey,activate,enterGalaxy,enterRegion,enterNeighborhood,enterSystem,enterBody,enterKey,approach,at,inspectAtmosphere,scale,selectObject,enterMicro,deeper,back,nextPage,nextWindow,time,searchWorlds,onChange(fn){V.assert(typeof fn==='function','listener');listeners.add(fn);return()=>listeners.delete(fn);}});

@@ -11,6 +11,7 @@ function assertContracts(){
  return true;
 }
 function targetIdFromValidated(validated){return P.hex(validated.body.selection.entityId)}
+function jsonSafe(value){if(value===null||typeof value==='string'||typeof value==='number'||typeof value==='boolean')return value;if(typeof value==='bigint'){const n=Number(value);return Number.isSafeInteger(n)?n:value.toString();}if(value instanceof Uint8Array)return P.hex(value);if(Array.isArray(value))return value.map(jsonSafe);if(value&&typeof value==='object'){const out={};for(const key of Object.keys(value))out[key]=jsonSafe(value[key]);return out;}return String(value)}
 function portableWitness(bytes,validated=S.validateBytes(bytes)){
  const checkpoint=validated.world.checkpoint;
  const selected=targetIdFromValidated(validated);
@@ -47,7 +48,7 @@ function consequenceFromValidated(validated,targetId=targetIdFromValidated(valid
   lastIntervention:last===null?null:{
    contract:last.contract,
    kind:last.kind,
-   parameters:last.parameters,
+   parameters:jsonSafe(last.parameters),
    authority:last.authority,
    canonicalMutation:last.canonicalMutation,
    canonicalP6Mutation:last.canonicalP6Mutation

@@ -64,4 +64,4 @@ assert.equal(candidate.centralRegistrationRequired,true);
 assert.equal(candidate.authority,'PRESENTATION_ONLY');
 provider.dispose();
 assert.equal(provider.snapshot().disposed,true);
-console.log(JSON.stringify({status:'PASS',provider:Provider.VERSION,contract:Provider.CONTRACT,drawCalls:result.metrics.drawCalls,uploadedBytes:result.metrics.uploadedBytes,pick:{entityId:pick.entityId,selectionContract:pick.selectionContract},authority:'PRESENTATION_ONLY',shadowAuthorities:{camera:snap.shadowCamera,scale:snap.shadowScaleRuntime,selection:snap.shadowSelection},driverEvidence:'FAKE_WEBGL2_API_ONLY'},null,2));
+console.log(JSON.stringify({status:'PASS',provider:Provider.VERSION,contract:Provider.CONTRACT,drawCalls:result.metrics.drawCalls,uploadedBytes:result.metrics.uploadedBytes,pick:{entityId:pick.entityId,selectionContract:pick.selectionContract},authority:'PRESENTATION_ONLY',shadowAuthorities:{camera:snap.shadowCamera,scale:snap.shadowScaleRuntime,selection:snap.shadowSelection},driverEvidence:'FAKE_WEBGL2_API_ONLY'}));

@@ -23,7 +23,7 @@ function create(canvas,glCanvas,{onActivate=null,onPoint=null,onObject=null}={})
  const g=canvas.getContext('2d',{alpha:true}),maps=new Map(),budget=O.v1RenderBudget.create({mobile:false,dpr:1});
  if(!g)throw new Error('Canvas2D unavailable');
  let gpu=null,gpuError=null,snapshot=null,scene=null,token=0,readyRevision=-1,width=1,height=1,dpr=1,disposed=false,picks=[];
- let yaw=0,pitch=0,bodyId=null,selectedPick=-1,terrain=[];
+ let yaw=0,pitch=0,bodyId=null,selectedPick=-1,terrain=[],travelDistanceRadii=null,travelBand=null;
  const metrics={frames:0,mapBuilds:0,mapEvictions:0,modelSamples:0,terrainSamples:0,maxMapCells:0,maxTerrainCells:0,drawnObjects:0,cancellations:0};
  const pause=()=>new Promise(resolve=>setTimeout(resolve,0));
  function resize(){const b=canvas.getBoundingClientRect();width=Math.max(1,b.width);height=Math.max(1,b.height);dpr=Math.min(2,root.devicePixelRatio||1);const w=Math.round(width*dpr),h=Math.round(height*dpr);if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}g.setTransform(dpr,0,0,dpr,0,0);}
@@ -33,32 +33,28 @@ function create(canvas,glCanvas,{onActivate=null,onPoint=null,onObject=null}={})
  function rowNode(sourceId){return snapshot.rows.find(n=>String(n.canonicalId||n.entityId)===String(sourceId));}
  function pick(x,y,r,data,labelText){picks.push({x,y,r,data,label:labelText});}
  function galaxyGlyph(x,y,r,node){const m=node.metadata.modelProfile,morph=m?.morphology||'UNKNOWN',seed=C.hash(node.canonicalId);g.save();g.translate(x,y);g.rotate(seed%628/100);g.scale(1,.62);glow(0,0,r*2.2,'rgba(113,171,218,.16)');if(morph.includes('SPIRAL')||morph.includes('DISK')){for(let arm=0;arm<3;arm++){g.beginPath();for(let j=0;j<=40;j++){const t=j/40,a=arm*Math.PI*2/3+t*5.7,rr=t*r;const xx=Math.cos(a)*rr,yy=Math.sin(a)*rr;if(j===0)g.moveTo(xx,yy);else g.lineTo(xx,yy);}g.strokeStyle='rgba(152,187,206,.70)';g.lineWidth=2.5;g.stroke();}}else{g.beginPath();g.ellipse(0,0,r,r*.6,0,0,Math.PI*2);g.fillStyle='rgba(162,175,188,.22)';g.fill();}glow(0,0,r*.7,'rgba(243,209,160,.85)');g.restore();}
+ function norm3(v){const n=Math.hypot(v[0],v[1],v[2])||1;return v.map(x=>x/n)}
+ function cross3(a,b){return[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]]}
+ function cameraFor(scale,{system=false}={}){const anchor=O.waveIVScaleRuntime?.snapshot?.().anchors?.[travelBand]||null,ratio=anchor&&travelDistanceRadii?clamp(travelDistanceRadii/anchor,.45,2.4):1,d=scale*(system?2.8:2.05)*ratio,cp=Math.cos(pitch),pos=[Math.sin(yaw)*cp*d,Math.sin(pitch)*d,Math.cos(yaw)*cp*d],forward=norm3(pos.map(x=>-x)),right=norm3(cross3(forward,[0,1,0])),up=norm3(cross3(right,forward));return{position:pos,origin:pos,target:[0,0,0],right,up,forward,focalLength:1.18,near:scale*.01,fovYRadians:Math.PI/3,aspect:width/height,far:scale*20};}
  function macro(s){
   background();
-  if(s.stage==='UNIVERSE'){
-   const galaxies=s.rows.map(n=>({...n,...n.metadata.modelProfile,canonicalId:n.canonicalId,authority:'CANONICAL_PROVEN'}));scene=O.v1WorldPresentation.galaxyScene({discovery:{galaxies,authority:'CANONICAL_PROVEN'}});
-  }else if(s.stage==='GALAXY'){
-   scene=C.scene('REGION',s.galaxy.canonicalId,s.rows.map((n,i)=>C.object('GALACTIC_REGION',n.entityId,n,{x:.12+.76*((i%6)+.5)/6,y:.18+.61*(Math.floor(i/6)+.5)/Math.max(1,Math.ceil(s.rows.length/6))})));
-   g.save();g.globalAlpha=.3;galaxyGlyph(width*.5,height*.48,Math.min(width,height)*.38,s.galaxy);g.restore();
-  }else if(['REGION','NEIGHBORHOOD'].includes(s.stage)){
-   scene=O.v1WorldPresentation.neighborhoodScene({centerId:s.neighborhood.entityId,systems:s.rows.map(n=>({...n,canonicalId:n.canonicalId,primary:{temperatureK:Number(n.metadata.primaryStar?.facts.baselineTemperatureK)||null},componentCount:Number(n.metadata.facts.stellarComponentCount)}))});
-  }else{
-   const stars=s.rows.filter(n=>n.kind==='star').map(n=>({...n,canonicalId:n.canonicalId,temperatureK:Number(n.metadata.facts.baselineTemperatureK),radiusMilliSolar:Number(n.metadata.facts.baselineRadiusMilliSolar)}));
-   const planets=s.rows.filter(n=>n.kind==='planet').map(n=>({...n,canonicalId:n.canonicalId,orbitMilliAu:Number(n.metadata.facts.baselineSemiMajorAxisMicroAu)/1000,radiusKm:O.v1World.radiusEstimateKm(n.metadata.facts.bulkPriorClass,Number(n.metadata.facts.baselineMassMilliEarth))}));
-   scene=O.v1WorldPresentation.systemScene({system:{canonicalId:s.system.canonicalId,stars,planets,authority:'CANONICAL_PROVEN'}});
-   for(const l of scene.links){g.beginPath();g.ellipse(width*.5,height*.5,l.visual.radius*width,l.visual.radius*height*.66,0,0,Math.PI*2);g.strokeStyle='rgba(154,189,209,.17)';g.lineWidth=1;g.stroke();}
+  if(s.stage==='SYSTEM'&&O.v1x04SystemProvider){
+   const system={id:s.system.canonicalId,facts:s.system.metadata?.facts||{}},stars=s.rows.filter(n=>n.kind==='star').map(n=>({id:n.canonicalId||n.entityId,facts:n.metadata?.facts||{}})),planets=s.rows.filter(n=>n.kind==='planet').map(n=>({id:n.canonicalId||n.entityId,facts:n.metadata?.facts||{}}));
+   const rendered=O.v1x04SystemProvider.render({system,stars,planets},{camera:cameraFor(28,{system:true}),viewport:{width,height}});scene={kind:'SYSTEM_3D',objects:rendered.hitTargets};
+   for(const orbit of rendered.projectedOrbits){if(orbit.points.length<2)continue;g.beginPath();orbit.points.forEach((p,i)=>i?g.lineTo(p.x,p.y):g.moveTo(p.x,p.y));g.strokeStyle='rgba(154,189,209,.25)';g.lineWidth=1;g.stroke();}
+   for(const h of rendered.hitTargets){if(!h.visible)continue;const node=s.rows.find(n=>String(n.canonicalId||n.entityId)===String(h.canonicalEntityId));if(!node)continue;const r=node.kind==='star'?11:7,c=node.kind==='star'?[255,213,151]:[107,179,199];glow(h.x,h.y,r*3,'rgba('+c.join(',')+',.23)');g.beginPath();g.arc(h.x,h.y,r,0,Math.PI*2);g.fillStyle=rgb(c);g.fill();const name=(node.kind==='star'?'Star ':'World ')+short(h.canonicalEntityId);label(name,h.x,h.y+r+17,{align:'center',color:'#c0d1de',size:10});pick(h.x,h.y,Math.max(18,r+7),{node},name);}
+   label('P3 identities / true 3D perspective / orbit geometry is presentation-only',22,height-20,{size:10});return;
   }
-  for(const [i,o] of scene.objects.entries()){
-   const node=rowNode(o.sourceId)||s.rows.find(n=>n.entityId===o.sourceId);if(!node)continue;
-   const v=o.visual,cols=Math.min(4,Math.max(2,Math.floor(width/180))),macroRow=Math.floor(i/cols),macroRows=Math.ceil(scene.objects.length/cols),x=s.stage==='UNIVERSE'?width*(.10+.80*((i%cols)+.5)/cols):v.x*width,y=s.stage==='UNIVERSE'?height*(.15+.66*(macroRow+.5)/macroRows):v.y*height,r=s.stage==='UNIVERSE'?21:node.kind==='star'?Math.min(32,v.sizePx):node.kind==='planet'?13:7;
-   if(node.kind==='galaxy')galaxyGlyph(x,y,r,node);
-   else{const c=node.kind==='star'?(v.color||[1,.8,.5]):node.kind==='planet'?([.42,.70,.78]):[.63,.8,.89];glow(x,y,r*2.7,'rgba('+c.map(n=>Math.round(n*255)).join(',')+',.24)');g.beginPath();g.arc(x,y,r,0,Math.PI*2);g.fillStyle=rgb(c.map(n=>n*255));g.fill();if(node.kind==='planet'){g.beginPath();g.arc(x,y,r+4,0,Math.PI*2);g.strokeStyle='rgba(172,221,239,.30)';g.stroke();}}
-   const name=(node.kind==='galaxy'?'Galaxy':node.kind==='galactic_region'?'Region':node.kind==='system'?'System':node.kind==='star'?'Star':'World')+' '+short(node.canonicalId||node.entityId);
-   label(name,x,y+r+20,{align:'center',color:'#c0d1de',size:11});pick(x,y,Math.max(24,r+8),{node},name);
+  const context=s.stage==='UNIVERSE'?'UNIVERSE':s.stage==='GALAXY'?'GALAXY':s.stage==='REGION'?'REGION':'NEIGHBORHOOD',scopeId=s.stage==='UNIVERSE'?s.node.entityId:s.stage==='GALAXY'?s.galaxy.entityId:s.stage==='REGION'?s.region.entityId:s.neighborhood.entityId,sp=O.v1x02SpatialUniverse,profile=sp.profile({context}),camera=cameraFor(profile.scaleUnits),rep=sp.representation({context,scopeId,entities:s.rows,cameraFrame:camera,limit:64});scene={kind:'SPATIAL_3D',objects:rep.objects};
+  if(s.stage==='GALAXY'){g.save();g.globalAlpha=.18;galaxyGlyph(width*.5,height*.48,Math.min(width,height)*.35,s.galaxy);g.restore();}
+  for(const o of rep.objects){if(!o.view?.visible)continue;const node=s.rows.find(n=>String(n.canonicalId||n.entityId)===String(o.canonicalId||o.entityId||o.identity));if(!node)continue;const x=width*.5+o.view.x*Math.min(width,height)*.46,y=height*.5-o.view.y*Math.min(width,height)*.46,depthScale=clamp(profile.scaleUnits/o.view.depth,.35,1.6),r=(node.kind==='galaxy'?18:node.kind==='star'?12:node.kind==='planet'?9:7)*depthScale;
+   if(node.kind==='galaxy')galaxyGlyph(x,y,r,node);else{const c=node.kind==='star'?[255,214,151]:node.kind==='planet'?[107,179,199]:[161,204,227];glow(x,y,r*2.7,'rgba('+c.join(',')+',.22)');g.beginPath();g.arc(x,y,r,0,Math.PI*2);g.fillStyle=rgb(c);g.fill();}
+   const name=(node.kind==='galaxy'?'Galaxy':node.kind==='galactic_region'?'Region':node.kind==='system'?'System':node.kind==='star'?'Star':'World')+' '+short(node.canonicalId||node.entityId);label(name,x,y+r+18,{align:'center',color:'#c0d1de',size:10});pick(x,y,Math.max(20,r+8),{node},name);
   }
-  label('P3 identities / model context / schematic positions',22,height-20,{size:10});
+  label('P3 identities / deterministic 3D presentation coordinates / camera-relative parallax',22,height-20,{size:10});
   if(!s.rows.length)label('No entities in this bounded page. Continue the survey.',width/2,height/2,{align:'center',size:16});
  }
+
  async function mapFor(world,myToken){
   const id=world.planetIdentity,cacheKey=id+':'+world.canonicalInputDigest;
   if(maps.has(cacheKey)){const value=maps.get(cacheKey);maps.delete(cacheKey);maps.set(cacheKey,value);return value;}
@@ -181,11 +177,12 @@ function create(canvas,glCanvas,{onActivate=null,onPoint=null,onObject=null}={})
   if(myToken!==token||disposed)return;metrics.frames++;metrics.drawnObjects=scene?.objects.length||0;budget.request('TERRAIN','visible',{objects:terrain.length,bytes:terrain.length*512,draws:1});readyRevision=s.revision;
  }
  function rotate(dx,dy){yaw+=dx*.006;pitch=clamp(pitch+dy*.004,-1.35,1.35);if(snapshot)render(snapshot);}
+ function setTravelDistance(distanceRadii,band){const d=Number(distanceRadii);if(Number.isFinite(d)&&d>0)travelDistanceRadii=d;if(band)travelBand=String(band);return state();}
  function activateAt(x,y){for(let i=picks.length-1;i>=0;i--){const p=picks[i];if(Math.hypot(x-p.x,y-p.y)>p.r)continue;const d=p.data;if(snapshot?.stage==='GLOBAL_SURFACE'&&d.point&&!d.settlement)continue;if(d.node)onActivate?.(d.node);else if(d.objectId)onObject?.(d.objectId);else if(d.point)onPoint?.(d.point,{settlement:d.settlement||null});return true;}if(snapshot?.world&&['ORBIT','APPROACH'].includes(snapshot.stage)){const p=pointFromScreen(x,y,snapshot.stage==='APPROACH'?.88:.76);if(p){onPoint?.(p,{});return true;}}if(snapshot?.stage==='GLOBAL_SURFACE'&&x>=32&&x<=width-32&&y>=72&&y<=height-73){const p=W.location(snapshot.world.planetIdentity,Math.round(90000000-(y-72)/(height-145)*180000000),Math.round(-180000000+(x-32)/(width-64)*360000000));onPoint?.(p,{});return true;}return false;}
  function keyboard(key){if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(key)&&picks.length){selectedPick=(selectedPick+(key==='ArrowLeft'||key==='ArrowUp'?-1:1)+picks.length)%picks.length;canvas.setAttribute('aria-label','Universe viewport. Focused '+picks[selectedPick].label);const p=picks[selectedPick];g.strokeStyle='#eac680';g.lineWidth=2;g.beginPath();g.arc(p.x,p.y,p.r+3,0,Math.PI*2);g.stroke();return true;}if(key==='Enter'&&selectedPick>=0){const p=picks[selectedPick];return activateAt(p.x,p.y);}return false;}
  function state(){return {version:VERSION,readyRevision,worldIdentity:snapshot?.world?.planetIdentity||null,stage:snapshot?.stage,sceneScale:scene?.scale,sceneSourceId:scene?.sourceId,sourceIds:scene?.objects.map(o=>o.sourceId)||[],pickCount:picks.length,metrics:{...metrics},mapCacheEntries:maps.size,mapCacheLimit:MAX_MAPS,mapResolution:[MAP_W,MAP_H],gpu:gpu?.snapshot()||null,gpuError,budget:budget.snapshot(),authority:'PRESENTATION_ONLY',networkResources:0};}
  function dispose(){disposed=true;token++;maps.clear();picks=[];terrain=[];gpu?.dispose();budget.clear('dispose');}
- return Object.freeze({VERSION,render,rotate,activateAt,keyboard,state,dispose,resize,sampleColor});
+ return Object.freeze({VERSION,render,rotate,setTravelDistance,activateAt,keyboard,state,dispose,resize,sampleColor});
 }
 O.v1LivingRenderer=Object.freeze({VERSION,MAP_W,MAP_H,MAX_MAPS,MAX_TERRAIN,sampleColor,create});
 })(globalThis);
