@@ -55,11 +55,10 @@ const manifest = {
   claims,
   browserMatrix: {...browsers, directFile: true, requiredNetwork: false},
   physicalDevices: {android: 'NOT_VERIFIED', ios: 'NOT_VERIFIED'},
-  founderAcceptance: 'NOT_GRANTED',
-  certificationEligible: false,
-  certificationReason: productionDelta.length === 0 ? 'NO_RESPONSIBLE_PRODUCTION_DELTA_ON_EVIDENCE_LANE' : allBrowsers ? 'REQUIRES_CLAIM_SPECIFIC_ORACLE_ADJUDICATION' : 'BROWSER_MATRIX_INCOMPLETE'
+  founderAcceptance: 'NOT_GRANTED'
 };
 validateEvidenceManifest(manifest, {identity});
 fs.mkdirSync(root, {recursive: true});
 writeJson(path.join(root, 'evidence-manifest.json'), manifest);
-console.log(JSON.stringify({status: 'PASS', suite: 'v1x14-evidence-manifest', checkpoint: identity.sha, artifacts: artifacts.length, productionDelta: productionDelta.length, browserMatrix: manifest.browserMatrix, certificationEligible: false, certificationReason: manifest.certificationReason}));
+const certificationReason = productionDelta.length === 0 ? 'NO_RESPONSIBLE_PRODUCTION_DELTA_ON_EVIDENCE_LANE' : allBrowsers ? 'REQUIRES_CLAIM_SPECIFIC_ORACLE_ADJUDICATION' : 'BROWSER_MATRIX_INCOMPLETE';
+console.log(JSON.stringify({status: 'PASS', suite: 'v1x14-evidence-manifest', checkpoint: identity.sha, artifacts: artifacts.length, productionDelta: productionDelta.length, browserMatrix: manifest.browserMatrix, certificationEligible: false, certificationReason}));
