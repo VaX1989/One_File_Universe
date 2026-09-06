@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - parallel/v1-wave-a-planetology-environment-2026-09-05
+      - automation/ofu-world-planetary-causality-trace-2026-09-06
   pull_request:
     paths:
       - 'src/domains/v1/planetology/**'
@@ -25,8 +26,11 @@ jobs:
         run: |
           node --check src/domains/v1/planetology/causal-system.js
           node --check src/domains/v1/environment/world-system.js
+          node --check src/domains/v1/planetology/causality-trace.js
       - name: Causal planetology oracle
         run: node tests/v1/planetology/causal-system.mjs
+      - name: Planetary causality trace oracle
+        run: node tests/v1/planetology/causality-trace.mjs
       - name: Environment oracle
         run: node tests/v1/environment/world-system.mjs
       - name: Additive component integrity
