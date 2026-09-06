@@ -1,0 +1,21 @@
+{
+  "model": "v1x17-life-ecology-evolution-fixed-v1",
+  "environmentPacketDigest": "5c95cd62c0a76a21129f702141799a93b5e9212ef0c0c1bb41b8cce307ff02bb",
+  "initialStateDigest": "7622aad30a182302aa479493e8f50b1d67f9fd0861b70dae1b3cf50324548c0e",
+  "ecologyEventId": "r17:event:a4741a621fe01a9998e56a941bea05f1b3e3e80436cadc084b84b7b5e92d669c",
+  "postEcologyStateDigest": "649ab7986b4c69733527063fc55b632446411f98606a4eec6c859bdaabdb04e6",
+  "childLineageId": "r17:lineage:5eeb25539a4bf559a0f64e563877d10e0c8ccc20fd406f9c3ab4e9d71f3f7835",
+  "finalReplayStateDigest": "090dd0a198d5e67a644c030e28721db586a49811e00f0cc2d1786c2eef133a3b",
+  "mutationRngDigest": "27aa44f5e4387360164d676d2ea7a2e6a1254485cb8bb18daeb5d30e9ba09653",
+  "mutationDeltaI": "0",
+  "populationAfter": {
+    "p1": "910",
+    "p2": "548",
+    "consumer": "103",
+    "ghost": "0"
+  },
+  "lifecycleAfter": {
+    "juvenile": "80",
+    "adult": "70"
+  }
+}
