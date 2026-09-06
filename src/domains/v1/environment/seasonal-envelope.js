@@ -7,6 +7,7 @@ const SOURCE='research/v1x-16-planetary-causality-2026-09-06';
 const AUTH=V.authority('v1.environment.seasonal-envelope','1.0.0',[SOURCE],
   'Bounded deterministic four-phase seasonal envelope over an exact modeled location. It summarizes the existing reduced-order environment model and does not create measured weather, empirical climate normals or canonical environmental facts.',[
     'Four fixed phase samples are a model-inspection seam, not a forecast or observational time series.',
+    'World-context location identity and environment-sample location identity are distinct deterministic namespaces and are never conflated.',
     'Temperature, precipitation, hydrology and surface-state outputs remain MODEL_DERIVED_SIMULATION.',
     'No P4 history is admitted or mutated and no P5/P6 canonical authority is promoted.'
   ]);
@@ -21,7 +22,10 @@ function samplePhase(planet,point,seasonPpm){
   const waterActivityPpm=clamp(Math.max(liquid,h.runoffPpm||0,h.subsurfaceIcePotentialPpm||0,m.waterContentPpm||0,c.precipitationPotentialPpm||0));
   return V.freezeDeep({
     seasonPpm,
-    locationIdentity:surface.location.locationIdentity,
+    sourceLocationIdentity:point.locationIdentity,
+    sampleLocationIdentity:surface.location.locationIdentity,
+    latMicroDeg:point.latMicroDeg,
+    lonMicroDeg:point.lonMicroDeg,
     localMeanTemperatureMilliK:Number(c.localMeanTemperatureMilliK||0),
     precipitationPotentialPpm:clamp(c.precipitationPotentialPpm),
     aridityPpm:clamp(c.aridityPpm),
@@ -44,6 +48,8 @@ function summarize(planet,point){
   V.assert(point&&point.planetIdentity===planet.planetIdentity,'seasonal envelope exact world/location identity');
   const snapshots=Object.freeze(SEASON_MARKS.map(season=>samplePhase(planet,point,season)));
   V.assert(snapshots.length===MAX_SAMPLES,'seasonal sample bound');
+  V.assert(new Set(snapshots.map(x=>x.sourceLocationIdentity)).size===1,'seasonal source location identity continuity');
+  V.assert(new Set(snapshots.map(x=>x.sampleLocationIdentity)).size===1,'seasonal sample location identity continuity');
   const temperature=range(snapshots.map(x=>x.localMeanTemperatureMilliK));
   const precipitation=range(snapshots.map(x=>x.precipitationPotentialPpm));
   const waterActivity=range(snapshots.map(x=>x.waterActivityPpm));
@@ -54,6 +60,8 @@ function summarize(planet,point){
     version:VERSION,
     worldIdentity:planet.planetIdentity,
     locationIdentity:point.locationIdentity,
+    sampleLocationIdentity:snapshots[0].sampleLocationIdentity,
+    locationIdentitySemantics:'WORLD_CONTEXT_SOURCE_AND_ENVIRONMENT_SAMPLE_IDENTITIES_ARE_DISTINCT',
     modelClass:'BOUNDED_FOUR_PHASE_SEASONAL_ENVIRONMENT_ENVELOPE',
     seasonMarksPpm:SEASON_MARKS,
     sampleCount:snapshots.length,
