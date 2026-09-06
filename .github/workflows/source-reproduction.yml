@@ -8,6 +8,7 @@ on:
   push:
     branches:
       - main
+      - 'development/v1.*'
       - integration/wave-iv-massive-convergence-vertical-slice-2026-09-04
       - docs/founder-vision-multiscale-formalization-2026-09-05
       - integration/wave-v-parallel-base-enablement-2026-09-05
