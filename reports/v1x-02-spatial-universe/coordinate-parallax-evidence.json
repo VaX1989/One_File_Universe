@@ -1,0 +1,36 @@
+{
+  "schema": "ofu-v1x-02-coordinate-parallax-evidence-1",
+  "authority": "PRESENTATION_ONLY",
+  "productionVersion": "ofu-v1x-02-spatial-universe-1",
+  "consumerContract": "ofu-v1x-02-spatial-consumer-1",
+  "goldenFixtureSha256": "28f64cabf4fc46de83938e5bcb5ddd94b1c0ed04cfe879853976e64c6cf5c31f",
+  "coordinateWitnesses": {
+    "universeSeedA": [
+      {"identity":"canonicalId:galaxy:alpha","x":524.765915461,"y":145.430398512,"z":592.555022993},
+      {"identity":"canonicalId:galaxy:beta","x":-78.031521994,"y":106.795163215,"z":-592.47503256},
+      {"identity":"canonicalId:galaxy:delta","x":-8.823928525,"y":-28.469325402,"z":-196.054044554},
+      {"identity":"canonicalId:galaxy:epsilon","x":-642.296187484,"y":-134.728180316,"z":86.020315725}
+    ],
+    "spiralGalaxySeedB": [
+      {"identity":"canonicalId:region:0","x":1.785850901,"y":-6.734617726,"z":-29.872445626},
+      {"identity":"canonicalId:region:1","x":45.53594104,"y":337.784432944,"z":-116.195548844},
+      {"identity":"canonicalId:region:2","x":-0.780283672,"y":2.15039418,"z":8.071601669},
+      {"identity":"canonicalId:region:3","x":81.389669317,"y":91.181958201,"z":-334.545594118}
+    ]
+  },
+  "parallaxWitness": {
+    "depthSpread": 1185.030055553,
+    "shiftSpread": 0.003118633,
+    "nearShift": 0.012612525,
+    "farShift": 0.009493892,
+    "depthDependent": true,
+    "claims": {"provesPhysicalDistance":false,"provesThreeDimensionalPresentationResponse":true}
+  },
+  "stabilityWitness": {
+    "queryOrderStable": true,
+    "revisitStable": true,
+    "cacheResidencyIndependentByConstruction": true,
+    "primaryPlacementNonCoplanar": true,
+    "noPrimaryGridOracle": "PASS"
+  }
+}
