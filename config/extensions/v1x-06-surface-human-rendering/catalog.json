@@ -1,0 +1,89 @@
+{
+  "schema": "ofu-provider-catalog-1",
+  "owners": [
+    {
+      "id": "v1x-06-surface-human-rendering",
+      "prefixes": ["v1x-06"],
+      "kinds": ["scene", "renderer", "interaction"],
+      "authorities": ["PRESENTATION_ONLY"]
+    }
+  ],
+  "canonicalAdmissions": [],
+  "providers": [
+    {
+      "contract": "ofu-px-contracts-1",
+      "id": "v1x-06.scene.surface-human",
+      "version": "1.0.0",
+      "owner": "v1x-06-surface-human-rendering",
+      "kind": "scene",
+      "authority": {
+        "class": "PRESENTATION_ONLY",
+        "contract": "ofu-px-contracts-1",
+        "model": "v1x-06.scene.surface-human",
+        "version": "1.0.0",
+        "sources": ["src/v1x-06-surface-human-rendering/surface-provider.js", "src/v1x-06-surface-human-rendering/terrain-lod.js", "ofu-wave-iv-scale-runtime-3", "ofu-wave-iv-selection-1"],
+        "assumptions": ["Consumes upstream planet identity, selection, reference-frame and environment inputs read-only."],
+        "limitations": ["Procedural relief, tile geometry, shorelines, horizon styling and fallback materials are presentation cues unless an upstream source explicitly carries stronger authority."],
+        "evidence": []
+      },
+      "fidelity": {"regime":"surface","validity":"Global through human-scale surface presentation for supported upstream surface targets","resolution":"Bounded cube-sphere LOD tiles with local tangent-frame presentation","uncertainty":"No claim of measured elevation, shoreline, biome boundary or geodetic camera truth"},
+      "lifecycle": "SHIPPING",
+      "requires": [],
+      "claims": ["scene.surface-human-v1x06"],
+      "operations": ["REPRESENT"],
+      "budget": {"entities":256,"bytes":1048576,"operations":1048576,"queue":256},
+      "evidence": [{"id":"v1x-06.surface-human-rendering","tier":"LANE_TARGETED"}],
+      "mandatory": false
+    },
+    {
+      "contract": "ofu-px-contracts-1",
+      "id": "v1x-06.renderer.surface-human",
+      "version": "1.0.0",
+      "owner": "v1x-06-surface-human-rendering",
+      "kind": "renderer",
+      "authority": {
+        "class": "PRESENTATION_ONLY",
+        "contract": "ofu-px-contracts-1",
+        "model": "v1x-06.renderer.surface-human",
+        "version": "1.0.0",
+        "sources": ["src/v1x-06-surface-human-rendering/surface-provider.js"],
+        "assumptions": ["Renderer consumes prepared surface frame data and does not mutate canonical world state."],
+        "limitations": ["Lane verification exercises deterministic Canvas2D command generation; integration-owner scene binding and full browser/GPU visual certification remain separate."],
+        "evidence": []
+      },
+      "fidelity": {"regime":"surface","validity":"Embodied surface frame rendering","resolution":"Canvas viewport terrain patches, atmosphere/horizon layers and overlay marks","uncertainty":"Raster output is presentation, not a physical measurement surface"},
+      "lifecycle": "SHIPPING",
+      "requires": [{"id":"v1x-06.scene.surface-human","version":"1.0.0","authority":"PRESENTATION_ONLY"}],
+      "claims": ["renderer.surface-human-v1x06"],
+      "operations": ["REPRESENT"],
+      "budget": {"entities":256,"bytes":1048576,"operations":1048576,"queue":256},
+      "evidence": [{"id":"v1x-06.surface-human-rendering","tier":"LANE_TARGETED"}],
+      "mandatory": false
+    },
+    {
+      "contract": "ofu-px-contracts-1",
+      "id": "v1x-06.interaction.surface-local-travel",
+      "version": "1.0.0",
+      "owner": "v1x-06-surface-human-rendering",
+      "kind": "interaction",
+      "authority": {
+        "class": "PRESENTATION_ONLY",
+        "contract": "ofu-px-contracts-1",
+        "model": "v1x-06.interaction.surface-local-travel",
+        "version": "1.0.0",
+        "sources": ["src/v1x-06-surface-human-rendering/journey.js", "src/v1x-06-surface-human-rendering/math-frame.js", "ofu-wave-iv-input-intent-3", "ofu-wave-iv-scale-runtime-3"],
+        "assumptions": ["Input intent, canonical camera/reference-frame ownership and selection remain upstream responsibilities."],
+        "limitations": ["Lane journey state is a presentation witness and does not admit P4 history or replace V1X-01 camera/reference-frame authority."],
+        "evidence": []
+      },
+      "fidelity": {"regime":"surface","validity":"Bounded local movement and reverse traversal after supported surface arrival","resolution":"Continuous local tangent-frame displacement with bounded step and floating-origin rebase","uncertainty":"Local path is not canonical trajectory history"},
+      "lifecycle": "SHIPPING",
+      "requires": [],
+      "claims": ["interaction.surface-local-travel-v1x06"],
+      "operations": ["TRAVEL", "REFINE", "PROJECT", "RECONCILE"],
+      "budget": {"entities":256,"bytes":1048576,"operations":1048576,"queue":256},
+      "evidence": [{"id":"v1x-06.surface-human-rendering","tier":"LANE_TARGETED"}],
+      "mandatory": false
+    }
+  ]
+}
