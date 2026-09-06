@@ -50,3 +50,6 @@ body.wave-a-active [data-workspace-panel="explore"]>:not(#living-panel):not(#v1-
 /* Keep the scale rail inside the viewport even when prior shell sizing is shorter. */
 body.wave-a-active .viewport-frame{height:calc(100vh - 180px);min-height:620px;max-height:920px}#living-titlebar,#living-breadcrumbs,#living-rail{flex-shrink:0}#living-canvas-wrap{min-height:280px}
 @media(max-width:760px){body.wave-a-active .viewport-frame{height:620px;min-height:620px;max-height:760px}#living-canvas-wrap{min-height:320px}}
+
+/* The mobile bottom sheet is the sole vertical scroll owner. Avoid nested scroll traps and unstable touch hit-testing between adjacent choices. */
+html[data-ofu-mobile="true"] .mobile-sheet-body .living-choices{max-height:none;overflow:visible;padding-right:0}
