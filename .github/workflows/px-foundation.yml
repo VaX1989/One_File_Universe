@@ -28,10 +28,10 @@ jobs:
           node-version: '24.20.0'
       - name: Exact source
         run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
-      - name: Install Chromium for owner-qualified browser conformance
+      - name: Install browsers for owner-qualified browser conformance
         run: |
           npm install --no-save --package-lock=false playwright@1.62.1
-          npx playwright install --with-deps chromium
+          npx playwright install --with-deps chromium firefox webkit
       - name: Build full v1 oracle fixture
         run: node tools/build-ofu-rendering-v09.mjs
       - name: Owner-qualified PX conformance
