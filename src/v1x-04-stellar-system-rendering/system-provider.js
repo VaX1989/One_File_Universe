@@ -8,7 +8,7 @@ const DESCRIPTOR=Object.freeze({contract:'ofu-px-contracts-1',id:'v1x04.system.r
 function freeze(value){if(!value||typeof value!=='object'||Object.isFrozen(value))return value;for(const k of Object.keys(value))freeze(value[k]);return Object.freeze(value)}
 function cameraRetreat(camera,factor,metadata={}){
   const position=M.v3(camera.position,'camera.position'),target=M.v3(camera.target,'camera.target'),offset=M.sub(position,target),previous=camera.responsiveViewportFit||{},distanceFactor=Number(previous.distanceFactor||1)*factor;
-  return freeze({...camera,position:M.add(target,M.mul(offset,factor)),responsiveViewportFit:{authority:'PRESENTATION_ONLY',sourceAspect:previous.sourceAspect??camera.aspect,targetAspect:previous.targetAspect??camera.aspect,distanceFactor,sceneFitAttempts:Number(metadata.sceneFitAttempts??previous.sceneFitAttempts??0),sceneFitReason:metadata.sceneFitReason??previous.sceneFitReason??null}});
+  return freeze({...camera,position:M.add(target,M.mul(offset,factor)),responsiveViewportFit:{authority:'PRESENTATION_ONLY',sourceAspect:Number(metadata.sourceAspect??previous.sourceAspect??camera.aspect),targetAspect:Number(metadata.targetAspect??previous.targetAspect??camera.aspect),distanceFactor,sceneFitAttempts:Number(metadata.sceneFitAttempts??previous.sceneFitAttempts??0),sceneFitReason:metadata.sceneFitReason??previous.sceneFitReason??null}});
 }
 function responsiveCamera(camera,viewport){
   if(!camera||typeof camera!=='object')throw new TypeError('external camera frame required');
@@ -17,7 +17,7 @@ function responsiveCamera(camera,viewport){
   const targetAspect=1.25;
   if(aspect>=targetAspect)return camera;
   const factor=Math.min(2.4,targetAspect/aspect);
-  return cameraRetreat(camera,factor,{sceneFitAttempts:0,sceneFitReason:'RESPONSIVE_ASPECT'});
+  return cameraRetreat(camera,factor,{sourceAspect:aspect,targetAspect,sceneFitAttempts:0,sceneFitReason:'RESPONSIVE_ASPECT'});
 }
 function visibleNodeCount(scene,camera,viewport){
   let visible=0;for(const node of scene.nodes){const pixel=M.ndcToPixel(M.project(node.transitionPosition3d,camera),viewport);if(pixel?.visible)visible++;}return visible;
