@@ -30,5 +30,5 @@ r.enterKey(r.seedGraph.body.canonicalKey);const epoch=r.snapshot().world.civiliz
 ok(r.snapshot().historyDepth<=r.snapshot().maxHistory,'base Living history remains bounded');ok(r.snapshot().forwardKnownDepth<=r.snapshot().maxHistory&&r.snapshot().forwardDepth<=r.snapshot().maxHistory,'forward controller stacks remain bounded to Living history limit');eq(r.snapshot().canonicalMutation,false,'forward navigation never gains canonical mutation authority');
 
 const controls=fs.readFileSync('src/bootstrap/product/living-forward-controls.js','utf8');
-assert.match(controls,/data\.livingAction='forward'/);assert.match(controls,/event\.key==='\['/);assert.match(controls,/event\.key==='\]'/);assert.match(controls,/historyDepth/);assert.match(controls,/forwardDepth/);cases+=5;
+assert.match(controls,/dataset\.livingAction='forward'/);assert.match(controls,/event\.key==='\['/);assert.match(controls,/event\.key==='\]'/);assert.match(controls,/historyDepth/);assert.match(controls,/forwardDepth/);cases+=5;
 console.log(JSON.stringify({status:'PASS',suite:'v11-living-forward-navigation',cases,forwardVersion:r.snapshot().forwardNavigationVersion,maxHistory:r.snapshot().maxHistory,invalidations:r.snapshot().forwardInvalidations}));
