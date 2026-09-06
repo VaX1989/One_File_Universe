@@ -7,6 +7,7 @@ on:
     paths:
       - 'src/domains/v1/civilization/network-context.js'
       - 'tests/v1/civilization/network-context.mjs'
+      - 'tests/v1/civilization/local-context-composition.mjs'
       - 'config/components/v11-settlement-network-context.json'
       - '.github/workflows/v11-world-settlement-network.yml'
 
@@ -38,12 +39,15 @@ jobs:
         run: |
           node --check src/domains/v1/civilization/network-context.js
           node --check tests/v1/civilization/network-context.mjs
+          node --check tests/v1/civilization/local-context-composition.mjs
       - name: Existing civilization systemic oracle
         run: node tests/v1/civilization/systemic-civilization.mjs
       - name: Existing settlement history oracle
         run: node tests/v1/civilization/settlement-history-context.mjs
       - name: Settlement network oracle
         run: node tests/v1/civilization/network-context.mjs
+      - name: Civilization local-context composition
+        run: node tests/v1/civilization/local-context-composition.mjs
       - name: Component descriptor integration
         run: |
           node --input-type=module <<'NODE'
