@@ -52,7 +52,7 @@ jobs:
           node tools/build-ofu-rendering-v09.mjs > /tmp/post-v1-build-2.json
           cmp /tmp/post-v1-first.html dist/One_File_Universe.html
           cmp /tmp/post-v1-first-manifest.json dist/rendering-build-manifest.json
-          test "$(grep -Eoc '(src|href)=[\"'\"'']https?://' dist/One_File_Universe.html)" -eq 0
+          test "$(grep -Eoc "(src|href)=[\"']https?://" dist/One_File_Universe.html)" -eq 0
           grep -q "connect-src 'none'" dist/One_File_Universe.html
 
   chromium-product-smoke:
