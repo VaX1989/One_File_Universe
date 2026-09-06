@@ -1,0 +1,96 @@
+{
+  "schema": "ofu-ai-f0-benchmark-results-1",
+  "capturedOn": "2026-09-06",
+  "classification": {
+    "gatewayTests": "MEASURED_LOCAL_EXECUTION",
+    "deterministicCorpus": "MEASURED_LOCAL_EXECUTION_NON_LLM_FALLBACK",
+    "payloadProxy": "MEASURED_LOCAL_SYNTHETIC_PROXY",
+    "candidateArtifactAndArchitecture": "SOURCE_OBSERVED_OR_DERIVED",
+    "directFileBrowser": "ENVIRONMENT_BLOCKED",
+    "localModelDecode": "NOT_MEASURED"
+  },
+  "gatewayTests": {
+    "total": 22,
+    "pass": 22,
+    "fail": 0,
+    "runtime": "Node v22.16.0",
+    "evidence": "evidence/gateway-tests.tap"
+  },
+  "deterministicCorpus": {
+    "total": 17,
+    "pass": 17,
+    "fail": 0,
+    "passRate": 1,
+    "evidence": "evidence/corpus-results.json",
+    "warning": "Tests deterministic gateway/fallback behavior, not language-model task quality."
+  },
+  "payloadProxy": {
+    "schema": "ofu-ai-f0-payload-benchmark-1",
+    "runtime": "v22.16.0",
+    "platform": "linux-x64",
+    "note": "Compression/decode timings use deterministic high-entropy synthetic byte payloads in fresh child processes; they are not model inference measurements.",
+    "proxy": [
+      {
+        "bytes": 16777216,
+        "generationMs": 46.499635999999995,
+        "base64Bytes": 22369624,
+        "base64EncodeMs": 10.36976399999999,
+        "base64DecodeMs": 9.635585000000006,
+        "gzipBytes": 16782359,
+        "gzipMs": 503.34184000000005,
+        "brotliBytes": 16777233,
+        "brotliMs": 40.68368699999996,
+        "memory": {
+          "start": {"rss":27652096,"heapUsed":4391592,"external":1922178,"arrayBuffers":12491},
+          "afterRaw": {"rss":47706112,"heapUsed":4405288,"external":18695935,"arrayBuffers":16789707},
+          "afterB64": {"rss":70119424,"heapUsed":4406400,"external":41065559,"arrayBuffers":16789707},
+          "afterDecode": {"rss":86896640,"heapUsed":4407760,"external":57842775,"arrayBuffers":33566923},
+          "peakRss": 86896640,
+          "peakRssDelta": 59244544
+        }
+      },
+      {
+        "bytes": 67108864,
+        "generationMs": 213.28712900000002,
+        "base64Bytes": 89478488,
+        "base64EncodeMs": 42.86625700000002,
+        "base64DecodeMs": 39.50349399999999,
+        "gzipBytes": 67129367,
+        "gzipMs": 2316.512287,
+        "brotliBytes": 67108929,
+        "brotliMs": 335.7980950000001,
+        "memory": {
+          "start": {"rss":27648000,"heapUsed":4391520,"external":1922178,"arrayBuffers":12491},
+          "afterRaw": {"rss":98033664,"heapUsed":4405216,"external":69027583,"arrayBuffers":67121355},
+          "afterB64": {"rss":187555840,"heapUsed":4406328,"external":158506071,"arrayBuffers":67121355},
+          "afterDecode": {"rss":254664704,"heapUsed":4397776,"external":225614935,"arrayBuffers":134230219},
+          "peakRss": 254664704,
+          "peakRssDelta": 227016704
+        }
+      }
+    ],
+    "candidateEstimates": [
+      {"id":"smollm2-135m-instruct-onnx-q4f16","modelPayloadBytes":117266133,"tokenizerBytesApprox":3520000,"runtimeBytes":null,"base64EmbeddedModelBytes":156354844,"base64EmbeddedKnownModelPlusTokenizerBytes":161048180,"kvBytesPerTokenFp16":23040,"kvMiBAt512":11.25,"kvMiBAt2048":45,"kvMiBAt8192":180},
+      {"id":"smollm2-360m-instruct-onnx-q4f16","modelPayloadBytes":272000000,"tokenizerBytesApprox":3520000,"runtimeBytes":null,"base64EmbeddedModelBytes":362666668,"base64EmbeddedKnownModelPlusTokenizerBytes":367360000,"kvBytesPerTokenFp16":40960,"kvMiBAt512":20,"kvMiBAt2048":80,"kvMiBAt8192":320},
+      {"id":"gemma3-270m-it-onnx-q4f16","modelPayloadBytes":273000000,"tokenizerBytesApprox":20300000,"runtimeBytes":null,"base64EmbeddedModelBytes":364000000,"base64EmbeddedKnownModelPlusTokenizerBytes":391066668,"kvBytesPerTokenFp16":18432,"kvMiBAt512":9,"kvMiBAt2048":36,"kvMiBAt8192":144},
+      {"id":"qwen2.5-0.5b-instruct-onnx-q4f16","modelPayloadBytes":483000000,"tokenizerBytesApprox":7030000,"runtimeBytes":null,"base64EmbeddedModelBytes":644000000,"base64EmbeddedKnownModelPlusTokenizerBytes":653373336,"kvBytesPerTokenFp16":12288,"kvMiBAt512":6,"kvMiBAt2048":24,"kvMiBAt8192":96}
+    ]
+  },
+  "directFile": {
+    "schema": "ofu-ai-f0-direct-file-probe-1",
+    "executed": false,
+    "classification": "ENVIRONMENT_BLOCKED",
+    "error": "Page.goto: net::ERR_BLOCKED_BY_ADMINISTRATOR at file:///tmp/ofu-ai-f0-files/research/ai-f0-local-inference-feasibility/direct-file-probe.html\nCall log:\n  - navigating to \"file:///tmp/ofu-ai-f0-files/research/ai-f0-local-inference-feasibility/direct-file-probe.html\", waiting until \"load\"\n"
+  },
+  "localModelInference": {
+    "executed": false,
+    "firstTokenLatencyMs": null,
+    "sustainedTokensPerSecond": null,
+    "peakCpuHeapBytes": null,
+    "peakGpuMemoryBytes": null,
+    "contextRuntimeMemoryMeasured": false,
+    "ofuTaskQualityMeasured": false,
+    "promptInjectionModelBehaviorMeasured": false,
+    "reason": "No approved model/runtime binary was available locally and model download/network access was unavailable; vendor performance was not substituted for measurement."
+  }
+}

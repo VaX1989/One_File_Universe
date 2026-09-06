@@ -1,0 +1,23 @@
+{
+  "schema": "ofu-ai-f0-environment-1",
+  "capturedOn": "2026-09-06",
+  "node": "v22.16.0",
+  "python": "3.13.5",
+  "chromium": "144.0.7559.96 Debian trixie",
+  "os": "Linux 6.18.35 x86_64",
+  "cpu": {
+    "logicalCpus": 5,
+    "model": "INTEL(R) XEON(R) PLATINUM 8573C"
+  },
+  "memory": {
+    "totalBytes": 6236925952,
+    "availableBytesAtCapture": 5249515520,
+    "swapBytes": 0
+  },
+  "gpu": {
+    "nvidiaSmiAvailable": false,
+    "measuredGpuMemoryBytes": null
+  },
+  "networkConstraint": "ordinary shell/model-download networking unavailable in execution environment",
+  "directFileConstraint": "headless Chromium file:// navigation blocked by host administrator policy"
+}

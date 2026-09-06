@@ -1,0 +1,67 @@
+{
+  "schema": "ofu-ai-f0-source-provenance-1",
+  "asOf": "2026-09-06",
+  "policy": "Metadata only. No third-party weights or runtime binaries are committed by AI-F0.",
+  "models": [
+    {
+      "id": "smollm2-135m-instruct-onnx-q4f16",
+      "upstream": "HuggingFaceTB/SmolLM2-135M-Instruct",
+      "licenseObserved": "Apache-2.0",
+      "conversion": "onnx-community/SmolLM2-135M-Instruct-ONNX",
+      "observations": ["q4f16 ONNX payload 117266133 bytes", "tokenizer JSON approximately 3.52 MB", "135M-class architecture metadata"],
+      "urls": ["https://huggingface.co/HuggingFaceTB/SmolLM2-135M-Instruct", "https://huggingface.co/onnx-community/SmolLM2-135M-Instruct-ONNX/blob/main/onnx/model_q4f16.onnx", "https://huggingface.co/onnx-community/SmolLM2-135M-Instruct-ONNX/tree/main"],
+      "redistributionDecision": "NOT_COMMITTED; Apache-2.0 is permissive but conversion provenance, notices, exact hashes and repository artifact policy still require an explicit pre-redistribution review."
+    },
+    {
+      "id": "smollm2-360m-instruct-onnx-q4f16",
+      "upstream": "HuggingFaceTB/SmolLM2-360M-Instruct",
+      "licenseObserved": "Apache-2.0",
+      "conversion": "onnx-community/SmolLM2-360M-Instruct-ONNX",
+      "observations": ["q4f16 ONNX payload approximately 272 MB", "tokenizer JSON approximately 3.52 MB", "360M-class architecture metadata"],
+      "urls": ["https://huggingface.co/HuggingFaceTB/SmolLM2-360M-Instruct", "https://huggingface.co/onnx-community/SmolLM2-360M-Instruct-ONNX/tree/main/onnx"],
+      "redistributionDecision": "NOT_COMMITTED; exact converted-artifact hash/notice review required."
+    },
+    {
+      "id": "gemma3-270m-it-onnx-q4f16",
+      "upstream": "google/gemma-3-270m-it",
+      "licenseObserved": "Gemma Terms",
+      "conversion": "onnx-community/gemma-3-270m-it-ONNX",
+      "observations": ["current q4f16 external-data payload approximately 273 MB", "tokenizer JSON approximately 20.3 MB", "gated model access/terms acceptance"],
+      "urls": ["https://huggingface.co/google/gemma-3-270m-it", "https://huggingface.co/onnx-community/gemma-3-270m-it-ONNX/tree/main"],
+      "redistributionDecision": "DO_NOT_REDISTRIBUTE from AI-F0. Terms, gating and redistribution obligations require explicit legal/project review first."
+    },
+    {
+      "id": "qwen2.5-0.5b-instruct-onnx-q4f16",
+      "upstream": "Qwen/Qwen2.5-0.5B-Instruct",
+      "licenseObserved": "Apache-2.0",
+      "conversion": "onnx-community/Qwen2.5-0.5B-Instruct",
+      "observations": ["q4f16 ONNX payload approximately 483 MB", "tokenizer JSON approximately 7.03 MB", "0.5B-class architecture metadata"],
+      "urls": ["https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct", "https://huggingface.co/onnx-community/Qwen2.5-0.5B-Instruct/tree/main/onnx"],
+      "redistributionDecision": "NOT_COMMITTED; exact converted-artifact hash/notice review required."
+    }
+  ],
+  "runtimes": [
+    {
+      "name": "ONNX Runtime Web",
+      "licenseObserved": "MIT",
+      "role": "Preferred AI-F1 experimental baseline candidate because WASM/CPU is available and model/WASM bytes can be supplied from memory; WebGPU remains optional.",
+      "urls": ["https://onnxruntime.ai/docs/tutorials/web/", "https://onnxruntime.ai/docs/tutorials/web/ep-webgpu.html", "https://github.com/microsoft/onnxruntime"],
+      "binaryBytes": null,
+      "binaryBytesReason": "No runtime version/build has been frozen or locally materialized in AI-F0."
+    },
+    {
+      "name": "Transformers.js",
+      "licenseObserved": "NOT_RECORDED_AS_REDISTRIBUTION_AUTHORITY_IN_AI-F0",
+      "role": "Candidate orchestration/tokenizer layer; offline configuration supports disabling remote models, but strict one-file loading must be demonstrated without URL fetches.",
+      "urls": ["https://huggingface.co/docs/transformers.js/api/env", "https://huggingface.co/docs/transformers.js/guides/webgpu"],
+      "binaryBytes": null
+    },
+    {
+      "name": "WebLLM",
+      "licenseObserved": "Apache-2.0",
+      "role": "Secondary WebGPU experiment only; not acceptable as the required baseline because WebGPU is optional in OFU policy.",
+      "urls": ["https://github.com/mlc-ai/web-llm"],
+      "binaryBytes": null
+    }
+  ]
+}

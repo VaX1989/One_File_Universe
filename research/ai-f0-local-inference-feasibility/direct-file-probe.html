@@ -1,0 +1,10 @@
+<!doctype html><meta charset="utf-8"><title>OFU AI-F0 direct-file probe</title><pre id="out">running</pre><script>
+(async()=>{const r={protocol:location.protocol,isSecureContext,crossOriginIsolated,sharedArrayBuffer:typeof SharedArrayBuffer==='function',wasm:typeof WebAssembly==='object',webgpuApi:!!navigator.gpu,decompressionStream:typeof DecompressionStream==='function',workerBlob:false,wasmInstantiate:false,selfFetch:false,indexedDb:false,localStorage:false,webgpuAdapter:false};
+try{const b=Uint8Array.from(atob('AGFzbQEAAAABBQFgAAF/AwIBAAcFAQF4AAAKBgEEAEEHCw=='),c=>c.charCodeAt(0));const {instance}=await WebAssembly.instantiate(b);r.wasmInstantiate=instance.exports.x()===7}catch(e){r.wasmError=String(e)}
+try{await new Promise((res,rej)=>{const u=URL.createObjectURL(new Blob(['onmessage=()=>postMessage(42)']));const w=new Worker(u);w.onmessage=e=>{r.workerBlob=e.data===42;w.terminate();URL.revokeObjectURL(u);res()};w.onerror=rej;w.postMessage(1)})}catch(e){r.workerError=String(e)}
+try{const x=await fetch(location.href);r.selfFetch=x.ok}catch(e){r.selfFetchError=String(e)}
+try{localStorage.setItem('ofu-ai-f0','1');r.localStorage=localStorage.getItem('ofu-ai-f0')==='1';localStorage.removeItem('ofu-ai-f0')}catch(e){r.localStorageError=String(e)}
+try{await new Promise((res,rej)=>{const q=indexedDB.open('ofu-ai-f0-probe',1);q.onupgradeneeded=()=>{};q.onsuccess=()=>{r.indexedDb=true;q.result.close();indexedDB.deleteDatabase('ofu-ai-f0-probe');res()};q.onerror=()=>rej(q.error)})}catch(e){r.indexedDbError=String(e)}
+if(navigator.gpu){try{const a=await Promise.race([navigator.gpu.requestAdapter(),new Promise(r=>setTimeout(()=>r(null),1500))]);r.webgpuAdapter=!!a}catch(e){r.webgpuError=String(e)}}
+r.userAgent=navigator.userAgent;r.hardwareConcurrency=navigator.hardwareConcurrency;r.deviceMemory=navigator.deviceMemory??null;window.__OFU_AI_F0_RESULT__=r;document.getElementById('out').textContent=JSON.stringify(r,null,2)})();
+</script>

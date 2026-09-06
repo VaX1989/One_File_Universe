@@ -1,0 +1,6 @@
+{
+  "schema": "ofu-ai-f0-direct-file-probe-1",
+  "executed": false,
+  "classification": "ENVIRONMENT_BLOCKED",
+  "error": "Page.goto: net::ERR_BLOCKED_BY_ADMINISTRATOR at file:///tmp/ofu-ai-f0-files/research/ai-f0-local-inference-feasibility/direct-file-probe.html\nCall log:\n  - navigating to \"file:///tmp/ofu-ai-f0-files/research/ai-f0-local-inference-feasibility/direct-file-probe.html\", waiting until \"load\"\n"
+}

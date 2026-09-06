@@ -1,0 +1,59 @@
+{
+  "schema": "ofu-ai-f0-model-candidates-1",
+  "asOf": "2026-09-06",
+  "note": "Artifact sizes are source-observed metadata, not local decode measurements. No third-party weights are committed.",
+  "candidates": [
+    {
+      "id": "smollm2-135m-instruct-onnx-q4f16",
+      "family": "SmolLM2",
+      "parametersApprox": 135000000,
+      "license": "Apache-2.0",
+      "sourceModel": "HuggingFaceTB/SmolLM2-135M-Instruct",
+      "runtimeFormat": "ONNX q4f16",
+      "modelPayloadBytes": 117266133,
+      "tokenizerBytesApprox": 3520000,
+      "runtimeBytes": null,
+      "architecture": {"layers":30,"hiddenSize":576,"attentionHeads":9,"kvHeads":3,"headDim":64,"maxContext":8192},
+      "sourceUrls": ["https://huggingface.co/HuggingFaceTB/SmolLM2-135M-Instruct","https://huggingface.co/onnx-community/SmolLM2-135M-Instruct-ONNX/blob/main/onnx/model_q4f16.onnx","https://huggingface.co/onnx-community/SmolLM2-135M-Instruct-ONNX/tree/main"]
+    },
+    {
+      "id": "smollm2-360m-instruct-onnx-q4f16",
+      "family": "SmolLM2",
+      "parametersApprox": 360000000,
+      "license": "Apache-2.0",
+      "sourceModel": "HuggingFaceTB/SmolLM2-360M-Instruct",
+      "runtimeFormat": "ONNX q4f16",
+      "modelPayloadBytes": 272000000,
+      "tokenizerBytesApprox": 3520000,
+      "runtimeBytes": null,
+      "architecture": {"layers":32,"hiddenSize":960,"attentionHeads":15,"kvHeads":5,"headDim":64,"maxContext":8192},
+      "sourceUrls": ["https://huggingface.co/HuggingFaceTB/SmolLM2-360M-Instruct","https://huggingface.co/onnx-community/SmolLM2-360M-Instruct-ONNX/tree/main/onnx"]
+    },
+    {
+      "id": "gemma3-270m-it-onnx-q4f16",
+      "family": "Gemma 3",
+      "parametersApprox": 270000000,
+      "license": "Gemma Terms (non-Apache; acceptance/review required before redistribution)",
+      "sourceModel": "google/gemma-3-270m-it",
+      "runtimeFormat": "ONNX q4f16 external-data",
+      "modelPayloadBytes": 273000000,
+      "tokenizerBytesApprox": 20300000,
+      "runtimeBytes": null,
+      "architecture": {"layers":18,"hiddenSize":640,"attentionHeads":4,"kvHeads":1,"headDim":256,"maxContext":32768,"slidingWindow":512},
+      "sourceUrls": ["https://huggingface.co/google/gemma-3-270m-it","https://huggingface.co/onnx-community/gemma-3-270m-it-ONNX/tree/main"]
+    },
+    {
+      "id": "qwen2.5-0.5b-instruct-onnx-q4f16",
+      "family": "Qwen2.5",
+      "parametersApprox": 500000000,
+      "license": "Apache-2.0",
+      "sourceModel": "Qwen/Qwen2.5-0.5B-Instruct",
+      "runtimeFormat": "ONNX q4f16",
+      "modelPayloadBytes": 483000000,
+      "tokenizerBytesApprox": 7030000,
+      "runtimeBytes": null,
+      "architecture": {"layers":24,"hiddenSize":896,"attentionHeads":14,"kvHeads":2,"headDim":64,"maxContext":32768},
+      "sourceUrls": ["https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct","https://huggingface.co/onnx-community/Qwen2.5-0.5B-Instruct/tree/main/onnx"]
+    }
+  ]
+}
