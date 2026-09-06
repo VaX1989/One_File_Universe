@@ -49,8 +49,12 @@ expectPhases(['src/rendering/living-scene.js','src/domains/planetology/volatile-
   assert(p5.length>=p6.length&&p3.length>=p5.length);cases++;
 }
 
-// Cross-cutting authority/persistence/integration surfaces remain cumulative.
-for(const path of ['src/persistence/save.js','src/kernel/p2-canonical.js','src/domains/v1/world-provider.js','tests/integration/p3-p5-contract-tests.mjs','docs/adr/ADR-0001.md']){
+// Known foundational/deterministic code is cumulatively routed by contract, not by uncertainty.
+for(const path of ['src/persistence/save.js','src/kernel/p2-canonical.js']){
+  const result=expectPhases([path],all,'P1');assert.equal(result.failClosed,false);
+}
+// Cross-cutting/unknown ownership is cumulative specifically because it fails closed.
+for(const path of ['src/domains/v1/world-provider.js','tests/integration/p3-p5-contract-tests.mjs','docs/adr/ADR-0001.md']){
   const result=expectPhases([path],all,'P1');assert.equal(result.failClosed,true);
 }
 
