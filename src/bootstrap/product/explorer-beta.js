@@ -56,9 +56,16 @@ function sync(){
  const nextStamp=[snapshot.token,session.previous,session.pinned,session.bookmarks.join('|'),session.recent.join('|'),session.trail.join('|'),session.trailCursor,JSON.stringify(session.progress),session.onboardingDismissed,state.storage].join('::');if(nextStamp===lastStamp)return;lastStamp=nextStamp;state.syncs++;render(snapshot)
 }
 function openToken(token,{collapse=true,action='open-saved-target',preserveTrail=false}={}){
- try{const key=C.parsePlanetKey(token),bridge=O.v08SelectionBridge;if(!bridge?.selectPlanet)throw new Error('selection bridge unavailable');if(preserveTrail)lastToken=token;bridge.selectPlanet(key,{announce:false});session=C.markProgress(session,'selected');save();state.lastAction=action;O.v08ExploreNavigation?.sync?.();sync();O.productUI?.announce?.('Opened '+worldDisplay(resolveSnapshot(token)));if(collapse&&O.v08MobileInteraction?.state?.active)O.v08MobileInteraction.collapse();return true}catch(error){O.productUI?.announce?.('Saved destination could not be opened safely');state.lastAction='open-failed:'+String(error?.message||error);return false}
+ const priorLastToken=lastToken;
+ try{const key=C.parsePlanetKey(token),bridge=O.v08SelectionBridge;if(!bridge?.selectPlanet)throw new Error('selection bridge unavailable');if(preserveTrail)lastToken=token;bridge.selectPlanet(key,{announce:false});session=C.markProgress(session,'selected');save();state.lastAction=action;O.v08ExploreNavigation?.sync?.();sync();O.productUI?.announce?.('Opened '+worldDisplay(resolveSnapshot(token)));if(collapse&&O.v08MobileInteraction?.state?.active)O.v08MobileInteraction.collapse();return true}catch(error){if(preserveTrail)lastToken=priorLastToken;O.productUI?.announce?.('Saved destination could not be opened safely');state.lastAction='open-failed:'+String(error?.message||error);return false}
 }
-function navigateTrail(delta){const moved=C.moveTrail(session,delta);if(!moved.moved)return false;session=moved.session;save();lastStamp='';return openToken(moved.token,{collapse:false,action:delta<0?'trail-back':'trail-forward',preserveTrail:true})}
+function navigateTrail(delta){
+ const moved=C.moveTrail(session,delta);if(!moved.moved)return false;
+ const priorSession=session,priorLastToken=lastToken;session=moved.session;lastStamp='';
+ const opened=openToken(moved.token,{collapse:false,action:delta<0?'trail-back':'trail-forward',preserveTrail:true});
+ if(opened){save();return true}
+ session=priorSession;lastToken=priorLastToken;save();lastStamp='';sync();return false;
+}
 function mark(name){session=C.markProgress(session,name);save();lastStamp='';sync()}
 function onClick(event){
  const open=event.target.closest?.('[data-beta-open]');if(open){openToken(open.dataset.betaOpen);return}
