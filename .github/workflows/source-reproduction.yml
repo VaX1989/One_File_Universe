@@ -3,7 +3,7 @@ name: Exact Source Reproduction Bundle
 # Diagnostic source transport, not a certification or release gate.
 # Only tracked public repository objects are archived; no runner files,
 # credentials, caches, or environment values are included.
-# Every head on the explicitly authorized program branches must be reproducible without network access.
+# Every canonical head and every proposed post-v1 head must be reproducible without network access.
 on:
   push:
     branches:
@@ -13,12 +13,18 @@ on:
       - docs/founder-vision-multiscale-formalization-2026-09-05
       - integration/wave-v-parallel-base-enablement-2026-09-05
       - integration/v1.0-definitive-product-convergence-2026-09-05
+  pull_request:
+    branches:
+      - 'development/v1.*'
+
+env:
+  OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 
 permissions:
   contents: read
 
 concurrency:
-  group: source-reproduction-${{ github.ref }}
+  group: source-reproduction-${{ github.event_name }}-${{ github.event.pull_request.head.ref || github.ref_name }}
   cancel-in-progress: true
 
 jobs:
@@ -28,12 +34,12 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ env.OFU_SOURCE_SHA }}
           fetch-depth: 0
           persist-credentials: false
       - name: Archive exact tracked source and ancestry
         env:
-          EXPECTED_SHA: ${{ github.sha }}
+          EXPECTED_SHA: ${{ env.OFU_SOURCE_SHA }}
         shell: bash
         run: |
           set -euo pipefail
@@ -47,7 +53,7 @@ jobs:
           (cd dist/source-reproduction && sha256sum exact-source.tar.gz source.bundle refs.txt source.txt > SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: source-reproduction-${{ github.sha }}
+          name: source-reproduction-${{ env.OFU_SOURCE_SHA }}
           path: dist/source-reproduction/
           if-no-files-found: error
           retention-days: 30
