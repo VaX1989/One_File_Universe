@@ -1,0 +1,42 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>V1X-03 deterministic macrocosm frame sequence</title>
+<style>
+html,body{margin:0;background:#07090f;color:#f4f7ff;font:14px/1.35 system-ui,sans-serif}main{padding:18px}h1{font-size:18px;margin:0 0 12px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.frame{border:1px solid #33405c;background:radial-gradient(circle at 50% 48%,#12182a,#06070c 68%);padding:8px}.frame h2{font-size:13px;margin:0 0 6px}.meta{font-size:11px;color:#b8c3d9;margin:6px 0 0}canvas{display:block;width:100%;height:auto;aspect-ratio:16/10;background:transparent}pre{white-space:pre-wrap;font-size:10px;color:#aebbd2;margin-top:14px;border-top:1px solid #283149;padding-top:10px}
+</style>
+<main>
+<h1>V1X-03 / true-3D macrocosm / deterministic camera + continuous reveal</h1>
+<div class="grid" id="grid"></div>
+<pre id="evidence">initializing</pre>
+</main>
+<script src="../../src/v1x-03-macrocosm-rendering/macro-core.js"></script>
+<script src="../../src/v1x-03-macrocosm-rendering/shaders.js"></script>
+<script src="../../src/v1x-03-macrocosm-rendering/webgl2-provider.js"></script>
+<script>
+(function(){
+'use strict';
+const O=globalThis.OFU;
+function rnd(i,k){let x=(i*2654435761+k*2246822519)>>>0;x^=x>>>15;x=Math.imul(x,2246822519);x^=x>>>13;return(x>>>0)/4294967296}
+const selection=Object.freeze({contract:'ofu-wave-iv-selection-1',canonicalId:'fixture:galaxy:anchor',canonicalKey:Object.freeze({fixture:'galaxy-anchor'})});
+const entities=[{id:'galaxy:anchor',kind:'GALAXY',authority:'PRESENTATION_ONLY',position:[0,0,1050],radius:95,selectable:true,selection,selected:true,presentation:{minDetail:0,morphologyClass:'SPIRAL',priority:100}}];
+for(let i=0;i<54;i++)entities.push({id:'galaxy:'+i,kind:'GALAXY',authority:'PRESENTATION_ONLY',position:[(rnd(i,1)-.5)*2200,(rnd(i,2)-.5)*1300,650+rnd(i,3)*4600],radius:28+rnd(i,4)*115,presentation:{minDetail:0,morphologyClass:i%3===0?'ELLIPTICAL':i%3===1?'SPIRAL':'IRREGULAR'}});
+for(let i=0;i<64;i++)entities.push({id:'region:'+i,kind:'GALACTIC_REGION',authority:'PRESENTATION_ONLY',position:[(rnd(i,11)-.5)*1200,(rnd(i,12)-.5)*760,450+rnd(i,13)*2100],radius:12+rnd(i,14)*28,presentation:{minDetail:.2,morphologyClass:'IRREGULAR'}});
+for(let i=0;i<96;i++)entities.push({id:'neighborhood:'+i,kind:'STELLAR_NEIGHBORHOOD',authority:'PRESENTATION_ONLY',position:[(rnd(i,21)-.5)*680,(rnd(i,22)-.5)*420,350+rnd(i,23)*1450],radius:3+rnd(i,24)*10,presentation:{minDetail:.55}});
+const scene={contract:'v1x-02-spatial-fixture',dimension:3,frameId:'macro-browser-evidence',entities};
+const anchors={galaxy:1000,region:100,stellar_neighborhood:10};
+const states=[
+ {name:'A / distant galaxy regime',distance:860,x:-150,target:[0,0,1800]},
+ {name:'B / region reveal',distance:105,x:0,target:[0,0,1800]},
+ {name:'C / neighborhood reveal + parallax',distance:14,x:150,target:[0,0,1800]}
+];
+const evidence=[];
+for(const state of states){
+ const host=document.createElement('section');host.className='frame';const title=document.createElement('h2');title.textContent=state.name;const canvas=document.createElement('canvas');canvas.width=640;canvas.height=400;const meta=document.createElement('div');meta.className='meta';host.append(title,canvas,meta);document.getElementById('grid').append(host);
+ const provider=O.v1x03MacroWebGL2.create({canvas,quality:'balanced'});const camera={contract:'v1x-01-external-camera-fixture',position:[state.x,0,-900],target:state.target,up:[0,1,0],fovYRadians:Math.PI/3,near:1,far:9000};const scale={contract:'ofu-wave-iv-scale-runtime-3',semanticScale:'galaxy',distanceIntentRadii:state.distance,anchors};
+ let result;try{result=provider.render({scene,camera,scale,viewport:{width:640,height:400,devicePixelRatio:1},clear:true});}catch(error){evidence.push({name:state.name,error:String(error.message||error),available:provider.snapshot().available});meta.textContent='WebGL2 unavailable: '+String(error.message||error);continue}
+ const frame=result.frame,anchor=frame.objects.find(x=>x.id==='galaxy:anchor'),pick=anchor?provider.pick(anchor.projection.screenX,anchor.projection.screenY):null,snap=provider.snapshot();meta.textContent='hash '+frame.hash+' / detail '+frame.semanticDetail.toFixed(3)+' / visible '+frame.resources.visibleCount+' / '+result.metrics.renderMs.toFixed(3)+' ms';evidence.push({name:state.name,hash:frame.hash,detail:frame.semanticDetail,visible:frame.resources.visibleCount,pick:pick&&{entityId:pick.entityId,hitMode:pick.hitMode},metrics:result.metrics,resources:frame.resources,provider:{available:snap.available,shadowCamera:snap.shadowCamera,shadowScaleRuntime:snap.shadowScaleRuntime,shadowSelection:snap.shadowSelection}});
+ }
+ const ok=evidence.length===3&&evidence.every(x=>!x.error&&x.provider?.available&&x.provider.shadowCamera===false&&x.provider.shadowScaleRuntime===false&&x.provider.shadowSelection===false)&&evidence[0].visible<evidence[2].visible&&evidence.every(x=>x.pick?.entityId==='galaxy:anchor');
+ globalThis.__V1X03_EVIDENCE__={status:ok?'PASS':'FAIL',webgl2:ok,sequence:evidence};document.getElementById('evidence').textContent=JSON.stringify(globalThis.__V1X03_EVIDENCE__,null,2);document.documentElement.dataset.v1x03=ok?'pass':'fail';
+})();
+</script>

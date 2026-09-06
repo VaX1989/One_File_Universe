@@ -1,0 +1,107 @@
+{
+  "contract": "ofu-v1x-03-deterministic-camera-trace-1",
+  "authority": "PRESENTATION_ONLY",
+  "canonicalPromotion": false,
+  "cameraSource": "EXTERNAL fixture shaped for V1X-01; production provider owns no camera state",
+  "spatialSource": "3D fixture shaped for V1X-02; coordinates are test/presentation fixtures and are not astronomy facts",
+  "scaleContract": "ofu-wave-iv-scale-runtime-3",
+  "selectionContract": "ofu-wave-iv-selection-1",
+  "frames": [
+    {
+      "id": "A",
+      "label": "Universe / distant galaxy regime",
+      "frameHash": "51a6a6ec",
+      "distanceIntentRadii": 900,
+      "semanticDetail": 0.022878745280337478,
+      "visibleCount": 3,
+      "objectIds": [
+        "galaxy:anchor",
+        "galaxy:far",
+        "galaxy:near"
+      ],
+      "cameraPosition": [
+        -70,
+        25,
+        700
+      ]
+    },
+    {
+      "id": "B",
+      "label": "Galactic region reveal",
+      "frameHash": "0f42ed92",
+      "distanceIntentRadii": 100,
+      "semanticDetail": 0.4999999999999999,
+      "visibleCount": 5,
+      "objectIds": [
+        "galaxy:anchor",
+        "galaxy:near",
+        "galaxy:far",
+        "region:a",
+        "region:b"
+      ],
+      "cameraPosition": [
+        0,
+        10,
+        360
+      ]
+    },
+    {
+      "id": "C",
+      "label": "Neighborhood approach",
+      "frameHash": "6e659811",
+      "distanceIntentRadii": 12,
+      "semanticDetail": 0.9604093769761877,
+      "visibleCount": 7,
+      "objectIds": [
+        "galaxy:anchor",
+        "galaxy:near",
+        "galaxy:far",
+        "region:a",
+        "region:b",
+        "neighborhood:a",
+        "neighborhood:b"
+      ],
+      "cameraPosition": [
+        70,
+        8,
+        190
+      ]
+    }
+  ],
+  "parallax": {
+    "kind": "ISOLATED_LATERAL_CAMERA_TRANSLATION",
+    "leftCamera": [
+      -70,
+      0,
+      500
+    ],
+    "rightCamera": [
+      70,
+      0,
+      500
+    ],
+    "nearEntityPx": 123.53117080396896,
+    "farEntityPx": 54.559600438419636,
+    "nearGreaterThanFar": true
+  },
+  "reverse": {
+    "contract": "ofu-v1x-03-reverse-continuity-witness-1",
+    "startHash": "51a6a6ec",
+    "forwardHash": "6e659811",
+    "returnHash": "51a6a6ec",
+    "reversible": true,
+    "startDetail": 0.022878745280337478,
+    "forwardDetail": 0.9604093769761877,
+    "returnDetail": 0.022878745280337478
+  },
+  "baselineComparison": {
+    "source": "Wave-A legacy src/rendering/macro/macro-scene.js + macro-canvas.js presentationGeometry XY projection",
+    "rejectedBehavior": "flattened XY presentation geometry with canvas pan offsets; world Z and free-camera translation are not projection inputs",
+    "cameraTranslationParallaxPx": 0,
+    "v1x03CameraTranslationParallaxPx": {
+      "near": 123.53117080396896,
+      "far": 54.559600438419636
+    },
+    "claimClass": "PRESENTATION_ONLY"
+  }
+}

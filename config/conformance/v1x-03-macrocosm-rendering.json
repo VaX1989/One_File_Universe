@@ -1,0 +1,65 @@
+{
+  "schema": "ofu-conformance-1",
+  "tests": [
+    {
+      "id": "v1x-03.macro-core",
+      "owner": "v1x-03-macrocosm-rendering",
+      "tier": "FAST_LOCAL",
+      "command": [
+        "node",
+        "tests/v1x-03-macrocosm-rendering/macro-core.mjs"
+      ],
+      "providers": [
+        "px.scene.macro",
+        "px.interaction.camera"
+      ],
+      "oracle": "ofu-v1x-03-macro-core-1",
+      "timeoutMs": 30000
+    },
+    {
+      "id": "v1x-03.webgl-provider-orchestration",
+      "owner": "v1x-03-macrocosm-rendering",
+      "tier": "FAST_LOCAL",
+      "command": [
+        "node",
+        "tests/v1x-03-macrocosm-rendering/webgl-provider-fake.mjs"
+      ],
+      "providers": [
+        "px.scene.macro",
+        "px.interaction.camera"
+      ],
+      "oracle": "ofu-v1x-03-webgl-provider-orchestration-1",
+      "timeoutMs": 30000
+    },
+    {
+      "id": "v1x-03.deterministic-visual-witness",
+      "owner": "v1x-03-macrocosm-rendering",
+      "tier": "FAST_LOCAL",
+      "command": [
+        "node",
+        "tests/v1x-03-macrocosm-rendering/generate-evidence.mjs"
+      ],
+      "providers": [
+        "px.scene.macro",
+        "px.interaction.camera"
+      ],
+      "oracle": "ofu-v1x-03-deterministic-camera-trace-1",
+      "timeoutMs": 30000
+    },
+    {
+      "id": "v1x-03.resource-evidence",
+      "owner": "v1x-03-macrocosm-rendering",
+      "tier": "FAST_LOCAL",
+      "command": [
+        "node",
+        "tests/v1x-03-macrocosm-rendering/resource-evidence.mjs"
+      ],
+      "providers": [
+        "px.scene.macro",
+        "px.interaction.camera"
+      ],
+      "oracle": "ofu-v1x-03-resource-evidence-1",
+      "timeoutMs": 30000
+    }
+  ]
+}
