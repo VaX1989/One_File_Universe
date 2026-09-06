@@ -11,11 +11,12 @@ function save(){if(!storage)return;try{storage.setItem(STORAGE_KEY,JSON.stringif
 function progress(s){const stage=String(s?.stage||'UNIVERSE'),surface=Array.isArray(runtime?.SURFACE)&&runtime.SURFACE.includes(stage),micro=Array.isArray(runtime?.REGIMES)&&runtime.REGIMES.includes(stage);return Object.freeze({started:stage!=='UNIVERSE',world:!!s?.world||!!s?.body&&['planet','moon'].includes(String(s.body.kind||'').toLowerCase()),surface:surface||micro})}
 function coarseInput(){try{return root.matchMedia?.('(pointer: coarse)')?.matches===true||Number(root.navigator?.maxTouchPoints||0)>0}catch{return false}}
 function makeStep(id,text,done){const li=document.createElement('li');li.dataset.livingGuidanceStep=id;li.dataset.complete=done?'true':'false';li.setAttribute('aria-label',(done?'Completed: ':'Not completed: ')+text);li.textContent=(done?'✓ ':'○ ')+text;return li}
+function primaryActions(){return panel?[...panel.children].find(node=>node.classList?.contains('living-actions'))||null:null}
 function removeFirstFlight(){document.getElementById('living-first-flight')?.remove()}
 function dismiss(){state.dismissed=true;save();removeFirstFlight();O.productUI?.announce?.('First flight guide dismissed');schedule()}
 function toggleGuide(force){const next=typeof force==='boolean'?force:!state.guideOpen;if(next===state.guideOpen)return;state.guideOpen=next;if(next)state.guideOpens++;schedule();O.productUI?.announce?.(next?'Exploration controls opened':'Exploration controls closed')}
 function ensureControlButton(){
- const actions=panel?.querySelector('.living-actions');if(!actions)return null;let button=actions.querySelector('[data-living-guidance-toggle]');
+ const actions=primaryActions();if(!actions)return null;let button=actions.querySelector('[data-living-guidance-toggle]');
  if(!button){button=document.createElement('button');button.type='button';button.className='living-button';button.textContent='Controls';button.dataset.livingGuidanceToggle='';button.setAttribute('aria-controls','living-controls-guide');button.setAttribute('aria-keyshortcuts','?');button.addEventListener('click',()=>toggleGuide());actions.append(button);state.decorations++}
  button.setAttribute('aria-expanded',state.guideOpen?'true':'false');button.setAttribute('aria-label',state.guideOpen?'Close exploration controls':'Open exploration controls');return button
 }
@@ -34,7 +35,7 @@ function renderGuide(anchor){
 function render(){
  if(!runtime||!panel)return false;const s=runtime.snapshot(),p=progress(s),stamp=JSON.stringify(p);if(stamp!==lastProgress){lastProgress=stamp;state.progressUpdates++}
  if(p.started&&p.world&&p.surface&&!state.completed){state.completed=true;save();removeFirstFlight();O.productUI?.announce?.('First flight complete')}
- const control=ensureControlButton(),anchor=control?.closest('.living-actions')||panel.querySelector('.living-actions');renderFirstFlight(p,stamp,anchor);renderGuide(anchor);state.ready=true;return true
+ const control=ensureControlButton(),anchor=control?.closest('.living-actions')||primaryActions();renderFirstFlight(p,stamp,anchor);renderGuide(anchor);state.ready=true;return true
 }
 function schedule(){if(scheduled)return;scheduled=true;(root.requestAnimationFrame||((fn)=>root.setTimeout(fn,0)))(()=>{scheduled=false;render()})}
 function onKeydown(event){if(event.defaultPrevented||event.altKey||event.ctrlKey||event.metaKey)return;const tag=event.target?.tagName;if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'||event.target?.isContentEditable)return;if(event.key==='?'){event.preventDefault();toggleGuide()}}
