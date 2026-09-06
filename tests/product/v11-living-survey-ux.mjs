@@ -12,6 +12,7 @@ assert.match(ux,/data-living-model-authority/,'every visible result receives an 
 assert.match(ux,/canonical identity retained/,'result affordance must explain retained canonical identity');
 assert.match(ux,/identity mismatch/,'post-activation identity verification must fail visibly');
 assert.match(ux,/MutationObserver/,'dynamic Living panel rerenders must be re-decorated');
+assert.match(ux,/MAX_ATTACH_ATTEMPTS=120/,'startup attachment must be bounded beyond the Living product maximum boot window');assert.match(ux,/attachStatus='timeout'/,'bounded startup must expose a terminal timeout state');
 assert.doesNotMatch(ux,/v09ExplorerBeta|beta-discovery|worldFor\(|build\(/,'hardening must not recreate a legacy or independent world-discovery surface');
 const plan=loadComponents(),ids=plan.map(c=>c.id),sources=plan.map(c=>c.source),livingIndex=ids.indexOf('v1.product.living-universe'),uxIndex=ids.indexOf('v1.product.living-survey-ux');
 assert(livingIndex>=0&&uxIndex>livingIndex,'Living survey UX must load after the shipping Living product');assert.equal(plan[uxIndex].stage,'full');assert(sources.includes('src/bootstrap/product/living-survey-ux.js'));
