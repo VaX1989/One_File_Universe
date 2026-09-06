@@ -45,10 +45,10 @@ jobs:
       - name: Verify exact source checkout
         shell: bash
         run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
-      - name: Install Chromium for PX browser conformance
+      - name: Install full browser matrix for PX browser conformance
         run: |
           npm install --no-save --package-lock=false playwright@1.62.1
-          npx playwright install --with-deps chromium
+          npx playwright install --with-deps chromium firefox webkit
       - name: Build full v1 oracle fixture
         run: node tools/build-ofu-rendering-v09.mjs
       - name: PX additive integration conformance
