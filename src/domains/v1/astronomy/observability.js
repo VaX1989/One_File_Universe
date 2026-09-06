@@ -25,10 +25,13 @@ function crowdingContext(galaxy,region){
 }
 function atDistance(primary,{distanceMilliPc,crowdingPpm=0,referenceFluxPpm=1000}={}){
  V.assert(primary&&typeof primary==='object','stellar observability primary');
- V.int(distanceMilliPc,'distanceMilliPc',1,1000000000);V.ppm(crowdingPpm,'crowdingPpm');V.int(referenceFluxPpm,'referenceFluxPpm',1,1000000000);
+ // Keep Number-facing outputs inside the exact-integer range: one parsec is the
+ // nearest supported comparison frame; the product reference series starts at 10 pc.
+ V.int(distanceMilliPc,'distanceMilliPc',1000,1000000000);V.ppm(crowdingPpm,'crowdingPpm');V.int(referenceFluxPpm,'referenceFluxPpm',1,1000000000);
  const luminosityMilliSolar=V.clamp(Math.round(Number(primary.luminosityMilliSolar||0)),0,1000000000);
  const d=BigInt(distanceMilliPc),denom=d*d;
  const relativeFluxAt10PcPpm=Number((BigInt(luminosityMilliSolar)*100000000000n)/denom);
+ V.assert(Number.isSafeInteger(relativeFluxAt10PcPpm),'observability relative flux exact integer bound');
  const flux=BigInt(Math.max(0,relativeFluxAt10PcPpm)),ref=BigInt(referenceFluxPpm),fluxScore=flux===0n?0:Number((flux*1000000n)/(flux+ref));
  const transmission=clamp(PPM-Math.floor(crowdingPpm*3/4));
  const detectabilityScorePpm=clamp(Math.floor(fluxScore*transmission/PPM));
