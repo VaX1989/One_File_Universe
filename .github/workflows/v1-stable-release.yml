@@ -1,0 +1,200 @@
+name: V1 Stable Release Publisher
+
+on:
+  workflow_run:
+    workflows: ['V1 Definitive Certification']
+    types: [completed]
+    branches: [main]
+
+concurrency:
+  group: v1-stable-release
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  actions: read
+
+env:
+  GH_TOKEN: ${{ github.token }}
+  RELEASE_TAG: v1.0.0
+  RELEASE_TITLE: One File Universe v1.0.0
+  SOURCE_SHA: ${{ github.event.workflow_run.head_sha }}
+  V1_RUN_ID: ${{ github.event.workflow_run.id }}
+
+jobs:
+  verify-publish:
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+
+      - name: Require exact unchanged main and unused stable identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git ls-remote origin refs/heads/main | cut -f1)" = "$SOURCE_SHA"
+          test -z "$(git ls-remote origin refs/tags/$RELEASE_TAG | cut -f1)"
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            echo 'v1.0.0 release already exists; stable releases are immutable' >&2
+            exit 1
+          fi
+
+      - name: Require exact-main release gates
+        id: gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          require_run() {
+            local workflow="$1"
+            local attempts=40
+            local run_id=''
+            for ((i=1; i<=attempts; i++)); do
+              gh run list --workflow "$workflow" --branch main --commit "$SOURCE_SHA" --limit 50 \
+                --json databaseId,headSha,conclusion,event,status > /tmp/runs.json
+              run_id="$(jq -r --arg sha "$SOURCE_SHA" '[.[] | select(.headSha==$sha and .status=="completed" and .conclusion=="success")][0].databaseId // empty' /tmp/runs.json)"
+              if test -n "$run_id"; then
+                printf '%s=%s\n' "$(printf '%s' "$workflow" | tr '[:upper:] -' '[:lower:]__')" "$run_id" >> "$GITHUB_OUTPUT"
+                printf '%s -> %s\n' "$workflow" "$run_id"
+                return 0
+              fi
+              sleep 30
+            done
+            echo "No successful exact-main run for: $workflow @ $SOURCE_SHA" >&2
+            return 1
+          }
+          require_run 'V1 Definitive Certification'
+          require_run 'Rendering Production'
+          require_run 'Exact Source Reproduction Bundle'
+
+      - name: Download definitive exact-main artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh run download "$V1_RUN_ID" -n "v1-candidate-$SOURCE_SHA" -D release-build
+          test -f release-build/One_File_Universe.html
+          test -f release-build/rendering-build-manifest.json
+
+      - name: Verify artifact identity, integrity and release contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('node:fs');
+          const crypto=require('node:crypto');
+          const manifest=JSON.parse(fs.readFileSync('release-build/rendering-build-manifest.json','utf8'));
+          const html=fs.readFileSync('release-build/One_File_Universe.html');
+          const digest=crypto.createHash('sha256').update(html).digest('hex');
+          const req=(ok,msg)=>{if(!ok)throw new Error(msg)};
+          req(manifest.status==='PASS','build status is not PASS');
+          req(manifest.sourceCommit===process.env.SOURCE_SHA,'artifact source is not exact released main');
+          req(manifest.productVersion==='1.0.0','productVersion is not 1.0.0');
+          req(manifest.releaseLine==='v1.0.0','releaseLine is not v1.0.0');
+          req(manifest.releaseStatus==='HISTORICAL_BASELINE','releaseStatus drift');
+          req(manifest.candidateOnly===false,'artifact is still candidate-only');
+          req(manifest.artifact==='One_File_Universe.html','unexpected artifact name');
+          req(manifest.artifactSha256===digest,'manifest/artifact SHA mismatch');
+          req(manifest.artifactBytes===html.length,'manifest/artifact byte-count mismatch');
+          req(manifest.runtime?.strictSingleFile===true,'single-file contract mismatch');
+          req(manifest.runtime?.directFile===true,'direct-file contract mismatch');
+          req(manifest.runtime?.offline===true && manifest.runtime?.networkRequired===false,'offline contract mismatch');
+          req(!/(src|href)=["'][^"']*https?:\/\//i.test(html.toString('utf8')),'external runtime URL found');
+          fs.writeFileSync('expected-sha256.txt',digest+'\n');
+          fs.writeFileSync('expected-bytes.txt',String(html.length)+'\n');
+          NODE
+
+      - name: Prepare honest stable release notes
+        shell: bash
+        run: |
+          set -euo pipefail
+          V1_URL="https://github.com/$GITHUB_REPOSITORY/actions/runs/$V1_RUN_ID"
+          RENDER_ID="$(gh run list --workflow 'Rendering Production' --branch main --commit "$SOURCE_SHA" --limit 50 --json databaseId,headSha,conclusion,status --jq ".[] | select(.headSha==\"$SOURCE_SHA\" and .status==\"completed\" and .conclusion==\"success\") | .databaseId" | head -n1)"
+          REPRO_ID="$(gh run list --workflow 'Exact Source Reproduction Bundle' --branch main --commit "$SOURCE_SHA" --limit 50 --json databaseId,headSha,conclusion,status --jq ".[] | select(.headSha==\"$SOURCE_SHA\" and .status==\"completed\" and .conclusion==\"success\") | .databaseId" | head -n1)"
+          TREE="$(git rev-parse HEAD^{tree})"
+          SHA256="$(tr -d '\n' < expected-sha256.txt)"
+          BYTES="$(tr -d '\n' < expected-bytes.txt)"
+          cat > release-notes.md <<EOF
+          # One File Universe v1.0.0
+
+          One File Universe 1.0 is the first stable architectural and product baseline of the living multiscale universe. It is not the final expression of its visual, experiential or scientific ambitions.
+
+          ## Certified release identity
+
+          - released commit: \`$SOURCE_SHA\`
+          - tree: \`$TREE\`
+          - standalone asset: \`One_File_Universe.html\`
+          - HTML SHA-256: \`$SHA256\`
+          - HTML bytes: \`$BYTES\`
+          - strict single-file: \`true\`
+          - direct \`file:\` operation: \`true\`
+          - runtime network required: \`false\`
+          - V1 Definitive Certification: $V1_URL
+          - Rendering Production: https://github.com/$GITHUB_REPOSITORY/actions/runs/$RENDER_ID
+          - Exact Source Reproduction Bundle: https://github.com/$GITHUB_REPOSITORY/actions/runs/$REPRO_ID
+
+          ## Known accepted v1.0.0 limitations
+
+          - Camera and exploration polish remain limited.
+          - Planetary/world visual diversity remains limited.
+          - UX, interaction fluidity and mobile polish have substantial post-v1 improvement potential.
+          - Scientific/domain depth remains incomplete relative to the long-term vision.
+          - Physical Android devices are **not certified** for v1.0.0.
+          - Physical iOS devices are **not certified** for v1.0.0.
+
+          These are accepted limitations of the historical v1 baseline, not claims of complete visual or scientific maturity. Future product improvement belongs to v1.1+.
+          EOF
+
+      - name: Stage immutable v1.0.0 draft release
+        id: draft
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release create "$RELEASE_TAG" release-build/One_File_Universe.html \
+            --target "$SOURCE_SHA" \
+            --title "$RELEASE_TITLE" \
+            --notes-file release-notes.md \
+            --draft
+          RELEASE_ID="$(gh release view "$RELEASE_TAG" --json databaseId --jq .databaseId)"
+          test -n "$RELEASE_ID"
+          printf 'release_id=%s\n' "$RELEASE_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Verify remote tag and draft asset byte-for-byte
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG_SHA="$(git ls-remote origin refs/tags/$RELEASE_TAG | cut -f1)"
+          test "$TAG_SHA" = "$SOURCE_SHA"
+          rm -rf remote-release && mkdir remote-release
+          gh release download "$RELEASE_TAG" -p One_File_Universe.html -D remote-release
+          test "$(sha256sum remote-release/One_File_Universe.html | cut -d' ' -f1)" = "$(tr -d '\n' < expected-sha256.txt)"
+          test "$(stat -c%s remote-release/One_File_Universe.html)" = "$(tr -d '\n' < expected-bytes.txt)"
+          cmp -s release-build/One_File_Universe.html remote-release/One_File_Universe.html
+
+      - name: Publish stable release only after remote verification
+        shell: bash
+        env:
+          RELEASE_ID: ${{ steps.draft.outputs.release_id }}
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" -X PATCH -F draft=false -F prerelease=false >/tmp/published.json
+          test "$(jq -r .draft /tmp/published.json)" = false
+          test "$(jq -r .prerelease /tmp/published.json)" = false
+          test "$(jq -r .target_commitish /tmp/published.json)" = "$SOURCE_SHA"
+
+      - name: Final read-back verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git ls-remote origin refs/heads/main | cut -f1)" = "$SOURCE_SHA"
+          test "$(git ls-remote origin refs/tags/$RELEASE_TAG | cut -f1)" = "$SOURCE_SHA"
+          test "$(gh release view "$RELEASE_TAG" --json isDraft,isPrerelease,targetCommitish --jq '.isDraft')" = false
+          test "$(gh release view "$RELEASE_TAG" --json isDraft,isPrerelease,targetCommitish --jq '.isPrerelease')" = false
+          rm -rf published-release && mkdir published-release
+          gh release download "$RELEASE_TAG" -p One_File_Universe.html -D published-release
+          test "$(sha256sum published-release/One_File_Universe.html | cut -d' ' -f1)" = "$(tr -d '\n' < expected-sha256.txt)"
+          test "$(stat -c%s published-release/One_File_Universe.html)" = "$(tr -d '\n' < expected-bytes.txt)"
+          cmp -s release-build/One_File_Universe.html published-release/One_File_Universe.html
