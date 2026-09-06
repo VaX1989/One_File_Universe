@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: p6-v1-${{ github.workflow }}-${{ github.ref }}
+  group: p6-v1-${{ github.event_name }}-${{ github.event.pull_request.head.ref || github.ref_name }}
   cancel-in-progress: true
 
 permissions:
@@ -19,12 +19,12 @@ jobs:
   node:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with: {ref: '${{ env.OFU_SOURCE_SHA }}'}
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with: {node-version: '24.20.0'}
-      - uses: actions/setup-python@v5
-        with: {python-version: '3.13'}
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with: {python-version: '3.13.15'}
       - name: Verify exact source
         shell: bash
         run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
@@ -69,7 +69,7 @@ jobs:
           node tools/build-ofu-p6.mjs > /tmp/p6-build-second.json
           cmp /tmp/One_File_Universe.p6.first.html dist/One_File_Universe.html
           cmp /tmp/p6-build-manifest.first.json dist/p6-build-manifest.json
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
           name: p6-v1-node-${{ env.OFU_SOURCE_SHA }}
@@ -83,9 +83,9 @@ jobs:
       fail-fast: false
       matrix: {browser: [chromium, firefox, webkit]}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with: {ref: '${{ env.OFU_SOURCE_SHA }}'}
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with: {node-version: '24.20.0'}
       - name: Verify exact source
         shell: bash
@@ -95,7 +95,7 @@ jobs:
       - run: node tools/build-ofu-p6.mjs
       - run: node tests/p6/browser-p6-v1.mjs
         env: {BROWSER: '${{ matrix.browser }}'}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
           name: p6-v1-linux-${{ matrix.browser }}-${{ env.OFU_SOURCE_SHA }}
@@ -109,9 +109,9 @@ jobs:
           - {os: macos-latest, browser: webkit}
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with: {ref: '${{ env.OFU_SOURCE_SHA }}'}
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with: {node-version: '24.20.0'}
       - name: Verify exact source
         shell: bash
@@ -121,7 +121,7 @@ jobs:
       - run: node tools/build-ofu-p6.mjs
       - run: node tests/p6/browser-p6-v1.mjs
         env: {BROWSER: '${{ matrix.browser }}'}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
           name: p6-v1-${{ runner.os }}-${{ runner.arch }}-${{ matrix.browser }}-${{ env.OFU_SOURCE_SHA }}
@@ -137,7 +137,7 @@ jobs:
           test '${{ needs.node.result }}' = success
           test '${{ needs.browser-linux.result }}' = success
           test '${{ needs.browser-platform.result }}' = success
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           pattern: p6-v1-*-${{ env.OFU_SOURCE_SHA }}
           path: evidence
@@ -156,7 +156,7 @@ jobs:
           test "$(jq -r '.artifactSha256' evidence/browser-*.json | sort -u | wc -l)" -eq 1
           test "$(jq -r '.goldenCorpusDigest' evidence/browser-*.json | sort -u | wc -l)" -eq 1
           test "$(jq -r '.sourceCommit' evidence/browser-*.json | sort -u)" = "$OFU_SOURCE_SHA"
-          test "$(jq -r 'select(.hostPlatform=="darwin") | .hostArch' evidence/browser-*.json)" = arm64
+          test "$(jq -r 'select(.hostPlatform==\"darwin\") | .hostArch' evidence/browser-*.json)" = arm64
           test "$(jq -r '.realSafariVerified' evidence/browser-*.json | sort -u)" = false
           test "$(jq -r '.artifactContainsConformanceAuthority' evidence/browser-*.json | sort -u)" = false
           test "$(jq -r '.shippedConformanceConstructor' evidence/browser-*.json | sort -u)" = false
