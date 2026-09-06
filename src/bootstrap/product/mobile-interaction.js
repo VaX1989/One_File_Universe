@@ -20,6 +20,8 @@ function sourceKind(){
 function orientationName(){
  return root.screen?.orientation?.type||(root.innerWidth>root.innerHeight?'landscape':'portrait');
 }
+function primaryCanvas(){return DOC.getElementById('living-view')||DOC.getElementById('planet-view')}
+function canvasEvent(event){const id=event?.target?.id;return id==='living-view'||id==='planet-view'}
 function workspaceName(){return O.productUI?.state?.workspace||DOC.documentElement.dataset.workspace||'explore'}
 function mobileActive(){return mobileQuery?mobileQuery.matches:root.innerWidth<=700}
 function interactiveNodes(){return body?[...body.querySelectorAll('a[href],button,input,select,textarea,summary,[tabindex]')]:[]}
@@ -61,7 +63,8 @@ function syncWorkspace({preserveFocus=false}={}){
  setSheet(preserveFocus&&focusedInside?'expanded':'peek');
 }
 function snapshot(){
- const vv=root.visualViewport||null,canvas=DOC.getElementById('planet-view'),rect=canvas?.getBoundingClientRect?.(),kind=sourceKind(),ownedInput=O.waveIVInputRouter?.state;
+ const vv=root.visualViewport||null,canvas=primaryCanvas(),rect=canvas?.getBoundingClientRect?.(),kind=sourceKind(),ownedInput=O.waveIVInputRouter?.state;
+ const surface=canvas?.id==='living-view'?'living-primary':canvas?.id==='planet-view'?'legacy-planet':'missing';
  return Object.freeze({
   seamVersion:state.seamVersion,
   active:state.active,
@@ -70,9 +73,9 @@ function snapshot(){
   diagnosticsOpen:state.diagnosticsOpen,
   source:Object.freeze({kind,localDirect:kind==='file'||kind==='content'}),
   viewport:Object.freeze({layoutWidth:root.innerWidth||0,layoutHeight:root.innerHeight||0,visualWidth:vv?.width??root.innerWidth??0,visualHeight:vv?.height??root.innerHeight??0,visualScale:vv?.scale??1,dpr:root.devicePixelRatio||1,orientation:orientationName()}),
-  input:Object.freeze({coarse:!!coarseQuery?.matches,maxTouchPoints:root.navigator?.maxTouchPoints||0,canvasTouchAction:canvas?root.getComputedStyle(canvas).touchAction:null,lastGesture:ownedInput?.lastGesture||state.lastGesture,canvasPointerCancels:ownedInput?.pointerCancels??state.canvasPointerCancels,lostPointerCaptures:ownedInput?.lostPointerCaptures??0,pointerResets:ownedInput?.pointerResets??0,gestureOwner:ownedInput?.initialized?'wave-iv-input-router':'legacy-preview'}),
-  canvas:rect?Object.freeze({width:Math.round(rect.width),height:Math.round(rect.height),top:Math.round(rect.top),bottom:Math.round(rect.bottom)}):null,
-  renderer:Object.freeze({targetStatus:root.__OFU_PLANET_PREVIEW__?.targetStatus||null,pointerActive:root.__OFU_PLANET_PREVIEW__?.pointerActive??null}),
+  input:Object.freeze({coarse:!!coarseQuery?.matches,maxTouchPoints:root.navigator?.maxTouchPoints||0,canvasTouchAction:canvas?root.getComputedStyle(canvas).touchAction:null,lastGesture:ownedInput?.lastGesture||state.lastGesture,canvasPointerCancels:ownedInput?.pointerCancels??state.canvasPointerCancels,lostPointerCaptures:ownedInput?.lostPointerCaptures??0,pointerResets:ownedInput?.pointerResets??0,gestureOwner:surface==='living-primary'?'v1-living-product':ownedInput?.initialized?'wave-iv-input-router':'legacy-preview'}),
+  canvas:rect?Object.freeze({id:canvas.id,width:Math.round(rect.width),height:Math.round(rect.height),top:Math.round(rect.top),bottom:Math.round(rect.bottom)}):null,
+  renderer:Object.freeze({surface,targetStatus:root.__OFU_PLANET_PREVIEW__?.targetStatus||null,pointerActive:root.__OFU_PLANET_PREVIEW__?.pointerActive??null}),
   accessibility:Object.freeze({reducedMotion:!!reducedQuery?.matches,sheetExpanded:state.sheet==='expanded'}),
   events:Object.freeze({resize:state.resizeEvents,orientation:state.orientationEvents,visualViewport:state.visualViewportEvents})
  });
@@ -82,9 +85,9 @@ function diagnosticLines(){
  return[
   `layout ${Math.round(v.layoutWidth)}x${Math.round(v.layoutHeight)} | visual ${Math.round(v.visualWidth)}x${Math.round(v.visualHeight)} @${v.visualScale.toFixed(2)} | dpr ${v.dpr}`,
   `orientation ${v.orientation} | source ${s.source.kind} | local-direct ${s.source.localDirect}`,
-  `input ${i.coarse?'coarse':'fine'} | touch-points ${i.maxTouchPoints} | canvas ${i.canvasTouchAction||'unknown'}`,
+  `input ${i.coarse?'coarse':'fine'} | touch-points ${i.maxTouchPoints} | canvas ${i.canvasTouchAction||'unknown'} | owner ${i.gestureOwner}`,
   `sheet ${s.sheet} | workspace ${s.workspace} | reduced-motion ${s.accessibility.reducedMotion}`,
-  `canvas ${c?c.width+'x'+c.height:'missing'} | renderer ${s.renderer.targetStatus||'pending'} | pointer ${String(s.renderer.pointerActive)}`,
+  `canvas ${c?c.id+' '+c.width+'x'+c.height:'missing'} | surface ${s.renderer.surface} | renderer ${s.renderer.targetStatus||'pending'} | pointer ${String(s.renderer.pointerActive)}`,
   `last-gesture ${i.lastGesture} | pointer-cancels ${i.canvasPointerCancels}`,
   'Physical-device status is browser-reported only; capture a screenshot with this panel open for founder retest evidence.'
  ].join('\n');
@@ -150,9 +153,8 @@ function bind(){
   if(e.target.closest?.('button[data-workspace]')&&(e.key==='ArrowLeft'||e.key==='ArrowRight'))syncWorkspace({preserveFocus:false});
  },false);
  DOC.addEventListener('focusin',e=>{if(state.active&&state.sheet==='peek'&&body?.contains(e.target))setSheet('expanded')});
- const canvas=DOC.getElementById('planet-view');
- canvas?.addEventListener('pointerdown',e=>{if(e.pointerType==='touch'||e.pointerType==='pen')state.lastGesture='canvas-'+e.pointerType});
- canvas?.addEventListener('pointercancel',()=>{state.canvasPointerCancels++;state.lastGesture='canvas-pointercancel';renderDiagnostics()});
+ DOC.addEventListener('pointerdown',e=>{if(!canvasEvent(e)||!(e.pointerType==='touch'||e.pointerType==='pen'))return;state.lastGesture='canvas-'+e.pointerType;renderDiagnostics()},false);
+ DOC.addEventListener('pointercancel',e=>{if(!canvasEvent(e))return;state.canvasPointerCancels++;state.lastGesture='canvas-pointercancel';renderDiagnostics()},false);
  const workspaceObserver=new MutationObserver(records=>{if(records.some(r=>r.attributeName==='data-workspace'))syncWorkspace({preserveFocus:true})});workspaceObserver.observe(DOC.documentElement,{attributes:true,attributeFilter:['data-workspace']});
  const onMedia=()=>syncMode({preserveFocus:true});
  mobileQuery?.addEventListener?.('change',onMedia);coarseQuery?.addEventListener?.('change',onMedia);reducedQuery?.addEventListener?.('change',renderDiagnostics);
