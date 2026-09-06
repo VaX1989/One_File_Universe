@@ -1,0 +1,22 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1.models.astronomy.observability",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/astronomy/observability.js",
+      "dependencies": [
+        "v1.models.astronomy.depth"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Selective V1X-15 harvest: bounded hypothetical observer-distance geometry and relative-flux/crowding context over existing modeled stellar systems. No catalog, survey-completeness, physical observer-position or P3 promotion claim.",
+      "provides": [
+        "v1.models.astronomy.observability"
+      ]
+    }
+  ]
+}

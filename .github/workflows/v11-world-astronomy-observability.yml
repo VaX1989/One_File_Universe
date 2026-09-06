@@ -1,0 +1,30 @@
+name: V1.1 World Astronomy Observability
+on:
+  push:
+    branches:
+      - development/v1.1-quality-exploration
+  pull_request:
+    paths:
+      - 'src/domains/v1/astronomy/observability.js'
+      - 'tests/v1/astronomy/observability.mjs'
+      - 'config/components/v11-astronomy-observability.json'
+      - '.github/workflows/v11-world-astronomy-observability.yml'
+jobs:
+  astronomy-observability:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.20.0'
+      - name: Syntax
+        run: |
+          node --check src/domains/v1/astronomy/observability.js
+          node --check tests/v1/astronomy/observability.mjs
+      - name: Existing astronomy depth oracle
+        run: node tests/v1/astronomy/depth.mjs
+      - name: Astronomy observability oracle
+        run: node tests/v1/astronomy/observability.mjs
+      - name: Live component graph integrity
+        run: node tests/extensions/components.mjs
