@@ -1,0 +1,87 @@
+name: Post-v1 Development Gate
+
+on:
+  push:
+    branches:
+      - 'development/v1.*'
+  pull_request:
+    branches:
+      - 'development/v1.*'
+  workflow_dispatch:
+
+concurrency:
+  group: post-v1-development-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  OFU_CONFORMANCE_TIER: ${{ github.event_name == 'pull_request' && 'LANE_TARGETED' || 'RELEASE' }}
+
+permissions:
+  contents: read
+
+jobs:
+  exact-head-reliability:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: '${{ env.OFU_SOURCE_SHA }}'
+          fetch-depth: 0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.20.0'
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13.15'
+      - name: Verify exact source
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Frozen foundation and deterministic contracts
+        run: npm test
+      - name: Persistence, replay, authority and resource-bound regression
+        run: node tests/v1/session-persistence.mjs
+      - name: PX live component and conformance manifest integrity
+        run: |
+          node tests/extensions/components.mjs
+          node tests/extensions/conformance.mjs
+      - name: PX seal falsification suite
+        run: node tests/extensions/seal.mjs
+      - name: Reproducible standalone build
+        shell: bash
+        run: |
+          node tools/build-ofu-rendering-v09.mjs > /tmp/post-v1-build-1.json
+          cp dist/One_File_Universe.html /tmp/post-v1-first.html
+          cp dist/rendering-build-manifest.json /tmp/post-v1-first-manifest.json
+          node tools/build-ofu-rendering-v09.mjs > /tmp/post-v1-build-2.json
+          cmp /tmp/post-v1-first.html dist/One_File_Universe.html
+          cmp /tmp/post-v1-first-manifest.json dist/rendering-build-manifest.json
+          test "$(grep -Eoc "(src|href)=[\"']https?://" dist/One_File_Universe.html)" -eq 0
+          grep -q "connect-src 'none'" dist/One_File_Universe.html
+
+  browser-release-conformance:
+    needs: exact-head-reliability
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: '${{ env.OFU_SOURCE_SHA }}'
+          fetch-depth: 0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.20.0'
+      - name: Verify exact source
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Build shipping single-file product
+        run: node tools/build-ofu-rendering-v09.mjs
+      - name: Install pinned browser oracle matrix
+        run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium firefox webkit
+      - name: Progressive extension conformance
+        run: node tools/extensions/conformance.mjs "$OFU_CONFORMANCE_TIER" --exact
+      - name: Living product interaction and persistence journey
+        run: node tests/wave-iv/browser-founder-interaction.mjs
+      - name: Compact mobile and orientation regression
+        run: node tests/wave-iv/browser-mobile-compact.mjs

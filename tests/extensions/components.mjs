@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {planComponents,emittedComponent,manifestOf} from '../../tools/extensions/components.mjs';
+import {planComponents,loadComponents,emittedComponent,manifestOf} from '../../tools/extensions/components.mjs';
 let cases=0;
 const fixture=(id,overrides={})=>({id,version:'1.0.0',owner:'test',kind:'code',stage:'foundation',placement:'script',source:'src/test/'+id+'.js',dependencies:[],authority:'DERIVED',provenance:'synthetic fixture',provides:[id],...overrides});
 const read=()=>Buffer.from('globalThis.fixture=1;');
@@ -16,4 +16,5 @@ for(const kind of ['code','style','glsl','wgsl','worker','html','table','data','
 }
 assert.throws(()=>planComponents([a],{read:()=>Buffer.from('broken{')}),SyntaxError);cases++;
 assert.throws(()=>planComponents([a],{read,maxBytes:1}),/byte budget/);cases++;
-console.log(JSON.stringify({status:'PASS',suite:'px-components',cases}));
+const integrated=loadComponents();assert(integrated.length>0,'live component manifests must compose');assert.equal(new Set(integrated.map(component=>component.id)).size,integrated.length,'live component ids must remain unique');cases+=2;
+console.log(JSON.stringify({status:'PASS',suite:'px-components',cases,integratedComponents:integrated.length}));

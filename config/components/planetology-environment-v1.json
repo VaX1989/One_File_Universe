@@ -30,7 +30,7 @@
     {
       "id": "v1.models.planetology.causality-trace",
       "version": "1.0.0",
-      "owner": "world-simulation",
+      "owner": "v1",
       "kind": "code",
       "stage": "foundation",
       "placement": "script",
