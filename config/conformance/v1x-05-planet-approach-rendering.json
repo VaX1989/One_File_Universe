@@ -1,0 +1,14 @@
+{
+  "schema": "ofu-conformance-1",
+  "tests": [
+    {
+      "id": "v1x-05.continuity",
+      "owner": "v1x-05-planet-approach-rendering",
+      "tier": "LANE_TARGETED",
+      "command": ["node", "tests/v1x-05-planet-approach-rendering/continuity.mjs"],
+      "providers": ["v1x-05.planet-approach"],
+      "oracle": "v1x-05.identity-frame-authority-resource-continuity",
+      "timeoutMs": 30000
+    }
+  ]
+}

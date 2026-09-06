@@ -1,0 +1,10 @@
+{
+  "source": "Wave-A legacy src/rendering/macro/macro-scene.js + macro-canvas.js presentationGeometry XY projection",
+  "rejectedBehavior": "flattened XY presentation geometry with canvas pan offsets; world Z and free-camera translation are not projection inputs",
+  "cameraTranslationParallaxPx": 0,
+  "v1x03CameraTranslationParallaxPx": {
+    "near": 123.53117080396896,
+    "far": 54.559600438419636
+  },
+  "claimClass": "PRESENTATION_ONLY"
+}

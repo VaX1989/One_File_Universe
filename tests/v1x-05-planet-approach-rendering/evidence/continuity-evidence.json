@@ -1,0 +1,27 @@
+{
+  "schema": "ofu-v1x05-continuity-evidence-1",
+  "status": "PASS",
+  "classification": "MEASURED_RUNTIME_EVIDENCE",
+  "checkpointHead": "bdb185869e40d0771ae571a88eb082f185a8db55",
+  "productionBlob": "c164d98aa1d9fbf97b6f0d0f9aebc3d5893b73fe",
+  "testBlob": "81f4ce43400c2dd75b7160109c9cbcfdf794ae23",
+  "selectedCanonicalTarget": "planet:test-001",
+  "samples": 1025,
+  "serializedBytes": 481845,
+  "elapsedMsObserved": 10.28,
+  "maxStepM": 4027676099.44383,
+  "maxRelativeStep": 0.004682078361852615,
+  "maxSplitReconstructionErrorM": 0,
+  "startDistanceM": 860232526704.2627,
+  "endDistanceM": 6383742,
+  "surfaceAnchor": "planet:test-001/nav-anchor/-423756002,612560846,-667233138",
+  "unknownAtmosphereVisible": false,
+  "reverseSelectionPreserved": true,
+  "upstreamOpaqueSystemCoordinateWitnessM": [9.46e23, -1.2e23, 3.4e22],
+  "absoluteSystemCoordinatesConsumedByPlanetMath": false,
+  "notes": [
+    "Measured by executing the production and targeted-test files whose Git blob hashes exactly match the named remote checkpoint.",
+    "Runtime duration is observational, not a deterministic product contract.",
+    "This evidence does not certify integrated browser visuals, cumulative v1, or founder acceptance."
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1x-03.macro-core",
+      "version": "1.0.0",
+      "owner": "v1x-03-macrocosm-rendering",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/v1x-03-macrocosm-rendering/macro-core.js",
+      "dependencies": [],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "V1X-03 additive true-3D macro projection, continuous shared-scale reveal, direct picking and deterministic resource/continuity witness logic. Consumes external camera, scale, selection and spatial scene data without owning them.",
+      "provides": ["v1x-03.macro-core"]
+    },
+    {
+      "id": "v1x-03.macro-shaders",
+      "version": "1.0.0",
+      "owner": "v1x-03-macrocosm-rendering",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/v1x-03-macrocosm-rendering/shaders.js",
+      "dependencies": [],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "V1X-03 WebGL2 GLSL ES 3.00 point renderer shaders. Morphology, brightness and color are explicitly presentation cues and not scientific evidence.",
+      "provides": ["v1x-03.macro-shaders"]
+    },
+    {
+      "id": "v1x-03.macro-webgl2-provider",
+      "version": "1.0.0",
+      "owner": "v1x-03-macrocosm-rendering",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/v1x-03-macrocosm-rendering/webgl2-provider.js",
+      "dependencies": ["v1x-03.macro-core", "v1x-03.macro-shaders"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "V1X-03 additive WebGL2-first macro scene-provider candidate. It intentionally does not self-register into central scene composition and owns no camera, scale or selection state.",
+      "provides": ["v1x-03.macro-webgl2-provider"]
+    }
+  ]
+}
