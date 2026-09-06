@@ -83,5 +83,7 @@ jobs:
         run: node tools/extensions/conformance.mjs "$OFU_CONFORMANCE_TIER" --exact
       - name: Living product interaction and persistence journey
         run: node tests/wave-iv/browser-founder-interaction.mjs
+      - name: Modeled Inspector product evidence
+        run: node tests/product/browser-v11-modeled-inspector.mjs
       - name: Compact mobile and orientation regression
         run: node tests/wave-iv/browser-mobile-compact.mjs

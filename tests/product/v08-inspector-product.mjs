@@ -4,10 +4,14 @@ import vm from 'node:vm';
 
 const panel=fs.readFileSync('src/bootstrap/product/inspect-panel.html','utf8');
 const source=fs.readFileSync('src/bootstrap/product/inspector-product.js','utf8');
+const languageSource=fs.readFileSync('src/bootstrap/product/inspector-beta.js','utf8');
 
 assert.match(panel,/What the canonical model says|Understand what the canonical model says/);
 assert.match(panel,/Environment/);
 assert.match(panel,/Biology/);
+assert.match(panel,/Modeled world context/);
+assert.match(panel,/MODEL_DERIVED_SIMULATION/);
+assert.match(panel,/does not replace canonical P3\/P5\/P6 facts/);
 assert.match(panel,/Evidence, limits & provenance/);
 assert.match(panel,/Advanced details & canonical record/);
 assert.match(panel,/Open Lab technical evidence/);
@@ -103,5 +107,12 @@ assert.doesNotMatch(source,/resolvePlanet\s*\(/,'Lane C must not independently r
 assert.doesNotMatch(source,/realizePhysicalPlanet\s*\(/,'Lane C must not independently create P5 authority');
 assert.doesNotMatch(source,/environmentV2Projection\s*\(/,'Lane C must not independently create Environment authority');
 assert.doesNotMatch(source,/\.eligibility\s*\(/,'Lane C must not independently create P6 authority');
+
+assert.match(languageSource,/seamVersion:2/,'v1.1 Inspector language seam must be versioned');
+assert.match(languageSource,/product\.inspect\('v1\.inspector\.world'\)/,'modeled Inspector must consume the registered provider rather than rebuild the world');
+assert.match(languageSource,/MODEL_DERIVED_SIMULATION/,'modeled Inspector must verify authority class');
+assert.match(languageSource,/canonicalPromotion!==false/,'modeled Inspector must reject canonical-promotion drift');
+assert.match(languageSource,/modeled inspector stale selection/,'modeled Inspector must reject a provider result for another selection');
+assert.doesNotMatch(languageSource,/v1World\.build\s*\(/,'product Inspector must not independently build modeled worlds');
 
 console.log('v0.8 Inspector product lane: PASS');
