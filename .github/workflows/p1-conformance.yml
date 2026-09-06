@@ -3,6 +3,9 @@ on:
   push:
     branches: [main, 'feature/**']
   pull_request:
+concurrency:
+  group: p1-conformance-${{ github.event_name }}-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
 env:
   OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 permissions:
