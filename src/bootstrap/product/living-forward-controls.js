@@ -10,7 +10,7 @@ function decorate(){
  const product=O.v1LivingProduct;if(!product?.runtime)return false;runtime=product.runtime;panel=document.getElementById('living-panel');if(!panel)return false;
  const back=panel.querySelector('[data-living-action="back"]');if(!back)return false;back.setAttribute('aria-keyshortcuts','Escape Backspace [');
  const forward=forwardButton(back),snapshot=runtime.snapshot();forward.disabled=!(snapshot.forwardDepth>0);forward.setAttribute('aria-label',forward.disabled?'No forward exploration context':'Forward to next exploration context');
- if(restoreForwardFocus&&!forward.disabled){restoreForwardFocus=false;forward.focus({preventScroll:true});state.focusRestores++}
+ if(restoreForwardFocus){restoreForwardFocus=false;if(!forward.disabled){forward.focus({preventScroll:true});state.focusRestores++}}
  state.ready=true;return true;
 }
 function bindRuntime(){if(!runtime||runtime.__ofuForwardControlsBound)return;try{Object.defineProperty(runtime,'__ofuForwardControlsBound',{value:true})}catch{}runtime.onChange?.(schedule)}
