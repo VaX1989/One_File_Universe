@@ -34,6 +34,9 @@ for(const file of workflows){
   }
   assert(!/python-version:\s*['"]3\.13['"]/.test(text),`${file}: Python conformance runtime must pin an exact patch version`);
   checks++;
+  const malformedSingleQuotedJq=text.split(/\r?\n/).filter(line=>/jq\s+-r\s+'/.test(line)&&/\\"/.test(line));
+  assert.equal(malformedSingleQuotedJq.length,0,`${file}: jq programs already protected by single quotes must not backslash-escape double quotes: ${malformedSingleQuotedJq.join(' | ')}`);
+  checks++;
   if(/OFU_SOURCE_SHA/.test(text)){
     const artifactNameLines=text.split(/\r?\n/).filter(line=>/^\s*name:\s+.*\$\{\{.*github\.sha/.test(line));
     assert.equal(artifactNameLines.length,0,`${file}: artifact names must bind to OFU_SOURCE_SHA rather than the pull-request merge SHA`);
