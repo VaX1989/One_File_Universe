@@ -12,7 +12,7 @@ const AUTH=V.authority('v1.evolution.local-lineage-context','1.0.0',[SOURCE],
     'No biological event is admitted to canonical P4 history by this query.'
   ]);
 const MAX_LOCAL_POPULATIONS=12,MAX_ANCESTRY_DEPTH=8,MAX_LINEAGE_EVENTS=64,MAX_TRACE_EVIDENCE=48;
-function unsupported(reason){return V.freezeDeep({version:VERSION,supported:false,reason,profiles:Object.freeze([]),populationCount:0,maxLocalPopulations:MAX_LOCAL_POPULATIONS,authority:AUTH,canonicalP6Unchanged:true,canonicalP4History:false,fossilObservation:false});}
+function unsupported(reason){return V.freezeDeep({version:VERSION,supported:false,reason,profiles:Object.freeze([]),populationCount:0,maxLocalPopulations:MAX_LOCAL_POPULATIONS,authority:AUTH,canonicalP6Unchanged:true,canonicalP4History:false,p4Admission:false,p4Mutation:false,fossilObservation:false,globalAbundanceInference:false,universalEvolutionaryLawClaim:false});}
 function lineageIndexes(ecosystem){
   const current=new Map((ecosystem?.populations||[]).map(p=>[p.lineageId,p])),divergence=new Map();
   for(const e of (ecosystem?.history||[]).slice(-256))if(e.type==='LINEAGE_DIVERGENCE'&&e.lineageId&&!divergence.has(e.lineageId))divergence.set(e.lineageId,e);
@@ -34,11 +34,14 @@ function lineageChain(population,ecosystem,{maxDepth=MAX_ANCESTRY_DEPTH}={}){
 }
 function profilePopulation(population,ecosystem,traceEvidence,{maxDepth=MAX_ANCESTRY_DEPTH}={}){
   const ancestry=lineageChain(population,ecosystem,{maxDepth}),lineages=new Set(ancestry.chain.map(x=>x.lineageId));
-  const events=(ecosystem?.history||[]).filter(e=>lineages.has(e.lineageId)||lineages.has(e.details?.parentLineageId)).slice(-MAX_LINEAGE_EVENTS).map(e=>Object.freeze({eventId:e.eventId,generation:e.generation,type:e.type,lineageId:e.lineageId,canonicalP4Event:e.canonicalP4Event===true}));
+  // Only events whose subject lineage is on this exact ancestry chain belong here.
+  // Matching merely on details.parentLineageId would pull in sibling divergence events
+  // and overstate the queried lineage's own history.
+  const events=(ecosystem?.history||[]).filter(e=>lineages.has(e.lineageId)).slice(-MAX_LINEAGE_EVENTS).map(e=>Object.freeze({eventId:e.eventId,generation:e.generation,type:e.type,lineageId:e.lineageId,canonicalP4Event:e.canonicalP4Event===true}));
   const traces=(traceEvidence||[]).filter(e=>lineages.has(e.lineageId)).slice(-MAX_TRACE_EVIDENCE).map(e=>Object.freeze({evidenceId:e.evidenceId,sourceEventId:e.sourceEventId,lineageId:e.lineageId,kind:e.kind,tracePotentialPpm:e.tracePotentialPpm,directObservation:e.directObservation===true}));
   return V.freezeDeep({populationId:population.populationId,lineageId:population.lineageId,role:population.role||null,localDensityPpm:population.localDensityPpm??null,rarityClass:population.rarityClass||null,
     generationBorn:population.generationBorn??null,ancestry,lineageEvents:Object.freeze(events),traceEvidence:Object.freeze(traces),
-    ancestryInferenceClass:'BOUNDED_MODELED_LINEAGE_LEDGER_PROJECTION',authority:AUTH,canonicalBiologyClaim:false,fitnessMeasurement:false,globalAbundanceInference:false,fossilObservation:false});
+    ancestryInferenceClass:'BOUNDED_MODELED_LINEAGE_LEDGER_PROJECTION',eventScopeClass:'EXACT_ANCESTRY_SUBJECT_LINEAGES_ONLY',authority:AUTH,canonicalBiologyClaim:false,fitnessMeasurement:false,globalAbundanceInference:false,fossilObservation:false});
 }
 function profileFromContext(world,context,{maxDepth=MAX_ANCESTRY_DEPTH}={}){
   V.int(maxDepth,'maxDepth',1,MAX_ANCESTRY_DEPTH);const ecosystem=world?.biology?.ecosystem;
