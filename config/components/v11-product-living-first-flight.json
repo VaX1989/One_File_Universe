@@ -1,0 +1,18 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1.product.living-first-flight",
+      "version": "1.0.0",
+      "owner": "product",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/bootstrap/product/living-first-flight.js",
+      "dependencies": ["v1.product.living-universe"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Post-v1 first-run guidance for the shipping Living foreground. Progress/dismissal are bounded local product state and never create scientific, canonical, navigation or persistence authority.",
+      "provides": ["v1.product.living-first-flight"]
+    }
+  ]
+}
