@@ -39,6 +39,10 @@ jobs:
         run: npm test
       - name: Persistence, replay, authority and resource-bound regression
         run: node tests/v1/session-persistence.mjs
+      - name: PX live component and conformance manifest integrity
+        run: |
+          node tests/extensions/components.mjs
+          node tests/extensions/conformance.mjs
       - name: PX seal falsification suite
         run: node tests/extensions/seal.mjs
       - name: Reproducible standalone build
