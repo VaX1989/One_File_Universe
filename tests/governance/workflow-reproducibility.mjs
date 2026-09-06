@@ -15,15 +15,17 @@ const coreWorkflows=[
   `${workflowDir}/post-v1-development.yml`,
 ];
 const featureWorkflowNames=fs.readdirSync(workflowDir)
-  .filter(name=>/^v11-world-.*\.yml$/.test(name)||/^product-v11-.*\.yml$/.test(name))
+  .filter(name=>/^v11-world-.*\.yml$/.test(name)||/^product-v11-.*\.yml$/.test(name)||/^reliability-.*\.yml$/.test(name))
   .sort();
 const featureWorkflows=featureWorkflowNames.map(name=>`${workflowDir}/${name}`);
 const v11WorldWorkflows=featureWorkflows.filter(file=>/\/v11-world-/.test(file));
+const reliabilityWorkflows=featureWorkflows.filter(file=>/\/reliability-/.test(file));
 assert(v11WorldWorkflows.length>0,'expected at least one canonical v1.1 world workflow');
+assert(reliabilityWorkflows.length>0,'expected at least one canonical reliability workflow');
 const sourceReproductionFile=`${workflowDir}/source-reproduction.yml`;
 const workflows=[...coreWorkflows,...featureWorkflows,sourceReproductionFile];
 const immutableAction=/uses:\s+[^\s@]+@[0-9a-f]{40}(?:\s+#.*)?$/;
-let checks=1;
+let checks=2;
 for(const file of workflows){
   const text=fs.readFileSync(file,'utf8');
   const actionLines=text.split(/\r?\n/).filter(line=>/\buses:\s+/.test(line));
@@ -62,4 +64,4 @@ assert(/push:[\s\S]*?-\s+['"]development\/v1\.\*['"]/.test(sourceReproduction),'
 assert(/pull_request:[\s\S]*?-\s+['"]development\/v1\.\*['"]/.test(sourceReproduction),'source reproduction must cover proposed post-v1 heads');
 assert(/name:\s+source-reproduction-\$\{\{\s*env\.OFU_SOURCE_SHA\s*\}\}/.test(sourceReproduction),'source reproduction artifact must be named by exact source SHA');
 checks+=3;
-console.log(JSON.stringify({status:'PASS',suite:'workflow-reproducibility',workflows:workflows.length,featureWorkflows:featureWorkflows.length,v11WorldWorkflows:v11WorldWorkflows.length,checks}));
+console.log(JSON.stringify({status:'PASS',suite:'workflow-reproducibility',workflows:workflows.length,featureWorkflows:featureWorkflows.length,v11WorldWorkflows:v11WorldWorkflows.length,reliabilityWorkflows:reliabilityWorkflows.length,checks}));
