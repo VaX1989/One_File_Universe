@@ -12,7 +12,7 @@ const AUTH=V.authority('v1.civilization.settlement-history-context','1.0.0',[SOU
     'No persistent-person, birth-cohort, private mental-state or genealogy claim is introduced.'
   ]);
 const MAX_TIMELINE_EPOCHS=16,MAX_EVENTS=64,MAX_EVIDENCE=64;
-function unsupported(reason,settlementId=null){return V.freezeDeep({version:VERSION,supported:false,reason,settlementId,timeline:Object.freeze([]),evidence:Object.freeze([]),authority:AUTH,canonicalHistoryClaim:false,canonicalArchaeologyClaim:false,p4Admission:false,measuredEvidence:false});}
+function unsupported(reason,settlementId=null){return V.freezeDeep({version:VERSION,supported:false,reason,settlementId,timeline:Object.freeze([]),evidence:Object.freeze([]),authority:AUTH,canonicalHistoryClaim:false,canonicalArchaeologyClaim:false,p4Admission:false,p4Mutation:false,measuredEvidence:false,physicalRouteLegacyClaim:false,persistentPersonClaim:false});}
 function profile(state,settlementId,{timelineLimit=MAX_TIMELINE_EPOCHS,evidenceLimit=32}={}){
   V.text(settlementId,'settlementId',128);V.int(timelineLimit,'timelineLimit',1,MAX_TIMELINE_EPOCHS);V.int(evidenceLimit,'evidenceLimit',1,MAX_EVIDENCE);
   if(!state||state.state!=='MODELED_CIVILIZATION')return unsupported('NO_MODELED_CIVILIZATION',settlementId);
@@ -34,10 +34,12 @@ function profile(state,settlementId,{timelineLimit=MAX_TIMELINE_EPOCHS,evidenceL
   }));
   const foundations=events.filter(e=>e.type==='SETTLEMENT_FOUNDATION').map(e=>e.epoch),abandonments=events.filter(e=>e.type==='ABANDONMENT').map(e=>e.epoch),destructive=events.filter(e=>['CONFLICT','SETTLEMENT_DESTROYED','COLLAPSE','RESOURCE_CRISIS'].includes(e.type));
   const currentTradeRoutes=(state.tradeEdges||[]).filter(e=>e.from===settlementId||e.to===settlementId).length,currentInfrastructureAssets=(state.infrastructure||[]).filter(x=>x.settlementId===settlementId).length;
-  const eventDerived=evidence.filter(f=>f.sourceEventProposalId!==null).length,snapshotDerived=evidence.filter(f=>f.derivationClass==='INFRASTRUCTURE_SNAPSHOT_DERIVED_NO_EVENT_CAUSE').length;
+  const eventDerived=evidence.filter(f=>f.derivationClass==='EVENT_PROPOSAL_DERIVED'&&typeof f.sourceEventProposalId==='string'&&f.sourceEventProposalId.length>0).length,
+    snapshotDerived=evidence.filter(f=>f.derivationClass==='INFRASTRUCTURE_SNAPSHOT_DERIVED_NO_EVENT_CAUSE'&&f.sourceEventProposalId==null).length,
+    unclassifiedEvidence=evidence.length-eventDerived-snapshotDerived;
   return V.freezeDeep({version:VERSION,supported:true,settlementId,modeledEpoch:Number(state.epoch||0),currentSettlement:settlement,
     timeline,evidence,summary:Object.freeze({foundationEpoch:foundations.length?Math.min(...foundations):null,abandonmentEpochs:Object.freeze([...new Set(abandonments)].sort((a,b)=>a-b)),
-      destructiveEventCount:destructive.length,eventCount:events.length,evidenceCount:evidence.length,eventDerivedEvidenceCount:eventDerived,snapshotDerivedEvidenceCount:snapshotDerived,
+      destructiveEventCount:destructive.length,eventCount:events.length,evidenceCount:evidence.length,eventDerivedEvidenceCount:eventDerived,snapshotDerivedEvidenceCount:snapshotDerived,unclassifiedEvidenceCount:unclassifiedEvidence,
       currentStatus:settlement?.status||'NO_CURRENT_SETTLEMENT_SNAPSHOT',currentPopulation:Number(settlement?.population||0),currentTradeRouteCount:currentTradeRoutes,currentInfrastructureAssetCount:currentInfrastructureAssets}),
     historySourceClass:'MODEL_PROPOSAL_LEDGER',archaeologySourceClass:'MODEL_DERIVED_CONSEQUENCE_SET',routeContextClass:'CURRENT_CONNECTIVITY_SNAPSHOT_NOT_PERSISTED_ROUTE_LEGACY',
     bounds:Object.freeze({maxTimelineEpochs:MAX_TIMELINE_EPOCHS,maxEvents:MAX_EVENTS,maxEvidence:MAX_EVIDENCE}),authority:AUTH,
