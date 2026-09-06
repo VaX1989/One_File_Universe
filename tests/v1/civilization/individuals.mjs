@@ -1,0 +1,23 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+globalThis.OFU={};
+for(const f of ['src/kernel/sha256.js','src/extensions/contracts.js','src/domains/v1/common.js'])vm.runInThisContext(fs.readFileSync(f,'utf8'),{filename:f});
+const settlement=Object.freeze({settlementId:'s'.repeat(64),population:37,status:'ACTIVE',scarcityPpm:700000,infrastructurePpm:120000,type:'VILLAGE'});
+const civilization=Object.freeze({worldIdentity:'w'.repeat(64),state:'MODELED_CIVILIZATION',epoch:15,settlements:Object.freeze([settlement]),tradeEdges:Object.freeze([{from:settlement.settlementId,to:'t'.repeat(64)}]),technology:Object.freeze({production:2,transport:1,materials:1,energy:1,communication:1,medicine:0,construction:2,knowledgeContinuityPpm:650000,exchangePpm:550000,environmentImpactPpm:100000})});
+const baseContext=Object.freeze({objects:Object.freeze([Object.freeze({kind:'SETTLEMENT',entityId:settlement.settlementId,settlement})]),life:Object.freeze({}),planetaryCausality:Object.freeze({})});
+OFU.v1WorldContext=Object.freeze({localContext(){return baseContext;}});
+vm.runInThisContext(fs.readFileSync('src/domains/v1/civilization/individuals.js','utf8'),{filename:'src/domains/v1/civilization/individuals.js'});
+const I=OFU.v1CivilizationIndividuals,W=OFU.v1WorldContext;
+const a=I.materialize(civilization,settlement,{count:8}),b=I.materialize(civilization,settlement,{count:8});
+assert.deepEqual(a,b);assert.equal(a.supported,true);assert.equal(a.sampleCount,8);assert.equal(a.maxRepresentatives,8);assert.equal(a.globalEnumeration,false);assert.equal(a.authority.class,'MODEL_DERIVED_SIMULATION');assert.equal(a.canonicalP4Unchanged,true);
+assert.equal(new Set(a.representatives.map(x=>x.representativeId)).size,8);
+for(const r of a.representatives){assert.equal(r.identityClass,'SYNTHETIC_CURRENT_EPOCH_REPRESENTATIVE');assert.equal(r.persistentPersonIdentity,false);assert.equal(r.genealogyModeled,false);assert.equal(r.personalMemoryModeled,false);assert.equal(r.privateMentalStateClaim,false);assert.equal(r.canonicalP4Actor,false);assert.ok(r.knowledgeDomains.length<=4);assert.ok(r.contextualGoals.length<=3);assert(I.ROLES.includes(r.role));}
+assert(a.representatives[0].contextualGoals.some(x=>x.kind==='RESOURCE_SECURITY'));assert(a.representatives[0].contextualGoals.some(x=>x.kind==='MAINTENANCE_AND_REPAIR'));assert(a.representatives[0].contextualGoals.some(x=>x.kind==='TRADE_CONTINUITY'));
+const nextEpoch=I.materialize({...civilization,epoch:16},settlement,{count:1});assert.notEqual(nextEpoch.representatives[0].representativeId,a.representatives[0].representativeId);assert.equal(nextEpoch.representatives[0].persistentPersonIdentity,false);
+const tiny=I.materialize(civilization,{...settlement,population:2},{count:8});assert.equal(tiny.sampleCount,2);
+const noCiv=I.materialize({...civilization,state:'NO_CIVILIZATION_MODEL'},settlement,{count:4});assert.equal(noCiv.supported,false);assert.equal(noCiv.reason,'NO_MODELED_CIVILIZATION');
+const abandoned=I.materialize(civilization,{...settlement,status:'ABANDONED',population:0},{count:4});assert.equal(abandoned.supported,false);assert.equal(abandoned.reason,'NO_ACTIVE_SETTLEMENT_POPULATION');
+const missing=I.fromLocalContext({civilization},{objects:[]});assert.equal(missing.supported,false);assert.equal(missing.reason,'NO_SETTLEMENT_AT_EXACT_LOCATION');
+const wrapped=W.localContext({civilization},{},{count:4});assert.equal(wrapped.objects,baseContext.objects);assert.equal(wrapped.civilizationRepresentatives.supported,true);assert.equal(wrapped.civilizationRepresentatives.sampleCount,4);
+console.log(JSON.stringify({status:'PASS',suite:'v1.1 civilization representatives',version:I.VERSION,sample:a.sampleCount,identity:a.representatives[0].identityClass,authority:a.authority.class}));
