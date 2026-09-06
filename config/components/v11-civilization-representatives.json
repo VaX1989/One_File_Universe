@@ -1,0 +1,23 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1.civilization.representatives",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/civilization/individuals.js",
+      "dependencies": [
+        "v1.civilization.runtime",
+        "v1.ecology.causal-niche"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Selective post-v1 harvest from V1X-18 bounded late-materialization research. Shipping form emits only current-epoch synthetic settlement representatives because the current aggregate runtime has no authoritative birth-cohort/person ledger; no persistent-person, memory, belief or P4 actor claim.",
+      "provides": [
+        "v1.civilization.representatives"
+      ]
+    }
+  ]
+}
