@@ -18,6 +18,7 @@ try{
  const journeys=[];
  async function stage(expected){await page.waitForFunction(s=>OFU.v1LivingProduct.runtime.snapshot().stage===s,expected,{timeout:10000});const rec=await page.evaluate(()=>{const s=OFU.v1LivingProduct.runtime.snapshot(),p=OFU.pxProduct.snapshot(),r=OFU.v1LivingProduct.renderer.state();return{stage:s.stage,body:s.body?.entityId||null,history:s.historyDepth,cache:s.discoveryCacheEntries,cacheLimit:s.discoveryCacheLimit,traversal:s.traversal,registry:p.registry,render:r};});assert.equal(rec.stage,expected);assert(rec.cache<=rec.cacheLimit);return rec;}
  async function clickEntity(id){const q='[data-living-entity="'+id+'"]';await page.locator(q).click();}
+ await page.locator('[data-open-workspace="explore"]').first().click();await page.waitForFunction(()=>!document.querySelector('[data-workspace-panel="explore"]').hidden);
  for(const viewport of [{width:1280,height:800},{width:390,height:844},{width:844,height:390}]){
   await page.setViewportSize(viewport);await page.locator('[data-living-scale="UNIVERSE"]').click();await stage('UNIVERSE');
   await clickEntity(seed.galaxy);await stage('GALAXY');await clickEntity(seed.region);await stage('REGION');
