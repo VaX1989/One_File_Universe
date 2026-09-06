@@ -1,0 +1,19 @@
+{
+  "schema": "ofu-r18-causal-oracle-1",
+  "authority": "RESEARCH_ONLY",
+  "fixture": "r18-fixture",
+  "baselineYear30": {
+    "riverPopulation": 20048,
+    "riverConflictPpm": 40330,
+    "riverTechnologyPpm": 795041
+  },
+  "droughtYear30": {
+    "riverPopulation": 10081,
+    "riverConflictPpm": 70779,
+    "riverRouteLegacy": 3240
+  },
+  "conflictShockYear8": {
+    "riverRuins": 284929,
+    "riverConflictPpm": 135009
+  }
+}
