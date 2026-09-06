@@ -1,0 +1,129 @@
+{
+  "schema": "ofu-v1x-handoff-1",
+  "laneId": "PROMPT 9 / V1X-09",
+  "branch": "parallel/v1x-09-micro-matter-experience-2026-09-06",
+  "status": "IMPLEMENTED_UNCERTIFIED",
+  "authorityClass": "PRESENTATION_ONLY",
+  "contractSet": "OFU-V1X-CONTRACT-SET-2026-09-06.1",
+  "base": {
+    "sha": "760c0c70bccb6afd7c7b07600c0f5be3f80e7b19",
+    "tree": "3324e6354b5ff1b90156d1693e6051595b6f1219"
+  },
+  "checkpoint": {
+    "sha": "32339fafa42a4802a339d2162fc57598be4ca672",
+    "tree": "85a809b2bf31fa29c64b0ba17b6f34ab6ec72013"
+  },
+  "changedPaths": [
+    "config/components/v1x-09-micro-matter-experience.json",
+    "config/conformance/v1x-09-micro-matter-experience.json",
+    "config/extensions/v1x-09-micro-matter-experience/providers.json",
+    "src/v1x-09-micro-matter-experience/experience.js",
+    "src/v1x-09-micro-matter-experience/presentation-provider.js",
+    "src/v1x-09-micro-matter-experience/source-anchor.js",
+    "tests/v1x-09-micro-matter-experience/bounds-authority.mjs",
+    "tests/v1x-09-micro-matter-experience/journey.mjs",
+    "tests/v1x-09-micro-matter-experience/run.mjs"
+  ],
+  "ownershipValidation": {
+    "command": "node tools/validate-v1x-ownership.mjs --branch parallel/v1x-09-micro-matter-experience-2026-09-06 --head 32339fafa42a4802a339d2162fc57598be4ca672 --integration-ref refs/remotes/origin/integration/v1.0-definitive-product-convergence-2026-09-05",
+    "status": "PASS",
+    "matrixVersion": "2026-09-06.1"
+  },
+  "dependencies": [
+    {"laneId": "V1X-06", "checkpointSha": "760c0c70bccb6afd7c7b07600c0f5be3f80e7b19"},
+    {"laneId": "V1X-07", "checkpointSha": "760c0c70bccb6afd7c7b07600c0f5be3f80e7b19"},
+    {"laneId": "V1X-11", "checkpointSha": "760c0c70bccb6afd7c7b07600c0f5be3f80e7b19"}
+  ],
+  "tests": [
+    {
+      "command": "GitHub Actions V1X Lane Ownership run 34031832183 / job 101482658631",
+      "status": "PASS",
+      "evidencePath": "reports/v1x/v1x-09/IMPLEMENTATION_EVIDENCE.md"
+    },
+    {
+      "command": "node tests/v1x-09-micro-matter-experience/journey.mjs",
+      "status": "NOT_RUN",
+      "evidencePath": "reports/v1x/v1x-09/IMPLEMENTATION_EVIDENCE.md"
+    },
+    {
+      "command": "node tests/v1x-09-micro-matter-experience/bounds-authority.mjs",
+      "status": "NOT_RUN",
+      "evidencePath": "reports/v1x/v1x-09/IMPLEMENTATION_EVIDENCE.md"
+    },
+    {
+      "command": "node tools/extensions/conformance.mjs INTEGRATION --exact",
+      "status": "NOT_RUN",
+      "evidencePath": "reports/v1x/v1x-09/IMPLEMENTATION_EVIDENCE.md"
+    }
+  ],
+  "evidence": [
+    {
+      "path": "reports/v1x/v1x-09/IMPLEMENTATION_EVIDENCE.md",
+      "sha256": "9a635c691308440b4ed323a8d950a9f5cbf491e0fb6766cb15131aa0d185be28",
+      "claim": "Implementation, ownership, authority, resource and certification-state evidence."
+    },
+    {
+      "path": "reports/v1x/v1x-09/journey-contract-witness.json",
+      "sha256": "515ee86580795f3cb0776786b8036b4b85e572e7ecbdab557327ae34180797e8",
+      "claim": "Deterministic journey and reconciliation oracle specification; not measured runtime evidence."
+    }
+  ],
+  "knownDefects": [
+    {
+      "priority": "P1",
+      "summary": "Exact-head V1X-09 journey and additive INTEGRATION conformance have not executed on the authorized lane.",
+      "status": "OPEN_CERTIFICATION_DEPENDENCY"
+    },
+    {
+      "priority": "P2",
+      "summary": "Browser-visible composition into shared rendering/input/scale/selection surfaces is pending convergence-owner integration.",
+      "status": "OPEN_INTEGRATION_DEPENDENCY"
+    }
+  ],
+  "adversarialFindings": [
+    "Unknown biological organization remains unsupported rather than being converted into assumed cell structure.",
+    "Unresolved chemistry remains unresolved; V1X-09 does not fabricate molecular or atomic content.",
+    "Source-backed atomic coordinates do not imply electron orbits, exact wavefunctions, classical trajectories or quantum dynamics.",
+    "Local source anchors reject unbounded or non-JSON context rather than silently dropping unsupported state.",
+    "The lane does not create or mutate shared camera, scale, selection, input or persistence authorities."
+  ],
+  "requestedSharedContractChanges": [],
+  "scientificAuthorityClaims": [
+    {
+      "claim": "Captured bounded local context can be deterministically reconciled to its source anchor.",
+      "authorityClass": "DERIVED",
+      "source": "src/v1x-09-micro-matter-experience/source-anchor.js"
+    },
+    {
+      "claim": "Semantic magnification and micro/matter fidelity labels are presentation surfaces only.",
+      "authorityClass": "PRESENTATION_ONLY",
+      "source": "src/v1x-09-micro-matter-experience/presentation-provider.js"
+    }
+  ],
+  "resourceEvidence": {
+    "status": "IMPLEMENTATION_WITNESS_ONLY",
+    "measuredRuntimeEvidence": false,
+    "frozenMicroCaps": {
+      "microFeatures": 128,
+      "molecularUnits": 64,
+      "atoms": 256,
+      "cacheEntries": 4,
+      "transitionHistory": 128
+    },
+    "sourceAnchorCaps": {
+      "depth": 16,
+      "nodes": 4096,
+      "bytes": 65536
+    },
+    "exactHeadLaneRuntime": "NOT_RUN"
+  },
+  "browserEvidence": {
+    "status": "NOT_VERIFIED",
+    "reason": "Shared renderer composition is convergence-owner-only and no exact-head browser journey ran for this lane."
+  },
+  "physicalDeviceEvidence": {
+    "android": "NOT_VERIFIED",
+    "ios": "NOT_VERIFIED"
+  },
+  "integrationNotes": "Checkpoint 2 is the immutable implementation checkpoint. V1X-06, V1X-07 and V1X-11 had no post-base checkpoint available when consumed, so the handoff records the frozen base SHA for those dependencies. Final evidence-only commits do not imply accepted integration."
+}
