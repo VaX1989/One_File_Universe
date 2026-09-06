@@ -1,0 +1,18 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1.product.living-survey-ux",
+      "version": "1.0.0",
+      "owner": "product",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/bootstrap/product/living-survey-ux.js",
+      "dependencies": ["v1.product.living-universe"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Post-v1 product hardening for the existing shipping Living modeled-world survey. Adds visible authority communication and activation verification without creating canonical or model authority.",
+      "provides": ["v1.product.living-survey-ux"]
+    }
+  ]
+}
