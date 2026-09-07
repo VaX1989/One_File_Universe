@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+const source=fs.readFileSync('src/domains/v1/life/v2x08-life-facade.js','utf8');
+const sandbox={globalThis:{}};sandbox.globalThis.globalThis=sandbox.globalThis;vm.createContext(sandbox.globalThis);vm.runInContext(source,sandbox.globalThis,{filename:'v2x08-life-facade.js'});
+const L=sandbox.globalThis.OFU.v2x08Life;
+assert.equal(L.AUTHORITY,'MODEL_DERIVED_SIMULATION');
+const state=L.normalizeScenario({worldId:'world:test',lineages:[{id:'l1',traits:['photosynthetic']},{id:'l2',traits:['mobile']}],populations:[{id:'p1',lineageId:'l1',regionId:'r1',abundance:120},{id:'p2',lineageId:'l2',regionId:'r1',abundance:30}],interactions:[{id:'i1',sourcePopulationId:'p1',targetPopulationId:'p2',kind:'RESOURCE_LINK',strengthPpm:250000}]});
+const summary=L.summarize(state);assert.equal(summary.lineageCount,2);assert.equal(summary.populationCount,2);assert.equal(summary.totalRepresentedAbundance,150n);
+const samples=L.localSamples(state,{regionId:'r1',limit:1});assert.equal(samples.sampleCount,1);assert.equal(samples.globalAbundanceClaim,false);
+const variation=L.proposeTraitVariation(state,{lineageId:'l1',trait:'cold-tolerance'});assert.equal(variation.admitted,false);assert.equal(variation.requiresGovernedAdmission,true);
+const speciation=L.proposeSpeciation(state,{parentLineageId:'l2',proposedLineageId:'l3',witness:{criterion:'bounded-example'}});assert.equal(speciation.admitted,false);assert.equal(speciation.requiresP4OrGameplayAdmission,true);
+assert.throws(()=>L.normalizeScenario({worldId:'x',lineages:[],populations:[{id:'p',lineageId:'missing',regionId:'r',abundance:1}],interactions:[]}));
+console.log(JSON.stringify({status:'PASS',suite:'v2x08-single-file-facade',authority:L.AUTHORITY,lineages:summary.lineageCount,populations:summary.populationCount,proposalAdmission:'EXTERNAL_GOVERNED'}));
