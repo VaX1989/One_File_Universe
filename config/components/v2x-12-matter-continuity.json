@@ -4,7 +4,7 @@
     {
       "id": "v2x12.matter.continuity",
       "version": "1.0.0",
-      "owner": "v2x-12-matter-continuity",
+      "owner": "v1",
       "kind": "code",
       "stage": "foundation",
       "placement": "script",
@@ -16,33 +16,33 @@
         "v1.micro.molecular-electronic-reference"
       ],
       "authority": "MODEL_DERIVED_SIMULATION",
-      "provenance": "V2X-12 additive source-aware bounded matter-continuity layer. Preserves v1 material/micro/molecular/atomic authority, adds explicit provenance, biological compartment descriptors, mixture/reaction topology, bonding/coordination descriptors, fixed-point source atom records and cross-regime commitment witnesses without MD or quantum claims.",
+      "provenance": "V2X-12 additive source-aware bounded matter-continuity layer under the existing v1 domain source namespace. The V2X-12 lane is the change owner; the PX component owner value is v1 solely to satisfy source-namespace integrity. Preserves v1 material/micro/molecular/atomic authority, adds explicit provenance, biological compartment descriptors, mixture/reaction topology, bonding/coordination descriptors, fixed-point source atom records and cross-regime commitment witnesses without MD or quantum claims.",
       "provides": ["v2x12.matter.continuity"]
     },
     {
       "id": "v2x12.matter.presentation",
       "version": "1.0.0",
-      "owner": "v2x-12-matter-continuity",
+      "owner": "product",
       "kind": "code",
       "stage": "full",
       "placement": "script",
       "source": "src/rendering/microscopic/matter-continuity-provider.js",
       "dependencies": ["v2x12.matter.continuity"],
       "authority": "PRESENTATION_ONLY",
-      "provenance": "V2X-12 bounded microscopic presentation provider exposing material/microstructure/molecular/atomic fidelity and source-coordinate cues without owning camera, scale, selection, input or canonical mutation authority.",
+      "provenance": "V2X-12 bounded microscopic presentation provider under the product rendering source namespace. The V2X-12 lane is the change owner; the PX component owner value is product solely to satisfy source-namespace integrity. Exposes material/microstructure/molecular/atomic fidelity and source-coordinate cues without owning camera, scale, selection, input or canonical mutation authority.",
       "provides": ["v2x12.matter.presentation"]
     },
     {
       "id": "px.providers.v2x12-matter-continuity",
       "version": "1.0.0",
-      "owner": "v2x-12-matter-continuity",
+      "owner": "px",
       "kind": "data",
       "stage": "foundation",
       "placement": "resource",
       "source": "config/extensions/v2x-12-matter-continuity/providers.json",
       "dependencies": [],
       "authority": "MODEL_DERIVED_SIMULATION",
-      "provenance": "V2X-12 provider catalog for additive matter-continuity model and presentation capabilities.",
+      "provenance": "V2X-12 provider catalog in the governed PX extension namespace. The catalog retains V2X-12 provider identities and scientific authority boundaries; PX is only the component source-namespace owner.",
       "provides": ["v2x12.matter.provider-catalog"]
     }
   ]
