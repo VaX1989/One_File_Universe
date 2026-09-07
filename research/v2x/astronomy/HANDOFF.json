@@ -1,0 +1,69 @@
+{
+  "schema": "ofu-v2x15-research-handoff-1",
+  "lane": "V2X-15_ASTRONOMY_PLANETOLOGY_FRONTIER",
+  "laneStatus": "CHECKPOINT_READY_RESEARCH_ONLY",
+  "branch": "research/v2x-15-astronomy-planetology-frontier-2026-09-07",
+  "baseSha": "70af4a84bb8cb7c782966bb4b3b8aab8aa86838e",
+  "baseTree": "44b2cf8a40cb3e8acaa79f41acf5faa77d152a96",
+  "preHandoffTestedHeadSha": "d8ccfffc0652f3806428c3b961477cd9e5d9b2b3",
+  "preHandoffTestedHeadTree": "6334035cf5dc5430ebea6bb2fde35cebd749e403",
+  "implemented": [
+    "pairwise low-e low-i mutual-Hill stability screen",
+    "source-bounded rocky PREM mass-radius reference for 1-8 Earth masses and CMF 0-0.4",
+    "ideal-gas isothermal hydrostatic scale-height reference",
+    "grey-atmosphere radiative-equilibrium reference",
+    "fail-closed atmospheric escape-regime discriminator",
+    "dimensionless convection/geodynamics diagnostic without plate-tectonics truth claim",
+    "conservative volatile reservoir ledger",
+    "bounded Schlichting-style impact-loss scenario kernel",
+    "source and limitation ledgers",
+    "boundary/metamorphic research test runner"
+  ],
+  "testsExecuted": [
+    {
+      "command": "node research/v2x/run-tests.mjs",
+      "result": "PASS",
+      "evidence": "Exact GitHub blobs for astronomy/oracles.mjs, planetology/oracles.mjs, and run-tests.mjs were materialized and their git hash-object values matched GitHub blob SHAs before execution. Direct git clone was unavailable because the local execution environment could not resolve github.com."
+    },
+    {
+      "check": "compare base..tested-head",
+      "result": "ahead_by=7 behind_by=0; only research/v2x/** paths changed"
+    }
+  ],
+  "authorityAndLimitations": [
+    "All outputs are RESEARCH_ONLY or model/scenario diagnostics.",
+    "No canonical shipping provider registration or promotion is performed.",
+    "Hill screening is not N-body or Lagrange stability truth.",
+    "Rocky mass-radius does not uniquely infer composition and returns UNSUPPORTED outside the source domain.",
+    "Atmospheric escape classification does not authorize a universal rate model.",
+    "Geodynamics output does not assert plate tectonics.",
+    "Grey atmosphere does not assert weather, GCM-equivalent climate, or habitability.",
+    "Impact loss is a bounded paper-specific scenario, not universal history reconstruction."
+  ],
+  "knownDefects": [],
+  "dependencyBlockers": [
+    "Canonical promotion remains convergence-owner work.",
+    "AMD/general Hill and N-body stability are not yet implemented.",
+    "Versioned MIST interpolation and conditional multiplicity population tables are not yet implemented.",
+    "Water-rich/high-pressure EOS and sub-Neptune evolution grids remain research backlog."
+  ],
+  "nextInScopeBacklog": [
+    "ASTRO-STABILITY-02: AMD/general-Hill classifier with independent reference oracle",
+    "STELLAR-TRACK-02: exact versioned MIST interpolation fixture with abundance-domain metadata",
+    "STELLAR-MULTIPLICITY-02: conditional period/q/e research priors with explicit selection caveats",
+    "PLANET-BULK-02: separate rocky, water-rich and H/He envelope scenario families",
+    "CLIMATE-EBM-02: bounded 0D/1D energy-balance reference with explicit heat capacity and orbital forcing",
+    "GEODYNAMICS-02: parameterized thermal ledger and Ra/Nu regime scenarios",
+    "ATMOSPHERE-ESCAPE-02: rate-law applicability gates and independent numerical reference cases"
+  ],
+  "canConvergenceConsumeThisCheckpoint": true,
+  "promotionPackets": [
+    "ASTRO-STABILITY-01",
+    "PLANET-BULK-02",
+    "GEODYNAMICS-02",
+    "ATMOSPHERE-ESCAPE-02",
+    "CLIMATE-EBM-02",
+    "VOLATILE-SURFACE-02",
+    "IMPACT-EROSION-01"
+  ]
+}
