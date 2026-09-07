@@ -219,11 +219,15 @@ equal(selection.inferenceGuard, 'LOCAL_SAMPLE_MUST_NOT_INFER_GLOBAL_ABUNDANCE', 
 
 const skewed = createLifeState({
   eventKey: 'fixture:skewed',
-  lineages: [{ id: 'lin-a', traits: [] }],
+  lineages: [
+    { id: 'lin-dominant', traits: [] },
+    { id: 'lin-rare-a', traits: [] },
+    { id: 'lin-rare-b', traits: [] },
+  ],
   populations: [
-    { id: 'dominant', lineageId: 'lin-a', regionId: 'r', abundance: 98 },
-    { id: 'rare-a', lineageId: 'lin-a', regionId: 'r', abundance: 1 },
-    { id: 'rare-b', lineageId: 'lin-a', regionId: 'r', abundance: 1 },
+    { id: 'dominant', lineageId: 'lin-dominant', regionId: 'r', abundance: 98 },
+    { id: 'rare-a', lineageId: 'lin-rare-a', regionId: 'r', abundance: 1 },
+    { id: 'rare-b', lineageId: 'lin-rare-b', regionId: 'r', abundance: 1 },
   ],
   interactions: [],
   regions: { r: { resourcePool: 0, nutrientPool: 0, opportunityPpm: PPM } },
