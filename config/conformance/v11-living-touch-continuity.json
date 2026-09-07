@@ -1,0 +1,33 @@
+{
+  "schema": "ofu-conformance-1",
+  "tests": [
+    {
+      "id": "v1.living-touch-continuity-static",
+      "owner": "product",
+      "tier": "LANE_TARGETED",
+      "command": [
+        "node",
+        "tests/product/v11-living-touch-continuity.mjs"
+      ],
+      "providers": [
+        "v1.scene.living-world"
+      ],
+      "oracle": "v11-living-touch-continuity-static-1",
+      "timeoutMs": 10000
+    },
+    {
+      "id": "v1.living-touch-continuity-browser",
+      "owner": "product",
+      "tier": "LANE_TARGETED",
+      "command": [
+        "node",
+        "tests/product/browser-v11-living-touch-continuity.mjs"
+      ],
+      "providers": [
+        "v1.scene.living-world"
+      ],
+      "oracle": "v11-living-touch-continuity-browser-1",
+      "timeoutMs": 30000
+    }
+  ]
+}
