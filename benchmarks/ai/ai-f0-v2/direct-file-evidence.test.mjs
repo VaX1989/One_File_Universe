@@ -1,0 +1,15 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {adjudicateDirectFileAttempt,summarizeBrowserMatrix} from './direct-file-evidence.mjs';
+const pass=(engine='chromium',o={})=>({engine,engineAvailable:true,originProtocol:'file:',pageExecuted:true,networkGuardActive:true,networkRequestsAttempted:0,networkRequestsSucceeded:0,wasmInitialized:true,modelInitialized:true,inferenceCompleted:true,policyBlocked:false,physicalDevice:false,...o});
+test('genuine direct-file zero-network inference is positive evidence',()=>{assert.equal(adjudicateDirectFileAttempt(pass()).positiveEvidence,true);});
+test('about:blank or http diagnostics can never become direct-file evidence',()=>{assert.equal(adjudicateDirectFileAttempt(pass('chromium',{originProtocol:'about:'})).classification,'NOT_DIRECT_FILE');});
+test('host policy block is classified as environment limitation',()=>{assert.equal(adjudicateDirectFileAttempt(pass('chromium',{policyBlocked:true,pageExecuted:false})).classification,'ENVIRONMENT_POLICY_BLOCKED');});
+test('missing engine is not a browser failure claim',()=>{assert.equal(adjudicateDirectFileAttempt(pass('firefox',{engineAvailable:false,pageExecuted:false})).classification,'ENGINE_UNAVAILABLE');});
+test('network success invalidates zero-fetch evidence',()=>{assert.equal(adjudicateDirectFileAttempt(pass('chromium',{networkRequestsAttempted:1,networkRequestsSucceeded:1})).classification,'NETWORK_LEAK_OBSERVED');});
+test('network guard is mandatory even if no requests were observed',()=>{assert.equal(adjudicateDirectFileAttempt(pass('chromium',{networkGuardActive:false})).classification,'NETWORK_GUARD_MISSING');});
+test('WASM, model init and inference completion are separate gates',()=>{assert.equal(adjudicateDirectFileAttempt(pass('chromium',{wasmInitialized:false})).classification,'WASM_NOT_INITIALIZED');assert.equal(adjudicateDirectFileAttempt(pass('chromium',{modelInitialized:false})).classification,'MODEL_NOT_INITIALIZED');assert.equal(adjudicateDirectFileAttempt(pass('chromium',{inferenceCompleted:false})).classification,'INFERENCE_NOT_COMPLETED');});
+test('required browser matrix requires every engine positive',()=>{const s=summarizeBrowserMatrix([pass('chromium'),pass('firefox'),pass('webkit')]);assert.equal(s.complete,true);assert.equal(s.shippingPromotion,false);});
+test('missing or blocked engine keeps matrix incomplete',()=>{const s=summarizeBrowserMatrix([pass('chromium'),pass('firefox',{engineAvailable:false})]);assert.deepEqual(s.missing,['webkit']);assert.deepEqual(s.failing,['firefox']);assert.equal(s.complete,false);});
+test('physical-device coverage is not inferred from desktop browser pass',()=>{const s=summarizeBrowserMatrix([pass('chromium'),pass('firefox'),pass('webkit')]);assert.equal(s.physicalDeviceCovered,false);});
+test('duplicate engine attempts are rejected instead of cherry-picked',()=>{assert.throws(()=>summarizeBrowserMatrix([pass('chromium'),pass('chromium')],{requiredEngines:['chromium']}),/DUPLICATE_ENGINE_ATTEMPT/);});
