@@ -1,0 +1,22 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1.environment.local-hydrology",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/environment/local-hydrology.js",
+      "dependencies": [
+        "v1.environment.seasonal-envelope"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Selective V1X-16 harvest: bounded nine-probe local relief/hydrology inspection over the existing modeled environment. Lowest-neighbor and water-activity witnesses are descriptive model outputs only; no measured river/watershed/flow, P4 admission, or P5/P6 canonical promotion.",
+      "provides": [
+        "v1.environment.local-hydrology"
+      ]
+    }
+  ]
+}
