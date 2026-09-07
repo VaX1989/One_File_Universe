@@ -14,13 +14,13 @@ function canonicalPart(value, name) {
 }
 
 export function individualId({ worldId, settlementId, birthOrdinal }) {
-  if (!Number.isInteger(birthOrdinal) || birthOrdinal < 0) throw new TypeError('birthOrdinal must be a non-negative integer');
+  if (!Number.isSafeInteger(birthOrdinal) || birthOrdinal < 0) throw new TypeError('birthOrdinal must be a non-negative safe integer');
   const address = `${canonicalPart(worldId, 'worldId')}|${canonicalPart(settlementId, 'settlementId')}|${birthOrdinal}`;
   return `person:${fnv1a64(address)}`;
 }
 
 export function householdId({ worldId, settlementId, householdOrdinal }) {
-  if (!Number.isInteger(householdOrdinal) || householdOrdinal < 0) throw new TypeError('householdOrdinal must be a non-negative integer');
+  if (!Number.isSafeInteger(householdOrdinal) || householdOrdinal < 0) throw new TypeError('householdOrdinal must be a non-negative safe integer');
   const address = `${canonicalPart(worldId, 'worldId')}|${canonicalPart(settlementId, 'settlementId')}|household|${householdOrdinal}`;
   return `household:${fnv1a64(address)}`;
 }
@@ -31,7 +31,8 @@ export function identityCommitment(input) {
     worldId: canonicalPart(input.worldId, 'worldId'),
     settlementId: canonicalPart(input.settlementId, 'settlementId'),
     birthOrdinal: input.birthOrdinal,
-    birthYear: Number.isInteger(input.birthYear) ? input.birthYear : null,
+    birthYear: Number.isSafeInteger(input.birthYear) ? input.birthYear : null,
+    cohortKey: input.cohortKey == null ? null : String(input.cohortKey),
     provenance: input.provenance || 'MODEL_DERIVED_SIMULATION'
   });
 }
