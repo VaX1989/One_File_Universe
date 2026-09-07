@@ -105,7 +105,9 @@ export function hydrostaticScaleHeight({ temperatureK, molarMassKgPerMol, gravit
   const mu = finite('molarMassKgPerMol', molarMassKgPerMol);
   const g = finite('gravityMps2', gravityMps2);
   if (t <= 0 || mu <= 0 || g <= 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'NON_POSITIVE_THERMODYNAMIC_INPUT' });
-  return Object.freeze({ status: 'PRESENT', scaleHeightMeters: (R_GAS * t) / (mu * g), assumptions: 'IDEAL_GAS_ISOTHERMAL_HYDROSTATIC_REFERENCE' });
+  const scaleHeightMeters = (R_GAS * t) / (mu * g);
+  if (!Number.isFinite(scaleHeightMeters) || scaleHeightMeters <= 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'NON_FINITE_SCALE_HEIGHT' });
+  return Object.freeze({ status: 'PRESENT', scaleHeightMeters, assumptions: 'IDEAL_GAS_ISOTHERMAL_HYDROSTATIC_REFERENCE' });
 }
 
 export function bandpassDistanceModulus({ absoluteMagnitude, distancePc, extinctionMagnitude, bandpassId, magnitudeSystem }) {
@@ -115,6 +117,8 @@ export function bandpassDistanceModulus({ absoluteMagnitude, distancePc, extinct
   if (!bandpassId || !magnitudeSystem || magnitudeSystem === 'UNSPECIFIED') return Object.freeze({ status: 'UNSUPPORTED', reason: 'EXPLICIT_BANDPASS_AND_MAGNITUDE_SYSTEM_REQUIRED' });
   if (d <= 0 || extinction < 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'INVALID_DISTANCE_OR_EXTINCTION' });
   const distanceModulus = 5 * Math.log10(d) - 5;
+  const apparentMagnitude = M + distanceModulus + extinction;
+  if (!Number.isFinite(distanceModulus) || !Number.isFinite(apparentMagnitude)) return Object.freeze({ status: 'UNSUPPORTED', reason: 'NON_FINITE_PHOTOMETRIC_TRANSFORM' });
   return Object.freeze({
     status: 'PRESENT',
     bandpassId,
@@ -123,10 +127,11 @@ export function bandpassDistanceModulus({ absoluteMagnitude, distancePc, extinct
     distancePc: d,
     extinctionMagnitude: extinction,
     distanceModulus,
-    apparentMagnitude: M + distanceModulus + extinction,
-    assumptions: 'EUCLIDEAN_DISTANCE_MODULUS_WITH_EXPLICIT_BANDPASS_MAGNITUDE_SYSTEM_AND_EXTINCTION_INPUT',
+    apparentMagnitude,
+    assumptions: 'DISTANCE_MODULUS_WITH_EXPLICIT_BANDPASS_MAGNITUDE_SYSTEM_EXTINCTION_AND_CALLER_SUPPLIED_DISTANCE_DEFINITION',
     surveyCompletenessClaim: false,
-    extinctionModelClaim: false
+    extinctionModelClaim: false,
+    cosmologyClaim: false
   });
 }
 
@@ -135,18 +140,29 @@ export function angularObservabilityGeometry({ distancePc, projectedSeparationAu
   const separation = finite('projectedSeparationAu', projectedSeparationAu);
   if (d <= 0 || separation < 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'INVALID_GEOMETRY_INPUT' });
   const lineOfSightDistanceAu = d * AU_PER_PARSEC;
+  if (!Number.isFinite(lineOfSightDistanceAu) || lineOfSightDistanceAu <= 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'GEOMETRY_SCALE_OVERFLOW' });
   const exactProjectedAngularSeparationArcsec = Math.atan2(separation, lineOfSightDistanceAu) * ARCSEC_PER_RADIAN;
   const smallAngleApproxArcsec = separation / d;
   const approximationAbsoluteErrorArcsec = smallAngleApproxArcsec - exactProjectedAngularSeparationArcsec;
   const approximationRelativeError = exactProjectedAngularSeparationArcsec > 0 ? approximationAbsoluteErrorArcsec / exactProjectedAngularSeparationArcsec : 0;
+  const parallaxArcsec = Math.atan2(1, lineOfSightDistanceAu) * ARCSEC_PER_RADIAN;
+  const inverseDistanceParallaxApproxArcsec = 1 / d;
+  const parallaxApproximationAbsoluteErrorArcsec = inverseDistanceParallaxApproxArcsec - parallaxArcsec;
+  const parallaxApproximationRelativeError = parallaxArcsec > 0 ? parallaxApproximationAbsoluteErrorArcsec / parallaxArcsec : 0;
+  if (![exactProjectedAngularSeparationArcsec, smallAngleApproxArcsec, approximationAbsoluteErrorArcsec, approximationRelativeError, parallaxArcsec, inverseDistanceParallaxApproxArcsec, parallaxApproximationAbsoluteErrorArcsec, parallaxApproximationRelativeError].every(Number.isFinite)) {
+    return Object.freeze({ status: 'UNSUPPORTED', reason: 'NON_FINITE_ANGULAR_GEOMETRY' });
+  }
   return Object.freeze({
     status: 'PRESENT',
-    parallaxArcsec: 1 / d,
+    parallaxArcsec,
+    inverseDistanceParallaxApproxArcsec,
+    parallaxApproximationAbsoluteErrorArcsec,
+    parallaxApproximationRelativeError,
     projectedAngularSeparationArcsec: exactProjectedAngularSeparationArcsec,
     smallAngleApproxArcsec,
     smallAngleApproximationAbsoluteErrorArcsec: approximationAbsoluteErrorArcsec,
     smallAngleApproximationRelativeError: approximationRelativeError,
-    assumptions: 'EXACT_RIGHT_TRIANGLE_PROJECTED_SEPARATION_ANGLE_WITH_IAU_PARSEC_AU_CONVERSION; PARALLAX_1_OVER_D_PC_REFERENCE',
+    assumptions: 'EXACT_ATAN2_GEOMETRY_WITH_IAU_PARSEC_AU_CONVERSION; INVERSE_DISTANCE_AND_SMALL_ANGLE_VALUES_RETAINED_ONLY_AS_APPROXIMATION_DIAGNOSTICS',
     instrumentResolutionClaim: false,
     detectionProbabilityClaim: false
   });
