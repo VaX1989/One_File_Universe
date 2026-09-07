@@ -1,0 +1,23 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1.civilization.network-context",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/civilization/network-context.js",
+      "dependencies": [
+        "v1.convergence.world-context",
+        "v1.civilization.runtime"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Selective post-v1 V1X-18 harvest. Adds bounded deterministic current modeled settlement/trade topology inspection with exact graph-connectivity witnesses; no empirical route reconstruction, resilience probability, P4 admission, persistent-person identity or canonical history promotion.",
+      "provides": [
+        "v1.civilization.network-context"
+      ]
+    }
+  ]
+}
