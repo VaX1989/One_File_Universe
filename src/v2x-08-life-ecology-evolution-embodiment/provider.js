@@ -1,5 +1,14 @@
 import { summarizeLifeState } from './model.js';
 import { materializeLocalOrganisms } from './embodiment.js';
+import {
+  proposeTraitVariation,
+  evaluateSelectionCriterion,
+  buildSpeciationProposal,
+} from './evolution.js';
+import {
+  describeSuccession,
+  compareRecovery,
+} from './succession.js';
 
 function assert(condition, message) {
   if (!condition) throw new Error(`LIFE_V2_PROVIDER_INVALID: ${message}`);
@@ -15,13 +24,22 @@ export const LIFE_V2_PROVIDER_DESCRIPTOR = Object.freeze({
     'LIFE_POPULATION_INSPECTION',
     'LIFE_INTERACTION_INSPECTION',
     'LIFE_LOCAL_REPRESENTATIVE_SAMPLES',
+    'LIFE_TRAIT_VARIATION_PROPOSAL',
+    'LIFE_SELECTION_CRITERION_WITNESS',
+    'LIFE_SPECIATION_EVENT_PROPOSAL',
+    'LIFE_SUCCESSION_INSPECTION',
+    'LIFE_RECOVERY_COMPARISON',
   ]),
   exclusions: Object.freeze([
-    'ABIogenesis',
+    'ABIOGENESIS',
     'CANONICAL_ALIEN_BIOLOGY',
     'PERSISTENT_PERSON_IDENTITY',
     'P4_EVENT_ADMISSION',
     'GLOBAL_ABUNDANCE_FROM_LOCAL_SAMPLE',
+    'UNIVERSAL_SPECIES_THRESHOLD',
+    'UNIVERSAL_MUTATION_RATE',
+    'MOLECULAR_GENETICS',
+    'ENVIRONMENT_MUTATION_AUTHORITY',
   ]),
 });
 
@@ -89,6 +107,26 @@ export function createLifeProvider({ getState }) {
 
     localSamples(request) {
       return materializeLocalOrganisms(state(), request);
+    },
+
+    proposeTraitVariation(request) {
+      return proposeTraitVariation(state(), request);
+    },
+
+    evaluateSelection(proposal, request) {
+      return evaluateSelectionCriterion(state(), proposal, request);
+    },
+
+    proposeSpeciation(proposal, witness, request) {
+      return buildSpeciationProposal(proposal, witness, request);
+    },
+
+    inspectSuccession(regionId, profile) {
+      return describeSuccession(state(), regionId, profile);
+    },
+
+    compareRecovery(beforeState, regionId) {
+      return compareRecovery(beforeState, state(), regionId);
     },
   });
 }
