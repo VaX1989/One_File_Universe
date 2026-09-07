@@ -37,5 +37,7 @@ const controls=fs.readFileSync('src/bootstrap/product/living-forward-controls.js
 assert.match(controls,/dataset\.livingAction='forward'/);assert.match(controls,/event\.key==='\['/);assert.match(controls,/event\.key==='\]'/);assert.match(controls,/historyDepth/);assert.match(controls,/forwardDepth/);cases+=5;
 assert.doesNotMatch(controls,/Back to previous exploration context/,'successful keyboard Back must delegate accessible feedback to the semantic Living transition status');
 assert.doesNotMatch(controls,/O\.productUI\?\.announce\?\.\('Forward to next exploration context'\)/,'successful Forward must not race the semantic Living transition status with a generic live-region announcement');
-assert.match(controls,/Forward navigation could not be restored/,'failure feedback remains explicit instead of being suppressed with successful duplicate feedback');cases+=3;
+assert.match(controls,/navigationFailure\('Back',error\)/,'keyboard Back failures remain explicitly surfaced');
+assert.match(controls,/navigationFailure\('Forward',error\)/,'Forward button and keyboard failures remain explicitly surfaced');
+assert.match(controls,/direction\+' navigation could not be restored'/,'failure feedback remains explicit instead of being suppressed with successful duplicate feedback');cases+=5;
 console.log(JSON.stringify({status:'PASS',suite:'v11-living-forward-navigation',cases,forwardVersion:r.snapshot().forwardNavigationVersion,maxHistory:r.snapshot().maxHistory,invalidations:r.snapshot().forwardInvalidations}));
