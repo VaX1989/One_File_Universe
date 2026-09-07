@@ -20,7 +20,7 @@
     },
     {
       "id": "ofu.v2x01.runtime.scheduler",
-      "version": "1.2.0",
+      "version": "1.3.0",
       "owner": "runtime",
       "kind": "code",
       "stage": "foundation",
@@ -30,7 +30,7 @@
         "ofu.v2x01.runtime.contracts"
       ],
       "authority": "MEASURED_RUNTIME_EVIDENCE",
-      "provenance": "Deterministic weighted bounded scheduler with bounded same-class lifecycle starvation, distinct cooperative interaction preemption, idempotent cancellation and fail-closed backpressure.",
+      "provenance": "Deterministic weighted bounded scheduler with bounded same-class lifecycle starvation, distinct cooperative interaction preemption, idempotent cancellation, and opaque transactional admission tokens that reserve bounded capacity before destructive runtime preparation.",
       "provides": [
         "ofu.v2x01.runtime.scheduler"
       ]
@@ -135,7 +135,7 @@
         "ofu.v2x01.runtime.workers"
       ],
       "authority": "MEASURED_RUNTIME_EVIDENCE",
-      "provenance": "Durable identity/commitment/history are immutable inputs; lifecycle state and request schemas are verified, WARM GPU reservation is forbidden, heavy sync fallback is admission-bounded before destructive invalidation, scheduler backpressure cannot evict unrelated valid cache entries, late direct fallbacks retain reservations until cleanup, failed releases quarantine conservative accounting, and eviction/cancellation/worker completion/context loss cannot rewrite durable truth or commit stale lineage.",
+      "provenance": "Durable identity/commitment/history are immutable inputs; lifecycle state and request schemas are verified, WARM GPU reservation is forbidden, heavy sync fallback and scheduler capacity are admission-bounded before destructive invalidation or resource-pressure eviction, late direct fallbacks retain reservations until cleanup, failed releases quarantine conservative accounting, and eviction/cancellation/worker completion/context loss cannot rewrite durable truth or commit stale lineage.",
       "provides": [
         "ofu.v2x01.materialization.runtime"
       ]

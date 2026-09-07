@@ -42,11 +42,14 @@ for(const name of names){
     assert(ev.pressure.evicted>=1);
     assert.equal(ev.final.workingSet.entries,0);
     assert.equal(ev.final.workingSet.quarantined,0);
+    assert.equal(ev.final.workingSet.detached,0);
+    assert.equal(ev.final.scheduler.current.admissions,0);
+    assert(ev.final.scheduler.metrics.peakAdmissions<=1);
     assert(ev.final.resources.peak.cpuEstimateBytes<=1024);
     assert(ev.final.resources.peak.gpuEstimateBytes<=1024);
     const unexpected=requests.filter(x=>x!==url&&!x.startsWith('blob:')&&!x.startsWith('data:')&&!x.startsWith('about:'));
     assert.equal(unexpected.length,0);
-    evidence.push({browser:name,directFile:true,offline:true,workerRuns:ev.final.workers.metrics.workerRuns,workerCancellations:ev.final.workers.metrics.cancelled,contextLossWorkerCancellation:true,warmGpuFree:true,peak:ev.final.resources.peak});
+    evidence.push({browser:name,directFile:true,offline:true,workerRuns:ev.final.workers.metrics.workerRuns,workerCancellations:ev.final.workers.metrics.cancelled,contextLossWorkerCancellation:true,warmGpuFree:true,peakAdmissions:ev.final.scheduler.metrics.peakAdmissions,peak:ev.final.resources.peak});
   }finally{await browser.close()}
 }
 

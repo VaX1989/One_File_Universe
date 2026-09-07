@@ -1,11 +1,11 @@
 (function(root){
 'use strict';
-const O=root.OFU=root.OFU||{},C=O.pxContracts,R=O.v2x01Contracts,K=O.v2x01CacheKey,S=O.v2x01AdaptiveScheduler,L=O.v2x01ResourceLedger,W=O.v2x01WorkerExecutor,V='ofu-v2x01-materialization-runtime-4';
+const O=root.OFU=root.OFU||{},C=O.pxContracts,R=O.v2x01Contracts,K=O.v2x01CacheKey,S=O.v2x01AdaptiveScheduler,L=O.v2x01ResourceLedger,W=O.v2x01WorkerExecutor,V='ofu-v2x01-materialization-runtime-5';
 if(!C||!R||!K||!S||!L)throw Error('V2X-01 materialization dependencies');
 function fail(c,m){const e=Error('OFU V2X-01 '+c+': '+m);e.code=c;return e}
 function create(o={}){
   C.keys(o,[],['budgets','scheduler','ledger','workerExecutor']);const b=R.budgets(o.budgets||{}),scheduler=o.scheduler||S.create({budgets:b}),ledger=o.ledger||L.create({budgets:b}),workers=o.workerExecutor===false?null:(o.workerExecutor||(W?W.create({maxPayloadBytes:b.taskBytes}):null)),providers=new Map(),entries=new Map(),active=new Map(),gen=new Map(),quarantine=new Map(),detached=new Map(),max=Math.min(b.cacheEntries,b.materializations);
-  C.assert(scheduler&&typeof scheduler.schedule==='function'&&typeof scheduler.cancel==='function'&&typeof scheduler.cancelWhere==='function'&&typeof scheduler.drain==='function'&&typeof scheduler.snapshot==='function','DEPENDENCY','scheduler surface');C.assert(ledger&&typeof ledger.reserve==='function'&&typeof ledger.commit==='function'&&typeof ledger.release==='function'&&typeof ledger.snapshot==='function','DEPENDENCY','resource ledger surface');if(workers)C.assert(typeof workers.register==='function'&&typeof workers.execute==='function'&&typeof workers.canRunWorker==='function'&&typeof workers.snapshot==='function','DEPENDENCY','worker executor surface');
+  C.assert(scheduler&&typeof scheduler.reserveAdmission==='function'&&typeof scheduler.schedule==='function'&&typeof scheduler.cancel==='function'&&typeof scheduler.cancelWhere==='function'&&typeof scheduler.drain==='function'&&typeof scheduler.snapshot==='function','DEPENDENCY','scheduler surface');C.assert(ledger&&typeof ledger.reserve==='function'&&typeof ledger.commit==='function'&&typeof ledger.release==='function'&&typeof ledger.snapshot==='function','DEPENDENCY','resource ledger surface');if(workers)C.assert(typeof workers.register==='function'&&typeof workers.execute==='function'&&typeof workers.canRunWorker==='function'&&typeof workers.snapshot==='function','DEPENDENCY','worker executor surface');
   let seq=0,clock=0;
   const m={requests:0,hits:0,misses:0,materializations:0,evictions:0,invalidations:0,cancellations:0,staleRejects:0,releaseFailures:0,quarantinedReleases:0,quarantineRecoveries:0,detachedFallbacks:0,detachedSettlements:0,fallbackAdmissionRejects:0,contextLosses:0,memoryPressureEvents:0,restorations:0,workerResults:0,fallbackResults:0};
   function reg(x){
@@ -38,7 +38,7 @@ function create(o={}){
   function room(protect){while(entries.size>=max){const e=candidates(protect)[0];if(!e)throw fail('CACHE_BUDGET','no evictable entry');release(e,'cache-capacity')}}
   function cancelPending(predicate,reason){let n=0;for(const [key,a] of [...active.entries()]){if(!predicate(a,key))continue;if(scheduler.cancel(a.jobId,reason)){gen.set(key,(gen.get(key)||0)+1);m.cancellations++;n++}}return n}
   function invalidateLogical(k,why='invalidated'){
-    const a=active.get(k);if(a){scheduler.cancel(a.jobId,why);active.delete(k);m.cancellations++}
+    const a=active.get(k);if(a){if(scheduler.cancel(a.jobId,why))m.cancellations++;active.delete(k)}
     let n=0;for(const e of [...entries.values()])if(e.logicalKey===k){e.pinned=false;release(e,why);n++}m.invalidations+=n;return n;
   }
   function reserve(id,x,k){for(;;){try{return ledger.reserve(id,x)}catch(e){if(e.code!=='RESOURCE_BUDGET')throw e;const v=candidates(k)[0];if(!v)throw e;release(v,'resource-pressure')}}}
@@ -48,10 +48,11 @@ function create(o={}){
     if(r.targetState==='COLD'){invalidateLogical(k,'cold');return witness(r,null,false)}
     const hit=entries.get(r.cache.digest);if(hit&&hit.state===r.targetState){hit.lastUse=++clock;hit.pinned=r.targetState==='IMMEDIATE';m.hits++;return witness(r,hit,true,hit.executionMode)}
     const workerCapable=!!(workers&&r.preferWorker&&r.provider.workerProgram&&workers.canRunWorker(r.provider.handlerId));if(!workerCapable&&r.estimate.operations>b.syncFallbackOperations){m.fallbackAdmissionRejects++;throw fail('SYNC_FALLBACK_BUDGET','declared operations '+r.estimate.operations+' exceed '+b.syncFallbackOperations)}
-    m.misses++;invalidateLogical(k,'superseded');
-    const g=(gen.get(k)||0)+1;gen.set(k,g);const rid='v2x01.resource.'+(++seq),jid='v2x01.task.'+seq;reserve(rid,r.estimate,k);let h;
+    m.misses++;const admission=scheduler.reserveAdmission();let admitted=false,rid=null,jid=null,g=null,h;
     try{
-      h=scheduler.schedule({id:jid,taskClass:r.taskClass,state:r.targetState,preemptible:r.taskClass!=='INTERACTION',run:async signal=>{
+      invalidateLogical(k,'superseded');
+      g=(gen.get(k)||0)+1;gen.set(k,g);rid='v2x01.resource.'+(++seq);jid='v2x01.task.'+seq;reserve(rid,r.estimate,k);
+      h=scheduler.schedule({id:jid,taskClass:r.taskClass,state:r.targetState,preemptible:r.taskClass!=='INTERACTION',admission,run:async signal=>{
         const payload={durable:r.durable,targetState:r.targetState,taskClass:r.taskClass,semantic:r.semantic,semanticDigest:r.semanticDigest,presentation:r.presentation,modelVersion:r.provider.modelVersion,representationVersion:r.provider.representationVersion};
         let mode='DIRECT',raw,committed=false;
         try{
@@ -61,8 +62,8 @@ function create(o={}){
           const actual=R.estimate({cpuEstimateBytes:raw.cpuEstimateBytes,gpuEstimateBytes:raw.gpuEstimateBytes,entities:raw.entities,operations:raw.operations,transferBytes:raw.transferBytes});for(const q of ['cpuEstimateBytes','gpuEstimateBytes','entities','operations','transferBytes'])C.assert(actual[q]<=r.estimate[q],'BUDGET','actual '+q);
           const value=C.data(raw.value,{bytes:b.taskBytes,nodes:4096});room(k);const e={cacheDigest:r.cache.digest,logicalKey:k,provider:r.provider,identity:r.durable.identity,state:r.targetState,pinned:r.targetState==='IMMEDIATE',lastUse:++clock,resourceId:rid,usage:actual,value,executionMode:mode},out=witness(r,e,false,mode);ledger.commit(rid,actual);committed=true;entries.set(e.cacheDigest,e);m.materializations++;return out;
         }catch(error){if(raw!==undefined&&!committed&&!quarantine.has(rid))cleanupRaw(rid,r,raw,signal.aborted||gen.get(k)!==g?'stale-work':'rejected-materialization',error);throw error}
-      }});
-    }catch(e){ledger.release(rid);throw e}
+      }});admitted=true;
+    }catch(e){if(!admitted)admission.release();if(rid)ledger.release(rid);throw e}
     active.set(k,{jobId:jid,g,taskClass:r.taskClass,state:r.targetState,gpuEstimateBytes:r.estimate.gpuEstimateBytes});
     try{return await h.promise}finally{if(active.get(k)?.jobId===jid)active.delete(k);if(!entries.has(r.cache.digest)&&!quarantine.has(rid)&&!detached.has(rid))ledger.release(rid)}
   }
