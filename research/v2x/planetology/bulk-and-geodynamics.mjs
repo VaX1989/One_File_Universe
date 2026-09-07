@@ -1,5 +1,9 @@
 export const AUTHORITY = 'RESEARCH_ONLY';
 
+const SUB_NEPTUNE_SOURCE_DOMAIN = Object.freeze({ massEarth: [1, 20], envelopeFraction: [0.0001, 0.20], irradiationEarth: [0.1, 1000], ageGyr: [0.1, 10] });
+const MAX_EOS_CELLS = 262144;
+const MAX_SUB_NEPTUNE_CELLS = 262144;
+
 function finite(name, value) {
   if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
   return value;
@@ -22,6 +26,18 @@ function bracket(axis, value) {
   return { lo, hi, t: (value - axis[lo]) / (axis[hi] - axis[lo]) };
 }
 
+function inRange(value, range) {
+  return value >= range[0] && value <= range[1];
+}
+
+function validPtEnvelope(envelope) {
+  if (!envelope || typeof envelope !== 'object') return null;
+  const keys = ['pressureMinPa', 'pressureMaxPa', 'temperatureMinK', 'temperatureMaxK'];
+  if (keys.some((key) => !Number.isFinite(envelope[key]))) return null;
+  if (!(envelope.pressureMinPa >= 0 && envelope.pressureMinPa < envelope.pressureMaxPa && envelope.temperatureMinK > 0 && envelope.temperatureMinK < envelope.temperatureMaxK)) return null;
+  return Object.freeze({ pressureMinPa: envelope.pressureMinPa, pressureMaxPa: envelope.pressureMaxPa, temperatureMinK: envelope.temperatureMinK, temperatureMaxK: envelope.temperatureMaxK });
+}
+
 export function compositionRegimeContract({ massEarth, radiusEarth, ageGyr = null, irradiationEarth = null, hHeEnvelopeFraction = null, waterMassFraction = null }) {
   const m = finite('massEarth', massEarth);
   const r = finite('radiusEarth', radiusEarth);
@@ -32,8 +48,10 @@ export function compositionRegimeContract({ massEarth, radiusEarth, ageGyr = nul
     const f = finite('hHeEnvelopeFraction', hHeEnvelopeFraction);
     const age = finite('ageGyr', ageGyr);
     const irr = finite('irradiationEarth', irradiationEarth);
-    if (m < 1 || m > 20 || f < 0.0001 || f > 0.20 || age < 0.1 || age > 10 || irr < 0.1 || irr > 1000) return Object.freeze({ status: 'UNSUPPORTED', reason: 'OUTSIDE_LOPEZ_FORTNEY_GRID_ENVELOPE' });
-    return Object.freeze({ status: 'SUB_NEPTUNE_SCENARIO_COORDINATE', family: 'H_HE_ENVELOPE', uniqueCompositionInference: false, requiresEvolutionGrid: true });
+    if (!inRange(m, SUB_NEPTUNE_SOURCE_DOMAIN.massEarth) || !inRange(f, SUB_NEPTUNE_SOURCE_DOMAIN.envelopeFraction) || !inRange(age, SUB_NEPTUNE_SOURCE_DOMAIN.ageGyr) || !inRange(irr, SUB_NEPTUNE_SOURCE_DOMAIN.irradiationEarth)) {
+      return Object.freeze({ status: 'UNSUPPORTED', reason: 'OUTSIDE_LOPEZ_FORTNEY_2014_GRID_ENVELOPE' });
+    }
+    return Object.freeze({ status: 'SUB_NEPTUNE_SCENARIO_COORDINATE', family: 'H_HE_ENVELOPE', sourceFamily: 'LOPEZ_FORTNEY_2014', uniqueCompositionInference: false, requiresEvolutionGrid: true });
   }
   if (waterMassFraction != null) {
     const f = finite('waterMassFraction', waterMassFraction);
@@ -43,27 +61,56 @@ export function compositionRegimeContract({ massEarth, radiusEarth, ageGyr = nul
   return Object.freeze({ status: 'DEGENERATE_BULK_OBSERVABLES', reason: 'MASS_RADIUS_ALONE_DO_NOT_UNIQUELY_IDENTIFY_COMPOSITION', candidateFamilies: Object.freeze(['ROCKY', 'WATER_RICH', 'H_HE_ENVELOPE', 'MIXED']), uniqueCompositionInference: false });
 }
 
-export function waterEosApplicabilityContract({ eosId, eosHash, pressurePa, temperatureK, phaseDiagramId = null, extrapolationDeclared = false }) {
+export function waterEosApplicabilityContract({ eosId, eosHash, pressurePa, temperatureK, phaseDiagramId = null, phaseBoundarySourceId = null, validityEnvelope = null, extrapolationDeclared = false }) {
   const pressure = finite('pressurePa', pressurePa);
   const temperature = finite('temperatureK', temperatureK);
   if (!eosId || !eosHash) return Object.freeze({ status: 'UNSUPPORTED', reason: 'EOS_ID_AND_HASH_REQUIRED' });
   if (pressure < 0 || temperature <= 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'INVALID_PRESSURE_OR_TEMPERATURE' });
-  const phaseContext = pressure >= 30e9 ? 'ICE_X_OR_IONIC_BONDING_RELEVANT' : pressure >= 2.1e9 ? 'HIGH_PRESSURE_ICE_VII_FAMILY_RELEVANT' : 'LOWER_PRESSURE_WATER_ICE_LIQUID_REGIME';
+  const envelope = validPtEnvelope(validityEnvelope);
+  if (!phaseDiagramId || !phaseBoundarySourceId || !envelope) return Object.freeze({ status: 'RESEARCH_REQUIRED', reason: 'PHASE_DIAGRAM_SOURCE_AND_EXACT_PT_VALIDITY_ENVELOPE_REQUIRED', radiusPredictionAuthorized: false, compositionTruthClaim: false });
+  const inside = pressure >= envelope.pressureMinPa && pressure <= envelope.pressureMaxPa && temperature >= envelope.temperatureMinK && temperature <= envelope.temperatureMaxK;
+  if (!inside && !extrapolationDeclared) return Object.freeze({ status: 'UNSUPPORTED', reason: 'QUERY_OUTSIDE_DECLARED_EOS_PT_VALIDITY_ENVELOPE', validityEnvelope: envelope, radiusPredictionAuthorized: false, compositionTruthClaim: false });
   return Object.freeze({
-    status: phaseDiagramId ? 'EOS_COORDINATE_READY' : 'RESEARCH_REQUIRED', eosId, eosHash, pressurePa: pressure, temperatureK: temperature, phaseDiagramId, phaseContext,
-    extrapolationDeclared: Boolean(extrapolationDeclared), radiusPredictionAuthorized: Boolean(phaseDiagramId) && !extrapolationDeclared, compositionTruthClaim: false,
+    status: inside && !extrapolationDeclared ? 'EOS_COORDINATE_READY' : 'RESEARCH_REQUIRED',
+    eosId,
+    eosHash,
+    pressurePa: pressure,
+    temperatureK: temperature,
+    phaseDiagramId,
+    phaseBoundarySourceId,
+    validityEnvelope: envelope,
+    phaseContext: 'PHASE_MUST_BE_RESOLVED_FROM_VERSIONED_PT_PHASE_DATA_NOT_PRESSURE_ALONE',
+    extrapolationDeclared: Boolean(extrapolationDeclared),
+    densityLookupAuthorized: inside && !extrapolationDeclared,
+    radiusPredictionAuthorized: false,
+    compositionTruthClaim: false,
     requiredEvidence: Object.freeze(['EOS_VERSION', 'EOS_HASH', 'P_T_VALIDITY', 'PHASE_BOUNDARY_SOURCE', 'EXTRAPOLATION_POLICY'])
   });
 }
 
-export function interpolateVersionedWaterEos({ eosId, eosHash, phaseDiagramId, pressureAxisPa, temperatureAxisK, densityKgM3, pressurePa, temperatureK }) {
-  const applicability = waterEosApplicabilityContract({ eosId, eosHash, phaseDiagramId, pressurePa, temperatureK });
-  if (applicability.status !== 'EOS_COORDINATE_READY') return applicability;
+export function interpolateVersionedWaterEos({ eosId, eosHash, phaseDiagramId, phaseBoundarySourceId, pressureAxisPa, temperatureAxisK, densityKgM3, pressurePa, temperatureK }) {
+  if (!eosId || !eosHash || !phaseDiagramId || !phaseBoundarySourceId) return Object.freeze({ status: 'UNSUPPORTED', reason: 'EOS_PHASE_VERSION_PROVENANCE_REQUIRED' });
   if (!strictlyIncreasing(pressureAxisPa) || !strictlyIncreasing(temperatureAxisK)) return Object.freeze({ status: 'UNSUPPORTED', reason: 'STRICTLY_INCREASING_EOS_AXES_REQUIRED' });
-  if (pressureAxisPa.length > 4096 || temperatureAxisK.length > 4096) return Object.freeze({ status: 'UNSUPPORTED', reason: 'EOS_AXIS_RESOURCE_BOUND_EXCEEDED' });
+  const cellCount = pressureAxisPa.length * temperatureAxisK.length;
+  if (pressureAxisPa.length > 4096 || temperatureAxisK.length > 4096 || cellCount > MAX_EOS_CELLS) return Object.freeze({ status: 'UNSUPPORTED', reason: 'EOS_RESOURCE_BOUND_EXCEEDED', maxCells: MAX_EOS_CELLS });
   if (!Array.isArray(densityKgM3) || densityKgM3.length !== pressureAxisPa.length || densityKgM3.some((row) => !Array.isArray(row) || row.length !== temperatureAxisK.length || row.some((x) => !Number.isFinite(x) || x <= 0))) {
     return Object.freeze({ status: 'UNSUPPORTED', reason: 'RECTANGULAR_POSITIVE_EOS_DENSITY_GRID_REQUIRED' });
   }
+  const applicability = waterEosApplicabilityContract({
+    eosId,
+    eosHash,
+    phaseDiagramId,
+    phaseBoundarySourceId,
+    pressurePa,
+    temperatureK,
+    validityEnvelope: {
+      pressureMinPa: pressureAxisPa[0],
+      pressureMaxPa: pressureAxisPa[pressureAxisPa.length - 1],
+      temperatureMinK: temperatureAxisK[0],
+      temperatureMaxK: temperatureAxisK[temperatureAxisK.length - 1]
+    }
+  });
+  if (applicability.status !== 'EOS_COORDINATE_READY') return applicability;
   const p = bracket(pressureAxisPa, pressurePa);
   const t = bracket(temperatureAxisK, temperatureK);
   if (!p || !t) return Object.freeze({ status: 'UNSUPPORTED', reason: 'EOS_QUERY_OUTSIDE_VERSIONED_TABLE' });
@@ -75,17 +122,36 @@ export function interpolateVersionedWaterEos({ eosId, eosHash, phaseDiagramId, p
   const upper = d10 + (d11 - d10) * t.t;
   const density = lower + (upper - lower) * p.t;
   return Object.freeze({
-    status: 'MODEL_DERIVED_EOS_INTERPOLATION', eosId, eosHash, phaseDiagramId, densityKgM3: density, interpolationRule: 'BILINEAR_P_T', extrapolated: false,
-    cell: Object.freeze({ pressureLo: p.lo, pressureHi: p.hi, temperatureLo: t.lo, temperatureHi: t.hi }), compositionTruthClaim: false
+    status: 'MODEL_DERIVED_EOS_INTERPOLATION',
+    eosId,
+    eosHash,
+    phaseDiagramId,
+    phaseBoundarySourceId,
+    densityKgM3: density,
+    interpolationRule: 'BILINEAR_P_T',
+    extrapolated: false,
+    phaseContext: applicability.phaseContext,
+    cell: Object.freeze({ pressureLo: p.lo, pressureHi: p.hi, temperatureLo: t.lo, temperatureHi: t.hi }),
+    densityLookupAuthorized: true,
+    radiusPredictionAuthorized: false,
+    compositionTruthClaim: false
   });
 }
 
-export function interpolateVersionedSubNeptuneGrid({ gridId, gridHash, massAxisEarth, envelopeFractionAxis, irradiationAxisEarth, ageAxisGyr, radiusEarthFlat, massEarth, envelopeFraction, irradiationEarth, ageGyr }) {
-  if (!gridId || !gridHash) return Object.freeze({ status: 'UNSUPPORTED', reason: 'GRID_ID_AND_HASH_REQUIRED' });
+export function interpolateVersionedSubNeptuneGrid({ gridId, gridHash, modelFamilyId, massAxisEarth, envelopeFractionAxis, irradiationAxisEarth, ageAxisGyr, radiusEarthFlat, massEarth, envelopeFraction, irradiationEarth, ageGyr }) {
+  if (!gridId || !gridHash || !modelFamilyId) return Object.freeze({ status: 'UNSUPPORTED', reason: 'GRID_ID_HASH_AND_MODEL_FAMILY_REQUIRED' });
+  if (modelFamilyId !== 'LOPEZ_FORTNEY_2014') return Object.freeze({ status: 'UNSUPPORTED', reason: 'UNSUPPORTED_SUB_NEPTUNE_MODEL_FAMILY' });
   const axes = [massAxisEarth, envelopeFractionAxis, irradiationAxisEarth, ageAxisGyr];
   if (axes.some((axis) => !strictlyIncreasing(axis))) return Object.freeze({ status: 'UNSUPPORTED', reason: 'STRICTLY_INCREASING_4D_AXES_REQUIRED' });
+  const domainChecks = [
+    [massAxisEarth, SUB_NEPTUNE_SOURCE_DOMAIN.massEarth],
+    [envelopeFractionAxis, SUB_NEPTUNE_SOURCE_DOMAIN.envelopeFraction],
+    [irradiationAxisEarth, SUB_NEPTUNE_SOURCE_DOMAIN.irradiationEarth],
+    [ageAxisGyr, SUB_NEPTUNE_SOURCE_DOMAIN.ageGyr]
+  ];
+  if (domainChecks.some(([axis, range]) => axis[0] < range[0] || axis[axis.length - 1] > range[1])) return Object.freeze({ status: 'UNSUPPORTED', reason: 'GRID_AXES_EXCEED_DECLARED_SOURCE_FAMILY_DOMAIN' });
   const product = axes.reduce((acc, axis) => acc * axis.length, 1);
-  if (product > 262144) return Object.freeze({ status: 'UNSUPPORTED', reason: '4D_GRID_RESOURCE_BOUND_EXCEEDED' });
+  if (product > MAX_SUB_NEPTUNE_CELLS) return Object.freeze({ status: 'UNSUPPORTED', reason: '4D_GRID_RESOURCE_BOUND_EXCEEDED', maxCells: MAX_SUB_NEPTUNE_CELLS });
   if (!Array.isArray(radiusEarthFlat) || radiusEarthFlat.length !== product || radiusEarthFlat.some((x) => !Number.isFinite(x) || x <= 0)) return Object.freeze({ status: 'UNSUPPORTED', reason: 'POSITIVE_FLAT_RADIUS_GRID_REQUIRED' });
   const query = [finite('massEarth', massEarth), finite('envelopeFraction', envelopeFraction), finite('irradiationEarth', irradiationEarth), finite('ageGyr', ageGyr)];
   const scenario = compositionRegimeContract({ massEarth: query[0], radiusEarth: 1, hHeEnvelopeFraction: query[1], irradiationEarth: query[2], ageGyr: query[3] });
@@ -106,8 +172,15 @@ export function interpolateVersionedSubNeptuneGrid({ gridId, gridHash, massAxisE
     radiusEarth += radiusEarthFlat[flatIndex(idx[0], idx[1], idx[2], idx[3])] * weight;
   }
   return Object.freeze({
-    status: 'MODEL_DERIVED_SUB_NEPTUNE_GRID_INTERPOLATION', gridId, gridHash, radiusEarth, interpolationRule: '4D_MULTILINEAR_MASS_ENVELOPE_IRRADIATION_AGE', extrapolated: false,
-    coordinates: Object.freeze({ massEarth: query[0], envelopeFraction: query[1], irradiationEarth: query[2], ageGyr: query[3] }), uniqueCompositionInference: false
+    status: 'MODEL_DERIVED_SUB_NEPTUNE_GRID_INTERPOLATION',
+    gridId,
+    gridHash,
+    modelFamilyId,
+    radiusEarth,
+    interpolationRule: '4D_MULTILINEAR_MASS_ENVELOPE_IRRADIATION_AGE',
+    extrapolated: false,
+    coordinates: Object.freeze({ massEarth: query[0], envelopeFraction: query[1], irradiationEarth: query[2], ageGyr: query[3] }),
+    uniqueCompositionInference: false
   });
 }
 
@@ -132,14 +205,15 @@ export function nusseltRayleighScenario({ rayleighNumber, regime }) {
   return Object.freeze({ status: 'MODEL_DERIVED_SCENARIO', nusseltProportionalTo: Math.pow(ra, beta), exponentBeta: beta, normalizationSpecified: false, plateTectonicsTruthClaim: false, interpretation: 'SCALING_SHAPE_ONLY_UNTIL_NORMALIZATION_AND_RHEOLOGY_ARE_BOUND' });
 }
 
-export function laggedNusseltRayleighScenario({ rayleighNumberNow, rayleighNumberPast, lagMyr, regime }) {
+export function laggedNusseltRayleighScenario({ rayleighNumberNow, rayleighNumberPast, lagMyr, regime, contextId, contextHash }) {
   const raNow = finite('rayleighNumberNow', rayleighNumberNow);
   const raPast = finite('rayleighNumberPast', rayleighNumberPast);
   const lag = finite('lagMyr', lagMyr);
+  if (!contextId || !contextHash) return Object.freeze({ status: 'UNSUPPORTED', reason: 'LAG_CONTEXT_ID_AND_HASH_REQUIRED' });
   if (raNow <= 0 || raPast <= 0 || lag < 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'INVALID_LAGGED_RA_INPUT' });
   if (lag < 200 || lag > 300) return Object.freeze({ status: 'RESEARCH_REQUIRED', reason: 'OUTSIDE_ONEILL_REPORTED_LAG_CONTEXT' });
   const now = nusseltRayleighScenario({ rayleighNumber: raNow, regime });
   const past = nusseltRayleighScenario({ rayleighNumber: raPast, regime });
   if (now.status !== 'MODEL_DERIVED_SCENARIO' || past.status !== 'MODEL_DERIVED_SCENARIO') return Object.freeze({ status: 'RESEARCH_REQUIRED', reason: 'REGIME_SCALING_UNAVAILABLE' });
-  return Object.freeze({ status: 'MODEL_DERIVED_SCENARIO', instantaneousProxy: now.nusseltProportionalTo, laggedSurfaceProxy: past.nusseltProportionalTo, lagMyr: lag, exponentBeta: now.exponentBeta, interpretation: 'RESEARCH_LAG_SENSITIVITY_BRACKET_NOT_HISTORY_RECONSTRUCTION', tectonicHistoryTruthClaim: false });
+  return Object.freeze({ status: 'MODEL_DERIVED_SCENARIO', instantaneousProxy: now.nusseltProportionalTo, laggedSurfaceProxy: past.nusseltProportionalTo, lagMyr: lag, exponentBeta: now.exponentBeta, contextId, contextHash, interpretation: 'RESEARCH_LAG_SENSITIVITY_BRACKET_NOT_HISTORY_RECONSTRUCTION_OR_UNIVERSAL_PLANETARY_LAG', tectonicHistoryTruthClaim: false });
 }
