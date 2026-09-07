@@ -45,8 +45,8 @@ function heapPop(heap,counter){
   while(true){const left=index*2+1,right=left+1;let best=index;if(left<heap.length){bump(counter);if(heapBetter(heap[left],heap[best]))best=left}if(right<heap.length){bump(counter);if(heapBetter(heap[right],heap[best]))best=right}if(best===index)break;const tmp=heap[index];heap[index]=heap[best];heap[best]=tmp;index=best}
   return root;
 }
-function alternatePathBottleneckCapacity(graph,start,goal,blockedEdgeId,counter){
-  if(start===goal)return 0;const best=new Map(graph.settlementIds.map(id=>[id,0])),heap=[];best.set(start,Number.MAX_SAFE_INTEGER);heapPush(heap,{node:start,capacity:Number.MAX_SAFE_INTEGER},counter);
+function alternatePathBottleneckCapacity(graph,start,goal,blockedEdgeId,counter=null){
+  counter=counter||{count:0};if(start===goal)return 0;const best=new Map(graph.settlementIds.map(id=>[id,0])),heap=[];best.set(start,Number.MAX_SAFE_INTEGER);heapPush(heap,{node:start,capacity:Number.MAX_SAFE_INTEGER},counter);
   while(heap.length){const current=heapPop(heap,counter);if(!current||current.capacity<(best.get(current.node)||0))continue;if(current.node===goal)return current.capacity===Number.MAX_SAFE_INTEGER?0:current.capacity;
     for(const edge of graph.adjacency.get(current.node)||[]){bump(counter);if(edge.edgeId===blockedEdgeId)continue;const next=edge.from===current.node?edge.to:edge.from,candidate=Math.min(current.capacity,Math.max(0,i(edge.capacityUnits)));if(candidate>(best.get(next)||0)){best.set(next,candidate);heapPush(heap,{node:next,capacity:candidate},counter)}}
   }
