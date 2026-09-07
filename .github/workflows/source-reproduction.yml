@@ -57,3 +57,36 @@ jobs:
           path: dist/source-reproduction/
           if-no-files-found: error
           retention-days: 30
+
+  verify-uploaded-reproduction:
+    needs: source-reproduction
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5 / Node 24 runtime
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v5 / Node 24 runtime
+        with:
+          name: source-reproduction-${{ env.OFU_SOURCE_SHA }}
+          path: dist/source-readback
+      - name: Verify uploaded artifact identity and bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd dist/source-readback
+          sha256sum -c SHA256SUMS
+          grep -Fx "SOURCE_SHA=$OFU_SOURCE_SHA" source.txt
+          expected_tree="$(git -C ../.. rev-parse HEAD^{tree})"
+          grep -Fx "SOURCE_TREE=$expected_tree" source.txt
+          grep -Fx 'PURPOSE=DIAGNOSTIC_NOT_CERTIFICATION' source.txt
+          tar -tzf exact-source.tar.gz >/dev/null
+          git -C ../.. bundle verify "$PWD/source.bundle"
+          tar -tzf exact-source.tar.gz | grep -v '/$' | LC_ALL=C sort > /tmp/archive-files.txt
+          git -C ../.. ls-tree -r --name-only HEAD | LC_ALL=C sort > /tmp/tracked-files.txt
+          cmp /tmp/tracked-files.txt /tmp/archive-files.txt
