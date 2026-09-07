@@ -6,15 +6,19 @@ on:
     paths:
       - 'src/domains/v1/environment/local-hydrology.js'
       - 'tests/v1/environment/local-hydrology.mjs'
+      - 'tests/v1/environment/local-hydrology-composition.mjs'
       - 'config/components/v11-local-hydrology.json'
       - '.github/workflows/v11-world-local-hydrology.yml'
   pull_request:
     paths:
       - 'src/domains/v1/environment/local-hydrology.js'
       - 'tests/v1/environment/local-hydrology.mjs'
+      - 'tests/v1/environment/local-hydrology-composition.mjs'
       - 'config/components/v11-local-hydrology.json'
       - '.github/workflows/v11-world-local-hydrology.yml'
       - 'src/domains/v1/environment/seasonal-envelope.js'
+      - 'src/domains/v1/planetology/causality-trace.js'
+      - 'src/domains/v1/planetology/volatile-ledger.js'
       - 'src/domains/v1/convergence/world-context.js'
 
 permissions:
@@ -45,24 +49,34 @@ jobs:
         run: |
           node --check src/domains/v1/environment/local-hydrology.js
           node --check tests/v1/environment/local-hydrology.mjs
+          node --check tests/v1/environment/local-hydrology-composition.mjs
       - name: Existing environment oracle
         run: node tests/v1/environment/world-system.mjs
+      - name: Planetary causality dependency oracle
+        run: node tests/v1/planetology/causality-trace.mjs
+      - name: Volatile ledger dependency oracle
+        run: node tests/v1/planetology/volatile-ledger.mjs
       - name: Seasonal environment dependency oracle
         run: node tests/v1/environment/seasonal-envelope.mjs
       - name: Local hydrology oracle
         run: node tests/v1/environment/local-hydrology.mjs
+      - name: Cross-wrapper composition oracle
+        run: node tests/v1/environment/local-hydrology-composition.mjs
       - name: Component descriptor integration
         run: |
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import {planComponents} from './tools/extensions/components.mjs';
           const world={id:'v1.convergence.world-context',version:'1.0.0',owner:'v1',kind:'code',stage:'foundation',placement:'script',source:'src/domains/v1/convergence/world-context.js',dependencies:[],authority:'MODEL_DERIVED_SIMULATION',provenance:'validation dependency',provides:['v1.convergence.world-context']};
+          const causality=JSON.parse(fs.readFileSync('config/components/planetology-environment-v1.json','utf8')).components.find(x=>x.id==='v1.models.planetology.causality-trace');
+          const volatileLedger=JSON.parse(fs.readFileSync('config/components/v11-volatile-ledger.json','utf8')).components[0];
           const seasonal=JSON.parse(fs.readFileSync('config/components/v11-seasonal-environment.json','utf8')).components[0];
           const actual=JSON.parse(fs.readFileSync('config/components/v11-local-hydrology.json','utf8')).components[0];
-          const plan=planComponents([world,seasonal,actual]);
-          const ids=plan.map(x=>x.id);
-          const s=ids.indexOf('v1.environment.seasonal-envelope'),h=ids.indexOf('v1.environment.local-hydrology');
-          if(s<0||h<0||h<=s)throw new Error('local hydrology component ordering invalid');
+          const common={id:'v1.models.common',version:'1.0.0',owner:'v1',kind:'code',stage:'foundation',placement:'script',source:'src/domains/v1/common.js',dependencies:[],authority:'MODEL_DERIVED_SIMULATION',provenance:'validation dependency',provides:['v1.models.common']};
+          const environment={id:'v1.models.environment.world-system',version:'2.0.0',owner:'v1',kind:'code',stage:'foundation',placement:'script',source:'src/domains/v1/environment/world-system.js',dependencies:[],authority:'MODEL_DERIVED_SIMULATION',provenance:'validation dependency',provides:['v1.models.environment.world-system']};
+          const plan=planComponents([common,environment,world,causality,volatileLedger,seasonal,actual]);
+          const ids=plan.map(x=>x.id),s=ids.indexOf('v1.environment.seasonal-envelope'),h=ids.indexOf('v1.environment.local-hydrology');
+          if(s<0||h<0||h<=s||!ids.includes('v1.models.planetology.causality-trace')||!ids.includes('v1.models.planetology.volatile-ledger'))throw new Error('local hydrology component ordering invalid');
           console.log(JSON.stringify({status:'PASS',component:'v1.environment.local-hydrology',planned:ids}));
           NODE
       - name: Workflow reproducibility guard
