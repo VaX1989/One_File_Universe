@@ -30,6 +30,8 @@ const state = createLifeState({
 const provider = createLifeProvider({ getState: () => state });
 assert.equal(LIFE_V2_PROVIDER_DESCRIPTOR.authorityClass, 'MODEL_DERIVED_SIMULATION');
 assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.capabilities.includes('LIFE_SELECTION_CRITERION_WITNESS'));
+assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.capabilities.includes('LIFE_INTERACTION_INSPECTION'));
+assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.capabilities.includes('LIFE_REGION_INSPECTION'));
 assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.exclusions.includes('P4_EVENT_ADMISSION'));
 assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.exclusions.includes('UNIVERSAL_MUTATION_RATE'));
 assert.equal(provider.summary().totalAbundance, 400n);
@@ -37,6 +39,33 @@ assert.equal(provider.inspectLineage('lin-provider').aggregateAbundance, 400n);
 assert.deepEqual(provider.inspectPopulation('pop-provider').incomingInteractionIds, []);
 assert.equal(provider.inspectRegion('r-provider').totalRepresentedAbundance, 400n);
 assert.equal(provider.inspectLineage('missing'), null);
+assert.equal(provider.inspectInteraction('missing'), null);
+
+const interactionState = createLifeState({
+  eventKey: 'fixture:provider-interaction',
+  lineages: [
+    { id: 'lin-source', traits: [] },
+    { id: 'lin-target', traits: [] },
+  ],
+  populations: [
+    { id: 'pop-source', lineageId: 'lin-source', regionId: 'r-provider', abundance: 20 },
+    { id: 'pop-target', lineageId: 'lin-target', regionId: 'r-provider', abundance: 30 },
+  ],
+  interactions: [
+    { id: 'edge-causal', kind: 'PREDATION', sourcePopulationId: 'pop-source', targetPopulationId: 'pop-target', intensityPpm: 100_000, assimilationPpm: 500_000 },
+    { id: 'edge-association', kind: 'ASSOCIATION_ONLY', sourcePopulationId: 'pop-source', targetPopulationId: 'pop-target', intensityPpm: 0, assimilationPpm: 0 },
+  ],
+  regions: { 'r-provider': { resourcePool: 0, nutrientPool: 0, opportunityPpm: 500_000 } },
+});
+const interactionProvider = createLifeProvider({ getState: () => interactionState });
+const causalInspection = interactionProvider.inspectInteraction('edge-causal');
+assert.equal(causalInspection.causalWithinModel, true);
+assert.equal(causalInspection.empiricalCausationClaimed, false);
+assert.equal(causalInspection.source.lineageId, 'lin-source');
+assert.equal(causalInspection.target.representedAbundance, 30n);
+const associationInspection = interactionProvider.inspectInteraction('edge-association');
+assert.equal(associationInspection.causalWithinModel, false);
+assert.match(associationInspection.limitation, /non-causal/);
 
 const variation = provider.proposeTraitVariation({
   lineageId: 'lin-provider', eventKey: 'p4:provider-variation', allowedTraitKeys: ['mobility'], maxAbsoluteDeltaPpm: 25_000,
@@ -91,4 +120,4 @@ assert.throws(() => buildOrganismRenderDescriptors(samples, { maxDescriptors: -1
 assert.throws(() => buildOrganismRenderDescriptors([{ ...samples[0], representativeOfAggregate: false }]), /representative aggregate sample required/);
 assert.throws(() => buildOrganismRenderDescriptors([{ ...samples[0], presentation: { ...samples[0].presentation, authorityClass: 'MODEL_DERIVED_SIMULATION' } }]), /presentation-only motion descriptor required/);
 
-console.log('V2X-08 life provider renderer: PASS (32 assertions)');
+console.log('V2X-08 life provider renderer: PASS (41 assertions)');
