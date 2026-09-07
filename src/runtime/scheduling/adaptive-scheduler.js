@@ -15,6 +15,7 @@ function create(options={}){
   function peaks(){metrics.peakActive=Math.max(metrics.peakActive,activeJobs.size);metrics.peakQueued=Math.max(metrics.peakQueued,queuedCount());metrics.peakJobs=Math.max(metrics.peakJobs,jobs.size);}
   function flush(){if(jobs.size)return;const value=snapshot();while(waiters.length)waiters.shift()(value);}
   function removeQueued(job){const q=queues.get(job.taskClass),index=q.indexOf(job);if(index>=0)q.splice(index,1);}
+  function enqueue(job){const q=queues.get(job.taskClass);q.push(job);q.sort((a,b)=>R.STATE_RANK[b.state]-R.STATE_RANK[a.state]||a.sequence-b.sequence);}
   function selectNext(){
     if(!queuedCount())return null;
     for(let i=0;i<cycle.length;i++){
@@ -42,7 +43,7 @@ function create(options={}){
   function schedulePump(){if(pumpScheduled)return;pumpScheduled=true;queueMicrotask(pump);}
   function signalPreemptionForInteraction(){
     if(activeJobs.size<maxActive)return false;
-    const candidates=[...activeJobs.values()].filter(j=>j.preemptible&&j.taskClass!=='INTERACTION').sort((a,b)=>R.TASK_CLASSES.indexOf(b.taskClass)-R.TASK_CLASSES.indexOf(a.taskClass)||a.sequence-b.sequence);
+    const candidates=[...activeJobs.values()].filter(j=>j.preemptible&&j.taskClass!=='INTERACTION').sort((a,b)=>R.TASK_CLASSES.indexOf(b.taskClass)-R.TASK_CLASSES.indexOf(a.taskClass)||R.STATE_RANK[a.state]-R.STATE_RANK[b.state]||a.sequence-b.sequence);
     const victim=candidates[0];if(!victim)return false;metrics.preemptionSignals++;victim.controller.abort(fail('PREEMPTED','interaction '+victim.id));return true;
   }
   function schedule(input){
@@ -51,7 +52,7 @@ function create(options={}){
     if(queuedCount()>=maxQueue||jobs.size>=maxQueue+maxActive){metrics.backpressure++;throw fail('BACKPRESSURE','bounded scheduler capacity reached');}
     const controller=new AbortController();let resolve,reject;const promise=new Promise((yes,no)=>{resolve=yes;reject=no;});
     const job={id,taskClass,state,run:input.run,preemptible:input.preemptible!==false,controller,resolve,reject,promise,status:'QUEUED',sequence:sequence++};
-    jobs.set(id,job);queues.get(taskClass).push(job);metrics.submitted++;peaks();if(taskClass==='INTERACTION')signalPreemptionForInteraction();schedulePump();
+    jobs.set(id,job);enqueue(job);metrics.submitted++;peaks();if(taskClass==='INTERACTION')signalPreemptionForInteraction();schedulePump();
     return Object.freeze({id,promise,cancel(reason='cancelled'){return cancel(id,reason);},status(){return jobs.get(id)?.status||job.status;}});
   }
   function cancel(id,reason='cancelled'){
