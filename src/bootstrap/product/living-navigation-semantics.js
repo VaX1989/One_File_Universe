@@ -16,7 +16,7 @@ function ensureCurrentContext(snapshot,crumbs){
  if(exact){existing?.previousElementSibling?.matches?.('[data-living-current-separator]')&&existing.previousElementSibling.remove();existing?.remove();state.lastBreadcrumb=String(exact.textContent||'').replace(/\s+/g,' ').trim();state.lastBreadcrumbSynthetic=false;return 1}
  const label=contextLabel(snapshot);let current=existing;
  if(!current){const separator=document.createElement('span');separator.textContent=' / ';separator.setAttribute('aria-hidden','true');separator.dataset.livingCurrentSeparator='true';current=document.createElement('span');current.dataset.livingCurrentContext='true';breadcrumbs.append(separator,current);state.syntheticBreadcrumbs++}
- current.textContent=label;setCurrent(current,'location');state.lastBreadcrumb=label;state.lastBreadcrumbSynthetic=true;return 1;
+ if(current.textContent!==label)current.textContent=label;setCurrent(current,'location');state.lastBreadcrumb=label;state.lastBreadcrumbSynthetic=true;return 1;
 }
 function sync(snapshot=runtime?.snapshot?.()){
  pending=false;if(!rail||!breadcrumbs||!snapshot)return false;
