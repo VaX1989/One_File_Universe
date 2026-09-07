@@ -33,11 +33,15 @@ assert.equal(LIFE_V2_PROVIDER_DESCRIPTOR.authorityClass, 'MODEL_DERIVED_SIMULATI
 assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.capabilities.includes('LIFE_SELECTION_CRITERION_WITNESS'));
 assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.capabilities.includes('LIFE_INTERACTION_INSPECTION'));
 assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.capabilities.includes('LIFE_REGION_INSPECTION'));
+assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.capabilities.includes('LIFE_LIFECYCLE_COMPOSITION'));
+assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.capabilities.includes('LIFE_REPRESENTATIVE_LIFECYCLE_SAMPLE'));
 assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.exclusions.includes('P4_EVENT_ADMISSION'));
 assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.exclusions.includes('UNIVERSAL_MUTATION_RATE'));
+assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.exclusions.includes('UNIVERSAL_LIFECYCLE_RATE'));
 assert.equal(provider.summary().totalAbundance, 400n);
 assert.equal(provider.inspectLineage('lin-provider').aggregateAbundance, 400n);
 assert.deepEqual(provider.inspectPopulation('pop-provider').incomingInteractionIds, []);
+assert.equal(provider.inspectPopulation('pop-provider').lifecycleSemantics, 'PROFILE_BOUND_AGGREGATE_COMPOSITION');
 assert.equal(provider.inspectRegion('r-provider').totalRepresentedAbundance, 400n);
 assert.equal(provider.inspectLineage('missing'), null);
 assert.equal(provider.inspectInteraction('missing'), null);
@@ -129,6 +133,35 @@ const capped = buildOrganismRenderDescriptors([...samples, ...samples, ...sample
 assert.equal(capped.length, 4);
 assert.ok(capped.every((descriptor) => descriptor.segmentBudget === 3));
 
+const stressLineages = Array.from({ length: 64 }, (_, index) => ({
+  id: `stress-lineage-${index}`,
+  traits: [
+    { key: 'body-size', valuePpm: 100_000 + index * 10_000 },
+    { key: 'mobility', valuePpm: 300_000 + index * 5_000 },
+  ],
+}));
+const stressState = createLifeState({
+  eventKey: 'fixture:stress-bound',
+  lineages: stressLineages,
+  populations: stressLineages.map((lineage, index) => ({
+    id: `stress-population-${index}`,
+    lineageId: lineage.id,
+    regionId: 'stress-region',
+    abundance: index + 1,
+    lifecycleStagePpm: { juvenile: 200_000, mature: 700_000, senescent: 100_000 },
+  })),
+  interactions: [],
+  regions: { 'stress-region': { resourcePool: 0, nutrientPool: 0, opportunityPpm: 500_000 } },
+});
+const stressProvider = createLifeProvider({ getState: () => stressState });
+const stressSamplesA = stressProvider.localSamples({ regionId: 'stress-region', maxSamples: 9999, viewportKey: 'stress' });
+const stressSamplesB = stressProvider.localSamples({ regionId: 'stress-region', maxSamples: 9999, viewportKey: 'stress' });
+assert.equal(stressSamplesA.length, 128, 'materialization must clamp adversarial sample requests to hard product bound');
+assert.deepEqual(stressSamplesA, stressSamplesB, 'maximum bounded materialization must remain deterministic');
+const stressDescriptors = buildOrganismRenderDescriptors(stressSamplesA, { quality: 'LOW', maxDescriptors: 9999 });
+assert.equal(stressDescriptors.length, 128, 'renderer must clamp maximum descriptor production to hard product bound');
+assert.ok(stressDescriptors.every((descriptor) => descriptor.segmentBudget === 3), 'bounded stress render must preserve requested low quality grammar');
+
 const fractionalCap = buildOrganismRenderDescriptors(samples, { quality: 'BALANCED', maxDescriptors: 2.9 });
 assert.equal(fractionalCap.length, 2, 'fractional descriptor budgets must be floored deterministically');
 assert.throws(() => buildOrganismRenderDescriptors(samples, { maxDescriptors: Number.NaN }), /maxDescriptors must be a non-negative finite number/);
@@ -142,4 +175,4 @@ assert.throws(() => buildOrganismRenderDescriptors([{ ...samples[0], position: {
 assert.throws(() => buildOrganismRenderDescriptors([{ ...samples[0], presentation: { ...samples[0].presentation, motionAmplitude: Number.NaN } }]), /motionAmplitude must be finite/, 'non-finite presentation motion must fail closed');
 assert.throws(() => buildOrganismRenderDescriptors([{ ...samples[0], aggregateAbundance: '400' }]), /aggregate abundance evidence must be a non-negative bigint/, 'render evidence must preserve exact aggregate abundance type');
 
-console.log('V2X-08 life provider renderer: PASS (54 assertions)');
+console.log('V2X-08 life provider renderer: PASS (62 assertions)');
