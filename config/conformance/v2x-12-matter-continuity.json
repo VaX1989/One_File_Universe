@@ -1,0 +1,23 @@
+{
+  "schema": "ofu-conformance-1",
+  "tests": [
+    {
+      "id": "v2x12.matter.authority-provenance",
+      "owner": "v2x-12-matter-continuity",
+      "tier": "FAST_LOCAL",
+      "command": ["node", "tests/v2x-12-matter-continuity/authority-provenance.mjs"],
+      "providers": ["v2x12.model.matter-continuity", "v2x12.representation.microscopic-matter"],
+      "oracle": "v2x12-matter-authority-provenance-1",
+      "timeoutMs": 180000
+    },
+    {
+      "id": "v2x12.matter.continuity-biology",
+      "owner": "v2x-12-matter-continuity",
+      "tier": "INTEGRATION",
+      "command": ["node", "tests/v2x-12-matter-continuity/continuity-biology.mjs"],
+      "providers": ["v2x12.model.matter-continuity", "v2x12.representation.microscopic-matter"],
+      "oracle": "v2x12-matter-cross-regime-continuity-1",
+      "timeoutMs": 180000
+    }
+  ]
+}
