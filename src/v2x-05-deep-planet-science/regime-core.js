@@ -4,7 +4,7 @@ const O=root.OFU=root.OFU||{};
 const VERSION='ofu-v2x-05-deep-planet-regime-core-2';
 const AUTHORITY='MODEL_DERIVED_SIMULATION';
 const PPM=1000000;
-const LIMITS=Object.freeze({historySamples:64,climateCells:24,constituents:6,queryContexts:4,bytes:262144,operations:20000,queue:64,exactInventoryUnits:Math.floor(Number.MAX_SAFE_INTEGER/PPM)});
+const LIMITS=Object.freeze({historySamples:64,climateCells:24,constituents:6,queryContexts:4,bytes:262144,operations:20000,queue:64,exactInventoryUnits:Number.MAX_SAFE_INTEGER});
 const BULK=Object.freeze(['TERRESTRIAL','VOLATILE_RICH','ICE_GIANT','GAS_GIANT']);
 function freeze(v,seen){
   if(!v||typeof v!=='object'||Object.isFrozen(v))return v;
@@ -15,15 +15,31 @@ function freeze(v,seen){
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,Math.round(Number.isFinite(Number(v))?Number(v):0)));
 const safe=(v,a=Number.MIN_SAFE_INTEGER,b=Number.MAX_SAFE_INTEGER)=>Number.isSafeInteger(v)&&v>=a&&v<=b;
 const nonNegativeFinite=v=>Number.isFinite(Number(v))&&Number(v)>=0;
+function roundDivBigInt(numerator,denominator){
+  if(typeof numerator!=='bigint'||typeof denominator!=='bigint'||denominator<=0n)throw new RangeError('positive bigint denominator required');
+  const negative=numerator<0n,abs=negative?-numerator:numerator,offset=negative?(denominator-1n)/2n:denominator/2n,q=(abs+offset)/denominator,result=negative?-q:q;
+  const number=Number(result);if(!Number.isSafeInteger(number))throw new RangeError('rounded bigint result outside safe integer domain');return number;
+}
+function mulDivRound(a,b,denominator){
+  if(!Number.isSafeInteger(a)||!Number.isSafeInteger(b)||!Number.isSafeInteger(denominator)||denominator<=0)throw new RangeError('safe integer mul/div operands required');
+  const absA=Math.abs(a),absB=Math.abs(b);
+  if(absA===0||absB===0)return 0;
+  if(absA<=Math.floor(Number.MAX_SAFE_INTEGER/absB))return Math.round(a*b/denominator);
+  return roundDivBigInt(BigInt(a)*BigInt(b),BigInt(denominator));
+}
+function ratioPpm(numerator,denominator,maxPpm=Number.MAX_SAFE_INTEGER){
+  if(!safe(numerator,0)||!safe(denominator,1)||!safe(maxPpm,0))throw new RangeError('bounded non-negative ratio operands required');
+  return Math.min(maxPpm,mulDivRound(numerator,PPM,denominator));
+}
 function normalizePpm(values){
   if(!Array.isArray(values)||values.length===0||values.length>LIMITS.constituents)throw new RangeError('bounded ppm vector required');
-  const maxWeight=Math.floor(Number.MAX_SAFE_INTEGER/Math.max(1,values.length));
-  if(!values.every(v=>nonNegativeFinite(v)&&Number(v)<=maxWeight))throw new RangeError('finite non-negative bounded ppm weights required');
-  const clean=values.map(v=>Math.round(Number(v))),sum=clean.reduce((a,b)=>a+b,0);
-  if(!Number.isSafeInteger(sum))throw new RangeError('ppm weight sum outside safe integer domain');
-  if(sum===0)return Object.freeze(clean.map(()=>0));
-  const scaled=clean.map(v=>v*PPM/sum),base=scaled.map(Math.floor);let left=PPM-base.reduce((a,b)=>a+b,0);
-  const rank=scaled.map((v,i)=>({i,r:v-base[i]})).sort((a,b)=>b.r-a.r||a.i-b.i);
+  if(!values.every(v=>nonNegativeFinite(v)&&Number.isSafeInteger(Number(v))))throw new RangeError('finite non-negative safe-integer ppm weights required');
+  const clean=values.map(Number),numericSum=clean.reduce((a,b)=>a+b,0);
+  if(numericSum===0)return Object.freeze(clean.map(()=>0));
+  const numericFast=Number.isSafeInteger(numericSum)&&clean.every(v=>v===0||v<=Math.floor(Number.MAX_SAFE_INTEGER/PPM));
+  const rows=numericFast?clean.map((v,i)=>{const numerator=v*PPM,q=Math.floor(numerator/numericSum);return {i,q,r:numerator-q*numericSum};}):(()=>{const sum=clean.reduce((a,b)=>a+BigInt(b),0n);return clean.map((v,i)=>{const numerator=BigInt(v)*BigInt(PPM);return {i,q:Number(numerator/sum),r:numerator%sum};});})();
+  const base=rows.map(row=>row.q);let left=PPM-base.reduce((a,b)=>a+b,0);
+  const rank=rows.slice().sort((a,b)=>a.r===b.r?a.i-b.i:(a.r>b.r?-1:1));
   for(let i=0;i<left;i++)base[rank[i%rank.length].i]++;
   return Object.freeze(base);
 }
@@ -62,7 +78,7 @@ function classify(planet){
   const giant=bulk==='ICE_GIANT'||bulk==='GAS_GIANT';
   const subNeptune=!giant&&bulk==='VOLATILE_RICH'&&mass>=2000&&radius>=9000&&light>=220000;
   const airless=!giant&&!subNeptune&&(pressure<12000||String(a.compositionFamily)==='AIRLESS_OR_TRACE_EXOSPHERE');
-  const condensedSharePpm=clamp(condensed*PPM/initial,0,PPM);
+  const condensedSharePpm=clamp(ratioPpm(condensed,initial,PPM),0,PPM);
   const oceanCandidate=!giant&&!subNeptune&&!airless&&condensedSharePpm>=250000&&eq>=180000&&eq<=390000;
   let regime;
   if(bulk==='GAS_GIANT')regime='GAS_GIANT';
@@ -80,5 +96,5 @@ function classify(planet){
     integrity:freeze({identityConsistent:true,compositionClosurePpm:PPM,interiorLayerClosurePpm:PPM,sourceObjectsFrozen:false}),
     authority:AUTHORITY,fidelity:freeze({regime:'deep-planet-reduced-order',validity:'Known V1 bulk priors inside explicit mass/radius/age and exact modeled-state closure bounds',resolution:'One modeled world',uncertainty:'Regime labels are deterministic model classifications, not observed planet taxonomy or EOS retrievals'})});
 }
-O.v2x05RegimeCore=Object.freeze({VERSION,AUTHORITY,PPM,LIMITS,BULK,freeze,clamp,safe,normalizePpm,unsupported,extract,validatePpmClosure,classify});
+O.v2x05RegimeCore=Object.freeze({VERSION,AUTHORITY,PPM,LIMITS,BULK,freeze,clamp,safe,roundDivBigInt,mulDivRound,ratioPpm,normalizePpm,unsupported,extract,validatePpmClosure,classify});
 })(typeof globalThis!=='undefined'?globalThis:this);

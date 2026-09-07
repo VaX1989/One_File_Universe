@@ -20,15 +20,16 @@ function interiorState(planet,regime){
   const x=C.extract(planet);if(!x.supported)return x;
   const h=x.interior?.heat||{},age=Number(x.inputs.ageMyr),heat=Number(h.heatIndexPpm),conv=Number(x.interior.convectiveVigorPpm),volc=Number(x.interior.volcanismPpm),dynamo=Number(x.interior.dynamoPpm);
   if(!C.safe(age,0,20000)||![heat,conv,volc,dynamo].every(v=>C.safe(v,0,PPM)))return C.unsupported(x.worldIdentity,'INVALID_INTERIOR_PROXY_STATE');
-  const layers=[Number(x.interior.coreFractionPpm),Number(x.interior.mantleFractionPpm),Number(x.interior.crustFractionPpm)];
+  const layers=[Number(x.interior.coreFractionPpm),Number(x.interior.mantleFractionPpm),Number(x.interior.crustFractionPpm)],differentiation=Number(x.interior.differentiationPpm);
   if(!C.validatePpmClosure(layers))return C.unsupported(x.worldIdentity,'INTERIOR_LAYER_PPM_NOT_CLOSED');
+  if(!C.safe(differentiation,0,PPM))return C.unsupported(x.worldIdentity,'INVALID_DIFFERENTIATION_PROXY_STATE');
   let shares;try{shares=heatShares(x.interior);}catch{return C.unsupported(x.worldIdentity,'INVALID_INTERIOR_HEAT_ATTRIBUTION_STATE');}
-  const coolingProgressPpm=C.clamp(age*PPM/14000,0,PPM),retainedThermalPotentialPpm=C.clamp(heat*(PPM-coolingProgressPpm)/PPM+heat*0.35,0,PPM);
+  const coolingProgressPpm=C.clamp(Math.round(age*PPM/14000),0,PPM),retainedThermalPotentialPpm=C.clamp(Math.round(heat*(PPM-coolingProgressPpm)/PPM)+Math.round(heat*350000/PPM),0,PPM);
   const giant=!regime.solidSurfaceModel;
   const volatileMobilityPpm=C.clamp(Number(x.composition.icePpm)+Number(x.composition.lightVolatilePpm),0,PPM);
-  const tectonicPotentialPpm=giant?null:C.clamp(conv*0.68+volatileMobilityPpm*0.17-Number(x.interior.crustFractionPpm)*0.08,0,PPM);
+  const tectonicPotentialPpm=giant?null:C.clamp(Math.round(conv*680000/PPM)+Math.round(volatileMobilityPpm*170000/PPM)-Math.round(Number(x.interior.crustFractionPpm)*80000/PPM),0,PPM);
   const geodynamics=giant?C.freeze({supported:false,status:'UNSUPPORTED',reason:'NO_RESOLVED_SOLID_SURFACE',plateTectonicsResolved:false}):C.freeze({supported:true,status:'PRESENT',tectonicPotentialPpm,volcanicPotentialPpm:volc,convectiveVigorPpm:conv,sourceTectonicRegime:String(x.interior.tectonicRegime||'UNKNOWN'),plateTectonicsResolved:false,tectonicHistoryClaim:false,calibratedConvectionClaim:false});
-  return C.freeze({version:VERSION,worldIdentity:x.worldIdentity,supported:true,status:'PRESENT',differentiation:C.freeze({state:String(x.interior.differentiationState||'UNKNOWN'),potentialPpm:C.clamp(x.interior.differentiationPpm,0,PPM),coreFractionPpm:layers[0],mantleFractionPpm:layers[1],crustFractionPpm:layers[2],resolvedLayerBoundaryClaim:false}),
+  return C.freeze({version:VERSION,worldIdentity:x.worldIdentity,supported:true,status:'PRESENT',differentiation:C.freeze({state:String(x.interior.differentiationState||'UNKNOWN'),potentialPpm:differentiation,coreFractionPpm:layers[0],mantleFractionPpm:layers[1],crustFractionPpm:layers[2],resolvedLayerBoundaryClaim:false}),
     heat:C.freeze({heatIndexPpm:heat,normalizedDriverShares:shares,normalizedAttributionOnly:true,conservedEnergyClaim:false,heatFlowUnitClaim:false}),cooling:C.freeze({coolingProgressPpm,retainedThermalPotentialPpm,thermalEvolutionCalibrationClaim:false}),geodynamics,dynamoPotentialPpm:dynamo,eosClaim:false,authority:AUTHORITY,canonicalPromotion:false});
 }
 function constituentState(x){
@@ -48,16 +49,18 @@ function historyContext(x,history){
   if(!Array.isArray(history)||history.length===0||history.length>C.LIMITS.historySamples)return C.freeze({status:'UNSUPPORTED',reason:'XUV_HISTORY_BOUND',historyUsed:false,samples:Array.isArray(history)?history.length:null,baseEscapePpm:baseEscape,currentXuvMilliWm2:currentXuv,historyAdjustedEscapeContextPpm:baseEscape,retainedContextPpm:PPM-baseEscape,escapeRateClaim:false});
   let lastAge=-1,total=0,peak=0;
   for(const row of history){const age=Number(row?.ageMyr),xuv=Number(row?.xuvMilliWm2);if(!C.safe(age,0,20000)||!C.safe(xuv,0,50000000)||age<lastAge)return C.freeze({status:'UNSUPPORTED',reason:'INVALID_OR_UNORDERED_XUV_HISTORY',historyUsed:false,samples:history.length,baseEscapePpm:baseEscape,currentXuvMilliWm2:currentXuv,historyAdjustedEscapeContextPpm:baseEscape,retainedContextPpm:PPM-baseEscape,escapeRateClaim:false});lastAge=age;total+=xuv;peak=Math.max(peak,xuv);}
-  const mean=Math.round(total/history.length),ratioPpm=currentXuv>0?C.clamp(mean*PPM/currentXuv,0,4000000):(mean>0?4000000:PPM),adjustment=Math.round((ratioPpm-PPM)*0.12),adjusted=C.clamp(baseEscape+adjustment,0,970000);
+  const mean=Math.round(total/history.length),ratioPpm=currentXuv>0?C.clamp(C.ratioPpm(mean,currentXuv,4000000),0,4000000):(mean>0?4000000:PPM),adjustment=Math.round((ratioPpm-PPM)*120000/PPM),adjusted=C.clamp(baseEscape+adjustment,0,970000);
   return C.freeze({status:'PRESENT',historyUsed:true,samples:history.length,currentXuvMilliWm2:currentXuv,meanXuvMilliWm2:mean,peakXuvMilliWm2:peak,meanToCurrentRatioPpm:ratioPpm,baseEscapePpm:baseEscape,historyAdjustedEscapeContextPpm:adjusted,retainedContextPpm:PPM-adjusted,contextOnly:true,integratedMassLossClaim:false,escapeRateClaim:false});
 }
 function atmosphereState(planet,regime,options={}){
   const x=C.extract(planet);if(!x.supported)return x;
   const constituents=constituentState(x),escape=historyContext(x,options.xuvHistory),pressure=Number(x.atmosphere.pressureProxyPpm),family=String(x.atmosphere.compositionFamily||'UNKNOWN');
+  const collapse=Number(x.atmosphere.collapsePotentialPpm),cloud=Number(x.atmosphere.cloudCondensatePotentialPpm),outgassing=Number(x.atmosphere.outgassingPpm),molecularMass=Number(x.atmosphere.meanMolecularMassMilliAmu);
+  if(!C.safe(collapse,0,PPM)||!C.safe(cloud,0,PPM)||!C.safe(outgassing,0,PPM)||!C.safe(molecularMass,0))return C.freeze({version:VERSION,worldIdentity:x.worldIdentity,supported:false,status:'UNSUPPORTED',reason:'INVALID_ATMOSPHERIC_PROXY_STATE',regime:regime.regime,pressureProxyPpm:pressure,composition:constituents,retentionEscape:escape,authority:AUTHORITY,canonicalPromotion:false});
   if(escape.status==='UNSUPPORTED')return C.freeze({version:VERSION,worldIdentity:x.worldIdentity,supported:false,status:'UNSUPPORTED',reason:escape.reason,regime:regime.regime,pressureProxyPpm:pressure,composition:constituents,retentionEscape:escape,authority:AUTHORITY,canonicalPromotion:false});
   if(pressure>=12000&&family!=='AIRLESS_OR_TRACE_EXOSPHERE'&&!constituents.supported)return C.freeze({version:VERSION,worldIdentity:x.worldIdentity,supported:false,status:'UNSUPPORTED',reason:constituents.reason||'UNSUPPORTED_COLLISIONAL_ATMOSPHERE_FAMILY',regime:regime.regime,pressureProxyPpm:pressure,composition:constituents,retentionEscape:escape,authority:AUTHORITY,canonicalPromotion:false});
   return C.freeze({version:VERSION,worldIdentity:x.worldIdentity,supported:true,status:'PRESENT',regime:regime.regime,pressureProxyPpm:pressure,composition:constituents,
-    retentionEscape:escape,collapsePotentialPpm:C.clamp(x.atmosphere.collapsePotentialPpm,0,PPM),cloudCondensatePotentialPpm:C.clamp(x.atmosphere.cloudCondensatePotentialPpm,0,PPM),outgassingPotentialPpm:C.clamp(x.atmosphere.outgassingPpm,0,PPM),
+    retentionEscape:escape,collapsePotentialPpm:collapse,cloudCondensatePotentialPpm:cloud,outgassingPotentialPpm:outgassing,
     pressureUnitClaim:false,observedAtmosphereClaim:false,photochemistryClaim:false,canonicalAtmosphereClaim:false,authority:AUTHORITY,canonicalPromotion:false});
 }
 function radiativeState(planet,regime,atmosphere){

@@ -11,8 +11,7 @@ const freeze=C.freeze;
 const clamp=C.clamp;
 function scalePpm(value,sharePpm){
   if(!Number.isSafeInteger(value)||!Number.isSafeInteger(sharePpm)||Math.abs(sharePpm)>PPM)throw new RangeError('safe integer ppm scaling required');
-  const product=value*sharePpm;if(!Number.isSafeInteger(product))throw new RangeError('ppm scaling product outside safe integer domain');
-  return Math.round(product/PPM);
+  return Math.round(value*sharePpm/PPM);
 }
 function signedScalePpm(value,signedSharePpm){return scalePpm(value,signedSharePpm);}
 function rotationRegime(hours){
@@ -67,9 +66,11 @@ function climateEnvelope(planet,regime,radiative,atmosphere){
 }
 function splitExact(total,weights){
   if(!C.safe(total,0,C.LIMITS.exactInventoryUnits))throw new RangeError('exact bounded non-negative total required');
-  const shares=C.normalizePpm(weights),base=shares.map(s=>Math.floor(total*s/PPM));let left=total-base.reduce((a,b)=>a+b,0);
-  const raw=shares.map((s,i)=>({i,r:total*s/PPM-base[i]})).sort((a,b)=>b.r-a.r||a.i-b.i);
-  for(let i=0;i<left;i++)base[raw[i%raw.length].i]++;
+  const shares=C.normalizePpm(weights),numericFast=total===0||total<=Math.floor(Number.MAX_SAFE_INTEGER/PPM);
+  const rows=numericFast?shares.map((s,i)=>{const numerator=total*s,q=Math.floor(numerator/PPM);return {i,q,r:numerator-q*PPM};}):shares.map((s,i)=>{const numerator=BigInt(total)*BigInt(s),den=BigInt(PPM);return {i,q:Number(numerator/den),r:numerator%den};});
+  const base=rows.map(row=>row.q);let left=total-base.reduce((a,b)=>a+b,0);
+  const rank=rows.slice().sort((a,b)=>a.r===b.r?a.i-b.i:(a.r>b.r?-1:1));
+  for(let i=0;i<left;i++)base[rank[i%rank.length].i]++;
   return Object.freeze(base);
 }
 function volatilePartition(planet,regime,radiative,climate){
@@ -77,8 +78,11 @@ function volatilePartition(planet,regime,radiative,climate){
   const a=x.atmosphere,vals=[a.initialInventoryUnits,a.escapedUnits,a.interiorUnits,a.surfaceCondensedUnits,a.atmosphereUnits].map(Number);
   if(!vals.every(v=>C.safe(v,0,C.LIMITS.exactInventoryUnits))||vals[0]<=0)return C.unsupported(x.worldIdentity,'VOLATILE_LEDGER_OUTSIDE_EXACT_INTEGER_DOMAIN',{maxExactInventoryUnits:C.LIMITS.exactInventoryUnits});
   const [initial,escaped,interior,surfaceCondensed,atmospheric]=vals;
-  const sourceSum=escaped+interior+surfaceCondensed+atmospheric;
-  if(!Number.isSafeInteger(sourceSum)||sourceSum!==initial)return C.unsupported(x.worldIdentity,'SOURCE_VOLATILE_LEDGER_NOT_CLOSED',{initialInventoryUnits:initial,sourceSumUnits:Number.isSafeInteger(sourceSum)?sourceSum:null,residualUnits:Number.isSafeInteger(sourceSum)?sourceSum-initial:null});
+  const retainedBig=BigInt(interior)+BigInt(surfaceCondensed)+BigInt(atmospheric),declaredRetained=x.atmosphere.retainedUnits;
+  const sourceSumBig=BigInt(escaped)+retainedBig,initialBig=BigInt(initial);
+  if(sourceSumBig!==initialBig)return C.unsupported(x.worldIdentity,'SOURCE_VOLATILE_LEDGER_NOT_CLOSED',{initialInventoryUnits:initial,sourceSumUnits:sourceSumBig<=BigInt(Number.MAX_SAFE_INTEGER)?Number(sourceSumBig):null,residualUnits:sourceSumBig-initialBig>=BigInt(Number.MIN_SAFE_INTEGER)&&sourceSumBig-initialBig<=BigInt(Number.MAX_SAFE_INTEGER)?Number(sourceSumBig-initialBig):null});
+  if(declaredRetained!==undefined&&(!C.safe(Number(declaredRetained),0,C.LIMITS.exactInventoryUnits)||BigInt(Number(declaredRetained))!==retainedBig))return C.unsupported(x.worldIdentity,'SOURCE_VOLATILE_RETAINED_LEDGER_NOT_CLOSED');
+  if(Object.prototype.hasOwnProperty.call(x.atmosphere,'conserved')&&x.atmosphere.conserved!==true)return C.unsupported(x.worldIdentity,'SOURCE_VOLATILE_CONSERVED_FLAG_FALSE');
   let surfaceLiquid=0,surfaceIce=0,subsurfaceCondensed=0,deepCondensedOrCloudReservoir=0;
   if(regime.solidSurfaceModel){
     const rawModeledSurface=radiative?.modeledSurfaceTemperature?.temperatureMilliK,hasModeledSurface=Number.isSafeInteger(rawModeledSurface),modeledSurface=hasModeledSurface?rawModeledSurface:null,eq=Number(x.formation.equilibriumTemperatureMilliK),t=hasModeledSurface?modeledSurface:eq;
@@ -86,12 +90,12 @@ function volatilePartition(planet,regime,radiative,climate){
     const liquidWeight=clamp(PPM-Math.abs(t-288000)*5,0,PPM),iceWeight=clamp((273150-t)*8+180000,0,PPM),subsurfaceWeight=clamp(260000+Math.round(Math.abs(t-273150)*7/10),80000,850000);
     [surfaceLiquid,surfaceIce,subsurfaceCondensed]=splitExact(surfaceCondensed,[liquidWeight,iceWeight,subsurfaceWeight]);
   }else deepCondensedOrCloudReservoir=surfaceCondensed;
-  const partitionSum=escaped+interior+atmospheric+surfaceLiquid+surfaceIce+subsurfaceCondensed+deepCondensedOrCloudReservoir;
+  const partitionSumBig=BigInt(escaped)+BigInt(interior)+BigInt(atmospheric)+BigInt(surfaceLiquid)+BigInt(surfaceIce)+BigInt(subsurfaceCondensed)+BigInt(deepCondensedOrCloudReservoir),partitionSum=Number(partitionSumBig);
   const cryosphereUnits=surfaceIce+subsurfaceCondensed;
   const oceanCandidate=regime.solidSurfaceModel&&surfaceLiquid>0&&climate?.temperatureRangeMilliK?.max>=260000&&climate?.temperatureRangeMilliK?.min<=360000;
   return freeze({version:VERSION,worldIdentity:x.worldIdentity,supported:true,status:'PRESENT',modelUnit:'NORMALIZED_VOLATILE_INVENTORY_UNIT',initialInventoryUnits:initial,
     reservoirs:freeze({escapedUnits:escaped,interiorUnits:interior,atmosphereUnits:atmospheric,surfaceLiquidUnits:surfaceLiquid,surfaceIceUnits:surfaceIce,subsurfaceCondensedUnits:subsurfaceCondensed,deepCondensedOrCloudReservoirUnits:deepCondensedOrCloudReservoir}),
-    closure:freeze({sumUnits:partitionSum,residualUnits:initial-partitionSum,exactInternalClosure:partitionSum===initial,sourceLedgerClosureVerified:true,arithmeticSafeInteger:Number.isSafeInteger(partitionSum)}),
+    closure:freeze({sumUnits:partitionSum,residualUnits:Number(initialBig-partitionSumBig),exactInternalClosure:partitionSumBig===initialBig,sourceLedgerClosureVerified:true,arithmeticSafeInteger:Number.isSafeInteger(partitionSum)}),
     surface:freeze({resolved:regime.solidSurfaceModel,oceanCandidate,oceanUnits:surfaceLiquid,cryosphereUnits,subsurfaceCondensedUnits:subsurfaceCondensed,partitionTemperatureSource:regime.solidSurfaceModel?(Number.isSafeInteger(radiative?.modeledSurfaceTemperature?.temperatureMilliK)?'V2X05_MODELED_SURFACE_TEMPERATURE':'V1_IRRADIATION_EQUILIBRIUM_PROXY'):null,globalOceanDepthClaim:false,oceanChemistryClaim:false,iceSheetDynamicsClaim:false}),
     giantSemantics:regime.solidSurfaceModel?null:'CONDENSED_SOURCE_RESERVOIR_RETAINED_WITHOUT_SOLID_SURFACE_OCEAN_INTERPRETATION',physicalMassUnitClaim:false,canonicalOceanClaim:false,authority:AUTHORITY,canonicalPromotion:false});
 }
