@@ -9,11 +9,13 @@ const descriptor=JSON.parse(read('config/components/v11-product-living-navigatio
 assert.match(living,/id:'living-breadcrumbs'/,'shipping Living product exposes breadcrumb navigation');
 assert.match(living,/id:'living-rail'/,'shipping Living product exposes cross-scale navigation');
 assert.match(living,/'aria-pressed':s\.stage===scale/,'baseline scale rail exposes current position as toggle state');
-assert.match(source,/VERSION='ofu-v11-living-navigation-semantics-1'/);
+assert.match(source,/VERSION='ofu-v11-living-navigation-semantics-2'/);
 assert.match(source,/AUTHORITY='PRESENTATION_ONLY'/);
 assert.match(source,/button\.removeAttribute\('aria-pressed'\)/,'scale navigation must stop pretending to be a toggle group');
 assert.match(source,/setCurrent\(button,active\?'step':null\)/,'active scale must use aria-current step semantics');
-assert.match(source,/button===currentCrumb\?'location':null/,'last breadcrumb must expose current location semantics');
+assert.match(source,/setCurrent\(button,button===exact\?'location':null\)/,'exact breadcrumb stage must expose current location semantics');
+assert.match(source,/data-living-current-context|livingCurrentContext/,'deeper stages missing from the legacy breadcrumb trail need a real current-context node');
+assert.match(source,/STAGE_LABELS=Object\.freeze\(\{NEIGHBORHOOD:'Stellar neighborhood',APPROACH:'Approach'/,'deeper navigation context labels must be explicit and product-readable');
 assert.match(source,/snapshot\.micro\?'MICRO'/,'micro regimes must map to the single Micro rail destination');
 assert.match(source,/MutationObserver/,'deterministically replaced chrome must be resynchronized');
 assert.match(source,/runtime\.onChange\?\.\(snapshot=>sync\(snapshot\)\)/,'runtime navigation must resynchronize semantics');
