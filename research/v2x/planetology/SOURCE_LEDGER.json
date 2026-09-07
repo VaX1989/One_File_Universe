@@ -1,5 +1,5 @@
 {
-  "schema": "ofu-v2x15-science-source-ledger-1",
+  "schema": "ofu-v2x15-science-source-ledger-2",
   "authority": "RESEARCH_ONLY",
   "sources": [
     {
@@ -11,8 +11,8 @@
     {
       "id": "ONEILL_2020",
       "doi": "10.1016/j.pss.2020.105059",
-      "supports": ["parameterized thermal-evolution and tectonic-regime scenario context"],
-      "doesNotSupport": ["instantaneous deterministic tectonic-history classification"]
+      "supports": ["parameterized thermal-evolution and tectonic-regime scenario context", "reported 200-300 Myr lag context between interior Rayleigh-state changes and surface heat-flow response"],
+      "doesNotSupport": ["instantaneous deterministic tectonic-history classification", "universal fixed lag for arbitrary planets"]
     },
     {
       "id": "GRONOFF_ET_AL_2020",
@@ -24,7 +24,7 @@
       "id": "NORTH_CAHALAN_COAKLEY_1981",
       "doi": "10.1029/RG019i001p00091",
       "supports": ["reduced energy-balance climate model hierarchy"],
-      "doesNotSupport": ["weather or GCM-equivalent local climate truth"]
+      "doesNotSupport": ["weather or GCM-equivalent local climate truth", "unique linear OLR coefficients for arbitrary atmospheres"]
     },
     {
       "id": "COWAN_ABBOT_2014",
@@ -41,8 +41,14 @@
     {
       "id": "LOPEZ_FORTNEY_2014",
       "doi": "10.1088/0004-637X/792/1/1",
-      "supports": ["sub-Neptune radius dependence on envelope fraction, age and irradiation"],
-      "doesNotSupport": ["single composition-independent mass-radius law"]
+      "supports": ["sub-Neptune radius dependence on envelope fraction, age and irradiation", "research-grid envelope of 1-20 Earth masses, 0.01%-20% H/He, 0.1-1000 Earth irradiation and 0.1-10 Gyr"],
+      "doesNotSupport": ["single composition-independent mass-radius law", "radius prediction without the actual versioned evolution grid"]
+    },
+    {
+      "id": "HUANG_ET_AL_2021_WATER_EOS",
+      "doi": "10.1093/mnras/stab645",
+      "supports": ["high-pressure water EOS materially affects modeled water-rich planet interiors and radii", "explicit pressure-temperature validity and phase-boundary provenance requirements"],
+      "doesNotSupport": ["invented EOS values without a versioned table", "unique water-rich composition inference from mass-radius alone", "unbounded extrapolation across unvalidated pressure-temperature regimes"]
     }
   ]
 }
