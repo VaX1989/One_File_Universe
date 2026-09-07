@@ -46,6 +46,31 @@ function morphologyDescriptor(lineage) {
   });
 }
 
+function behaviorDescriptor(lineage, region) {
+  const mobilityPpm = traitValue(lineage, 'mobility');
+  const opportunityPpm = region.opportunityPpm;
+  const disturbancePenaltyPpm = PPM - region.disturbancePpm;
+  const activityOpportunityPpm = mobilityPpm * opportunityPpm / PPM * disturbancePenaltyPpm / PPM;
+  const behaviorClass = activityOpportunityPpm >= 650_000n
+    ? 'HIGH_LOCAL_ACTIVITY_OPPORTUNITY'
+    : activityOpportunityPpm >= 250_000n
+      ? 'MODERATE_LOCAL_ACTIVITY_OPPORTUNITY'
+      : 'LOW_LOCAL_ACTIVITY_OPPORTUNITY';
+  return Object.freeze({
+    behaviorClass,
+    activityOpportunityPpm,
+    mobilityTraitPpm: mobilityPpm,
+    environmentalOpportunityPpm: opportunityPpm,
+    disturbancePenaltyPpm,
+    feedingMode: lineage.morphology.feedingMode,
+    locomotionMode: lineage.morphology.locomotionMode,
+    authorityClass: 'MODEL_DERIVED_SIMULATION',
+    cognitionClaimed: false,
+    empiricalEthologyClaimed: false,
+    limitation: 'Activity opportunity is a bounded model response to explicit trait and regional context, not an empirical prediction of behavior or cognition.',
+  });
+}
+
 function representativeLifecycle(population, seed) {
   const roll = BigInt(deterministicHash(`${seed}|lifecycle`)) % PPM;
   const juvenileBoundary = population.lifecycleStagePpm.juvenile;
@@ -122,12 +147,15 @@ export function materializeLocalOrganisms(state, request) {
     if (quota === 0) continue;
     const lineage = lineageById.get(population.lineageId);
     assert(lineage, `lineage ${population.lineageId} missing`);
+    const region = state.regions[population.regionId];
+    assert(region, `region ${population.regionId} missing`);
     let morphology = morphologyByLineageId.get(lineage.id);
     if (!morphology) {
       morphology = morphologyDescriptor(lineage);
       morphologyByLineageId.set(lineage.id, morphology);
     }
-    const motionAmplitude = Number(traitValue(lineage, 'mobility')) / 1_000_000;
+    const behavior = behaviorDescriptor(lineage, region);
+    const motionAmplitude = Number(behavior.activityOpportunityPpm) / 1_000_000;
 
     for (let index = 0; index < quota; index += 1) {
       const sampleId = `sample:${population.id}:${state.eventKey}:${index}`;
@@ -143,6 +171,7 @@ export function materializeLocalOrganisms(state, request) {
         representativeOfAggregate: true,
         aggregateAbundance: population.abundance,
         lifecycle,
+        behavior,
         position: Object.freeze({
           x: unitFromHash(`${seed}|x`) * 2 - 1,
           y: unitFromHash(`${seed}|y`) * 2 - 1,
@@ -157,7 +186,9 @@ export function materializeLocalOrganisms(state, request) {
             ? 'DEVELOPMENTAL_ACTIVITY_PRESENTATION'
             : lifecycle.stage === 'SENESCENT'
               ? 'REDUCED_ACTIVITY_PRESENTATION'
-              : 'BASELINE_ACTIVITY_PRESENTATION',
+              : behavior.behaviorClass === 'LOW_LOCAL_ACTIVITY_OPPORTUNITY'
+                ? 'LOW_ACTIVITY_PRESENTATION'
+                : 'BASELINE_ACTIVITY_PRESENTATION',
           authorityClass: 'PRESENTATION_ONLY',
         }),
       }));
@@ -179,6 +210,7 @@ export function projectSelectionToAggregate(sample, state) {
     regionId: population.regionId,
     sampleId: sample.id,
     representativeLifecycleStage: sample.lifecycle?.stage ?? null,
+    modeledBehaviorClass: sample.behavior?.behaviorClass ?? null,
     sampleIsPersistentIndividual: false,
     inferenceGuard: 'LOCAL_SAMPLE_MUST_NOT_INFER_GLOBAL_ABUNDANCE',
   });
