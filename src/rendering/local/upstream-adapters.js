@@ -1,8 +1,9 @@
 (function(root){
 'use strict';
 const O=root.OFU=root.OFU||{};
-const VERSION='ofu-v2x-07-upstream-adapters-1';
+const VERSION='ofu-v2x-07-upstream-adapters-2';
 const AUTHORITY='PRESENTATION_ONLY';
+const TRAVERSAL_SOURCE_VERSION='ofu-v2x-07-local-traversal-adapter-2';
 function freeze(v){if(!v||typeof v!=='object'||Object.isFrozen(v))return v;for(const k of Object.keys(v))freeze(v[k]);return Object.freeze(v)}
 function finite(v,label='value'){const n=Number(v);if(!Number.isFinite(n))throw new TypeError(label+' must be finite');return n}
 function cameraFromPlanetSurface(input,{headingRad=null,pitchRad=null}={}){const s=input?.camera||input;if(!s||typeof s!=='object')throw new TypeError('planet-surface camera snapshot required');const pos=s.absolutePresentationPositionM;if(!Array.isArray(pos)||pos.length!==3)throw new TypeError('planet-surface camera must expose absolutePresentationPositionM');return freeze({planetId:String(s.planetId||input?.planetId||'unknown-planet'),anchorToken:String(s.anchorToken||input?.anchor?.token||'unbound-local-anchor'),currentBand:String(s.currentBand||input?.currentBand||'HUMAN').toUpperCase(),absolutePresentationPositionM:pos.map(Number),headingRad:finite(headingRad??s.headingRad??0,'headingRad'),pitchRad:finite(pitchRad??s.pitchRad??0,'pitchRad'),authority:String(s.authority||input?.authority||AUTHORITY),selectionToken:input?.selectionToken??null,surfaceTarget:input?.surfaceTarget??null,referenceFrameRef:input?.referenceFrameRef??null,claims:{cameraAuthorityOwned:false,canonicalGeodesyClaim:false}})}
@@ -11,9 +12,9 @@ function groundProviderFromPlanetSurfaceTerrain(terrainApi,{anchorToken,sourceAu
 function localDomainProvider(provider){if(!provider||typeof provider!=='object'||typeof provider.materializeLocal!=='function')throw new TypeError('local domain provider with materializeLocal required');return freeze({id:String(provider.id||'local-domain-provider'),authority:String(provider.authority||'UNSPECIFIED_SOURCE_AUTHORITY'),mutatesBaseTerrain:false,interiorCapability:provider.interiorCapability||null,materializeInterior:provider.materializeInterior,materializeLocal(context){return provider.materializeLocal(context)}})}
 function nonMetricProjection(providerId,projection){return freeze({id:String(providerId),authority:String(projection?.authority||AUTHORITY),mutatesBaseTerrain:false,materializeLocal(){return freeze({objects:[],decorations:[],unsupported:'UPSTREAM_PROJECTION_HAS_NO_LOCAL_METRIC_POSITION'})},claims:{projectionDiscarded:false,localPositionInvented:false}})}
 function integrationContractRequest(){return freeze({version:VERSION,authority:AUTHORITY,lane:'V2X-07',requiresCentralMutation:false,requiresConvergenceBinding:true,requestedBindings:[
- {kind:'COMPONENT_DESCRIPTOR',exactFilename:'config/components/v2x-07-human-scale-local-traversal.json',reason:'deterministic additive discovery of lane-owned scripts'},
- {kind:'LIVING_RENDERER_PROVIDER_BIND',reason:'central renderer is convergence-owned; bind local experience provider without moving camera/selection authority'},
- {kind:'INPUT_INTENT_ADAPTER_BIND',reason:'central input router is convergence-owned; route local traversal intents through existing camera authority'}
- ],laneOwnedSources:['src/rendering/local/**','src/product/exploration/local/**','tests/v2x-07-human-scale-local-traversal/**'],claims:{centralComposerMutated:false,cameraAuthorityMutated:false,inputRouterMutated:false}})}
-O.v2x07UpstreamAdapters=Object.freeze({VERSION,AUTHORITY,cameraFromPlanetSurface,cameraFromV1x06Journey,groundProviderFromPlanetSurfaceTerrain,localDomainProvider,nonMetricProjection,integrationContractRequest});
+ {kind:'COMPONENT_DESCRIPTOR',exactFilename:'config/components/v2x-07-human-scale-local-traversal.json',state:'SATISFIED_BY_CONVERGENCE',reason:'deterministic additive discovery of lane-owned scripts'},
+ {kind:'LIVING_RENDERER_PROVIDER_BIND',state:'SATISFIED_BY_COMPONENT_DISCOVERY',reason:'central renderer remains convergence-owned'},
+ {kind:'TRAVERSAL_REHOME_SYNC',state:'REQUIRED',sourcePath:'src/product/exploration/local/local-traversal.js',sourceVersion:TRAVERSAL_SOURCE_VERSION,targetPath:'src/rendering/local/v2x07-local-traversal-adapter.js',requiredSemanticDelta:['WALK_STEP_EXCEEDS_BOUND','CURRENT_GROUND_UNSUPPORTED','current-vs-target-ground-step-delta'],reason:'shipping descriptor points at convergence-owned rehome; sync lane-owned traversal v2 without transferring camera/input authority'}
+ ],laneOwnedSources:['src/rendering/local/**','src/product/exploration/local/**','tests/v2x-07-human-scale-local-traversal/**'],claims:{centralComposerMutated:false,cameraAuthorityMutated:false,inputRouterMutated:false,traversalRehomeMutationPerformed:false}})}
+O.v2x07UpstreamAdapters=Object.freeze({VERSION,AUTHORITY,TRAVERSAL_SOURCE_VERSION,cameraFromPlanetSurface,cameraFromV1x06Journey,groundProviderFromPlanetSurfaceTerrain,localDomainProvider,nonMetricProjection,integrationContractRequest});
 })(typeof globalThis!=='undefined'?globalThis:this);
