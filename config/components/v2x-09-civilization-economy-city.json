@@ -78,6 +78,58 @@
       "authority": "MODEL_DERIVED_SIMULATION",
       "provenance": "V2X-09 public additive API composition. It creates no canonical history, no persistent persons, no canonical selection/camera/persistence authority, and no direct planet/life mutation.",
       "provides": ["v2x09.civilization.economy-city"]
+    },
+    {
+      "id": "v2x09.civilization.production-network",
+      "version": "1.0.0",
+      "owner": "v2x-09-civilization-economy-city",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/v2x-09-civilization-economy-city/production-network.js",
+      "dependencies": ["v2x09.civilization.core@1.0.0"],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "V2X-09 deterministic multi-stage production graph, bounded logistics capacities, degradation witnesses, service satisfaction and accounting-unit closure. It mutates no canonical economy, infrastructure or history state.",
+      "provides": ["v2x09.civilization.production-network", "v2x09.civilization.logistics-bottlenecks"]
+    },
+    {
+      "id": "v2x09.civilization.society-dynamics",
+      "version": "1.0.0",
+      "owner": "v2x-09-civilization-economy-city",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/v2x-09-civilization-economy-city/society-dynamics.js",
+      "dependencies": ["v2x09.civilization.core@1.0.0", "v2x09.civilization.production-network@1.0.0"],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "V2X-09 aggregate scarcity, opportunity, migration-pressure and institutional-response proposals. No persistent person is created and no population, polity, planet, life or P4 authority is mutated.",
+      "provides": ["v2x09.civilization.aggregate-migration-pressure", "v2x09.civilization.institution-response-proposals"]
+    },
+    {
+      "id": "v2x09.civilization.urban-evolution",
+      "version": "1.0.0",
+      "owner": "v2x-09-civilization-economy-city",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/v2x-09-civilization-economy-city/urban-evolution.js",
+      "dependencies": ["v2x09.civilization.core@1.0.0", "v2x09.civilization.production-network@1.0.0", "v2x09.civilization.society-dynamics@1.0.0"],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "V2X-09 causal urban-family and specialization model with history/infrastructure-backed evidence layers. Render cues are explicitly PRESENTATION_ONLY and claim neither physical geometry nor empirical archaeology.",
+      "provides": ["v2x09.civilization.urban-evolution", "v2x09.civilization.urban-evolution-render-cues"]
+    },
+    {
+      "id": "v2x09.civilization.advanced-api",
+      "version": "1.0.0",
+      "owner": "v2x-09-civilization-economy-city",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/v2x-09-civilization-economy-city/advanced.js",
+      "dependencies": ["v2x09.civilization.production-network@1.0.0", "v2x09.civilization.society-dynamics@1.0.0", "v2x09.civilization.urban-evolution@1.0.0"],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "V2X-09 additive advanced composition over production/logistics, aggregate society dynamics and urban evolution. Shared-renderer integration remains convergence-owner work.",
+      "provides": ["v2x09.civilization.advanced-composition"]
     }
   ]
 }
