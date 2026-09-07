@@ -42,6 +42,8 @@ jobs:
         run: node tests/v2x10/convergence-blockers.mjs
       - name: Living macrocosm composition witness
         run: node tests/v2x-convergence/macrocosm-composition.mjs
+      - name: Living single-camera authority witness
+        run: node tests/v2x-convergence/living-camera-authority.mjs
       - name: Install governed Chromium evidence runtime
         run: |
           npm install --no-save --package-lock=false playwright@1.62.1
