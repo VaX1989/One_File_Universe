@@ -21,10 +21,10 @@
     "fidelity":{"regime":"product","validity":"Deterministic identity-keyed macrocosm presentation for Universe, Galaxy, Region and Neighborhood contexts under externally governed inputs.","resolution":"At most 64 represented upstream entities, 96 region children and 1536 decorative stellar-density particles before stricter quality-profile limits.","uncertainty":"Generated spatial/morphological cues are presentation-only; stronger upstream positions or facts retain their declared authority without promotion."},
     "lifecycle":"SHIPPING",
     "requires":[{"id":"v1x02.representation.spatial-universe","version":"1.0.0","authority":"PRESENTATION_ONLY"},{"id":"px.interaction.camera","version":"1.0.0","authority":"PRESENTATION_ONLY"}],
-    "claims":["representation.macrocosm-3d","representation.galaxy-morphology-bounded","representation.decorative-density-nonselectable","representation.region-refinement-continuity"],
+    "claims":["representation.macrocosm-3d","representation.galaxy-morphology-bounded","representation.decorative-density-nonselectable","representation.region-refinement-continuity","representation.cross-scale-identity-continuity"],
     "operations":["REPRESENT","PROJECT","REFINE"],
     "budget":{"entities":1536,"bytes":1048576,"operations":8192,"queue":96},
-    "evidence":[{"id":"v2x03.macrocosm.determinism","tier":"FAST_LOCAL"},{"id":"v2x03.macrocosm.depth-bounds","tier":"LANE_TARGETED"}],
+    "evidence":[{"id":"v2x03.macrocosm.determinism","tier":"FAST_LOCAL"},{"id":"v2x03.macrocosm.depth-bounds","tier":"LANE_TARGETED"},{"id":"v2x03.macrocosm.continuity-identity","tier":"LANE_TARGETED"}],
     "mandatory":false
   }]
 }
