@@ -34,6 +34,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
       - name: Require exact unchanged live main and a new release line
         shell: bash
         run: |
