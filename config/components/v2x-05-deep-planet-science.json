@@ -58,12 +58,12 @@
       "version": "1.0.0",
       "owner": "v2x-05-deep-planet-science",
       "kind": "data",
-      "stage": "full",
+      "stage": "foundation",
       "placement": "resource",
       "source": "config/extensions/v2x-05-deep-planet-science/catalog.json",
-      "dependencies": ["v2x05.deep-planet.provider"],
+      "dependencies": [],
       "authority": "MODEL_DERIVED_SIMULATION",
-      "provenance": "Lane-owned additive V2X-05 provider catalog with no canonical admissions.",
+      "provenance": "Lane-owned additive V2X-05 provider catalog bound at foundation as metadata only; runtime provider code is composed at full stage and canonical admissions remain empty.",
       "provides": ["v2x05.deep-planet.provider-catalog"]
     }
   ]
