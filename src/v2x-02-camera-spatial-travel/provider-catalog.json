@@ -36,14 +36,14 @@
         "limitations": [
           "Camera paths, reference-frame transforms and cinematic interpolation are presentation-only and are not physical trajectories, orbital phases or scientific position measurements.",
           "Hierarchical local frames preserve bounded reversible presentation context; this provider does not claim one globally precise floating-point coordinate across cosmic-to-microscopic scales.",
-          "Executable rewind is limited to controller-observed reversible presentation operations. External camera commands and spatial mutations that invalidate a reference-frame return witness fail closed by discarding stale reverse capability.",
+          "Executable rewind is limited to controller-observed reversible presentation operations. External camera commands, selection observations and spatial mutations that invalidate a reference-frame return witness fail closed by discarding stale reverse capability.",
           "This additive lane does not commandeer the convergence-owned Living renderer or central input router; those consumers must adopt the exposed controller/provider through their owned seam."
         ],
         "evidence": [
           {
             "id": "v2x02.travel.fast",
             "kind": "PRESENTATION_TEST",
-            "digest": "e2c2ea00f3f53ec3bb51751e309c72524fc85cf80169da5a6245f778619e6d87"
+            "digest": "1a00526cd940c52602609f20817a8187a183a309cfc4d2611e30f0f39dad05b3"
           }
         ]
       },
@@ -51,7 +51,7 @@
         "regime": "product",
         "validity": "Bounded continuous presentation travel over the frozen V1X camera, semantic-distance and reference-frame authorities, with fail-closed reversible operation journaling.",
         "resolution": "Frame-paced accumulated distance/look intents, bounded local translation, explicit wheel unit normalization, hierarchical reference-frame handoffs and exact-within-tolerance rewind for observed presentation operations.",
-        "uncertainty": "Interpolation timing and camera path are perceptual product choices; scientific distance, orbital phase and unsupported micro continuity remain outside this provider's authority. Rewind correctness is conditional on the camera remaining under the observed command stream."
+        "uncertainty": "Interpolation timing and camera path are perceptual product choices; scientific distance, orbital phase and unsupported micro continuity remain outside this provider's authority. Rewind correctness is conditional on the camera remaining under the observed command stream and selection context."
       },
       "lifecycle": "SHIPPING",
       "requires": [],
