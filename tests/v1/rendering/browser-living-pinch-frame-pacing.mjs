@@ -28,7 +28,7 @@ try{
  await page.waitForFunction(()=>OFU.v1LivingProduct.runtime.snapshot().stage==='REGION',null,{timeout:10000});await waitReady();
  const before=await sample();
  assert.equal(before.renderer.authority,'PRESENTATION_ONLY');
- assert.equal(before.pacing.strategy,'RAF_LATEST_PINCH_COORDINATE_WITH_SYNC_BOUNDARIES_AND_TERMINAL_FLUSH');
+ assert.equal(before.pacing.strategy,'RAF_LATEST_PINCH_COORDINATE_WITH_RUNTIME_NORMALIZED_SYNC_BOUNDARIES_AND_TERMINAL_FLUSH');
  assert.ok(before.canvas.nonEmpty>0);
 
  const active=await page.evaluate(()=>{
