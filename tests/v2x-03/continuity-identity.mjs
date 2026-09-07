@@ -27,11 +27,17 @@ const n1=P.buildNeighborhood({objects:systems,cameraFrame:frame,quality:'STANDAR
 const n2=P.buildNeighborhood({objects:shuffled,cameraFrame:frame,quality:'STANDARD'});
 assert.equal(n1.objects.length,48,'STANDARD neighborhood must exercise a real bounded subset');
 assert.deepEqual(n1.objects,n2.objects,'neighborhood bounded subset and ordering must be query-order stable');
+assert.deepEqual(n1.drawOrder,n2.drawOrder,'far-to-near draw ordering must remain query-order stable');
 assert.deepEqual(n1.objects.map(o=>o.sourceId),systems.slice(0,48).map(s=>s.canonicalId),'stable identity ordering must determine bounded subset');
 assert.equal(n1.stability.queryOrderIndependent,true);
 assert.equal(n1.stability.invalidPlacementDoesNotConsumeCap,true);
+assert.equal(n1.stability.drawOrderStable,true);
+assert.equal(n1.claims.drawOrderIsPresentationOnly,true);
+assert.equal(n1.claims.physicalOcclusionClaim,false);
+const visibleById=new Map(n1.objects.filter(o=>o.view.visible).map(o=>[o.sourceId,o]));
+for(let i=1;i<n1.drawOrder.length;i++)assert.ok(visibleById.get(n1.drawOrder[i-1]).view.depth>=visibleById.get(n1.drawOrder[i]).view.depth,'draw order must be far-to-near');
 const ids=new Set(systems.map(x=>x.canonicalId));
-for(const o of n1.objects){assert.ok(ids.has(o.sourceId),'neighborhood identity must come from upstream');assert.equal(o.selectable,true);assert.equal(o.claims.identityPreserved,true)}
+for(const o of n1.objects){assert.ok(ids.has(o.sourceId),'neighborhood identity must come from upstream');assert.equal(o.selectable,true);assert.equal(o.claims.identityPreserved,true);assert.equal(o.claims.brightnessPhysical,false)}
 for(const d of g1.field.particles)assert.equal(d.selectable,false);
 for(const d of g1.field.clusters)assert.equal(d.selectable,false);
 for(const d of g1.field.dust)assert.equal(d.selectable,false);
@@ -56,4 +62,4 @@ const w=P.continuityWitness({galaxy:g1,region:r1,neighborhood:n1});
 assert.equal(w.galaxyId,g1.galaxyId);assert.equal(w.regionParent,g1.galaxyId);
 assert.ok(w.neighborhoodObjectIds.every(id=>ids.has(id)));
 assert.equal(w.cameraOwnedHere,false);assert.equal(w.selectionOwnedHere,false);assert.equal(w.scaleOwnedHere,false);
-console.log(JSON.stringify({status:'PASS',oracle:'V2X03_CONTINUITY_IDENTITY',galaxyId:w.galaxyId,regionParent:w.regionParent,neighborhoodObjects:w.neighborhoodObjectIds.length,queryOrderStable:true,nonVacuousNeighborhood:true,capStarvationClosed:true,nestedCanonicalKeyStable:true,deterministicPickTieBreak:true,decorativeNonSelectable:true,externalAuthoritiesPreserved:true}));
+console.log(JSON.stringify({status:'PASS',oracle:'V2X03_CONTINUITY_IDENTITY',galaxyId:w.galaxyId,regionParent:w.regionParent,neighborhoodObjects:w.neighborhoodObjectIds.length,queryOrderStable:true,nonVacuousNeighborhood:true,capStarvationClosed:true,nestedCanonicalKeyStable:true,stableFarToNearDrawOrder:true,deterministicPickTieBreak:true,decorativeNonSelectable:true,externalAuthoritiesPreserved:true}));
