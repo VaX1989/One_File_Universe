@@ -1,0 +1,22 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1.product.touch-continuity",
+      "version": "1.1.0",
+      "owner": "product",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/bootstrap/product/v11-touch-continuity.js",
+      "dependencies": [
+        "v1.product.living-universe"
+      ],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Post-v1 mobile input continuity: after a two-pointer pinch releases normally to one remaining touch/pen pointer, presentation drag may continue without requiring a full lift/re-touch; cancellation still fails closed.",
+      "provides": [
+        "v1.product.touch-continuity"
+      ]
+    }
+  ]
+}
