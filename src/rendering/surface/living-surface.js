@@ -51,6 +51,7 @@ function buildFrame(materialization,{patchLimit=9,limits={}}={}){
  const frame={version:VERSION,authority:AUTHORITY,status:'READY',planetIdentity:materialization.planetIdentity,anchorLocationIdentity:materialization.anchorAddress.locationIdentity,projection:{kind:'LOCAL_TANGENT_SPHERICAL_PRESENTATION',bounds:[minX,maxX,minY,maxY]},patches:panels,commands,summary:freeze(summary),limits:bound,truncated:freeze(truncated),claims:{visualReliefMeasured:false,shorelineCanonical:false,riverPathPhysical:false,renderingMutatesWorld:false,patchLayoutIsMapProjection:true,reliefShadingPresentationOnly:true,presentationTruncationExplicit:true}};
  return freeze({...frame,frameDigest:stableDigest({planetIdentity:frame.planetIdentity,anchor:frame.anchorLocationIdentity,summary,truncated,commands:commands.map(c=>({kind:c.kind,fill:c.fill,riverIdentity:c.riverIdentity,riverOrder:c.riverOrder,points:c.points}))})});
 }
+function utf8Bytes(text){if(typeof TextEncoder==='function')return new TextEncoder().encode(String(text)).length;let n=0;for(const ch of String(text)){const cp=ch.codePointAt(0);n+=cp<=0x7f?1:cp<=0x7ff?2:cp<=0xffff?3:4}return n}
 function renderSvg(frame,width=960,height=640){
  const w=Math.max(64,Math.floor(width)),h=Math.max(64,Math.floor(height));
  if(frame.status==='NO_SOLID_SURFACE')return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><rect width="100%" height="100%" fill="#111827"/><text x="${w/2}" y="${h/2}" text-anchor="middle" fill="#d1d5db" font-family="sans-serif" font-size="22">NO SOLID SURFACE</text></svg>`;
@@ -62,7 +63,7 @@ function renderSvg(frame,width=960,height=640){
  }
  const trunc=frame.truncated.patches+frame.truncated.polygons+frame.truncated.coastlines+frame.truncated.rivers;
  out+=`<rect x="0" y="0" width="${w}" height="34" fill="#071323" opacity="0.78"/><text x="14" y="23" fill="#e5e7eb" font-family="sans-serif" font-size="14">${esc(frame.planetIdentity)} | patches ${frame.summary.patches} | coasts ${frame.summary.coastlines} | rivers ${frame.summary.rivers}${trunc?` | bounded omissions ${trunc}`:''}</text></svg>`;
- if(out.length>frame.limits.maxSvgBytes)throw new Error('surface SVG byte budget exceeded');return out;
+ if(utf8Bytes(out)>frame.limits.maxSvgBytes)throw new Error('surface SVG byte budget exceeded');return out;
 }
 function renderCanvas2D(ctx,frame,width,height){
  if(!ctx||typeof ctx.beginPath!=='function')throw new TypeError('CanvasRenderingContext2D-like context required');const w=Math.max(1,Number(width)||ctx.canvas?.width||1),h=Math.max(1,Number(height)||ctx.canvas?.height||1);ctx.fillStyle='#071323';ctx.fillRect(0,0,w,h);
