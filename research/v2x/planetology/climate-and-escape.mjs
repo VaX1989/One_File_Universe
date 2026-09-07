@@ -30,6 +30,55 @@ export function zeroDimensionalEbm({ stellarFluxWm2, bondAlbedo, outgoingLongwav
   });
 }
 
+export function transientZeroDimensionalEbmStep({ temperatureK, heatCapacityJm2K, stellarFluxWm2, bondAlbedo, durationSeconds, outgoingLongwaveA = 210, outgoingLongwaveB = 2, referenceTemperatureK = 273.15, maxTemperatureStepK = 1 }) {
+  let temperature = finite('temperatureK', temperatureK);
+  const heatCapacity = finite('heatCapacityJm2K', heatCapacityJm2K);
+  const stellarFlux = finite('stellarFluxWm2', stellarFluxWm2);
+  const albedo = finite('bondAlbedo', bondAlbedo);
+  const duration = finite('durationSeconds', durationSeconds);
+  const A = finite('outgoingLongwaveA', outgoingLongwaveA);
+  const B = finite('outgoingLongwaveB', outgoingLongwaveB);
+  const tref = finite('referenceTemperatureK', referenceTemperatureK);
+  const maxStep = finite('maxTemperatureStepK', maxTemperatureStepK);
+  if (temperature <= 0 || heatCapacity <= 0 || stellarFlux <= 0 || albedo < 0 || albedo >= 1 || duration < 0 || B <= 0 || tref <= 0 || maxStep <= 0) {
+    return Object.freeze({ status: 'UNSUPPORTED', reason: 'INVALID_TRANSIENT_EBM_INPUT' });
+  }
+  const absorbed = stellarFlux * (1 - albedo) / 4;
+  const initialNet = absorbed - (A + B * (temperature - tref));
+  const estimatedDelta = duration === 0 ? 0 : initialNet * duration / heatCapacity;
+  const substeps = Math.max(1, Math.ceil(Math.abs(estimatedDelta) / maxStep));
+  if (substeps > 10000) return Object.freeze({ status: 'UNSUPPORTED', reason: 'SUBSTEP_RESOURCE_BOUND_EXCEEDED' });
+  const dt = duration / substeps;
+  const initialTemperatureK = temperature;
+  let absorbedEnergyJm2 = 0;
+  let outgoingEnergyJm2 = 0;
+  for (let i = 0; i < substeps; i += 1) {
+    const outgoing = A + B * (temperature - tref);
+    const net = absorbed - outgoing;
+    const delta = net * dt / heatCapacity;
+    if (!Number.isFinite(delta) || Math.abs(delta) > maxStep * 1.0000001) return Object.freeze({ status: 'UNSUPPORTED', reason: 'NUMERICAL_STEP_BOUND_VIOLATED' });
+    temperature += delta;
+    if (temperature <= 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'NON_PHYSICAL_TEMPERATURE_REACHED' });
+    absorbedEnergyJm2 += absorbed * dt;
+    outgoingEnergyJm2 += outgoing * dt;
+  }
+  const storageChangeJm2 = heatCapacity * (temperature - initialTemperatureK);
+  const expectedStorageChangeJm2 = absorbedEnergyJm2 - outgoingEnergyJm2;
+  return Object.freeze({
+    status: 'PRESENT',
+    initialTemperatureK,
+    temperatureK: temperature,
+    substeps,
+    absorbedEnergyJm2,
+    outgoingEnergyJm2,
+    storageChangeJm2,
+    energyResidualJm2: storageChangeJm2 - expectedStorageChangeJm2,
+    assumptions: 'TRANSIENT_ZERO_DIMENSIONAL_LINEAR_OLR_EBM_EXPLICIT_BOUNDED_STEP',
+    weatherTruthClaim: false,
+    gcmTruthClaim: false
+  });
+}
+
 export function orbitalMeanFluxFactor({ eccentricity }) {
   const e = finite('eccentricity', eccentricity);
   if (e < 0 || e >= 1) return Object.freeze({ status: 'UNSUPPORTED', reason: 'INVALID_ECCENTRICITY' });
@@ -55,6 +104,29 @@ export function energyLimitedEscapeApplicability({ planetMassEarth, planetRadius
     rateAuthorized: true,
     assumptions: 'ENERGY_LIMITED_ESCAPE_WITH_EXPLICIT_EFFICIENCY_RXUV_AND_ROCHE_CORRECTION',
     universalEscapeTruthClaim: false
+  });
+}
+
+export function atmosphereMassBudgetStep({ atmosphereMassKg, escapeRateKgPerS, sourceRateKgPerS = 0, durationSeconds }) {
+  const mass = finite('atmosphereMassKg', atmosphereMassKg);
+  const escapeRate = finite('escapeRateKgPerS', escapeRateKgPerS);
+  const sourceRate = finite('sourceRateKgPerS', sourceRateKgPerS);
+  const dt = finite('durationSeconds', durationSeconds);
+  if (mass < 0 || escapeRate < 0 || sourceRate < 0 || dt < 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'NEGATIVE_MASS_RATE_OR_TIME' });
+  const requestedLossKg = escapeRate * dt;
+  const sourceKg = sourceRate * dt;
+  const availableKg = mass + sourceKg;
+  const realizedLossKg = Math.min(requestedLossKg, availableKg);
+  const afterKg = availableKg - realizedLossKg;
+  return Object.freeze({
+    status: requestedLossKg <= availableKg ? 'CONSERVED' : 'DEPLETION_CAPPED',
+    beforeKg: mass,
+    sourceKg,
+    requestedLossKg,
+    realizedLossKg,
+    afterKg,
+    residualKg: afterKg - (mass + sourceKg - realizedLossKg),
+    universalEscapeHistoryClaim: false
   });
 }
 
