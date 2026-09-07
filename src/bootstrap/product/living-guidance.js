@@ -19,6 +19,13 @@ function removeFirstFlight(){document.getElementById('living-first-flight')?.rem
 function clearMobileExposureRetry(){if(!mobileExposureTimer)return;root.clearTimeout(mobileExposureTimer);mobileExposureTimer=0}
 function dismiss(){state.dismissed=true;clearMobileExposureRetry();save();removeFirstFlight();O.productUI?.announce?.('First flight guide dismissed');schedule()}
 function ensureGuideVisible(){const mobile=O.v08MobileInteraction;if(!state.guideOpen||!mobile?.state?.active||mobile.state.sheet==='expanded'||typeof mobile.expand!=='function')return false;mobile.expand();state.mobileExpands++;return true}
+function firstFlightVisibleOnMobile(box,mobile){
+ if(!box||!mobile?.state?.active||mobile.state.sheet!=='expanded')return false;
+ const body=box.closest?.('#mobile-sheet-body');if(body&&(body.inert===true||body.getAttribute('aria-hidden')==='true'))return false;
+ const rect=box.getBoundingClientRect?.();if(!rect||rect.width<=0||rect.height<=0)return false;
+ const style=typeof root.getComputedStyle==='function'?root.getComputedStyle(box):null;if(style&&(style.display==='none'||style.visibility==='hidden'))return false;
+ return true
+}
 function scheduleFirstFlightExposureRetry(){
  if(mobileExposureTimer||state.mobileFirstFlightOffered||state.dismissed||state.completed||state.progress.started||!compactMobileTarget())return false;
  if(state.mobileFirstFlightExposureAttempts>=MAX_MOBILE_EXPOSURE_ATTEMPTS){state.mobileFirstFlightExposureTimeout=true;return false}
@@ -27,7 +34,9 @@ function scheduleFirstFlightExposureRetry(){
 function ensureFirstFlightVisible(){
  const box=document.getElementById('living-first-flight');if(state.mobileFirstFlightOffered||!box||state.dismissed||state.completed||state.progress.started||!compactMobileTarget()){clearMobileExposureRetry();return false}
  const mobile=O.v08MobileInteraction;if(!mobile?.state?.active||typeof mobile.expand!=='function'){scheduleFirstFlightExposureRetry();return false}
- clearMobileExposureRetry();state.mobileFirstFlightOffered=true;if(mobile.state.sheet==='expanded')return true;mobile.expand();state.mobileFirstFlightExpands++;return true
+ if(firstFlightVisibleOnMobile(box,mobile)){clearMobileExposureRetry();state.mobileFirstFlightOffered=true;return true}
+ if(mobile.state.sheet!=='expanded'){mobile.expand();state.mobileFirstFlightExpands++}
+ scheduleFirstFlightExposureRetry();return false
 }
 function toggleGuide(force){const next=typeof force==='boolean'?force:!state.guideOpen;if(next===state.guideOpen){if(next)ensureGuideVisible();return}state.guideOpen=next;if(next){state.guideOpens++;ensureGuideVisible()}schedule();O.productUI?.announce?.(next?'Exploration controls opened':'Exploration controls closed')}
 function ensureControlButton(){
@@ -55,5 +64,5 @@ function render(){
 function schedule(){if(scheduled)return;scheduled=true;(root.requestAnimationFrame||((fn)=>root.setTimeout(fn,0)))(()=>{scheduled=false;render()})}
 function onKeydown(event){if(event.defaultPrevented||event.altKey||event.ctrlKey||event.metaKey)return;const tag=event.target?.tagName;if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'||event.target?.isContentEditable)return;if(event.key==='?'){event.preventDefault();toggleGuide()}}
 function attach(){state.attachAttempts++;const product=O.v1LivingProduct,next=document.getElementById('living-panel');if(!product?.runtime||!next){if(state.attachAttempts>=MAX_ATTACH_ATTEMPTS){state.attachStatus='timeout';return}root.setTimeout(attach,50);return}runtime=product.runtime;panel=next;state.attachStatus='attached';runtime.onChange?.(schedule);observer=new MutationObserver(schedule);observer.observe(panel,{childList:true,subtree:true});render()}
-load();root.addEventListener('keydown',onKeydown,false);root.addEventListener('resize',schedule,{passive:true});const api=Object.freeze({VERSION,STORAGE_KEY,MAX_ATTACH_ATTEMPTS,MAX_MOBILE_EXPOSURE_ATTEMPTS,state,progress,render,dismiss,toggleGuide,snapshot:()=>Object.freeze({...state,progress:runtime?progress(runtime.snapshot()):Object.freeze({...state.progress}),input:coarseInput()?'coarse':'fine',compactMobileTarget:compactMobileTarget()})});O.v11LivingGuidance=api;root.__OFU_LIVING_GUIDANCE__=api;attach();
+load();root.addEventListener('keydown',onKeydown,false);root.addEventListener('resize',schedule,{passive:true});const api=Object.freeze({VERSION,STORAGE_KEY,MAX_ATTACH_ATTEMPTS,MAX_MOBILE_EXPOSURE_ATTEMPTS,state,progress,render,dismiss,toggleGuide,firstFlightVisibleOnMobile,snapshot:()=>Object.freeze({...state,progress:runtime?progress(runtime.snapshot()):Object.freeze({...state.progress}),input:coarseInput()?'coarse':'fine',compactMobileTarget:compactMobileTarget()})});O.v11LivingGuidance=api;root.__OFU_LIVING_GUIDANCE__=api;attach();
 })(typeof globalThis!=='undefined'?globalThis:this);
