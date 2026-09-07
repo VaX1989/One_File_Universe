@@ -7,6 +7,14 @@ import {loadComponents} from './components.mjs';
 const TIERS=['FAST_LOCAL','LANE_TARGETED','INTEGRATION','CUMULATIVE','RELEASE'];
 const sha=x=>crypto.createHash('sha256').update(x).digest('hex');
 const check=(ok,m)=>{if(!ok)throw new Error('PX conformance: '+m);};
+function parseJsonResult(stdout,id){
+ const text=String(stdout??'').trim();
+ check(text.length>0&&Buffer.byteLength(text,'utf8')<=8*1024*1024,id+' invalid JSON result size');
+ const starts=[0];for(let i=0;i<text.length-1;i++)if(text[i]==='\n'&&text[i+1]==='{')starts.push(i+1);
+ check(starts.length<=65536,id+' excessive JSON candidates');
+ for(let i=starts.length-1;i>=0;i--){try{const value=JSON.parse(text.slice(starts[i]));if(value&&typeof value==='object'&&!Array.isArray(value))return value;}catch{}}
+ throw new Error('PX conformance: '+id+' missing JSON result');
+}
 export function loadConformance(root=process.cwd()){
  const dir=path.join(root,'config/conformance'),files=fs.readdirSync(dir).filter(f=>f.endsWith('.json')).sort(),all=[];
  check(files.length<=128,'manifest count');
@@ -43,7 +51,7 @@ export function runConformance(tier,{root=process.cwd(),exact=false}={}){
  const results=[];
  for(const t of tests.filter(t=>TIERS.indexOf(t.tier)<=TIERS.indexOf(tier))){const start=performance.now(),command=t.command[0]==='node'?process.execPath:t.command[0],r=spawnSync(command,t.command.slice(1),{cwd:root,env:process.env,encoding:'utf8',timeout:t.timeoutMs,maxBuffer:8*1024*1024});
   check(!r.error&&r.status===0,t.id+' failed\n'+String(r.stderr||r.error||r.stdout).slice(-4000));
-  const lines=r.stdout.trim().split('\n');let value;try{value=JSON.parse(lines.at(-1));}catch{throw new Error('PX conformance: '+t.id+' missing JSON result');}
+  const value=parseJsonResult(r.stdout,t.id);
   check(value.status==='PASS',t.id+' did not report PASS');
   results.push({id:t.id,owner:t.owner,tier:t.tier,oracle:t.oracle,providers:t.providers,testSourceSha256:t.sourceSha256,result:value,durationMs:Math.round(performance.now()-start),stdoutSha256:sha(r.stdout)});
  }
