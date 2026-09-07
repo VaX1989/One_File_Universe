@@ -6,6 +6,7 @@ const protectedWorkflows=[
   '.github/workflows/post-v1-development.yml',
   '.github/workflows/source-reproduction.yml',
   '.github/workflows/certified-preview-release.yml',
+  '.github/workflows/v1-stable-release.yml',
 ];
 
 function checkoutBlocks(text){
