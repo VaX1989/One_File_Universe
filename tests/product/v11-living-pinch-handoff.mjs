@@ -5,12 +5,17 @@ const source=fs.readFileSync('src/bootstrap/product/living-pinch-handoff.js','ut
 let cases=0;const ok=(value,message)=>{assert.ok(value,message);cases++;};
 const component=plan.find(c=>c.id==='v1.product.living-pinch-handoff');
 ok(component,'pinch handoff component is registered');
+ok(component.version==='1.1.0','hardened pinch handoff contract version is registered');
 ok(component.authority==='PRESENTATION_ONLY','pinch handoff remains presentation-only');
 ok(component.dependencies.includes('v1.product.living-universe'),'pinch handoff depends on the shipping Living product');
 ok(plan.findIndex(c=>c.id==='v1.product.living-pinch-handoff')>plan.findIndex(c=>c.id==='v1.product.living-universe'),'pinch handoff is emitted after Living input ownership is established');
+assert.match(source,/DRAG_THRESHOLD_PX=5/);cases++;
 assert.match(source,/pointers\.size===1&&hadPinch/);cases++;
 assert.match(source,/coreInput\?\.lastGesture==='drag'/);cases++;
 assert.match(source,/renderer\.rotate\(dx,dy\)/);cases++;
 assert.match(source,/pointercancel/);cases++;
+assert.match(source,/lostpointercapture/);cases++;
+assert.match(source,/if\(cancelled\)\{[\s\S]*pinchSeen=false;handoff=null/);cases++;
+assert.match(source,/if\(!pointers\.has\(event\.pointerId\)\)return;/);cases++;
 assert.doesNotMatch(source,/selectPlanet|enterKey|setNavigationCoordinate|runtime\./);cases++;
-console.log(JSON.stringify({status:'PASS',suite:'v11-living-pinch-handoff',cases,version:'ofu-v11-living-pinch-handoff-1'}));
+console.log(JSON.stringify({status:'PASS',suite:'v11-living-pinch-handoff',cases,version:'ofu-v11-living-pinch-handoff-2',authority:'PRESENTATION_ONLY',dragThresholdPx:5,cancelFailsClosed:true,lostCaptureFailsClosed:true}));
