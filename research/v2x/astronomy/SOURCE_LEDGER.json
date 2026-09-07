@@ -1,23 +1,39 @@
 {
-  "schema": "ofu-v2x15-science-source-ledger-2",
+  "schema": "ofu-v2x15-science-source-ledger-3",
   "authority": "RESEARCH_ONLY",
   "sources": [
     {
       "id": "GLADMAN_1993",
       "doi": "10.1006/icar.1993.1169",
-      "supports": ["pairwise circular/coplanar Hill-stability screening", "low-mass mutual-Hill separation threshold context"],
-      "doesNotSupport": ["general N-body stability", "Lagrange stability", "resonance safety"]
+      "supports": [
+        "two-planet Hill-stability screening for initially circular coplanar orbits",
+        "low-mass mutual-Hill separation threshold approaching 2 sqrt(3)"
+      ],
+      "implementationGuard": "pairwiseHillScreen applies the 2 sqrt(3) form only at numerically circular/coplanar input and uses a conservative total planet-to-star mass-ratio guard <= 1e-3",
+      "doesNotSupport": [
+        "finite-eccentricity use of the same 2 sqrt(3) formula",
+        "general N-body stability",
+        "Lagrange stability",
+        "mean-motion-resonance safety"
+      ]
     },
     {
       "id": "LASKAR_PETIT_2017_AMD",
       "arxiv": "1703.07125",
-      "supports": ["AMD-based a-priori dynamical screening concept", "pairwise coplanar collision-critical AMD construction and critical eccentricity root"],
-      "doesNotSupport": ["replacement for integration in all systems", "mean-motion resonance overlap safety", "general Lagrange or N-body stability"]
+      "supports": [
+        "AMD-based a-priori dynamical screening concept",
+        "pairwise coplanar collision-critical AMD construction and critical eccentricity root"
+      ],
+      "doesNotSupport": [
+        "replacement for integration in all systems",
+        "mean-motion resonance overlap safety",
+        "general Lagrange or N-body stability"
+      ]
     },
     {
       "id": "PETIT_LASKAR_BOUE_2018",
       "doi": "10.1051/0004-6361/201833088",
-      "supports": ["Hill criterion in AMD framework"],
+      "supports": ["Hill criterion in AMD framework and explicit validity dependence on masses/orbital architecture"],
       "doesNotSupport": ["outer-body ejection exclusion", "universal high-mass validity"]
     },
     {
@@ -25,6 +41,22 @@
       "arxiv": "1705.06756",
       "supports": ["mean-motion-resonance overlap as a distinct compact-system dynamical limit"],
       "doesNotSupport": ["treating collision-AMD stability as resonance or chaos stability"]
+    },
+    {
+      "id": "NUMERICAL_KDK_DIAGNOSTIC",
+      "supports": [
+        "bounded Newtonian point-mass kick-drift-kick short-horizon falsification",
+        "energy angular-momentum and linear-momentum drift reporting",
+        "coarse/fine same-horizon step-convergence comparison"
+      ],
+      "authority": "ALGORITHMIC_RESEARCH_DIAGNOSTIC_NOT_EMPIRICAL_SOURCE",
+      "doesNotSupport": [
+        "long-term stability",
+        "collision outcomes",
+        "general relativity",
+        "tidal evolution",
+        "secular-chaos absence"
+      ]
     },
     {
       "id": "ZENG_SASSELOV_JACOBSEN_2016",
@@ -41,20 +73,26 @@
     {
       "id": "MOE_DISTEFANO_2017",
       "doi": "10.3847/1538-4365/aa6fb6",
-      "supports": ["coupled period, mass-ratio and eccentricity population structure"],
-      "doesNotSupport": ["factorized universal binary prior"]
+      "supports": ["coupled period mass-ratio and eccentricity population structure and selection-aware empirical inference"],
+      "implementationGuard": "versioned conditional cells require physical q/e bounds, explicit weight semantics and table digest; selectionCorrected remains false unless a future promoted table binds a selection function",
+      "doesNotSupport": ["factorized universal binary prior", "invented conditional weights", "survey completeness without selection provenance"]
     },
     {
       "id": "MIST_I_2016",
       "doi": "10.3847/0004-637X/823/2/102",
-      "supports": ["stellar evolutionary track and isochrone grid context"],
-      "doesNotSupport": ["implicit unversioned interpolation"]
+      "supports": ["stellar evolutionary track and isochrone grid context across broad age/mass/metallicity ranges"],
+      "doesNotSupport": ["implicit unversioned interpolation", "assuming a broad published family equals the bounds of any exact downloaded grid fixture"]
     },
     {
       "id": "MIST_II_2026",
       "doi": "10.3847/1538-4365/ae48f3",
-      "supports": ["alpha-enhanced stellar grids and abundance-sensitive interpolation requirements"],
-      "doesNotSupport": ["silent solar-scaled chemistry assumptions"]
+      "supports": [
+        "alpha-enhanced stellar grids with alpha/Fe values -0.2 0.0 +0.2 +0.4 +0.6",
+        "metallicity coverage to approximately -3 <= Fe/H <= +0.5",
+        "abundance-sensitive interpolation requirements"
+      ],
+      "implementationGuard": "mistInterpolationContract requires exact release/hash/domain metadata, grid-supported rotation values, and rejects the unpublished Fe/H=+0.5 alpha/Fe=+0.6 combination",
+      "doesNotSupport": ["silent solar-scaled chemistry assumptions", "invented grid points", "interpolation outside exact fixture bounds"]
     }
   ]
 }
