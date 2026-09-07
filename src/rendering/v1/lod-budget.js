@@ -2,9 +2,18 @@
 'use strict';
 const O=root.OFU=root.OFU||{},VERSION='ofu-v1-render-budget-1',AUTHORITY='RUNTIME_ACCOUNTING';
 const ACCOUNTING=Object.freeze({class:'MODELED_ALLOCATION_ACCOUNTING',byteSemantics:'CALLER_DECLARED_NORMALIZED_ESTIMATE',driverMemoryMeasured:false,gpuMemoryMeasured:false,heapMemoryMeasured:false,limitsAreAdmissionCeilings:true});
+const SURFACE_ACCOUNTING=Object.freeze({class:'MODELED_BACKING_SURFACE_ACCOUNTING',pixelSemantics:'CANVAS_BACKING_STORE_DIMENSIONS',byteSemantics:'RGBA8_EQUIVALENT_COLOR_BYTES_ONLY',driverMemoryMeasured:false,gpuMemoryMeasured:false,heapMemoryMeasured:false,framebufferAttachmentsMeasured:false});
+const SURFACE_LIMITS=Object.freeze({desktopPixels:4194304,mobilePixels:2097152,maxDimension:4096,colorBytesPerPixel:4});
 const BASE=Object.freeze({COSMIC:{objects:96,bytes:2097152,draws:10},SYSTEM:{objects:80,bytes:2097152,draws:12},GLOBE:{objects:24,bytes:12582912,draws:14},TERRAIN:{objects:224,bytes:25165824,draws:24},ECOLOGY:{objects:96,bytes:5242880,draws:12},SETTLEMENT:{objects:160,bytes:6291456,draws:14},MICRO:{objects:512,bytes:8388608,draws:16}});
 function freeze(v){if(!v||typeof v!=='object'||Object.isFrozen(v))return v;for(const k of Object.keys(v))freeze(v[k]);return Object.freeze(v)}
 function config({mobile=false,dpr=1,memoryClass='NORMAL'}={}){const f=(mobile?.62:1)*(Number(dpr)>2?.82:1)*(memoryClass==='LOW'?.64:memoryClass==='HIGH'?1.2:1),out={};for(const [k,v] of Object.entries(BASE))out[k]=freeze({objects:Math.max(8,Math.floor(v.objects*f)),bytes:Math.max(262144,Math.floor(v.bytes*f)),draws:Math.max(4,Math.floor(v.draws*f))});return freeze(out)}
+function surfacePlan({cssWidth=1,cssHeight=1,dpr=1,mobile=false,maxDpr=2,maxPixels=null,maxDimension=SURFACE_LIMITS.maxDimension}={}){
+ const widthCss=Math.max(1,Number(cssWidth)||1),heightCss=Math.max(1,Number(cssHeight)||1),requestedDpr=Math.min(Math.max(.01,Number(maxDpr)||2),Math.max(.01,Number(dpr)||1));
+ const defaultPixels=mobile?SURFACE_LIMITS.mobilePixels:SURFACE_LIMITS.desktopPixels,pixelCeiling=Math.max(1,Math.floor(Number(maxPixels)||defaultPixels)),dimensionCeiling=Math.max(1,Math.floor(Number(maxDimension)||SURFACE_LIMITS.maxDimension));
+ const scale=Math.min(requestedDpr,Math.sqrt(pixelCeiling/(widthCss*heightCss)),dimensionCeiling/widthCss,dimensionCeiling/heightCss),effectiveDpr=Math.max(.01,scale);
+ const width=Math.max(1,Math.floor(widthCss*effectiveDpr)),height=Math.max(1,Math.floor(heightCss*effectiveDpr)),pixels=width*height;
+ return freeze({cssWidth:widthCss,cssHeight:heightCss,requestedDpr,effectiveDpr,width,height,pixels,pixelCeiling,maxDimension:dimensionCeiling,constrained:effectiveDpr+1e-9<requestedDpr,modeledColorBytes:pixels*SURFACE_LIMITS.colorBytesPerPixel,accounting:SURFACE_ACCOUNTING});
+}
 function create(options={}){
  const limits=config(options),buckets=new Map(),clock={tick:0},metrics={allocations:0,evictions:0,rejections:0,releases:0,contextLosses:0,peakBytes:0};
  function bucket(name){name=String(name).toUpperCase();if(!limits[name])throw new RangeError('unknown render budget '+name);if(!buckets.has(name))buckets.set(name,new Map());return buckets.get(name)}
@@ -17,5 +26,5 @@ function create(options={}){
  function snapshot(){const u={};for(const k of Object.keys(limits))u[k]=freeze(usage(k));return freeze({version:VERSION,authority:AUTHORITY,accounting:ACCOUNTING,limits,usage:u,metrics:{...metrics}})}
  return Object.freeze({limits,request,release,clear,snapshot})
 }
-O.v1RenderBudget=Object.freeze({VERSION,AUTHORITY,ACCOUNTING,BASE,config,create});
+O.v1RenderBudget=Object.freeze({VERSION,AUTHORITY,ACCOUNTING,SURFACE_ACCOUNTING,SURFACE_LIMITS,BASE,config,surfacePlan,create});
 })(globalThis);
