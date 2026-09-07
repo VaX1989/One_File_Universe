@@ -1,4 +1,4 @@
-import { summarizeLifeState } from './model.js';
+import { advanceEcology, summarizeLifeState } from './model.js';
 import { materializeLocalOrganisms } from './embodiment.js';
 import {
   proposeTraitVariation,
@@ -6,6 +6,7 @@ import {
   buildSpeciationProposal,
 } from './evolution.js';
 import {
+  applyDispersal,
   describeSuccession,
   compareRecovery,
 } from './succession.js';
@@ -25,6 +26,8 @@ export const LIFE_V2_PROVIDER_DESCRIPTOR = Object.freeze({
     'LIFE_INTERACTION_INSPECTION',
     'LIFE_REGION_INSPECTION',
     'LIFE_LIFECYCLE_COMPOSITION',
+    'LIFE_ADVANCE_SIMULATION',
+    'LIFE_DISPERSAL_SIMULATION',
     'LIFE_LOCAL_REPRESENTATIVE_SAMPLES',
     'LIFE_REPRESENTATIVE_LIFECYCLE_SAMPLE',
     'LIFE_BEHAVIOR_OPPORTUNITY',
@@ -139,6 +142,28 @@ export function createLifeProvider({ getState }) {
         opportunityPpm: region.opportunityPpm,
         populationIds: Object.freeze(populations.map((population) => population.id).sort()),
         totalRepresentedAbundance: populations.reduce((sum, population) => sum + population.abundance, 0n),
+        authorityClass: 'MODEL_DERIVED_SIMULATION',
+      });
+    },
+
+    simulateAdvance(event) {
+      const current = state();
+      const result = advanceEcology(current, event);
+      return Object.freeze({
+        ...result,
+        sourceEventKey: current.eventKey,
+        eventAdmissionPerformed: false,
+        authorityClass: 'MODEL_DERIVED_SIMULATION',
+      });
+    },
+
+    simulateDispersal(event) {
+      const current = state();
+      const result = applyDispersal(current, event);
+      return Object.freeze({
+        ...result,
+        sourceEventKey: current.eventKey,
+        eventAdmissionPerformed: false,
         authorityClass: 'MODEL_DERIVED_SIMULATION',
       });
     },
