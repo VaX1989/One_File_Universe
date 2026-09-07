@@ -14,6 +14,7 @@ function createCameraAuthority({frameGraph,scaleModel,initialPose,initialLogDist
  if(!scaleModel||typeof scaleModel.describe!=='function')throw new TypeError('semantic scale model required');
  let pose=frozenPose(initialPose||{frameId:frameGraph.rootFrameId,position:[0,0,0],orientation:[0,0,0,1]});frameGraph.frame(pose.frameId);
  let logDistanceM=scaleModel.clampLog(initialLogDistanceM),semanticScale=scaleModel.deriveBand(logDistanceM),selection=token(selectionToken,'selectionToken'),sequence=0,commandCount=0,legacyAdoptions=0,lastOperation=null,spatialMutationEpoch=0;
+ let translationCompensation=[0,0,0];
  const returnStack=[];
  const listeners=new Set();
  function derived(){return scaleModel.describe(logDistanceM,{previous:semanticScale});}
@@ -33,6 +34,7 @@ function createCameraAuthority({frameGraph,scaleModel,initialPose,initialLogDist
    const after=frameGraph.rebasePose(before,targetFrame);pose=frozenPose(after);witness=frameGraph.witness(before.frameId,targetFrame,before.position);
    if(returnStack.length>=64)returnStack.shift();returnStack.push(Object.freeze({fromPose:before,toFrame:targetFrame,spatialMutationEpoch}));
   }
+  translationCompensation=[0,0,0];
   if(!witness.finite)throw new Error('reference-frame handoff produced non-finite transform');
   return Object.freeze({kind:'REFERENCE_FRAME_HANDOFF',reason,from:before.frameId,to:targetFrame,witness,precisionRestoredFromReturnStack:restored});
  }
@@ -52,7 +54,11 @@ function createCameraAuthority({frameGraph,scaleModel,initialPose,initialLogDist
   const yaw=finite(yawRadians,'yawRadians'),pitch=finite(pitchRadians,'pitchRadians'),delta=F.qMul(F.qAxisAngle([0,1,0],yaw),F.qAxisAngle([1,0,0],pitch));pose=frozenPose({...pose,orientation:F.qMul(pose.orientation,delta)});spatialMutationEpoch++;returnStack.length=0;commandCount++;emit({kind:'LOOK',source,yawRadians:yaw,pitchRadians:pitch},{selectionInvariant:true,distanceInvariant:true});return snapshot();
  }
  function resetOrientation({source='reset-orientation'}={}){pose=frozenPose({...pose,orientation:[0,0,0,1]});spatialMutationEpoch++;returnStack.length=0;commandCount++;emit({kind:'RESET_ORIENTATION',source},{selectionInvariant:true,distanceInvariant:true});return snapshot();}
- function translateLocal(delta,{source='translate'}={}){const d=F.vec3(delta,'translation delta');pose=frozenPose({...pose,position:[pose.position[0]+d[0],pose.position[1]+d[1],pose.position[2]+d[2]]});spatialMutationEpoch++;returnStack.length=0;commandCount++;emit({kind:'TRANSLATE_LOCAL',source,delta:d},{selectionInvariant:true,distanceInvariant:true});return snapshot();}
+ function translateLocal(delta,{source='translate'}={}){
+  const d=F.vec3(delta,'translation delta'),next=[];
+  for(let i=0;i<3;i++){const y=d[i]-translationCompensation[i],sum=pose.position[i]+y;translationCompensation[i]=(sum-pose.position[i])-y;next.push(sum);}
+  pose=frozenPose({...pose,position:next});spatialMutationEpoch++;returnStack.length=0;commandCount++;emit({kind:'TRANSLATE_LOCAL',source,delta:d},{selectionInvariant:true,distanceInvariant:true,compensatedTranslation:true});return snapshot();
+ }
  function observeSelection(nextSelection,{sourceContract='ofu-wave-iv-selection-1'}={}){const next=token(nextSelection,'selectionToken'),before=selection;selection=next;emit({kind:'OBSERVE_EXTERNAL_SELECTION',sourceContract,changed:before!==next},{cameraDidNotMutateSelection:true});return snapshot();}
  function adoptLegacyDistance(nextLogDistanceM,{sourceContract=SCALE_CONTRACT}={}){
   const next=scaleModel.clampLog(nextLogDistanceM);if(commandCount>0&&Math.abs(next-logDistanceM)>1e-12)throw new Error('legacy distance adoption allowed only before authoritative camera commands');
