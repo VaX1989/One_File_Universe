@@ -56,7 +56,7 @@ function available(node){
 function chromeFallback(key){
  if(key?.surface==='rail'&&rail){
   const buttons=[...rail.querySelectorAll('button[data-living-scale]')];
-  return buttons.find(node=>node.getAttribute('aria-pressed')==='true'&&available(node))||buttons.find(available)||null;
+  return buttons.find(node=>(node.getAttribute('aria-current')==='step'||node.getAttribute('aria-pressed')==='true')&&available(node))||buttons.find(available)||null;
  }
  if(key?.surface==='breadcrumb'&&breadcrumbs){const buttons=[...breadcrumbs.querySelectorAll('button')].filter(available);return buttons.at(-1)||null}
  return null;
