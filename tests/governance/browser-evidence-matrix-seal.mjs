@@ -14,6 +14,30 @@ const TARGETS = [
 ];
 
 function record(mode, [platform, arch, browser]) {
+  if (mode === 'p6') {
+    return {
+      status: 'PASS',
+      sourceCommit: SOURCE,
+      browser,
+      hostPlatform: platform,
+      hostArch: arch,
+      unexpectedNetworkRequests: 0,
+      manifestHash: 'a'.repeat(64),
+      biosphereId: 'b'.repeat(64),
+      lineageId: 'c'.repeat(64),
+      speciesId: 'd'.repeat(64),
+      stateDigest: 'e'.repeat(64),
+      artifactSha256: 'f'.repeat(64),
+      goldenCorpusDigest: '0'.repeat(64),
+      realSafariVerified: false,
+      artifactContainsConformanceAuthority: false,
+      shippedConformanceConstructor: false,
+      canonicalGenesisAvailable: false,
+      persistentLineageTransitions: false,
+      privateClock: false,
+    };
+  }
+
   const common = {
     status: 'PASS',
     sourceCommit: SOURCE,
@@ -73,7 +97,7 @@ function failureCode(result) {
   return line ? JSON.parse(line).code : null;
 }
 
-for (const mode of ['p5', 'p5-environment-v2']) {
+for (const mode of ['p5', 'p5-environment-v2', 'p6']) {
   const {result} = execute(mode);
   assert.equal(result.status, 0, `${mode}: canonical five-target matrix must pass: ${result.stderr}`);
   const report = JSON.parse(result.stdout.trim());
@@ -89,6 +113,17 @@ for (const mode of ['p5', 'p5-environment-v2']) {
     fs.writeFileSync(files[4], `${JSON.stringify(last)}\n`);
   });
   assert.notEqual(result.status, 0, 'duplicate target must fail with count still equal to five');
+  assert.equal(failureCode(result), 'DUPLICATE_TARGET');
+}
+
+{
+  const {result} = execute('p6', ({files}) => {
+    const first = JSON.parse(fs.readFileSync(files[0], 'utf8'));
+    const last = JSON.parse(fs.readFileSync(files[4], 'utf8'));
+    Object.assign(last, {hostPlatform: first.hostPlatform, hostArch: first.hostArch, browser: first.browser});
+    fs.writeFileSync(files[4], `${JSON.stringify(last)}\n`);
+  });
+  assert.notEqual(result.status, 0, 'P6 duplicate host target must fail with count still equal to five');
   assert.equal(failureCode(result), 'DUPLICATE_TARGET');
 }
 
@@ -125,6 +160,16 @@ for (const mode of ['p5', 'p5-environment-v2']) {
 }
 
 {
+  const {result} = execute('p6', ({files}) => {
+    const value = JSON.parse(fs.readFileSync(files[0], 'utf8'));
+    value.stateDigest = '9'.repeat(64);
+    fs.writeFileSync(files[0], `${JSON.stringify(value)}\n`);
+  });
+  assert.notEqual(result.status, 0);
+  assert.equal(failureCode(result), 'CROSS_RUNTIME_DISAGREEMENT');
+}
+
+{
   const {result} = execute('p5', ({files}) => {
     const value = JSON.parse(fs.readFileSync(files[0], 'utf8'));
     value.goldenCorpusVersion = 'wrong-corpus';
@@ -138,6 +183,16 @@ for (const mode of ['p5', 'p5-environment-v2']) {
   const {result} = execute('p5-environment-v2', ({files}) => {
     const value = JSON.parse(fs.readFileSync(files[0], 'utf8'));
     value.earthAnchorMilliK = '254579';
+    fs.writeFileSync(files[0], `${JSON.stringify(value)}\n`);
+  });
+  assert.notEqual(result.status, 0);
+  assert.equal(failureCode(result), 'FIXED_INVARIANT_MISMATCH');
+}
+
+{
+  const {result} = execute('p6', ({files}) => {
+    const value = JSON.parse(fs.readFileSync(files[0], 'utf8'));
+    value.canonicalGenesisAvailable = true;
     fs.writeFileSync(files[0], `${JSON.stringify(value)}\n`);
   });
   assert.notEqual(result.status, 0);
@@ -163,7 +218,7 @@ if (process.platform !== 'win32') {
 console.log(JSON.stringify({
   status: 'PASS',
   suite: 'browser-evidence-matrix-seal',
-  modes: ['p5', 'p5-environment-v2'],
+  modes: ['p5', 'p5-environment-v2', 'p6'],
   expectedTargets: TARGETS.map(parts => parts.join('/')),
   symlinkCase: process.platform === 'win32' ? 'NOT_EXECUTED_ON_WINDOWS' : 'PASS',
 }));
