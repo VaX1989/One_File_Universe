@@ -31,16 +31,20 @@ export function classifyEscapeRegime({ jeansParameter, hydrogenSupplyLimited = f
   return Object.freeze({ status: 'RESEARCH_REQUIRED', regime: 'AMBIGUOUS_ESCAPE_REGIME', thresholdSetId, thresholdSetHash, thresholdSemantics, rateModelAuthorized: false });
 }
 
-export function convectionDiagnostic({ rayleighNumber, nusseltNumber, viscosityContrast, parameterSetId, parameterSetHash, smallContrastMax = 1e2, stagnantContrastMin = 1e5 }) {
+export function convectionDiagnostic({ rayleighNumber, nusseltNumber, viscosityContrast, criticalRayleighNumber, parameterSetId, parameterSetHash, smallContrastMax = 1e2, stagnantContrastMin = 1e5 }) {
   const ra = finite('rayleighNumber', rayleighNumber);
   const nu = finite('nusseltNumber', nusseltNumber);
   const contrast = finite('viscosityContrast', viscosityContrast);
+  const raCritical = finite('criticalRayleighNumber', criticalRayleighNumber);
   const smallMax = finite('smallContrastMax', smallContrastMax);
   const stagnantMin = finite('stagnantContrastMin', stagnantContrastMin);
   if (!parameterSetId || !parameterSetHash) return Object.freeze({ status: 'RESEARCH_REQUIRED', reason: 'CONVECTION_REGIME_PARAMETER_SET_REQUIRED', plateTectonicsTruthClaim: false });
-  if (ra <= 0 || nu <= 0 || contrast <= 0 || smallMax <= 0 || stagnantMin <= smallMax) return Object.freeze({ status: 'UNSUPPORTED', reason: 'NON_POSITIVE_OR_INVALID_DIMENSIONLESS_INPUT' });
+  if (ra <= 0 || nu <= 0 || contrast <= 0 || raCritical <= 0 || smallMax <= 0 || stagnantMin <= smallMax) return Object.freeze({ status: 'UNSUPPORTED', reason: 'NON_POSITIVE_OR_INVALID_DIMENSIONLESS_INPUT' });
+  if (ra <= raCritical) {
+    return Object.freeze({ status: 'RESEARCH_REQUIRED', reason: 'AT_OR_BELOW_DECLARED_CONVECTION_ONSET', rayleighNumber: ra, criticalRayleighNumber: raCritical, nusseltNumber: nu, parameterSetId, parameterSetHash, regime: 'CONDUCTION_OR_ONSET_CONTEXT', plateTectonicsTruthClaim: false });
+  }
   const regime = contrast < smallMax ? 'SMALL_VISCOSITY_CONTRAST' : contrast < stagnantMin ? 'TRANSITIONAL' : 'STAGNANT_LID_LIKE';
-  return Object.freeze({ status: 'PRESENT', rayleighNumber: ra, nusseltNumber: nu, viscosityContrast: contrast, regime, parameterSetId, parameterSetHash, thresholds: Object.freeze({ smallContrastMax: smallMax, stagnantContrastMin: stagnantMin, universalThresholdClaim: false }), plateTectonicsTruthClaim: false });
+  return Object.freeze({ status: 'PRESENT', rayleighNumber: ra, criticalRayleighNumber: raCritical, supercriticality: ra / raCritical, nusseltNumber: nu, viscosityContrast: contrast, regime, parameterSetId, parameterSetHash, thresholds: Object.freeze({ smallContrastMax: smallMax, stagnantContrastMin: stagnantMin, universalThresholdClaim: false, criticalRayleighUniversalClaim: false }), plateTectonicsTruthClaim: false });
 }
 
 export function volatileLedger({ surfaceKg, atmosphereKg, interiorKg, deltaSurfaceKg = 0, deltaAtmosphereKg = 0, deltaInteriorKg = 0, externalSourceKg = 0, externalSinkKg = 0 }) {
