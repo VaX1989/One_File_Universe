@@ -38,6 +38,7 @@ assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.capabilities.includes('LIFE_INTERACTION_IN
 assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.capabilities.includes('LIFE_REGION_INSPECTION'));
 assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.capabilities.includes('LIFE_LIFECYCLE_COMPOSITION'));
 assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.capabilities.includes('LIFE_ADVANCE_SIMULATION'));
+assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.capabilities.includes('LIFE_ADVANCE_TRANSITION_WITNESS'));
 assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.capabilities.includes('LIFE_DISPERSAL_SIMULATION'));
 assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.capabilities.includes('LIFE_REPRESENTATIVE_LIFECYCLE_SAMPLE'));
 assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.capabilities.includes('LIFE_BEHAVIOR_OPPORTUNITY'));
@@ -76,6 +77,18 @@ assert.equal(advanceSimulationA.sourceEventKey, state.eventKey);
 assert.equal(advanceSimulationA.state.eventKey, advanceEvent.eventKey);
 assert.equal(advanceSimulationA.eventAdmissionPerformed, false, 'provider simulation must never claim P4 event admission');
 assert.equal(advanceSimulationA.authorityClass, 'MODEL_DERIVED_SIMULATION');
+assert.equal(advanceSimulationA.transitionWitness.schema, 'ofu-v2x-08-life-advance-witness-1');
+assert.equal(advanceSimulationA.transitionWitness.sourceEventKey, state.eventKey);
+assert.equal(advanceSimulationA.transitionWitness.eventKey, advanceEvent.eventKey);
+assert.equal(advanceSimulationA.transitionWitness.empiricalCausationClaimed, false);
+assert.equal(advanceSimulationA.transitionWitness.environmentMutationAuthorityClaimed, false);
+assert.equal(advanceSimulationA.transitionWitness.eventAdmissionPerformed, false);
+const primaryRegionWitness = advanceSimulationA.transitionWitness.regions.find((entry) => entry.regionId === 'r-provider');
+assert.ok(primaryRegionWitness);
+assert.equal(primaryRegionWitness.resourceDelta, primaryRegionWitness.resourceAfter - primaryRegionWitness.resourceBefore);
+assert.equal(primaryRegionWitness.nutrientDelta, primaryRegionWitness.nutrientAfter - primaryRegionWitness.nutrientBefore);
+assert.equal(primaryRegionWitness.representedBirths, advanceSimulationA.diagnostics.reduce((sum, entry) => sum + entry.births, 0n));
+assert.equal(primaryRegionWitness.representedDemographicDeaths, advanceSimulationA.diagnostics.reduce((sum, entry) => sum + entry.deaths, 0n));
 assert.deepEqual(state, sourceSnapshot, 'advance simulation must not mutate provider source state');
 
 const dispersalEvent = {
