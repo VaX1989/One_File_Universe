@@ -27,27 +27,38 @@ function assertPreviewTransaction(source){
   assert(/\.draft/.test(draftVerify)&&/\.prerelease/.test(draftVerify)&&/\.target_commitish/.test(draftVerify),`${file}: remote draft identity must be checked before publication`);
   assert(/SOURCE_SHA/.test(draftVerify),`${file}: remote draft target must remain bound to exact source SHA`);
 
-  const abort=segment(source,'Abort stale preview transaction if main moved','Publish only after verified draft');
+  const abort=segment(source,'Abort stale preview transaction if main moved','Cleanup failed staged preview transaction');
   assert(/git ls-remote origin refs\/heads\/main/.test(abort),`${file}: publication boundary must re-read live main`);
   assert(/LIVE_MAIN/.test(abort)&&/SOURCE_SHA/.test(abort),`${file}: publication boundary must compare live main with exact source SHA`);
-  assert(/gh release delete "\$RELEASE_TAG" --cleanup-tag --yes/.test(abort),`${file}: stale draft/tag must be cleaned up if main moves`);
+
+  const cleanup=segment(source,'Cleanup failed staged preview transaction','Publish only after verified draft');
+  assert(/if:\s*failure\(\)/.test(cleanup),`${file}: failed staged transactions must trigger cleanup`);
+  assert(/steps\.draft\.outputs\.release_id/.test(cleanup)&&/RELEASE_ID/.test(cleanup),`${file}: cleanup must target the exact staged release id`);
+  assert(/releases\/\$RELEASE_ID[^\n]*-X DELETE/.test(cleanup),`${file}: cleanup must delete only the exact staged draft release`);
+  assert(/\.draft/.test(cleanup)&&/\.target_commitish/.test(cleanup)&&/SOURCE_SHA/.test(cleanup),`${file}: cleanup must authenticate draft identity before deletion`);
+  assert(/TAG_SHA/.test(cleanup)&&/TAG_SHA[^\n]*SOURCE_SHA|SOURCE_SHA[^\n]*TAG_SHA/.test(cleanup),`${file}: cleanup must authenticate tag ownership before deletion`);
+  assert(/git\/refs\/tags\/\$RELEASE_TAG[^\n]*-X DELETE/.test(cleanup),`${file}: cleanup must remove only this transaction tag`);
 
   const publish=stepIndex(source,'Publish only after verified draft');
   assert(stepIndex(source,'Stage draft release only')<publish,`${file}: publication must follow draft staging`);
   assert(stepIndex(source,'Re-download remote draft asset and verify bytes/hash')<publish,`${file}: publication must follow remote readback`);
-  assert(stepIndex(source,'Abort stale preview transaction if main moved')<publish,`${file}: live-main recheck must immediately gate publication`);
+  assert(stepIndex(source,'Abort stale preview transaction if main moved')<publish,`${file}: live-main recheck must gate publication`);
+  assert(stepIndex(source,'Cleanup failed staged preview transaction')<publish,`${file}: failure cleanup must be positioned before publication`);
   return true;
 }
 
 assert.equal(assertPreviewTransaction(text),true);
 
 const reordered=text.replace(
-  /([\s\S]*?)(      - name: Abort stale preview transaction if main moved[\s\S]*?)(      - name: Publish only after verified draft)/,
+  /([\s\S]*?)(      - name: Abort stale preview transaction if main moved[\s\S]*?)(      - name: Cleanup failed staged preview transaction)/,
   '$1$3\n$2'
 );
-assert.throws(()=>assertPreviewTransaction(reordered),/must precede|must immediately gate publication/);
+assert.throws(()=>assertPreviewTransaction(reordered),/must precede|must gate publication/);
 
-const noCleanup=text.replace('gh release delete "$RELEASE_TAG" --cleanup-tag --yes','echo stale-preview');
-assert.throws(()=>assertPreviewTransaction(noCleanup),/must be cleaned up/);
+const noReleaseCleanup=text.replace('gh api "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" -X DELETE','echo stale-preview-release');
+assert.throws(()=>assertPreviewTransaction(noReleaseCleanup),/exact staged draft release/);
 
-console.log(JSON.stringify({status:'PASS',suite:'release-transaction-boundary',workflow:file,syntheticCases:2}));
+const noTagOwnership=text.replace('if test "$TAG_SHA" != "$SOURCE_SHA"; then','if false; then');
+assert.throws(()=>assertPreviewTransaction(noTagOwnership),/authenticate tag ownership/);
+
+console.log(JSON.stringify({status:'PASS',suite:'release-transaction-boundary',workflow:file,syntheticCases:3}));
