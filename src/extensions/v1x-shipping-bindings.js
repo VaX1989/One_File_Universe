@@ -3,7 +3,38 @@
 const O=root.OFU=root.OFU||{},C=O.pxContracts,P=O.pxProduct;
 if(!C||!P)throw new Error('V1X shipping bindings require the sealed PX descriptor graph');
 const registry=P.registry,encoder=new TextEncoder();
-const safe=value=>C.data(JSON.parse(JSON.stringify(value,(_key,item)=>typeof item==='bigint'?String(item):item instanceof Uint8Array?Array.from(item):item)));
+const SAFE_LIMITS=Object.freeze({nodes:32768,depth:24,stringBytes:1048576,typedArrayItems:32768}),forbiddenKeys=new Set(['__proto__','prototype','constructor']);
+function safe(value){
+ let nodes=0,stringBytes=0;const seen=new Set();
+ const addString=(text,label)=>{const bytes=encoder.encode(text).length;stringBytes+=bytes;C.assert(bytes<=65536&&stringBytes<=SAFE_LIMITS.stringBytes,'DATA_BUDGET',label);return text;};
+ function copy(item,depth){
+  C.assert(++nodes<=SAFE_LIMITS.nodes&&depth<=SAFE_LIMITS.depth,'DATA_BUDGET','provider output nodes/depth');
+  if(item===null||typeof item==='boolean')return item;
+  if(typeof item==='string')return addString(item,'provider output string bytes');
+  if(typeof item==='number'){C.assert(Number.isFinite(item)&&Math.abs(item)<=Number.MAX_SAFE_INTEGER&&!Object.is(item,-0),'NUMBER','provider output finite safe-magnitude number required');return item;}
+  if(typeof item==='bigint')return addString(String(item),'provider output BigInt bytes');
+  if(item instanceof Uint8Array){
+   C.assert(item.length<=SAFE_LIMITS.typedArrayItems&&nodes+item.length<=SAFE_LIMITS.nodes,'DATA_BUDGET','provider output Uint8Array');
+   const out=new Array(item.length);for(let i=0;i<item.length;i++)out[i]=copy(item[i],depth+1);return out;
+  }
+  C.assert(item&&typeof item==='object','DATA_TYPE','provider output JSON data required');
+  const prototype=Object.getPrototypeOf(item);C.assert(Array.isArray(item)?prototype===Array.prototype:prototype===Object.prototype||prototype===null,'DATA_TYPE','provider output plain data required');
+  C.assert(!seen.has(item),'DATA_CYCLE','provider output cyclic value');seen.add(item);
+  const names=Reflect.ownKeys(item);let out;
+  if(Array.isArray(item)){
+   C.assert(item.length<=SAFE_LIMITS.nodes&&names.length===item.length+1,'DATA_TYPE','provider output dense array without extra fields required');out=new Array(item.length);
+   for(let i=0;i<item.length;i++){const descriptor=Object.getOwnPropertyDescriptor(item,String(i));C.assert(descriptor&&descriptor.enumerable&&'value'in descriptor,'DATA_TYPE','provider output array accessor/hole');out[i]=copy(descriptor.value,depth+1);}
+  }else{
+   C.assert(names.length<=SAFE_LIMITS.nodes,'DATA_BUDGET','provider output record fields');out=Object.create(null);
+   for(const key of names)C.assert(typeof key==='string'&&!forbiddenKeys.has(key)&&key.length<=128,'DATA_KEY','provider output unsupported key');
+   for(const key of names.sort()){
+    const descriptor=Object.getOwnPropertyDescriptor(item,key);C.assert(descriptor&&descriptor.enumerable&&'value'in descriptor,'DATA_TYPE','provider output accessor/hidden field');addString(key,'provider output key bytes');out[key]=copy(descriptor.value,depth+1);
+   }
+  }
+  seen.delete(item);return out;
+ }
+ return C.data(copy(value,0));
+}
 function entityCount(value){
  for(const path of [['objects'],['hitTargets'],['frames'],['terrain'],['visual','organismInstances'],['trace']]){
   let current=value;for(const part of path)current=current?.[part];if(Array.isArray(current))return current.length;
