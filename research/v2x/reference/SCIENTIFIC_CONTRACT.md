@@ -36,4 +36,4 @@ Cross-domain fixtures are falsification oracles/proposals only. They cannot admi
 
 ## Failure policy
 
-Invalid or non-plain records, duplicate IDs/dependencies/topology, unknown references, cap overflow, rejected unbounded metadata, stale or mixed refinement fingerprints, forged ephemeral ID metadata, negative stocks, empty/zero elemental compositions, graph cycles, unbalanced reactions, missing provenance, unsupported authority combinations, unknown model-regime flags, and invalid model-regime booleans fail closed. Unknown remains unknown.
+Invalid or non-plain records, duplicate IDs/dependencies/topology, unknown references, cap overflow, rejected unbounded metadata, stale or mixed refinement fingerprints, forged ephemeral ID metadata, negative stocks, undeclared reaction-stock species, empty/zero elemental compositions, graph cycles, unbalanced reactions, missing provenance, unsupported authority combinations, unknown model-regime flags, and invalid model-regime booleans fail closed. Unknown remains unknown.
