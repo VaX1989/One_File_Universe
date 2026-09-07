@@ -13,8 +13,7 @@ eq(r.snapshot().forwardDepth,0,'initial forward history is empty');
 
 let noOpNotifications=0;const stopNoOpProbe=r.onChange(()=>noOpNotifications++),noOpBefore=r.snapshot();
 r.setCanonicalSelection(r.seedGraph.body.canonicalKey,{source:'forward-oracle-noop-selection'});
-eq(r.snapshot().revision,noOpBefore.revision,'same retained canonical selection leaves Living revision unchanged');
-eq(noOpNotifications,0,'unchanged wrapped runtime call must not fan out a synthetic Living change');stopNoOpProbe();
+eq(r.snapshot().revision,noOpBefore.revision,'same retained canonical selection leaves Living revision unchanged');eq(noOpNotifications,0,'unchanged wrapped runtime call must not fan out a synthetic Living change');stopNoOpProbe();
 
 r.enterGalaxy(r.seedGraph.galaxy);const galaxyId=id();
 r.enterRegion(r.seedGraph.region);const regionId=id();
@@ -36,4 +35,9 @@ ok(r.snapshot().historyDepth<=r.snapshot().maxHistory,'base Living history remai
 
 const controls=fs.readFileSync('src/bootstrap/product/living-forward-controls.js','utf8');
 assert.match(controls,/dataset\.livingAction='forward'/);assert.match(controls,/event\.key==='\['/);assert.match(controls,/event\.key==='\]'/);assert.match(controls,/historyDepth/);assert.match(controls,/forwardDepth/);cases+=5;
+assert.doesNotMatch(controls,/Back to previous exploration context/,'successful keyboard Back must delegate accessible feedback to the semantic Living transition status');
+assert.doesNotMatch(controls,/O\.productUI\?\.announce\?\.\('Forward to next exploration context'\)/,'successful Forward must not race the semantic Living transition status with a generic live-region announcement');
+assert.match(controls,/navigationFailure\('Back',error\)/,'keyboard Back failures remain explicitly surfaced');
+assert.match(controls,/navigationFailure\('Forward',error\)/,'Forward button and keyboard failures remain explicitly surfaced');
+assert.match(controls,/direction\+' navigation could not be restored'/,'failure feedback remains explicit instead of being suppressed with successful duplicate feedback');cases+=5;
 console.log(JSON.stringify({status:'PASS',suite:'v11-living-forward-navigation',cases,forwardVersion:r.snapshot().forwardNavigationVersion,maxHistory:r.snapshot().maxHistory,invalidations:r.snapshot().forwardInvalidations}));
