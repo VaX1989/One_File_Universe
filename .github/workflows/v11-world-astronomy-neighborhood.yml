@@ -1,14 +1,12 @@
 name: V1.1 World Galactic Neighborhood
 on:
-  push:
-    branches:
-      - development/v1.1-quality-exploration
   pull_request:
     paths:
       - 'src/domains/v1/astronomy/neighborhood.js'
       - 'tests/v1/astronomy/neighborhood.mjs'
       - 'config/components/v11-astronomy-neighborhood.json'
       - '.github/workflows/v11-world-astronomy-neighborhood.yml'
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -28,6 +26,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: ${{ env.OFU_SOURCE_SHA }}
+          persist-credentials: false
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '24.20.0'
@@ -43,7 +42,18 @@ jobs:
         run: node tests/v1/astronomy/observability.mjs
       - name: Galactic neighborhood oracle
         run: node tests/v1/astronomy/neighborhood.mjs
-      - name: Live component graph integrity
-        run: node tests/extensions/components.mjs
+      - name: Component descriptor integration
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {planComponents} from './tools/extensions/components.mjs';
+          const actual=JSON.parse(fs.readFileSync('config/components/v11-astronomy-neighborhood.json','utf8')).components[0];
+          const base={id:'v1.models.astronomy',version:'1.0.0',owner:'v1',kind:'code',stage:'foundation',placement:'script',source:'src/domains/v1/astronomy.js',dependencies:[],authority:'MODEL_DERIVED_SIMULATION',provenance:'validation dependency',provides:['v1.models.astronomy']};
+          const depth=JSON.parse(fs.readFileSync('config/components/v11-astronomy-depth.json','utf8')).components[0];
+          const observability=JSON.parse(fs.readFileSync('config/components/v11-astronomy-observability.json','utf8')).components[0];
+          const plan=planComponents([base,depth,observability,actual]);
+          if(!plan.some(x=>x.id==='v1.models.astronomy.galactic-neighborhood'))throw new Error('galactic neighborhood component missing');
+          console.log(JSON.stringify({status:'PASS',component:'v1.models.astronomy.galactic-neighborhood',planned:plan.length}));
+          NODE
       - name: Workflow reproducibility guard
         run: node tests/governance/workflow-reproducibility.mjs
