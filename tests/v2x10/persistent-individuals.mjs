@@ -3,7 +3,7 @@ import { createDemographyLedger, applyDemographicStep, demographicSummary, DEMOG
 import { individualId } from '../../src/domains/v1/individuals/identity.js';
 import { refineIndividuals, retainIndividual, appendHistoryRef, proposeIndividualAction, INDIVIDUAL_LIMITS } from '../../src/domains/v1/individuals/runtime.js';
 import { reconcileIndividuals, reconcileDemography } from '../../src/domains/v1/individuals/reconcile.js';
-import { transmitConventions } from '../../src/domains/v1/culture/transmission.js';
+import { transmitConventions, CULTURE_LIMITS } from '../../src/domains/v1/culture/transmission.js';
 
 let checks = 0;
 const check = (condition, message) => { assert.ok(condition, message); checks += 1; };
@@ -14,16 +14,26 @@ check(ledger.population === 105, 'birth/death conservation');
 check(ledger.nextBirthOrdinal === 107, 'stable birth ordinal allocation');
 check(demographicSummary(ledger).population === 105, 'summary matches ledger');
 check(reconcileDemography({ aggregatePopulation: 105, ledger }).status === 'PASS', 'demography reconciles with aggregate');
+check(reconcileDemography({ aggregatePopulation: 104, ledger }).status === 'FAIL', 'demography reconciliation fails closed on aggregate mismatch');
 
 const idA = individualId({ worldId: 'w', settlementId: 's1', birthOrdinal: 4 });
 const idB = individualId({ worldId: 'w', settlementId: 's1', birthOrdinal: 4 });
 check(idA === idB, 'identity deterministic');
+check(individualId({ worldId: 'e\u0301', settlementId: 's1', birthOrdinal: 4 }) === individualId({ worldId: '\u00e9', settlementId: 's1', birthOrdinal: 4 }), 'identity canonicalizes NFC-equivalent address parts');
+check(individualId({ worldId: 'w2', settlementId: 's1', birthOrdinal: 4 }) !== idA, 'world identity domain separation');
+check(individualId({ worldId: 'w', settlementId: 's2', birthOrdinal: 4 }) !== idA, 'settlement identity domain separation');
+check(individualId({ worldId: 'w', settlementId: 's1', birthOrdinal: 5 }) !== idA, 'birth ordinal identity domain separation');
+assert.throws(() => individualId({ worldId: 'w', settlementId: 's1', birthOrdinal: -1 }), /birthOrdinal/, 'negative birth ordinal is rejected'); checks += 1;
+assert.throws(() => individualId({ worldId: '', settlementId: 's1', birthOrdinal: 0 }), /worldId is required/, 'empty world identity is rejected'); checks += 1;
 
 const aggregate = { population: 1_000_000_000, roles: ['farmer', 'builder'], cultureConventions: ['market-day'], educationTopics: ['water'] };
 const first = refineIndividuals({ worldId: 'w', settlementId: 's1', aggregate, startOrdinal: 4, count: 2, currentYear: 30 });
 check(first.length === 2, 'tiny active set from huge aggregate');
 check(first[0].id === idA, 'refine uses stable identity');
 check(first[0].lineage.status === 'UNKNOWN_UNLESS_RETAINED' && first[0].lineage.parentIds.length === 0, 'no fabricated genealogy');
+check(refineIndividuals({ worldId: 'w', settlementId: 's1', aggregate, startOrdinal: 4, count: 0 }).length === 0, 'zero-count refinement is empty');
+check(refineIndividuals({ worldId: 'w', settlementId: 's1', aggregate: { population: 2 }, startOrdinal: 2, count: 1 }).length === 0, 'refinement outside addressable aggregate is empty');
+assert.throws(() => refineIndividuals({ worldId: 'w', settlementId: 's1', aggregate: { population: -1 }, count: 1 }), /aggregate.population/, 'negative aggregate population is rejected'); checks += 1;
 
 let person = appendHistoryRef(first[0], { eventId: 'evt-1', provenance: 'MODEL_DERIVED_SIMULATION', kind: 'WITNESSED' });
 person = { ...person, culture: transmitConventions(person.culture, ['river-festival']) };
@@ -34,11 +44,21 @@ check(revisited.id === person.id, 'identity survives eviction/revisit');
 check(revisited.memories[0].eventId === 'evt-1', 'bounded admitted/model history ref survives revisit');
 check(revisited.culture.conventions.includes('river-festival'), 'structured convention survives revisit');
 
+const cultureFlood = Array.from({ length: CULTURE_LIMITS.MAX_CONVENTIONS + 20 }, (_, index) => `convention-${String(index).padStart(2, '0')}`);
+const saturatedCulture = transmitConventions(revisited.culture, cultureFlood);
+check(saturatedCulture.conventions.length === CULTURE_LIMITS.MAX_CONVENTIONS, 'culture transmission remains bounded');
+check([...saturatedCulture.conventions].join('|') === [...saturatedCulture.conventions].sort().join('|'), 'culture convention representation is deterministic');
+check(saturatedCulture.semantics === 'structured-conventions-not-real-language-or-belief-truth', 'culture does not claim real language or belief truth');
+
 const proposal = proposeIndividualAction(revisited, { kind: 'REQUEST_MOVE', targetId: 's2' });
 check(proposal.authority === 'PROPOSAL_ONLY_REQUIRES_P4_ADMISSION', 'individual actions cannot self-admit');
 
 const recon = reconcileIndividuals({ aggregate, people: first, startOrdinal: 4 });
 check(recon.status === 'PASS' && recon.projection.materializedCount === 2, 'independent projection/reconcile passes');
+const duplicateRecon = reconcileIndividuals({ aggregate, people: [first[0], first[0]], startOrdinal: 4 });
+check(duplicateRecon.status === 'FAIL' && duplicateRecon.defects.some((defect) => defect.startsWith('duplicate-id:')), 'aggregate refinement reconciliation rejects duplicate identity');
+const outOfRangeRecon = reconcileIndividuals({ aggregate: { population: 5, nextBirthOrdinal: 5 }, people: [{ ...first[0], birthOrdinal: 9 }], startOrdinal: 0 });
+check(outOfRangeRecon.status === 'FAIL' && outOfRangeRecon.defects.some((defect) => defect.startsWith('ordinal-outside-address-space:')), 'aggregate refinement reconciliation rejects out-of-address-space ordinal');
 
 const capped = refineIndividuals({ worldId: 'w', settlementId: 's1', aggregate, startOrdinal: 0, count: INDIVIDUAL_LIMITS.MAX_ACTIVE + 999 });
 check(capped.length === INDIVIDUAL_LIMITS.MAX_ACTIVE, 'active individual working set bounded');
