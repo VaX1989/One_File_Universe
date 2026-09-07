@@ -65,6 +65,66 @@ throws(() => createLifeState({
 throws(() => createLifeState({
   lineages: [{ id: 'lin', traits: [] }], populations: [{ id: 'orphan-region', lineageId: 'lin', regionId: 'missing', abundance: 1 }], interactions: [], regions: {},
 }), /region missing/, 'population aggregates must fail closed when their upstream region identity is absent');
+throws(() => createLifeState({
+  lineages: [{ id: 'lin', traits: [] }],
+  populations: [
+    { id: 'aggregate-a', lineageId: 'lin', regionId: 'r', abundance: 1 },
+    { id: 'aggregate-b', lineageId: 'lin', regionId: 'r', abundance: 1 },
+  ],
+  interactions: [], regions: { r: { resourcePool: 0, nutrientPool: 0 } },
+}), /multiple population aggregates/, 'one lineage/region pair must map to one unambiguous aggregate population');
+
+const lifecycleNoFlow = advanceEcology(base, {
+  type: 'LIFE_ADVANCE', eventKey: 'p4:lifecycle-no-flow',
+  profile: {
+    birthPpm: 0, mortalityPpm: 0, resourcePerBirth: 1, nutrientPerBirth: 1,
+    maintenancePerIndividual: 0, disturbanceMortalityPpm: 0,
+    juvenileMaturationPpm: 0, matureSenescencePpm: 0,
+  },
+}).state;
+equal(lifecycleNoFlow.populations[0].lifecycleStagePpm, base.populations[0].lifecycleStagePpm, 'zero explicit lifecycle transition rates must preserve stage composition when demography is unchanged');
+
+const lifecycleAdvanced = advanceEcology(base, {
+  type: 'LIFE_ADVANCE', eventKey: 'p4:lifecycle-advance',
+  profile: {
+    birthPpm: 0, mortalityPpm: 0, resourcePerBirth: 1, nutrientPerBirth: 1,
+    maintenancePerIndividual: 0, disturbanceMortalityPpm: 0,
+    juvenileMaturationPpm: 500_000, matureSenescencePpm: 100_000,
+  },
+}).state;
+equal(lifecycleAdvanced.populations[0].lifecycleStagePpm, {
+  juvenile: 100_000n,
+  mature: 730_000n,
+  senescent: 170_000n,
+}, 'explicit lifecycle rates must advance exact 20/70/10 counts to 10/73/17 without changing abundance');
+equal(Object.values(lifecycleAdvanced.populations[0].lifecycleStagePpm).reduce((sum, value) => sum + value, 0n), PPM, 'advanced lifecycle composition must remain exactly normalized to one million ppm');
+equal(lifecycleAdvanced.populations[0].abundance, base.populations[0].abundance, 'pure lifecycle transitions must conserve represented abundance');
+throws(() => advanceEcology(base, {
+  type: 'LIFE_ADVANCE', eventKey: 'p4:lifecycle-invalid',
+  profile: { birthPpm: 0, mortalityPpm: 0, maintenancePerIndividual: 0, juvenileMaturationPpm: 1_000_001 },
+}), /juvenileMaturationPpm out of bounds/, 'lifecycle rate profiles above one million ppm must fail closed');
+
+const birthLifecycleFixture = createLifeState({
+  eventKey: 'fixture:birth-lifecycle',
+  lineages: [{ id: 'lin-birth', traits: [{ key: 'fecundity', valuePpm: PPM }, { key: 'resilience', valuePpm: PPM }] }],
+  populations: [{
+    id: 'pop-birth', lineageId: 'lin-birth', regionId: 'r', abundance: 100,
+    lifecycleStagePpm: { juvenile: 0, mature: PPM, senescent: 0 },
+  }],
+  interactions: [],
+  regions: { r: { resourcePool: 50, nutrientPool: 50, opportunityPpm: PPM, disturbancePpm: 0 } },
+});
+const birthLifecycleNext = advanceEcology(birthLifecycleFixture, {
+  type: 'LIFE_ADVANCE', eventKey: 'p4:birth-lifecycle',
+  profile: {
+    birthPpm: 500_000, mortalityPpm: 0, resourcePerBirth: 1, nutrientPerBirth: 1,
+    maintenancePerIndividual: 0, disturbanceMortalityPpm: 0,
+    juvenileMaturationPpm: 0, matureSenescencePpm: 0,
+  },
+}).state;
+equal(birthLifecycleNext.populations[0].abundance, 150n, 'resource-funded births must increase aggregate abundance by the exact bounded birth count');
+check(birthLifecycleNext.populations[0].lifecycleStagePpm.juvenile > 0n, 'new modeled births must enter the juvenile lifecycle pool');
+equal(Object.values(birthLifecycleNext.populations[0].lifecycleStagePpm).reduce((sum, value) => sum + value, 0n), PPM, 'birth-adjusted lifecycle composition must remain exactly normalized');
 
 const indivisibleMaintenance = createLifeState({
   eventKey: 'fixture:indivisible-maintenance',
