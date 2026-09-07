@@ -11,7 +11,7 @@
       "source": "src/audio/v2x14/living-audio-context.js",
       "dependencies": ["v1.product.living-universe"],
       "authority": "PRESENTATION_ONLY",
-      "provenance": "Fail-closed projection from Living snapshot to optional systemic-audio context. Living REGION and NEIGHBORHOOD are translated to the V1X-13 planner's galactic_region and stellar_neighborhood regimes; audible medium still requires explicit modeled pressure; unknown/thin atmospheres stay silent; micro regimes suppress unrelated life/civilization audio without erasing underlying modeled context.",
+      "provenance": "Fail-closed projection from Living snapshot to optional systemic-audio context. REGION and NEIGHBORHOOD map to the V1X-13 planner's galactic_region and stellar_neighborhood regimes. Diegetic medium, weather and biophony require an actual global/regional/local/human surface stage plus explicit modeled pressure; APPROACH remains orientation-only even if stale local context is present. Unknown/thin atmospheres stay silent; micro regimes suppress unrelated life/civilization audio without erasing underlying modeled context.",
       "provides": ["v2x14.audio.living-context"]
     },
     {
