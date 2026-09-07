@@ -1,0 +1,59 @@
+{
+  "schema": "ofu-super-parallel-base-1",
+  "version": "2026-09-07.2",
+  "status": "PREPARED_FOR_PROMPT_01_CONVERGENCE",
+  "canonicalDevelopmentBranch": "development/v1.1-quality-exploration",
+  "superParallelBaseSha": "70af4a84bb8cb7c782966bb4b3b8aab8aa86838e",
+  "superParallelBaseTree": "44b2cf8a40cb3e8acaa79f41acf5faa77d152a96",
+  "enablingCheckpointSha": "2489f283b74d4306d79d390b6bb0d7ce458cbf26",
+  "enablingCheckpointTree": "f97becfd708778171f4f0e40a49e9183e1a4e924",
+  "baseDecision": "READY_FOR_CONVERGENCE_REVIEW",
+  "writerMegaLanesAuthorized": false,
+  "ownershipMatrix": "docs/parallel/V2X_OWNERSHIP_MATRIX.json",
+  "capabilityRegistry": "docs/parallel/V2X_CAPABILITY_REGISTRY.json",
+  "gapRegistry": "docs/parallel/V2X_GAP_REGISTRY.json",
+  "researchHarvestLedger": "docs/parallel/V2X_RESEARCH_HARVEST_LEDGER.json",
+  "openPrAdjudicationLedger": "docs/parallel/V2X_OPEN_PR_ADJUDICATION_LEDGER.json",
+  "baselineEvidence": "docs/parallel/V2X_BASELINE_EVIDENCE.json",
+  "prompt02Gate": {
+    "required": true,
+    "state": "READY_FOR_PROMPT_01_INTEGRATION",
+    "reason": "V2X-00 enabling architecture/governance checkpoint exists. Prompt 01 must integrate/reconcile it and explicitly bind/authorize downstream lane identities before any writer mega-lane may write."
+  },
+  "liveRealityAtPreparation": {
+    "canonicalSha": "ddc91b11769e8d3b61a9d840ab27faf606cd5394",
+    "canonicalTree": "9621ff5d27c88df77515d0ec47d4e25e75b47acf",
+    "postBaseDeltaPolicy": "FORWARD_RECONCILE_BY_PROMPT_01_NO_SILENT_REBASE",
+    "currentCandidatePr": 178,
+    "mergedPostBasePr": 177
+  },
+  "preExistingCiTruth": {
+    "baseCheckRunsObserved": 75,
+    "baseFailureMarkerObserved": false,
+    "baseCancelledMarkerObserved": false,
+    "legacyStatusState": "pending",
+    "legacyStatusesCount": 0,
+    "claimLimit": "Repository-observed GitHub Checks evidence only; this session did not independently rerun every base workflow."
+  },
+  "prompt02Evidence": {
+    "standaloneOwnershipValidatorReplay": "PASS",
+    "standaloneNodeRuntime": "v22.16.0",
+    "canonicalNodeRequirement": "24.20.x",
+    "fullLocalCheckoutGate": "ENVIRONMENT_BLOCKED_DNS",
+    "fullLocalCheckoutFailure": "Could not resolve host github.com",
+    "prePrExactHeadCheckRuns": 0,
+    "browserEvidenceRequired": false,
+    "reasonBrowserEvidenceNotRequired": "No production renderer/provider/runtime behavior or build composition was changed by V2X-00."
+  },
+  "invariants": {
+    "mainDirectWrites": false,
+    "v1_0_0Mutable": false,
+    "forcePush": false,
+    "standardEditionOfflineDirectFile": true,
+    "singleHtmlArchitecture": true,
+    "unknownStaysUnknown": true,
+    "authorityBoundariesPreserved": true,
+    "physicalDeviceEvidenceClaimed": false,
+    "downstreamWritersFailClosed": true
+  }
+}
