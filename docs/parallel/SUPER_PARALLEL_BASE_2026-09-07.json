@@ -1,0 +1,39 @@
+{
+  "schema": "ofu-super-parallel-base-1",
+  "version": "2026-09-07.1",
+  "status": "ACTIVE",
+  "canonicalDevelopmentBranch": "development/v1.1-quality-exploration",
+  "superParallelBaseSha": "70af4a84bb8cb7c782966bb4b3b8aab8aa86838e",
+  "superParallelBaseTree": "44b2cf8a40cb3e8acaa79f41acf5faa77d152a96",
+  "baseDecision": "GO_FOR_BASE_REVIEW_ONLY",
+  "writerMegaLanesAuthorized": false,
+  "ownershipMatrix": "docs/parallel/V2X_OWNERSHIP_MATRIX.json",
+  "ownershipBootstrapCommit": "8e73881d5ccbc2d347cde756f0057a61d148a18e",
+  "prompt02Gate": {
+    "required": true,
+    "state": "DEPENDENCY_BLOCKED",
+    "reason": "Prompt 02 checkpoint is not present in the repository or current command context. No V2X writer mega-lane may be authorized until its exact checkpoint is reviewed and integrated."
+  },
+  "queueAdjudication": {
+    "integrated": [
+      {"pr":174,"checkpoint":"94e4262389b8096d45d4a6745376b522810cbd13","decision":"GO","resultingCanonicalSha":"70af4a84bb8cb7c782966bb4b3b8aab8aa86838e"}
+    ],
+    "repair": [
+      {"pr":175,"checkpoint":"8e63d4caf7a3d09e2ba7fc5f88bd70effdff4424","decision":"REPAIR","reason":"Dedicated direct-file Chromium Living pinch-handoff oracle fails on founder-visible dead-zone behavior."}
+    ],
+    "superseded": [
+      {"pr":169,"decision":"CLOSED_SUPERSEDED","successor":175}
+    ],
+    "pendingFreshReconciliation": [127,139,141,144,151,153]
+  },
+  "invariants": {
+    "mainDirectWrites": false,
+    "v1_0_0Mutable": false,
+    "forcePush": false,
+    "standardEditionOfflineDirectFile": true,
+    "singleHtmlArchitecture": true,
+    "unknownStaysUnknown": true,
+    "authorityBoundariesPreserved": true,
+    "physicalDeviceEvidenceClaimed": false
+  }
+}
