@@ -1,0 +1,18 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1.product.living-session-resume",
+      "version": "1.0.0",
+      "owner": "product",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/bootstrap/product/living-session-resume.js",
+      "dependencies": ["v1.product.living-universe", "v1.product.living-forward-controls"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Post-v1 local-device resume of validated shipping Living navigation locations through public runtime APIs. Stored Product state cannot create canonical, scientific, model or replay authority and invalid locations fail closed to Universe.",
+      "provides": ["v1.product.living-session-resume"]
+    }
+  ]
+}
