@@ -1,8 +1,8 @@
 (function(root){
 'use strict';
 const O=root.OFU=root.OFU||{};if(typeof document==='undefined')return;
-const VERSION='ofu-v11-living-pinch-handoff-3',MAX_ATTACH_ATTEMPTS=120,DRAG_THRESHOLD_PX=5;
-const state={version:VERSION,ready:false,attachStatus:'waiting',attachAttempts:0,pinchStarts:0,handoffs:0,handoffMoves:0,coreOwnedMoves:0,exclusiveMoves:0,cancellations:0,captureLosses:0,thresholdWaits:0,lastRemainingPointer:null,lastGesture:null};
+const VERSION='ofu-v11-living-pinch-handoff-2',MAX_ATTACH_ATTEMPTS=120,DRAG_THRESHOLD_PX=5;
+const state={version:VERSION,ready:false,attachStatus:'waiting',attachAttempts:0,pinchStarts:0,handoffs:0,handoffMoves:0,coreOwnedMoves:0,cancellations:0,captureLosses:0,thresholdWaits:0,lastRemainingPointer:null,lastGesture:null};
 let product=null,renderer=null,canvas=null,handoff=null,pinchSeen=false;
 const pointers=new Map();
 function position(event){const rect=canvas.getBoundingClientRect();return{x:Number.isFinite(event.clientX)?event.clientX-rect.left:Number(event.offsetX)||0,y:Number.isFinite(event.clientY)?event.clientY-rect.top:Number(event.offsetY)||0}}
@@ -15,12 +15,6 @@ function move(event){
  if(!handoff||handoff.pointerId!==event.pointerId||pointers.size!==1)return;
  const coreInput=product?.snapshot?.().input;
  if(coreInput?.lastGesture==='drag'){state.coreOwnedMoves++;handoff=null;state.lastGesture='core-drag';return}
- // Once a pinch has promoted its surviving pointer into this handoff, this helper
- // is the sole presentation owner until release/cancel. Capture-phase ownership
- // prevents legacy/bubble listeners from turning threshold jitter into a second
- // renderer.rotate request while still allowing a future core-native drag owner
- // (detected above) to supersede the helper cleanly.
- event.stopImmediatePropagation?.();state.exclusiveMoves++;
  let dx,dy;
  if(!handoff.engaged){
   dx=p.x-handoff.startX;dy=p.y-handoff.startY;
@@ -52,7 +46,7 @@ function lostCapture(event){
  state.captureLosses++;finish(event,true);
 }
 function bind(){
- canvas.addEventListener('pointerdown',down,false);canvas.addEventListener('pointermove',move,true);canvas.addEventListener('pointerup',event=>finish(event,false),false);canvas.addEventListener('pointercancel',event=>finish(event,true),false);canvas.addEventListener('lostpointercapture',lostCapture,false);
+ canvas.addEventListener('pointerdown',down,false);canvas.addEventListener('pointermove',move,false);canvas.addEventListener('pointerup',event=>finish(event,false),false);canvas.addEventListener('pointercancel',event=>finish(event,true),false);canvas.addEventListener('lostpointercapture',lostCapture,false);
  canvas.dataset.ofuPinchHandoff='ready';state.ready=true;state.attachStatus='attached';
 }
 function attach(){
