@@ -45,15 +45,74 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           mkdir -p dist/source-reproduction
-          git archive --format=tar.gz --output=dist/source-reproduction/exact-source.tar.gz HEAD
-          git bundle create dist/source-reproduction/source.bundle --all HEAD
+
+          # The source payload is a pure function of the exact source commit.
+          git archive --format=tar.gz --output=dist/source-reproduction/exact-source.tar.gz "$EXPECTED_SHA"
+          git archive --format=tar.gz --output=/tmp/exact-source-repeat.tar.gz "$EXPECTED_SHA"
+          cmp dist/source-reproduction/exact-source.tar.gz /tmp/exact-source-repeat.tar.gz
+
+          # Do not bundle --all: ambient remote branches/tags may change while the
+          # exact source commit remains identical. Anchor ancestry to one private,
+          # deterministic local ref. Disable bitmap-driven and multi-threaded pack
+          # heuristics so repeated bundle creation is byte-stable as well as
+          # semantically identical.
+          source_ref="refs/ofu/source/$EXPECTED_SHA"
+          git update-ref "$source_ref" "$EXPECTED_SHA"
+          trap 'git update-ref -d "$source_ref" >/dev/null 2>&1 || true' EXIT
+          git -c pack.threads=1 -c pack.useBitmaps=false bundle create dist/source-reproduction/source.bundle "$source_ref"
+          git -c pack.threads=1 -c pack.useBitmaps=false bundle create /tmp/source-repeat.bundle "$source_ref"
+          cmp dist/source-reproduction/source.bundle /tmp/source-repeat.bundle
           git bundle verify dist/source-reproduction/source.bundle
-          git for-each-ref --format='%(refname) %(objectname)' > dist/source-reproduction/refs.txt
+          printf '%s %s\n' "$EXPECTED_SHA" "$source_ref" > dist/source-reproduction/source-ref.txt
+          test "$(git bundle list-heads dist/source-reproduction/source.bundle | wc -l)" -eq 1
+          git bundle list-heads dist/source-reproduction/source.bundle | grep -Fx "$EXPECTED_SHA $source_ref"
+          git update-ref -d "$source_ref"
+          trap - EXIT
+
           printf 'SOURCE_SHA=%s\nSOURCE_TREE=%s\nPURPOSE=DIAGNOSTIC_NOT_CERTIFICATION\n' "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})" > dist/source-reproduction/source.txt
-          (cd dist/source-reproduction && sha256sum exact-source.tar.gz source.bundle refs.txt source.txt > SHA256SUMS)
+          (cd dist/source-reproduction && sha256sum exact-source.tar.gz source.bundle source-ref.txt source.txt > SHA256SUMS)
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6 / Node 24 runtime
         with:
           name: source-reproduction-${{ env.OFU_SOURCE_SHA }}
           path: dist/source-reproduction/
           if-no-files-found: error
           retention-days: 30
+
+  verify-uploaded-reproduction:
+    needs: source-reproduction
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5 / Node 24 runtime
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v5 / Node 24 runtime
+        with:
+          name: source-reproduction-${{ env.OFU_SOURCE_SHA }}
+          path: dist/source-readback
+      - name: Verify uploaded artifact identity and bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd dist/source-readback
+          sha256sum -c SHA256SUMS
+          grep -Fx "SOURCE_SHA=$OFU_SOURCE_SHA" source.txt
+          expected_tree="$(git -C ../.. rev-parse HEAD^{tree})"
+          grep -Fx "SOURCE_TREE=$expected_tree" source.txt
+          grep -Fx 'PURPOSE=DIAGNOSTIC_NOT_CERTIFICATION' source.txt
+
+          expected_ref="refs/ofu/source/$OFU_SOURCE_SHA"
+          grep -Fx "$OFU_SOURCE_SHA $expected_ref" source-ref.txt
+          test "$(git -C ../.. bundle list-heads "$PWD/source.bundle" | wc -l)" -eq 1
+          git -C ../.. bundle list-heads "$PWD/source.bundle" | grep -Fx "$OFU_SOURCE_SHA $expected_ref"
+
+          tar -tzf exact-source.tar.gz >/dev/null
+          git -C ../.. bundle verify "$PWD/source.bundle"
+          tar -tzf exact-source.tar.gz | grep -v '/$' | LC_ALL=C sort > /tmp/archive-files.txt
+          git -C ../.. ls-tree -r --name-only HEAD | LC_ALL=C sort > /tmp/tracked-files.txt
+          cmp /tmp/tracked-files.txt /tmp/archive-files.txt

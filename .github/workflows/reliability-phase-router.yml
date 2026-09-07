@@ -8,10 +8,12 @@ on:
       - 'tools/ci/phase-router.mjs'
       - 'tools/ci/git-phase-router.mjs'
       - 'tools/ci/phase-gate.mjs'
+      - 'tests/governance/workflow-reproducibility.mjs'
       - 'tests/governance/phase-router.mjs'
       - 'tests/governance/git-phase-router.mjs'
       - 'tests/governance/phase-gate.mjs'
       - 'tests/governance/historical-phase-workflows.mjs'
+      - 'tests/governance/historical-action-runtimes.mjs'
       - '.github/workflows/p1-conformance.yml'
       - '.github/workflows/p1-p4-baseline.yml'
       - '.github/workflows/p2-conformance.yml'
@@ -22,16 +24,16 @@ on:
       - '.github/workflows/p6-v1-conformance.yml'
       - '.github/workflows/reliability-phase-router.yml'
   pull_request:
-    branches:
-      - 'development/v1.*'
     paths:
       - 'tools/ci/phase-router.mjs'
       - 'tools/ci/git-phase-router.mjs'
       - 'tools/ci/phase-gate.mjs'
+      - 'tests/governance/workflow-reproducibility.mjs'
       - 'tests/governance/phase-router.mjs'
       - 'tests/governance/git-phase-router.mjs'
       - 'tests/governance/phase-gate.mjs'
       - 'tests/governance/historical-phase-workflows.mjs'
+      - 'tests/governance/historical-action-runtimes.mjs'
       - '.github/workflows/p1-conformance.yml'
       - '.github/workflows/p1-p4-baseline.yml'
       - '.github/workflows/p2-conformance.yml'
@@ -67,6 +69,8 @@ jobs:
       - name: Verify exact source
         shell: bash
         run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Workflow reproducibility guard
+        run: node tests/governance/workflow-reproducibility.mjs
       - name: Phase router adversarial regression
         run: node tests/governance/phase-router.mjs
       - name: Git range adapter adversarial regression
@@ -75,6 +79,8 @@ jobs:
         run: node tests/governance/phase-gate.mjs
       - name: Historical workflow routing contract
         run: node tests/governance/historical-phase-workflows.mjs
+      - name: Historical action runtime contract
+        run: node tests/governance/historical-action-runtimes.mjs
       - name: Exercise fail-closed CLI examples
         shell: bash
         run: |

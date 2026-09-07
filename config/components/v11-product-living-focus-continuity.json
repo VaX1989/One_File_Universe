@@ -3,7 +3,7 @@
   "components": [
     {
       "id": "v1.product.living-focus-continuity",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "owner": "product",
       "kind": "code",
       "stage": "full",
@@ -11,7 +11,7 @@
       "source": "src/bootstrap/product/living-focus-continuity.js",
       "dependencies": ["v1.product.living-universe", "v1.product.living-forward-controls", "v1.product.living-survey-ux"],
       "authority": "PRESENTATION_ONLY",
-      "provenance": "Post-v1 focus continuity for the shipping Living panel. Restores only an already-focused semantic product control after deterministic panel replacement and never changes navigation, canonical identity, scientific state, persistence, or model authority.",
+      "provenance": "Post-v1 semantic focus continuity for the shipping Living panel and navigation chrome. Restores only an already-focused panel control, scale control, or breadcrumb after deterministic DOM replacement; bounded chrome fallbacks preserve keyboard orientation when an exact control disappears. It never changes navigation, canonical identity, scientific state, persistence, or model authority.",
       "provides": ["v1.product.living-focus-continuity"]
     }
   ]
