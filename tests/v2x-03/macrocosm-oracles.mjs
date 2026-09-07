@@ -46,6 +46,12 @@ for(const args of [
 ]){
  const qp=B.qualityFor(args);assert.equal(qp.name,args.expected);const plan=B.planGalaxy(galaxyScene.field,args);assert.ok(plan.usage.draws<=3);assert.ok(plan.usage.instances<=plan.bounds.maxInstances);assert.ok(plan.usage.bytes<=plan.bounds.maxBytes);assert.equal(plan.claims.gpuMemoryMeasured,false);assert.equal(plan.claims.driverMemoryMeasured,false)
 }
+const immutablePlan=B.planGalaxy(galaxyScene.field,{width:1440,height:900,dpr:1,memoryClass:'NORMAL'});
+assert.ok(immutablePlan.batches.length>0);
+const exposed=immutablePlan.batches[0].data,original=exposed[0];
+exposed[0]=original+12345;
+assert.equal(immutablePlan.batches[0].data[0],original,'mutating an exposed typed-array copy must not mutate the frozen batch');
+assert.equal(immutablePlan.batches[0].claims.internalBufferExposed,false);
 const nearCue=B.depthCue(2,{near:1,far:1000}),farCue=B.depthCue(800,{near:1,far:1000});assert.ok(nearCue.sizeScale>farCue.sizeScale);assert.ok(nearCue.opacity>farCue.opacity);assert.ok(nearCue.fog<farCue.fog);assert.equal(farCue.claims.physicalExtinction,false);
 
 const children=entities.slice(0,70).map((e,i)=>({...e,entityId:'region-child-'+i}));
@@ -68,4 +74,4 @@ for(const quality of ['LOW','MOBILE','STANDARD','HIGH']){
 assert.throws(()=>P.buildUniverse({scopeId:'dup',entities:[entities[0],entities[0]],cameraFrame:frame}),/duplicate upstream identity/);
 const witness=P.continuityWitness({galaxy:galaxyScene,region,neighborhood});
 assert.equal(witness.cameraOwnedHere,false);assert.equal(witness.selectionOwnedHere,false);assert.equal(witness.scaleOwnedHere,false);
-console.log(JSON.stringify({status:'PASS',oracle:'V2X03_MACROCOSM_ORACLES',contract:P.CONTRACT,bounds:{galaxyParticles:galaxyScene.field.bounds.particles,galaxyDecorative:galaxyScene.field.bounds.total,regionObjects:region.objects.length,neighborhoodObjects:neighborhood.objects.length,maxGalaxyDraws:3},noGrid:true,deterministicRevisit:true,decorativeNonSelectable:true,externalCamera:true,qualityProfiles:true}));
+console.log(JSON.stringify({status:'PASS',oracle:'V2X03_MACROCOSM_ORACLES',contract:P.CONTRACT,bounds:{galaxyParticles:galaxyScene.field.bounds.particles,galaxyDecorative:galaxyScene.field.bounds.total,regionObjects:region.objects.length,neighborhoodObjects:neighborhood.objects.length,maxGalaxyDraws:3},noGrid:true,deterministicRevisit:true,decorativeNonSelectable:true,externalCamera:true,qualityProfiles:true,immutablePackedData:true}));
