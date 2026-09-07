@@ -1,8 +1,8 @@
 (function(root){
 'use strict';
 const O=root.OFU=root.OFU||{};if(typeof document==='undefined')return;
-const VERSION='ofu-v11-living-transition-feedback-1',MAX_ATTACH_ATTEMPTS=120;
-const state={version:VERSION,ready:false,attachStatus:'waiting',attachAttempts:0,updates:0,stageAnnouncements:0,contextAnnouncements:0,selectionAnnouncements:0,suppressed:0,lastSignature:null,lastMessage:''};
+const VERSION='ofu-v11-living-transition-feedback-2',MAX_ATTACH_ATTEMPTS=120;
+const state={version:VERSION,ready:false,attachStatus:'waiting',attachAttempts:0,updates:0,stageAnnouncements:0,contextAnnouncements:0,selectionAnnouncements:0,selectionClearAnnouncements:0,suppressed:0,lastSignature:null,lastMessage:''};
 let runtime=null,stage=null,status=null,scheduled=false,pendingSnapshot=null,baseline=null;
 const clean=value=>String(value||'').replace(/[_-]+/g,' ').replace(/\s+/g,' ').trim();
 const short=value=>String(value||'').slice(0,8);
@@ -24,6 +24,7 @@ function messageFor(previous,next){
  if(identityChanged){state.contextAnnouncements++;return 'Exploration context changed to '+contextName(next)+'.'}
  if(pointChanged&&next.point){state.contextAnnouncements++;return 'Exploration location updated on '+contextName(next)+' at '+clean(next.stage).toLowerCase()+' scale.'}
  if(selectionChanged&&next.selectedObjectId){state.selectionAnnouncements++;return selectedLabel(next)+' selected.'}
+ if(selectionChanged&&previous.selectedObjectId&&!next.selectedObjectId){state.selectionClearAnnouncements++;return 'Selection cleared.'}
  state.suppressed++;return null;
 }
 function ensureStatus(){if(status?.isConnected)return status;stage=document.getElementById('living-stage');if(!stage)return null;status=document.getElementById('living-transition-status');if(!status){status=document.createElement('p');status.id='living-transition-status';status.className='visually-hidden';status.setAttribute('role','status');status.setAttribute('aria-live','polite');status.setAttribute('aria-atomic','true');status.dataset.livingProductState='PRESENTATION_ONLY';stage.append(status)}return status}
