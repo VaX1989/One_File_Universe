@@ -6,14 +6,18 @@ on:
       - 'development/v1.*'
     paths:
       - 'tools/ci/phase-router.mjs'
+      - 'tools/ci/git-phase-router.mjs'
       - 'tests/governance/phase-router.mjs'
+      - 'tests/governance/git-phase-router.mjs'
       - '.github/workflows/reliability-phase-router.yml'
   pull_request:
     branches:
       - 'development/v1.*'
     paths:
       - 'tools/ci/phase-router.mjs'
+      - 'tools/ci/git-phase-router.mjs'
       - 'tests/governance/phase-router.mjs'
+      - 'tests/governance/git-phase-router.mjs'
       - '.github/workflows/reliability-phase-router.yml'
 
 concurrency:
@@ -34,6 +38,7 @@ jobs:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5 / Node 24 runtime
         with:
           ref: '${{ env.OFU_SOURCE_SHA }}'
+          fetch-depth: 0
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5 / Node 24 runtime
         with:
           node-version: '24.20.0'
@@ -42,9 +47,17 @@ jobs:
         run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
       - name: Phase router adversarial regression
         run: node tests/governance/phase-router.mjs
+      - name: Git range adapter adversarial regression
+        run: node tests/governance/git-phase-router.mjs
       - name: Exercise fail-closed CLI examples
         shell: bash
         run: |
           node tools/ci/phase-router.mjs --base-ref development/v1.1-quality-exploration src/rendering/living-scene.js
           node tools/ci/phase-router.mjs --base-ref development/v1.1-quality-exploration src/domains/planetology/volatile-ledger.js
           node tools/ci/phase-router.mjs --base-ref main src/rendering/living-scene.js
+      - name: Exercise exact Git range adapter
+        shell: bash
+        env:
+          OFU_BASE_REF: ${{ github.event.pull_request.base.ref || github.ref_name }}
+          OFU_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: node tools/ci/git-phase-router.mjs --base-ref "$OFU_BASE_REF" --base-sha "$OFU_BASE_SHA" --head-sha "$OFU_SOURCE_SHA"
