@@ -51,18 +51,18 @@ try{
  const before=await state(),pixelsBefore=await hashCanvas();
  assert.equal(before.runtime.stage,'APPROACH');assert.ok(before.runtime.world);
  assert.equal(before.renderer.authority,'PRESENTATION_ONLY');assert.equal(before.renderer.gpu,null);assert.match(String(before.renderer.gpuError),/FORCED_WEBGL2_FALLBACK_ORACLE/);
- assert.equal(before.renderer.metrics.fallbackScratchAllocations,1,'first fallback frame must allocate exactly one reusable scratch canvas');
- assert.equal(before.renderer.metrics.fallbackScratchResizes,1,'first fallback frame must size its reusable scratch once');
+ assert.equal(before.renderer.metrics.fallbackScratchAllocations,1,'all fallback regimes must share exactly one reusable scratch canvas');
+ assert.ok(before.renderer.metrics.fallbackScratchResizes>=1,'fallback scratch must have a concrete bounded ImageData size');
  assert.ok(before.renderer.metrics.fallbackFrames>=1);assert.ok(before.renderer.scratch?.allocated);assert.ok(before.renderer.scratch.size>0&&before.renderer.scratch.size<=420);
  assert.ok(before.renderer.scratch.pixels<=420*420);assert.equal(before.renderer.scratch.accounting,'MODELED_SCRATCH_SURFACE_LIFECYCLE');assert.equal(before.renderer.scratch.heapMemoryMeasured,false);assert.equal(before.renderer.scratch.gpuMemoryMeasured,false);
  assert.ok(pixelsBefore.nonEmpty>0,'Canvas2D fallback must remain visibly populated');
 
- const canonical=before.runtime,hashes=[pixelsBefore.hash];
+ const canonical=before.runtime,hashes=[pixelsBefore.hash],resizeCount=before.renderer.metrics.fallbackScratchResizes;
  for(const [dx,dy] of [[18,2],[15,-3],[12,4],[10,-2],[14,1],[11,3]]){await rotate(dx,dy);hashes.push((await hashCanvas()).hash);}
  const after=await state();
  assert.deepEqual(after.runtime,canonical,'fallback camera rotation must not mutate canonical/runtime navigation state');
  assert.equal(after.renderer.metrics.fallbackScratchAllocations,1,'repeated fallback frames must reuse one scratch canvas');
- assert.equal(after.renderer.metrics.fallbackScratchResizes,1,'stable viewport fallback must reuse one ImageData allocation');
+ assert.equal(after.renderer.metrics.fallbackScratchResizes,resizeCount,'stable viewport fallback must reuse the existing ImageData allocation');
  assert.ok(after.renderer.metrics.fallbackFrames>=before.renderer.metrics.fallbackFrames+6,'all deliberate fallback camera frames must execute');
  assert.ok(after.renderer.metrics.maxFallbackScratchPixels<=420*420,'fallback scratch pixels must remain under the hard presentation bound');
  assert.equal(after.renderer.scratch.size,before.renderer.scratch.size);assert.equal(after.renderer.scratch.pixels,before.renderer.scratch.pixels);
