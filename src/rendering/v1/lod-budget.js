@@ -7,10 +7,11 @@ const SURFACE_LIMITS=Object.freeze({desktopPixels:4194304,mobilePixels:2097152,m
 const BASE=Object.freeze({COSMIC:{objects:96,bytes:2097152,draws:10},SYSTEM:{objects:80,bytes:2097152,draws:12},GLOBE:{objects:24,bytes:12582912,draws:14},TERRAIN:{objects:224,bytes:25165824,draws:24},ECOLOGY:{objects:96,bytes:5242880,draws:12},SETTLEMENT:{objects:160,bytes:6291456,draws:14},MICRO:{objects:512,bytes:8388608,draws:16}});
 function freeze(v){if(!v||typeof v!=='object'||Object.isFrozen(v))return v;for(const k of Object.keys(v))freeze(v[k]);return Object.freeze(v)}
 function config({mobile=false,dpr=1,memoryClass='NORMAL'}={}){const f=(mobile?.62:1)*(Number(dpr)>2?.82:1)*(memoryClass==='LOW'?.64:memoryClass==='HIGH'?1.2:1),out={};for(const [k,v] of Object.entries(BASE))out[k]=freeze({objects:Math.max(8,Math.floor(v.objects*f)),bytes:Math.max(262144,Math.floor(v.bytes*f)),draws:Math.max(4,Math.floor(v.draws*f))});return freeze(out)}
+function finitePositive(value,fallback){const number=Number(value);return Number.isFinite(number)&&number>0?number:fallback}
 function surfacePlan({cssWidth=1,cssHeight=1,dpr=1,mobile=false,maxDpr=2,maxPixels=null,maxDimension=SURFACE_LIMITS.maxDimension}={}){
- const widthCss=Math.max(1,Number(cssWidth)||1),heightCss=Math.max(1,Number(cssHeight)||1),requestedDpr=Math.min(Math.max(.01,Number(maxDpr)||2),Math.max(.01,Number(dpr)||1));
- const defaultPixels=mobile?SURFACE_LIMITS.mobilePixels:SURFACE_LIMITS.desktopPixels,pixelCeiling=Math.max(1,Math.floor(Number(maxPixels)||defaultPixels)),dimensionCeiling=Math.max(1,Math.floor(Number(maxDimension)||SURFACE_LIMITS.maxDimension));
- const scale=Math.min(requestedDpr,Math.sqrt(pixelCeiling/(widthCss*heightCss)),dimensionCeiling/widthCss,dimensionCeiling/heightCss),effectiveDpr=Math.max(.01,scale);
+ const widthCss=finitePositive(cssWidth,1),heightCss=finitePositive(cssHeight,1),requestedDpr=Math.min(Math.max(.01,finitePositive(maxDpr,2)),Math.max(.01,finitePositive(dpr,1)));
+ const defaultPixels=mobile?SURFACE_LIMITS.mobilePixels:SURFACE_LIMITS.desktopPixels,pixelCeiling=Math.max(1,Math.floor(finitePositive(maxPixels,defaultPixels))),dimensionCeiling=Math.max(1,Math.floor(finitePositive(maxDimension,SURFACE_LIMITS.maxDimension)));
+ const effectiveDpr=Math.min(requestedDpr,Math.sqrt(pixelCeiling/(widthCss*heightCss)),dimensionCeiling/widthCss,dimensionCeiling/heightCss);
  const width=Math.max(1,Math.floor(widthCss*effectiveDpr)),height=Math.max(1,Math.floor(heightCss*effectiveDpr)),pixels=width*height;
  return freeze({cssWidth:widthCss,cssHeight:heightCss,requestedDpr,effectiveDpr,width,height,pixels,pixelCeiling,maxDimension:dimensionCeiling,constrained:effectiveDpr+1e-9<requestedDpr,modeledColorBytes:pixels*SURFACE_LIMITS.colorBytesPerPixel,accounting:SURFACE_ACCOUNTING});
 }
