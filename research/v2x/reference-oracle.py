@@ -83,8 +83,22 @@ def orbital_mean_flux_factor(e: float) -> float:
     return 1.0 / math.sqrt(1.0 - e * e)
 
 
-def energy_limited_rate(mass_earth: float, rxuv_earth: float, xuv_flux: float, efficiency: float, roche_k: float) -> float:
-    return efficiency * math.pi * (rxuv_earth * R_EARTH) ** 3 * xuv_flux / (G * mass_earth * M_EARTH * roche_k)
+def energy_limited_rate_erkaev(
+    mass_earth: float,
+    planet_radius_earth: float,
+    rxuv_earth: float,
+    xuv_flux: float,
+    efficiency: float,
+    roche_k: float,
+) -> float:
+    """Erkaev/Salz convention: pi * eta * F_XUV * R_p * R_XUV^2 / (G M_p K)."""
+    if mass_earth <= 0 or planet_radius_earth <= 0 or rxuv_earth < planet_radius_earth:
+        raise ValueError("invalid planet/XUV radius geometry")
+    if xuv_flux < 0 or not (0 < efficiency <= 1) or not (0 < roche_k <= 1):
+        raise ValueError("invalid energy-limited escape input")
+    rp = planet_radius_earth * R_EARTH
+    rxuv = rxuv_earth * R_EARTH
+    return efficiency * math.pi * rp * rxuv * rxuv * xuv_flux / (G * mass_earth * M_EARTH * roche_k)
 
 
 if __name__ == "__main__":
@@ -106,7 +120,7 @@ if __name__ == "__main__":
         "grey_255_tau_2_3_k": grey_temperature(255.0, 2.0 / 3.0),
         "impact_loss_x_05": impact_loss(0.5),
         "mean_flux_factor_e_05": orbital_mean_flux_factor(0.5),
-        "energy_limited_example_kg_s": energy_limited_rate(1.0, 1.1, 10.0, 0.1, 0.9),
+        "energy_limited_erkaev_example_kg_s": energy_limited_rate_erkaev(1.0, 1.0, 1.1, 10.0, 0.1, 0.9),
         "hill_threshold_2sqrt3": 2.0 * math.sqrt(3.0),
     }
     print(json.dumps(out, sort_keys=True, indent=2))
