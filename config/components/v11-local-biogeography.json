@@ -1,0 +1,22 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1.ecology.local-biogeography",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/ecology/biogeography-context.js",
+      "dependencies": [
+        "v1.ecology.causal-niche"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Selective post-v1 V1X-17 harvest. Adds a five-site bounded modeled neighborhood comparison for local environment, lineage and role turnover; no empirical range, dispersal, abundance, selection, P4 or canonical P6 claim.",
+      "provides": [
+        "v1.ecology.local-biogeography"
+      ]
+    }
+  ]
+}
