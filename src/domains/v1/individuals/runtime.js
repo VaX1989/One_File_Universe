@@ -1,5 +1,6 @@
 import { identityCommitment, householdId } from './identity.js';
 import { deriveCulturalProfile } from '../culture/transmission.js';
+import { selectLivingMembers } from '../demography/ledger.js';
 
 const MAX_ACTIVE = 128;
 const MAX_MEMORIES = 16;
@@ -7,7 +8,7 @@ const MAX_SOCIAL_TIES = 24;
 const MAX_SKILLS = 16;
 
 function bounded(values, max) {
-  return Object.freeze((values || []).slice(-max).map((value) => Object.freeze({ ...value })));
+  return Object.freeze((values || []).slice(-max).map((value) => typeof value === 'object' && value !== null ? Object.freeze({ ...value }) : value));
 }
 
 function deterministicInt(text, modulo) {
@@ -16,10 +17,13 @@ function deterministicInt(text, modulo) {
   return modulo ? value % modulo : value;
 }
 
-export function materializeIndividual({ worldId, settlementId, birthOrdinal, birthYear = null, currentYear = 0, aggregate = {}, retained = null } = {}) {
-  const identity = identityCommitment({ worldId, settlementId, birthOrdinal, birthYear });
+export function materializeIndividual({ worldId, settlementId, birthOrdinal, birthYear = null, cohortKey = null, currentYear = 0, aggregate = {}, retained = null } = {}) {
+  const identity = identityCommitment({ worldId, settlementId, birthOrdinal, birthYear, cohortKey });
   const durable = retained && retained.id === identity.id ? retained : null;
-  const householdOrdinal = durable?.householdOrdinal ?? Math.floor(birthOrdinal / 4);
+  const householdSize = Number.isSafeInteger(aggregate.householdSizeEstimate) && aggregate.householdSizeEstimate > 0
+    ? Math.min(32, aggregate.householdSizeEstimate)
+    : 4;
+  const householdOrdinal = durable?.householdOrdinal ?? Math.floor(birthOrdinal / householdSize);
   const rolePool = aggregate.roles?.length ? aggregate.roles : ['resident'];
   const role = durable?.role || String(rolePool[deterministicInt(identity.id, rolePool.length)]);
   const culture = durable?.culture || deriveCulturalProfile({
@@ -27,13 +31,14 @@ export function materializeIndividual({ worldId, settlementId, birthOrdinal, bir
     educationTopics: aggregate.educationTopics || [],
     seedTag: identity.id
   });
-  const age = Number.isInteger(identity.birthYear) ? Math.max(0, currentYear - identity.birthYear) : null;
+  const age = Number.isSafeInteger(identity.birthYear) ? Math.max(0, currentYear - identity.birthYear) : null;
   return Object.freeze({
-    schema: 'ofu-individual-1',
+    schema: 'ofu-individual-2',
     ...identity,
     age,
     householdOrdinal,
     householdId: householdId({ worldId, settlementId, householdOrdinal }),
+    householdAuthority: 'MODEL_DERIVED_GROUPING_NOT_KINSHIP',
     role,
     skills: durable?.skills || Object.freeze([]),
     education: durable?.education || Object.freeze([]),
@@ -41,15 +46,16 @@ export function materializeIndividual({ worldId, settlementId, birthOrdinal, bir
     socialTies: durable?.socialTies || Object.freeze([]),
     memories: durable?.memories || Object.freeze([]),
     culture,
-    lineage: durable?.lineage || Object.freeze({ parentIds: Object.freeze([]), status: 'UNKNOWN_UNLESS_RETAINED' })
+    lineage: durable?.lineage || Object.freeze({ parentIds: Object.freeze([]), relations: Object.freeze([]), status: 'UNKNOWN_UNLESS_RETAINED' })
   });
 }
 
 export function refineIndividuals({ worldId, settlementId, aggregate, startOrdinal = 0, count = 1, retainedById = new Map(), currentYear = 0 } = {}) {
-  if (!aggregate || !Number.isInteger(aggregate.population) || aggregate.population < 0) throw new TypeError('aggregate.population must be a non-negative integer');
-  if (!Number.isInteger(startOrdinal) || startOrdinal < 0) throw new TypeError('startOrdinal must be non-negative');
-  if (!Number.isInteger(count) || count < 0) throw new TypeError('count must be non-negative');
-  const boundedCount = Math.min(count, MAX_ACTIVE, Math.max(0, aggregate.population - startOrdinal));
+  if (!aggregate || !Number.isSafeInteger(aggregate.population) || aggregate.population < 0) throw new TypeError('aggregate.population must be a non-negative safe integer');
+  if (!Number.isSafeInteger(startOrdinal) || startOrdinal < 0) throw new TypeError('startOrdinal must be non-negative');
+  if (!Number.isSafeInteger(count) || count < 0) throw new TypeError('count must be non-negative');
+  const addressableBirths = Number.isSafeInteger(aggregate.nextBirthOrdinal) ? aggregate.nextBirthOrdinal : aggregate.population;
+  const boundedCount = Math.min(count, MAX_ACTIVE, Math.max(0, addressableBirths - startOrdinal), aggregate.population);
   const people = [];
   for (let offset = 0; offset < boundedCount; offset += 1) {
     const birthOrdinal = startOrdinal + offset;
@@ -65,6 +71,30 @@ export function refineIndividuals({ worldId, settlementId, aggregate, startOrdin
     }));
   }
   return Object.freeze(people);
+}
+
+export function refinePopulation({ worldId, ledger, aggregate = {}, start = 0, count = 1, retainedById = new Map(), currentYear = ledger?.currentYear ?? 0 } = {}) {
+  if (!ledger) throw new TypeError('ledger is required');
+  const members = selectLivingMembers(ledger, { start, count: Math.min(count, MAX_ACTIVE) });
+  return Object.freeze(members.map((member) => {
+    const preview = identityCommitment({
+      worldId,
+      settlementId: ledger.settlementId,
+      birthOrdinal: member.birthOrdinal,
+      birthYear: member.birthYear,
+      cohortKey: member.cohortKey
+    });
+    return materializeIndividual({
+      worldId,
+      settlementId: ledger.settlementId,
+      birthOrdinal: member.birthOrdinal,
+      birthYear: member.birthYear,
+      cohortKey: member.cohortKey,
+      currentYear,
+      aggregate: { ...aggregate, population: ledger.population, nextBirthOrdinal: ledger.nextBirthOrdinal },
+      retained: retainedById.get(preview.id) || null
+    });
+  }));
 }
 
 export function retainIndividual(person) {
@@ -86,7 +116,11 @@ export function appendHistoryRef(person, ref) {
   if (!ref || !ref.eventId || !ref.provenance) throw new TypeError('history ref requires eventId and provenance');
   return Object.freeze({
     ...person,
-    memories: bounded([...person.memories, { eventId: String(ref.eventId), provenance: String(ref.provenance), kind: String(ref.kind || 'OBSERVED') }], MAX_MEMORIES)
+    memories: bounded([...person.memories, {
+      eventId: String(ref.eventId),
+      provenance: String(ref.provenance),
+      kind: String(ref.kind || 'OBSERVED')
+    }], MAX_MEMORIES)
   });
 }
 
