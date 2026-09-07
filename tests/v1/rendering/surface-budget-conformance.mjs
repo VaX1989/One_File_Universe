@@ -24,9 +24,16 @@ assert.deepEqual(JSON.parse(JSON.stringify(B.surfacePlan({cssWidth:2560,cssHeigh
 
 const webgl=fs.readFileSync('src/rendering/v1/webgl2-world.js','utf8');
 assert.match(webgl,/v1RenderBudget\?\.surfacePlan/,'shipping WebGL2 resize must consume the shared surface plan');
-assert.match(webgl,/surfaceConstraintEvents/,'surface constraint events must be observable');
-assert.match(webgl,/maxSurfacePixels/,'maximum observed backing pixels must be accounted');
-assert.match(webgl,/resourceProfile:profile,surface,admission/,'render evidence must expose the active surface plan');
+assert.match(webgl,/surfaceConstraintEvents/,'WebGL surface constraint events must be observable');
+assert.match(webgl,/maxSurfacePixels/,'maximum observed WebGL backing pixels must be accounted');
+assert.match(webgl,/resourceProfile:profile,surface,admission/,'WebGL render evidence must expose the active surface plan');
 assert.doesNotMatch(webgl,/driverMemoryMeasured:true|gpuMemoryMeasured:true/,'surface accounting must not invent driver/GPU telemetry');
 
-console.log(JSON.stringify({status:'PASS',suite:'v1-render-surface-budget',baseline,large,mobile,extreme,authority:'RUNTIME_ACCOUNTING',driverMemoryMeasured:false,gpuMemoryMeasured:false,heapMemoryMeasured:false}));
+const living=fs.readFileSync('src/rendering/v1/living-renderer.js','utf8');
+assert.match(living,/v1RenderBudget\.surfacePlan\(/,'shipping Living Canvas2D resize must consume the shared surface plan');
+assert.match(living,/g\.setTransform\(plan\.effectiveDpr/,'Canvas2D CSS-coordinate transform must follow the bounded effective backing DPR');
+assert.match(living,/resourceProfile:budgetProfile,surface,budget/,'Living renderer evidence must expose the active surface plan');
+assert.match(living,/surfaceConstraintEvents/,'Living surface constraint events must be observable');
+assert.match(living,/maxSurfacePixels/,'maximum observed Living backing pixels must be accounted');
+
+console.log(JSON.stringify({status:'PASS',suite:'v1-render-surface-budget',baseline,large,mobile,extreme,surfaces:['living-canvas2d','living-webgl2'],authority:'RUNTIME_ACCOUNTING',driverMemoryMeasured:false,gpuMemoryMeasured:false,heapMemoryMeasured:false}));
