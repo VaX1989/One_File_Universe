@@ -1,0 +1,156 @@
+import fs from 'node:fs';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+
+const context=vm.createContext({console});
+for(const name of ['core.js','production-network.js','society-dynamics.js','urban-evolution.js','advanced.js']){
+  vm.runInContext(fs.readFileSync(new URL('../../src/v2x-09-civilization-economy-city/'+name,import.meta.url),'utf8'),context,{filename:name});
+}
+const K=context.OFU.v2x09CivilizationCore;
+const PROD=context.OFU.v2x09CivilizationProductionNetwork;
+const SOC=context.OFU.v2x09CivilizationSocietyDynamics;
+const URB=context.OFU.v2x09CivilizationUrbanEvolution;
+const ADV=context.OFU.v2x09CivilizationAdvanced;
+let cases=0;
+const check=(v,m)=>{assert.ok(v,m);cases++};
+const eq=(a,b,m)=>{assert.equal(JSON.stringify(a),JSON.stringify(b),m);cases++};
+
+function fixture({damaged=false,dry=false,abandoned=false,lowTech=false,stressedDelta=false,energyStarvedRidge=false}={}){
+  const settlements=[
+    {settlementId:'delta-city',regionId:'delta',status:abandoned?'ABANDONED':'ACTIVE',population:abandoned?0:26000,infrastructurePpm:damaged?280000:720000,scarcityPpm:stressedDelta?920000:180000,polityId:'polity-a'},
+    {settlementId:'ridge-town',regionId:'ridge',status:'ACTIVE',population:6200,infrastructurePpm:610000,scarcityPpm:140000,polityId:'polity-a'},
+    {settlementId:'harbor-village',regionId:'delta',status:'ACTIVE',population:1800,infrastructurePpm:320000,scarcityPpm:260000,polityId:'polity-b'}
+  ];
+  const state={
+    state:'MODELED_CIVILIZATION',worldIdentity:'world-advanced',lineageId:'lineage-advanced',epoch:40,
+    regions:[
+      {regionId:'delta',waterPpm:dry?120000:860000,biologicalResourcePpm:830000,materialResourcePpm:420000},
+      {regionId:'ridge',waterPpm:240000,biologicalResourcePpm:280000,materialResourcePpm:920000}
+    ],
+    settlements,
+    resources:[
+      {resourceId:'delta-food',regionId:'delta',resourceClass:'BIOMASS_OR_ANALOGUE',amountUnits:240000,availabilityPpm:820000,depletable:true},
+      {resourceId:'delta-energy',regionId:'delta',resourceClass:'ACCESSIBLE_ENERGY_GRADIENT',amountUnits:180000,availabilityPpm:690000,depletable:false},
+      {resourceId:'ridge-material',regionId:'ridge',resourceClass:'MINERAL_OR_CONSTRUCTION_MATERIAL',amountUnits:330000,availabilityPpm:910000,depletable:true}
+    ],
+    tradeEdges:[
+      {edgeId:'edge-1',from:'delta-city',to:'ridge-town',costPpm:220000,flowUnits:1200,status:'ACTIVE'},
+      {edgeId:'edge-2',from:'delta-city',to:'harbor-village',costPpm:120000,flowUnits:900,status:'ACTIVE'}
+    ],
+    technology:lowTech?{production:1,transport:0,materials:1,energy:1,communication:0,medicine:0,construction:1,conflict:0,knowledgeContinuityPpm:210000}:{production:4,transport:3,materials:3,energy:3,communication:3,medicine:2,construction:4,conflict:1,knowledgeContinuityPpm:620000},
+    polities:[
+      {polityId:'polity-a',institutionId:'inst-a',settlementIds:['delta-city','ridge-town'],authorityPpm:720000,legitimacyPpm:damaged?250000:690000,cohesionPpm:damaged?260000:640000,status:'ACTIVE'},
+      {polityId:'polity-b',institutionId:'inst-b',settlementIds:['harbor-village'],authorityPpm:360000,legitimacyPpm:520000,cohesionPpm:560000,status:'ACTIVE'}
+    ],
+    infrastructure:[
+      {infrastructureId:'road-1',kind:'MAJOR_CORRIDOR',fromSettlementId:'delta-city',toSettlementId:'ridge-town',status:damaged?'DAMAGED':'ACTIVE',conditionPpm:damaged?180000:900000,builtEpoch:10,lastActiveEpoch:40},
+      {infrastructureId:'road-2',kind:'ROUTE_CORRIDOR',fromSettlementId:'delta-city',toSettlementId:'harbor-village',status:'ACTIVE',conditionPpm:820000,builtEpoch:12,lastActiveEpoch:40}
+    ],
+    history:{proposals:[
+      {eventProposalId:'ev-found-delta',epoch:0,type:'SETTLEMENT_FOUNDATION',targetIds:['delta-city']},
+      {eventProposalId:'ev-road',epoch:10,type:'INFRASTRUCTURE_BUILT',targetIds:['delta-city','road-1']},
+      ...(damaged?[{eventProposalId:'ev-conflict',epoch:35,type:'CONFLICT',targetIds:['delta-city'],payload:{intensityPpm:780000}}]:[]),
+      ...(abandoned?[{eventProposalId:'ev-abandon',epoch:40,type:'ABANDONMENT',targetIds:['delta-city']}]:[])
+    ]}
+  };
+  const economy={
+    status:'STEPPED',epoch:40,settlements:[
+      {settlementId:'delta-city',regionId:'delta',status:abandoned?'ABANDONED':'ACTIVE',population:abandoned?0:26000,stocks:{SUBSISTENCE_GOODS:stressedDelta?400:34000,MATERIAL_GOODS:stressedDelta?200:16000,ENERGY_SERVICE:stressedDelta?100:9000}},
+      {settlementId:'ridge-town',regionId:'ridge',status:'ACTIVE',population:6200,stocks:{SUBSISTENCE_GOODS:9000,MATERIAL_GOODS:18000,ENERGY_SERVICE:energyStarvedRidge?0:5200}},
+      {settlementId:'harbor-village',regionId:'delta',status:'ACTIVE',population:1800,stocks:{SUBSISTENCE_GOODS:4200,MATERIAL_GOODS:2900,ENERGY_SERVICE:2700}}
+    ]
+  };
+  return {state,economy};
+}
+
+check(PROD&&SOC&&URB&&ADV,'advanced modules load');
+check(PROD.RECIPE_GRAPH.some(r=>Object.keys(r.inputs).some(g=>PROD.INTERMEDIATE_GOODS.includes(g))),'recipe graph is genuinely multi-stage');
+const base=fixture();
+const composed1=ADV.modelAdvancedCivilization(base.state,base.economy),composed2=ADV.modelAdvancedCivilization(base.state,base.economy);
+eq(composed1,composed2,'advanced composition deterministic');
+check(composed1.status==='MODELED'&&composed1.mutationPerformed===false&&composed1.requiresConvergenceOwnerComposition===true,'advanced composition preserves authority and integration boundary');
+const before=JSON.stringify(base.economy);
+const n1=PROD.productionNetwork(base.state,base.economy),n2=PROD.productionNetwork(base.state,base.economy);
+eq(n1,n2,'production/logistics network deterministic');
+check(JSON.stringify(base.economy)===before,'production network does not mutate input economy');
+check(n1.status==='MODELED'&&n1.closure.allClosed,'advanced network modeled with complete accounting closure');
+check(n1.closure.entries.every(x=>x.closed),'every advanced ledger witness closes');
+check(n1.recipeGraph.length===5&&n1.intermediateGoods.length===5,'bounded explicit recipe/intermediate graph exposed');
+check(n1.settlements.every(s=>s.serviceSatisfaction.services.length===5),'service demand and satisfaction exposed per settlement');
+check(n1.operations<=n1.limits.operations,'production network operation budget respected');
+check(n1.mutationPerformed===false&&n1.canonicalHistoryMutation===false,'production network has no external authority mutation');
+
+const starved=fixture({energyStarvedRidge:true});
+const starvedNet=PROD.productionNetwork(starved.state,starved.economy);
+check(starvedNet.flows.length>0,'intermediate service/goods move across modeled trade routes when deficits exist');
+check(starvedNet.flows.every(f=>f.amountUnits>0&&f.authority==='MODEL_DERIVED_SIMULATION'),'all logistics flows are bounded model-derived units');
+const routeHealthy=starvedNet.routes.find(r=>r.edgeId==='edge-1');
+check(routeHealthy.capacityUnits>0&&routeHealthy.conditionPpm===900000,'healthy modeled infrastructure supports route capacity');
+
+const damaged=fixture({damaged:true,energyStarvedRidge:true});
+const damagedNet=PROD.productionNetwork(damaged.state,damaged.economy);
+const routeDamaged=damagedNet.routes.find(r=>r.edgeId==='edge-1');
+check(routeDamaged.capacityUnits<routeHealthy.capacityUnits,'damaged infrastructure causally reduces route capacity');
+check(routeDamaged.degradationPpm===820000,'explicit infrastructure condition becomes degradation witness');
+check(damagedNet.bottlenecks.some(b=>b.kind==='INFRASTRUCTURE_DEGRADATION'&&b.edgeId==='edge-1'),'degraded route becomes bounded bottleneck evidence');
+check(damagedNet.routes.every(r=>r.usedUnits<=r.capacityUnits),'route utilization never exceeds capacity');
+
+const low=fixture({lowTech:true});
+const lowNet=PROD.productionNetwork(low.state,low.economy);
+check(lowNet.routes.every(r=>r.capacityUnits===0),'route capacity disabled when logistics prerequisites are unmet');
+check(lowNet.satisfaction.some(s=>s.unmetUnits>0),'low-technology case exposes unmet derived services');
+
+const dynamics=SOC.societyDynamics(base.state,n1),dynamics2=SOC.societyDynamics(base.state,n1);
+eq(dynamics,dynamics2,'aggregate society dynamics deterministic');
+check(dynamics.status==='MODELED'&&dynamics.settlementPressures.length===3,'aggregate pressure model covers modeled settlements');
+check(dynamics.institutionProposals.length===2,'institution response proposals remain polity bounded');
+check(dynamics.institutionProposals.every(p=>p.mutationPerformed===false&&p.universalSociologicalClaim===false),'institution responses are proposal-only and non-universal');
+check(dynamics.persistentPersonIdentityCreated===false&&dynamics.planetOrLifeMutation===false,'society dynamics preserve person and cross-domain authority boundaries');
+
+const stressed=fixture({damaged:true,stressedDelta:true});
+const stressedNet=PROD.productionNetwork(stressed.state,stressed.economy);
+const stressedDyn=SOC.societyDynamics(stressed.state,stressedNet);
+const deltaPressure=stressedDyn.settlementPressures.find(x=>x.settlementId==='delta-city');
+check(deltaPressure.migrationPressurePpm>=380000,'resource/logistics stress raises aggregate migration pressure');
+check(stressedDyn.migrationProposals.some(p=>p.sourceSettlementId==='delta-city'),'high-pressure settlement emits aggregate migration/displacement proposal');
+check(stressedDyn.migrationProposals.every(p=>p.persistentPersonIdentityCreated===false&&p.persistentPersonIds.length===0&&p.mutationPerformed===false),'migration proposals never create persistent persons or mutate population directly');
+check(stressedDyn.institutionProposals.find(p=>p.polityId==='polity-a').mechanisms.includes('REPAIR_PRIORITY'),'damaged network creates institution repair-priority mechanism');
+check(stressedDyn.institutionProposals.find(p=>p.polityId==='polity-a').sourceBottleneckIds.length>0,'institution proposal is causally tied to network bottleneck witnesses');
+
+const urban=URB.urbanEvolution(base.state,n1,dynamics),urban2=URB.urbanEvolution(base.state,n1,dynamics);
+eq(urban,urban2,'urban evolution deterministic');
+const deltaUrban=urban.settlements.find(x=>x.settlementId==='delta-city');
+const ridgeUrban=urban.settlements.find(x=>x.settlementId==='ridge-town');
+check(deltaUrban.family==='PORT_CLUSTER','wet connected advanced settlement becomes port-cluster morphology family');
+check(ridgeUrban.family==='RESOURCE_FRONTIER','material-rich advanced settlement becomes resource-frontier family');
+check(deltaUrban.specializations.some(x=>x.kind==='WATER_TERMINAL'),'water terminal specialization requires waterborne capability and network');
+check(deltaUrban.specializations.some(x=>x.kind==='LOGISTICS_QUARTER'),'derived distribution service shapes visible specialization');
+check(deltaUrban.claims.physicalGeometry===false&&deltaUrban.claims.empiricalUrbanForecast===false,'urban family remains non-physical, non-empirical model presentation');
+check(urban.renderCues.every(c=>c.authority==='PRESENTATION_ONLY'),'all evolution render cues remain presentation-only');
+check(urban.requiresConvergenceOwnerComposition===true&&urban.rendererMutationPerformed===false,'advanced render plan preserves shared renderer ownership');
+
+const dry=fixture({dry:true});
+const dryNet=PROD.productionNetwork(dry.state,dry.economy),dryDyn=SOC.societyDynamics(dry.state,dryNet),dryUrban=URB.urbanEvolution(dry.state,dryNet,dryDyn);
+const dryDelta=dryUrban.settlements.find(x=>x.settlementId==='delta-city');
+check(dryDelta.family!=='PORT_CLUSTER'&&!dryDelta.specializations.some(x=>x.kind==='WATER_TERMINAL'),'dry case cannot receive port family or water terminal decoration');
+
+const damagedDyn=SOC.societyDynamics(damaged.state,damagedNet),damagedUrban=URB.urbanEvolution(damaged.state,damagedNet,damagedDyn);
+const damagedDelta=damagedUrban.settlements.find(x=>x.settlementId==='delta-city');
+check(damagedDelta.evidenceLayers.some(x=>x.kind==='CORRIDOR_DEGRADATION'),'infrastructure condition produces explicit corridor degradation layer');
+check(damagedDelta.evidenceLayers.some(x=>x.kind==='DAMAGE_OR_STRESS'),'history conflict produces history-backed damage layer');
+check(damagedDelta.evidenceLayers.every(x=>x.physicalArchaeologyClaim===false&&x.canonicalHistoryClaim===false),'evidence layers do not claim archaeology or canonical history');
+
+const abandoned=fixture({abandoned:true});
+const abandonedNet=PROD.productionNetwork(abandoned.state,abandoned.economy),abandonedDyn=SOC.societyDynamics(abandoned.state,abandonedNet),abandonedUrban=URB.urbanEvolution(abandoned.state,abandonedNet,abandonedDyn);
+const abandonedDelta=abandonedUrban.settlements.find(x=>x.settlementId==='delta-city');
+check(abandonedDelta.family==='POST_COLLAPSE_RELICT'&&abandonedDelta.phase==='RELICT','abandoned settlement becomes honest post-collapse relict family');
+check(abandonedDelta.evidenceLayers.some(x=>x.kind==='ABANDONMENT'),'relict representation is backed by abandonment witness');
+
+const absent=PROD.productionNetwork({state:'NO_CIVILIZATION_MODEL'},null);
+check(absent.status==='NO_MODELED_CIVILIZATION_OR_ECONOMY','advanced production remains honest for no-civilization case');
+const absentSoc=SOC.societyDynamics({state:'NO_CIVILIZATION_MODEL'},absent);
+check(absentSoc.status==='NO_MODELED_CIVILIZATION_OR_NETWORK','society dynamics remain honest for absent model');
+const absentUrban=URB.urbanEvolution({state:'NO_CIVILIZATION_MODEL'},absent,absentSoc);
+check(absentUrban.status==='NO_MODELED_INPUT'&&absentUrban.renderCues.length===0,'urban evolution produces no unsupported decoration');
+
+console.log(JSON.stringify({status:'PASS',cases,contracts:[PROD.CONTRACT,SOC.CONTRACT,URB.CONTRACT],healthyRouteCapacity:routeHealthy.capacityUnits,damagedRouteCapacity:routeDamaged.capacityUnits,starvedFlows:starvedNet.flows.length,stressedMigrationProposals:stressedDyn.migrationProposals.length,deltaFamily:deltaUrban.family,dryDeltaFamily:dryDelta.family,abandonedFamily:abandonedDelta.family}));

@@ -1,0 +1,47 @@
+{
+  "schema": "ofu-v2x-research-harvest-1",
+  "status": "HARVESTED_SELECTIVELY",
+  "date": "2026-09-07",
+  "researchSources": [
+    {
+      "lane": "V2X-15",
+      "branch": "research/v2x-15-astronomy-planetology-frontier-2026-09-07",
+      "sha": "06bf59698b293c670d8b33f20bc006f848eba025",
+      "tree": "4c920c3ad17ccd64624f091d35c454c1970dfec7",
+      "disposition": "HARVEST_LIMITATIONS_AND_FALSIFICATION_CONTRACTS_ONLY",
+      "shippingApplications": ["V2X-04", "V2X-05", "V2X-06"],
+      "accepted": [
+        "explicit unknown orbital phase and missing orientation fields remain non-canonical",
+        "deep-planet outputs remain reduced-order and bounded rather than calibrated EOS/retrieval/GCM claims",
+        "surface/geology/hydrology refinements preserve upstream model authority and unsupported states"
+      ],
+      "rejectedFromShipping": [
+        "research-only kernels as canonical truth",
+        "unvalidated high-fidelity physical claims",
+        "implicit promotion of research models into shared scientific authority"
+      ]
+    },
+    {
+      "lane": "V2X-16",
+      "branch": "research/v2x-16-life-civ-matter-frontier-2026-09-07",
+      "sha": "358d78bde0b9d1dc3e8ed7aacd44ec343e79258b",
+      "tree": "fbf06f07cfd2fcf9809554b0424b581aac931384",
+      "disposition": "HARVEST_BOUNDED_MECHANISMS_AND_FAILURE_BOUNDARIES",
+      "shippingApplications": ["V2X-08", "V2X-09", "V2X-10", "V2X-11", "V2X-12"],
+      "accepted": [
+        "life variation/speciation remain proposals until governed admission",
+        "civilization, knowledge and production remain model-derived with provenance",
+        "individual identity remains persistent and deterministic without claiming person-level ground truth",
+        "matter regime transitions use explicit units, reference frames and fail-closed unsupported boundaries"
+      ],
+      "rejectedFromShipping": [
+        "research-only dynamics as canonical history",
+        "unbounded reaction or civilization networks",
+        "unitless microscopic coordinates",
+        "fabricated molecular or atomic precision"
+      ]
+    }
+  ],
+  "authorityRule": "Research harvest may constrain models, tests, limitations and presentation policy; it may not self-promote canonical truth.",
+  "ownershipMatrixVersion": "2026-09-07.5"
+}

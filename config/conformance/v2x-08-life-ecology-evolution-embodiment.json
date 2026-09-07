@@ -1,0 +1,14 @@
+{
+  "schema": "ofu-conformance-1",
+  "tests": [
+    {
+      "id": "v2x08.life.single-file-facade",
+      "owner": "v2x-08-life-ecology-evolution-embodiment",
+      "tier": "FAST_LOCAL",
+      "command": ["node", "tests/v2x-08/single-file-facade.mjs"],
+      "providers": ["v2x08.model.life-single-file"],
+      "oracle": "v2x08-life-single-file-bounded-authority",
+      "timeoutMs": 30000
+    }
+  ]
+}

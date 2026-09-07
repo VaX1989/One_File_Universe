@@ -65,7 +65,9 @@ try{
  assert.ok(Math.abs(pixelDelta-lineDelta)<1e-6,'line normalization must be behaviorally equivalent to the matching pixel delta');
 
  await page.evaluate(()=>OFU.v1LivingProduct.runtime.setNavigationCoordinate(2,{source:'wheel-normalization-reset-page'}));await raf2();await ready();
- const pageMode=await fire(-1,2);
+ // Two page units exceed the 300px cap even at the minimum 240px page factor.
+ // A single page unit can legitimately remain below the cap on compact canvases.
+ const pageMode=await fire(-2,2);
  assert.equal(pageMode.immediate.originalDefaultPrevented,true);
  assert.deepEqual(pageMode.immediate.seen.map(e=>[e.deltaMode,e.deltaY]),[[0,-300]],'page wheel input must be bounded before entering the shipping pixel path');
  assert.equal(pageMode.immediate.normalization.line,0);assert.equal(pageMode.immediate.normalization.page,1);assert.equal(pageMode.immediate.normalization.redispatched,1);

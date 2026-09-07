@@ -1,0 +1,42 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "px.providers.v2x02-camera-spatial-travel",
+      "version": "1.0.0",
+      "owner": "v2x-02-camera-spatial-travel",
+      "kind": "data",
+      "stage": "foundation",
+      "placement": "resource",
+      "source": "src/v2x-02-camera-spatial-travel/provider-catalog.json",
+      "dependencies": [],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "V2X-02 additive provider catalog. It exposes presentation travel capability only and does not alter canonical identity, selection, scientific state, persistence or central routing authority.",
+      "provides": ["px.providers.v2x02-camera-spatial-travel"]
+    },
+    {
+      "id": "v2x02.camera.continuous-travel",
+      "version": "1.0.0",
+      "owner": "v2x-02-camera-spatial-travel",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/v2x-02-camera-spatial-travel/continuous-travel.js",
+      "dependencies": [
+        "px.providers.v2x02-camera-spatial-travel",
+        "ofu.extensions.product-bindings",
+        "v1x-01.camera.reference-frames",
+        "v1x-01.camera.semantic-distance",
+        "v1x-01.camera.authority",
+        "v1.rendering.transition-runtime"
+      ],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "V2X-02 bounded controller layered over the frozen V1X camera/distance/reference-frame authorities. It accumulates input intents, preserves observed journey context and exposes camera-relative travel without creating a competing camera or scientific position authority.",
+      "provides": [
+        "v2x02.camera.continuous-travel",
+        "v2x02.camera.journey-context",
+        "v2x02.camera.input-accumulator"
+      ]
+    }
+  ]
+}

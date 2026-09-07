@@ -1,0 +1,62 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v2x12.matter.continuity",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/micro/matter-continuity-v2.js",
+      "dependencies": [
+        "v1.micro.pipeline",
+        "v1.models.microscopic",
+        "v1.material.reference-properties",
+        "v1.micro.molecular-electronic-reference"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Convergence-owned V2X-12 bounded matter-continuity layer. Preserves v1 material/micro/molecular/atomic authority, explicit provenance and cross-regime commitments without MD or quantum claims.",
+      "provides": ["v2x12.matter.continuity"]
+    },
+    {
+      "id": "v2x12.matter.unit-contract",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/micro/matter-continuity-unit-contract.js",
+      "dependencies": ["v2x12.matter.continuity"],
+      "authority": "DERIVED",
+      "provenance": "Convergence-owned fail-closed coordinate adapter. positionFm is accepted only for explicit fm input; pm, angstrom and nm source coordinates require explicit source-space positions and exact integer-fm conversion while retaining source-unit provenance.",
+      "provides": ["v2x12.matter.unit-contract"]
+    },
+    {
+      "id": "v2x12.matter.presentation",
+      "version": "1.0.0",
+      "owner": "product",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/rendering/microscopic/matter-continuity-provider.js",
+      "dependencies": ["v2x12.matter.unit-contract"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "V2X-12 bounded microscopic presentation provider. Exposes material/microstructure/molecular/atomic fidelity and source-coordinate cues without owning camera, scale, selection, input or canonical mutation authority.",
+      "provides": ["v2x12.matter.presentation"]
+    },
+    {
+      "id": "px.providers.v2x12-matter-continuity",
+      "version": "1.0.0",
+      "owner": "px",
+      "kind": "data",
+      "stage": "foundation",
+      "placement": "resource",
+      "source": "config/extensions/v2x-12-matter-continuity/providers.json",
+      "dependencies": ["v2x12.matter.unit-contract"],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "V2X-12 provider catalog in the governed PX extension namespace. The catalog retains V2X-12 provider identities and scientific authority boundaries; PX is only the component source-namespace owner.",
+      "provides": ["v2x12.matter.provider-catalog"]
+    }
+  ]
+}
