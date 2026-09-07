@@ -1,0 +1,10 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {adjudicatePackagingEvidence} from './packaging-evidence.mjs';
+const x=(o={})=>({artifactBytes:100,artifactSha256:'a'.repeat(64),rebuildSha256:'a'.repeat(64),embeddedRoles:['runtime-js','runtime-wasm','model','tokenizer'],networkSurfaceScanPassed:true,generatorTestsPassed:true,externalResourceReferences:0,...o});
+test('structurally verified deterministic package stays research-only',()=>{const r=adjudicatePackagingEvidence(x());assert.equal(r.ok,true);assert.equal(r.directFileRuntimeEvidence,false);assert.equal(r.shippingPromotion,false);});
+test('byte-different rebuild fails',()=>assert.equal(adjudicatePackagingEvidence(x({rebuildSha256:'b'.repeat(64)})).reason,'PACKAGE_REBUILD_NOT_BYTE_IDENTICAL'));
+test('all four embedded roles are mandatory',()=>assert.equal(adjudicatePackagingEvidence(x({embeddedRoles:['runtime-js','runtime-wasm','model']})).reason,'PACKAGE_EMBEDDED_ROLE_SET_INCOMPLETE'));
+test('duplicate role cannot substitute for missing role',()=>assert.equal(adjudicatePackagingEvidence(x({embeddedRoles:['runtime-js','runtime-wasm','model','model']})).reason,'PACKAGE_EMBEDDED_ROLE_SET_INCOMPLETE'));
+test('generator tests and network scan are separate gates',()=>{assert.equal(adjudicatePackagingEvidence(x({generatorTestsPassed:false})).reason,'PACKAGE_GENERATOR_TESTS_REQUIRED');assert.equal(adjudicatePackagingEvidence(x({networkSurfaceScanPassed:false})).reason,'PACKAGE_NETWORK_SURFACE_SCAN_FAILED');});
+test('external resource reference count must be exactly zero',()=>assert.equal(adjudicatePackagingEvidence(x({externalResourceReferences:1})).reason,'PACKAGE_EXTERNAL_RESOURCE_REFERENCE'));
+test('malformed hash and unknown fields fail schema',()=>{assert.throws(()=>adjudicatePackagingEvidence(x({artifactSha256:'x'})),/PACKAGING_EVIDENCE_SCHEMA/);assert.throws(()=>adjudicatePackagingEvidence({...x(),trusted:true}),/PACKAGING_EVIDENCE_SCHEMA/);});
+test('structural packaging evidence never claims direct-file runtime execution',()=>assert.equal(adjudicatePackagingEvidence(x()).directFileRuntimeEvidence,false));
