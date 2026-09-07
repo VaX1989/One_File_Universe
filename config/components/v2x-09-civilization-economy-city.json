@@ -11,8 +11,8 @@
       "source": "src/v2x-09-civilization-economy-city/core.js",
       "dependencies": [],
       "authority": "MODEL_DERIVED_SIMULATION",
-      "provenance": "V2X-09 bounded civilization technology prerequisite and utility core; model-derived scenario logic only. Trade degree counts only explicitly active trade edges whose two modeled settlement endpoints are active.",
-      "provides": ["v2x09.civilization.technology-prerequisites"]
+      "provenance": "V2X-09 bounded civilization technology/utility core. Trade degree counts only explicitly active edges whose modeled settlement endpoints are active. Settlement, resource, trade-edge, region, polity, infrastructure-asset and history-proposal identities fail closed when missing or duplicated; no last-wins identity semantics are permitted.",
+      "provides": ["v2x09.civilization.technology-prerequisites", "v2x09.civilization.deterministic-identity-validation"]
     },
     {
       "id": "v2x09.civilization.economy-init",
@@ -76,7 +76,7 @@
       "source": "src/v2x-09-civilization-economy-city/index.js",
       "dependencies": ["v2x09.civilization.economy-step", "v2x09.civilization.institutions", "v2x09.civilization.morphology"],
       "authority": "MODEL_DERIVED_SIMULATION",
-      "provenance": "V2X-09 public additive API composition plus bounded route-failure envelope analysis. Failure scenarios are topology/capacity witnesses only: no guaranteed flow substitution, no physical transport geometry, no canonical history, no persistent persons, and no planet/life mutation.",
+      "provenance": "V2X-09 public additive API plus deterministic route-failure envelopes. Failure analysis rejects duplicate input identities, excludes disabled/non-operational routes, carries input evidence-completeness explicitly, evaluates at most 16 candidate routes and 256 scenarios, and enforces one 50000-operation budget for the entire envelope. Results are topology/capacity witnesses only: no guaranteed flow substitution, physical transport geometry, canonical history or cross-domain mutation.",
       "provides": ["v2x09.civilization.economy-city", "v2x09.civilization.network-failure-envelope"]
     },
     {
@@ -89,8 +89,8 @@
       "source": "src/v2x-09-civilization-economy-city/production-network.js",
       "dependencies": ["v2x09.civilization.core"],
       "authority": "MODEL_DERIVED_SIMULATION",
-      "provenance": "V2X-09 deterministic multi-stage production graph with direct allocation followed by bounded residual widest-path logistics. Only explicitly active trade edges between active modeled settlements can carry capacity; inactive, unknown or missing-endpoint routes remain visible as disabled witnesses. Routing is bounded to 48 settlements, 96 routes, 47 simple-path hops, 1024 path searches and 48000 operations, preserves per-edge capacity/accounting closure, and makes no physical route-geometry or shortest-physical-path claim.",
-      "provides": ["v2x09.civilization.production-network", "v2x09.civilization.logistics-bottlenecks", "v2x09.civilization.residual-widest-routing"]
+      "provenance": "V2X-09 deterministic multi-stage production graph with direct allocation followed by residual widest-path logistics. Only explicitly active trade edges between active, evidence-backed modeled settlement endpoints can carry capacity; inactive, unknown or missing-endpoint routes remain visible disabled witnesses. Routing is bounded to 48 settlements, 96 routes, 47 simple-path hops, 1024 searches and 48000 reported operations; a reserve protects service/ledger closure under search-budget exhaustion. Production exposes state/economy evidence coverage and never treats missing modeled economy as zero. Per-edge capacity/accounting closure is preserved and no physical route geometry or shortest-physical-path claim is made.",
+      "provides": ["v2x09.civilization.production-network", "v2x09.civilization.logistics-bottlenecks", "v2x09.civilization.residual-widest-routing", "v2x09.civilization.evidence-coverage"]
     },
     {
       "id": "v2x09.civilization.society-dynamics",
@@ -102,8 +102,8 @@
       "source": "src/v2x-09-civilization-economy-city/society-dynamics.js",
       "dependencies": ["v2x09.civilization.core", "v2x09.civilization.production-network"],
       "authority": "MODEL_DERIVED_SIMULATION",
-      "provenance": "V2X-09 aggregate scarcity, opportunity, migration-pressure and institutional-response proposals. Social route-stress averages only usable modeled routes and treats absence of usable routes as bounded isolation pressure. No persistent person is created and no population, polity, planet, life or P4 authority is mutated.",
-      "provides": ["v2x09.civilization.aggregate-migration-pressure", "v2x09.civilization.institution-response-proposals"]
+      "provenance": "V2X-09 aggregate scarcity, opportunity, migration-pressure and institution-response proposals over complete modeled evidence only. Missing or state/economy-conflicting settlement evidence remains null/explicit and cannot emit synthetic migration pressure. Institutions exclude incomplete members while exposing the exclusion. Physical infrastructure degradation may trigger REPAIR_PRIORITY; topology/isolation instead triggers NETWORK_ACCESS_OR_REDUNDANCY_PRIORITY. No persistent person, population, polity, planet, life or P4 authority is mutated.",
+      "provides": ["v2x09.civilization.aggregate-migration-pressure", "v2x09.civilization.institution-response-proposals", "v2x09.civilization.society-evidence-gaps"]
     },
     {
       "id": "v2x09.civilization.urban-evolution",
@@ -115,8 +115,8 @@
       "source": "src/v2x-09-civilization-economy-city/urban-evolution.js",
       "dependencies": ["v2x09.civilization.core", "v2x09.civilization.production-network", "v2x09.civilization.society-dynamics"],
       "authority": "MODEL_DERIVED_SIMULATION",
-      "provenance": "V2X-09 causal urban-family and specialization model with history/infrastructure-backed evidence layers. Corridor-degradation presentation layers require explicit MODELED_INFRASTRUCTURE_CONDITION evidence plus a source infrastructure identifier; trade-only fallback routes cannot masquerade as archaeological or infrastructure remnants. Render cues remain PRESENTATION_ONLY and claim neither physical geometry nor empirical archaeology.",
-      "provides": ["v2x09.civilization.urban-evolution", "v2x09.civilization.urban-evolution-render-cues"]
+      "provenance": "V2X-09 causal urban-family and specialization model with history/infrastructure-backed evidence layers. Corridor degradation requires explicit MODELED_INFRASTRUCTURE_CONDITION evidence plus a source infrastructure ID; trade-only fallback cannot masquerade as archaeology or infrastructure remnant. Incomplete economic evidence produces MODEL_EVIDENCE_INCOMPLETE rather than fabricated stable/stressed state. Render cues remain PRESENTATION_ONLY and claim neither physical geometry nor empirical archaeology.",
+      "provides": ["v2x09.civilization.urban-evolution", "v2x09.civilization.urban-evolution-render-cues", "v2x09.civilization.urban-evidence-completeness"]
     },
     {
       "id": "v2x09.civilization.advanced-api",
@@ -128,8 +128,8 @@
       "source": "src/v2x-09-civilization-economy-city/advanced.js",
       "dependencies": ["v2x09.civilization.production-network", "v2x09.civilization.society-dynamics", "v2x09.civilization.urban-evolution"],
       "authority": "MODEL_DERIVED_SIMULATION",
-      "provenance": "V2X-09 advanced composition with bounded network-resilience metrics and infrastructure-only counterfactual recovery envelopes. Alternate-path capacity is explicitly topology-only, recovery holds the economy snapshot constant, and neither surface claims canonical forecasting or mutates shared authority.",
-      "provides": ["v2x09.civilization.advanced-composition", "v2x09.civilization.network-resilience", "v2x09.civilization.recovery-envelope"]
+      "provenance": "V2X-09 advanced composition with explicit evidence-completeness summary, globally bounded network resilience and infrastructure-only counterfactual recovery. Bridge detection is linear in the modeled graph; alternate bottleneck capacity uses a deterministic max-capacity heap under one 250000-operation resilience budget. Recovery requires active modeled endpoints, ROUTE_LOGISTICS, PUBLIC_WORKS and identified infrastructure assets; it holds the economy snapshot constant, is capped at 16 projected epochs and 5500000 reported submodel operations, and never claims canonical forecasting. Shared renderer composition remains convergence-owner work.",
+      "provides": ["v2x09.civilization.advanced-composition", "v2x09.civilization.network-resilience", "v2x09.civilization.recovery-envelope", "v2x09.civilization.composition-evidence-summary"]
     }
   ]
 }
