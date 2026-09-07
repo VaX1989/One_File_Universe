@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 globalThis.OFU={};
-for(const f of ['src/kernel/sha256.js','src/kernel/p2-unicode.js','src/kernel/p2-canonical.js','src/temporal/p4-temporal.js','src/gameplay/contracts.js','src/simulation/cross-domain/causal-engine.js','src/simulation/temporal-adapters/p4-gameplay-bridge.js','src/gameplay/runtime.js'])vm.runInThisContext(fs.readFileSync(f,'utf8'),{filename:f});
+for(const f of ['src/kernel/sha256.js','src/kernel/p2-unicode.js','src/kernel/p2-canonical.js','src/temporal/p4-temporal.js','src/gameplay/contracts.js','src/gameplay/p2-resource-normalizer.js','src/simulation/cross-domain/causal-engine.js','src/simulation/temporal-adapters/p4-gameplay-bridge.js','src/gameplay/runtime.js'])vm.runInThisContext(fs.readFileSync(f,'utf8'),{filename:f});
 const O=globalThis.OFU,P=O.p2,C=O.v2x11GameplayContracts,E=O.v2x11CausalEngine,B=O.v2x11P4GameplayBridge,G=O.v2x11Gameplay;
 const id=s=>P.hex(O.sha256.digest(new TextEncoder().encode(s))),universe=id('v2x11-universe'),target=id('v2x11-target'),context={targetId:target,modelWorld:null,source:'TEST'};
 let cases=0;
+assert.deepEqual(C.resourceVector([{resourceId:'energy',units:7n}]),[{resourceId:'energy',units:7}]);assert.throws(()=>C.resourceVector([{resourceId:'energy',units:1000000001n}]),/out of range/);cases+=2;
 let session=G.createSession({universeIdentity:universe,targetId:target,initialResources:[{resourceId:'energy',units:200},{resourceId:'supplies',units:20},{resourceId:'storage_capacity',units:20}]});
 const p1=G.propose({session,actorId:'founder',kind:'SURVEY',parameters:{mode:'baseline'},context}).proposal,p2=G.propose({session,actorId:'founder',kind:'SURVEY',parameters:{mode:'baseline'},context}).proposal;assert.equal(p1.proposalId,p2.proposalId);cases++;
 let first=G.perform({session,actorId:'founder',kind:'SURVEY',parameters:{mode:'baseline'},context});session=first.session;assert.equal(first.receipt.status,'ADMITTED');assert.equal(first.receipt.elapsedMicros,1000000);assert.equal(first.execution.status,'APPLIED');cases+=3;
