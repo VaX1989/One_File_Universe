@@ -1,0 +1,18 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v2x10.model.persistent-individuals",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/domains/v1/individuals/provider.js",
+      "dependencies": [],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Convergence-owned single-file adapter over the V2X-10 persistent-individual semantics: deterministic world/settlement/birth-ordinal identity, bounded retained individual state, unknown genealogy unless retained, structured model-derived culture and proposal-only actions requiring governed admission.",
+      "provides": ["v2x10.model.persistent-individuals"]
+    }
+  ]
+}
