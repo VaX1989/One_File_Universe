@@ -6,6 +6,7 @@ on:
     paths:
       - 'src/domains/v1/planetology/bulk-physical-diagnostics.js'
       - 'tests/v1/planetology/bulk-physical-diagnostics.mjs'
+      - 'tests/v1/provider-integration.mjs'
       - 'config/components/v11-bulk-physical-diagnostics.json'
       - 'config/components/v1.json'
       - '.github/workflows/v11-world-bulk-physical-diagnostics.yml'
@@ -13,6 +14,7 @@ on:
     paths:
       - 'src/domains/v1/planetology/bulk-physical-diagnostics.js'
       - 'tests/v1/planetology/bulk-physical-diagnostics.mjs'
+      - 'tests/v1/provider-integration.mjs'
       - 'config/components/v11-bulk-physical-diagnostics.json'
       - 'config/components/v1.json'
       - '.github/workflows/v11-world-bulk-physical-diagnostics.yml'
@@ -45,6 +47,7 @@ jobs:
         run: |
           node --check src/domains/v1/planetology/bulk-physical-diagnostics.js
           node --check tests/v1/planetology/bulk-physical-diagnostics.mjs
+          node --check tests/v1/provider-integration.mjs
       - name: Causal planetology regression
         run: node tests/v1/planetology/causal-system.mjs
       - name: Environment regression
@@ -53,6 +56,8 @@ jobs:
         run: node tests/v1/planetology/giant-family.mjs
       - name: Bulk physical diagnostics oracle
         run: node tests/v1/planetology/bulk-physical-diagnostics.mjs
+      - name: Real modeled-world provider consumer
+        run: node tests/v1/provider-integration.mjs
       - name: Component and modeled-world consumer integration
         run: |
           node --input-type=module <<'NODE'
