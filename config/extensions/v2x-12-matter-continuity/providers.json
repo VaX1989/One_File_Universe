@@ -86,7 +86,9 @@
         "uncertainty": "Source-backed, computed/model-derived, unresolved and presentation-only geometry are exposed as distinct fidelity states."
       },
       "lifecycle": "SHIPPING",
-      "requires": ["v2x12.model.matter-continuity"],
+      "requires": [
+        {"id": "v2x12.model.matter-continuity", "version": "1.0.0", "authority": "MODEL_DERIVED_SIMULATION"}
+      ],
       "claims": ["representation.microscopic-matter-v2"],
       "operations": ["INSPECT", "REPRESENT"],
       "budget": {"entities": 256, "bytes": 262144, "operations": 2048, "queue": 32},
