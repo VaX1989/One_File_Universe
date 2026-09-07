@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5 / Node 24 runtime
         with:
           ref: ${{ env.OFU_SOURCE_SHA }}
           fetch-depth: 0
@@ -51,7 +51,7 @@ jobs:
           git for-each-ref --format='%(refname) %(objectname)' > dist/source-reproduction/refs.txt
           printf 'SOURCE_SHA=%s\nSOURCE_TREE=%s\nPURPOSE=DIAGNOSTIC_NOT_CERTIFICATION\n' "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})" > dist/source-reproduction/source.txt
           (cd dist/source-reproduction && sha256sum exact-source.tar.gz source.bundle refs.txt source.txt > SHA256SUMS)
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6 / Node 24 runtime
         with:
           name: source-reproduction-${{ env.OFU_SOURCE_SHA }}
           path: dist/source-reproduction/
