@@ -65,26 +65,37 @@ assert(/pull_request:[\s\S]*?-\s+['"]development\/v1\.\*['"]/.test(sourceReprodu
 assert(/name:\s+source-reproduction-\$\{\{\s*env\.OFU_SOURCE_SHA\s*\}\}/.test(sourceReproduction),'source reproduction artifact must be named by exact source SHA');
 checks+=3;
 
-// Primary post-v1 control-plane workflows must not regress to GitHub Actions
-// whose JavaScript runtime requires the hosted runner's Node 20 compatibility shim.
-// These immutable commits were independently verified to declare `runs.using: node24`.
+// Primary post-v1 and main-promotion workflows must not regress to GitHub
+// Actions whose JavaScript runtime requires the hosted runner's Node 20
+// compatibility shim. These immutable commits were independently verified to
+// declare `runs.using: node24`.
 const nativeNode24Pins=Object.freeze({
   checkout:'actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09',
   setupNode:'actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444',
   setupPython:'actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1',
   uploadArtifact:'actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f',
+  downloadArtifact:'actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131',
 });
 const nativeRuntimeContracts=[
   {file:`${workflowDir}/foundation.yml`,pins:['checkout','setupNode','setupPython']},
   {file:`${workflowDir}/post-v1-development.yml`,pins:['checkout','setupNode','setupPython']},
   {file:sourceReproductionFile,pins:['checkout','uploadArtifact']},
   {file:`${workflowDir}/reliability-phase-router.yml`,pins:['checkout','setupNode']},
+  {file:`${workflowDir}/v1-certification.yml`,pins:['checkout','setupNode','setupPython','uploadArtifact']},
+  {file:`${workflowDir}/rendering-production.yml`,pins:['checkout','setupNode','setupPython','uploadArtifact','downloadArtifact']},
+  {file:`${workflowDir}/px-foundation.yml`,pins:['checkout','setupNode','uploadArtifact']},
 ];
 for(const contract of nativeRuntimeContracts){
   const text=fs.readFileSync(contract.file,'utf8');
+  const lines=text.split(/\r?\n/);
   for(const key of contract.pins){
-    assert(text.includes(nativeNode24Pins[key]),`${contract.file}: ${key} must use the authenticated native Node 24 action pin`);
-    checks++;
+    const expected=nativeNode24Pins[key],actionName=expected.slice(0,expected.indexOf('@'));
+    const occurrences=lines.filter(line=>line.includes(`uses: ${actionName}@`));
+    assert(occurrences.length>0,`${contract.file}: expected at least one ${actionName} action`);
+    for(const line of occurrences){
+      assert(line.includes(expected),`${contract.file}: every ${actionName} use must use the authenticated native Node 24 action pin: ${line.trim()}`);
+      checks++;
+    }
   }
 }
 
