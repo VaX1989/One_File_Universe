@@ -1,0 +1,100 @@
+{
+  "schema": "ofu-provider-catalog-1",
+  "owners": [
+    {
+      "id": "v2x-12-matter-continuity",
+      "prefixes": ["v2x12"],
+      "kinds": ["model", "representation"],
+      "authorities": ["MODEL_DERIVED_SIMULATION", "DERIVED", "PRESENTATION_ONLY"]
+    }
+  ],
+  "canonicalAdmissions": [],
+  "providers": [
+    {
+      "contract": "ofu-px-contracts-1",
+      "id": "v2x12.model.matter-continuity",
+      "version": "1.0.0",
+      "owner": "v2x-12-matter-continuity",
+      "kind": "model",
+      "authority": {
+        "class": "MODEL_DERIVED_SIMULATION",
+        "contract": "ofu-px-contracts-1",
+        "model": "v2x12.model.matter-continuity",
+        "version": "1.0.0",
+        "sources": [
+          "src/domains/v1/micro/matter-continuity-v2.js",
+          "src/domains/v1/materials/reference-properties.js",
+          "research/v1x-19-matter-microphysics-2026-09-06@9fb5e65e75bb21515f3c541033da25f8fc4d94a6"
+        ],
+        "assumptions": [
+          "Cross-regime continuity is semantic and commitment-based; representative micro/molecular/atomic states are bounded local materializations rather than whole-object enumeration."
+        ],
+        "limitations": [
+          "Material component ppm is never reinterpreted as mole fraction.",
+          "Reaction networks are topology descriptors only; kinetics and thermodynamics are not solved.",
+          "Source-backed structure requires explicit provenance and licensing metadata before V2X-12 treats the source claim as eligible.",
+          "No molecular dynamics, reactive molecular dynamics, electron-orbit, orbital, wavefunction or quantum-dynamics claim is made."
+        ],
+        "evidence": []
+      },
+      "fidelity": {
+        "regime": "matter-continuity-v2",
+        "validity": "Bounded source-aware material, representative microstructure, chemistry topology and atomic structural continuity layered over shipping v1 matter providers.",
+        "resolution": "Tissue/cell descriptor bridge plus MATERIAL, MICROSTRUCTURE, MOLECULAR and ATOMIC semantic regimes with explicit finite caps.",
+        "uncertainty": "Unknown chemistry, unsupported source provenance, unmeasured kinetics and non-classical states remain explicitly unresolved or unsupported."
+      },
+      "lifecycle": "SHIPPING",
+      "requires": [],
+      "claims": ["model.matter-continuity-v2"],
+      "operations": ["INSPECT", "REFINE", "PROJECT", "RECONCILE"],
+      "budget": {"entities": 768, "bytes": 393216, "operations": 4096, "queue": 64},
+      "evidence": [
+        {"id": "v2x12.matter.authority-provenance", "tier": "FAST_LOCAL"},
+        {"id": "v2x12.matter.continuity-biology", "tier": "INTEGRATION"}
+      ],
+      "mandatory": false
+    },
+    {
+      "contract": "ofu-px-contracts-1",
+      "id": "v2x12.representation.microscopic-matter",
+      "version": "1.0.0",
+      "owner": "v2x-12-matter-continuity",
+      "kind": "representation",
+      "authority": {
+        "class": "PRESENTATION_ONLY",
+        "contract": "ofu-px-contracts-1",
+        "model": "v2x12.representation.microscopic-matter",
+        "version": "1.0.0",
+        "sources": [
+          "src/rendering/microscopic/matter-continuity-provider.js",
+          "src/domains/v1/micro/matter-continuity-v2.js"
+        ],
+        "assumptions": [
+          "Semantic magnification and normalized display coordinates can communicate regime changes without asserting literal Euclidean zoom or new scientific authority."
+        ],
+        "limitations": [
+          "Molecular grid placement is presentation-only.",
+          "Fixed-point structural coordinates can be normalized for display while original integer coordinates remain separately retained.",
+          "The provider owns no shared camera, scale, selection, input or canonical mutation authority."
+        ],
+        "evidence": []
+      },
+      "fidelity": {
+        "regime": "microscopic-matter",
+        "validity": "Authority-labelled bounded presentation of V2X-12 material, microstructure, molecular and atomic representations.",
+        "resolution": "At most 256 provider nodes per projected microscopic representation.",
+        "uncertainty": "Source-backed, computed/model-derived, unresolved and presentation-only geometry are exposed as distinct fidelity states."
+      },
+      "lifecycle": "SHIPPING",
+      "requires": ["v2x12.model.matter-continuity"],
+      "claims": ["representation.microscopic-matter-v2"],
+      "operations": ["INSPECT", "REPRESENT"],
+      "budget": {"entities": 256, "bytes": 262144, "operations": 2048, "queue": 32},
+      "evidence": [
+        {"id": "v2x12.matter.authority-provenance", "tier": "FAST_LOCAL"},
+        {"id": "v2x12.matter.continuity-biology", "tier": "INTEGRATION"}
+      ],
+      "mandatory": false
+    }
+  ]
+}
