@@ -2,36 +2,206 @@
 'use strict';
 const O=root.OFU=root.OFU||{},A=O.v2x06SurfaceAddress,G=O.v2x06Geography,H=O.v2x06Hydrology;
 if(!A||!G||!H)throw new Error('V2X-06 surface address/geography/hydrology required');
-const VERSION='ofu-v2x-06-hierarchical-terrain-1';
+const VERSION='ofu-v2x-06-hierarchical-terrain-2';
 const AUTHORITY='PRESENTATION_ONLY';
 const SOURCE_AUTHORITY='MODEL_DERIVED_SIMULATION';
-const DEFAULTS=Object.freeze({maxPatches:25,maxVertices:25000,maxBytes:8*1024*1024,maxOperations:250000,maxQueue:64,gridResolution:17,maxCachedPatches:64});
+const PPM=1000000;
+const DEFAULTS=Object.freeze({
+ maxPatches:25,
+ maxVertices:25000,
+ maxBytes:8*1024*1024,
+ maxOperations:250000,
+ maxQueue:64,
+ gridResolution:17,
+ minGridResolution:9,
+ maxGridResolution:33,
+ maxCachedPatches:64,
+ maxCacheBytes:16*1024*1024,
+ maxTransitionSamples:129
+});
 function freeze(v){if(!v||typeof v!=='object'||Object.isFrozen(v))return v;for(const k of Object.keys(v))freeze(v[k]);return Object.freeze(v)}
 function clamp(v,a,b){return Math.max(a,Math.min(b,Number(v)||0))}
+function clampPpm(v){return Math.round(clamp(v,0,PPM))}
 function hash32(text){let h=2166136261>>>0;for(const ch of String(text)){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}h^=h>>>16;return h>>>0}
 function stableDigest(value){return ('00000000'+hash32(JSON.stringify(value)).toString(16)).slice(-8)}
+function edgeVectorKey(v){return v.map(x=>Math.round(x*1e11)).join(',')}
+function normalizedOddResolution(value,min,max){let r=Math.floor(Number(value)||0);r=Math.max(3,Math.min(65,r));if(r%2===0)r-=1;r=Math.max(min,Math.min(max,r));if(r%2===0)r=Math.max(min,r-1);return r}
 function createProvider({model,hydrology,bounds={}}={}){
  if(!model||!hydrology)throw new TypeError('surface model and hydrology required');
- const limit=Object.freeze({...DEFAULTS,...bounds});for(const k of ['maxPatches','maxVertices','maxBytes','maxOperations','maxQueue','gridResolution','maxCachedPatches']){if(!Number.isInteger(limit[k])||limit[k]<=0)throw new RangeError('invalid terrain bound '+k)}
- const gridResolution=Math.max(3,Math.min(33,limit.gridResolution|1)),cache=new Map();let tick=0,evictions=0;
- function cacheKey(patch){return patch.patchIdentity+'@'+gridResolution}
- function evict(){while(cache.size>limit.maxCachedPatches){let oldest=null;for(const e of cache.values())if(!oldest||e.lastUse<oldest.lastUse)oldest=e;if(!oldest)break;cache.delete(oldest.key);evictions++}}
- function edgeVectorKey(v){return v.map(x=>Math.round(x*1e11)).join(',')}
- function buildPatch(patch,budget){const key=cacheKey(patch),hit=cache.get(key);if(hit){hit.lastUse=++tick;budget.vertices+=hit.patch.vertices.length;budget.bytes+=hit.patch.estimatedBytes;budget.operations+=1;if(budget.vertices>limit.maxVertices)throw new Error('terrain vertex budget exceeded');if(budget.bytes>limit.maxBytes)throw new Error('terrain byte budget exceeded');if(budget.operations>limit.maxOperations)throw new Error('terrain operation budget exceeded');return hit.patch}
-  const vertices=[],rows=[],res=gridResolution;for(let y=0;y<res;y++){const row=[];for(let x=0;x<res;x++){budget.operations+=2;if(budget.operations>limit.maxOperations)throw new Error('terrain operation budget exceeded');const unit=A.patchPointUnit(patch,x/(res-1),y/(res-1)),ll=A.unitToLatLon(unit),address=A.locate(model.planetIdentity,ll.latMicroDeg,ll.lonMicroDeg,patch.level),g=model.sampleUnit(unit),index=vertices.length;vertices.push(freeze({unit,latMicroDeg:ll.latMicroDeg,lonMicroDeg:ll.lonMicroDeg,reliefCuePpm:g.reliefCuePpm,coastDeltaPpm:g.coastDeltaPpm,surfaceClass:g.surfaceClass,provinceClass:g.provinceClass,materialFamily:g.materialFamily,plateIdentity:g.plateIdentity,basinIdentity:g.basinIdentity,orogenCuePpm:g.orogenCuePpm,volcanicCuePpm:g.volcanicCuePpm,impactCuePpm:g.impactCuePpm,erosionCuePpm:g.erosionCuePpm,cryosphereCuePpm:g.cryosphereCuePpm,aridityCuePpm:g.aridityCuePpm,landformAnalog:g.landformAnalog||'NONE',addressIdentity:address.locationIdentity}));row.push(index)}rows.push(row)}
-  const edgeIndices={N:rows[res-1].slice(),S:rows[0].slice(),W:rows.map(r=>r[0]),E:rows.map(r=>r[res-1])},edgeSignatures={};for(const edge of ['N','S','E','W']){const pts=edgeIndices[edge].map(i=>vertices[i]),tokens=pts.map(v=>edgeVectorKey(v.unit)+'|'+v.reliefCuePpm+'|'+v.surfaceClass).sort();edgeSignatures[edge]=stableDigest(tokens)}
-  const coastSegments=[];for(let y=0;y<res-1;y++)for(let x=0;x<res-1;x++){const ids=[rows[y][x],rows[y][x+1],rows[y+1][x+1],rows[y+1][x]],vs=ids.map(i=>vertices[i]),coords=[[x/(res-1),y/(res-1)],[(x+1)/(res-1),y/(res-1)],[(x+1)/(res-1),(y+1)/(res-1)],[x/(res-1),(y+1)/(res-1)]],crossings=[];for(const [a,b] of [[0,1],[1,2],[2,3],[3,0]]){const va=vs[a].coastDeltaPpm,vb=vs[b].coastDeltaPpm;if((va<=0&&vb>0)||(va>0&&vb<=0)){const t=Math.abs(va-vb)>1e-9?clamp(va/(va-vb),0,1):.5,u=coords[a][0]+(coords[b][0]-coords[a][0])*t,v=coords[a][1]+(coords[b][1]-coords[a][1])*t;crossings.push({u,v,unit:A.patchPointUnit(patch,u,v)})}}for(let i=0;i+1<crossings.length;i+=2)coastSegments.push(freeze({points:freeze([crossings[i],crossings[i+1]]),kind:'COASTLINE_REFINEMENT_CUE'}))}
-  const drainage=hydrology.networkForPatch(patch,{maxRivers:8,seedGrid:5}),sampleIndices=[rows[Math.floor(res/2)][Math.floor(res/2)],rows[0][0],rows[0][res-1],rows[res-1][0],rows[res-1][res-1]],samples=sampleIndices.map(i=>vertices[i]),substrateHooks=sampleIndices.map(i=>{const v=vertices[i],a=A.locate(model.planetIdentity,v.latMicroDeg,v.lonMicroDeg,patch.level),h=hydrology.sample(a);return freeze({locationIdentity:a.locationIdentity,materialFamily:v.materialFamily,provinceClass:v.provinceClass,surfaceClass:v.surfaceClass,reliefCuePpm:v.reliefCuePpm,waterActivityPpm:h.waterActivityPpm,riverOrder:h.riverOrder,cryosphereCuePpm:v.cryosphereCuePpm,aridityCuePpm:v.aridityCuePpm,claims:{biologyAssigned:false,civilizationAssigned:false,resourceTruthAssigned:false}})}),summary={solidSamples:vertices.filter(v=>v.surfaceClass==='SOLID').length,liquidSamples:vertices.filter(v=>v.surfaceClass==='LIQUID').length,cryosphereSamples:vertices.filter(v=>v.cryosphereCuePpm>600000).length,aridSamples:vertices.filter(v=>v.aridityCuePpm>650000).length,coastSegments:coastSegments.length,riverCount:drainage.rivers.length,lakeCount:drainage.lakes.length,wetlandCount:drainage.wetlands.length,reliefMinPpm:Math.min(...vertices.map(v=>v.reliefCuePpm)),reliefMaxPpm:Math.max(...vertices.map(v=>v.reliefCuePpm)),maxOrogenCuePpm:Math.max(...vertices.map(v=>Math.abs(v.orogenCuePpm))),maxVolcanicCuePpm:Math.max(...vertices.map(v=>v.volcanicCuePpm)),maxImpactCuePpm:Math.max(...vertices.map(v=>v.impactCuePpm)),maxErosionCuePpm:Math.max(...vertices.map(v=>v.erosionCuePpm)),duneAnalogSamples:vertices.filter(v=>v.landformAnalog==='DUNE_FIELD_ANALOG_PRESENTATION').length,glacierAnalogSamples:vertices.filter(v=>v.landformAnalog==='GLACIER_ANALOG_PRESENTATION').length};
-  const estimatedBytes=vertices.length*112+coastSegments.length*40+drainage.rivers.reduce((n,r)=>n+r.points.length*48,0)+2048;budget.vertices+=vertices.length;budget.bytes+=estimatedBytes;if(budget.vertices>limit.maxVertices)throw new Error('terrain vertex budget exceeded');if(budget.bytes>limit.maxBytes)throw new Error('terrain byte budget exceeded');
-  const built=freeze({version:VERSION,authority:AUTHORITY,sourceAuthority:SOURCE_AUTHORITY,planetIdentity:model.planetIdentity,patchIdentity:patch.patchIdentity,parentPatchIdentity:patch.parentPatchIdentity,face:patch.face,level:patch.level,x:patch.x,y:patch.y,bounds:patch.bounds,gridResolution:res,vertices,rows:freeze(rows),edgeIndices:freeze(edgeIndices),edgeSignatures:freeze(edgeSignatures),coastSegments:freeze(coastSegments),drainage,summary:freeze(summary),estimatedBytes,sampleWitness:freeze(samples),substrateHooks:freeze(substrateHooks),processLayers:freeze([{id:'EROSION_WEATHERING_PRESENTATION',timescaleClass:'GEOLOGIC_AGGREGATE_UNRESOLVED',fidelity:'HEURISTIC_MODEL_CUE',intensityPpm:summary.maxErosionCuePpm},{id:'SEDIMENT_TRANSPORT_PRESENTATION',timescaleClass:'EVENT_TO_GEOLOGIC_UNRESOLVED',fidelity:'HEURISTIC_DRAINAGE_CUE',intensityPpm:Math.max(0,...substrateHooks.map(h=>h.waterActivityPpm))},{id:'REGOLITH_SUBSTRATE_PRESENTATION',timescaleClass:'UNRESOLVED',fidelity:'MATERIAL_FAMILY_CUE',intensityPpm:Math.max(...vertices.map(v=>v.aridityCuePpm))}]),claims:{gridElevationPhysical:false,coastlineCanonical:false,riverGeometryPhysical:false,geographySourceModelDerived:true}});cache.set(key,{key,patch:built,lastUse:++tick});evict();return built}
- function gatherPatches(anchorPatch,radius,maxPatches){const r=Math.max(0,Math.min(4,Math.floor(radius))),candidates=[];for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++)candidates.push({dx,dy,d:Math.max(Math.abs(dx),Math.abs(dy))});candidates.sort((a,b)=>a.d-b.d||a.dy-b.dy||a.dx-b.dx);const out=[],seen=new Set();for(const c of candidates){if(out.length>=maxPatches)break;let p=anchorPatch;for(let i=0;i<Math.abs(c.dy);i++)p=A.neighborPatch(p,c.dy>0?'N':'S');for(let i=0;i<Math.abs(c.dx);i++)p=A.neighborPatch(p,c.dx>0?'E':'W');if(seen.has(p.patchIdentity))continue;seen.add(p.patchIdentity);out.push(p)}return out}
- function materialize({anchorAddress,level=anchorAddress?.level??6,radius=1,maxPatches=limit.maxPatches}={}){if(!anchorAddress)throw new TypeError('anchorAddress required');const target=A.atLevel(anchorAddress,level),anchorPatch=A.patchAt(model.planetIdentity,target.face,target.level,target.x,target.y);if(model.noSolidSurface)return freeze({version:VERSION,authority:AUTHORITY,sourceAuthority:SOURCE_AUTHORITY,status:'NO_SOLID_SURFACE',planetIdentity:model.planetIdentity,anchorAddress:target,patches:[],resources:{patches:0,vertices:0,bytes:0,operations:0,queue:0},cache:snapshotCache(),claims:{giantSurfaceFabricated:false}});
-  const cap=Math.max(1,Math.min(limit.maxPatches,Math.floor(maxPatches))),patchList=gatherPatches(anchorPatch,Math.max(0,Math.min(4,Math.floor(radius))),cap),budget={vertices:0,bytes:0,operations:0},patches=[];for(const p of patchList)patches.push(buildPatch(p,budget));patches.sort((a,b)=>a.patchIdentity.localeCompare(b.patchIdentity));const result={version:VERSION,authority:AUTHORITY,sourceAuthority:SOURCE_AUTHORITY,status:'READY',planetIdentity:model.planetIdentity,anchorAddress:target,patches,resources:{patches:patches.length,vertices:budget.vertices,bytes:budget.bytes,operations:budget.operations,queue:0,maxPatches:limit.maxPatches,maxVertices:limit.maxVertices,maxBytes:limit.maxBytes,maxOperations:limit.maxOperations},cache:snapshotCache(),claims:{planetWideFullResolutionMesh:false,canonicalElevation:false,adaptiveMaterialization:true}};return freeze({...result,revisitDigest:stableDigest({planetIdentity:result.planetIdentity,anchor:target.locationIdentity,level:target.level,patches:patches.map(p=>({id:p.patchIdentity,edges:p.edgeSignatures,summary:p.summary}))})})}
- function edgeWitness(patch,edge){const neighbor=A.neighborPatch(patch,edge),a=buildPatch(patch,{vertices:0,bytes:0,operations:0}),b=buildPatch(neighbor,{vertices:0,bytes:0,operations:0}),target=a.edgeSignatures[edge];let neighborEdge=null;for(const e of ['N','S','E','W'])if(b.edgeSignatures[e]===target){neighborEdge=e;break}const addressWitness=A.oppositeEdgeWitness(patch,edge,gridResolution);return freeze({version:'ofu-v2x-06-terrain-seam-witness-1',authority:'MEASURED_RUNTIME_EVIDENCE',patchIdentity:patch.patchIdentity,edge,neighborPatchIdentity:neighbor.patchIdentity,neighborEdge,crossFace:patch.face!==neighbor.face,addressCoincident:addressWitness.coincident,terrainSignatureMatch:neighborEdge!==null,pass:addressWitness.coincident&&neighborEdge!==null})}
- function lodReconcile(address,coarseLevel,fineLevel){const coarse=A.atLevel(address,coarseLevel),fine=A.atLevel(address,fineLevel),back=A.atLevel(fine,coarseLevel),ag=model.sample(coarse),bg=model.sample(fine),h=hydrology.reconcileLocation(coarse,fine);return freeze({version:'ofu-v2x-06-lod-reconcile-1',authority:'MEASURED_RUNTIME_EVIDENCE',address:A.reconcileLocation(coarse,fine),roundTrip:A.reconcileLocation(coarse,back),sameRelief:ag.reliefCuePpm===bg.reliefCuePpm,sameSurfaceClass:ag.surfaceClass===bg.surfaceClass,hydrology:h,pass:A.reconcileLocation(coarse,fine).pass&&A.reconcileLocation(coarse,back).pass&&ag.reliefCuePpm===bg.reliefCuePpm&&ag.surfaceClass===bg.surfaceClass&&h.pass})}
+ const limit=Object.freeze({...DEFAULTS,...bounds});
+ for(const k of ['maxPatches','maxVertices','maxBytes','maxOperations','maxQueue','gridResolution','minGridResolution','maxGridResolution','maxCachedPatches','maxCacheBytes','maxTransitionSamples']){
+  if(!Number.isInteger(limit[k])||limit[k]<=0)throw new RangeError('invalid terrain bound '+k);
+ }
+ if(limit.minGridResolution>limit.maxGridResolution)throw new RangeError('minGridResolution exceeds maxGridResolution');
+ const minGridResolution=normalizedOddResolution(limit.minGridResolution,3,65);
+ const maxGridResolution=normalizedOddResolution(limit.maxGridResolution,minGridResolution,65);
+ const gridResolution=normalizedOddResolution(limit.gridResolution,minGridResolution,maxGridResolution);
+ const cache=new Map();let tick=0,evictions=0,cacheBytes=0;
+ function normalizeResolution(value){return normalizedOddResolution(value,minGridResolution,maxGridResolution)}
+ function cacheKey(patch,resolution){return patch.patchIdentity+'@'+resolution}
+ function evict(){
+  while(cache.size>limit.maxCachedPatches||cacheBytes>limit.maxCacheBytes){
+   let oldest=null;for(const e of cache.values())if(!oldest||e.lastUse<oldest.lastUse)oldest=e;
+   if(!oldest)break;cache.delete(oldest.key);cacheBytes-=oldest.patch.estimatedBytes;evictions++;
+  }
+  if(cacheBytes<0)cacheBytes=0;
+ }
+ function chargeBudget(budget,patch,cacheHit){
+  budget.vertices+=patch.vertices.length;budget.bytes+=patch.estimatedBytes;budget.operations+=cacheHit?1:0;
+  if(budget.vertices>limit.maxVertices)throw new Error('terrain vertex budget exceeded');
+  if(budget.bytes>limit.maxBytes)throw new Error('terrain byte budget exceeded');
+  if(budget.operations>limit.maxOperations)throw new Error('terrain operation budget exceeded');
+ }
+ function buildPatch(patch,budget,resolution=gridResolution){
+  const res=normalizeResolution(resolution),key=cacheKey(patch,res),hit=cache.get(key);
+  if(hit){hit.lastUse=++tick;chargeBudget(budget,hit.patch,true);return hit.patch}
+  const vertices=[],rows=[];
+  for(let y=0;y<res;y++){
+   const row=[];
+   for(let x=0;x<res;x++){
+    budget.operations+=2;if(budget.operations>limit.maxOperations)throw new Error('terrain operation budget exceeded');
+    const unit=A.patchPointUnit(patch,x/(res-1),y/(res-1)),ll=A.unitToLatLon(unit),address=A.locate(model.planetIdentity,ll.latMicroDeg,ll.lonMicroDeg,patch.level),g=model.sampleUnit(unit),index=vertices.length;
+    vertices.push(freeze({
+     unit,latMicroDeg:ll.latMicroDeg,lonMicroDeg:ll.lonMicroDeg,
+     reliefCuePpm:g.reliefCuePpm,coastDeltaPpm:g.coastDeltaPpm,surfaceClass:g.surfaceClass,
+     provinceClass:g.provinceClass,materialFamily:g.materialFamily,plateIdentity:g.plateIdentity,
+     basinIdentity:g.basinIdentity,orogenCuePpm:g.orogenCuePpm,volcanicCuePpm:g.volcanicCuePpm,
+     impactCuePpm:g.impactCuePpm,erosionCuePpm:g.erosionCuePpm,cryosphereCuePpm:g.cryosphereCuePpm,
+     aridityCuePpm:g.aridityCuePpm,landformAnalog:g.landformAnalog||'NONE',addressIdentity:address.locationIdentity
+    }));
+    row.push(index);
+   }
+   rows.push(row);
+  }
+  const edgeIndices={N:rows[res-1].slice(),S:rows[0].slice(),W:rows.map(r=>r[0]),E:rows.map(r=>r[res-1])},edgeSignatures={};
+  for(const edge of ['N','S','E','W']){
+   const pts=edgeIndices[edge].map(i=>vertices[i]),tokens=pts.map(v=>edgeVectorKey(v.unit)+'|'+v.reliefCuePpm+'|'+v.surfaceClass).sort();
+   edgeSignatures[edge]=stableDigest(tokens);
+  }
+  const coastSegments=[];
+  for(let y=0;y<res-1;y++)for(let x=0;x<res-1;x++){
+   const ids=[rows[y][x],rows[y][x+1],rows[y+1][x+1],rows[y+1][x]],vs=ids.map(i=>vertices[i]);
+   const coords=[[x/(res-1),y/(res-1)],[(x+1)/(res-1),y/(res-1)],[(x+1)/(res-1),(y+1)/(res-1)],[x/(res-1),(y+1)/(res-1)]],crossings=[];
+   for(const [a,b] of [[0,1],[1,2],[2,3],[3,0]]){
+    const va=vs[a].coastDeltaPpm,vb=vs[b].coastDeltaPpm;
+    if((va<=0&&vb>0)||(va>0&&vb<=0)){
+     const t=Math.abs(va-vb)>1e-9?clamp(va/(va-vb),0,1):.5,u=coords[a][0]+(coords[b][0]-coords[a][0])*t,v=coords[a][1]+(coords[b][1]-coords[a][1])*t;
+     crossings.push({u,v,unit:A.patchPointUnit(patch,u,v)});
+    }
+   }
+   for(let i=0;i+1<crossings.length;i+=2)coastSegments.push(freeze({points:freeze([crossings[i],crossings[i+1]]),kind:'COASTLINE_REFINEMENT_CUE'}));
+  }
+  const drainage=hydrology.networkForPatch(patch,{maxRivers:8,seedGrid:5});
+  const sampleIndices=[rows[Math.floor(res/2)][Math.floor(res/2)],rows[0][0],rows[0][res-1],rows[res-1][0],rows[res-1][res-1]],samples=sampleIndices.map(i=>vertices[i]);
+  const substrateHooks=sampleIndices.map(i=>{
+   const v=vertices[i],a=A.locate(model.planetIdentity,v.latMicroDeg,v.lonMicroDeg,patch.level),h=hydrology.sample(a);
+   return freeze({locationIdentity:a.locationIdentity,materialFamily:v.materialFamily,provinceClass:v.provinceClass,surfaceClass:v.surfaceClass,reliefCuePpm:v.reliefCuePpm,waterActivityPpm:h.waterActivityPpm,riverOrder:h.riverOrder,cryosphereCuePpm:v.cryosphereCuePpm,aridityCuePpm:v.aridityCuePpm,claims:{biologyAssigned:false,civilizationAssigned:false,resourceTruthAssigned:false}});
+  });
+  const summary={
+   solidSamples:vertices.filter(v=>v.surfaceClass==='SOLID').length,
+   liquidSamples:vertices.filter(v=>v.surfaceClass==='LIQUID').length,
+   cryosphereSamples:vertices.filter(v=>v.cryosphereCuePpm>600000).length,
+   aridSamples:vertices.filter(v=>v.aridityCuePpm>650000).length,
+   coastSegments:coastSegments.length,riverCount:drainage.rivers.length,lakeCount:drainage.lakes.length,wetlandCount:drainage.wetlands.length,
+   reliefMinPpm:Math.min(...vertices.map(v=>v.reliefCuePpm)),reliefMaxPpm:Math.max(...vertices.map(v=>v.reliefCuePpm)),
+   maxOrogenCuePpm:Math.max(...vertices.map(v=>Math.abs(v.orogenCuePpm))),maxVolcanicCuePpm:Math.max(...vertices.map(v=>v.volcanicCuePpm)),
+   maxImpactCuePpm:Math.max(...vertices.map(v=>v.impactCuePpm)),maxErosionCuePpm:Math.max(...vertices.map(v=>v.erosionCuePpm)),
+   duneAnalogSamples:vertices.filter(v=>v.landformAnalog==='DUNE_FIELD_ANALOG_PRESENTATION').length,
+   glacierAnalogSamples:vertices.filter(v=>v.landformAnalog==='GLACIER_ANALOG_PRESENTATION').length
+  };
+  const estimatedBytes=vertices.length*112+coastSegments.length*40+drainage.rivers.reduce((n,r)=>n+r.points.length*48,0)+2048;
+  budget.vertices+=vertices.length;budget.bytes+=estimatedBytes;
+  if(budget.vertices>limit.maxVertices)throw new Error('terrain vertex budget exceeded');if(budget.bytes>limit.maxBytes)throw new Error('terrain byte budget exceeded');
+  const built=freeze({
+   version:VERSION,authority:AUTHORITY,sourceAuthority:SOURCE_AUTHORITY,planetIdentity:model.planetIdentity,
+   patchIdentity:patch.patchIdentity,parentPatchIdentity:patch.parentPatchIdentity,face:patch.face,level:patch.level,x:patch.x,y:patch.y,bounds:patch.bounds,
+   gridResolution:res,vertices,rows:freeze(rows),edgeIndices:freeze(edgeIndices),edgeSignatures:freeze(edgeSignatures),coastSegments:freeze(coastSegments),drainage,
+   summary:freeze(summary),estimatedBytes,sampleWitness:freeze(samples),substrateHooks:freeze(substrateHooks),
+   processLayers:freeze([
+    {id:'EROSION_WEATHERING_PRESENTATION',timescaleClass:'GEOLOGIC_AGGREGATE_UNRESOLVED',fidelity:'HEURISTIC_MODEL_CUE',intensityPpm:summary.maxErosionCuePpm},
+    {id:'SEDIMENT_TRANSPORT_PRESENTATION',timescaleClass:'EVENT_TO_GEOLOGIC_UNRESOLVED',fidelity:'HEURISTIC_DRAINAGE_CUE',intensityPpm:Math.max(0,...substrateHooks.map(h=>h.waterActivityPpm))},
+    {id:'REGOLITH_SUBSTRATE_PRESENTATION',timescaleClass:'UNRESOLVED',fidelity:'MATERIAL_FAMILY_CUE',intensityPpm:Math.max(...vertices.map(v=>v.aridityCuePpm))}
+   ]),
+   claims:{gridElevationPhysical:false,coastlineCanonical:false,riverGeometryPhysical:false,geographySourceModelDerived:true}
+  });
+  cache.set(key,{key,patch:built,lastUse:++tick});cacheBytes+=estimatedBytes;evict();return built;
+ }
+ function gatherPatches(anchorPatch,radius,maxPatches){
+  const r=Math.max(0,Math.min(4,Math.floor(radius))),candidates=[];
+  for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++)candidates.push({dx,dy,d:Math.max(Math.abs(dx),Math.abs(dy)),manhattan:Math.abs(dx)+Math.abs(dy)});
+  candidates.sort((a,b)=>a.d-b.d||a.manhattan-b.manhattan||a.dy-b.dy||a.dx-b.dx);
+  const out=[],seen=new Set();
+  for(const c of candidates){
+   if(out.length>=maxPatches)break;let p=anchorPatch;
+   for(let i=0;i<Math.abs(c.dy);i++)p=A.neighborPatch(p,c.dy>0?'N':'S');
+   for(let i=0;i<Math.abs(c.dx);i++)p=A.neighborPatch(p,c.dx>0?'E':'W');
+   if(seen.has(p.patchIdentity))continue;seen.add(p.patchIdentity);out.push(p);
+  }
+  return out;
+ }
+ function adaptivePlan({level=6,radius=1,maxPatches=limit.maxPatches,detailDemandPpm=500000,resourcePressurePpm=0}={}){
+  const detail=clampPpm(detailDemandPpm),pressure=clampPpm(resourcePressurePpm),requested=Math.max(1,Math.min(limit.maxPatches,Math.floor(Number(maxPatches)||limit.maxPatches)));
+  let resolution=minGridResolution;
+  if(pressure<800000&&detail>=300000)resolution=Math.min(maxGridResolution,17);
+  if(pressure<350000&&detail>=760000)resolution=maxGridResolution;
+  resolution=normalizeResolution(resolution);
+  let patchCap=requested;
+  if(pressure>=850000)patchCap=Math.min(patchCap,1);else if(pressure>=650000)patchCap=Math.min(patchCap,4);else if(pressure>=400000)patchCap=Math.min(patchCap,9);
+  const radiusCap=Math.max(0,Math.min(4,Math.floor(Number(radius)||0),patchCap<=1?0:patchCap<=4?1:4));
+  return freeze({version:'ofu-v2x-06-adaptive-terrain-plan-1',authority:AUTHORITY,level:Math.max(0,Math.min(A.MAX_LEVEL,Math.floor(Number(level)||0))),detailDemandPpm:detail,resourcePressurePpm:pressure,gridResolution:resolution,maxPatches:patchCap,radius:radiusCap,claims:{cameraTruthConsumed:false,selectionTruthConsumed:false,resourcePressureCallerSupplied:true,detailDemandCallerSupplied:true}});
+ }
+ function materialize({anchorAddress,level=anchorAddress?.level??6,radius=1,maxPatches=limit.maxPatches,gridResolution:resolutionOverride}={}){
+  if(!anchorAddress)throw new TypeError('anchorAddress required');const target=A.atLevel(anchorAddress,level),anchorPatch=A.patchAt(model.planetIdentity,target.face,target.level,target.x,target.y),res=normalizeResolution(resolutionOverride??gridResolution);
+  if(model.noSolidSurface)return freeze({version:VERSION,authority:AUTHORITY,sourceAuthority:SOURCE_AUTHORITY,status:'NO_SOLID_SURFACE',planetIdentity:model.planetIdentity,anchorAddress:target,patches:[],resources:{patches:0,vertices:0,bytes:0,operations:0,queue:0,gridResolution:res},cache:snapshotCache(),claims:{giantSurfaceFabricated:false}});
+  const cap=Math.max(1,Math.min(limit.maxPatches,Math.floor(maxPatches))),patchList=gatherPatches(anchorPatch,Math.max(0,Math.min(4,Math.floor(radius))),cap),budget={vertices:0,bytes:0,operations:0},patches=[];
+  for(const p of patchList)patches.push(buildPatch(p,budget,res));patches.sort((a,b)=>a.patchIdentity.localeCompare(b.patchIdentity));
+  const result={version:VERSION,authority:AUTHORITY,sourceAuthority:SOURCE_AUTHORITY,status:'READY',planetIdentity:model.planetIdentity,anchorAddress:target,patches,
+   resources:{patches:patches.length,vertices:budget.vertices,bytes:budget.bytes,operations:budget.operations,queue:0,gridResolution:res,maxPatches:limit.maxPatches,maxVertices:limit.maxVertices,maxBytes:limit.maxBytes,maxOperations:limit.maxOperations},
+   cache:snapshotCache(),claims:{planetWideFullResolutionMesh:false,canonicalElevation:false,adaptiveMaterialization:true}};
+  return freeze({...result,revisitDigest:stableDigest({planetIdentity:result.planetIdentity,anchor:target.locationIdentity,level:target.level,gridResolution:res,patches:patches.map(p=>({id:p.patchIdentity,edges:p.edgeSignatures,summary:p.summary}))})});
+ }
+ function materializeAdaptive({anchorAddress,level=anchorAddress?.level??6,radius=1,maxPatches=limit.maxPatches,detailDemandPpm=500000,resourcePressurePpm=0}={}){
+  const plan=adaptivePlan({level,radius,maxPatches,detailDemandPpm,resourcePressurePpm}),m=materialize({anchorAddress,level:plan.level,radius:plan.radius,maxPatches:plan.maxPatches,gridResolution:plan.gridResolution});
+  return freeze({...m,adaptivePlan:plan,claims:{...m.claims,adaptivePlanApplied:true}});
+ }
+ function edgeWitness(patch,edge,resolution=gridResolution){
+  const res=normalizeResolution(resolution),neighbor=A.neighborPatch(patch,edge),a=buildPatch(patch,{vertices:0,bytes:0,operations:0},res),b=buildPatch(neighbor,{vertices:0,bytes:0,operations:0},res),target=a.edgeSignatures[edge];
+  let neighborEdge=null;for(const e of ['N','S','E','W'])if(b.edgeSignatures[e]===target){neighborEdge=e;break}
+  const addressWitness=A.oppositeEdgeWitness(patch,edge,res);
+  return freeze({version:'ofu-v2x-06-terrain-seam-witness-2',authority:'MEASURED_RUNTIME_EVIDENCE',patchIdentity:patch.patchIdentity,edge,neighborPatchIdentity:neighbor.patchIdentity,neighborEdge,crossFace:patch.face!==neighbor.face,gridResolution:res,addressCoincident:addressWitness.coincident,terrainSignatureMatch:neighborEdge!==null,pass:addressWitness.coincident&&neighborEdge!==null});
+ }
+ function edgeVertices(built,edge){return built.edgeIndices[edge].map(i=>built.vertices[i])}
+ function childEdgePair(parentPatch,edge){const c=A.childPatches(parentPatch);if(edge==='N')return[c[2],c[3]];if(edge==='S')return[c[0],c[1]];if(edge==='E')return[c[1],c[3]];if(edge==='W')return[c[0],c[2]];throw new RangeError('edge must be N/S/E/W')}
+ function sampleToken(v){return edgeVectorKey(v.unit)+'|'+v.reliefCuePpm+'|'+v.surfaceClass+'|'+v.coastDeltaPpm}
+ function mixedLodEdgeWitness(parentPatch,edge,resolution=gridResolution){
+  if(parentPatch.level>=A.MAX_LEVEL)throw new RangeError('mixed LOD witness requires refinable parent patch');
+  const res=normalizeResolution(resolution),parentBuilt=buildPatch(parentPatch,{vertices:0,bytes:0,operations:0},res),coarse=edgeVertices(parentBuilt,edge),pair=childEdgePair(parentPatch,edge),fine=[],morph=[];
+  for(let half=0;half<2;half++){
+   const childBuilt=buildPatch(pair[half],{vertices:0,bytes:0,operations:0},res),cv=edgeVertices(childBuilt,edge);
+   for(let i=0;i<cv.length;i++){
+    if(half===1&&i===0)continue;
+    const globalT=(half+i/(res-1))/2,pos=globalT*(res-1),lo=Math.floor(pos+1e-12),hi=Math.ceil(pos-1e-12),alpha=pos-lo;
+    fine.push(cv[i]);morph.push(freeze({fineKey:edgeVectorKey(cv[i].unit),globalT,coarseLo:Math.max(0,Math.min(res-1,lo)),coarseHi:Math.max(0,Math.min(res-1,hi)),alpha}));
+   }
+  }
+  if(fine.length>limit.maxTransitionSamples)throw new Error('terrain transition sample budget exceeded');
+  const fineTokens=new Set(fine.map(sampleToken)),coarseTokens=coarse.map(sampleToken),anchors=coarseTokens.filter(t=>fineTokens.has(t));
+  return freeze({version:'ofu-v2x-06-mixed-lod-edge-witness-1',authority:'MEASURED_RUNTIME_EVIDENCE',parentPatchIdentity:parentPatch.patchIdentity,edge,coarseLevel:parentPatch.level,fineLevel:parentPatch.level+1,gridResolution:res,coarseSamples:coarse.length,fineSamples:fine.length,anchoredCoarseSamples:anchors.length,morphMap:freeze(morph),pass:anchors.length===coarse.length,claims:{morphMapPresentationOnly:true,physicalElevationTransition:false}});
+ }
+ function crossFaceMixedLodWitness(coarsePatch,edge,resolution=gridResolution){
+  const res=normalizeResolution(resolution),address=A.oppositeEdgeWitness(coarsePatch,edge,res);if(!address.coincident||!address.neighborEdge)return freeze({version:'ofu-v2x-06-cross-face-mixed-lod-witness-1',authority:'MEASURED_RUNTIME_EVIDENCE',pass:false,reason:'NO_OPPOSITE_EDGE'});
+  const neighbor=A.neighborPatch(coarsePatch,edge);if(neighbor.level>=A.MAX_LEVEL)throw new RangeError('cross-face mixed LOD witness requires refinable neighbor');
+  const coarseBuilt=buildPatch(coarsePatch,{vertices:0,bytes:0,operations:0},res),coarse=edgeVertices(coarseBuilt,edge),fine=[];
+  for(const child of childEdgePair(neighbor,address.neighborEdge)){
+   const childBuilt=buildPatch(child,{vertices:0,bytes:0,operations:0},res);for(const v of edgeVertices(childBuilt,address.neighborEdge))fine.push(v);
+  }
+  const fineTokens=new Set(fine.map(sampleToken)),coarseTokens=coarse.map(sampleToken),anchors=coarseTokens.filter(t=>fineTokens.has(t));
+  return freeze({version:'ofu-v2x-06-cross-face-mixed-lod-witness-1',authority:'MEASURED_RUNTIME_EVIDENCE',coarsePatchIdentity:coarsePatch.patchIdentity,edge,fineNeighborParentIdentity:neighbor.patchIdentity,fineNeighborEdge:address.neighborEdge,crossFace:coarsePatch.face!==neighbor.face,gridResolution:res,coarseSamples:coarse.length,fineSamples:fineTokens.size,anchoredCoarseSamples:anchors.length,pass:coarsePatch.face!==neighbor.face&&anchors.length===coarse.length,claims:{mixedFaceLodPresentationSeam:true,canonicalGeometryClaim:false}});
+ }
+ function lodReconcile(address,coarseLevel,fineLevel){const coarse=A.atLevel(address,coarseLevel),fine=A.atLevel(address,fineLevel),back=A.atLevel(fine,coarseLevel),ag=model.sample(coarse),bg=model.sample(fine),h=hydrology.reconcileLocation(coarse,fine),ab=A.reconcileLocation(coarse,fine),round=A.reconcileLocation(coarse,back);return freeze({version:'ofu-v2x-06-lod-reconcile-2',authority:'MEASURED_RUNTIME_EVIDENCE',address:ab,roundTrip:round,sameRelief:ag.reliefCuePpm===bg.reliefCuePpm,sameSurfaceClass:ag.surfaceClass===bg.surfaceClass,hydrology:h,pass:ab.pass&&round.pass&&ag.reliefCuePpm===bg.reliefCuePpm&&ag.surfaceClass===bg.surfaceClass&&h.pass})}
  function pickSurfaceUnit(unitVector,level=6){const ll=A.unitToLatLon(unitVector),address=A.locate(model.planetIdentity,ll.latMicroDeg,ll.lonMicroDeg,Math.max(0,Math.min(A.MAX_LEVEL,Math.floor(Number(level)||0)))),geography=model.sample(address),water=hydrology.sample(address);return freeze({version:'ofu-v2x-06-surface-pick-1',authority:'DERIVED',planetIdentity:model.planetIdentity,locationIdentity:address.locationIdentity,patchIdentity:address.patchIdentity,latMicroDeg:address.latMicroDeg,lonMicroDeg:address.lonMicroDeg,level:address.level,surfaceClass:geography.surfaceClass,provinceClass:geography.provinceClass,hydrologyContext:water.contextClass,claims:{screenRayOwned:false,cameraAuthorityOwned:false,selectionAuthorityOwned:false,canonicalElevation:false}})}
- function snapshotCache(){let bytes=0;for(const e of cache.values())bytes+=e.patch.estimatedBytes;return freeze({version:'ofu-v2x-06-terrain-cache-witness-1',authority:'MEASURED_RUNTIME_EVIDENCE',entries:cache.size,estimatedBytes:bytes,maxCachedPatches:limit.maxCachedPatches,evictions})}
- return Object.freeze({VERSION,AUTHORITY,SOURCE_AUTHORITY,model,hydrology,limits:limit,gridResolution,materialize,edgeWitness,lodReconcile,pickSurfaceUnit,snapshotCache});
+ function snapshotCache(){return freeze({version:'ofu-v2x-06-terrain-cache-witness-2',authority:'MEASURED_RUNTIME_EVIDENCE',entries:cache.size,estimatedBytes:cacheBytes,maxCachedPatches:limit.maxCachedPatches,maxCacheBytes:limit.maxCacheBytes,evictions,withinEntryBound:cache.size<=limit.maxCachedPatches,withinByteBound:cacheBytes<=limit.maxCacheBytes})}
+ return Object.freeze({VERSION,AUTHORITY,SOURCE_AUTHORITY,model,hydrology,limits:limit,gridResolution,minGridResolution,maxGridResolution,adaptivePlan,materialize,materializeAdaptive,edgeWitness,mixedLodEdgeWitness,crossFaceMixedLodWitness,lodReconcile,pickSurfaceUnit,snapshotCache});
 }
 O.v2x06HierarchicalTerrain=Object.freeze({VERSION,AUTHORITY,SOURCE_AUTHORITY,DEFAULTS,createProvider});
 })(globalThis);
