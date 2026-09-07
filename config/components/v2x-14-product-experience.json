@@ -29,7 +29,7 @@
     },
     {
       "id": "v2x14.product.style",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "owner": "v2x-14-product-experience",
       "kind": "style",
       "stage": "full",
@@ -37,7 +37,7 @@
       "source": "src/product/v2x14/product-experience.css",
       "dependencies": [],
       "authority": "PRESENTATION_ONLY",
-      "provenance": "Lane-owned skip-link, structured-current-context, compact safe-area and reduced-motion styling. No product truth or input authority.",
+      "provenance": "Lane-owned skip-link, structured-current-context, compact safe-area, 44px+ audio targets, explicit focus-visible and scoped reduced-motion styling. No product truth or input authority.",
       "provides": ["v2x14.product.style"]
     }
   ]
