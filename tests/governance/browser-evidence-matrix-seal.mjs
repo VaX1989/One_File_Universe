@@ -14,6 +14,27 @@ const TARGETS = [
 ];
 
 function record(mode, [platform, arch, browser]) {
+  if (mode === 'p3') {
+    return {
+      phase: 'P3',
+      status: 'PASS',
+      sourceSha: SOURCE,
+      browser,
+      platform,
+      arch,
+      region: '1'.repeat(64),
+      galaxy: '2'.repeat(64),
+      system: '3'.repeat(64),
+      planet: '4'.repeat(64),
+      moon: '5'.repeat(64),
+      manifestHash: '6'.repeat(64),
+      corpusDigest: '7'.repeat(64),
+      records: 8,
+      key: {galaxyX: '1', siteX: '2'},
+      planetKey: {galaxyX: '1', siteX: '2', orbitSlot: '0'},
+      moonKey: {galaxyX: '1', siteX: '2', orbitSlot: '0', satelliteSlot: '0'},
+    };
+  }
   if (mode === 'p6') {
     return {
       status: 'PASS',
@@ -68,7 +89,8 @@ function record(mode, [platform, arch, browser]) {
 function writeMatrix(dir, mode) {
   const files = [];
   for (const [index, target] of TARGETS.entries()) {
-    const file = path.join(dir, `browser-${index}-${target.join('-')}.json`);
+    const prefix = mode === 'p3' ? 'p3-browser' : 'browser';
+    const file = path.join(dir, `${prefix}-${index}-${target.join('-')}.json`);
     fs.writeFileSync(file, `${JSON.stringify(record(mode, target))}\n`);
     files.push(file);
   }
@@ -97,7 +119,7 @@ function failureCode(result) {
   return line ? JSON.parse(line).code : null;
 }
 
-for (const mode of ['p5', 'p5-environment-v2', 'p6']) {
+for (const mode of ['p3', 'p5', 'p5-environment-v2', 'p6']) {
   const {result} = execute(mode);
   assert.equal(result.status, 0, `${mode}: canonical five-target matrix must pass: ${result.stderr}`);
   const report = JSON.parse(result.stdout.trim());
@@ -128,6 +150,16 @@ for (const mode of ['p5', 'p5-environment-v2', 'p6']) {
 }
 
 {
+  const {result} = execute('p3', ({files}) => {
+    const value = JSON.parse(fs.readFileSync(files[0], 'utf8'));
+    value.sourceSha = '2'.repeat(40);
+    fs.writeFileSync(files[0], `${JSON.stringify(value)}\n`);
+  });
+  assert.notEqual(result.status, 0);
+  assert.equal(failureCode(result), 'SOURCE_SHA_MISMATCH');
+}
+
+{
   const {result} = execute('p5', ({files}) => {
     const value = JSON.parse(fs.readFileSync(files[0], 'utf8'));
     value.sourceCommit = '2'.repeat(40);
@@ -147,6 +179,16 @@ for (const mode of ['p5', 'p5-environment-v2', 'p6']) {
   const {result} = execute('p5', ({files}) => fs.writeFileSync(files[0], ' '.repeat(1_048_577)));
   assert.notEqual(result.status, 0);
   assert.equal(failureCode(result), 'RESOURCE_LIMIT');
+}
+
+{
+  const {result} = execute('p3', ({files}) => {
+    const value = JSON.parse(fs.readFileSync(files[0], 'utf8'));
+    value.corpusDigest = '8'.repeat(64);
+    fs.writeFileSync(files[0], `${JSON.stringify(value)}\n`);
+  });
+  assert.notEqual(result.status, 0);
+  assert.equal(failureCode(result), 'CROSS_RUNTIME_DISAGREEMENT');
 }
 
 {
@@ -218,7 +260,7 @@ if (process.platform !== 'win32') {
 console.log(JSON.stringify({
   status: 'PASS',
   suite: 'browser-evidence-matrix-seal',
-  modes: ['p5', 'p5-environment-v2', 'p6'],
+  modes: ['p3', 'p5', 'p5-environment-v2', 'p6'],
   expectedTargets: TARGETS.map(parts => parts.join('/')),
   symlinkCase: process.platform === 'win32' ? 'NOT_EXECUTED_ON_WINDOWS' : 'PASS',
 }));
