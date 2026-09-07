@@ -9,24 +9,27 @@ const baselineProtectedWorkflows=[
   `${workflowDir}/certified-preview-release.yml`,
   `${workflowDir}/v1-stable-release.yml`,
 ];
-const repositoryWriteKeys=new Set(['actions','checks','contents','deployments','issues','packages','pull-requests','repository-projects','security-events','statuses']);
+const privilegedWriteKeys=new Set([
+  'actions','attestations','checks','contents','deployments','discussions','id-token',
+  'issues','packages','pages','pull-requests','repository-projects','security-events','statuses',
+]);
 
-function hasRepositoryWritePermission(text){
+function hasPrivilegedPermission(text){
   for(const raw of text.split(/\r?\n/)){
     const line=raw.replace(/\s+#.*$/,'');
     if(/^\s*permissions:\s*write-all\s*$/.test(line))return true;
     const match=line.match(/^\s*([a-z-]+):\s*write\s*$/);
-    if(match&&repositoryWriteKeys.has(match[1]))return true;
+    if(match&&privilegedWriteKeys.has(match[1]))return true;
   }
   return false;
 }
 
-const repositoryWriteWorkflows=fs.readdirSync(workflowDir)
+const privilegedWorkflows=fs.readdirSync(workflowDir)
   .filter(name=>/\.ya?ml$/.test(name))
   .map(name=>`${workflowDir}/${name}`)
-  .filter(file=>hasRepositoryWritePermission(fs.readFileSync(file,'utf8')))
+  .filter(file=>hasPrivilegedPermission(fs.readFileSync(file,'utf8')))
   .sort();
-const protectedWorkflows=[...new Set([...baselineProtectedWorkflows,...repositoryWriteWorkflows])].sort();
+const protectedWorkflows=[...new Set([...baselineProtectedWorkflows,...privilegedWorkflows])].sort();
 const checkoutRequired=new Set(baselineProtectedWorkflows);
 
 function checkoutBlocks(text){
@@ -54,7 +57,7 @@ function assertCredentialBoundary(file,text,{requireCheckout=false}={}){
   return blocks.length;
 }
 
-assert(repositoryWriteWorkflows.length>0,'expected at least one repository-write workflow');
+assert(privilegedWorkflows.length>0,'expected at least one privileged workflow');
 let checkouts=0;
 for(const file of protectedWorkflows)checkouts+=assertCredentialBoundary(file,fs.readFileSync(file,'utf8'),{requireCheckout:checkoutRequired.has(file)});
 
@@ -66,9 +69,12 @@ const commentSpoof=`steps:\n  - uses: actions/checkout@${'a'.repeat(40)}\n    wi
 assert.throws(()=>assertCredentialBoundary('synthetic-comment-spoof.yml',commentSpoof),/must not persist GITHUB_TOKEN/);
 const safe=`steps:\n  - uses: actions/checkout@${'a'.repeat(40)}\n    with:\n      ref: deadbeef\n      persist-credentials: false # credential is intentionally ephemeral\n  - name: Test\n    run: node test.mjs\n`;
 assert.equal(assertCredentialBoundary('synthetic-safe.yml',safe),1);
-assert.equal(hasRepositoryWritePermission('permissions:\n  contents: write\n'),true);
-assert.equal(hasRepositoryWritePermission('jobs:\n  release:\n    permissions:\n      pull-requests: write\n'),true);
-assert.equal(hasRepositoryWritePermission('permissions: write-all\n'),true);
-assert.equal(hasRepositoryWritePermission('permissions:\n  contents: read\n  # issues: write\n'),false);
+assert.equal(hasPrivilegedPermission('permissions:\n  contents: write\n'),true);
+assert.equal(hasPrivilegedPermission('jobs:\n  release:\n    permissions:\n      pull-requests: write\n'),true);
+assert.equal(hasPrivilegedPermission('permissions:\n  id-token: write\n'),true,'OIDC token minting is a privileged credential boundary');
+assert.equal(hasPrivilegedPermission('permissions:\n  attestations: write\n'),true);
+assert.equal(hasPrivilegedPermission('permissions:\n  pages: write\n'),true);
+assert.equal(hasPrivilegedPermission('permissions: write-all\n'),true);
+assert.equal(hasPrivilegedPermission('permissions:\n  contents: read\n  # issues: write\n'),false);
 
-console.log(JSON.stringify({status:'PASS',suite:'workflow-credential-boundary',workflows:protectedWorkflows.length,repositoryWriteWorkflows:repositoryWriteWorkflows.length,checkouts,syntheticCases:8}));
+console.log(JSON.stringify({status:'PASS',suite:'workflow-credential-boundary',workflows:protectedWorkflows.length,privilegedWorkflows:privilegedWorkflows.length,checkouts,syntheticCases:11}));
