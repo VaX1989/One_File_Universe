@@ -55,7 +55,10 @@ const expectPhases=(paths,expected,earliest=expected[0]??null)=>{const result=ro
 {
   const result=expectPhases(['config/components/v2x-14-product-experience.json','src/domains/v1/micro/matter-continuity-v2.js'],all,'P1');assert.equal(result.failClosed,true);
 }
-for(const path of ['config/components/v2x-99-future.json','tests/v2x-99/future.mjs','src/product/v2x99/future.js']){
+for(const path of [
+  'config/components/v2x-17-identity-pending.json','tests/v2x-17/identity-pending.mjs','src/product/v2x17/identity-pending.js',
+  'config/components/v2x-99-future.json','tests/v2x-99/future.mjs','src/product/v2x99/future.js',
+]){
   const result=expectPhases([path],all,'P1');assert.equal(result.failClosed,true);
 }
 
