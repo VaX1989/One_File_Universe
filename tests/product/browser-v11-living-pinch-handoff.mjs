@@ -9,6 +9,23 @@ const manifest=JSON.parse(fs.readFileSync('dist/rendering-build-manifest.json','
 const file=path.resolve('dist/One_File_Universe.html'),evidenceDir=path.resolve('dist/evidence/product-v11');fs.mkdirSync(evidenceDir,{recursive:true});
 const browser=await chromium.launch({headless:true}),context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,offline:true}),page=await context.newPage();
 const requests=[],errors=[];page.on('request',r=>requests.push({url:r.url(),type:r.resourceType(),nav:r.isNavigationRequest()}));page.on('pageerror',e=>errors.push(String(e.message||e).slice(0,500)));
+await page.addInitScript(()=>{
+ const nativeAdd=EventTarget.prototype.addEventListener,nativeRemove=EventTarget.prototype.removeEventListener,wrappedByOriginal=new WeakMap();
+ const captureOf=options=>typeof options==='boolean'?options:!!options?.capture;
+ const targetOf=target=>target===window?'window':target===document?'document':target?.id?('#'+target.id):String(target?.tagName||target?.constructor?.name||'unknown').toLowerCase();
+ const count=()=>globalThis.OFU?.v1LivingProduct?.renderer?.state?.().framePacing?.inputEvents;
+ globalThis.__OFU_POINTERMOVE_ROTATION_TRACE__=[];
+ function wrapperFor(listener,options){
+  let byCapture=wrappedByOriginal.get(listener);if(!byCapture){byCapture=new Map();wrappedByOriginal.set(listener,byCapture)}
+  const capture=captureOf(options);if(byCapture.has(capture))return byCapture.get(capture);
+  const registration=(new Error('pointermove registration')).stack||'';
+  const invoke=typeof listener==='function'?function(event){return listener.call(this,event)}:function(event){return listener.handleEvent.call(listener,event)};
+  const wrapped=function(event){const before=count();try{return invoke.call(this,event)}finally{const after=count();if(Number.isFinite(before)&&Number.isFinite(after)&&after>before){globalThis.__OFU_POINTERMOVE_ROTATION_TRACE__.push({target:targetOf(this),capture,before,after,registration,invocation:(new Error('pointermove invocation')).stack||''});}}};
+  byCapture.set(capture,wrapped);return wrapped;
+ }
+ EventTarget.prototype.addEventListener=function(type,listener,options){return nativeAdd.call(this,type,type==='pointermove'&&listener?wrapperFor(listener,options):listener,options)};
+ EventTarget.prototype.removeEventListener=function(type,listener,options){if(type!=='pointermove'||!listener)return nativeRemove.call(this,type,listener,options);const wrapped=wrappedByOriginal.get(listener)?.get(captureOf(options));return nativeRemove.call(this,type,wrapped||listener,options)};
+});
 const url=pathToFileURL(file).href;
 const raf2=()=>page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
 async function fire(type,pointerId,x,y){await page.evaluate(({type,pointerId,x,y})=>{const c=document.getElementById('living-view'),r=c.getBoundingClientRect();c.dispatchEvent(new PointerEvent(type,{bubbles:true,cancelable:true,pointerId,pointerType:'touch',clientX:r.left+x,clientY:r.top+y,button:0,buttons:type==='pointerup'||type==='pointercancel'||type==='lostpointercapture'?0:1,isPrimary:pointerId%10===1}));},{type,pointerId,x,y})}
@@ -24,7 +41,9 @@ async function cycle(firstId,secondId,liftId,moveId){
  await fire('lostpointercapture',liftId,liftId===firstId?110:280,250);
  const afterNormalLost=await input();assert.equal(afterNormalLost.helper.cancellations,cancellationsBefore,'lost capture after normal pointerup must be ignored');assert.equal(afterNormalLost.helper.handoffPointerId,moveId,'normal release handoff must survive its trailing lost-capture event');
  const baseline=await quiet(),startX=moveId===firstId?110:280;assert(baseline.framePacing,'canonical Living rotation pacer must expose frame accounting');
+ await page.evaluate(()=>{globalThis.__OFU_POINTERMOVE_ROTATION_TRACE__.length=0});
  await fire('pointermove',moveId,startX+2,251);const thresholdImmediate=await input();
+ if(thresholdImmediate.framePacing.inputEvents!==baseline.framePacing.inputEvents){const trace=await page.evaluate(()=>globalThis.__OFU_POINTERMOVE_ROTATION_TRACE__);console.error('OFU_POINTERMOVE_ROTATION_TRACE '+JSON.stringify(trace));}
  assert.equal(thresholdImmediate.framePacing.inputEvents,baseline.framePacing.inputEvents,'sub-threshold jitter must not request a presentation rotation');assert.equal(thresholdImmediate.framePacing.frames,baseline.framePacing.frames,'sub-threshold jitter must not commit a paced rotation');assert.equal(thresholdImmediate.helper.handoffMoves,baseline.helper.handoffMoves,'sub-threshold continuation jitter must not rotate');assert.ok(thresholdImmediate.helper.thresholdWaits>baseline.helper.thresholdWaits,'sub-threshold continuation must be accounted');
  await raf2();const thresholded=await input();assert.equal(thresholded.framePacing.inputEvents,baseline.framePacing.inputEvents,'sub-threshold jitter must remain rotation-free after RAF settling');assert.equal(thresholded.framePacing.frames,baseline.framePacing.frames,'ambient renderer work must not be misattributed as a handoff rotation');assert.deepEqual(thresholded.runtime,baseline.runtime,'sub-threshold continuation must remain semantically inert');
  const beforeMove=await quiet();await fire('pointermove',moveId,startX+36,268);const immediate=await input();
