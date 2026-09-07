@@ -1,5 +1,7 @@
 import { LIFE_V2_LIMITS } from './model.js';
 
+const PPM = 1_000_000n;
+
 function assert(condition, message) {
   if (!condition) throw new Error(`LIFE_V2_EMBODIMENT_INVALID: ${message}`);
 }
@@ -41,6 +43,25 @@ function morphologyDescriptor(lineage) {
     defenseBand: armor < 300_000n ? 'LOW' : armor < 700_000n ? 'MODERATE' : 'HIGH',
     authorityClass: 'MODEL_DERIVED_SIMULATION',
     limitation: 'Semantic morphology only; not a prediction of real alien anatomy.',
+  });
+}
+
+function representativeLifecycle(population, seed) {
+  const roll = BigInt(deterministicHash(`${seed}|lifecycle`)) % PPM;
+  const juvenileBoundary = population.lifecycleStagePpm.juvenile;
+  const matureBoundary = juvenileBoundary + population.lifecycleStagePpm.mature;
+  const stage = roll < juvenileBoundary
+    ? 'JUVENILE'
+    : roll < matureBoundary
+      ? 'MATURE'
+      : 'SENESCENT';
+  return Object.freeze({
+    stage,
+    sourcePopulationStagePpm: population.lifecycleStagePpm,
+    representativeOnly: true,
+    persistentIndividualFact: false,
+    authorityClass: 'MODEL_DERIVED_SIMULATION',
+    limitation: 'Lifecycle stage is a deterministic representative draw from aggregate stage composition, not persistent individual history.',
   });
 }
 
@@ -103,6 +124,7 @@ export function materializeLocalOrganisms(state, request) {
     for (let index = 0; index < quota; index += 1) {
       const sampleId = `sample:${population.id}:${state.eventKey}:${index}`;
       const seed = `${sampleId}|${viewportKey}`;
+      const lifecycle = representativeLifecycle(population, seed);
       samples.push(Object.freeze({
         id: sampleId,
         populationId: population.id,
@@ -112,6 +134,7 @@ export function materializeLocalOrganisms(state, request) {
         individualIdentityPromoted: false,
         representativeOfAggregate: true,
         aggregateAbundance: population.abundance,
+        lifecycle,
         position: Object.freeze({
           x: unitFromHash(`${seed}|x`) * 2 - 1,
           y: unitFromHash(`${seed}|y`) * 2 - 1,
@@ -122,6 +145,11 @@ export function materializeLocalOrganisms(state, request) {
         presentation: Object.freeze({
           motionPhase: unitFromHash(`${seed}|motion`),
           motionAmplitude: Number(traitValue(lineage, 'mobility')) / 1_000_000,
+          activityCue: lifecycle.stage === 'JUVENILE'
+            ? 'DEVELOPMENTAL_ACTIVITY_PRESENTATION'
+            : lifecycle.stage === 'SENESCENT'
+              ? 'REDUCED_ACTIVITY_PRESENTATION'
+              : 'BASELINE_ACTIVITY_PRESENTATION',
           authorityClass: 'PRESENTATION_ONLY',
         }),
       }));
@@ -142,6 +170,7 @@ export function projectSelectionToAggregate(sample, state) {
     lineageId: population.lineageId,
     regionId: population.regionId,
     sampleId: sample.id,
+    representativeLifecycleStage: sample.lifecycle?.stage ?? null,
     sampleIsPersistentIndividual: false,
     inferenceGuard: 'LOCAL_SAMPLE_MUST_NOT_INFER_GLOBAL_ABUNDANCE',
   });
