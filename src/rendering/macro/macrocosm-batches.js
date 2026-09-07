@@ -2,7 +2,7 @@
 'use strict';
 const O=root.OFU=root.OFU||{};
 const VERSION='ofu-v2x-03-macrocosm-batches-1',AUTHORITY='PRESENTATION_ONLY';
-const freeze=v=>{if(!v||typeof v!=='object'||Object.isFrozen(v))return v;for(const k of Object.keys(v))freeze(v[k]);return Object.freeze(v)};
+const freeze=v=>{if(!v||typeof v!=='object'||Object.isFrozen(v))return v;if(ArrayBuffer.isView(v))return v;for(const k of Object.keys(v))freeze(v[k]);return Object.freeze(v)};
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,Number(v)));
 function qualityFor({width=1280,height=720,dpr=1,memoryClass='NORMAL',coarse=false}={}){
  const w=Math.max(1,Number(width)||1),h=Math.max(1,Number(height)||1),p=Math.max(1,Number(dpr)||1),mem=String(memoryClass||'NORMAL').toUpperCase(),compact=Math.min(w,h)<540||w/h>2.4||h/w>2.4;
@@ -11,7 +11,13 @@ function qualityFor({width=1280,height=720,dpr=1,memoryClass='NORMAL',coarse=fal
  if(mem==='HIGH'&&p<=2&&w*h>=1600000)return freeze({name:'HIGH',reason:'HIGH_MEMORY_LARGE_VIEWPORT'});
  return freeze({name:'STANDARD',reason:'STANDARD'});
 }
-function packFloat6(items,role){const out=new Float32Array(items.length*6);let k=0;for(const item of items){const p=item.position||{};out[k++]=Number(p.x)||0;out[k++]=Number(p.y)||0;out[k++]=Number(p.z)||0;out[k++]=Number(item.size??item.radius??1)||1;out[k++]=Number(item.brightness??item.opacity??item.weight??1)||1;out[k++]=Number(item.density??0)||0}return freeze({role,primitive:'POINT_SPRITES_OR_INSTANCED_QUADS',instances:items.length,strideFloats:6,bytes:out.byteLength,data:out,authority:AUTHORITY,claims:freeze({gpuLayoutCanonical:false})})}
+function packFloat6(items,role){
+ const out=new Float32Array(items.length*6);let k=0;
+ for(const item of items){const p=item.position||{};out[k++]=Number(p.x)||0;out[k++]=Number(p.y)||0;out[k++]=Number(p.z)||0;out[k++]=Number(item.size??item.radius??1)||1;out[k++]=Number(item.brightness??item.opacity??item.weight??1)||1;out[k++]=Number(item.density??0)||0}
+ const batch={role,primitive:'POINT_SPRITES_OR_INSTANCED_QUADS',instances:items.length,strideFloats:6,bytes:out.byteLength,authority:AUTHORITY,claims:freeze({gpuLayoutCanonical:false,internalBufferExposed:false})};
+ Object.defineProperty(batch,'data',{enumerable:true,get(){return out.slice()}});
+ return freeze(batch);
+}
 function planGalaxy(field,{width=1280,height=720,dpr=1,memoryClass='NORMAL',coarse=false}={}){
  if(!field||!Array.isArray(field.particles)||!Array.isArray(field.clusters)||!Array.isArray(field.dust))throw new TypeError('galaxy field required');const requested=qualityFor({width,height,dpr,memoryClass,coarse}),caps={LOW:{stars:192,clusters:8,dust:48},MOBILE:{stars:320,clusters:12,dust:72},STANDARD:{stars:640,clusters:18,dust:128},HIGH:{stars:1024,clusters:24,dust:192}}[requested.name],stars=field.particles.slice(0,caps.stars),clusters=field.clusters.slice(0,caps.clusters),dust=field.dust.slice(0,caps.dust),batches=[];
  if(stars.length)batches.push(packFloat6(stars,'STELLAR_DENSITY'));if(clusters.length)batches.push(packFloat6(clusters,'CLUSTER_CUES'));if(dust.length)batches.push(packFloat6(dust,'DUST_CUES'));
