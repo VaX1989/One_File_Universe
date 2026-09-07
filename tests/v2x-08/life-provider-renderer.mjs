@@ -119,5 +119,9 @@ assert.throws(() => buildOrganismRenderDescriptors(samples, { maxDescriptors: Nu
 assert.throws(() => buildOrganismRenderDescriptors(samples, { maxDescriptors: -1 }), /maxDescriptors must be a non-negative finite number/);
 assert.throws(() => buildOrganismRenderDescriptors([{ ...samples[0], representativeOfAggregate: false }]), /representative aggregate sample required/);
 assert.throws(() => buildOrganismRenderDescriptors([{ ...samples[0], presentation: { ...samples[0].presentation, authorityClass: 'MODEL_DERIVED_SIMULATION' } }]), /presentation-only motion descriptor required/);
+assert.throws(() => buildOrganismRenderDescriptors([{ ...samples[0], position: { ...samples[0].position, x: Number.NaN } }]), /position.x must be finite/, 'non-finite spatial evidence must fail closed before renderer handoff');
+assert.throws(() => buildOrganismRenderDescriptors([{ ...samples[0], position: { ...samples[0].position, y: 2 } }]), /position.y out of bounds/, 'out-of-domain local position must fail closed before renderer handoff');
+assert.throws(() => buildOrganismRenderDescriptors([{ ...samples[0], presentation: { ...samples[0].presentation, motionAmplitude: Number.NaN } }]), /motionAmplitude must be finite/, 'non-finite presentation motion must fail closed');
+assert.throws(() => buildOrganismRenderDescriptors([{ ...samples[0], aggregateAbundance: '400' }]), /aggregate abundance evidence must be a non-negative bigint/, 'render evidence must preserve exact aggregate abundance type');
 
-console.log('V2X-08 life provider renderer: PASS (41 assertions)');
+console.log('V2X-08 life provider renderer: PASS (45 assertions)');
