@@ -1,0 +1,18 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1.product.living-context-dock",
+      "version": "1.0.0",
+      "owner": "product",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/bootstrap/product/living-context-dock.js",
+      "dependencies": ["v1.product.living-universe", "v1x10.ux.viewport"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Post-v1 presentation adapter that keeps the existing contextual action dock synchronized with the actual shipping Living runtime instead of legacy Wave-IV selection/scale state. It creates no canonical, model, scientific or navigation authority.",
+      "provides": ["v1.product.living-context-dock"]
+    }
+  ]
+}
