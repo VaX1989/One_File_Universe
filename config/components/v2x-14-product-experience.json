@@ -3,7 +3,7 @@
   "components": [
     {
       "id": "v2x14.product.experience",
-      "version": "2.0.0",
+      "version": "3.0.0",
       "owner": "v2x-14-product-experience",
       "kind": "code",
       "stage": "full",
@@ -11,12 +11,12 @@
       "source": "src/product/v2x14/product-experience.js",
       "dependencies": ["v1.product.living-universe"],
       "authority": "PRESENTATION_ONLY",
-      "provenance": "Living-native current-location, breadcrumb, selection, focus-recovery and accessibility projection. It observes Living state and never routes native input or mutates canonical selection, scale, camera, persistence or science state.",
+      "provenance": "Living-native current-location, breadcrumb, selection, debounced announcement and focus-recovery accessibility projection. It preserves canonical aria-pressed rail semantics while adding aria-current, and never routes native input or mutates canonical selection, scale, camera, persistence or science state.",
       "provides": ["v2x14.product.experience"]
     },
     {
       "id": "v2x14.product.discovery",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "owner": "v2x-14-product-experience",
       "kind": "code",
       "stage": "full",
@@ -24,7 +24,7 @@
       "source": "src/product/v2x14/discovery.js",
       "dependencies": ["v1.product.living-universe"],
       "authority": "PRESENTATION_ONLY",
-      "provenance": "Bounded sparse discovery wrapper around the existing Living searchWorlds and enterKey APIs. It caps results, preserves continuation cursors and never enumerates the universe or directly mutates canonical selection.",
+      "provenance": "Bounded sparse discovery wrapper around existing Living searchWorlds and enterKey APIs. It caps rows and pages, supports cancellation, rejects stale cross-system results, preserves continuation cursors and never enumerates the universe or directly mutates canonical selection.",
       "provides": ["v2x14.product.discovery"]
     },
     {
