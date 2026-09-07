@@ -5,9 +5,9 @@ const VERSION='ofu-v2x-03-macrocosm-batches-1',AUTHORITY='PRESENTATION_ONLY';
 const freeze=v=>{if(!v||typeof v!=='object'||Object.isFrozen(v))return v;if(ArrayBuffer.isView(v))return v;for(const k of Object.keys(v))freeze(v[k]);return Object.freeze(v)};
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,Number(v)));
 function qualityFor({width=1280,height=720,dpr=1,memoryClass='NORMAL',coarse=false}={}){
- const w=Math.max(1,Number(width)||1),h=Math.max(1,Number(height)||1),p=Math.max(1,Number(dpr)||1),mem=String(memoryClass||'NORMAL').toUpperCase(),compact=Math.min(w,h)<540||w/h>2.4||h/w>2.4;
- if(mem==='LOW'||p>=3||compact&&coarse)return freeze({name:'LOW',reason:mem==='LOW'?'LOW_MEMORY':p>=3?'HIGH_DPR':'COMPACT_COARSE'});
- if(coarse||w<760)return freeze({name:'MOBILE',reason:'MOBILE_OR_COARSE'});
+ const w=Math.max(1,Number(width)||1),h=Math.max(1,Number(height)||1),p=Math.max(1,Number(dpr)||1),mem=String(memoryClass||'NORMAL').toUpperCase(),narrow=Math.min(w,h)<540,extremeAspect=w/h>2.4||h/w>2.4;
+ if(mem==='LOW'||p>=3||extremeAspect&&coarse)return freeze({name:'LOW',reason:mem==='LOW'?'LOW_MEMORY':p>=3?'HIGH_DPR':'EXTREME_ASPECT_COARSE'});
+ if(coarse||w<760||narrow)return freeze({name:'MOBILE',reason:'MOBILE_OR_COARSE'});
  if(mem==='HIGH'&&p<=2&&w*h>=1600000)return freeze({name:'HIGH',reason:'HIGH_MEMORY_LARGE_VIEWPORT'});
  return freeze({name:'STANDARD',reason:'STANDARD'});
 }
