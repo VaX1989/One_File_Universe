@@ -12,7 +12,7 @@ function near(actual, expected, tolerance, label) {
 
 const EBM_PROVENANCE = Object.freeze({ parameterSetId: 'synthetic-ebm-test', parameterSetHash: 'sha256:synthetic-ebm-test' });
 const ESCAPE_THRESHOLDS = Object.freeze({ thresholdSetId: 'research-jeans-threshold-test', thresholdSetHash: 'sha256:research-jeans-threshold-test' });
-const CONVECTION_PROVENANCE = Object.freeze({ parameterSetId: 'research-convection-threshold-test', parameterSetHash: 'sha256:research-convection-threshold-test' });
+const CONVECTION_PROVENANCE = Object.freeze({ parameterSetId: 'research-convection-threshold-test', parameterSetHash: 'sha256:research-convection-threshold-test', criticalRayleighNumber: 1708 });
 const MIST_DOMAIN = Object.freeze({ ageMinLog10Years: 5, ageMaxLog10Years: 10.3, massMinSolar: 0.1, massMaxSolar: 300, fehMin: -3, fehMax: 0.5 });
 
 // Rocky source-domain witnesses and fail-closed boundaries.
@@ -158,11 +158,13 @@ const depleted = atmosphereMassBudgetStep({ atmosphereMassKg: 10, escapeRateKgPe
 assert.equal(depleted.status, 'DEPLETION_CAPPED');
 near(depleted.afterKg, 0, 0, 'depletion floor');
 
-// Geodynamic heuristics require provenance; energy ledger remains exact bookkeeping.
+// Geodynamic heuristics require provenance and explicit convection onset; energy ledger remains exact bookkeeping.
 const convection = convectionDiagnostic({ rayleighNumber: 1e7, nusseltNumber: 10, viscosityContrast: 1e6, ...CONVECTION_PROVENANCE });
 assert.equal(convection.regime, 'STAGNANT_LID_LIKE');
 assert.equal(convection.plateTectonicsTruthClaim, false);
-assert.equal(convectionDiagnostic({ rayleighNumber: 1e7, nusseltNumber: 10, viscosityContrast: 1e6 }).status, 'RESEARCH_REQUIRED');
+assert.ok(convection.supercriticality > 1);
+assert.equal(convectionDiagnostic({ rayleighNumber: 1e7, nusseltNumber: 10, viscosityContrast: 1e6, criticalRayleighNumber: 1708 }).status, 'RESEARCH_REQUIRED');
+assert.equal(convectionDiagnostic({ rayleighNumber: 1000, nusseltNumber: 1, viscosityContrast: 10, ...CONVECTION_PROVENANCE }).status, 'RESEARCH_REQUIRED');
 const thermal = thermalLedgerStep({ mantleEnergyJ: 1e20, radiogenicPowerW: 2e12, corePowerW: 1e12, surfaceHeatLossW: 4e12, durationSeconds: 1e6 });
 assert.equal(thermal.status, 'CONSERVED');
 near(thermal.residualJ, 0, 0, 'thermal ledger residual');
