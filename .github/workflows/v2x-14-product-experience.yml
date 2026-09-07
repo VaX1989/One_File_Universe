@@ -1,0 +1,38 @@
+name: V2X-14 Product Experience
+on:
+  push:
+    branches:
+      - parallel/v2x-14-product-ux-mobile-accessibility-audio-2026-09-07
+  pull_request:
+    paths:
+      - 'src/product/v2x14/**'
+      - 'src/audio/v2x14/**'
+      - 'src/bootstrap/product/v2x14-*.js'
+      - 'tests/v2x-14-product-experience/**'
+      - 'config/components/v2x-14-*.json'
+      - '.github/workflows/v2x-14-product-experience.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Exact-head identity
+        run: |
+          echo "SOURCE_SHA=${GITHUB_SHA}"
+          git rev-parse HEAD
+          git rev-parse 'HEAD^{tree}'
+      - name: V2X-14 ownership
+        run: node tools/validate-v2x-ownership.mjs --lane V2X-14 --base-ref 39a9042c1965177ab273ba20ae9cff2c8c930979 --head-ref HEAD
+      - name: Product and audio contracts
+        run: node tests/v2x-14-product-experience/contracts.mjs
+      - name: Descriptor parse
+        run: node -e "for (const p of ['config/components/v2x-14-product-experience.json','config/components/v2x-14-systemic-audio.json']) JSON.parse(require('fs').readFileSync(p,'utf8')); console.log('descriptor parse PASS')"
