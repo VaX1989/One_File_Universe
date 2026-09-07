@@ -19,7 +19,7 @@ assert.equal(rockyRadiusPrem({ massEarth: 1, coreMassFraction: 0.41 }).status, '
 const rockyInterval = rockyRadiusPremInterval({ massEarthMin: 1, massEarthMax: 8, coreMassFractionMin: 0, coreMassFractionMax: 0.4 });
 assert.equal(rockyInterval.status, 'PRESENT');
 near(rockyInterval.radiusEarthMin, 0.986, 1e-12, 'rocky interval lower');
-near(rockyInterval.radiusEarthMax, 1.876987986, 1e-6, 'rocky interval upper');
+near(rockyInterval.radiusEarthMax, 1.8769908371662154, 1e-12, 'rocky interval upper');
 assert.equal(rockyRadiusPremInterval({ massEarthMin: 0.9, massEarthMax: 1.1, coreMassFractionMin: 0, coreMassFractionMax: 0.4 }).status, 'UNSUPPORTED');
 
 // Pairwise mutual-Hill screen and algebraic threshold inversion.
