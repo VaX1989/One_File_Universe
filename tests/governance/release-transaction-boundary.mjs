@@ -34,8 +34,9 @@ function assertPreviewTransaction(source){
   const ownership=segment(source,'Reconfirm staged release and tag ownership immediately before publication','Publish only after verified draft');
   assert(/releases\/\$RELEASE_ID/.test(ownership)&&/\.draft/.test(ownership)&&/\.target_commitish/.test(ownership)&&/\.tag_name/.test(ownership),`${file}: pre-publication boundary must re-authenticate the exact staged release`);
   assert(/git\/ref\/tags\/\$RELEASE_TAG/.test(ownership),`${file}: pre-publication boundary must read the live release tag object`);
-  assert(/TAG_OBJECT_TYPE/.test(ownership)&&/TAG_OBJECT_SHA/.test(ownership)&&/SOURCE_SHA/.test(ownership),`${file}: pre-publication boundary must resolve tag ownership to the exact source commit`);
+  assert(/TAG_OBJECT_TYPE/.test(ownership)&&/TAG_OBJECT_SHA/.test(ownership),`${file}: pre-publication boundary must resolve tag ownership`);
   assert(/git\/tags\/\$TAG_OBJECT_SHA/.test(ownership),`${file}: annotated release tags must be resolved before source comparison`);
+  assert(/test "\$TAG_OBJECT_SHA" = "\$SOURCE_SHA"/.test(ownership),`${file}: pre-publication tag must be bound to the exact source commit`);
 
   const publish=stepIndex(source,'Publish only after verified draft');
   const finalVerify=stepIndex(source,'Final published release, tag and asset verification');
@@ -49,14 +50,16 @@ function assertPreviewTransaction(source){
 
   const published=segment(source,'Final published release, tag and asset verification','Cleanup failed unpublished preview transaction');
   assert(/releases\/\$RELEASE_ID/.test(published)&&/\.draft/.test(published)&&/\.target_commitish/.test(published)&&/\.tag_name/.test(published),`${file}: final verification must read back published release identity`);
-  assert(/git\/ref\/tags\/\$RELEASE_TAG/.test(published)&&/TAG_OBJECT_SHA/.test(published)&&/SOURCE_SHA/.test(published),`${file}: final verification must read back exact tag ownership`);
+  assert(/git\/ref\/tags\/\$RELEASE_TAG/.test(published)&&/TAG_OBJECT_SHA/.test(published),`${file}: final verification must read back release tag ownership`);
+  assert(/test "\$TAG_OBJECT_SHA" = "\$SOURCE_SHA"/.test(published),`${file}: final verification must bind the published tag to the exact source commit`);
   assert(/gh release download/.test(published)&&/sha256sum/.test(published)&&/cmp -s/.test(published),`${file}: final verification must re-download and byte-compare the published artifact`);
 
   const cleanupText=source.slice(cleanup);
   assert(/if:\s*failure\(\)/.test(cleanupText),`${file}: failed transactions must trigger terminal cleanup`);
   assert(/steps\.draft\.outputs\.release_id/.test(cleanupText)&&/RELEASE_ID/.test(cleanupText),`${file}: cleanup must target the exact staged release id`);
   assert(/\.draft/.test(cleanupText)&&/\.target_commitish/.test(cleanupText)&&/\.tag_name/.test(cleanupText)&&/SOURCE_SHA/.test(cleanupText),`${file}: cleanup must authenticate unpublished draft identity before deletion`);
-  assert(/git\/ref\/tags\/\$RELEASE_TAG/.test(cleanupText)&&/TAG_OBJECT_SHA/.test(cleanupText),`${file}: cleanup must authenticate exact tag ownership before deleting remote state`);
+  assert(/git\/ref\/tags\/\$RELEASE_TAG/.test(cleanupText)&&/TAG_OBJECT_SHA/.test(cleanupText),`${file}: cleanup must read exact tag ownership before deleting remote state`);
+  assert(/test "\$TAG_OBJECT_SHA" != "\$SOURCE_SHA"/.test(cleanupText),`${file}: cleanup must refuse a tag no longer owned by this source`);
   assert(/releases\/\$RELEASE_ID[^\n]*-X DELETE/.test(cleanupText),`${file}: cleanup must delete only the exact staged draft release`);
   assert(/git\/refs\/tags\/\$RELEASE_TAG[^\n]*-X DELETE/.test(cleanupText),`${file}: cleanup must remove only this transaction tag`);
   return true;
@@ -83,7 +86,11 @@ assert.throws(()=>assertPreviewTransaction(cleanupBeforePublish),/terminal failu
 const noReleaseCleanup=text.replace('gh api "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" -X DELETE','echo stale-preview-release');
 assert.throws(()=>assertPreviewTransaction(noReleaseCleanup),/exact staged draft release/);
 
-const noFinalTagRead=text.replace(/(      - name: Final published release, tag and asset verification[\s\S]*?)TAG_REF_JSON="\$\(gh api "repos\/\$GITHUB_REPOSITORY\/git\/ref\/tags\/\$RELEASE_TAG"\)"/, '$1TAG_REF_JSON="{}"');
-assert.throws(()=>assertPreviewTransaction(noFinalTagRead),/final verification must read back exact tag ownership/);
+const finalStart=stepIndex(text,'Final published release, tag and asset verification');
+const finalEnd=stepIndex(text,'Cleanup failed unpublished preview transaction');
+const finalSegment=text.slice(finalStart,finalEnd);
+const weakenedFinal=finalSegment.replace('test "$TAG_OBJECT_SHA" = "$SOURCE_SHA"','test -n "$TAG_OBJECT_SHA"');
+const noFinalSourceBinding=text.slice(0,finalStart)+weakenedFinal+text.slice(finalEnd);
+assert.throws(()=>assertPreviewTransaction(noFinalSourceBinding),/published tag to the exact source commit/);
 
 console.log(JSON.stringify({status:'PASS',suite:'release-transaction-boundary',workflow:file,syntheticCases:5}));
