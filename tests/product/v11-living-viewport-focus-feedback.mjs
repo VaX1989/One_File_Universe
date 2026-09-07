@@ -10,7 +10,7 @@ const descriptor=JSON.parse(read('config/components/v11-product-living-viewport-
 assert.match(living,/canvas\.setAttribute\('aria-label','Universe viewport\. Focused '/,'shipping renderer reports keyboard-focused picks through the canvas label');
 assert.match(living,/selectedPick=-1/,'shipping renderer invalidates keyboard pick state on a fresh render');
 assert.match(product,/runtime\.onChange\(change\)/,'shipping Living navigation rerenders after runtime changes');
-assert.match(keyboard,/aria-keyshortcuts','existing keyboard adapter exposes only part of the canvas shortcut surface');
+assert.match(keyboard,/aria-keyshortcuts/,'existing keyboard adapter exposes only part of the canvas shortcut surface');
 assert.match(source,/VERSION='ofu-v11-living-viewport-focus-feedback-1'/);
 assert.match(source,/AUTHORITY='PRESENTATION_ONLY'/);
 assert.match(source,/FOCUSED_PREFIX='Universe viewport\. Focused '/);
