@@ -1,0 +1,14 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {aggregateSoak,adjudicateSoak,validateSoakCycle} from './soak-evidence.mjs';
+const c=(cycle,o={})=>({cycle,initMs:10,inferenceMs:20,beforeBytes:100,peakBytes:200,afterDisposeBytes:110,oom:false,error:null,...o});
+const gate={minCycles:3,maxFinalGrowthBytes:20,maxRestingGrowthBytes:30,maxPeakBytes:300,maxInitP95Ms:50,maxInferenceP95Ms:50};
+test('cycle schema rejects impossible peak',()=>assert.equal(validateSoakCycle(c(1,{peakBytes:99})),false));
+test('aggregate requires ordered unique cycles',()=>assert.throws(()=>aggregateSoak([c(1),c(1)],{realRuntime:true}),/SOAK_CYCLE_ORDER/));
+test('dry run can never pass soak gate',()=>{const s=aggregateSoak([c(1),c(2),c(3)],{realRuntime:false});assert.equal(adjudicateSoak(s,gate).reason,'REAL_RUNTIME_REQUIRED');});
+test('OOM has precedence over memory drift',()=>{const s=aggregateSoak([c(1),c(2,{oom:true}),c(3,{afterDisposeBytes:999})],{realRuntime:true});assert.equal(adjudicateSoak(s,gate).reason,'OOM_OBSERVED');});
+test('runtime error is independently fatal',()=>{const s=aggregateSoak([c(1),c(2,{error:'dispose failed'}),c(3)],{realRuntime:true});assert.equal(adjudicateSoak(s,gate).reason,'RUNTIME_ERROR_OBSERVED');});
+test('final resting growth is bounded',()=>{const s=aggregateSoak([c(1,{afterDisposeBytes:100}),c(2,{afterDisposeBytes:105}),c(3,{afterDisposeBytes:121})],{realRuntime:true});assert.equal(adjudicateSoak(s,gate).reason,'FINAL_RESTING_GROWTH_EXCEEDED');});
+test('transient resting drift is independently bounded',()=>{const s=aggregateSoak([c(1,{afterDisposeBytes:100}),c(2,{afterDisposeBytes:131}),c(3,{afterDisposeBytes:110})],{realRuntime:true});assert.equal(adjudicateSoak(s,gate).reason,'MAX_RESTING_GROWTH_EXCEEDED');});
+test('peak memory and p95 latencies are bounded',()=>{let s=aggregateSoak([c(1),c(2,{peakBytes:301}),c(3)],{realRuntime:true});assert.equal(adjudicateSoak(s,gate).reason,'PEAK_MEMORY_EXCEEDED');s=aggregateSoak([c(1),c(2,{initMs:51}),c(3)],{realRuntime:true});assert.equal(adjudicateSoak(s,gate).reason,'INIT_P95_EXCEEDED');s=aggregateSoak([c(1),c(2,{inferenceMs:51}),c(3)],{realRuntime:true});assert.equal(adjudicateSoak(s,gate).reason,'INFERENCE_P95_EXCEEDED');});
+test('bounded real-runtime cycles pass research-only',()=>{const s=aggregateSoak([c(1,{afterDisposeBytes:100}),c(2,{afterDisposeBytes:105}),c(3,{afterDisposeBytes:110})],{realRuntime:true});const r=adjudicateSoak(s,gate);assert.equal(r.eligible,true);assert.equal(r.shippingPromotion,false);});
