@@ -3,6 +3,7 @@ import { createLifeState } from '../../src/v2x-08-life-ecology-evolution-embodim
 import { createLifeProvider, LIFE_V2_PROVIDER_DESCRIPTOR } from '../../src/v2x-08-life-ecology-evolution-embodiment/provider.js';
 import { buildOrganismRenderDescriptors, cullOrganismRenderDescriptors } from '../../src/v2x-08-life-ecology-evolution-embodiment/renderer.js';
 
+const PPM = 1_000_000n;
 const state = createLifeState({
   eventKey: 'fixture:provider',
   lineages: [{
@@ -96,14 +97,29 @@ assert.equal(recovery.causationClaimed, false);
 
 const samples = provider.localSamples({ regionId: 'r-provider', maxSamples: 6, viewportKey: 'render-test' });
 assert.equal(samples.length, 6);
+assert.ok(samples.every((sample) => sample.lifecycle.authorityClass === 'MODEL_DERIVED_SIMULATION'));
+assert.ok(samples.every((sample) => sample.lifecycle.representativeOnly === true && sample.lifecycle.persistentIndividualFact === false));
+assert.ok(samples.every((sample) => ['JUVENILE', 'MATURE', 'SENESCENT'].includes(sample.lifecycle.stage)));
 const descriptorsA = buildOrganismRenderDescriptors(samples, { quality: 'HIGH' });
 const descriptorsB = buildOrganismRenderDescriptors(samples, { quality: 'HIGH' });
 assert.deepEqual(descriptorsA, descriptorsB);
 assert.equal(descriptorsA.length, 6);
 assert.ok(descriptorsA.every((descriptor) => descriptor.authorityClass === 'PRESENTATION_ONLY'));
 assert.ok(descriptorsA.every((descriptor) => descriptor.evidenceLink.representativeOnly === true));
+assert.ok(descriptorsA.every((descriptor) => ['JUVENILE', 'MATURE', 'SENESCENT'].includes(descriptor.evidenceLink.representativeLifecycleStage)));
 assert.ok(descriptorsA.every((descriptor) => descriptor.segmentBudget === 8));
 assert.ok(descriptorsA.every((descriptor) => descriptor.primitiveFamily === 'CHAINED_ELLIPSOIDS'));
+
+const matureState = createLifeState({
+  ...state,
+  eventKey: 'fixture:mature-only',
+  populations: [{ ...state.populations[0], lifecycleStagePpm: { juvenile: 0, mature: PPM, senescent: 0 } }],
+});
+const matureSamples = createLifeProvider({ getState: () => matureState }).localSamples({ regionId: 'r-provider', maxSamples: 8, viewportKey: 'mature-only' });
+assert.ok(matureSamples.every((sample) => sample.lifecycle.stage === 'MATURE'), '100% mature aggregate must materialize only representative mature stages');
+const matureDescriptors = buildOrganismRenderDescriptors(matureSamples, { quality: 'BALANCED' });
+assert.ok(matureDescriptors.every((descriptor) => descriptor.visualGrammar.representativeLifecycleStage === 'MATURE'));
+assert.ok(matureDescriptors.every((descriptor) => descriptor.motion.authorityClass === 'PRESENTATION_ONLY'));
 
 const culled = cullOrganismRenderDescriptors(descriptorsA, (position) => position.x >= 0);
 assert.ok(culled.length <= descriptorsA.length);
@@ -119,9 +135,11 @@ assert.throws(() => buildOrganismRenderDescriptors(samples, { maxDescriptors: Nu
 assert.throws(() => buildOrganismRenderDescriptors(samples, { maxDescriptors: -1 }), /maxDescriptors must be a non-negative finite number/);
 assert.throws(() => buildOrganismRenderDescriptors([{ ...samples[0], representativeOfAggregate: false }]), /representative aggregate sample required/);
 assert.throws(() => buildOrganismRenderDescriptors([{ ...samples[0], presentation: { ...samples[0].presentation, authorityClass: 'MODEL_DERIVED_SIMULATION' } }]), /presentation-only motion descriptor required/);
+assert.throws(() => buildOrganismRenderDescriptors([{ ...samples[0], lifecycle: { ...samples[0].lifecycle, authorityClass: 'CANONICAL_PROVEN' } }]), /representative lifecycle descriptor required/, 'lifecycle representative must not escalate authority');
+assert.throws(() => buildOrganismRenderDescriptors([{ ...samples[0], lifecycle: { ...samples[0].lifecycle, stage: 'UNKNOWN_MAGIC_STAGE' } }]), /unsupported representative lifecycle stage/, 'unknown lifecycle stage must fail closed at render handoff');
 assert.throws(() => buildOrganismRenderDescriptors([{ ...samples[0], position: { ...samples[0].position, x: Number.NaN } }]), /position.x must be finite/, 'non-finite spatial evidence must fail closed before renderer handoff');
 assert.throws(() => buildOrganismRenderDescriptors([{ ...samples[0], position: { ...samples[0].position, y: 2 } }]), /position.y out of bounds/, 'out-of-domain local position must fail closed before renderer handoff');
 assert.throws(() => buildOrganismRenderDescriptors([{ ...samples[0], presentation: { ...samples[0].presentation, motionAmplitude: Number.NaN } }]), /motionAmplitude must be finite/, 'non-finite presentation motion must fail closed');
 assert.throws(() => buildOrganismRenderDescriptors([{ ...samples[0], aggregateAbundance: '400' }]), /aggregate abundance evidence must be a non-negative bigint/, 'render evidence must preserve exact aggregate abundance type');
 
-console.log('V2X-08 life provider renderer: PASS (45 assertions)');
+console.log('V2X-08 life provider renderer: PASS (54 assertions)');
