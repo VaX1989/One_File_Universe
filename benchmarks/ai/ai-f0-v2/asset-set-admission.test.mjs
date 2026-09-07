@@ -1,0 +1,10 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {adjudicateAssetSet} from './asset-set-admission.mjs';
+const a=(role,n,o={})=>({role,id:`asset.${role}`,bytes:n,sha256:String({['runtime-js']:'a',['runtime-wasm']:'b',model:'c',tokenizer:'d'}[role]).repeat(64),license:role.startsWith('runtime')?'MIT':'Apache-2.0',redistributionReviewed:true,...o});const set=()=>[a('runtime-js',10),a('runtime-wasm',20),a('model',30),a('tokenizer',40)];
+test('complete exact asset set passes research admission only',()=>{const r=adjudicateAssetSet(set());assert.equal(r.ok,true);assert.equal(r.totalBytes,100);assert.equal(r.shippingPromotion,false);});
+test('all four semantic roles are mandatory',()=>assert.equal(adjudicateAssetSet(set().slice(0,3)).reason,'ASSET_SET_CARDINALITY'));
+test('duplicate roles fail closed',()=>{const x=set();x[3]={...x[3],role:'model',id:'other',sha256:'e'.repeat(64)};assert.equal(adjudicateAssetSet(x).reason,'DUPLICATE_ASSET_ROLE');});
+test('duplicate ids and hashes fail independently',()=>{let x=set();x[1]={...x[1],id:x[0].id};assert.equal(adjudicateAssetSet(x).reason,'DUPLICATE_ASSET_ID');x=set();x[1]={...x[1],sha256:x[0].sha256};assert.equal(adjudicateAssetSet(x).reason,'DUPLICATE_ASSET_HASH');});
+test('redistribution review is required per role',()=>{const x=set();x[2]={...x[2],redistributionReviewed:false};const r=adjudicateAssetSet(x);assert.equal(r.reason,'REDISTRIBUTION_REVIEW_REQUIRED');assert.equal(r.role,'model');});
+test('license cannot be empty even when review flag is true',()=>{const x=set();x[3]={...x[3],license:''};assert.equal(adjudicateAssetSet(x).reason,'ASSET_SCHEMA');});
+test('invalid exact identity fails schema',()=>{const x=set();x[0]={...x[0],sha256:'not-a-hash'};assert.equal(adjudicateAssetSet(x).reason,'ASSET_SCHEMA');});
+test('unknown fields fail exact schema rather than becoming trust metadata',()=>{const x=set();x[0]={...x[0],trusted:true};assert.equal(adjudicateAssetSet(x).reason,'ASSET_SCHEMA');});
