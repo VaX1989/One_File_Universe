@@ -5,7 +5,7 @@ function fail(c,m){const e=new Error(m);e.code=c;throw e}function clamp(x,a,b){x
 const VERTEX_GLSL=`#version 300 es
 precision highp float;
 out vec2 vUv;
-void main(){vec2 p=vec2((gl_VertexID<<1)&2,gl_VertexID&2);vUv=p;gl_Position=vec4(p*2.0-1.0,0.0,1.0);}`;
+void main(){vec2 p=vec2((gl_VertexID<<1)&2,gl_VertexID&2);vUv=p*.5;gl_Position=vec4(p*2.0-1.0,0.0,1.0);}`;
 const FRAGMENT_GLSL=`#version 300 es
 precision highp float;
 uniform sampler2D uColor;
