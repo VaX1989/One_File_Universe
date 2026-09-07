@@ -112,6 +112,16 @@ jobs:
           ].join('\n');
           fs.writeFileSync('release-notes.md',notes+'\n');
           NODE
+      - name: Reconfirm exact live main immediately before draft creation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git ls-remote origin refs/heads/main | cut -f1)" = "$SOURCE_SHA"
+          test -z "$(git ls-remote origin refs/tags/$RELEASE_TAG | cut -f1)"
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            echo 'Release appeared while verification was running; refusing to overwrite it' >&2
+            exit 1
+          fi
       - name: Stage draft release only
         id: draft
         shell: bash
@@ -128,8 +138,14 @@ jobs:
           printf 'release_id=%s\n' "$RELEASE_ID" >> "$GITHUB_OUTPUT"
       - name: Re-download remote draft asset and verify bytes/hash
         shell: bash
+        env:
+          RELEASE_ID: ${{ steps.draft.outputs.release_id }}
         run: |
           set -euo pipefail
+          RELEASE_JSON="$(gh api "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID")"
+          test "$(jq -r .draft <<<"$RELEASE_JSON")" = true
+          test "$(jq -r .prerelease <<<"$RELEASE_JSON")" = true
+          test "$(jq -r .target_commitish <<<"$RELEASE_JSON")" = "$SOURCE_SHA"
           rm -rf remote-release && mkdir remote-release
           gh release download "$RELEASE_TAG" -p One_File_Universe.html -D remote-release
           REMOTE_SHA="$(sha256sum remote-release/One_File_Universe.html | cut -d' ' -f1)"
@@ -140,6 +156,18 @@ jobs:
           printf '\n## Remote draft verification\n\n- status: **PASS**\n- re-downloaded SHA-256: `%s`\n- re-downloaded bytes: `%s`\n- byte-identical to certified exact-main artifact: `true`\n' \
             "$REMOTE_SHA" "$REMOTE_BYTES" >> release-notes.md
           gh release edit "$RELEASE_TAG" --notes-file release-notes.md
+      - name: Abort stale preview transaction if main moved
+        shell: bash
+        run: |
+          set -euo pipefail
+          LIVE_MAIN="$(git ls-remote origin refs/heads/main | cut -f1)"
+          if test "$LIVE_MAIN" != "$SOURCE_SHA"; then
+            echo "main advanced from $SOURCE_SHA to $LIVE_MAIN before publication; removing staged preview" >&2
+            if ! gh release delete "$RELEASE_TAG" --cleanup-tag --yes; then
+              echo 'failed to remove stale draft release/tag; manual cleanup required' >&2
+            fi
+            exit 1
+          fi
       - name: Publish only after verified draft
         shell: bash
         env:
