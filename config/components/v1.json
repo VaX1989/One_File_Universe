@@ -131,6 +131,7 @@
         "v1.models.planetology",
         "v1.models.environment.world-system",
         "v1.planetology.giant-family",
+        "v1.environment.atmospheric-column",
         "v1.models.biology",
         "v1.models.civilization",
         "v1.models.microscopic",
