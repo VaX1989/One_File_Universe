@@ -3,7 +3,7 @@
   "components": [
     {
       "id": "v1.product.living-pinch-handoff",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "owner": "product",
       "kind": "code",
       "stage": "full",
@@ -11,7 +11,7 @@
       "source": "src/bootstrap/product/living-pinch-handoff.js",
       "dependencies": ["v1.product.living-universe"],
       "authority": "PRESENTATION_ONLY",
-      "provenance": "Post-v1 mobile interaction continuity controller. After a multi-pointer pinch ends with one pointer still active, it preserves direct-manipulation drag continuity in the shipping Living viewport without changing canonical identity, semantic scale, scientific state, or navigation authority.",
+      "provenance": "Post-v1 mobile interaction continuity controller. After a normal multi-pointer pinch release leaves one pointer active, it establishes a fresh post-release pointer anchor before applying the bounded drag threshold, then preserves direct-manipulation drag continuity in the shipping Living viewport. Pointer cancellation or unmatched capture loss fails closed and never promotes the remaining pointer. The controller does not change canonical identity, semantic scale, scientific state, or navigation authority.",
       "provides": ["v1.product.living-pinch-handoff"]
     }
   ]
