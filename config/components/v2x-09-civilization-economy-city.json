@@ -102,7 +102,7 @@
       "source": "src/v2x-09-civilization-economy-city/society-dynamics.js",
       "dependencies": ["v2x09.civilization.core", "v2x09.civilization.production-network"],
       "authority": "MODEL_DERIVED_SIMULATION",
-      "provenance": "V2X-09 aggregate scarcity, opportunity, migration-pressure and institution-response proposals over complete modeled evidence only. Missing or state/economy-conflicting settlement evidence remains null/explicit and cannot emit synthetic migration pressure. Institutions exclude incomplete members while exposing the exclusion. Physical infrastructure degradation may trigger REPAIR_PRIORITY; topology/isolation instead triggers NETWORK_ACCESS_OR_REDUNDANCY_PRIORITY. No persistent person, population, polity, planet, life or P4 authority is mutated.",
+      "provenance": "V2X-09 aggregate scarcity, opportunity, migration-pressure and institution-response proposals over complete modeled evidence only. Missing or state/economy-conflicting settlement evidence remains null/explicit and cannot emit synthetic migration pressure. Institutions exclude incomplete members while exposing the exclusion. Zero modeled incident trade routes imply no inferred logistics stress; modeled incident routes that exist but are all unusable produce bounded access-disruption pressure. Physical infrastructure degradation may trigger REPAIR_PRIORITY, whereas supported network-access disruption triggers NETWORK_ACCESS_OR_REDUNDANCY_PRIORITY. No persistent person, population, polity, planet, life or P4 authority is mutated.",
       "provides": ["v2x09.civilization.aggregate-migration-pressure", "v2x09.civilization.institution-response-proposals", "v2x09.civilization.society-evidence-gaps"]
     },
     {
