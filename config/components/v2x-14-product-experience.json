@@ -24,7 +24,7 @@
       "source": "src/product/v2x14/product-experience.js",
       "dependencies": ["v1.product.living-universe", "v2x14.product.discovery"],
       "authority": "PRESENTATION_ONLY",
-      "provenance": "Non-owning Living accessibility augmentation. It preserves the canonical viewport label and aria-pressed state, adds reversible aria-current and keyboard-shortcut metadata, and delegates skip routing, focus continuity, transition announcements, bounded survey UI and context docking to the convergence-owned Living product modules instead of duplicating them.",
+      "provenance": "Non-owning Living accessibility augmentation. Unknown stage remains unknown; the canonical viewport label and aria-pressed state are preserved. Reversible aria-current is added only when no other owner already supplies that attribute and yields permanently if another owner changes it. Keyboard-shortcut metadata uses only unambiguous tokens. Skip routing, focus continuity, transition announcements, bounded survey UI and context docking remain convergence-owned Living capabilities rather than duplicated lane UI.",
       "provides": ["v2x14.product.experience"]
     },
     {
@@ -37,7 +37,7 @@
       "source": "src/product/v2x14/product-experience.css",
       "dependencies": [],
       "authority": "PRESENTATION_ONLY",
-      "provenance": "Lane-owned styling is restricted to the optional systemic-audio controls and status: compact 44/48px targets, focus-visible, forced-colors and reduced-motion handling. It no longer styles or creates duplicate Living skip, context, survey, focus or announcement surfaces.",
+      "provenance": "Lane-owned styling is restricted to the optional systemic-audio controls and status: compact 44/48px targets, focus-visible, forced-colors and reduced-motion handling. It does not style or create duplicate Living skip, context, survey, focus or announcement surfaces.",
       "provides": ["v2x14.product.style"]
     }
   ]
