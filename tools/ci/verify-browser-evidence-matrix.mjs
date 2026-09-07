@@ -19,20 +19,34 @@ const LIMITS = Object.freeze({
 
 const DEFAULT_TARGET_FIELDS = Object.freeze({platform: 'platform', arch: 'arch', browser: 'browser'});
 const POLICIES = Object.freeze({
+  p3: Object.freeze({
+    targetFields: DEFAULT_TARGET_FIELDS,
+    sourceField: 'sourceSha',
+    requireZeroUnexpectedNetworkRequests: false,
+    goldenCorpusVersion: null,
+    agreement: ['region', 'galaxy', 'system', 'planet', 'moon', 'manifestHash', 'corpusDigest', 'records', 'key', 'planetKey', 'moonKey'],
+    fixed: Object.freeze({}),
+  }),
   p5: Object.freeze({
     targetFields: DEFAULT_TARGET_FIELDS,
+    sourceField: 'sourceCommit',
+    requireZeroUnexpectedNetworkRequests: true,
     goldenCorpusVersion: 'golden-p5-corpus-v1',
     agreement: ['physicalDigest', 'terrainDigest', 'artifactSha256', 'artifactBytes'],
     fixed: Object.freeze({}),
   }),
   'p5-environment-v2': Object.freeze({
     targetFields: DEFAULT_TARGET_FIELDS,
+    sourceField: 'sourceCommit',
+    requireZeroUnexpectedNetworkRequests: true,
     goldenCorpusVersion: 'golden-p5-environment-v2-corpus-v1',
     agreement: ['manifestHash', 'environmentDigest', 'physicalDigest', 'artifactSha256'],
     fixed: Object.freeze({earthAnchorMilliK: '254578'}),
   }),
   p6: Object.freeze({
     targetFields: Object.freeze({platform: 'hostPlatform', arch: 'hostArch', browser: 'browser'}),
+    sourceField: 'sourceCommit',
+    requireZeroUnexpectedNetworkRequests: true,
     goldenCorpusVersion: null,
     agreement: ['manifestHash', 'biosphereId', 'lineageId', 'speciesId', 'stateDigest', 'artifactSha256', 'goldenCorpusDigest'],
     fixed: Object.freeze({
@@ -107,7 +121,8 @@ function collectBrowserEvidence(root) {
         continue;
       }
       if (!stat.isFile()) fail('UNSAFE_EVIDENCE_PATH', 'non-regular files are forbidden in browser evidence artifacts', candidate);
-      if (!entry.name.startsWith('browser-') || !entry.name.endsWith('.json')) continue;
+      if (!entry.name.startsWith('browser-') && !entry.name.startsWith('p3-browser-')) continue;
+      if (!entry.name.endsWith('.json')) continue;
       if (stat.size > LIMITS.maxFileBytes) fail('RESOURCE_LIMIT', `browser evidence file exceeds ${LIMITS.maxFileBytes} bytes`, candidate);
       if (files.length + 1 > LIMITS.maxBrowserFiles) fail('RESOURCE_LIMIT', `browser evidence exceeds ${LIMITS.maxBrowserFiles} files`, candidate);
       if (totalBrowserBytes + stat.size > LIMITS.maxTotalBrowserBytes) {
@@ -150,11 +165,13 @@ function verify({mode, root, sourceSha}) {
   for (const item of records) {
     const record = item.data;
     if (record.status !== 'PASS') fail('NON_PASS_INPUT', 'browser evidence status must be PASS', item.file);
-    if (record.sourceCommit !== sourceSha) fail('SOURCE_SHA_MISMATCH', 'browser evidence sourceCommit does not match exact source SHA', item.file);
+    if (record[policy.sourceField] !== sourceSha) fail('SOURCE_SHA_MISMATCH', `browser evidence ${policy.sourceField} does not match exact source SHA`, item.file);
     if (policy.goldenCorpusVersion && record.goldenCorpusVersion !== policy.goldenCorpusVersion) {
       fail('GOLDEN_CORPUS_MISMATCH', 'browser evidence Golden corpus version mismatch', item.file);
     }
-    if (record.unexpectedNetworkRequests !== 0) fail('NETWORK_INVARIANT', 'browser evidence reports unexpected network requests', item.file);
+    if (policy.requireZeroUnexpectedNetworkRequests && record.unexpectedNetworkRequests !== 0) {
+      fail('NETWORK_INVARIANT', 'browser evidence reports unexpected network requests', item.file);
+    }
     const key = targetKey(record, policy, item.file);
     if (byTarget.has(key)) fail('DUPLICATE_TARGET', `duplicate browser evidence target ${key}`, item.file);
     byTarget.set(key, item);
