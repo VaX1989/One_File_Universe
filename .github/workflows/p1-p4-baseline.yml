@@ -26,11 +26,11 @@ jobs:
       adapter_status: ${{ steps.phase-gate.outputs.adapter_status }}
       fail_closed: ${{ steps.phase-gate.outputs.fail_closed }}
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # Node 24 runtime
         with:
           ref: ${{ env.OFU_SOURCE_SHA }}
           fetch-depth: 0
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # Node 24 runtime
         with:
           node-version: '24.20.0'
       - name: Verify exact source checkout
@@ -49,13 +49,13 @@ jobs:
     if: ${{ needs.route.outputs.run == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # Node 24 runtime
         with:
           ref: ${{ env.OFU_SOURCE_SHA }}
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # Node 24 runtime
         with:
           node-version: '24.20.0'
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # Node 24 runtime
         with:
           python-version: '3.13.15'
       - name: Verify exact source checkout
@@ -86,7 +86,7 @@ jobs:
           node tools/build-ofu.mjs > /tmp/build-second.json
           cmp /tmp/One_File_Universe.first.html dist/One_File_Universe.html
           cmp /tmp/p1-p4-build-manifest.first.json dist/p1-p4-build-manifest.json
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6 / Node 24 runtime
         with:
           name: p1-p4-certified-build-${{ env.OFU_SOURCE_SHA }}
           path: |
@@ -103,10 +103,10 @@ jobs:
       matrix:
         browser: [chromium, firefox, webkit]
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # Node 24 runtime
         with:
           ref: ${{ env.OFU_SOURCE_SHA }}
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # Node 24 runtime
         with:
           node-version: '24.20.0'
       - name: Verify exact source checkout
@@ -119,7 +119,7 @@ jobs:
         run: node tests/baseline/browser-p1-p4.mjs
         env:
           BROWSER: ${{ matrix.browser }}
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6 / Node 24 runtime
         if: always()
         with:
           name: p1-p4-linux-x64-${{ matrix.browser }}-${{ env.OFU_SOURCE_SHA }}
@@ -138,10 +138,10 @@ jobs:
             browser: webkit
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # Node 24 runtime
         with:
           ref: ${{ env.OFU_SOURCE_SHA }}
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # Node 24 runtime
         with:
           node-version: '24.20.0'
       - name: Verify exact source checkout
@@ -154,7 +154,7 @@ jobs:
         run: node tests/baseline/browser-p1-p4.mjs
         env:
           BROWSER: ${{ matrix.browser }}
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6 / Node 24 runtime
         if: always()
         with:
           name: p1-p4-${{ runner.os }}-${{ runner.arch }}-${{ matrix.browser }}-${{ env.OFU_SOURCE_SHA }}
