@@ -3,7 +3,7 @@
   "components": [
     {
       "id": "v2x.living.domain-composition",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "owner": "product",
       "kind": "code",
       "stage": "full",
@@ -14,12 +14,20 @@
         "v2x04.render.orbit-3d",
         "v2x04.render.stellar-appearance",
         "v2x04.render.multi-star-illumination",
+        "v2x-06.surface.address",
+        "v2x-06.surface.geography",
+        "v2x-06.surface.hydrology",
+        "v2x-06.terrain.hierarchical",
+        "v2x-06.renderer.living-surface",
+        "v2x07.render.local-experience-provider",
         "v2x12.matter.continuity",
         "v2x12.matter.presentation"
       ],
       "authority": "PRESENTATION_ONLY",
-      "provenance": "Convergence-owned Living product compositor. SYSTEM consumes V2X-04 orbit and stellar presentation from current Living identities; MATERIAL through ATOMIC consume V2X-12 from the exact selected Living material source. Camera, selection, scale and canonical authority remain external.",
-      "provides": ["v2x.living.domain-composition"]
+      "provenance": "Convergence-owned Living product compositor. SYSTEM consumes V2X-04; GLOBAL/REGIONAL/LOCAL surface consume V2X-06 adaptive terrain/geology/hydrology; HUMAN consumes V2X-07 local depth/ground/embodiment while aggregate organisms remain non-persistent presentation; MATERIAL through ATOMIC consume V2X-12 from the exact selected Living material source. Camera, selection, scale, canonical geodesy and scientific authority remain external.",
+      "provides": [
+        "v2x.living.domain-composition"
+      ]
     }
   ]
 }
