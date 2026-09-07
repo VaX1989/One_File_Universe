@@ -53,9 +53,9 @@ function create(canvas,glCanvas,{onActivate=null,onPoint=null,onObject=null}={})
  const g=canvas.getContext('2d',{alpha:true}),maps=new Map();
  if(!g)throw new Error('Canvas2D unavailable');
  let budgetProfile=resourceProfile(),budget=O.v1RenderBudget.create(budgetProfile);
- let gpu=null,gpuError=null,snapshot=null,scene=null,token=0,readyRevision=-1,width=1,height=1,dpr=1,disposed=false,picks=[],surface=null,lastSurfaceKey=null;
+ let gpu=null,gpuError=null,snapshot=null,scene=null,token=0,readyRevision=-1,width=1,height=1,dpr=1,disposed=false,picks=[],surface=null,lastSurfaceKey=null,fallbackScratch=null;
  let yaw=0,pitch=0,bodyId=null,selectedPick=-1,terrain=[],travelDistanceRadii=null,travelBand=null;
- const metrics={frames:0,mapBuilds:0,mapEvictions:0,modelSamples:0,terrainSamples:0,terrainDrawCells:0,terrainLodReductions:0,maxMapCells:0,maxTerrainCells:0,maxTerrainDrawCells:0,drawnObjects:0,cancellations:0,profileChanges:0,admissionAttempts:0,admissionRejections:0,surfacePlanChanges:0,surfaceConstraintEvents:0,maxSurfacePixels:0};
+ const metrics={frames:0,mapBuilds:0,mapEvictions:0,modelSamples:0,terrainSamples:0,terrainDrawCells:0,terrainLodReductions:0,maxMapCells:0,maxTerrainCells:0,maxTerrainDrawCells:0,drawnObjects:0,cancellations:0,profileChanges:0,admissionAttempts:0,admissionRejections:0,surfacePlanChanges:0,surfaceConstraintEvents:0,maxSurfacePixels:0,fallbackFrames:0,fallbackScratchAllocations:0,fallbackScratchResizes:0,maxFallbackScratchPixels:0};
  const pause=()=>new Promise(resolve=>setTimeout(resolve,0));
  function syncBudgetProfile(){
   const next=resourceProfile({dpr,viewportWidth:root.innerWidth||width,viewportHeight:root.innerHeight||height});
@@ -119,10 +119,15 @@ function create(canvas,glCanvas,{onActivate=null,onPoint=null,onObject=null}={})
   for(const settlement of s.world.civilization.settlements||[]){const p=globe?screenForPoint(settlement.location,s.stage==='APPROACH'?.88:.76):project(settlement.location);if(!p)continue;positions.set(settlement.settlementId,p);settlementGlyph(p.x,p.y,settlement,globe?5:7);pick(p.x,p.y,14,{point:settlement.location,settlement},title(settlement.type)+' '+short(settlement.settlementId));if(!globe)label(short(settlement.settlementId),p.x+10,p.y-5,{size:9,color:'#d8b88b'});}
   if(!globe)for(const link of c.links){const a=positions.get(link.from),b=positions.get(link.to);if(!a||!b)continue;g.beginPath();g.moveTo(a.x,a.y);g.lineTo(b.x,b.y);g.strokeStyle='rgba(226,185,118,.40)';g.setLineDash([3,5]);g.stroke();g.setLineDash([]);}
  }
+ function fallbackScratchFor(size){
+  if(!fallbackScratch){const off=document.createElement('canvas'),ctx=off.getContext('2d');if(!ctx)throw new Error('Canvas2D fallback scratch unavailable');fallbackScratch={canvas:off,ctx,image:null,size:0};metrics.fallbackScratchAllocations++;}
+  if(fallbackScratch.size!==size){fallbackScratch.canvas.width=fallbackScratch.canvas.height=size;fallbackScratch.image=fallbackScratch.ctx.createImageData(size,size);fallbackScratch.size=size;metrics.fallbackScratchResizes++;metrics.maxFallbackScratchPixels=Math.max(metrics.maxFallbackScratchPixels,size*size);}
+  return fallbackScratch;
+ }
  function fallbackGlobe(map,scale){
-  const size=Math.min(420,Math.floor(Math.min(width,height)*scale)),off=document.createElement('canvas');off.width=off.height=size;const o=off.getContext('2d'),image=o.createImageData(size,size),r=size/2;
+  const size=Math.max(1,Math.min(420,Math.floor(Math.min(width,height)*scale))),scratch=fallbackScratchFor(size),off=scratch.canvas,o=scratch.ctx,image=scratch.image,r=size/2;
   for(let y=0;y<size;y++)for(let x=0;x<size;x++){const nx=(x-r)/r,ny=-(y-r)/r,q=nx*nx+ny*ny;if(q>1)continue;const z=Math.sqrt(1-q),wy=ny*Math.cos(pitch)+z*Math.sin(pitch),wz=z*Math.cos(pitch)-ny*Math.sin(pitch),lat=Math.asin(wy),lon=Math.atan2(nx,wz)+yaw,u=((lon/(Math.PI*2)+.5)%1+1)%1,v=.5-lat/Math.PI,si=(Math.min(map.height-1,Math.floor(v*map.height))*map.width+Math.min(map.width-1,Math.floor(u*map.width)))*4,j=(y*size+x)*4,light=.22+.78*Math.max(0,-nx*.5+ny*.36+z*.8);for(let k=0;k<3;k++)image.data[j+k]=map.data[si+k]*light;image.data[j+3]=255;}
-  o.putImageData(image,0,0);background();g.drawImage(off,(width-size)/2,(height-size)/2,size,size);
+  o.putImageData(image,0,0);background();g.drawImage(off,(width-size)/2,(height-size)/2,size,size);metrics.fallbackFrames++;
  }
  async function globe(s,myToken){
   if(bodyId!==s.world.planetIdentity){bodyId=s.world.planetIdentity;yaw=0;pitch=0;}
@@ -233,8 +238,8 @@ function create(canvas,glCanvas,{onActivate=null,onPoint=null,onObject=null}={})
  function setTravelDistance(distanceRadii,band){const d=Number(distanceRadii);if(Number.isFinite(d)&&d>0)travelDistanceRadii=d;if(band)travelBand=String(band);return state();}
  function activateAt(x,y){for(let i=picks.length-1;i>=0;i--){const p=picks[i];if(Math.hypot(x-p.x,y-p.y)>p.r)continue;const d=p.data;if(snapshot?.stage==='GLOBAL_SURFACE'&&d.point&&!d.settlement)continue;if(d.node)onActivate?.(d.node);else if(d.objectId)onObject?.(d.objectId);else if(d.point)onPoint?.(d.point,{settlement:d.settlement||null});return true;}if(snapshot?.world&&['ORBIT','APPROACH'].includes(snapshot.stage)){const p=pointFromScreen(x,y,snapshot.stage==='APPROACH'?.88:.76);if(p){onPoint?.(p,{});return true;}}if(snapshot?.stage==='GLOBAL_SURFACE'&&x>=32&&x<=width-32&&y>=72&&y<=height-73){const p=W.location(snapshot.world.planetIdentity,Math.round(90000000-(y-72)/(height-145)*180000000),Math.round(-180000000+(x-32)/(width-64)*360000000));onPoint?.(p,{});return true;}return false;}
  function keyboard(key){if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(key)&&picks.length){selectedPick=(selectedPick+(key==='ArrowLeft'||key==='ArrowUp'?-1:1)+picks.length)%picks.length;canvas.setAttribute('aria-label','Universe viewport. Focused '+picks[selectedPick].label);const p=picks[selectedPick];g.strokeStyle='#eac680';g.lineWidth=2;g.beginPath();g.arc(p.x,p.y,p.r+3,0,Math.PI*2);g.stroke();return true;}if(key==='Enter'&&selectedPick>=0){const p=picks[selectedPick];return activateAt(p.x,p.y);}return false;}
- function state(){return {version:VERSION,readyRevision,worldIdentity:snapshot?.world?.planetIdentity||null,stage:snapshot?.stage,sceneScale:scene?.scale,sceneSourceId:scene?.sourceId,sourceIds:scene?.objects.map(o=>o.sourceId)||[],pickCount:picks.length,metrics:{...metrics},mapCacheEntries:maps.size,mapCacheLimit:MAX_MAPS,mapResolution:[MAP_W,MAP_H],gpu:gpu?.snapshot()||null,gpuError,resourceProfile:budgetProfile,surface,budget:budget.snapshot(),authority:'PRESENTATION_ONLY',networkResources:0};}
- function dispose(){disposed=true;token++;maps.clear();picks=[];terrain=[];gpu?.dispose();budget.clear('dispose');}
+ function state(){return {version:VERSION,readyRevision,worldIdentity:snapshot?.world?.planetIdentity||null,stage:snapshot?.stage,sceneScale:scene?.scale,sceneSourceId:scene?.sourceId,sourceIds:scene?.objects.map(o=>o.sourceId)||[],pickCount:picks.length,metrics:{...metrics},mapCacheEntries:maps.size,mapCacheLimit:MAX_MAPS,mapResolution:[MAP_W,MAP_H],gpu:gpu?.snapshot()||null,gpuError,resourceProfile:budgetProfile,surface,fallbackScratch:fallbackScratch?{allocated:true,size:fallbackScratch.size,pixels:fallbackScratch.size*fallbackScratch.size,accounting:'MODELED_SCRATCH_SURFACE_LIFECYCLE',heapMemoryMeasured:false,gpuMemoryMeasured:false}:null,budget:budget.snapshot(),authority:'PRESENTATION_ONLY',networkResources:0};}
+ function dispose(){disposed=true;token++;maps.clear();picks=[];terrain=[];gpu?.dispose();gpu=null;fallbackScratch=null;budget.clear('dispose');}
  return Object.freeze({VERSION,render,rotate,setTravelDistance,activateAt,keyboard,state,dispose,resize,sampleColor});
 }
 O.v1LivingRenderer=Object.freeze({VERSION,MAP_W,MAP_H,MAX_MAPS,MAX_TERRAIN,sampleColor,adaptPresentationCamera,resourceProfile,terrainGridShape,create});
