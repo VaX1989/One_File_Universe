@@ -1,0 +1,76 @@
+name: Reliability Main Promotion Actions
+
+on:
+  push:
+    branches:
+      - 'development/v1.*'
+    paths:
+      - '.github/workflows/v1-certification.yml'
+      - '.github/workflows/rendering-production.yml'
+      - '.github/workflows/px-foundation.yml'
+      - '.github/workflows/reliability-main-promotion-actions.yml'
+      - 'tests/governance/workflow-reproducibility.mjs'
+  pull_request:
+    paths:
+      - '.github/workflows/v1-certification.yml'
+      - '.github/workflows/rendering-production.yml'
+      - '.github/workflows/px-foundation.yml'
+      - '.github/workflows/reliability-main-promotion-actions.yml'
+      - 'tests/governance/workflow-reproducibility.mjs'
+
+concurrency:
+  group: reliability-main-promotion-actions-${{ github.event_name }}-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+permissions:
+  contents: read
+
+jobs:
+  produce:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # Node 24 runtime
+        with:
+          ref: '${{ env.OFU_SOURCE_SHA }}'
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # Node 24 runtime
+        with:
+          node-version: '24.20.0'
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # Node 24 runtime
+        with:
+          python-version: '3.13.15'
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Verify promotion workflow reproducibility contracts
+        run: node tests/governance/workflow-reproducibility.mjs
+      - name: Create exact-head lifecycle witness
+        shell: bash
+        run: |
+          mkdir -p dist/reliability-main-promotion-actions
+          printf 'source=%s\nnode=%s\npython=%s\n' "$OFU_SOURCE_SHA" "$(node --version)" "$(python3 --version 2>&1)" > dist/reliability-main-promotion-actions/runtime.txt
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # Node 24 runtime
+        with:
+          name: reliability-main-promotion-actions-${{ env.OFU_SOURCE_SHA }}
+          path: dist/reliability-main-promotion-actions/runtime.txt
+          retention-days: 1
+
+  consume:
+    needs: produce
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # Node 24 runtime
+        with:
+          name: reliability-main-promotion-actions-${{ env.OFU_SOURCE_SHA }}
+          path: witness
+      - name: Verify lifecycle witness identity
+        shell: bash
+        run: |
+          test -f witness/runtime.txt
+          grep -Fx "source=$OFU_SOURCE_SHA" witness/runtime.txt
+          grep -Fx 'node=v24.20.0' witness/runtime.txt
+          grep -E '^python=Python 3\.13\.15$' witness/runtime.txt
