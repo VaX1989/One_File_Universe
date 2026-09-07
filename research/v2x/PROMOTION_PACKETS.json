@@ -1,0 +1,70 @@
+{
+  "schema": "ofu-v2x15-promotion-packets-2",
+  "authority": "RESEARCH_ONLY",
+  "canonicalPromotionPerformed": false,
+  "packets": [
+    {
+      "id": "ASTRO-STABILITY-02",
+      "target": "Prompt 07 / stellar-system dynamics consumer",
+      "candidateSurfaces": ["pairwiseHillScreen", "radialOrbitOverlapScreen", "angularMomentumDeficit", "dynamicsEscalation"],
+      "promotionPrerequisites": ["independent AMD-threshold reference implementation", "multi-planet adversarial fixtures", "resonance and secular-chaos escalation policy", "exact authority mapping"],
+      "forbiddenClaims": ["N_BODY_STABLE", "LAGRANGE_STABLE", "RESONANCE_SAFE"]
+    },
+    {
+      "id": "STELLAR-TRACK-02",
+      "target": "Prompt 07 / stellar evolution consumer",
+      "candidateSurfaces": ["mistInterpolationContract"],
+      "promotionPrerequisites": ["licensed or redistributable exact MIST grid fixture", "release identifier", "grid digest", "interpolation rule", "boundary policy", "error witnesses"],
+      "forbiddenClaims": ["unversioned stellar truth", "silent solar-scaled abundance"]
+    },
+    {
+      "id": "STELLAR-MULTIPLICITY-02",
+      "target": "Prompt 07 / system architecture consumer",
+      "candidateSurfaces": ["multiplicityPopulationContract"],
+      "promotionPrerequisites": ["population-conditioned table fixture", "selection-function provenance", "joint period-q-e validation", "primary-mass domain"],
+      "forbiddenClaims": ["universal factorized binary prior", "survey completeness"]
+    },
+    {
+      "id": "PLANET-BULK-02",
+      "target": "Prompt 07 / deep planet consumer",
+      "candidateSurfaces": ["rockyRadiusPrem", "compositionRegimeContract"],
+      "promotionPrerequisites": ["separate rocky/water-rich/H-He model authority", "high-pressure water EOS fixture", "sub-Neptune evolution-grid fixture", "uncertainty representation"],
+      "forbiddenClaims": ["unique composition from mass-radius", "source-backed rocky extrapolation below 1 Earth mass"]
+    },
+    {
+      "id": "ATMOSPHERE-ESCAPE-02",
+      "target": "Prompt 07 / atmosphere consumer",
+      "candidateSurfaces": ["classifyEscapeRegime", "energyLimitedEscapeApplicability"],
+      "promotionPrerequisites": ["explicit XUV history input contract", "R_XUV and Roche-correction provenance", "diffusion-limit gate", "boil-off gate", "numerical cross-checks"],
+      "forbiddenClaims": ["universal energy-limited escape", "complete atmospheric history"]
+    },
+    {
+      "id": "CLIMATE-EBM-02",
+      "target": "Prompt 07 / climate consumer",
+      "candidateSurfaces": ["zeroDimensionalEbm", "orbitalMeanFluxFactor", "greyAtmosphereSurfaceTemperature"],
+      "promotionPrerequisites": ["physical-unit contract", "parameter provenance", "heat-capacity/time integration for transient claims", "latitudinal transport model for zonal claims"],
+      "forbiddenClaims": ["weather", "GCM-equivalent local climate", "habitability truth"]
+    },
+    {
+      "id": "GEODYNAMICS-02",
+      "target": "Prompt 07 / interior consumer",
+      "candidateSurfaces": ["thermalLedgerStep", "convectionDiagnostic", "nusseltRayleighScenario"],
+      "promotionPrerequisites": ["rheology contract", "internal heating provenance", "geometry/boundary conditions", "normalization calibration", "lag semantics"],
+      "forbiddenClaims": ["plate tectonics present", "deterministic tectonic history"]
+    },
+    {
+      "id": "VOLATILE-SURFACE-02",
+      "target": "Prompt 08 / hydrology-surface consumer",
+      "candidateSurfaces": ["volatileLedger"],
+      "promotionPrerequisites": ["transfer-law authority separated from conservation ledger", "tectonic-regime assumptions", "high-pressure ice/EOS handling"],
+      "forbiddenClaims": ["universal ocean-mantle cycling", "habitability from reservoir partition"]
+    },
+    {
+      "id": "IMPACT-EROSION-01",
+      "target": "Prompt 08 / surface evolution consumer",
+      "candidateSurfaces": ["schlichtingIsothermalImpactLoss"],
+      "promotionPrerequisites": ["impactor/target geometry contract", "atmosphere-state assumptions", "regime selection against alternative impact-loss models"],
+      "forbiddenClaims": ["universal impact history", "unique reconstructed atmospheric loss"]
+    }
+  ]
+}
