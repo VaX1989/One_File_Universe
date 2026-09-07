@@ -39,7 +39,8 @@ assert.doesNotMatch(webgl,/driverMemoryMeasured:true|gpuMemoryMeasured:true/,'su
 const living=fs.readFileSync('src/rendering/v1/living-renderer.js','utf8');
 assert.match(living,/v1RenderBudget\.surfacePlan\(/,'shipping Living Canvas2D resize must consume the shared surface plan');
 assert.match(living,/g\.setTransform\(plan\.effectiveDpr/,'Canvas2D CSS-coordinate transform must follow the bounded effective backing DPR');
-assert.match(living,/resourceProfile:budgetProfile,surface,budget/,'Living renderer evidence must expose the active surface plan');
+assert.match(living,/resourceProfile:budgetProfile,surface,/,'Living renderer evidence must expose the active surface plan');
+assert.match(living,/budget:budget\.snapshot\(\)/,'Living renderer evidence must expose budget accounting alongside the surface plan');
 assert.match(living,/surfaceConstraintEvents/,'Living surface constraint events must be observable');
 assert.match(living,/maxSurfacePixels/,'maximum observed Living backing pixels must be accounted');
 
