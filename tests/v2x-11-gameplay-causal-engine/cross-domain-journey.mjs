@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 globalThis.OFU={};
-for(const f of ['src/kernel/sha256.js','src/kernel/p2-unicode.js','src/kernel/p2-canonical.js','src/temporal/p4-temporal.js','src/gameplay/contracts.js','src/simulation/cross-domain/causal-engine.js','src/simulation/temporal-adapters/p4-gameplay-bridge.js','src/gameplay/runtime.js'])vm.runInThisContext(fs.readFileSync(f,'utf8'),{filename:f});
+for(const f of ['src/kernel/sha256.js','src/kernel/p2-unicode.js','src/kernel/p2-canonical.js','src/temporal/p4-temporal.js','src/gameplay/contracts.js','src/gameplay/p2-resource-normalizer.js','src/simulation/cross-domain/causal-engine.js','src/simulation/temporal-adapters/p4-gameplay-bridge.js','src/gameplay/runtime.js'])vm.runInThisContext(fs.readFileSync(f,'utf8'),{filename:f});
 const O=globalThis.OFU,P=O.p2,G=O.v2x11Gameplay,id=s=>P.hex(O.sha256.digest(new TextEncoder().encode(s))),universe=id('journey-universe'),target=id('journey-target');
 O.v1Biology={projectHistory:(state,{epochs,generationsPerEpoch})=>({...state,generation:state.generation+epochs*generationsPerEpoch,summary:{populationCount:3}}),traceEvidence:state=>({generation:state.generation,evidence:[]})};
 O.v1Civilization={step:(state,{epochStep})=>({...state,epoch:state.epoch+epochStep,population:state.population+2,settlements:state.settlements,events:[...state.events,{eventProposalId:id('civil-'+(state.epoch+epochStep))}]})};
