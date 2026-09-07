@@ -21,10 +21,13 @@ function hasPrivilegedPermission(text){
   return false;
 }
 
-function exactRuntimeVersion(line,key){
-  const match=line.match(new RegExp(`^\\s*${key}:\\s*['\"]?([^'\"#\\s]+)['\"]?\\s*(?:#.*)?$`));
+function runtimeVersionValue(line,key){
+  const cleaned=line.replace(/\s+#.*$/,'');
+  const match=cleaned.match(new RegExp(`^\\s*${key}:\\s*(.*?)\\s*$`));
   if(!match)return null;
-  return /^\d+\.\d+\.\d+$/.test(match[1]);
+  let value=match[1].trim();
+  if((value.startsWith("'")&&value.endsWith("'"))||(value.startsWith('"')&&value.endsWith('"')))value=value.slice(1,-1).trim();
+  return value;
 }
 
 const immutableRemoteAction=/\buses:\s+[^\s@]+@[0-9a-f]{40}(?:\s+#.*)?$/;
@@ -40,9 +43,9 @@ function assertPrivilegedDependencies(file,text){
       actions++;
     }
     for(const key of ['node-version','python-version']){
-      const exact=exactRuntimeVersion(raw,key);
-      if(exact===null)continue;
-      assert.equal(exact,true,`${file}: privileged workflow ${key} must pin an exact patch version: ${line}`);
+      const value=runtimeVersionValue(raw,key);
+      if(value===null)continue;
+      assert(/^\d+\.\d+\.\d+$/.test(value),`${file}: privileged workflow ${key} must pin an exact patch version: ${line}`);
       runtimes++;
     }
   }
@@ -74,9 +77,11 @@ const mutableAction=`permissions:\n  contents: write\nsteps:\n  - uses: actions/
 assert.throws(()=>assertPrivilegedDependencies('synthetic-mutable.yml',mutableAction),/immutable 40-hex/);
 const floatingRuntime=`permissions:\n  contents: write\nsteps:\n  - uses: actions/setup-node@${'a'.repeat(40)}\n    with:\n      node-version: '24'\n`;
 assert.throws(()=>assertPrivilegedDependencies('synthetic-floating.yml',floatingRuntime),/exact patch version/);
+const expressionRuntime=`permissions:\n  contents: write\nsteps:\n  - uses: actions/setup-node@${'a'.repeat(40)}\n    with:\n      node-version: \${{ matrix.node }}\n`;
+assert.throws(()=>assertPrivilegedDependencies('synthetic-expression.yml',expressionRuntime),/exact patch version/,'matrix/expression runtime selectors must not evade exact privileged runtime pins');
 const broadWrite=`permissions: write-all\nsteps:\n  - uses: actions/checkout@${'a'.repeat(40)}\n`;
 assert.throws(()=>assertPrivilegedDependencies('synthetic-write-all.yml',broadWrite),/write-all is forbidden/);
 const localAction=`permissions:\n  contents: write\nsteps:\n  - uses: ./.github/actions/release-helper\n`;
 assert.doesNotThrow(()=>assertPrivilegedDependencies('synthetic-local.yml',localAction));
 
-console.log(JSON.stringify({status:'PASS',suite:'privileged-workflow-dependencies',workflows:privilegedWorkflows.length,actions,runtimes,syntheticCases:11}));
+console.log(JSON.stringify({status:'PASS',suite:'privileged-workflow-dependencies',workflows:privilegedWorkflows.length,actions,runtimes,syntheticCases:12}));
