@@ -1,1 +1,204 @@
-{"schema":"ofu-v2x-ownership-matrix-1","version":"2026-09-07.3","status":"PREPARED_FOR_CONVERGENCE","writeTarget":"parallel/v2x-00-super-parallel-base-2026-09-07","integrationTarget":"development/v1.1-quality-exploration","baseSha":"70af4a84bb8cb7c782966bb4b3b8aab8aa86838e","baseTree":"44b2cf8a40cb3e8acaa79f41acf5faa77d152a96","precedence":"DENY_BEFORE_ALLOW","writerLanesAuthorized":false,"sourceLineage":{"priorMatrix":"docs/parallel/V1X_OWNERSHIP_MATRIX.json","bootstrapVersion":"2026-09-07.1","rule":"Preserve prior shared-semantic constraints; V2X-00 may replace only the reviewed V2X control records it explicitly owns. No downstream writer grant exists until Prompt 01 binds exact identities and paths."},"activationRule":"Prompt 01 must integrate this checkpoint, bind exact downstream lane identities and grants, and explicitly set writerLanesAuthorized=true before any downstream V2X writer lane may write.","global":{"convergenceOwnerOnly":[".github/**","docs/parallel/V2X_OWNERSHIP_MATRIX.json","docs/parallel/SUPER_PARALLEL_BASE_2026-09-07.json","src/extensions/**","src/bootstrap/**","src/rendering/v1/**","src/rendering/planet-framing.js","src/scenes/v1/**","src/ui/app/v1/**","src/app/input-intent.js","src/engine/session/**","src/persistence/**","src/domains/v1/**","tools/build*.mjs","tools/product-template-compose.mjs","tools/extensions/components.mjs","tools/extensions/conformance.mjs","config/components/product.json","config/components/exploration-v1.json","config/components/planetology-environment-v1.json","config/components/v1-micro.json","config/components/v1.json","config/components/wave-a-convergence.json","config/extensions/*.json","config/conformance/px.json","config/conformance/v1.json","config/conformance/wave-a-convergence.json"],"historicalFrozenReadOnly":["src/kernel/**","src/domains/astronomy/**","src/temporal/**","src/domains/planetology/**","src/domains/biosphere/**","tests/p1/**","tests/p2/**","tests/p3/**","tests/p4/**","tests/p5/**","tests/p5-environment-v2/**","tests/p6/**","tests/vectors/**","docs/spec/**","docs/p3/**","docs/p5-environment-v2/**","docs/P4_TEMPORAL_CONTRACT.md","docs/P5_PLANET_PHYSICAL_CONTRACT.md","docs/P6_BIOSPHERE_CONTRACT.md"]},"sharedSemanticOwners":{"canonicalIdentity":{"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER"},"canonicalSelectionContext":{"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER"},"continuousDistanceSemanticScale":{"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER"},"cameraReferenceFrame":{"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER"},"spatialReferenceFrames":{"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER"},"inputIntentRouting":{"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER"},"sceneRepresentationSelection":{"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER","compatibilityAliasFor":"renderRepresentationSelection"},"renderRepresentationSelection":{"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER"},"p4TemporalEventAdmission":{"semanticOwner":"P4_FROZEN_AUTHORITY","sharedFileMutationOwner":"CONVERGENCE_OWNER"},"persistenceSessionAuthority":{"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER"},"buildComponentComposition":{"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER"},"providerRegistrySemantics":{"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER"},"crossScaleQueryRefineProjectReconcile":{"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER"},"capabilityQualityResourceBudgets":{"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER","compatibilityAliasFor":"runtimeMaterializationResourceBudgets"},"runtimeMaterializationResourceBudgets":{"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER"},"releaseEvidenceIngestion":{"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER"},"testConformanceRegistration":{"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER"}},"descriptorRegistration":{"discoveryAuthority":"tools/extensions/components.mjs","manifestDirectory":"config/components","discoveryStatus":"SUFFICIENT_EXISTING_SEAM","centralComposerMutationOwner":"CONVERGENCE_OWNER","downstreamRule":"A bound lane may add only exact descriptor filenames explicitly granted to that lane. A broad config/components/*.json grant is forbidden."},"interfaceFreeze":{"cameraAndReferenceFrames":["src/v1x-01-camera-scale-frames/reference-frames.js","src/v1x-01-camera-scale-frames/semantic-distance.js","src/v1x-01-camera-scale-frames/camera-authority.js"],"renderRepresentation":["docs/architecture/PX_EXTENSION_CONTRACTS.md","src/rendering/v1/living-renderer.js"],"crossScaleQuery":["docs/architecture/PX_EXTENSION_CONTRACTS.md"],"runtimeBudgets":["docs/architecture/PX_EXTENSION_CONTRACTS.md","tools/extensions/components.mjs"],"evidenceRegistration":["tools/extensions/conformance.mjs","config/conformance/px.json"]},"lanes":{"V2X-00":{"laneClass":"ENABLER","writerAuthorized":true,"allowedPatterns":["docs/parallel/SUPER_PARALLEL_BASE_2026-09-07.json","docs/parallel/V2X_OWNERSHIP_MATRIX.json","docs/parallel/V2X_CAPABILITY_REGISTRY.json","docs/parallel/V2X_GAP_REGISTRY.json","docs/parallel/V2X_RESEARCH_HARVEST_LEDGER.json","docs/parallel/V2X_OPEN_PR_ADJUDICATION_LEDGER.json","docs/parallel/V2X_BASELINE_EVIDENCE.json","tools/validate-v2x-ownership.mjs","tests/governance/v2x-ownership-validator.mjs"],"authorityExceptions":["docs/parallel/SUPER_PARALLEL_BASE_2026-09-07.json","docs/parallel/V2X_OWNERSHIP_MATRIX.json"],"reservedPatterns":[]}},"downstreamLaneSlots":[{"slot":1,"binding":"UNBOUND","writerAuthorized":false,"allowedPatterns":[]},{"slot":2,"binding":"UNBOUND","writerAuthorized":false,"allowedPatterns":[]},{"slot":3,"binding":"UNBOUND","writerAuthorized":false,"allowedPatterns":[]},{"slot":4,"binding":"UNBOUND","writerAuthorized":false,"allowedPatterns":[]},{"slot":5,"binding":"UNBOUND","writerAuthorized":false,"allowedPatterns":[]},{"slot":6,"binding":"UNBOUND","writerAuthorized":false,"allowedPatterns":[]},{"slot":7,"binding":"UNBOUND","writerAuthorized":false,"allowedPatterns":[]},{"slot":8,"binding":"UNBOUND","writerAuthorized":false,"allowedPatterns":[]},{"slot":9,"binding":"UNBOUND","writerAuthorized":false,"allowedPatterns":[]},{"slot":10,"binding":"UNBOUND","writerAuthorized":false,"allowedPatterns":[]},{"slot":11,"binding":"UNBOUND","writerAuthorized":false,"allowedPatterns":[]},{"slot":12,"binding":"UNBOUND","writerAuthorized":false,"allowedPatterns":[]},{"slot":13,"binding":"UNBOUND","writerAuthorized":false,"allowedPatterns":[]},{"slot":14,"binding":"UNBOUND","writerAuthorized":false,"allowedPatterns":[]},{"slot":15,"binding":"UNBOUND","writerAuthorized":false,"allowedPatterns":[]},{"slot":16,"binding":"UNBOUND","writerAuthorized":false,"allowedPatterns":[]},{"slot":17,"binding":"UNBOUND","writerAuthorized":false,"allowedPatterns":[]}],"reviewerPolicy":{"branchesRequired":false,"writeAccess":"READ_ONLY","allowedPaths":[],"allowedPatterns":[]}}
+{
+  "schema": "ofu-v2x-ownership-matrix-1",
+  "version": "2026-09-07.4",
+  "status": "ACTIVE_FOUNDER_MANUAL_AUTHORIZATION",
+  "writeTarget": "parallel/v2x-00-super-parallel-base-2026-09-07",
+  "integrationTarget": "development/v1.1-quality-exploration",
+  "baseSha": "70af4a84bb8cb7c782966bb4b3b8aab8aa86838e",
+  "baseTree": "44b2cf8a40cb3e8acaa79f41acf5faa77d152a96",
+  "precedence": "DENY_BEFORE_ALLOW",
+  "writerLanesAuthorized": true,
+  "sourceLineage": {
+    "priorMatrix": "docs/parallel/V1X_OWNERSHIP_MATRIX.json",
+    "bootstrapVersion": "2026-09-07.1",
+    "rule": "Preserve prior shared-semantic constraints. Founder manually authorized the downstream V2X development lanes after V2X-00 activation. Global writer authorization is therefore active; machine path grants remain fail-closed and are reconciled from exact lane checkpoints rather than broadened speculatively."
+  },
+  "founderManualAuthorization": {
+    "state": "ACTIVE",
+    "effectiveDate": "2026-09-07",
+    "scope": "ALL_DOWNSTREAM_DEVELOPMENT_LANES_STARTED_BY_FOUNDER",
+    "authority": "FOUNDER_MANUAL_OVERRIDE",
+    "reason": "Founder explicitly reported that all development lanes were manually authorized and started because the machine control plane remained globally closed after Prompt 02 integration.",
+    "retroactiveInvalidation": false,
+    "pathGrantPolicy": "OBSERVE_EXACT_CHECKPOINT_PATHS_THEN_RECONCILE_MACHINE_ALLOWLIST_NO_FORCE_NO_HISTORY_REWRITE",
+    "sharedSemanticPolicy": "DENY_BEFORE_ALLOW_REMAINS_IN_FORCE",
+    "centralAuthorityPolicy": "CONVERGENCE_OWNER_ONLY_REMAINS_IN_FORCE"
+  },
+  "activationRule": "SATISFIED_BY_PROMPT02_INTEGRATION_AND_FOUNDER_MANUAL_DOWNSTREAM_AUTHORIZATION. New lane checkpoints may proceed. Exact machine path binding is reconciled from immutable checkpoint evidence and may not weaken shared or historical deny sets.",
+  "global": {
+    "convergenceOwnerOnly": [
+      ".github/**",
+      "docs/parallel/V2X_OWNERSHIP_MATRIX.json",
+      "docs/parallel/SUPER_PARALLEL_BASE_2026-09-07.json",
+      "src/extensions/**",
+      "src/bootstrap/**",
+      "src/rendering/v1/**",
+      "src/rendering/planet-framing.js",
+      "src/scenes/v1/**",
+      "src/ui/app/v1/**",
+      "src/app/input-intent.js",
+      "src/engine/session/**",
+      "src/persistence/**",
+      "src/domains/v1/**",
+      "tools/build*.mjs",
+      "tools/product-template-compose.mjs",
+      "tools/extensions/components.mjs",
+      "tools/extensions/conformance.mjs",
+      "config/components/product.json",
+      "config/components/exploration-v1.json",
+      "config/components/planetology-environment-v1.json",
+      "config/components/v1-micro.json",
+      "config/components/v1.json",
+      "config/components/wave-a-convergence.json",
+      "config/extensions/*.json",
+      "config/conformance/px.json",
+      "config/conformance/v1.json",
+      "config/conformance/wave-a-convergence.json"
+    ],
+    "historicalFrozenReadOnly": [
+      "src/kernel/**",
+      "src/domains/astronomy/**",
+      "src/temporal/**",
+      "src/domains/planetology/**",
+      "src/domains/biosphere/**",
+      "tests/p1/**",
+      "tests/p2/**",
+      "tests/p3/**",
+      "tests/p4/**",
+      "tests/p5/**",
+      "tests/p5-environment-v2/**",
+      "tests/p6/**",
+      "tests/vectors/**",
+      "docs/spec/**",
+      "docs/p3/**",
+      "docs/p5-environment-v2/**",
+      "docs/P4_TEMPORAL_CONTRACT.md",
+      "docs/P5_PLANET_PHYSICAL_CONTRACT.md",
+      "docs/P6_BIOSPHERE_CONTRACT.md"
+    ]
+  },
+  "sharedSemanticOwners": {
+    "canonicalIdentity": {"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER"},
+    "canonicalSelectionContext": {"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER"},
+    "continuousDistanceSemanticScale": {"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER"},
+    "cameraReferenceFrame": {"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER"},
+    "spatialReferenceFrames": {"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER"},
+    "inputIntentRouting": {"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER"},
+    "sceneRepresentationSelection": {"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER","compatibilityAliasFor":"renderRepresentationSelection"},
+    "renderRepresentationSelection": {"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER"},
+    "p4TemporalEventAdmission": {"semanticOwner":"P4_FROZEN_AUTHORITY","sharedFileMutationOwner":"CONVERGENCE_OWNER"},
+    "persistenceSessionAuthority": {"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER"},
+    "buildComponentComposition": {"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER"},
+    "providerRegistrySemantics": {"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER"},
+    "crossScaleQueryRefineProjectReconcile": {"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER"},
+    "capabilityQualityResourceBudgets": {"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER","compatibilityAliasFor":"runtimeMaterializationResourceBudgets"},
+    "runtimeMaterializationResourceBudgets": {"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER"},
+    "releaseEvidenceIngestion": {"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER"},
+    "testConformanceRegistration": {"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER"}
+  },
+  "descriptorRegistration": {
+    "discoveryAuthority": "tools/extensions/components.mjs",
+    "manifestDirectory": "config/components",
+    "discoveryStatus": "SUFFICIENT_EXISTING_SEAM",
+    "centralComposerMutationOwner": "CONVERGENCE_OWNER",
+    "downstreamRule": "A bound lane may add only exact descriptor filenames explicitly granted to that lane. A broad config/components/*.json grant is forbidden."
+  },
+  "interfaceFreeze": {
+    "cameraAndReferenceFrames": ["src/v1x-01-camera-scale-frames/reference-frames.js","src/v1x-01-camera-scale-frames/semantic-distance.js","src/v1x-01-camera-scale-frames/camera-authority.js"],
+    "renderRepresentation": ["docs/architecture/PX_EXTENSION_CONTRACTS.md","src/rendering/v1/living-renderer.js"],
+    "crossScaleQuery": ["docs/architecture/PX_EXTENSION_CONTRACTS.md"],
+    "runtimeBudgets": ["docs/architecture/PX_EXTENSION_CONTRACTS.md","tools/extensions/components.mjs"],
+    "evidenceRegistration": ["tools/extensions/conformance.mjs","config/conformance/px.json"]
+  },
+  "lanes": {
+    "V2X-00": {
+      "laneClass": "ENABLER",
+      "writerAuthorized": true,
+      "allowedPatterns": [
+        "docs/parallel/SUPER_PARALLEL_BASE_2026-09-07.json",
+        "docs/parallel/V2X_OWNERSHIP_MATRIX.json",
+        "docs/parallel/V2X_CAPABILITY_REGISTRY.json",
+        "docs/parallel/V2X_GAP_REGISTRY.json",
+        "docs/parallel/V2X_RESEARCH_HARVEST_LEDGER.json",
+        "docs/parallel/V2X_OPEN_PR_ADJUDICATION_LEDGER.json",
+        "docs/parallel/V2X_BASELINE_EVIDENCE.json",
+        "tools/validate-v2x-ownership.mjs",
+        "tests/governance/v2x-ownership-validator.mjs"
+      ],
+      "authorityExceptions": ["docs/parallel/SUPER_PARALLEL_BASE_2026-09-07.json","docs/parallel/V2X_OWNERSHIP_MATRIX.json"],
+      "reservedPatterns": []
+    },
+    "V2X-03": {
+      "laneClass": "DEVELOPMENT",
+      "writerAuthorized": true,
+      "branch": "parallel/v2x-03-macrocosm-galaxy-rendering-2026-09-07",
+      "bindingEvidence": "PR #183 exact changed-path observation",
+      "allowedPatterns": [
+        "config/components/v2x-03-macrocosm.json",
+        "config/conformance/v2x-03-macrocosm.json",
+        "config/extensions/v2x-03-macrocosm/**",
+        "src/rendering/galaxy/**",
+        "src/rendering/macro/**",
+        "src/rendering/neighborhood/**",
+        "src/rendering/region/**",
+        "tests/v2x-03/**"
+      ],
+      "authorityExceptions": [],
+      "reservedPatterns": [
+        "config/components/v2x-03-macrocosm.json",
+        "config/conformance/v2x-03-macrocosm.json",
+        "config/extensions/v2x-03-macrocosm/**",
+        "src/rendering/galaxy/**",
+        "src/rendering/macro/**",
+        "src/rendering/neighborhood/**",
+        "src/rendering/region/**",
+        "tests/v2x-03/**"
+      ]
+    }
+  },
+  "observedDownstreamBranches": {
+    "V2X-01": "parallel/v2x-01-runtime-adaptive-materialization-2026-09-07",
+    "V2X-02": "parallel/v2x-02-camera-spatial-travel-2026-09-07",
+    "V2X-03": "parallel/v2x-03-macrocosm-galaxy-rendering-2026-09-07",
+    "V2X-04": "parallel/v2x-04-system-planet-approach-2026-09-07",
+    "V2X-06": "parallel/v2x-06-surface-terrain-geology-hydrology-2026-09-07",
+    "V2X-07": "parallel/v2x-07-human-scale-local-traversal-2026-09-07",
+    "V2X-09": "parallel/v2x-09-civilization-economy-city-2026-09-07",
+    "V2X-10": "parallel/v2x-10-persistent-individuals-history-2026-09-07",
+    "V2X-11": "parallel/v2x-11-gameplay-causal-engine-2026-09-07",
+    "V2X-12": "parallel/v2x-12-matter-cell-molecular-atomic-2026-09-07",
+    "V2X-13": "parallel/v2x-13-rendering-platform-webgpu-2026-09-07",
+    "V2X-14": "parallel/v2x-14-product-ux-mobile-accessibility-audio-2026-09-07",
+    "V2X-15": "research/v2x-15-astronomy-planetology-frontier-2026-09-07",
+    "V2X-16": "research/v2x-16-life-civ-matter-frontier-2026-09-07"
+  },
+  "authorizedExpectedBranchesNotYetObserved": {
+    "V2X-05": "parallel/v2x-05-deep-planet-science-2026-09-07",
+    "V2X-08": "parallel/v2x-08-life-ecology-evolution-embodiment-2026-09-07"
+  },
+  "downstreamLaneSlots": [
+    {"slot":1,"binding":"V2X-01","writerAuthorized":true,"machinePathBinding":"PENDING_FIRST_CHECKPOINT"},
+    {"slot":2,"binding":"V2X-02","writerAuthorized":true,"machinePathBinding":"PENDING_FIRST_CHECKPOINT"},
+    {"slot":3,"binding":"V2X-03","writerAuthorized":true,"machinePathBinding":"BOUND_FROM_PR_183"},
+    {"slot":4,"binding":"V2X-04","writerAuthorized":true,"machinePathBinding":"PENDING_FIRST_CHECKPOINT"},
+    {"slot":5,"binding":"V2X-05","writerAuthorized":true,"machinePathBinding":"FOUNDER_AUTHORIZED_BRANCH_NOT_YET_OBSERVED"},
+    {"slot":6,"binding":"V2X-06","writerAuthorized":true,"machinePathBinding":"PENDING_FIRST_CHECKPOINT"},
+    {"slot":7,"binding":"V2X-07","writerAuthorized":true,"machinePathBinding":"PENDING_FIRST_CHECKPOINT"},
+    {"slot":8,"binding":"V2X-08","writerAuthorized":true,"machinePathBinding":"FOUNDER_AUTHORIZED_BRANCH_NOT_YET_OBSERVED"},
+    {"slot":9,"binding":"V2X-09","writerAuthorized":true,"machinePathBinding":"PENDING_FIRST_CHECKPOINT"},
+    {"slot":10,"binding":"V2X-10","writerAuthorized":true,"machinePathBinding":"PENDING_FIRST_CHECKPOINT"},
+    {"slot":11,"binding":"V2X-11","writerAuthorized":true,"machinePathBinding":"PENDING_FIRST_CHECKPOINT"},
+    {"slot":12,"binding":"V2X-12","writerAuthorized":true,"machinePathBinding":"PENDING_FIRST_CHECKPOINT"},
+    {"slot":13,"binding":"V2X-13","writerAuthorized":true,"machinePathBinding":"PENDING_FIRST_CHECKPOINT"},
+    {"slot":14,"binding":"V2X-14","writerAuthorized":true,"machinePathBinding":"PENDING_FIRST_CHECKPOINT"},
+    {"slot":15,"binding":"V2X-15","writerAuthorized":true,"machinePathBinding":"PENDING_FIRST_CHECKPOINT"},
+    {"slot":16,"binding":"V2X-16","writerAuthorized":true,"machinePathBinding":"PENDING_FIRST_CHECKPOINT"},
+    {"slot":17,"binding":"FOUNDER_AUTHORIZED_IDENTITY_PENDING_OBSERVATION","writerAuthorized":true,"machinePathBinding":"PENDING_IDENTITY"}
+  ],
+  "reviewerPolicy": {
+    "branchesRequired": false,
+    "writeAccess": "READ_ONLY",
+    "allowedPaths": [],
+    "allowedPatterns": []
+  }
+}
