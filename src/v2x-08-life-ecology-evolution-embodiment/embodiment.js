@@ -44,10 +44,43 @@ function morphologyDescriptor(lineage) {
   });
 }
 
+function apportionSampleQuotas(populations, cap, totalAbundance, viewportKey) {
+  const quotas = populations.map((population) => {
+    const scaled = population.abundance * BigInt(cap);
+    return {
+      population,
+      quota: Number(scaled / totalAbundance),
+      remainder: scaled % totalAbundance,
+    };
+  });
+
+  let assigned = quotas.reduce((sum, entry) => sum + entry.quota, 0);
+  const remaining = Math.max(0, cap - assigned);
+  if (remaining > 0) {
+    const ranked = [...quotas].sort((a, b) => {
+      if (a.remainder !== b.remainder) return a.remainder > b.remainder ? -1 : 1;
+      if (a.population.abundance !== b.population.abundance) return a.population.abundance > b.population.abundance ? -1 : 1;
+      const ah = deterministicHash(`${viewportKey}|apportion|${a.population.id}`);
+      const bh = deterministicHash(`${viewportKey}|apportion|${b.population.id}`);
+      if (ah !== bh) return ah - bh;
+      return a.population.id.localeCompare(b.population.id);
+    });
+    for (let index = 0; index < remaining && index < ranked.length; index += 1) {
+      ranked[index].quota += 1;
+      assigned += 1;
+    }
+  }
+
+  assert(assigned <= cap, 'sample apportionment exceeded cap');
+  return quotas;
+}
+
 export function materializeLocalOrganisms(state, request) {
   assert(state?.schema === 'ofu-v2x-08-life-state-1', 'invalid life state');
   assert(request?.regionId, 'regionId required');
-  const cap = Math.max(0, Math.min(Number(request.maxSamples ?? LIFE_V2_LIMITS.maxLocalSamples), LIFE_V2_LIMITS.maxLocalSamples));
+  const requested = Number(request.maxSamples ?? LIFE_V2_LIMITS.maxLocalSamples);
+  assert(Number.isFinite(requested) && requested >= 0, 'maxSamples must be a non-negative finite number');
+  const cap = Math.max(0, Math.min(Math.floor(requested), LIFE_V2_LIMITS.maxLocalSamples));
   if (cap === 0) return Object.freeze([]);
 
   const populations = state.populations
@@ -58,17 +91,18 @@ export function materializeLocalOrganisms(state, request) {
   const totalAbundance = populations.reduce((sum, population) => sum + population.abundance, 0n);
   if (totalAbundance === 0n) return Object.freeze([]);
 
+  const viewportKey = String(request.viewportKey ?? 'local');
+  const quotas = apportionSampleQuotas(populations, cap, totalAbundance, viewportKey);
   const samples = [];
-  for (const population of populations) {
+
+  for (const { population, quota } of quotas) {
+    if (quota === 0) continue;
     const lineage = state.lineages.find((candidate) => candidate.id === population.lineageId);
     assert(lineage, `lineage ${population.lineageId} missing`);
-    let quota = Number(population.abundance * BigInt(cap) / totalAbundance);
-    if (quota === 0 && samples.length < cap) quota = 1;
-    quota = Math.min(quota, cap - samples.length);
 
     for (let index = 0; index < quota; index += 1) {
       const sampleId = `sample:${population.id}:${state.eventKey}:${index}`;
-      const seed = `${sampleId}|${request.viewportKey ?? 'local'}`;
+      const seed = `${sampleId}|${viewportKey}`;
       samples.push(Object.freeze({
         id: sampleId,
         populationId: population.id,
@@ -91,11 +125,10 @@ export function materializeLocalOrganisms(state, request) {
           authorityClass: 'PRESENTATION_ONLY',
         }),
       }));
-      if (samples.length >= cap) break;
     }
-    if (samples.length >= cap) break;
   }
 
+  assert(samples.length <= cap, 'materialized sample count exceeded cap');
   return Object.freeze(samples);
 }
 
