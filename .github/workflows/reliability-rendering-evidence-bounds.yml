@@ -1,0 +1,55 @@
+name: Reliability Rendering Evidence Bounds
+
+on:
+  push:
+    branches:
+      - 'development/v1.*'
+    paths:
+      - 'tests/rendering/seal-production-evidence.mjs'
+      - 'tests/rendering/seal-v1-production-evidence.mjs'
+      - 'tests/rendering/evidence-input-bounds.mjs'
+      - 'tools/ci/rendering-evidence-input.mjs'
+      - '.github/workflows/reliability-rendering-evidence-bounds.yml'
+  pull_request:
+    branches:
+      - 'development/v1.*'
+    paths:
+      - 'tests/rendering/seal-production-evidence.mjs'
+      - 'tests/rendering/seal-v1-production-evidence.mjs'
+      - 'tests/rendering/evidence-input-bounds.mjs'
+      - 'tools/ci/rendering-evidence-input.mjs'
+      - '.github/workflows/reliability-rendering-evidence-bounds.yml'
+
+concurrency:
+  group: reliability-rendering-evidence-bounds-${{ github.event_name }}-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+permissions:
+  contents: read
+
+jobs:
+  exact-head:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # Node 24 runtime
+        with:
+          ref: '${{ env.OFU_SOURCE_SHA }}'
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # Node 24 runtime
+        with:
+          node-version: '24.20.0'
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Workflow reproducibility guard
+        run: node tests/governance/workflow-reproducibility.mjs
+      - name: Rendering evidence ingestion resource and trust-boundary regression
+        run: node tests/rendering/evidence-input-bounds.mjs
+      - name: Production rendering seal parser checks
+        run: |
+          node --check tests/rendering/seal-production-evidence.mjs
+          node --check tests/rendering/seal-v1-production-evidence.mjs

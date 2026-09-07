@@ -1,19 +1,12 @@
-import fs from 'node:fs';
-import {validatePXEvidence} from '../../tools/extensions/seal.mjs';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
+import {validatePXEvidence} from '../../tools/extensions/seal.mjs';
+import {assertExactRenderingBrowserMatrix,collectRenderingEvidence,readBoundedRegularFile} from '../../tools/ci/rendering-evidence-input.mjs';
 
-const root=process.argv[2]||'evidence',files=[];
-function walk(directory){
- for(const entry of fs.readdirSync(directory,{withFileTypes:true})){
-  const file=path.join(directory,entry.name);
-  if(entry.isDirectory())walk(file);
-  else if(entry.name.endsWith('.json'))files.push(file);
- }
-}
-walk(root);
-const rows=files.map(file=>JSON.parse(fs.readFileSync(file,'utf8'))).filter(value=>value.sourceCommit&&value.browser);
-if(rows.length!==5)throw new Error('expected exactly five browser evidence records, got '+rows.length);
+const root=process.argv[2]||'evidence';
+const evidence=collectRenderingEvidence(root),records=evidence.records,docs=records.map(record=>record.doc);
+const rows=docs.filter(value=>value.sourceCommit&&value.browser);
+assertExactRenderingBrowserMatrix(rows,'foundation rendering browser evidence');
 
 for(const row of rows){
  if(row.status!=='PASS'||row.unexpectedNetworkRequests!==0||row.pageErrors!==0)throw new Error('invalid browser evidence '+row.browser);
@@ -35,28 +28,24 @@ for(const row of rows){
 
 const commits=new Set(rows.map(row=>row.sourceCommit)),artifacts=new Set(rows.map(row=>row.artifactSha256)),manifests=new Set(rows.map(row=>row.componentManifestHash)),witnesses=new Set(rows.map(row=>JSON.stringify(row.canonicalWitness)));
 if(commits.size!==1||artifacts.size!==1||manifests.size!==1||witnesses.size!==1)throw new Error('cross-runtime exact-head/artifact/witness drift');
-if(!rows.some(row=>row.platform==='darwin'&&row.arch==='arm64'&&row.browser==='webkit'))throw new Error('macOS ARM64 WebKit evidence missing');
-if(!rows.some(row=>row.platform==='win32'&&row.browser==='chromium'))throw new Error('Windows Chromium evidence missing');
-if(!rows.some(row=>row.platform==='linux'&&row.browser==='firefox'))throw new Error('Linux Firefox evidence missing');
-if(!rows.some(row=>row.platform==='linux'&&row.browser==='webkit'))throw new Error('Linux WebKit evidence missing');
-const chromium=rows.find(row=>row.platform==='linux'&&row.browser==='chromium');
+const chromium=rows.find(row=>row.platform==='linux'&&row.arch==='x64'&&row.browser==='chromium');
 if(!chromium||chromium.backend!=='webgl2'||chromium.visual.pixelCheck!=='MEASURED'||chromium.visual.nonBackgroundPixels<8)throw new Error('Linux Chromium WebGL2 visual seal missing');
 
 // A foundation proof and a full-product proof are separate artifacts at one
 // source commit. Never relabel the foundation hash as the shipping-product hash.
-const uniqueFile=name=>{const matches=files.filter(f=>path.basename(f)===name);if(matches.length!==1)throw new Error('expected one '+name);return matches[0]};
-const fullManifestPath=uniqueFile('rendering-build-manifest.json'),foundationManifestPath=uniqueFile('rendering-foundation-manifest.json');
-const fullManifest=JSON.parse(fs.readFileSync(fullManifestPath,'utf8')),foundationManifest=JSON.parse(fs.readFileSync(foundationManifestPath,'utf8'));
+const uniqueRecord=name=>{const matches=records.filter(record=>path.basename(record.file)===name);if(matches.length!==1)throw new Error('expected one '+name);return matches[0]};
+const fullManifestRecord=uniqueRecord('rendering-build-manifest.json'),foundationManifestRecord=uniqueRecord('rendering-foundation-manifest.json');
+const fullManifest=fullManifestRecord.doc,foundationManifest=foundationManifestRecord.doc,fullManifestPath=fullManifestRecord.file,foundationManifestPath=foundationManifestRecord.file;
 const expectedSource=process.env.OFU_SOURCE_SHA;if(!expectedSource||expectedSource!==[...commits][0])throw new Error('seal source pin mismatch');
 for(const [manifest,html] of [[fullManifest,path.join(path.dirname(fullManifestPath),'One_File_Universe.html')],[foundationManifest,path.join(path.dirname(foundationManifestPath),'One_File_Universe-foundation.html')]]){
- const bytes=fs.readFileSync(html),hash=createHash('sha256').update(bytes).digest('hex');
+ const bytes=readBoundedRegularFile(html),hash=createHash('sha256').update(bytes).digest('hex');
  if(manifest.sourceCommit!==expectedSource||manifest.artifactBytes!==bytes.length||manifest.artifactSha256!==hash||manifest.componentManifestHash!==[...manifests][0])throw new Error('artifact bytes/source/component pin mismatch');
 }
 if(foundationManifest.artifactSha256!==[...artifacts][0])throw new Error('foundation browser/artifact hash mismatch');
 if(fullManifest.waveIVRuntime?.version!=='ofu-wave-iv-scale-runtime-3'||fullManifest.surfacePresentation?.coverageArchitecture!=='FRUSTUM_GROUND_FOOTPRINT_BOUNDED')throw new Error('full product composition missing');
-const fullRows=files.map(f=>JSON.parse(fs.readFileSync(f,'utf8'))).filter(v=>v.artifactScope==='FULL_WAVE_IV_PRODUCT');
+const fullRows=docs.filter(v=>v.artifactScope==='FULL_WAVE_IV_PRODUCT');
+assertExactRenderingBrowserMatrix(fullRows,'full-product rendering browser evidence');
 const tuple=r=>[r.platform,r.arch,r.browser].join('/');
-if(fullRows.length!==5||new Set(fullRows.map(tuple)).size!==5)throw new Error('expected five distinct full-product visual records');
 for(const row of rows){
  const full=fullRows.find(v=>tuple(v)===tuple(row));
  if(!full||full.status!=='PASS'||full.exactSourceSha!==expectedSource||full.artifactSha256!==fullManifest.artifactSha256||full.canonicalWitnessNonInterference!==true)throw new Error('full-product exact-source visual evidence mismatch '+tuple(row));
@@ -76,7 +65,7 @@ for(const row of rows){
  }
 }
 
-const pxSeal=fullManifest.px?validatePXEvidence(files.map(f=>JSON.parse(fs.readFileSync(f,'utf8'))).filter(r=>r.schema==='ofu-px-browser-evidence-1'),fullManifest,expectedSource):null;
+const pxSeal=fullManifest.px?validatePXEvidence(docs.filter(r=>r.schema==='ofu-px-browser-evidence-1'),fullManifest,expectedSource):null;
 console.log(JSON.stringify({
  pxSeal,
  status:'PASS',
