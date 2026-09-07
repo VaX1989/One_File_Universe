@@ -50,12 +50,35 @@ function checkoutBlocks(text){
   }
   return blocks;
 }
+function inlineMapHasFalse(map,key){
+  for(const entry of map.split(',')){
+    const pair=entry.trim().match(/^["']?([a-z-]+)["']?\s*:\s*(.+)$/);
+    if(pair&&pair[1]===key&&unquote(pair[2])==='false')return true;
+  }
+  return false;
+}
+function checkoutCredentialsDisabled(block){
+  const lines=block.split(/\r?\n/);
+  for(let i=1;i<lines.length;i++){
+    const raw=lines[i].replace(/\s+#.*$/,''),trim=raw.trim(),indent=(raw.match(/^\s*/)||[''])[0].length;
+    const inline=trim.match(/^with:\s*\{(.*)\}\s*$/);
+    if(inline&&inlineMapHasFalse(inline[1],'persist-credentials'))return true;
+    if(trim!=='with:')continue;
+    for(let j=i+1;j<lines.length;j++){
+      const child=lines[j].replace(/\s+#.*$/,''),childTrim=child.trim(),childIndent=(child.match(/^\s*/)||[''])[0].length;
+      if(childTrim&&childIndent<=indent)break;
+      const pair=childTrim.match(/^persist-credentials:\s*(.+)$/);
+      if(pair&&unquote(pair[1])==='false')return true;
+    }
+  }
+  return false;
+}
 
 function assertCredentialBoundary(file,text,{requireCheckout=false}={}){
   const blocks=checkoutBlocks(text);
   if(requireCheckout)assert(blocks.length>0,`${file}: expected at least one repository checkout`);
   for(const block of blocks){
-    assert(/^\s*persist-credentials:\s*false\s*(?:#.*)?$/m.test(block),`${file}: checkout must not persist GITHUB_TOKEN credentials into the repository`);
+    assert(checkoutCredentialsDisabled(block),`${file}: checkout must set with.persist-credentials=false so GITHUB_TOKEN is not written into repository Git config`);
   }
   return blocks.length;
 }
@@ -65,13 +88,17 @@ let checkouts=0;
 for(const file of protectedWorkflows)checkouts+=assertCredentialBoundary(file,fs.readFileSync(file,'utf8'),{requireCheckout:checkoutRequired.has(file)});
 
 const unsafe=`steps:\n  - uses: actions/checkout@${'a'.repeat(40)}\n    with:\n      ref: deadbeef\n  - name: Untrusted repository test\n    run: node test.mjs\n`;
-assert.throws(()=>assertCredentialBoundary('synthetic-unsafe.yml',unsafe),/must not persist GITHUB_TOKEN/);
+assert.throws(()=>assertCredentialBoundary('synthetic-unsafe.yml',unsafe),/with\.persist-credentials=false/);
 const mutableUnsafe=`steps:\n  - uses: actions/checkout@v4\n    with:\n      ref: deadbeef\n  - run: node test.mjs\n`;
-assert.throws(()=>assertCredentialBoundary('synthetic-mutable-unsafe.yml',mutableUnsafe),/must not persist GITHUB_TOKEN/,'mutable checkout refs must not evade the credential boundary');
+assert.throws(()=>assertCredentialBoundary('synthetic-mutable-unsafe.yml',mutableUnsafe),/with\.persist-credentials=false/,'mutable checkout refs must not evade the credential boundary');
 const commentSpoof=`steps:\n  - uses: actions/checkout@${'a'.repeat(40)}\n    with:\n      ref: deadbeef\n      # persist-credentials: false\n  - name: Untrusted repository test\n    run: node test.mjs\n`;
-assert.throws(()=>assertCredentialBoundary('synthetic-comment-spoof.yml',commentSpoof),/must not persist GITHUB_TOKEN/);
+assert.throws(()=>assertCredentialBoundary('synthetic-comment-spoof.yml',commentSpoof),/with\.persist-credentials=false/);
+const envSpoof=`steps:\n  - uses: actions/checkout@${'a'.repeat(40)}\n    env:\n      persist-credentials: false\n`;
+assert.throws(()=>assertCredentialBoundary('synthetic-env-spoof.yml',envSpoof),/with\.persist-credentials=false/,'an env key named persist-credentials must not spoof an action input');
 const safe=`steps:\n  - uses: actions/checkout@${'a'.repeat(40)}\n    with:\n      ref: deadbeef\n      persist-credentials: false # credential is intentionally ephemeral\n  - name: Test\n    run: node test.mjs\n`;
 assert.equal(assertCredentialBoundary('synthetic-safe.yml',safe),1);
+const safeInline=`steps:\n  - uses: actions/checkout@${'a'.repeat(40)}\n    with: {ref: deadbeef, persist-credentials: 'false'}\n`;
+assert.equal(assertCredentialBoundary('synthetic-safe-inline.yml',safeInline),1,'inline action inputs should be parsed without weakening the boundary');
 assert.equal(hasPrivilegedPermission('permissions:\n  contents: write\n'),true);
 assert.equal(hasPrivilegedPermission('jobs:\n  release:\n    permissions:\n      pull-requests: "write"\n'),true);
 assert.equal(hasPrivilegedPermission('permissions:\n  id-token: write\n'),true,'OIDC token minting is a privileged credential boundary');
@@ -82,4 +109,4 @@ assert.equal(hasPrivilegedPermission('permissions: {contents: read, id-token: wr
 assert.equal(hasPrivilegedPermission("permissions: {'contents': 'write', actions: read}\n"),true,'quoted inline permission maps must not evade privilege discovery');
 assert.equal(hasPrivilegedPermission('permissions:\n  contents: read\n  # issues: write\n'),false);
 
-console.log(JSON.stringify({status:'PASS',suite:'workflow-credential-boundary',workflows:protectedWorkflows.length,privilegedWorkflows:privilegedWorkflows.length,checkouts,syntheticCases:13}));
+console.log(JSON.stringify({status:'PASS',suite:'workflow-credential-boundary',workflows:protectedWorkflows.length,privilegedWorkflows:privilegedWorkflows.length,checkouts,syntheticCases:15}));
