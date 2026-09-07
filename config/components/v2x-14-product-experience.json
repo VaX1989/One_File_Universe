@@ -1,0 +1,31 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v2x14.product.experience",
+      "version": "1.0.0",
+      "owner": "v2x-14-product-experience",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/product/v2x14/product-experience.js",
+      "dependencies": ["v1.product.living-universe"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "V2X-14 Living-native current-location, selection and accessibility projection. It observes existing Living state and never routes native input or mutates canonical selection, scale, camera, persistence or science state.",
+      "provides": ["v2x14.product.experience"]
+    },
+    {
+      "id": "v2x14.product.experience-adapter",
+      "version": "1.0.0",
+      "owner": "v2x-14-product-experience",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/bootstrap/product/v2x14-product-experience-adapter.js",
+      "dependencies": ["v2x14.product.experience", "v1.product.living-universe"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Exact bootstrap exception granted to V2X-14. Mounts a read-only accessibility projection on the current Living viewport after the existing Living product is ready.",
+      "provides": ["v2x14.product.experience-adapter"]
+    }
+  ]
+}
