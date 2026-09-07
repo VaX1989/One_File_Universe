@@ -2,6 +2,7 @@
   "schema":"ofu-conformance-1",
   "tests":[
     {"id":"v2x01.runtime.targeted","owner":"runtime","tier":"FAST_LOCAL","command":["node","tests/v2x-01-runtime-adaptive-materialization/targeted.mjs"],"providers":["px.test.conformance"],"oracle":"V2X01_RUNTIME_TARGETED_INVARIANTS","timeoutMs":60000},
-    {"id":"v2x01.runtime.soak","owner":"runtime","tier":"LANE_TARGETED","command":["node","tests/v2x-01-runtime-adaptive-materialization/soak.mjs"],"providers":["px.test.conformance"],"oracle":"V2X01_LONG_RESOURCE_PLATEAU","timeoutMs":120000}
+    {"id":"v2x01.runtime.soak","owner":"runtime","tier":"LANE_TARGETED","command":["node","tests/v2x-01-runtime-adaptive-materialization/soak.mjs"],"providers":["px.test.conformance"],"oracle":"V2X01_LONG_RESOURCE_PLATEAU","timeoutMs":120000},
+    {"id":"v2x01.runtime.browser-stress","owner":"runtime","tier":"LANE_TARGETED","command":["node","tests/v2x-01-runtime-adaptive-materialization/browser-stress.mjs"],"providers":["px.test.conformance"],"oracle":"V2X01_BROWSER_DIRECT_FILE_WORKER_RESOURCE_PLATEAU","timeoutMs":180000}
   ]
 }
