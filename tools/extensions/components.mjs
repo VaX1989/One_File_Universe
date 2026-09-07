@@ -61,7 +61,7 @@ export function emittedComponent(c){
  if(c.placement==='style'||c.kind==='html')return c.content;
  return '<script type="application/json" id="ofu-resource-'+c.id+'">'+escapeJson(JSON.stringify({id:c.id,kind:c.kind,encoding:c.encoding,sourceSha256:c.sourceSha256,contentSha256:sha(c.encoding==='base64'?Buffer.from(c.content,'base64'):Buffer.from(c.content)),content:c.content}))+'</script>';
 }
-export function manifestOf(plan){return plan.map(c=>{const {content,...d}=c;return {...d,emittedSha256:sha(emittedComponent(c)),emittedBytes:Buffer.byteLength(emittedComponent(c))};});
+export function manifestOf(plan){return plan.map(c=>{const {content,...d}=c;return {...d,emittedSha256:sha(emittedComponent(c)),emittedBytes:Buffer.byteLength(emittedComponent(c))};});}
 export function addComponents(html,plan,stage){
  const components=plan.filter(c=>c.stage===stage&&!c.placement.startsWith('fragment:'));
  check(html.split('</body>').length===2&&html.split('</style>').length>=2,'output slots');
