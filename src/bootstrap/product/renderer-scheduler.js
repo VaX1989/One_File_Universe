@@ -1,1 +1,27 @@
-(function(root){'use strict';if(typeof root.requestAnimationFrame!=='function'||root.__OFU_WAVE_IV_RAF_GATE__)return;const native=root.requestAnimationFrame.bind(root),state={version:'ofu-wave-iv-render-scheduler-1',suspendedPlanetFrames:0,executedPlanetFrames:0};function isPlanetFrame(fn){if(typeof fn!=='function'||fn.name!=='frame')return false;try{return /inspectorTarget\(\)/.test(Function.prototype.toString.call(fn))&&/localFrame\(now\)/.test(Function.prototype.toString.call(fn))}catch{return false}}function gated(fn){if(!isPlanetFrame(fn))return native(fn);const proxy=t=>{const scale=root.OFU?.waveIVScaleRuntime?.snapshot?.().semanticScale,macro=scale==='galaxy'||scale==='galactic_region'||scale==='stellar_neighborhood'||scale==='system';if(macro){state.suspendedPlanetFrames++;native(proxy);return}state.executedPlanetFrames++;fn(t)};return native(proxy)}root.requestAnimationFrame=gated;root.__OFU_WAVE_IV_RAF_GATE__=Object.freeze({VERSION:state.version,state,snapshot:()=>Object.freeze({...state})});})(typeof globalThis!=='undefined'?globalThis:this);
+(function(root){
+'use strict';
+if(typeof root.requestAnimationFrame!=='function'||root.__OFU_WAVE_IV_RAF_GATE__)return;
+const native=root.requestAnimationFrame.bind(root),nativeCancel=typeof root.cancelAnimationFrame==='function'?root.cancelAnimationFrame.bind(root):()=>{};
+const state={version:'ofu-wave-iv-render-scheduler-1',suspendedPlanetFrames:0,executedPlanetFrames:0,livingPacerInstalled:false,livingRotationInputs:0,livingRotationFrames:0,livingRotationCoalesced:0};
+function isPlanetFrame(fn){if(typeof fn!=='function'||fn.name!=='frame')return false;try{return /inspectorTarget\(\)/.test(Function.prototype.toString.call(fn))&&/localFrame\(now\)/.test(Function.prototype.toString.call(fn))}catch{return false}}
+function gated(fn){if(!isPlanetFrame(fn))return native(fn);const proxy=t=>{const scale=root.OFU?.waveIVScaleRuntime?.snapshot?.().semanticScale,macro=scale==='galaxy'||scale==='galactic_region'||scale==='stellar_neighborhood'||scale==='system';if(macro){state.suspendedPlanetFrames++;native(proxy);return}state.executedPlanetFrames++;fn(t)};return native(proxy)}
+function installLivingPacer(){
+ const O=root.OFU,living=O?.v1LivingRenderer;if(!living?.create)return false;
+ if(living.FRAME_PACING_VERSION){state.livingPacerInstalled=true;return true;}
+ const originalCreate=living.create.bind(living),version='ofu-living-frame-pacer-1';
+ function create(...args){
+  const renderer=originalCreate(...args);let frame=0,dx=0,dy=0,events=0,disposed=false;
+  const pacing={version,strategy:'RAF_COALESCED_ROTATION',inputEvents:0,frames:0,coalescedEvents:0,pendingEvents:0};
+  const flush=()=>{frame=0;const x=dx,y=dy,count=events;dx=0;dy=0;events=0;pacing.pendingEvents=0;if(disposed||!count)return;pacing.frames++;pacing.coalescedEvents+=Math.max(0,count-1);state.livingRotationFrames++;state.livingRotationCoalesced+=Math.max(0,count-1);renderer.rotate(x,y);};
+  const rotate=(x,y)=>{const rx=Number(x),ry=Number(y);if(!Number.isFinite(rx)||!Number.isFinite(ry))throw new TypeError('Living rotation delta must be finite');if(rx===0&&ry===0)return;dx+=rx;dy+=ry;events++;pacing.inputEvents++;pacing.pendingEvents=events;state.livingRotationInputs++;if(!frame)frame=native(flush);};
+  const rendererState=()=>Object.freeze({...renderer.state(),framePacing:Object.freeze({...pacing})});
+  const dispose=()=>{disposed=true;if(frame){nativeCancel(frame);frame=0;}dx=0;dy=0;events=0;pacing.pendingEvents=0;return renderer.dispose();};
+  return Object.freeze({...renderer,rotate,state:rendererState,dispose});
+ }
+ O.v1LivingRenderer=Object.freeze({...living,FRAME_PACING_VERSION:version,create});state.livingPacerInstalled=true;return true;
+}
+let attempts=0;function install(){if(installLivingPacer())return;if(++attempts<100)root.setTimeout(install,0)}
+root.requestAnimationFrame=gated;
+root.__OFU_WAVE_IV_RAF_GATE__=Object.freeze({VERSION:state.version,state,snapshot:()=>Object.freeze({...state})});
+install();
+})(typeof globalThis!=='undefined'?globalThis:this);

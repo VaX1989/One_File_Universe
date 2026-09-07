@@ -1,0 +1,19 @@
+{
+  "schema": "ofu-conformance-1",
+  "tests": [
+    {
+      "id": "v1.living-frame-pacing",
+      "owner": "v1",
+      "tier": "LANE_TARGETED",
+      "command": [
+        "node",
+        "tests/v1/rendering/browser-living-frame-pacing.mjs"
+      ],
+      "providers": [
+        "v1.scene.living-world"
+      ],
+      "oracle": "v1-living-frame-pacing-browser-oracle-1",
+      "timeoutMs": 30000
+    }
+  ]
+}
