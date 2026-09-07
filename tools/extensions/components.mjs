@@ -76,8 +76,9 @@ export function attachManifest(manifest,plan){
  const descriptors=manifestOf(plan),full={version:'ofu-additive-components-1',frozenBaseline:manifest.components,extensions:descriptors};
  manifest.additiveComponents=full;manifest.componentCompositionSha256=sha(JSON.stringify(full));
  const sandbox={TextEncoder,TextDecoder,Uint8Array};vm.createContext(sandbox);
- for(const d of plan.filter(c=>c.placement==='script'))new vm.Script(d.content,{filename:d.source}).runInContext(sandbox);
- const descriptorSet=sandbox.OFU?.extensions?.providers?.snapshot?.()||null;if(descriptorSet)manifest.boundProviderDescriptors=descriptorSet;
- const registrySnapshot=sandbox.OFU?.extensions?.registry?.snapshot?.()||null;if(registrySnapshot)manifest.boundRuntimeRegistry=registrySnapshot;
+ for(const file of ['src/kernel/sha256.js','src/extensions/contracts.js','src/extensions/registry.js'])vm.runInContext(fs.readFileSync(path.join(ROOT,file),'utf8'),sandbox,{filename:file});
+ sandbox.catalogJSON=JSON.stringify(plan.filter(c=>c.id.startsWith('px.providers.')).map(c=>JSON.parse(c.content)));
+ const result=vm.runInContext(`(()=>{const all=JSON.parse(catalogJSON);if(all.some(c=>c.canonicalAdmissions.length))throw new Error('Canonical admissions are governed outside additive catalogs');const policy={owners:all.flatMap(c=>c.owners),canonicalAdmissions:all.flatMap(c=>c.canonicalAdmissions),maxEntries:512},r=OFU.pxRegistry.create(policy);for(const d of all.flatMap(c=>c.providers))r.register(d);return JSON.stringify({manifest:r.seal(),digest:r.snapshot().manifestDigest});})()`,sandbox);
+ const registry=JSON.parse(result);manifest.px={...(manifest.px||{}),registryManifest:registry.manifest,registryDigest:registry.digest,regimes:plan.filter(c=>c.id.startsWith('px.regimes.')).flatMap(c=>JSON.parse(c.content).regimes).sort((a,b)=>a.order-b.order)};
  return manifest;
 }
