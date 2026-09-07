@@ -36,15 +36,21 @@ try{
   const y=rect.top+rect.height*.44,cx=rect.left+rect.width*.5,half=50,fire=(type,id,x,buttons)=>canvas.dispatchEvent(new PointerEvent(type,{pointerId:id,pointerType:'touch',isPrimary:id===1201,clientX:x,clientY:y,bubbles:true,cancelable:true,buttons}));
   fire('pointerdown',1201,cx-half,1);fire('pointerdown',1202,cx+half,1);let span=100;
   for(let i=1;i<=24;i++){const d=i*.375;fire('pointermove',1201,cx-half-d,1);fire('pointermove',1202,cx+half+d,1);span=100+d*2;}
-  const p1=runtime.navigationPacingSnapshot(),after=runtime.snapshot(),r1=product.renderer.state();
-  return {beforeRevision:before.revision,beforeCoordinate:before.navigationCoordinate,afterRevision:after.revision,afterCoordinate:after.navigationCoordinate,target:before.navigationCoordinate+Math.log2(span/100)*1.5,inputEvents:p1.inputEvents-p0.inputEvents,frames:p1.frames-p0.frames,pending:p1.pendingEvents,boundaries:p1.boundaryCommits-p0.boundaryCommits,terminals:p1.terminalCommits-p0.terminalCommits,rendererFrames:r1.metrics.frames-r0.metrics.frames,input:product.snapshot().input};
+  const p1=runtime.navigationPacingSnapshot(),after=runtime.snapshot(),r1=product.renderer.state(),activeInput=product.snapshot().input;
+  const result={beforeRevision:before.revision,beforeCoordinate:before.navigationCoordinate,afterRevision:after.revision,afterCoordinate:after.navigationCoordinate,target:before.navigationCoordinate+Math.log2(span/100)*1.5,inputEvents:p1.inputEvents-p0.inputEvents,frames:p1.frames-p0.frames,pending:p1.pendingEvents,boundaries:p1.boundaryCommits-p0.boundaryCommits,terminals:p1.terminalCommits-p0.terminalCommits,rendererFrames:r1.metrics.frames-r0.metrics.frames,input:activeInput};
+  // Keep the terminal pointerups in this same browser task. A Playwright protocol
+  // round-trip between the burst and pointerup gives requestAnimationFrame a legal
+  // opportunity to commit first, making an exact terminal-flush assertion racey.
+  // This same-task sequence proves the stronger contract directly: the entire
+  // same-stage burst is pending, then gesture termination flushes it exactly once.
+  fire('pointerup',1201,cx-59,0);fire('pointerup',1202,cx+59,0);
+  return result;
  });
  assert.ok(active.inputEvents>=40);
  assert.equal(active.frames,0);assert.equal(active.boundaries,0);assert.equal(active.terminals,0);assert.equal(active.rendererFrames,0);
  assert.equal(active.afterRevision,active.beforeRevision);assert.equal(active.afterCoordinate,active.beforeCoordinate);assert.ok(active.pending>=active.inputEvents);
  assert.equal(active.input.activePointers,2);assert.equal(active.input.pinchActive,true);
 
- await page.evaluate(()=>{const c=document.getElementById('living-view'),r=c.getBoundingClientRect(),y=r.top+r.height*.44,cx=r.left+r.width*.5,fire=(id,x)=>c.dispatchEvent(new PointerEvent('pointerup',{pointerId:id,pointerType:'touch',isPrimary:id===1201,clientX:x,clientY:y,bubbles:true,cancelable:true,buttons:0}));fire(1201,cx-59);fire(1202,cx+59);});
  const released=await sample();
  assert.equal(released.pacing.frames-before.pacing.frames,1);assert.equal(released.pacing.terminalCommits-before.pacing.terminalCommits,1);assert.equal(released.pacing.pendingEvents,0);
  assert.equal(released.runtime.revision,before.runtime.revision+1);assert.equal(released.runtime.stage,'REGION');assert.ok(Math.abs(released.runtime.navigationCoordinate-active.target)<1e-6);
