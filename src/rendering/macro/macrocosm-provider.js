@@ -1,9 +1,9 @@
 (function(root){
 'use strict';
 const O=root.OFU=root.OFU||{};
-const F=O.v2x03GalaxyField,R=O.v2x03RegionRefinement,N=O.v2x03NeighborhoodDepth,S=O.v1x02SpatialUniverse;
-if(!F||!R||!N||!S)throw new Error('V2X-03 macrocosm provider dependencies missing');
-const VERSION='ofu-v2x-03-macrocosm-provider-4',CONTRACT='ofu-v2x-03-macrocosm-consumer-1',AUTHORITY='PRESENTATION_ONLY';
+const F=O.v2x03GalaxyField,B=O.v2x03MacrocosmBatches,R=O.v2x03RegionRefinement,N=O.v2x03NeighborhoodDepth,S=O.v1x02SpatialUniverse;
+if(!F||!B||!R||!N||!S)throw new Error('V2X-03 macrocosm provider dependencies missing');
+const VERSION='ofu-v2x-03-macrocosm-provider-5',CONTRACT='ofu-v2x-03-macrocosm-consumer-1',AUTHORITY='PRESENTATION_ONLY';
 const QUALITY=Object.freeze({LOW:Object.freeze({entityLimit:20,field:'LOW'}),MOBILE:Object.freeze({entityLimit:28,field:'MOBILE'}),STANDARD:Object.freeze({entityLimit:48,field:'STANDARD'}),HIGH:Object.freeze({entityLimit:64,field:'HIGH'})});
 const freeze=v=>{if(!v||typeof v!=='object'||Object.isFrozen(v))return v;for(const k of Object.keys(v))freeze(v[k]);return Object.freeze(v)};
 function stableValue(value){if(value===null)return'null';const t=typeof value;if(t==='string')return's:'+value.length+':'+value;if(t==='number'){if(!Number.isFinite(value))throw new TypeError('canonicalKey numbers must be finite');return'n:'+String(Object.is(value,-0)?0:value)}if(t==='boolean')return value?'t':'f';if(Array.isArray(value))return'['+value.map(stableValue).join(',')+']';if(t==='object')return'{'+Object.keys(value).sort().map(k=>stableValue(k)+':'+stableValue(value[k])).join(',')+'}';throw new TypeError('canonicalKey contains unsupported value')}
@@ -19,9 +19,10 @@ function buildGalaxy({galaxy,entities=[],cameraFrame=null,quality='STANDARD',pre
  if(cameraFrame&&entities.length)rep=S.representation({context:'GALAXY',scopeId:galaxyId,entities:normalizeEntities(entities),cameraFrame,presentationSeed,morphology,densityHint,limit:cfg.entityLimit});
  return freeze({version:VERSION,contract:CONTRACT,status:'READY',scale:'GALAXY',authority:AUTHORITY,galaxyId,morphology,field,objects:rep?rep.objects:Object.freeze([]),camera:freeze({consumedExternalFrame:!!cameraFrame,ownsFrame:false}),bounds:freeze({entities:rep?.objects.length||0,maxEntities:cfg.entityLimit,decorative:field.bounds.total}),claims:freeze({fieldIsCalibratedObservation:false,decorativeSelectable:false,canonicalGalaxyIdentityPreserved:true,stableIdentityRequired:true})});
 }
+function buildGalaxyPacket(args={}){const scene=buildGalaxy(args),viewport=args.viewport||{},plan=B.planGalaxy(scene.field,{width:viewport.width??1280,height:viewport.height??720,dpr:viewport.dpr??1,memoryClass:viewport.memoryClass??'NORMAL',coarse:viewport.coarse??false});return freeze({version:VERSION,contract:CONTRACT,kind:'V2X03_GALAXY_RENDER_PACKET',status:'READY',authority:AUTHORITY,scene,batchPlan:plan,interaction:freeze({realObjectIds:Object.freeze(scene.objects.map(o=>o.canonicalId||o.entityId||o.identity||o.objectId)),decorativeSelectable:false,decorativeNavigable:false}),externalAuthorities:freeze({camera:true,selection:true,scale:true,resourceAdmission:true}),claims:freeze({rendererBackendOwnedHere:false,centralBudgetAdmissionOwnedHere:false,canonicalTruthChanged:false})})}
 function buildRegion({parentId,children,quality='STANDARD',focus=0,parentExtent=1}={}){const cfg=q(quality),scene=R.refine({parentId,children:normalizeEntities(children),quality:cfg.key,focus,parentExtent});return freeze({version:VERSION,contract:CONTRACT,status:'READY',scale:'REGION',authority:AUTHORITY,...scene,claims:freeze({hardReplacementRequired:false,regionBoundaryCanonical:false,stableIdentityRequired:true})})}
 function buildNeighborhood({objects,cameraFrame,quality='STANDARD',scaleUnits=36}={}){const cfg=q(quality),scene=N.project({objects:normalizeEntities(objects),cameraFrame,quality:cfg.key,scaleUnits});return freeze({version:VERSION,contract:CONTRACT,status:'READY',scale:'NEIGHBORHOOD',authority:AUTHORITY,...scene})}
 function pick(scene,x,y){if(scene?.scale!=='NEIGHBORHOOD')throw new Error('direct pick currently supported for NEIGHBORHOOD scenes only');return N.pick(scene,x,y)}
 function continuityWitness({galaxy,region,neighborhood}={}){return freeze({version:VERSION,contract:CONTRACT,galaxyId:galaxy?.galaxyId||null,regionParent:region?.parentId||null,neighborhoodObjectIds:Object.freeze((neighborhood?.objects||[]).map(o=>o.sourceId)),cameraOwnedHere:false,selectionOwnedHere:false,scaleOwnedHere:false,authority:AUTHORITY})}
-O.v2x03MacrocosmProvider=Object.freeze({VERSION,CONTRACT,AUTHORITY,QUALITY,buildUniverse,buildGalaxy,buildRegion,buildNeighborhood,pick,continuityWitness});
+O.v2x03MacrocosmProvider=Object.freeze({VERSION,CONTRACT,AUTHORITY,QUALITY,buildUniverse,buildGalaxy,buildGalaxyPacket,buildRegion,buildNeighborhood,pick,continuityWitness});
 })(typeof globalThis!=='undefined'?globalThis:this);
