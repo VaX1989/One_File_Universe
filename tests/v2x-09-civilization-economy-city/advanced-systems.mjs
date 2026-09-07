@@ -99,6 +99,11 @@ const low=fixture({lowTech:true});
 const lowNet=PROD.productionNetwork(low.state,low.economy);
 check(lowNet.routes.every(r=>r.capacityUnits===0),'route capacity disabled when logistics prerequisites are unmet');
 check(lowNet.satisfaction.some(s=>s.unmetUnits>0),'low-technology case exposes unmet derived services');
+const lowRecovery=ADV.projectRecoveryEnvelope(low.state,low.economy,{edgeId:'edge-1',maxEpochs:4});
+check(lowRecovery.status==='ROUTE_LOGISTICS_CAPABILITY_INACTIVE'&&lowRecovery.trajectory.length===0,'recovery refuses to invent repair trajectory without route-logistics capability');
+const noWorks=fixture();noWorks.state.technology={...noWorks.state.technology,construction:1};
+const noWorksRecovery=ADV.projectRecoveryEnvelope(noWorks.state,noWorks.economy,{edgeId:'edge-1',maxEpochs:4});
+check(noWorksRecovery.status==='PUBLIC_WORKS_CAPABILITY_INACTIVE'&&noWorksRecovery.trajectory.length===0,'recovery refuses spontaneous repair without modeled public-works capability');
 
 const dynamics=SOC.societyDynamics(base.state,n1),dynamics2=SOC.societyDynamics(base.state,n1);
 eq(dynamics,dynamics2,'aggregate society dynamics deterministic');
@@ -189,19 +194,26 @@ const inactiveNet=PROD.productionNetwork(inactive.state,inactive.economy),inacti
 check(inactiveRoute.capacityUnits===0&&inactiveRoute.routingEligible===false&&inactiveRoute.disableReason==='TRADE_EDGE_NOT_ACTIVE','inactive trade edge is retained as disabled witness and carries no capacity');
 check(!inactiveNet.flows.some(f=>f.pathEdgeIds.includes('edge-1')),'inactive trade edge never carries direct or residual flow');
 check(K.tradeDegree(inactive.state,'ridge-town')===0,'inactive trade edge does not inflate modeled trade degree');
-const inactiveDyn=SOC.societyDynamics(inactive.state,inactiveNet);
+const inactiveDyn=SOC.societyDynamics(inactive.state,inactiveNet),inactiveInstitution=inactiveDyn.institutionProposals.find(p=>p.polityId==='polity-a');
 check(inactiveDyn.settlementPressures.find(x=>x.settlementId==='ridge-town').routeStressPpm===700000,'social route stress treats settlement with no usable routes as isolated rather than averaging disabled routes');
+check(inactiveInstitution.mechanisms.includes('NETWORK_ACCESS_OR_REDUNDANCY_PRIORITY')&&!inactiveInstitution.mechanisms.includes('REPAIR_PRIORITY'),'institution distinguishes network isolation from physical infrastructure repair');
+const inactiveRecovery=ADV.projectRecoveryEnvelope(inactive.state,inactive.economy,{edgeId:'edge-1',maxEpochs:4});
+check(inactiveRecovery.status==='EDGE_NOT_ACTIVE_FOR_RECOVERY'&&inactiveRecovery.trajectory.length===0,'inactive trade edge cannot receive a fabricated recovery trajectory');
 
 const stale=fixture({energyStarvedRidge:true});
 stale.state.settlements.find(x=>x.settlementId==='ridge-town').status='ABANDONED';
 const staleNet=PROD.productionNetwork(stale.state,stale.economy),staleRoute=staleNet.routes.find(r=>r.edgeId==='edge-1'),staleRow=staleNet.settlements.find(x=>x.settlementId==='ridge-town');
 check(staleRow.status==='ABANDONED'&&staleRoute.capacityUnits===0&&staleRoute.disableReason==='SETTLEMENT_ENDPOINT_NOT_ACTIVE','authoritative state abandonment overrides stale active economy snapshot and disables incident route');
 check(!staleNet.flows.some(f=>f.transitSettlementIds?.includes('ridge-town')),'abandoned settlement can never become a residual transit node');
+const staleRecovery=ADV.projectRecoveryEnvelope(stale.state,stale.economy,{edgeId:'edge-1',maxEpochs:4});
+check(staleRecovery.status==='EDGE_ENDPOINT_NOT_ACTIVE_FOR_RECOVERY'&&staleRecovery.trajectory.length===0,'abandoned modeled endpoint blocks recovery projection');
 
 const missingEndpoint=fixture({energyStarvedRidge:true});
 missingEndpoint.economy.settlements=missingEndpoint.economy.settlements.filter(x=>x.settlementId!=='ridge-town');
 const missingNet=PROD.productionNetwork(missingEndpoint.state,missingEndpoint.economy),missingRoute=missingNet.routes.find(r=>r.edgeId==='edge-1');
 check(missingRoute&&missingRoute.capacityUnits===0&&missingRoute.disableReason==='MISSING_SETTLEMENT_ENDPOINT','missing economy endpoint remains explicit disabled route evidence instead of disappearing silently');
+const missingRecovery=ADV.projectRecoveryEnvelope(missingEndpoint.state,missingEndpoint.economy,{edgeId:'edge-1',maxEpochs:4});
+check(missingRecovery.status==='EDGE_ENDPOINT_NOT_MODELED_IN_ECONOMY'&&missingRecovery.trajectory.length===0,'recovery requires both edge endpoints in modeled economy snapshot');
 
 const widestState={
   state:'MODELED_CIVILIZATION',worldIdentity:'world-widest',lineageId:'lineage-widest',epoch:1,
