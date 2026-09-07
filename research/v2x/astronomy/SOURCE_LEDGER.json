@@ -1,24 +1,30 @@
 {
-  "schema": "ofu-v2x15-science-source-ledger-1",
+  "schema": "ofu-v2x15-science-source-ledger-2",
   "authority": "RESEARCH_ONLY",
   "sources": [
     {
       "id": "GLADMAN_1993",
       "doi": "10.1006/icar.1993.1169",
-      "supports": ["pairwise circular/coplanar Hill-stability screening"],
+      "supports": ["pairwise circular/coplanar Hill-stability screening", "low-mass mutual-Hill separation threshold context"],
       "doesNotSupport": ["general N-body stability", "Lagrange stability", "resonance safety"]
     },
     {
       "id": "LASKAR_PETIT_2017_AMD",
       "arxiv": "1703.07125",
-      "supports": ["AMD-based a-priori dynamical screening concept"],
-      "doesNotSupport": ["replacement for integration in all systems"]
+      "supports": ["AMD-based a-priori dynamical screening concept", "pairwise coplanar collision-critical AMD construction and critical eccentricity root"],
+      "doesNotSupport": ["replacement for integration in all systems", "mean-motion resonance overlap safety", "general Lagrange or N-body stability"]
     },
     {
       "id": "PETIT_LASKAR_BOUE_2018",
       "doi": "10.1051/0004-6361/201833088",
       "supports": ["Hill criterion in AMD framework"],
       "doesNotSupport": ["outer-body ejection exclusion", "universal high-mass validity"]
+    },
+    {
+      "id": "PETIT_LASKAR_BOUE_2017_MMR",
+      "arxiv": "1705.06756",
+      "supports": ["mean-motion-resonance overlap as a distinct compact-system dynamical limit"],
+      "doesNotSupport": ["treating collision-AMD stability as resonance or chaos stability"]
     },
     {
       "id": "ZENG_SASSELOV_JACOBSEN_2016",
