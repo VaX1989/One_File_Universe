@@ -111,11 +111,17 @@ function create(canvas,{maxDpr=2,mobile=null}={}){
   const error=gl.getError();if(error!==gl.NO_ERROR)throw new Error('WebGL draw error '+error);
   return{status:'RENDERED',frame,scale:scene.scale,authority:AUTHORITY,resourceProfile:profile,admission:lastAdmission,measurements:{...metrics},budget:budget?.snapshot()||null};
  }
- function onLost(e){e?.preventDefault?.();lost=true;budget?.clear('context-lost')}
+ function onLost(e){
+  e?.preventDefault?.();lost=true;budget?.clear('context-lost');
+  // WebGL resource objects become invalid when the context is lost. Drop the
+  // renderer's handles immediately so runtime accounting never presents those
+  // invalid objects as live allocations while recovery is pending.
+  point=globe=buffer=texture=null;textureKey=null;gl=null;
+ }
  function onRestored(){metrics.restores++;init();if(last)render(last)}
  canvas.addEventListener?.('webglcontextlost',onLost,false);canvas.addEventListener?.('webglcontextrestored',onRestored,false);
- function dispose(){canvas.removeEventListener?.('webglcontextlost',onLost,false);canvas.removeEventListener?.('webglcontextrestored',onRestored,false);budget?.clear('dispose');if(gl){if(point)gl.deleteProgram(point);if(globe)gl.deleteProgram(globe);if(buffer)gl.deleteBuffer(buffer);if(texture)gl.deleteTexture(texture)}gl=null}
- function snapshot(){return Object.freeze({version:VERSION,authority:AUTHORITY,contextLost:lost,frame,allocatedPrograms:gl?2:0,allocatedBuffers:gl?1:0,allocatedTextures:gl?1:0,resourceProfile:profile,admission:lastAdmission,measurements:{...metrics},budget:budget?.snapshot()||null})}
+ function dispose(){canvas.removeEventListener?.('webglcontextlost',onLost,false);canvas.removeEventListener?.('webglcontextrestored',onRestored,false);budget?.clear('dispose');if(gl){if(point)gl.deleteProgram(point);if(globe)gl.deleteProgram(globe);if(buffer)gl.deleteBuffer(buffer);if(texture)gl.deleteTexture(texture)}gl=point=globe=buffer=texture=null;textureKey=null}
+ function snapshot(){const live=!!(gl&&!lost);return Object.freeze({version:VERSION,authority:AUTHORITY,contextLost:lost,frame,allocatedPrograms:live?2:0,allocatedBuffers:live?1:0,allocatedTextures:live?1:0,resourceProfile:profile,admission:lastAdmission,measurements:{...metrics},budget:budget?.snapshot()||null})}
  return Object.freeze({render,resize,dispose,snapshot});
 }
 O.v1WorldWebGL2=Object.freeze({VERSION,AUTHORITY,resourceProfile,pointAdmissionPlan,globeAdmissionCost,create});
