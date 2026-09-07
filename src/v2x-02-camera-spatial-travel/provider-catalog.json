@@ -1,0 +1,74 @@
+{
+  "schema": "ofu-provider-catalog-1",
+  "owners": [
+    {
+      "id": "v2x-02-camera-spatial-travel",
+      "prefixes": ["v2x02"],
+      "kinds": ["interaction"],
+      "authorities": ["PRESENTATION_ONLY"]
+    }
+  ],
+  "canonicalAdmissions": [],
+  "providers": [
+    {
+      "contract": "ofu-px-contracts-1",
+      "id": "v2x02.interaction.continuous-travel",
+      "version": "1.0.0",
+      "owner": "v2x-02-camera-spatial-travel",
+      "kind": "interaction",
+      "authority": {
+        "class": "PRESENTATION_ONLY",
+        "contract": "ofu-px-contracts-1",
+        "model": "v2x02.continuous-travel",
+        "version": "1.0.0",
+        "sources": [
+          "src/v1x-01-camera-scale-frames/reference-frames.js",
+          "src/v1x-01-camera-scale-frames/semantic-distance.js",
+          "src/v1x-01-camera-scale-frames/camera-authority.js",
+          "src/rendering/v1/transition-runtime.js",
+          "src/v2x-02-camera-spatial-travel/continuous-travel.js"
+        ],
+        "assumptions": [
+          "The injected V1X camera instance remains the sole mutable camera and continuous-distance authority.",
+          "Selection, parent lineage, surface target and history tokens are observed as read-only context and never admitted as world mutations."
+        ],
+        "limitations": [
+          "Camera paths, reference-frame transforms and cinematic interpolation are presentation-only and are not physical trajectories, orbital phases or scientific position measurements.",
+          "Hierarchical local frames preserve bounded reversible presentation context; this provider does not claim one globally precise floating-point coordinate across cosmic-to-microscopic scales.",
+          "This additive lane does not commandeer the convergence-owned Living renderer or central input router; those consumers must adopt the exposed controller/provider through their owned seam."
+        ],
+        "evidence": [
+          {
+            "id": "v2x02.travel.fast",
+            "kind": "PRESENTATION_TEST",
+            "digest": "f7135b10dc077a4f2402a2bc19ea000af966066ebcaedbddefa7add53abe2b62"
+          }
+        ]
+      },
+      "fidelity": {
+        "regime": "product",
+        "validity": "Bounded continuous presentation travel over the frozen V1X camera, semantic-distance and reference-frame authorities.",
+        "resolution": "Frame-paced accumulated distance/look intents, bounded local translation and hierarchical reference-frame handoffs through the supported spatial ladder.",
+        "uncertainty": "Interpolation timing and camera path are perceptual product choices; scientific distance, orbital phase and unsupported micro continuity remain outside this provider's authority."
+      },
+      "lifecycle": "SHIPPING",
+      "requires": [],
+      "claims": [
+        "interaction.continuous-travel",
+        "interaction.camera-journey-context"
+      ],
+      "operations": ["TRAVEL"],
+      "budget": {
+        "entities": 1,
+        "bytes": 65536,
+        "operations": 64,
+        "queue": 8
+      },
+      "evidence": [
+        {"id": "v2x02.travel.fast", "tier": "FAST_LOCAL"},
+        {"id": "v2x02.travel.registry", "tier": "INTEGRATION"}
+      ],
+      "mandatory": false
+    }
+  ]
+}
