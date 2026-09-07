@@ -49,13 +49,14 @@ export function collisionCriticalAmd({ alpha, gamma, maxIterations = 96 }) {
   const F = (e1) => a * e1 + (g * e1) / Math.sqrt(a * (1 - e1 * e1) + g * g * e1 * e1) - 1 + a;
   let lo = 0;
   let hi = 1 - Number.EPSILON;
-  let flo = F(lo);
-  let fhi = F(hi);
+  const flo = F(lo);
+  const fhi = F(hi);
   if (!(flo <= 0 && fhi >= 0)) return Object.freeze({ status: 'RESEARCH_REQUIRED', reason: 'CRITICAL_ROOT_NOT_BRACKETED' });
   for (let i = 0; i < maxIterations; i += 1) {
     const mid = (lo + hi) / 2;
     const fm = F(mid);
-    if (fm > 0) { hi = mid; fhi = fm; } else { lo = mid; flo = fm; }
+    if (fm > 0) hi = mid;
+    else lo = mid;
   }
   const criticalInnerEccentricity = (lo + hi) / 2;
   const criticalOuterEccentricity = 1 - a - a * criticalInnerEccentricity;
@@ -89,10 +90,37 @@ export function circularCoplanarPlanetState({ starMassSolar, planetMassEarth, se
   if (star <= 0 || planet <= 0 || a <= 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'NON_POSITIVE_CIRCULAR_STATE_INPUT' });
   const totalSolarMass = star + planet * EARTH_TO_SOLAR_MASS;
   const speedAuPerYr = Math.sqrt(G_AU3_MSUN_YR2 * totalSolarMass / a);
-  return Object.freeze({ status: 'PRESENT', massEarth: planet, xAu: a * Math.cos(phase), yAu: a * Math.sin(phase), vxAuPerYr: -speedAuPerYr * Math.sin(phase), vyAuPerYr: speedAuPerYr * Math.cos(phase), assumptions: 'TWO_BODY_CIRCULAR_INITIAL_STATE_AROUND_ORIGIN_STAR_WITHOUT_REFLEX_CORRECTION' });
+  return Object.freeze({ status: 'PRESENT', massEarth: planet, xAu: a * Math.cos(phase), yAu: a * Math.sin(phase), vxAuPerYr: -speedAuPerYr * Math.sin(phase), vyAuPerYr: speedAuPerYr * Math.cos(phase), assumptions: 'TWO_BODY_RELATIVE_CIRCULAR_STATE_AROUND_ORIGIN_STAR; NBODY_DIAGNOSTIC_CAN_BARYCENTRICIZE_BEFORE_INTEGRATION' });
 }
 
-export function shortHorizonNBodyDiagnostic({ starMassSolar, planets, timestepYears, steps, minimumSeparationAuFloor = 1e-8 }) {
+function barycentricizeBodies(bodies) {
+  let totalMass = 0;
+  let comX = 0;
+  let comY = 0;
+  let comVx = 0;
+  let comVy = 0;
+  for (const body of bodies) {
+    totalMass += body.massSolar;
+    comX += body.massSolar * body.x;
+    comY += body.massSolar * body.y;
+    comVx += body.massSolar * body.vx;
+    comVy += body.massSolar * body.vy;
+  }
+  if (!(totalMass > 0)) return null;
+  comX /= totalMass;
+  comY /= totalMass;
+  comVx /= totalMass;
+  comVy /= totalMass;
+  for (const body of bodies) {
+    body.x -= comX;
+    body.y -= comY;
+    body.vx -= comVx;
+    body.vy -= comVy;
+  }
+  return Object.freeze({ totalMassSolar: totalMass, removedCenterOfMass: Object.freeze({ xAu: comX, yAu: comY, vxAuPerYr: comVx, vyAuPerYr: comVy }) });
+}
+
+export function shortHorizonNBodyDiagnostic({ starMassSolar, planets, timestepYears, steps, minimumSeparationAuFloor = 1e-8, barycentricizeInitialState = true }) {
   const star = finite('starMassSolar', starMassSolar);
   const dt = finite('timestepYears', timestepYears);
   const separationFloor = finite('minimumSeparationAuFloor', minimumSeparationAuFloor);
@@ -110,6 +138,9 @@ export function shortHorizonNBodyDiagnostic({ starMassSolar, planets, timestepYe
     if (massEarth <= 0) return Object.freeze({ status: 'UNSUPPORTED', reason: `NON_POSITIVE_PLANET_MASS_${i}` });
     bodies.push({ massSolar: massEarth * EARTH_TO_SOLAR_MASS, x, y, vx, vy, kind: 'PLANET', sourceIndex: i });
   }
+  const barycentricMetadata = barycentricizeInitialState ? barycentricizeBodies(bodies) : null;
+  if (barycentricizeInitialState && !barycentricMetadata) return Object.freeze({ status: 'UNSUPPORTED', reason: 'BARYCENTRIC_INITIALIZATION_FAILED' });
+
   const accelerations = () => {
     const ax = Array(bodies.length).fill(0);
     const ay = Array(bodies.length).fill(0);
@@ -132,13 +163,20 @@ export function shortHorizonNBodyDiagnostic({ starMassSolar, planets, timestepYe
     }
     return { status: 'PRESENT', ax, ay, minSeparationAu: minSeparation };
   };
+
   const invariants = () => {
     let kinetic = 0;
     let potential = 0;
     let angularMomentum = 0;
+    let linearMomentumX = 0;
+    let linearMomentumY = 0;
+    let scalarMomentumScale = 0;
     for (const body of bodies) {
       kinetic += 0.5 * body.massSolar * (body.vx * body.vx + body.vy * body.vy);
       angularMomentum += body.massSolar * (body.x * body.vy - body.y * body.vx);
+      linearMomentumX += body.massSolar * body.vx;
+      linearMomentumY += body.massSolar * body.vy;
+      scalarMomentumScale += body.massSolar * Math.hypot(body.vx, body.vy);
     }
     for (let i = 0; i < bodies.length; i += 1) {
       for (let j = i + 1; j < bodies.length; j += 1) {
@@ -149,8 +187,9 @@ export function shortHorizonNBodyDiagnostic({ starMassSolar, planets, timestepYe
         potential -= G_AU3_MSUN_YR2 * bodies[i].massSolar * bodies[j].massSolar / r;
       }
     }
-    return { energy: kinetic + potential, angularMomentum };
+    return { energy: kinetic + potential, angularMomentum, linearMomentumX, linearMomentumY, scalarMomentumScale };
   };
+
   const initial = invariants();
   if (!initial) return Object.freeze({ status: 'UNSUPPORTED', reason: 'INITIAL_SINGULAR_CONFIGURATION' });
   let acceleration = accelerations();
@@ -177,11 +216,15 @@ export function shortHorizonNBodyDiagnostic({ starMassSolar, planets, timestepYe
   if (!final) return Object.freeze({ status: 'DYNAMICAL_ANALYSIS_REQUIRED', reason: 'FINAL_SINGULAR_CONFIGURATION' });
   const relativeEnergyDrift = (final.energy - initial.energy) / Math.max(Math.abs(initial.energy), 1e-30);
   const relativeAngularMomentumDrift = (final.angularMomentum - initial.angularMomentum) / Math.max(Math.abs(initial.angularMomentum), 1e-30);
+  const linearMomentumDriftMagnitude = Math.hypot(final.linearMomentumX - initial.linearMomentumX, final.linearMomentumY - initial.linearMomentumY);
+  const relativeLinearMomentumDrift = linearMomentumDriftMagnitude / Math.max(initial.scalarMomentumScale, final.scalarMomentumScale, 1e-30);
   return Object.freeze({
     status: 'SHORT_HORIZON_NUMERICAL_DIAGNOSTIC',
     timestepYears: dt,
     steps,
     simulatedYears: dt * steps,
+    barycentricizedInitialState: Boolean(barycentricizeInitialState),
+    barycentricMetadata,
     minimumPairSeparationAu,
     initialEnergyDimensionless: initial.energy,
     finalEnergyDimensionless: final.energy,
@@ -189,6 +232,9 @@ export function shortHorizonNBodyDiagnostic({ starMassSolar, planets, timestepYe
     initialAngularMomentumDimensionless: initial.angularMomentum,
     finalAngularMomentumDimensionless: final.angularMomentum,
     relativeAngularMomentumDrift,
+    initialLinearMomentumDimensionless: Object.freeze({ x: initial.linearMomentumX, y: initial.linearMomentumY }),
+    finalLinearMomentumDimensionless: Object.freeze({ x: final.linearMomentumX, y: final.linearMomentumY }),
+    relativeLinearMomentumDrift,
     finalStates: Object.freeze(bodies.map((body) => Object.freeze({ kind: body.kind, sourceIndex: body.sourceIndex, xAu: body.x, yAu: body.y, vxAuPerYr: body.vx, vyAuPerYr: body.vy }))),
     integrator: 'KICK_DRIFT_KICK_LEAPFROG_2D_NEWTONIAN_POINT_MASS',
     collisionPhysicsIncluded: false,
@@ -196,6 +242,47 @@ export function shortHorizonNBodyDiagnostic({ starMassSolar, planets, timestepYe
     tidalPhysicsIncluded: false,
     longTermStabilityTruthClaim: false,
     nBodyStabilityTruthClaim: false
+  });
+}
+
+export function shortHorizonNBodyStepConvergence({ starMassSolar, planets, coarseTimestepYears, coarseSteps, refinementFactor = 2, minimumSeparationAuFloor = 1e-8, barycentricizeInitialState = true }) {
+  const coarseDt = finite('coarseTimestepYears', coarseTimestepYears);
+  if (!Number.isInteger(coarseSteps) || coarseSteps < 1) return Object.freeze({ status: 'UNSUPPORTED', reason: 'POSITIVE_INTEGER_COARSE_STEPS_REQUIRED' });
+  if (!Number.isInteger(refinementFactor) || refinementFactor < 2 || refinementFactor > 16) return Object.freeze({ status: 'UNSUPPORTED', reason: 'REFINEMENT_FACTOR_2_TO_16_REQUIRED' });
+  const fineSteps = coarseSteps * refinementFactor;
+  if (fineSteps > 100000) return Object.freeze({ status: 'UNSUPPORTED', reason: 'REFINED_NBODY_STEP_BOUND_EXCEEDED' });
+  const coarse = shortHorizonNBodyDiagnostic({ starMassSolar, planets, timestepYears: coarseDt, steps: coarseSteps, minimumSeparationAuFloor, barycentricizeInitialState });
+  if (coarse.status !== 'SHORT_HORIZON_NUMERICAL_DIAGNOSTIC') return Object.freeze({ status: 'DYNAMICAL_ANALYSIS_REQUIRED', reason: 'COARSE_DIAGNOSTIC_DID_NOT_COMPLETE', coarse });
+  const fine = shortHorizonNBodyDiagnostic({ starMassSolar, planets, timestepYears: coarseDt / refinementFactor, steps: fineSteps, minimumSeparationAuFloor, barycentricizeInitialState });
+  if (fine.status !== 'SHORT_HORIZON_NUMERICAL_DIAGNOSTIC') return Object.freeze({ status: 'DYNAMICAL_ANALYSIS_REQUIRED', reason: 'FINE_DIAGNOSTIC_DID_NOT_COMPLETE', coarse, fine });
+  if (coarse.finalStates.length !== fine.finalStates.length) return Object.freeze({ status: 'UNSUPPORTED', reason: 'STATE_CARDINALITY_MISMATCH' });
+  let positionSquared = 0;
+  let velocitySquared = 0;
+  for (let i = 0; i < coarse.finalStates.length; i += 1) {
+    const c = coarse.finalStates[i];
+    const f = fine.finalStates[i];
+    positionSquared += (c.xAu - f.xAu) ** 2 + (c.yAu - f.yAu) ** 2;
+    velocitySquared += (c.vxAuPerYr - f.vxAuPerYr) ** 2 + (c.vyAuPerYr - f.vyAuPerYr) ** 2;
+  }
+  const count = coarse.finalStates.length;
+  return Object.freeze({
+    status: 'SHORT_HORIZON_STEP_CONVERGENCE_DIAGNOSTIC',
+    simulatedYears: coarse.simulatedYears,
+    coarseTimestepYears: coarseDt,
+    fineTimestepYears: coarseDt / refinementFactor,
+    coarseSteps,
+    fineSteps,
+    refinementFactor,
+    rmsFinalPositionDifferenceAu: Math.sqrt(positionSquared / count),
+    rmsFinalVelocityDifferenceAuPerYr: Math.sqrt(velocitySquared / count),
+    coarseRelativeEnergyDrift: coarse.relativeEnergyDrift,
+    fineRelativeEnergyDrift: fine.relativeEnergyDrift,
+    coarseRelativeAngularMomentumDrift: coarse.relativeAngularMomentumDrift,
+    fineRelativeAngularMomentumDrift: fine.relativeAngularMomentumDrift,
+    coarseRelativeLinearMomentumDrift: coarse.relativeLinearMomentumDrift,
+    fineRelativeLinearMomentumDrift: fine.relativeLinearMomentumDrift,
+    numericalConvergenceTruthClaim: false,
+    longTermStabilityTruthClaim: false
   });
 }
 
