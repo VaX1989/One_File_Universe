@@ -27,6 +27,15 @@
       "providers": ["v2x05.model.deep-planet"],
       "oracle": "v2x05-deep-planet-read-only-consumer-contexts",
       "timeoutMs": 30000
+    },
+    {
+      "id": "v2x05.deep-planet.metamorphic-extended",
+      "owner": "v2x-05-deep-planet-science",
+      "tier": "LANE_TARGETED",
+      "command": ["node", "tests/v2x-05/metamorphic-extended.mjs"],
+      "providers": ["v2x05.model.deep-planet"],
+      "oracle": "v2x05-deep-planet-gravity-composition-rotation",
+      "timeoutMs": 30000
     }
   ]
 }
