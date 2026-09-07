@@ -7,11 +7,12 @@ const PHASES=Object.freeze(['P1','P2','P3','P4','P5','P6']);
 function fail(message){throw new Error('OFU historical phase gate: '+message);}
 
 export function normalizeGatePhases(input){
-  const values=Array.isArray(input)?input:typeof input==='string'?input.split(','):[];
+  const values=(Array.isArray(input)?input:typeof input==='string'?input.split(','):[])
+    .map(raw=>String(raw).trim().toUpperCase())
+    .filter(Boolean);
   if(values.length===0)fail('at least one phase is required');
   const requested=new Set();
-  for(const raw of values){
-    const phase=String(raw).trim().toUpperCase();
+  for(const phase of values){
     if(!PHASES.includes(phase))fail('unknown phase '+phase);
     requested.add(phase);
   }
