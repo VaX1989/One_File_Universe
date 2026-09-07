@@ -13,7 +13,7 @@
     {
       "id": "v2x12.matter.continuity-biology",
       "owner": "v2x-12-matter-continuity",
-      "tier": "INTEGRATION",
+      "tier": "LANE_TARGETED",
       "command": ["node", "tests/v2x-12-matter-continuity/continuity-biology.mjs"],
       "providers": ["v2x12.model.matter-continuity", "v2x12.representation.microscopic-matter"],
       "oracle": "v2x12-matter-cross-regime-continuity-1",
