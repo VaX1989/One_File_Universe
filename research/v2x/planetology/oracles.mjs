@@ -52,6 +52,51 @@ export function schlichtingIsothermalImpactLoss({ momentumRatioX }) {
   return Object.freeze({ status: 'PRESENT', lossFraction: Math.max(0, Math.min(1, lossFraction)), assumptions: 'SCHLICHTING_SARI_YALINEWICH_2015_ISOTHERMAL_SCENARIO', universalImpactHistoryClaim: false });
 }
 
+export function streamPowerIncisionScenario({ erodibilityK, drainageAreaM2, slope, areaExponentM, slopeExponentN, parameterSetId, parameterSetHash }) {
+  const K = finite('erodibilityK', erodibilityK);
+  const area = finite('drainageAreaM2', drainageAreaM2);
+  const s = finite('slope', slope);
+  const m = finite('areaExponentM', areaExponentM);
+  const n = finite('slopeExponentN', slopeExponentN);
+  if (!parameterSetId || !parameterSetHash) return Object.freeze({ status: 'UNSUPPORTED', reason: 'PARAMETER_SET_ID_AND_HASH_REQUIRED' });
+  if (K < 0 || area < 0 || s < 0 || m < 0 || n <= 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'INVALID_STREAM_POWER_PARAMETER' });
+  const incisionRateMPerTimeUnit = K * Math.pow(area, m) * Math.pow(s, n);
+  if (!Number.isFinite(incisionRateMPerTimeUnit)) return Object.freeze({ status: 'UNSUPPORTED', reason: 'NON_FINITE_INCISION_RATE' });
+  return Object.freeze({
+    status: 'MODEL_DERIVED_SCENARIO',
+    incisionRateMPerTimeUnit,
+    parameterSetId,
+    parameterSetHash,
+    exponents: Object.freeze({ m, n }),
+    assumptions: 'DETACHMENT_LIMITED_STREAM_POWER_E_EQUALS_K_A_POW_M_S_POW_N',
+    unitsRequireExternalBinding: true,
+    lithologyClimateCalibrationClaim: false,
+    universalErosionTruthClaim: false
+  });
+}
+
+export function upliftIncisionElevationStep({ elevationM, upliftRateMPerTimeUnit, incisionRateMPerTimeUnit, durationTimeUnits, maxAbsoluteElevationStepM = 1000 }) {
+  const z0 = finite('elevationM', elevationM);
+  const uplift = finite('upliftRateMPerTimeUnit', upliftRateMPerTimeUnit);
+  const incision = finite('incisionRateMPerTimeUnit', incisionRateMPerTimeUnit);
+  const dt = finite('durationTimeUnits', durationTimeUnits);
+  const maxStep = finite('maxAbsoluteElevationStepM', maxAbsoluteElevationStepM);
+  if (uplift < 0 || incision < 0 || dt < 0 || maxStep <= 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'NEGATIVE_RATE_TIME_OR_INVALID_STEP_BOUND' });
+  const upliftM = uplift * dt;
+  const incisionM = incision * dt;
+  const deltaM = upliftM - incisionM;
+  if (!Number.isFinite(deltaM) || Math.abs(deltaM) > maxStep) return Object.freeze({ status: 'RESEARCH_REQUIRED', reason: 'ELEVATION_STEP_BOUND_EXCEEDED' });
+  return Object.freeze({
+    status: 'MODEL_DERIVED_SCENARIO',
+    beforeElevationM: z0,
+    afterElevationM: z0 + deltaM,
+    upliftM,
+    incisionM,
+    deltaM,
+    terrainHistoryTruthClaim: false
+  });
+}
+
 export function equilibriumFluxFromTemperature({ effectiveTemperatureK }) {
   const t = finite('effectiveTemperatureK', effectiveTemperatureK);
   if (t <= 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'NON_POSITIVE_TEMPERATURE' });
