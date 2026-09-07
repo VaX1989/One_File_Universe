@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
-import { pairwiseHillScreen, minimumOuterAxisForCircularHillScreen, rockyRadiusPrem, rockyRadiusPremInterval, hydrostaticScaleHeight } from './astronomy/oracles.mjs';
+import { pairwiseHillScreen, minimumOuterAxisForCircularHillScreen, rockyRadiusPrem, rockyRadiusPremInterval, hydrostaticScaleHeight, bandpassDistanceModulus, angularObservabilityGeometry } from './astronomy/oracles.mjs';
 import { angularMomentumDeficit, collisionCriticalAmd, pairwiseCollisionAmdScreen, radialOrbitOverlapScreen, dynamicsEscalation } from './astronomy/dynamics.mjs';
 import { mistInterpolationContract, interpolateVersionedStellarSlice, multiplicityPopulationContract, evaluateVersionedMultiplicityCells } from './astronomy/stellar-contracts.mjs';
-import { greyAtmosphereSurfaceTemperature, classifyEscapeRegime, convectionDiagnostic, volatileLedger, schlichtingIsothermalImpactLoss } from './planetology/oracles.mjs';
-import { zeroDimensionalEbm, transientZeroDimensionalEbmStep, orbitalMeanFluxFactor, energyLimitedEscapeApplicability, atmosphereMassBudgetStep, blackbodyEmission } from './planetology/climate-and-escape.mjs';
+import { greyAtmosphereSurfaceTemperature, classifyEscapeRegime, convectionDiagnostic, volatileLedger, schlichtingIsothermalImpactLoss, streamPowerIncisionScenario, upliftIncisionElevationStep } from './planetology/oracles.mjs';
+import { zeroDimensionalEbm, transientZeroDimensionalEbmStep, zonalEbmStep, orbitalMeanFluxFactor, energyLimitedEscapeApplicability, atmosphereMassBudgetStep, blackbodyEmission } from './planetology/climate-and-escape.mjs';
 import { compositionRegimeContract, waterEosApplicabilityContract, interpolateVersionedWaterEos, interpolateVersionedSubNeptuneGrid, thermalLedgerStep, nusseltRayleighScenario, laggedNusseltRayleighScenario } from './planetology/bulk-and-geodynamics.mjs';
 
 function near(actual, expected, tolerance, label) {
@@ -82,6 +82,19 @@ assert.equal(evaluateVersionedMultiplicityCells({ populationId: 'research-popula
 const overlappingCells = [...cells, { ...cells[0] }];
 assert.equal(evaluateVersionedMultiplicityCells({ populationId: 'research-population', tableHash: 'sha256:test', cells: overlappingCells, primaryMassSolar: 1, periodLog10Days: 3, massRatio: 0.5, eccentricity: 0.2 }).status, 'UNSUPPORTED');
 
+// Observability remains geometric/photometric, not survey completeness.
+const dm10 = bandpassDistanceModulus({ absoluteMagnitude: 5, distancePc: 10, extinctionMagnitude: 0, bandpassId: 'TEST' });
+assert.equal(dm10.status, 'PRESENT');
+near(dm10.distanceModulus, 0, 1e-12, 'distance modulus at 10 pc');
+near(dm10.apparentMagnitude, 5, 1e-12, 'apparent magnitude at 10 pc');
+const dm100 = bandpassDistanceModulus({ absoluteMagnitude: 5, distancePc: 100, extinctionMagnitude: 0.5, bandpassId: 'TEST' });
+near(dm100.apparentMagnitude, 10.5, 1e-12, 'distance modulus plus extinction');
+assert.equal(bandpassDistanceModulus({ absoluteMagnitude: 5, distancePc: 10, extinctionMagnitude: 0 }).status, 'UNSUPPORTED');
+const angular = angularObservabilityGeometry({ distancePc: 10, projectedSeparationAu: 5 });
+near(angular.parallaxArcsec, 0.1, 1e-12, 'parallax geometry');
+near(angular.projectedAngularSeparationArcsec, 0.5, 1e-12, 'angular separation geometry');
+assert.equal(angular.detectionProbabilityClaim, false);
+
 // Earth-like ideal-gas hydrostatic scale-height reference.
 near(hydrostaticScaleHeight({ temperatureK: 288, molarMassKgPerMol: 0.02897, gravityMps2: 9.80665 }).scaleHeightMeters, 8428.64, 0.1, 'Earth-like scale height');
 
@@ -89,7 +102,7 @@ near(hydrostaticScaleHeight({ temperatureK: 288, molarMassKgPerMol: 0.02897, gra
 near(greyAtmosphereSurfaceTemperature({ effectiveTemperatureK: 255, infraredOpticalDepth: 2 / 3 }).temperatureK, 255, 1e-12, 'grey tau=2/3');
 assert.equal(greyAtmosphereSurfaceTemperature({ effectiveTemperatureK: 255, infraredOpticalDepth: -1 }).status, 'UNSUPPORTED');
 
-// Reduced climate equilibrium and transient energy closure.
+// Reduced climate equilibrium, transient and zonal energy closure.
 const ebmEq = zeroDimensionalEbm({ stellarFluxWm2: 1361, bondAlbedo: 0.3 });
 assert.equal(ebmEq.status, 'PRESENT');
 near(ebmEq.absorbedShortwaveWm2, ebmEq.outgoingLongwaveAtSolutionWm2, 1e-12, '0D EBM equilibrium closure');
@@ -98,6 +111,12 @@ assert.equal(transient.status, 'PRESENT');
 assert.ok(Math.abs(transient.energyResidualJm2) < 1e-3);
 assert.ok(transient.temperatureK > 0);
 assert.equal(transientZeroDimensionalEbmStep({ temperatureK: 280, heatCapacityJm2K: 1, stellarFluxWm2: 1e9, bondAlbedo: 0, durationSeconds: 1e9, maxTemperatureStepK: 0.001 }).status, 'UNSUPPORTED');
+const zonal = zonalEbmStep({ temperaturesK: [270, 280, 290, 300], heatCapacitiesJm2K: [4.2e8, 4.2e8, 4.2e8, 4.2e8], insolationFactors: [0.5, 1, 1.25, 1.25], bondAlbedos: [0.3, 0.3, 0.3, 0.3], stellarFluxWm2: 1361, durationSeconds: 86400 * 30 });
+assert.equal(zonal.status, 'PRESENT');
+assert.ok(Math.abs(zonal.transportResidualEnergyMeanJm2) < 1e-8);
+assert.ok(Math.abs(zonal.energyResidualMeanJm2) < 1e-3);
+assert.equal(zonal.gcmTruthClaim, false);
+assert.equal(zonalEbmStep({ temperaturesK: [280], heatCapacitiesJm2K: [1], insolationFactors: [1], bondAlbedos: [0.3], stellarFluxWm2: 1361, durationSeconds: 1 }).status, 'UNSUPPORTED');
 near(orbitalMeanFluxFactor({ eccentricity: 0.5 }).factor, 1 / Math.sqrt(0.75), 1e-12, 'mean flux e=0.5');
 assert.ok(blackbodyEmission({ temperatureK: 300 }).fluxWm2 > blackbodyEmission({ temperatureK: 250 }).fluxWm2);
 
@@ -159,5 +178,15 @@ assert.equal(volatileLedger({ surfaceKg: 3, atmosphereKg: 2, interiorKg: 5, delt
 near(schlichtingIsothermalImpactLoss({ momentumRatioX: 0.5 }).lossFraction, 0.45, 1e-12, 'impact-loss x=0.5');
 near(schlichtingIsothermalImpactLoss({ momentumRatioX: 1 }).lossFraction, 1, 1e-12, 'impact-loss x=1');
 assert.equal(schlichtingIsothermalImpactLoss({ momentumRatioX: 1.1 }).status, 'UNSUPPORTED');
+
+// Stream-power erosion remains a parameterized scenario with explicit provenance and step bound.
+const incision = streamPowerIncisionScenario({ erodibilityK: 1e-6, drainageAreaM2: 1e6, slope: 0.01, areaExponentM: 0.5, slopeExponentN: 1, parameterSetId: 'synthetic-test', parameterSetHash: 'sha256:test' });
+assert.equal(incision.status, 'MODEL_DERIVED_SCENARIO');
+near(incision.incisionRateMPerTimeUnit, 1e-5, 1e-15, 'stream-power incision witness');
+assert.equal(streamPowerIncisionScenario({ erodibilityK: 1e-6, drainageAreaM2: 1e6, slope: 0.01, areaExponentM: 0.5, slopeExponentN: 1 }).status, 'UNSUPPORTED');
+const elevation = upliftIncisionElevationStep({ elevationM: 1000, upliftRateMPerTimeUnit: 2e-5, incisionRateMPerTimeUnit: incision.incisionRateMPerTimeUnit, durationTimeUnits: 1000, maxAbsoluteElevationStepM: 1 });
+assert.equal(elevation.status, 'MODEL_DERIVED_SCENARIO');
+near(elevation.afterElevationM, 1000.01, 1e-12, 'uplift-incision step');
+assert.equal(upliftIncisionElevationStep({ elevationM: 1000, upliftRateMPerTimeUnit: 1, incisionRateMPerTimeUnit: 0, durationTimeUnits: 1000, maxAbsoluteElevationStepM: 1 }).status, 'RESEARCH_REQUIRED');
 
 console.log('V2X-15 research tests: PASS');
