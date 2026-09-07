@@ -78,7 +78,9 @@
           "Bounded tissue cells and cell compartments can be projected with inherited model store/material units while display placement remains presentation-only.",
           "Cell compartments, membranes, gradients, transport capacities and material-flow topology can be exposed as bounded semantic cues without claiming literal morphology, flux rates or metabolic kinetics.",
           "Reducing a rendering budget must not reposition retained nodes; bounded omission is reported explicitly with available-count and truncation witnesses.",
-          "When relation cues exceed the bounded projection limit, deterministic category-preserving projection retains cues from every nonempty relation class before allocating additional slots."
+          "When relation cues exceed the bounded projection limit, deterministic category-preserving projection retains cues from every nonempty relation class before allocating additional slots.",
+          "Unknown material, phase and mixture remainders remain explicitly labelled unresolved rather than being presented as known chemistry or phase inventory.",
+          "Integer femtometre source coordinates are centered with exact integer arithmetic before bounded conversion to presentation-space numbers, including large safe-integer offsets."
         ],
         "limitations": [
           "Tissue-cell, material, molecular and biological compartment placement is presentation-only.",
@@ -88,6 +90,7 @@
           "Computed atomic structure is explicitly distinguished from source-backed experimental structure.",
           "Node and relation budgets can omit otherwise available bounded cues; omission is exposed through truncation witnesses and is never presented as a complete inventory.",
           "Dense relation classes cannot silently starve every cue from another nonempty class; per-category projected and omitted counts remain explicit.",
+          "Tissue and biological presentation validates deterministic identity/ordinal uniqueness and material-unit closure before emitting cues; invalid closures fail closed.",
           "The provider owns no shared camera, scale, selection, input or canonical mutation authority."
         ],
         "evidence": []
@@ -102,7 +105,7 @@
       "requires": [
         {"id": "v2x12.model.matter-continuity", "version": "1.0.0", "authority": "MODEL_DERIVED_SIMULATION"}
       ],
-      "claims": ["representation.microscopic-matter-v2", "representation.tissue-cell-cues-v1", "representation.biological-matter-cues-v1", "representation.explicit-truncation-witness-v1", "representation.category-preserving-relations-v1", "representation.unresolved-material-fidelity-v1"],
+      "claims": ["representation.microscopic-matter-v2", "representation.tissue-cell-cues-v1", "representation.biological-matter-cues-v1", "representation.explicit-truncation-witness-v1", "representation.category-preserving-relations-v1", "representation.unresolved-material-fidelity-v1", "representation.unresolved-remainder-cues-v1", "representation.exact-fm-presentation-normalization-v1", "representation.presentation-closure-guard-v1"],
       "operations": ["INSPECT", "REPRESENT"],
       "budget": {"entities": 256, "bytes": 262144, "operations": 2048, "queue": 32},
       "evidence": [
