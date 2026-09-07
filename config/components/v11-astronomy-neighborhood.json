@@ -1,0 +1,22 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1.models.astronomy.galactic-neighborhood",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/astronomy/neighborhood.js",
+      "dependencies": [
+        "v1.models.astronomy.observability"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Selective V1X-15 harvest: fixed five-probe parameter-space neighborhood over the existing modeled galactic region profile. Deltas are descriptive model outputs only; no observed density field, physical coordinate reconstruction, survey calibration or P3 promotion.",
+      "provides": [
+        "v1.models.astronomy.galactic-neighborhood"
+      ]
+    }
+  ]
+}
