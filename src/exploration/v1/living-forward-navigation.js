@@ -31,6 +31,7 @@ function create(options={}){
   const after=raw.snapshot(),changed=after.revision!==before.revision,explicitNoPush=(name==='navigate'||name==='at')&&args[1]?.push===false;
   if(historyWasPushed(name,args,before,after))record(name,args,after);
   else if(changed&&(NON_HISTORY_MUTATIONS.has(name)||CONDITIONAL_HISTORY_METHODS.has(name)||explicitNoPush))invalidate();
+  if(!changed)return decorated();
   return notify();
  }
  function back(){
