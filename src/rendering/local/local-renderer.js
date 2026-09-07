@@ -11,20 +11,14 @@ function dot(a,b){return a[0]*b[0]+a[1]*b[1]+a[2]*b[2]}
 function cross(a,b){return[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]]}
 function norm(v){const m=Math.hypot(v[0],v[1],v[2]);if(!(m>0))throw new Error('non-zero vector required');return v.map(x=>x/m)}
 function view(camera,{width=1280,height=720,fovYRad=Math.PI/3,nearM=.05,farM=5000}={}){const eye=(camera.absolutePresentationPositionM||camera.positionM||[0,0,1]).map(Number),h=finite(camera.headingRad??0,'headingRad'),p=finite(camera.pitchRad??-.12,'pitchRad'),cp=Math.cos(p),forward=norm([Math.sin(h)*cp,Math.cos(h)*cp,Math.sin(p)]),right=norm([Math.cos(h),-Math.sin(h),0]),up=norm(cross(right,forward)),w=Math.max(1,Math.floor(finite(width,'width'))),hh=Math.max(1,Math.floor(finite(height,'height'))),aspect=w/hh,fov=clamp(finite(fovYRad,'fovYRad'),.3,1.45),near=Math.max(.01,finite(nearM,'nearM')),far=Math.max(near+1,finite(farM,'farM'));return freeze({eye,forward,right,up,width:w,height:hh,aspect,fovYRad:fov,nearM:near,farM:far,tanY:Math.tan(fov/2)})}
-function cameraPoint(v,p){const r=[p[0]-v.eye[0],p[1]-v.eye[1],p[2]-v.eye[2]];return[x=dot(r,v.right),y=dot(r,v.up),z=dot(r,v.forward)]}
+function cameraPoint(v,p){const r=[p[0]-v.eye[0],p[1]-v.eye[1],p[2]-v.eye[2]];return[dot(r,v.right),dot(r,v.up),dot(r,v.forward)]}
 function projectCameraPoint(v,p){const x=p[0],y=p[1],z=p[2];if(!(z>v.nearM&&z<v.farM))return freeze({visible:false,depthM:z});const nx=x/(z*v.tanY*v.aspect),ny=y/(z*v.tanY),visible=nx>=-1.25&&nx<=1.25&&ny>=-1.25&&ny<=1.25;return freeze({visible,depthM:z,nx,ny,x:(nx*.5+.5)*v.width,y:(.5-ny*.5)*v.height})}
 function projectPoint(v,p){return projectCameraPoint(v,cameraPoint(v,p))}
 function lerpCamera(a,b,t){return[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t]}
 function clipPolygonNear(points,nearM){const out=[];for(let i=0;i<points.length;i++){const a=points[i],b=points[(i+1)%points.length],aIn=a[2]>nearM,bIn=b[2]>nearM;if(aIn)out.push(a);if(aIn!==bIn){const denom=b[2]-a[2];if(Math.abs(denom)>1e-12){const t=(nearM-a[2])/denom;out.push(lerpCamera(a,b,clamp(t,0,1)))}}}return out}
 function clipTriangleNear(v,a,b,c){const clipped=clipPolygonNear([cameraPoint(v,a),cameraPoint(v,b),cameraPoint(v,c)],v.nearM);if(clipped.length<3)return[];const projected=clipped.map(p=>projectCameraPoint(v,[p[0],p[1],Math.max(p[2],v.nearM+1e-9)]));if(projected.some(p=>!Number.isFinite(p.x)||!Number.isFinite(p.y)||!Number.isFinite(p.depthM)))return[];const tris=[];for(let i=1;i<projected.length-1;i++)tris.push([projected[0],projected[i],projected[i+1]]);return tris}
 class DepthGrid{
- constructor(width,height,profileName='desktop'){
-  const p=DEPTH_PROFILES[String(profileName).toLowerCase()]||DEPTH_PROFILES.desktop;
-  this.cols=p.cols;this.rows=p.rows;this.width=width;this.height=height;
-  this.values=new Float64Array(this.cols*this.rows);this.values.fill(Infinity);
-  this.maxCells=p.maxCells;
-  if(this.values.length>this.maxCells)throw new Error('depth grid exceeds declared cell bound');
- }
+ constructor(width,height,profileName='desktop'){const p=DEPTH_PROFILES[String(profileName).toLowerCase()]||DEPTH_PROFILES.desktop;this.cols=p.cols;this.rows=p.rows;this.width=width;this.height=height;this.values=new Float64Array(this.cols*this.rows);this.values.fill(Infinity);this.maxCells=p.maxCells;if(this.values.length>this.maxCells)throw new Error('depth grid exceeds declared cell bound')}
  index(x,y){const ix=clamp(Math.floor(x/this.width*this.cols),0,this.cols-1),iy=clamp(Math.floor(y/this.height*this.rows),0,this.rows-1);return iy*this.cols+ix}
  at(x,y){return this.values[this.index(x,y)]}
  setCell(ix,iy,z){if(ix<0||iy<0||ix>=this.cols||iy>=this.rows)return;const k=iy*this.cols+ix;if(z<this.values[k])this.values[k]=z}
