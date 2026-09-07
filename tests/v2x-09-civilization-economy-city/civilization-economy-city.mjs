@@ -109,8 +109,30 @@ check(absent.status==='NO_MODELED_CIVILIZATION','no-civilization case stays hone
 const absentMorph=API.cityMorphology({state:'NO_CIVILIZATION_MODEL'});
 check(absentMorph.status==='NO_MODELED_CIVILIZATION'&&absentMorph.settlements.length===0,'no-civilization morphology does not decorate unsupported state');
 
+const triangleProduction={status:'MODELED',settlements:['a','b','c'].map(settlementId=>({settlementId,status:'ACTIVE'})),routes:[
+  {edgeId:'ab',from:'a',to:'b',capacityUnits:100,usedUnits:20,degradationPpm:100000,utilizationPpm:200000,routingEligible:true,operational:true},
+  {edgeId:'bc',from:'b',to:'c',capacityUnits:100,usedUnits:20,degradationPpm:100000,utilizationPpm:200000,routingEligible:true,operational:true},
+  {edgeId:'ca',from:'c',to:'a',capacityUnits:100,usedUnits:20,degradationPpm:100000,utilizationPpm:200000,routingEligible:true,operational:true},
+  {edgeId:'disabled-shadow',from:'a',to:'c',capacityUnits:10000,usedUnits:0,degradationPpm:0,utilizationPpm:0,routingEligible:false,operational:false}
+]};
+const failure1=API.networkFailureEnvelope(triangleProduction,{maxFailures:2}),failure2=API.networkFailureEnvelope(triangleProduction,{maxFailures:2});
+eq(failure1,failure2,'network failure envelope deterministic');
+check(failure1.scenarioCount===6&&failure1.candidateRouteIds.length===3&&!failure1.candidateRouteIds.includes('disabled-shadow'),'disabled routes never enter failure topology or candidate set');
+check(failure1.scenarios.filter(x=>x.failedRouteIds.length===1).every(x=>x.connectivityRatioPpm===1000000),'single failure in triangle preserves all modeled connected pairs');
+check(failure1.scenarios.filter(x=>x.failedRouteIds.length===2).every(x=>x.connectivityRatioPpm<1000000),'double failure in triangle reduces modeled connectivity');
+check(failure1.operations<=failure1.limits.operations&&failure1.flowSubstitutionClaim===false&&failure1.physicalTransportGeometryClaim===false,'failure analysis is globally operation-bounded and topology-only');
+
+const boundSettlements=Array.from({length:48},(_,i)=>({settlementId:'n'+i,status:'ACTIVE'})),boundRoutes=[];
+for(let i=0;i<48;i++)boundRoutes.push({edgeId:'ring-'+i,from:'n'+i,to:'n'+((i+1)%48),capacityUnits:100+i,usedUnits:0,degradationPpm:100000,utilizationPpm:0,routingEligible:true,operational:true});
+for(let i=0;i<48;i++)boundRoutes.push({edgeId:'chord-'+i,from:'n'+i,to:'n'+((i+2)%48),capacityUnits:200+i,usedUnits:0,degradationPpm:120000,utilizationPpm:0,routingEligible:true,operational:true});
+const boundFailure=API.networkFailureEnvelope({status:'MODELED',settlements:boundSettlements,routes:boundRoutes},{maxFailures:2});
+check(boundFailure.candidateLimitReached===true&&boundFailure.candidateRouteIds.length===16,'96-route failure analysis explicitly limits exhaustive candidates to top 16');
+check(boundFailure.scenarioCount===136&&boundFailure.scenarioLimitReached===false,'16-candidate single/double failure envelope enumerates the complete bounded 136 scenarios');
+check(boundFailure.operations<=API.FAILURE_LIMITS.operations,'48-settlement/96-route failure envelope remains inside one global operation budget');
+assert.throws(()=>API.networkFailureEnvelope({status:'MODELED',settlements:boundSettlements,routes:[...boundRoutes,{edgeId:'overflow',from:'n0',to:'n1',capacityUnits:1}]},{maxFailures:1}),/failure route bound exceeded/);cases++;
+
 const over=fixture();
 over.settlements=Array.from({length:49},(_,i)=>({...over.settlements[0],settlementId:'s-'+i}));
 assert.throws(()=>API.initializeEconomy(over),/settlements bound exceeded/);cases++;
 
-console.log(JSON.stringify({status:'PASS',cases,version:API.VERSION,activeCapabilities:t.activeCapabilities.length,impactProposals:s1.impactProposals.length,deltaDistricts:delta.districts.map(x=>x.kind)}));
+console.log(JSON.stringify({status:'PASS',cases,version:API.VERSION,activeCapabilities:t.activeCapabilities.length,impactProposals:s1.impactProposals.length,deltaDistricts:delta.districts.map(x=>x.kind),failureScenarios:failure1.scenarioCount,boundFailureScenarios:boundFailure.scenarioCount,boundFailureOperations:boundFailure.operations}));
