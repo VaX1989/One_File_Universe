@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import {load} from '../v1/integration/runtime-helper.mjs';
+const {O,plan}=load({extraComponents:['v2x02.camera.continuous-travel']});
+const id='v2x02.interaction.continuous-travel',registry=O.pxProduct.registry,snapshot=registry.snapshot();
+assert(snapshot.order.includes(id),'provider descriptor must be admitted into the sealed graph');
+assert(snapshot.bound.includes(id),'shipping continuous-travel provider must bind before registry seal');
+assert(plan.some(c=>c.id==='v2x02.camera.continuous-travel'));
+assert(plan.some(c=>c.id==='px.providers.v2x02-camera-spatial-travel'));
+const d=registry.descriptor(id),captured=O.pxProduct.captured();
+const request={contract:O.pxContracts.VERSION,provider:id,operation:'TRAVEL',selection:captured.selection,fidelity:d.fidelity,budget:d.budget,payload:{currentLogDistanceM:7,currentSemanticScale:'orbit',referenceRadiusM:6371000,intent:{kind:'wheel',deltaY:120,deltaMode:0}}};
+const result=registry.invoke(id,request);
+assert.equal(result.provider,id);assert.deepEqual(result.selection,captured.selection);assert.equal(result.value.distanceAuthorityKey,'logDistanceM');assert(result.value.toLogDistanceM>result.value.fromLogDistanceM);assert.equal(result.value.canonicalMutation,false);assert.equal(result.value.selectionMutation,false);assert.equal(result.value.historyMutation,false);assert.equal(result.value.cameraPathIsPhysicalTrajectory,false);
+assert.equal(O.v2x02ContinuousTravel.PROVIDER_ID,id);assert.equal(O.v2x02ContinuousTravel.AUTHORITY,'PRESENTATION_ONLY');
+console.log(JSON.stringify({status:'PASS',oracle:'v2x02-registry-binding-oracle-1',provider:id,admitted:true,bound:true,selectionInvariant:true,canonicalMutation:false,historyMutation:false,authority:'PRESENTATION_ONLY'}));
