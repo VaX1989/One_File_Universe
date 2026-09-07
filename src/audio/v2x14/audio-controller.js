@@ -1,24 +1,35 @@
 (function(root){
 'use strict';
 const O=root.OFU=root.OFU||{};
-const VERSION='ofu-v2x14-living-audio-controller-2',AUTHORITY='PRESENTATION_ONLY';
+const VERSION='ofu-v2x14-living-audio-controller-3',AUTHORITY='PRESENTATION_ONLY';
+const clamp=v=>Math.max(0,Math.min(1,Number.isFinite(Number(v))?Number(v):0));
+function normalized(base,next={}){return Object.freeze({enabled:next.enabled===undefined?base.enabled:next.enabled===true,muted:next.muted===undefined?base.muted:next.muted===true,volume:next.volume===undefined?base.volume:clamp(next.volume),reducedSensory:next.reducedSensory===undefined?base.reducedSensory:next.reducedSensory===true});}
 function create(options={}){
  const product=options.product||O.v1LivingProduct,map=options.map||O.v2x14LivingAudioContext,audio=options.audio||O.systemicAudioV1;
  if(!product||!map||!audio)throw new Error('V2X14 Living audio dependencies unavailable');
- const runtime=audio.createRuntime(options.runtimeOptions||{});let controls={enabled:false,muted:false,volume:0.5,reducedSensory:false},activated=false;
- async function sync(){const s=product.runtime?.snapshot?.()||{};return runtime.update(map.fromLiving(s),controls);}
- async function activate(next={}){controls={...controls,...next,enabled:true};activated=true;await sync();return runtime.resume();}
- async function setControls(next={}){controls={...controls,...next};await sync();if(!controls.enabled||controls.muted)return runtime.suspend();return activated?runtime.resume():runtime.snapshot();}
- return Object.freeze({authority:AUTHORITY,activate,setControls,sync,snapshot(){return Object.freeze({schema:'ofu-v2x14-audio-controller-snapshot-2',version:VERSION,authority:AUTHORITY,activated,controls:Object.freeze({...controls}),runtime:runtime.snapshot(),createsWorldFacts:false,navigationDependency:false,accessibilityDependency:false,userActivationRequired:true});},dispose:()=>runtime.dispose()});
+ const runtime=audio.createRuntime(options.runtimeOptions||{});let controls=normalized({enabled:false,muted:false,volume:0.5,reducedSensory:false}),activated=false,visibilitySuspended=false,disposed=false,tail=Promise.resolve();
+ const audibleRequested=()=>activated&&controls.enabled&&!controls.muted&&controls.volume>0&&!visibilitySuspended;
+ function enqueue(fn){const run=tail.then(()=>{if(disposed)throw new Error('V2X14 Living audio controller disposed');return fn();});tail=run.catch(()=>{});return run;}
+ async function updateContext(){const s=product.runtime?.snapshot?.()||{};return runtime.update(map.fromLiving(s),controls);}
+ function sync(){return enqueue(updateContext);}
+ function activate(next={}){return enqueue(async()=>{controls=normalized(controls,{...next,enabled:true});activated=true;await updateContext();return audibleRequested()?runtime.resume():runtime.suspend();});}
+ function setControls(next={}){return enqueue(async()=>{controls=normalized(controls,next);await updateContext();return audibleRequested()?runtime.resume():runtime.suspend();});}
+ function setVisibility(visible){return enqueue(async()=>{visibilitySuspended=visible===false;await updateContext();return audibleRequested()?runtime.resume():runtime.suspend();});}
+ function snapshot(){return Object.freeze({schema:'ofu-v2x14-audio-controller-snapshot-3',version:VERSION,authority:AUTHORITY,activated,visibilitySuspended,audibleRequested:audibleRequested(),controls, runtime:runtime.snapshot(),createsWorldFacts:false,navigationDependency:false,accessibilityDependency:false,userActivationRequired:true,serializedControlUpdates:true});}
+ function dispose(){return enqueue(async()=>{disposed=true;visibilitySuspended=true;try{await runtime.suspend();}catch{}return runtime.dispose();});}
+ return Object.freeze({authority:AUTHORITY,activate,setControls,setVisibility,sync,snapshot,dispose});
 }
 let mounted=null,attempts=0;
 async function autoMount(){
  if(mounted||typeof root.document==='undefined')return mounted;
  const product=O.v1LivingProduct,controlsApi=O.systemicAudioControlsV1;if(!product||!O.v2x14LivingAudioContext||!O.systemicAudioV1||!controlsApi){if(++attempts<120&&root.setTimeout)root.setTimeout(autoMount,50);return null;}
  const host=root.document.querySelector('[data-workspace-panel="lab"]')||root.document.getElementById('living-panel');if(!host){if(++attempts<120&&root.setTimeout)root.setTimeout(autoMount,50);return null;}
- const controller=create({product});const section=root.document.createElement('section');section.setAttribute('data-v2x14-audio','presentation-only');section.setAttribute('aria-label','Optional systemic audio');const h=root.document.createElement('h3');h.textContent='Systemic audio';const note=root.document.createElement('p');note.textContent='Optional presentation-only audio. It never indicates facts that are absent from the current modeled context.';section.append(h,note);host.appendChild(section);
- const bridge={setControls(value){return value?.enabled?controller.activate(value):controller.setControls(value);}};const controls=controlsApi.mount(section,bridge,{document:root.document,initial:{enabled:false,volume:0.5,muted:false,reducedSensory:false}});let timer=root.setInterval?root.setInterval(()=>controller.sync().catch(()=>{}),600):null;
- mounted=Object.freeze({controller,controls,section,snapshot:()=>controller.snapshot(),dispose:async()=>{if(timer!==null&&root.clearInterval)root.clearInterval(timer);controls.dispose();if(section.parentNode)section.parentNode.removeChild(section);return controller.dispose();}});root.__OFU_V2X14_AUDIO__=mounted;return mounted;
+ const controller=create({product}),section=root.document.createElement('section');section.setAttribute('data-v2x14-audio','presentation-only');section.setAttribute('aria-label','Optional systemic audio');const h=root.document.createElement('h3');h.textContent='Systemic audio';const note=root.document.createElement('p');note.textContent='Optional presentation-only audio. It never indicates facts that are absent from the current modeled context.';section.append(h,note);host.appendChild(section);
+ const bridge={setControls(value){const state=controller.snapshot();return value?.enabled&&state.activated!==true?controller.activate(value):controller.setControls(value);}};
+ const controls=controlsApi.mount(section,bridge,{document:root.document,initial:{enabled:false,volume:0.5,muted:false,reducedSensory:false}});
+ const tick=()=>{const s=controller.snapshot();if(s.activated&&s.controls.enabled&&!s.visibilitySuspended)controller.sync().catch(()=>{});};let timer=root.setInterval?root.setInterval(tick,600):null;
+ const visibility=()=>controller.setVisibility(root.document.visibilityState!=='hidden').catch(()=>{});root.document.addEventListener('visibilitychange',visibility);visibility();
+ mounted=Object.freeze({controller,controls,section,snapshot:()=>controller.snapshot(),dispose:async()=>{if(timer!==null&&root.clearInterval)root.clearInterval(timer);root.document.removeEventListener('visibilitychange',visibility);controls.dispose();if(section.parentNode)section.parentNode.removeChild(section);return controller.dispose();}});root.__OFU_V2X14_AUDIO__=mounted;return mounted;
 }
 O.v2x14LivingAudioController=Object.freeze({VERSION,AUTHORITY,create,autoMount,instance:()=>mounted});
 if(typeof root.document!=='undefined'){if(root.document.readyState==='loading')root.document.addEventListener('DOMContentLoaded',autoMount,{once:true});else if(root.setTimeout)root.setTimeout(autoMount,0);}
