@@ -2,7 +2,7 @@
 'use strict';
 if(typeof root.requestAnimationFrame!=='function'||root.__OFU_WAVE_IV_RAF_GATE__)return;
 const native=root.requestAnimationFrame.bind(root),nativeCancel=typeof root.cancelAnimationFrame==='function'?root.cancelAnimationFrame.bind(root):()=>{};
-const state={version:'ofu-wave-iv-render-scheduler-1',suspendedPlanetFrames:0,executedPlanetFrames:0,livingPacerInstalled:false,livingRotationInputs:0,livingRotationFrames:0,livingRotationCoalesced:0,livingNavigationPacerInstalled:false,livingPinchInputs:0,livingPinchFrames:0,livingPinchCoalesced:0,livingPinchStaleDrops:0};
+const state={version:'ofu-wave-iv-render-scheduler-1',suspendedPlanetFrames:0,executedPlanetFrames:0,livingPacerInstalled:false,livingRotationInputs:0,livingRotationFrames:0,livingRotationCoalesced:0,livingNavigationPacerInstalled:false,livingPinchInputs:0,livingPinchFrames:0,livingPinchCoalesced:0,livingPinchStaleDrops:0,livingPinchBoundaryCommits:0};
 function isPlanetFrame(fn){if(typeof fn!=='function'||fn.name!=='frame')return false;try{return /inspectorTarget\(\)/.test(Function.prototype.toString.call(fn))&&/localFrame\(now\)/.test(Function.prototype.toString.call(fn))}catch{return false}}
 function gated(fn){if(!isPlanetFrame(fn))return native(fn);const proxy=t=>{const scale=root.OFU?.waveIVScaleRuntime?.snapshot?.().semanticScale,macro=scale==='galaxy'||scale==='galactic_region'||scale==='stellar_neighborhood'||scale==='system';if(macro){state.suspendedPlanetFrames++;native(proxy);return}state.executedPlanetFrames++;fn(t)};return native(proxy)}
 function installLivingPacer(){
@@ -23,11 +23,12 @@ function installLivingPacer(){
 function installLivingNavigationPacer(){
  const O=root.OFU,living=O?.v1LivingRuntime;if(!living?.create)return false;
  if(living.NAVIGATION_PACING_VERSION){state.livingNavigationPacerInstalled=true;return true;}
- const originalCreate=living.create.bind(living),version='ofu-living-navigation-pacer-1';
+ const originalCreate=living.create.bind(living),version='ofu-living-navigation-pacer-1',navigationStages=Array.from(living.NAVIGATION_STAGES||[]);
  function create(...args){
   const runtime=originalCreate(...args);let frame=0,coordinate=null,options=null,queuedStage=null,events=0;
-  const pacing={version,strategy:'RAF_LATEST_PINCH_COORDINATE',inputEvents:0,frames:0,coalescedEvents:0,pendingEvents:0,staleDrops:0};
+  const pacing={version,strategy:'RAF_LATEST_PINCH_COORDINATE_WITH_SYNC_BOUNDARIES',inputEvents:0,frames:0,boundaryCommits:0,coalescedEvents:0,pendingEvents:0,staleDrops:0};
   const reset=()=>{coordinate=null;options=null;queuedStage=null;events=0;pacing.pendingEvents=0;};
+  const cancelPendingAsSuperseded=()=>{if(frame){nativeCancel(frame);frame=0;}if(events){pacing.coalescedEvents+=events;state.livingPinchCoalesced+=events;}reset();};
   const flush=()=>{
    frame=0;const target=coordinate,opts=options,stage=queuedStage,count=events;reset();if(target===null||!count)return;
    const current=runtime.snapshot();
@@ -37,7 +38,10 @@ function installLivingNavigationPacer(){
   const setNavigationCoordinate=(value,opts={})=>{
    if(opts?.source!=='living-active-pinch')return runtime.setNavigationCoordinate(value,opts);
    const target=Number(value);if(!Number.isFinite(target))throw new TypeError('Living pinch navigation coordinate must be finite');
-   const current=runtime.snapshot();coordinate=target;options=Object.freeze({...opts});queuedStage=current.stage;events++;pacing.inputEvents++;pacing.pendingEvents=events;state.livingPinchInputs++;if(!frame)frame=native(flush);return current;
+   const current=runtime.snapshot(),index=Math.max(0,Math.min(navigationStages.length-1,Math.round(target))),targetStage=navigationStages[index]||current.stage;
+   pacing.inputEvents++;state.livingPinchInputs++;
+   if(targetStage!==current.stage){cancelPendingAsSuperseded();pacing.boundaryCommits++;state.livingPinchBoundaryCommits++;return runtime.setNavigationCoordinate(target,opts);}
+   coordinate=target;options=Object.freeze({...opts});queuedStage=current.stage;events++;pacing.pendingEvents=events;if(!frame)frame=native(flush);return current;
   };
   const navigationPacingSnapshot=()=>Object.freeze({...pacing});
   return Object.freeze({...runtime,setNavigationCoordinate,navigationPacingSnapshot});
