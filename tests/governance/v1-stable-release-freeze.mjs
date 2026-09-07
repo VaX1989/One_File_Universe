@@ -7,6 +7,8 @@ const expected={
   sha:'38dd0d7c0ccc4a100dc3b75d3d159c6933bc4c16',
   assetSha256:'013d4277da9acebcbb739275c27f6e05ccbc838840738cd2f9b03bb8f5def61a',
   assetBytes:'1512784',
+  checkout:'actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09',
+  setupNode:'actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444',
 };
 let checks=0;
 for(const [key,value] of Object.entries({
@@ -26,4 +28,13 @@ assert(/test "\$SOURCE_SHA" = "\$V1_RELEASE_SHA"/.test(workflow),'new publicatio
 assert(/verify-publish:[\s\S]*needs:\s*release-state[\s\S]*publish_needed\s*==\s*'true'/.test(workflow),'publisher must run only when release-state proves publication is needed');checks++;
 assert(/permissions:[\s\S]*contents:\s*read[\s\S]*verify-publish:[\s\S]*permissions:[\s\S]*contents:\s*write/.test(workflow),'write permission must be scoped to the publisher job');checks++;
 assert(/pull_request:[\s\S]*v1-stable-release\.yml[\s\S]*v1-stable-release-freeze\.mjs/.test(workflow),'release policy changes must exercise the freeze oracle in pull requests');checks++;
+const checkoutLines=workflow.split(/\r?\n/).filter(line=>line.includes('uses: actions/checkout@'));
+assert.equal(checkoutLines.length,2,'stable publisher must have exactly two authenticated repository checkouts');checks++;
+for(const line of checkoutLines){assert(line.includes(expected.checkout),`stable publisher checkout must use the authenticated native Node 24 pin: ${line.trim()}`);checks++;}
+const setupNodeLines=workflow.split(/\r?\n/).filter(line=>line.includes('uses: actions/setup-node@'));
+assert.equal(setupNodeLines.length,1,'stable publisher policy must have exactly one Node setup action');checks++;
+assert(setupNodeLines[0].includes(expected.setupNode),'stable publisher setup-node must use the authenticated native Node 24 pin');checks++;
+assert(/node-version:\s*['"]24\.20\.0['"]/.test(workflow),'stable publisher policy Node runtime must remain exact-patch pinned');checks++;
+const checkoutBlocks=workflow.split(/(?=^\s*-\s+uses:\s+actions\/checkout@)/m).filter(block=>/^\s*-\s+uses:\s+actions\/checkout@/m.test(block));
+for(const block of checkoutBlocks){assert(/^\s*persist-credentials:\s*false\s*(?:#.*)?$/m.test(block),'stable publisher checkout must not persist repository credentials');checks++;}
 console.log(JSON.stringify({status:'PASS',suite:'v1-stable-release-freeze',checks,expected}));
