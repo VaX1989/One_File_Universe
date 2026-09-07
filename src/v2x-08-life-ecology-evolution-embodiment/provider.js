@@ -23,6 +23,7 @@ export const LIFE_V2_PROVIDER_DESCRIPTOR = Object.freeze({
     'LIFE_LINEAGE_INSPECTION',
     'LIFE_POPULATION_INSPECTION',
     'LIFE_INTERACTION_INSPECTION',
+    'LIFE_REGION_INSPECTION',
     'LIFE_LOCAL_REPRESENTATIVE_SAMPLES',
     'LIFE_TRAIT_VARIATION_PROPOSAL',
     'LIFE_SELECTION_CRITERION_WITNESS',
@@ -85,6 +86,36 @@ export function createLifeProvider({ getState }) {
         incomingInteractionIds: Object.freeze(incoming.map((edge) => edge.id).sort()),
         outgoingInteractionIds: Object.freeze(outgoing.map((edge) => edge.id).sort()),
         authorityClass: 'MODEL_DERIVED_SIMULATION',
+      });
+    },
+
+    inspectInteraction(interactionId) {
+      const current = state();
+      const interaction = current.interactions.find((candidate) => candidate.id === String(interactionId));
+      if (!interaction) return null;
+      const source = current.populations.find((population) => population.id === interaction.sourcePopulationId);
+      const target = current.populations.find((population) => population.id === interaction.targetPopulationId);
+      assert(source && target, `interaction ${interaction.id} endpoints missing from aggregate state`);
+      return Object.freeze({
+        ...interaction,
+        source: Object.freeze({
+          populationId: source.id,
+          lineageId: source.lineageId,
+          regionId: source.regionId,
+          representedAbundance: source.abundance,
+        }),
+        target: Object.freeze({
+          populationId: target.id,
+          lineageId: target.lineageId,
+          regionId: target.regionId,
+          representedAbundance: target.abundance,
+        }),
+        causalWithinModel: interaction.kind !== 'ASSOCIATION_ONLY',
+        empiricalCausationClaimed: false,
+        authorityClass: 'MODEL_DERIVED_SIMULATION',
+        limitation: interaction.kind === 'ASSOCIATION_ONLY'
+          ? 'Association-only edges are explicitly non-causal in this model.'
+          : 'Causal semantics are bounded to this explicit model interaction and are not empirical validation.',
       });
     },
 
