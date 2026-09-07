@@ -1,0 +1,25 @@
+{
+  "schema": "ofu-provider-catalog-1",
+  "owners": [
+    {"id":"v2x-08-life-ecology-evolution-embodiment","prefixes":["v2x08"],"kinds":["model"],"authorities":["MODEL_DERIVED_SIMULATION"]}
+  ],
+  "canonicalAdmissions": [],
+  "providers": [
+    {
+      "contract":"ofu-px-contracts-1",
+      "id":"v2x08.model.life-single-file",
+      "version":"1.0.0",
+      "owner":"v2x-08-life-ecology-evolution-embodiment",
+      "kind":"model",
+      "authority":{"class":"MODEL_DERIVED_SIMULATION","contract":"ofu-px-contracts-1","model":"v2x08.life-single-file-facade","version":"1.0.0","sources":["src/v2x-08-life-ecology-evolution-embodiment/model.js","src/v2x-08-life-ecology-evolution-embodiment/provider.js","src/domains/biosphere/p6-canonical.js","src/domains/v1/life/v2x08-life-facade.js","research/v2x-16-life-civ-matter-frontier-2026-09-07@358d78bde0b9d1dc3e8ed7aacd44ec343e79258b"],"assumptions":["Explicit scenario inputs are required; abiogenesis is not synthesized.","P6 remains the canonical biosphere boundary; V2X-08 outputs are model-derived only."],"limitations":["The single-file facade is a bounded convergence implementation and does not reproduce every research or ESM exploration kernel.","Trait variation and speciation are proposals only until admitted by governed temporal/gameplay authority.","Local samples do not establish global abundance."] ,"evidence":[]},
+      "fidelity":{"regime":"bounded-ecology-evolution-facade","validity":"Explicit model scenarios plus read-only P6 canonical biosphere boundary.","resolution":"At most 64 populations, 128 lineages, 256 interactions, 16 traits per lineage and 128 local samples.","uncertainty":"No canonical alien-biology, abiogenesis, universal mutation-rate or universal species-threshold claim."},
+      "lifecycle":"SHIPPING",
+      "requires":[],
+      "claims":["model.life-aggregate-summary","model.life-local-samples","model.life-trait-variation-proposal","model.life-speciation-proposal"],
+      "operations":["INSPECT","REFINE"],
+      "budget":{"entities":448,"bytes":1048576,"operations":20000,"queue":64},
+      "evidence":[{"id":"v2x08.life.single-file-facade","tier":"FAST_LOCAL"}],
+      "mandatory":false
+    }
+  ]
+}
