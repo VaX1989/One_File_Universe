@@ -1,18 +1,19 @@
 (function(root){
 'use strict';
 const O=root.OFU=root.OFU||{};
-const VERSION='ofu-v2x14-living-audio-controller-4',AUTHORITY='PRESENTATION_ONLY';
+const VERSION='ofu-v2x14-living-audio-controller-5',AUTHORITY='PRESENTATION_ONLY';
 const clamp=v=>Math.max(0,Math.min(1,Number.isFinite(Number(v))?Number(v):0));
 function normalized(base,next={}){return Object.freeze({enabled:next.enabled===undefined?base.enabled:next.enabled===true,muted:next.muted===undefined?base.muted:next.muted===true,volume:next.volume===undefined?base.volume:clamp(next.volume),reducedSensory:next.reducedSensory===undefined?base.reducedSensory:next.reducedSensory===true});}
+const same=(a,b)=>a.enabled===b.enabled&&a.muted===b.muted&&a.volume===b.volume&&a.reducedSensory===b.reducedSensory;
 function create(options={}){
  const product=options.product||O.v1LivingProduct,map=options.map||O.v2x14LivingAudioContext,audio=options.audio||O.systemicAudioV1;if(!product||!map||!audio)throw new Error('V2X14 Living audio dependencies unavailable');
- const runtime=audio.createRuntime(options.runtimeOptions||{});let controls=normalized({enabled:false,muted:false,volume:0.5,reducedSensory:false}),activated=false,visibilitySuspended=false,disposed=false,tail=Promise.resolve();const audibleRequested=()=>activated&&controls.enabled&&!controls.muted&&controls.volume>0&&!visibilitySuspended;
+ const runtime=audio.createRuntime(options.runtimeOptions||{});let controls=normalized({enabled:false,muted:false,volume:0.5,reducedSensory:false}),activated=false,visibilitySuspended=false,disposed=false,tail=Promise.resolve(),controlRevision=0,suppressedDuplicateControlUpdates=0;const audibleRequested=()=>activated&&controls.enabled&&!controls.muted&&controls.volume>0&&!visibilitySuspended;
  function enqueue(fn){const run=tail.then(()=>{if(disposed)throw new Error('V2X14 Living audio controller disposed');return fn();});tail=run.catch(()=>{});return run;}
  async function updateContext(){const s=product.runtime?.snapshot?.()||{};return runtime.update(map.fromLiving(s),controls);}function sync(){return enqueue(updateContext);}
- function activate(next={}){return enqueue(async()=>{controls=normalized(controls,{...next,enabled:true});activated=true;await updateContext();return audibleRequested()?runtime.resume():runtime.suspend();});}
- function setControls(next={}){return enqueue(async()=>{controls=normalized(controls,next);await updateContext();return audibleRequested()?runtime.resume():runtime.suspend();});}
- function setVisibility(visible){return enqueue(async()=>{visibilitySuspended=visible===false;await updateContext();return audibleRequested()?runtime.resume():runtime.suspend();});}
- function snapshot(){return Object.freeze({schema:'ofu-v2x14-audio-controller-snapshot-4',version:VERSION,authority:AUTHORITY,activated,visibilitySuspended,audibleRequested:audibleRequested(),controls,runtime:runtime.snapshot(),createsWorldFacts:false,navigationDependency:false,accessibilityDependency:false,userActivationRequired:true,serializedControlUpdates:true});}
+ function activate(next={}){return enqueue(async()=>{const candidate=normalized(controls,{...next,enabled:true});if(!same(candidate,controls)){controls=candidate;controlRevision++;}const first=!activated;activated=true;if(first)controlRevision++;await updateContext();return audibleRequested()?runtime.resume():runtime.suspend();});}
+ function setControls(next={}){return enqueue(async()=>{const candidate=normalized(controls,next);if(same(candidate,controls)){suppressedDuplicateControlUpdates++;return runtime.snapshot();}controls=candidate;controlRevision++;await updateContext();return audibleRequested()?runtime.resume():runtime.suspend();});}
+ function setVisibility(visible){return enqueue(async()=>{const next=visible===false;if(next===visibilitySuspended)return runtime.snapshot();visibilitySuspended=next;await updateContext();return audibleRequested()?runtime.resume():runtime.suspend();});}
+ function snapshot(){return Object.freeze({schema:'ofu-v2x14-audio-controller-snapshot-5',version:VERSION,authority:AUTHORITY,activated,visibilitySuspended,audibleRequested:audibleRequested(),controls,runtime:runtime.snapshot(),controlRevision,suppressedDuplicateControlUpdates,createsWorldFacts:false,navigationDependency:false,accessibilityDependency:false,userActivationRequired:true,serializedControlUpdates:true,deduplicatesControlUpdates:true});}
  function dispose(){return enqueue(async()=>{disposed=true;visibilitySuspended=true;try{await runtime.suspend();}catch{}return runtime.dispose();});}return Object.freeze({authority:AUTHORITY,activate,setControls,setVisibility,sync,snapshot,dispose});
 }
 let mounted=null,attempts=0;
