@@ -12,6 +12,7 @@ function representation(args={}){
   let scene=null;
   if(context==='UNIVERSE')scene=provider.buildUniverse(args);
   else if(context==='GALAXY')scene=provider.buildGalaxy({galaxy:{canonicalId:args.scopeId,metadata:{modelProfile:{morphology:args.morphology||'UNKNOWN'}}},entities:args.entities||[],cameraFrame:args.cameraFrame,quality:'STANDARD',presentationSeed:args.presentationSeed,densityHint:args.densityHint});
+  else if(context==='REGION')scene=provider.buildRegion({parentId:args.scopeId,children:args.entities||[],quality:'STANDARD',focus:args.focus??0,parentExtent:args.parentExtent??1});
   else if(context==='NEIGHBORHOOD')scene=provider.buildNeighborhood({objects:args.entities||[],cameraFrame:args.cameraFrame,quality:'STANDARD',scaleUnits:original.profile({context:'NEIGHBORHOOD'}).scaleUnits});
   if(scene&&Array.isArray(scene.objects)){
    providerCalls++;
