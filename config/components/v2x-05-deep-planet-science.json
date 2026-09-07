@@ -1,0 +1,70 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v2x05.deep-planet.regime-core",
+      "version": "1.0.0",
+      "owner": "v2x-05-deep-planet-science",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/v2x-05-deep-planet-science/regime-core.js",
+      "dependencies": [],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "V2X-05 bounded regime classifier over already modeled V1 planetology state; no observational taxonomy, EOS inference or canonical promotion.",
+      "provides": ["v2x05.deep-planet.regime-core"]
+    },
+    {
+      "id": "v2x05.deep-planet.interior-atmosphere",
+      "version": "1.0.0",
+      "owner": "v2x-05-deep-planet-science",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/v2x-05-deep-planet-science/interior-atmosphere.js",
+      "dependencies": ["v2x05.deep-planet.regime-core"],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "V2X-05 reduced interior, constituent-family, retention-history and radiative context using existing V1 proxies; no calibrated EOS, retrieval, photochemistry or escape-rate claim.",
+      "provides": ["v2x05.deep-planet.interior-atmosphere"]
+    },
+    {
+      "id": "v2x05.deep-planet.climate-volatile",
+      "version": "1.0.0",
+      "owner": "v2x-05-deep-planet-science",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/v2x-05-deep-planet-science/climate-volatile.js",
+      "dependencies": ["v2x05.deep-planet.regime-core", "v2x05.deep-planet.interior-atmosphere"],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "V2X-05 bounded NOT_GCM seasonal/latitudinal envelope, exact modeled volatile partition and normalized causal attribution; no weather, ocean-history or conserved-energy claim.",
+      "provides": ["v2x05.deep-planet.climate-volatile"]
+    },
+    {
+      "id": "v2x05.deep-planet.provider",
+      "version": "1.0.0",
+      "owner": "v2x-05-deep-planet-science",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/v2x-05-deep-planet-science/deep-planet-provider.js",
+      "dependencies": ["v1.models.planetology.causal-system", "v2x05.deep-planet.regime-core", "v2x05.deep-planet.interior-atmosphere", "v2x05.deep-planet.climate-volatile"],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "V2X-05 additive read-only deep-planet provider exposing bounded rendering, ecology, gameplay and Prompt-08 consumer contexts without owning shared registries or canonical state.",
+      "provides": ["v2x05.deep-planet.provider", "ofu-v2x-05-deep-planet-consumer-1"]
+    },
+    {
+      "id": "px.providers.v2x05-deep-planet",
+      "version": "1.0.0",
+      "owner": "v2x-05-deep-planet-science",
+      "kind": "data",
+      "stage": "foundation",
+      "placement": "resource",
+      "source": "config/extensions/v2x-05-deep-planet-science/catalog.json",
+      "dependencies": [],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Lane-owned additive V2X-05 provider catalog bound at foundation as metadata only; runtime provider code is composed at full stage and canonical admissions remain empty.",
+      "provides": ["v2x05.deep-planet.provider-catalog"]
+    }
+  ]
+}

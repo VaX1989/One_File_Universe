@@ -1,0 +1,30 @@
+{
+  "schema": "ofu-provider-catalog-1",
+  "owners": [{"id":"v2x-03-macrocosm","prefixes":["v2x03"],"kinds":["representation"],"authorities":["PRESENTATION_ONLY"]}],
+  "canonicalAdmissions": [],
+  "providers": [{
+    "contract":"ofu-px-contracts-1",
+    "id":"v2x03.representation.macrocosm",
+    "version":"1.0.0",
+    "owner":"v2x-03-macrocosm",
+    "kind":"representation",
+    "authority":{
+      "class":"PRESENTATION_ONLY",
+      "contract":"ofu-px-contracts-1",
+      "model":"v2x03.macrocosm",
+      "version":"1.0.0",
+      "sources":["src/rendering/macro/macrocosm-provider.js","src/rendering/galaxy/galaxy-field.js","src/rendering/region/region-refinement.js","src/rendering/neighborhood/neighborhood-depth.js","src/v1x-02-spatial-universe/spatial-universe.js"],
+      "assumptions":["Stable upstream identity is supplied by governed discovery/model providers.","Camera frames are supplied by the governed external camera owner.","Astronomy morphology or density hints retain their upstream authority and are only consumed as presentation context here."],
+      "limitations":["Generated galaxy density particles, dust cues, clusters and fallback coordinates are presentation-only and are not calibrated observations.","The provider does not own camera, semantic scale, canonical selection, temporal state, persistence, registry semantics or astronomical equations.","Decorative particles are never canonical discovery results and are never selectable or navigable.","Region interpolation communicates continuity but is not a claim of physical motion or canonical region boundaries."],
+      "evidence":[]
+    },
+    "fidelity":{"regime":"product","validity":"Deterministic identity-keyed macrocosm presentation for Universe, Galaxy, Region and Neighborhood contexts under externally governed inputs.","resolution":"At most 64 represented upstream entities, 96 region children and 1536 decorative stellar-density particles before stricter quality-profile limits.","uncertainty":"Generated spatial/morphological cues are presentation-only; stronger upstream positions or facts retain their declared authority without promotion."},
+    "lifecycle":"SHIPPING",
+    "requires":[{"id":"v1x02.representation.spatial-universe","version":"1.0.0","authority":"PRESENTATION_ONLY"},{"id":"px.interaction.camera","version":"1.0.0","authority":"PRESENTATION_ONLY"}],
+    "claims":["representation.macrocosm-3d","representation.galaxy-morphology-bounded","representation.decorative-density-nonselectable","representation.region-refinement-continuity","representation.cross-scale-identity-continuity"],
+    "operations":["REPRESENT","PROJECT","REFINE"],
+    "budget":{"entities":1536,"bytes":1048576,"operations":8192,"queue":96},
+    "evidence":[{"id":"v2x03.macrocosm.determinism","tier":"FAST_LOCAL"},{"id":"v2x03.macrocosm.depth-bounds","tier":"LANE_TARGETED"},{"id":"v2x03.macrocosm.continuity-identity","tier":"LANE_TARGETED"}],
+    "mandatory":false
+  }]
+}
