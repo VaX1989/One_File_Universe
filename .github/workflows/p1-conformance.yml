@@ -22,6 +22,7 @@ jobs:
         with:
           ref: '${{ env.OFU_SOURCE_SHA }}'
           fetch-depth: 0
+          persist-credentials: false
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # Node 24 runtime
         with: {node-version: '24.20.0'}
       - name: Verify exact source checkout
@@ -40,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # Node 24 runtime
-        with: {ref: '${{ env.OFU_SOURCE_SHA }}'}
+        with: {ref: '${{ env.OFU_SOURCE_SHA }}', persist-credentials: false}
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # Node 24 runtime
         with: {node-version: '24.20.0'}
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # Node 24 runtime
@@ -63,7 +64,7 @@ jobs:
         browser: [chromium, firefox, webkit]
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # Node 24 runtime
-        with: {ref: '${{ env.OFU_SOURCE_SHA }}'}
+        with: {ref: '${{ env.OFU_SOURCE_SHA }}', persist-credentials: false}
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # Node 24 runtime
         with: {node-version: '24.20.0'}
       - name: Verify exact source checkout
@@ -94,7 +95,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # Node 24 runtime
-        with: {ref: '${{ env.OFU_SOURCE_SHA }}'}
+        with: {ref: '${{ env.OFU_SOURCE_SHA }}', persist-credentials: false}
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # Node 24 runtime
         with: {node-version: '24.20.0'}
       - name: Verify exact source checkout
@@ -117,7 +118,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # Node 24 runtime
-        with: {ref: '${{ env.OFU_SOURCE_SHA }}'}
+        with: {ref: '${{ env.OFU_SOURCE_SHA }}', persist-credentials: false}
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # Node 24 runtime
         with: {node-version: '24.20.0'}
       - name: Verify exact source checkout
