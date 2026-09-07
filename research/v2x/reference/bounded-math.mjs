@@ -6,6 +6,10 @@ export function assertRecord(value, label = 'value') {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
     throw new TypeError(`${label} must be a plain record`);
   }
+  const prototype = Object.getPrototypeOf(value);
+  if (prototype !== Object.prototype && prototype !== null) {
+    throw new TypeError(`${label} must be a plain record`);
+  }
   return value;
 }
 

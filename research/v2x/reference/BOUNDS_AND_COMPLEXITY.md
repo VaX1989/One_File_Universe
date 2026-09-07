@@ -10,7 +10,7 @@ Research engineering bounds, not measured shipping performance.
 | commodities / sectors / routes | 64 / 32 / 128 | O(S*inputs + shipments log shipments) |
 | technologies / institutions / conventions | 128 / 32 / 64 | O(nodes+edges) |
 | matter species / reactions | 64 / 128 | O(reactions*stoichiometric terms) |
-| compartments / transport edges | 32 / 128 | O(edges log edges) |
+| compartments / transport edges / global transport species | 32 / 128 / 64 | O(compartments*species + edges log edges) |
 | microstructure grains / interfaces | 256 / 512 | O(G + I log I) |
 | atom sites / bonds | 256 / 512 | O(A+B) |
 | reference validity fields / fingerprint fields | 16 / 64 | bounded O(fields) |

@@ -18,7 +18,7 @@ Thermodynamic opportunity never implies life. `SOURCE_BACKED` opportunity requir
 
 ## Individuals non-claims
 
-Cohort transitions are accounting over supplied rates, not real population forecasts. Materialized persons are ephemeral bounded refinements with no canonical person identity, psychology, or predicted biography. Their request/state fingerprint prevents stale aggregate reconciliation but does not create persistent person identity. Exact genealogy is deliberately lost outside the retained kinship window.
+Cohort transitions are accounting over supplied rates, not real population forecasts. Materialized persons are ephemeral bounded refinements with no canonical person identity, psychology, or predicted biography. Their request/state fingerprint prevents stale aggregate reconciliation; mixed request batches and forged ID/fingerprint/slot metadata fail closed, without creating persistent person identity. Exact genealogy is deliberately lost outside the retained kinship window.
 
 ## Civilization non-claims
 
@@ -36,4 +36,4 @@ Cross-domain fixtures are falsification oracles/proposals only. They cannot admi
 
 ## Failure policy
 
-Invalid records, duplicate IDs/dependencies/topology, unknown references, cap overflow, rejected unbounded metadata, stale refinement fingerprints, negative stocks, graph cycles, unbalanced reactions, missing provenance, unsupported authority combinations, and invalid model-regime booleans fail closed. Unknown remains unknown.
+Invalid or non-plain records, duplicate IDs/dependencies/topology, unknown references, cap overflow, rejected unbounded metadata, stale or mixed refinement fingerprints, forged ephemeral ID metadata, negative stocks, empty/zero elemental compositions, graph cycles, unbalanced reactions, missing provenance, unsupported authority combinations, unknown model-regime flags, and invalid model-regime booleans fail closed. Unknown remains unknown.

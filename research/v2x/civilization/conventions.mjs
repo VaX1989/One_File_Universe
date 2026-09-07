@@ -12,7 +12,7 @@ export function conventionTick(groups, policy) {
   if (total === 0) return Object.freeze([]);
   const majority = [...groups].sort((a, b) => b.count - a.count || asciiCompare(a.id, b.id))[0];
   return Object.freeze(groups.map((g) => {
-    const fingerprint64 = stableFingerprint64([g.id, String(epoch), 'convention'], 'conventionInnovation', 128);
+    const fingerprint64 = stableFingerprint64([g.id, String(epoch), String(adoption), String(innovation), 'convention-policy-v2'], 'conventionInnovation', 128);
     const draw = Number.parseInt(fingerprint64.slice(-8), 16) % 1_000_000;
     return Object.freeze({
       ...g,

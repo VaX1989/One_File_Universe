@@ -1,4 +1,4 @@
-import { addSafe, assertRecord, boundedArray, mulDivFloor, nonNegativeInt, ppm, uniqueIds } from '../reference/bounded-math.mjs';
+import { addSafe, assertRecord, boundedArray, identifier, mulDivFloor, nonNegativeInt, ppm, uniqueIds } from '../reference/bounded-math.mjs';
 import { CIV_AUTHORITY, CIV_LIMITS } from './production.mjs';
 
 export function validateTechnologyGraph(nodes) {
@@ -13,9 +13,9 @@ export function validateTechnologyGraph(nodes) {
     const materialIds = new Set();
     for (const r of n.materials ?? []) {
       assertRecord(r, `${n.id}.material`);
-      if (typeof r.commodityId !== 'string' || !r.commodityId) throw new Error(`technology ${n.id} has invalid material commodityId`);
-      if (materialIds.has(r.commodityId)) throw new Error(`technology ${n.id} has duplicate material ${r.commodityId}`);
-      materialIds.add(r.commodityId);
+      const commodityId = identifier(r.commodityId, `${n.id}.material.commodityId`);
+      if (materialIds.has(commodityId)) throw new Error(`technology ${n.id} has duplicate material ${commodityId}`);
+      materialIds.add(commodityId);
       nonNegativeInt(r.minStock, 'minStock', CIV_LIMITS.maxStock);
     }
     for (const d of n.requires ?? []) {

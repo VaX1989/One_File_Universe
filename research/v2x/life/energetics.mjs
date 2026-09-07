@@ -57,8 +57,9 @@ function normalizeSource(source) {
 
 export function thermodynamicOpportunity(input) {
   assertRecord(input, 'input');
-  const donor = Boolean(input.donorAvailable);
-  const acceptor = Boolean(input.acceptorAvailable);
+  if (typeof input.donorAvailable !== 'boolean' || typeof input.acceptorAvailable !== 'boolean') throw new TypeError('donorAvailable and acceptorAvailable must be boolean');
+  const donor = input.donorAvailable;
+  const acceptor = input.acceptorAvailable;
   const gradient = int(input.freeEnergyGradientProxy ?? 0, 'freeEnergyGradientProxy', -1_000_000, 1_000_000);
   const pathway = input.pathwayAuthority ?? 'UNKNOWN';
   if (!['SOURCE_BACKED', 'MODEL_DERIVED', 'UNKNOWN'].includes(pathway)) throw new Error('invalid pathwayAuthority');
