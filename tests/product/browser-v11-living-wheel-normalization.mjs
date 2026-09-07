@@ -15,25 +15,27 @@ const ready=()=>page.waitForFunction(()=>OFU.v1LivingProduct.renderer.state().re
 
 try{
  await page.goto(target,{waitUntil:'load'});
- await page.waitForFunction(()=>OFU?.v1LivingProduct?.snapshot?.().initialized&&OFU?.v11LivingWheelNormalization?.snapshot&&OFU?.productUI,null,{timeout:30000});
+ await page.waitForFunction(()=>OFU?.v1LivingProduct?.snapshot?.().initialized&&OFU?.v11LivingWheelNormalization?.snapshot&&OFU?.v1LivingRuntime?.WHEEL_PACING_VERSION&&typeof OFU?.v1LivingProduct?.runtime?.wheelPacingSnapshot==='function'&&OFU?.productUI,null,{timeout:30000});
  await page.evaluate(async()=>{await OFU.v1LivingProduct.ready();OFU.productUI.workspace('explore',{focus:false,announceChange:false});OFU.v1LivingProduct.runtime.setNavigationCoordinate(2,{source:'wheel-normalization-reset'});});
  await raf2();await ready();
- const authority=await page.evaluate(()=>({normalizer:OFU.v11LivingWheelNormalization.snapshot(),product:OFU.v1LivingProduct.snapshot()}));
+ const authority=await page.evaluate(()=>({normalizer:OFU.v11LivingWheelNormalization.snapshot(),product:OFU.v1LivingProduct.snapshot(),scheduler:OFU.v1LivingRuntime.WHEEL_PACING_VERSION,pacing:OFU.v1LivingProduct.runtime.wheelPacingSnapshot()}));
  assert.equal(authority.normalizer.authority,'PRESENTATION_ONLY');
  assert.equal(authority.normalizer.strategy,'UNIT_AWARE_REDISPATCH_TO_SHIPPING_PIXEL_WHEEL_PATH');
  assert.equal(authority.product.canonicalMutation,false);
+ assert.equal(authority.scheduler,'ofu-living-wheel-pacer-2');
+ assert.equal(authority.pacing.strategy,'RAF_ACCUMULATED_WHEEL_DELTA_WITH_RUNTIME_NORMALIZED_SYNC_BOUNDARIES');
 
  const fire=async(deltaY,deltaMode)=>{
   const immediate=await page.evaluate(({deltaY,deltaMode})=>{
-   const product=OFU.v1LivingProduct,runtime=product.runtime,canvas=document.getElementById('living-view'),rect=canvas.getBoundingClientRect(),before=runtime.snapshot(),n0=OFU.v11LivingWheelNormalization.snapshot();
+   const product=OFU.v1LivingProduct,runtime=product.runtime,canvas=document.getElementById('living-view'),rect=canvas.getBoundingClientRect(),before=runtime.snapshot(),n0=OFU.v11LivingWheelNormalization.snapshot(),p0=runtime.wheelPacingSnapshot();
    const seen=[];const observe=e=>seen.push({deltaMode:e.deltaMode,deltaY:e.deltaY,defaultPrevented:e.defaultPrevented});canvas.addEventListener('wheel',observe,{capture:true});
    const original=new WheelEvent('wheel',{deltaY,deltaMode,clientX:rect.left+rect.width*.5,clientY:rect.top+rect.height*.5,bubbles:true,cancelable:true});
    const dispatchResult=canvas.dispatchEvent(original);canvas.removeEventListener('wheel',observe,{capture:true});
-   const after=runtime.snapshot(),n1=OFU.v11LivingWheelNormalization.snapshot();
-   return {dispatchResult,originalDefaultPrevented:original.defaultPrevented,seen,before:{revision:before.revision,stage:before.stage,navigationCoordinate:before.navigationCoordinate,node:before.node?.canonicalId||before.node?.entityId||null,body:before.body?.canonicalId||before.body?.entityId||null,historyDepth:before.historyDepth},after:{revision:after.revision,stage:after.stage,navigationCoordinate:after.navigationCoordinate,node:after.node?.canonicalId||after.node?.entityId||null,body:after.body?.canonicalId||after.body?.entityId||null,historyDepth:after.historyDepth},normalization:{line:n1.lineEvents-n0.lineEvents,page:n1.pageEvents-n0.pageEvents,redispatched:n1.redispatchedEvents-n0.redispatchedEvents,maxAbs:n1.maxAbsNormalizedDeltaY},input:product.snapshot().input};
+   const after=runtime.snapshot(),n1=OFU.v11LivingWheelNormalization.snapshot(),p1=runtime.wheelPacingSnapshot();
+   return {dispatchResult,originalDefaultPrevented:original.defaultPrevented,seen,before:{revision:before.revision,stage:before.stage,navigationCoordinate:before.navigationCoordinate,node:before.node?.canonicalId||before.node?.entityId||null,body:before.body?.canonicalId||before.body?.entityId||null,historyDepth:before.historyDepth},after:{revision:after.revision,stage:after.stage,navigationCoordinate:after.navigationCoordinate,node:after.node?.canonicalId||after.node?.entityId||null,body:after.body?.canonicalId||after.body?.entityId||null,historyDepth:after.historyDepth},normalization:{line:n1.lineEvents-n0.lineEvents,page:n1.pageEvents-n0.pageEvents,redispatched:n1.redispatchedEvents-n0.redispatchedEvents,maxAbs:n1.maxAbsNormalizedDeltaY},pacingBefore:p0,pacingImmediate:p1,input:product.snapshot().input};
   },{deltaY,deltaMode});
   await raf2();await ready();
-  const settled=await page.evaluate(()=>{const s=OFU.v1LivingProduct.runtime.snapshot();return{revision:s.revision,stage:s.stage,navigationCoordinate:s.navigationCoordinate,node:s.node?.canonicalId||s.node?.entityId||null,body:s.body?.canonicalId||s.body?.entityId||null,historyDepth:s.historyDepth,input:OFU.v1LivingProduct.snapshot().input,normalization:OFU.v11LivingWheelNormalization.snapshot()};});
+  const settled=await page.evaluate(()=>{const runtime=OFU.v1LivingProduct.runtime,s=runtime.snapshot();return{revision:s.revision,stage:s.stage,navigationCoordinate:s.navigationCoordinate,node:s.node?.canonicalId||s.node?.entityId||null,body:s.body?.canonicalId||s.body?.entityId||null,historyDepth:s.historyDepth,input:OFU.v1LivingProduct.snapshot().input,normalization:OFU.v11LivingWheelNormalization.snapshot(),pacing:runtime.wheelPacingSnapshot()};});
   return {immediate,settled};
  };
 
@@ -42,6 +44,13 @@ try{
  assert.equal(line.immediate.dispatchResult,false,'prevented source event must report cancelled dispatch');
  assert.deepEqual(line.immediate.seen.map(e=>[e.deltaMode,e.deltaY]),[[0,-40]],'one line notch must redispatch as one bounded pixel-wheel event');
  assert.deepEqual(line.immediate.normalization,{line:1,page:0,redispatched:1,maxAbs:40});
+ assert.equal(line.immediate.pacingImmediate.inputEvents-line.immediate.pacingBefore.inputEvents,1,'normalized line input must enter the canonical wheel pacer exactly once');
+ assert.equal(line.immediate.pacingImmediate.frames-line.immediate.pacingBefore.frames,0,'same-stage normalized line input must not commit inside the dispatch task');
+ assert.equal(line.immediate.pacingImmediate.pendingEvents,1,'normalized line input must remain pending for the next native animation frame');
+ assert.equal(line.immediate.after.revision,line.immediate.before.revision,'normalized same-stage line input must preserve runtime revision until paced flush');
+ assert.equal(line.immediate.after.navigationCoordinate,line.immediate.before.navigationCoordinate,'normalized same-stage line input must preserve coordinate until paced flush');
+ assert.equal(line.settled.pacing.frames-line.immediate.pacingBefore.frames,1,'normalized line input must produce exactly one canonical paced navigation frame');
+ assert.equal(line.settled.pacing.pendingEvents,0,'normalized line input must leave no pending wheel work after flush');
  assert.equal(line.settled.input.lastGesture,'wheel','normalized event must still traverse the shipping Living wheel listener');
  assert.equal(line.settled.stage,line.immediate.before.stage,'one line notch from REGION must remain same-stage');
  assert.equal(line.settled.node,line.immediate.before.node);assert.equal(line.settled.body,line.immediate.before.body);assert.equal(line.settled.historyDepth,line.immediate.before.historyDepth);
@@ -64,5 +73,5 @@ try{
  assert.equal(pageMode.settled.input.lastGesture,'wheel');
 
  assert.equal(errors.length,0,errors.join('\n'));assert.equal(requests.length,0,requests.join('\n'));
- console.log(JSON.stringify({status:'PASS',suite:'v11-living-wheel-normalization',authority:'PRESENTATION_ONLY',lineEquivalentPixels:40,lineCoordinateDelta:lineDelta,pixelCoordinateDelta:pixelDelta,pageNormalizedPixels:300,maxAbsNormalizedDeltaY:pageMode.settled.normalization.maxAbsNormalizedDeltaY,shippingWheelPathPreserved:true,offline:true,physicalDevice:false}));
+ console.log(JSON.stringify({status:'PASS',suite:'v11-living-wheel-normalization',authority:'PRESENTATION_ONLY',wheelPacingVersion:authority.scheduler,lineEquivalentPixels:40,lineCoordinateDelta:lineDelta,pixelCoordinateDelta:pixelDelta,lineNavigationFrames:line.settled.pacing.frames-line.immediate.pacingBefore.frames,pageNormalizedPixels:300,maxAbsNormalizedDeltaY:pageMode.settled.normalization.maxAbsNormalizedDeltaY,shippingWheelPathPreserved:true,canonicalWheelPacerPreserved:true,offline:true,physicalDevice:false}));
 }finally{await context.close();await browser.close();}
