@@ -81,6 +81,7 @@ const nativeRuntimeContracts=[
   {file:`${workflowDir}/post-v1-development.yml`,pins:['checkout','setupNode','setupPython']},
   {file:sourceReproductionFile,pins:['checkout','uploadArtifact']},
   {file:`${workflowDir}/reliability-phase-router.yml`,pins:['checkout','setupNode']},
+  {file:`${workflowDir}/reliability-main-promotion-actions.yml`,pins:['checkout','setupNode','setupPython','uploadArtifact','downloadArtifact']},
   {file:`${workflowDir}/v1-certification.yml`,pins:['checkout','setupNode','setupPython','uploadArtifact']},
   {file:`${workflowDir}/rendering-production.yml`,pins:['checkout','setupNode','setupPython','uploadArtifact','downloadArtifact']},
   {file:`${workflowDir}/px-foundation.yml`,pins:['checkout','setupNode','uploadArtifact']},
