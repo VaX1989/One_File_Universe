@@ -13,6 +13,7 @@ on:
       - 'tests/governance/git-phase-router.mjs'
       - 'tests/governance/phase-gate.mjs'
       - 'tests/governance/historical-phase-workflows.mjs'
+      - 'tests/governance/historical-action-runtimes.mjs'
       - '.github/workflows/p1-conformance.yml'
       - '.github/workflows/p1-p4-baseline.yml'
       - '.github/workflows/p2-conformance.yml'
@@ -23,8 +24,6 @@ on:
       - '.github/workflows/p6-v1-conformance.yml'
       - '.github/workflows/reliability-phase-router.yml'
   pull_request:
-    branches:
-      - 'development/v1.*'
     paths:
       - 'tools/ci/phase-router.mjs'
       - 'tools/ci/git-phase-router.mjs'
@@ -34,6 +33,7 @@ on:
       - 'tests/governance/git-phase-router.mjs'
       - 'tests/governance/phase-gate.mjs'
       - 'tests/governance/historical-phase-workflows.mjs'
+      - 'tests/governance/historical-action-runtimes.mjs'
       - '.github/workflows/p1-conformance.yml'
       - '.github/workflows/p1-p4-baseline.yml'
       - '.github/workflows/p2-conformance.yml'
@@ -79,6 +79,8 @@ jobs:
         run: node tests/governance/phase-gate.mjs
       - name: Historical workflow routing contract
         run: node tests/governance/historical-phase-workflows.mjs
+      - name: Historical action runtime contract
+        run: node tests/governance/historical-action-runtimes.mjs
       - name: Exercise fail-closed CLI examples
         shell: bash
         run: |
