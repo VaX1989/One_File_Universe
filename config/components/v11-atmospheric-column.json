@@ -1,0 +1,22 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1.environment.atmospheric-column",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/environment/atmospheric-column.js",
+      "dependencies": [
+        "v1.planetology.giant-family"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Selective V1X-16 harvest: bounded ideal-gas isothermal hydrostatic scale-height reference derived from existing modeled temperature, molecular-mass and gravity proxies. Airless/trace and non-thin-layer regimes fail closed; no vertical profile, atmospheric extent, measured climate/composition or canonical promotion claim.",
+      "provides": [
+        "v1.environment.atmospheric-column"
+      ]
+    }
+  ]
+}
