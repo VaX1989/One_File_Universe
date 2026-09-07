@@ -13,16 +13,19 @@ const privilegedWriteKeys=new Set([
   'actions','attestations','checks','contents','deployments','discussions','id-token',
   'issues','packages','pages','pull-requests','repository-projects','security-events','statuses',
 ]);
-
-function hasPrivilegedPermission(text){
-  for(const raw of text.split(/\r?\n/)){
-    const line=raw.replace(/\s+#.*$/,'');
-    if(/^\s*permissions:\s*write-all\s*$/.test(line))return true;
-    const match=line.match(/^\s*([a-z-]+):\s*write\s*$/);
-    if(match&&privilegedWriteKeys.has(match[1]))return true;
-  }
+function normalizedPermissionLine(raw){return raw.replace(/\s+#.*$/,'').trim()}
+function unquote(value){value=String(value).trim();if((value.startsWith("'")&&value.endsWith("'"))||(value.startsWith('"')&&value.endsWith('"')))return value.slice(1,-1).trim();return value}
+function privilegedPermissionOnLine(raw){
+  const line=normalizedPermissionLine(raw);
+  const scalar=line.match(/^permissions:\s*(.+)$/);
+  if(scalar&&!scalar[1].trim().startsWith('{')&&unquote(scalar[1])==='write-all')return true;
+  const direct=line.match(/^([a-z-]+):\s*(.+)$/);
+  if(direct&&privilegedWriteKeys.has(direct[1])&&unquote(direct[2])==='write')return true;
+  const inline=line.match(/^permissions:\s*\{(.*)\}\s*$/);
+  if(inline){for(const entry of inline[1].split(',')){const pair=entry.trim().match(/^["']?([a-z-]+)["']?\s*:\s*(.+)$/);if(pair&&privilegedWriteKeys.has(pair[1])&&unquote(pair[2])==='write')return true}}
   return false;
 }
+function hasPrivilegedPermission(text){return text.split(/\r?\n/).some(privilegedPermissionOnLine)}
 
 const privilegedWorkflows=fs.readdirSync(workflowDir)
   .filter(name=>/\.ya?ml$/.test(name))
@@ -70,11 +73,13 @@ assert.throws(()=>assertCredentialBoundary('synthetic-comment-spoof.yml',comment
 const safe=`steps:\n  - uses: actions/checkout@${'a'.repeat(40)}\n    with:\n      ref: deadbeef\n      persist-credentials: false # credential is intentionally ephemeral\n  - name: Test\n    run: node test.mjs\n`;
 assert.equal(assertCredentialBoundary('synthetic-safe.yml',safe),1);
 assert.equal(hasPrivilegedPermission('permissions:\n  contents: write\n'),true);
-assert.equal(hasPrivilegedPermission('jobs:\n  release:\n    permissions:\n      pull-requests: write\n'),true);
+assert.equal(hasPrivilegedPermission('jobs:\n  release:\n    permissions:\n      pull-requests: "write"\n'),true);
 assert.equal(hasPrivilegedPermission('permissions:\n  id-token: write\n'),true,'OIDC token minting is a privileged credential boundary');
 assert.equal(hasPrivilegedPermission('permissions:\n  attestations: write\n'),true);
 assert.equal(hasPrivilegedPermission('permissions:\n  pages: write\n'),true);
-assert.equal(hasPrivilegedPermission('permissions: write-all\n'),true);
+assert.equal(hasPrivilegedPermission("permissions: 'write-all'\n"),true);
+assert.equal(hasPrivilegedPermission('permissions: {contents: read, id-token: write}\n'),true,'inline permission maps must not evade privilege discovery');
+assert.equal(hasPrivilegedPermission("permissions: {'contents': 'write', actions: read}\n"),true,'quoted inline permission maps must not evade privilege discovery');
 assert.equal(hasPrivilegedPermission('permissions:\n  contents: read\n  # issues: write\n'),false);
 
-console.log(JSON.stringify({status:'PASS',suite:'workflow-credential-boundary',workflows:protectedWorkflows.length,privilegedWorkflows:privilegedWorkflows.length,checkouts,syntheticCases:11}));
+console.log(JSON.stringify({status:'PASS',suite:'workflow-credential-boundary',workflows:protectedWorkflows.length,privilegedWorkflows:privilegedWorkflows.length,checkouts,syntheticCases:13}));
