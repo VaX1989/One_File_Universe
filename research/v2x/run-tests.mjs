@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 import { pairwiseHillScreen, minimumOuterAxisForCircularHillScreen, rockyRadiusPrem, rockyRadiusPremInterval, hydrostaticScaleHeight } from './astronomy/oracles.mjs';
-import { angularMomentumDeficit, radialOrbitOverlapScreen, dynamicsEscalation } from './astronomy/dynamics.mjs';
-import { mistInterpolationContract, multiplicityPopulationContract } from './astronomy/stellar-contracts.mjs';
+import { angularMomentumDeficit, collisionCriticalAmd, pairwiseCollisionAmdScreen, radialOrbitOverlapScreen, dynamicsEscalation } from './astronomy/dynamics.mjs';
+import { mistInterpolationContract, interpolateVersionedStellarSlice, multiplicityPopulationContract, evaluateVersionedMultiplicityCells } from './astronomy/stellar-contracts.mjs';
 import { greyAtmosphereSurfaceTemperature, classifyEscapeRegime, convectionDiagnostic, volatileLedger, schlichtingIsothermalImpactLoss } from './planetology/oracles.mjs';
 import { zeroDimensionalEbm, transientZeroDimensionalEbmStep, orbitalMeanFluxFactor, energyLimitedEscapeApplicability, atmosphereMassBudgetStep, blackbodyEmission } from './planetology/climate-and-escape.mjs';
-import { compositionRegimeContract, waterEosApplicabilityContract, thermalLedgerStep, nusseltRayleighScenario, laggedNusseltRayleighScenario } from './planetology/bulk-and-geodynamics.mjs';
+import { compositionRegimeContract, waterEosApplicabilityContract, interpolateVersionedWaterEos, interpolateVersionedSubNeptuneGrid, thermalLedgerStep, nusseltRayleighScenario, laggedNusseltRayleighScenario } from './planetology/bulk-and-geodynamics.mjs';
 
 function near(actual, expected, tolerance, label) {
   assert.ok(Math.abs(actual - expected) <= tolerance, `${label}: expected ${expected}, got ${actual}`);
@@ -40,19 +40,47 @@ near(amdCircular.amdSI, 0, 0, 'circular coplanar AMD');
 const amdExcited = angularMomentumDeficit({ starMassSolar: 1, planets: [{ massEarth: 1, semiMajorAxisAu: 1, eccentricity: 0.1, inclinationDeg: 2 }] });
 assert.ok(amdExcited.amdSI > 0);
 assert.equal(amdExcited.amdStabilityThresholdApplied, false);
+const criticalAmd = collisionCriticalAmd({ alpha: 0.8, gamma: 1 });
+assert.equal(criticalAmd.status, 'PRESENT');
+near(criticalAmd.criticalInnerEccentricity, 0.10435607626104001, 1e-14, 'critical AMD e1');
+near(criticalAmd.criticalOuterEccentricity, 0.11651513899116794, 1e-14, 'critical AMD e2');
+near(criticalAmd.relativeCriticalAmd, 0.01169465771712036, 1e-14, 'critical AMD value');
+assert.ok(Math.abs(criticalAmd.rootResidual) < 1e-14);
+assert.equal(collisionCriticalAmd({ alpha: 1, gamma: 1 }).status, 'UNSUPPORTED');
+const amdStable = pairwiseCollisionAmdScreen({ innerMassEarth: 1, outerMassEarth: 1, innerSemiMajorAxisAu: 0.8, outerSemiMajorAxisAu: 1, innerEccentricity: 0.05, outerEccentricity: 0.05 });
+const amdUnstable = pairwiseCollisionAmdScreen({ innerMassEarth: 1, outerMassEarth: 1, innerSemiMajorAxisAu: 0.8, outerSemiMajorAxisAu: 1, innerEccentricity: 0.2, outerEccentricity: 0.2 });
+assert.equal(amdStable.status, 'AMD_COLLISION_STABLE_SCREEN');
+assert.equal(amdUnstable.status, 'DYNAMICAL_ANALYSIS_REQUIRED');
+assert.ok(amdStable.relativeAmd < amdUnstable.relativeAmd);
+assert.equal(amdStable.nBodyTruthClaim, false);
 const radialSafe = radialOrbitOverlapScreen({ innerSemiMajorAxisAu: 1, innerEccentricity: 0.05, outerSemiMajorAxisAu: 1.3, outerEccentricity: 0.05 });
 const radialOverlap = radialOrbitOverlapScreen({ innerSemiMajorAxisAu: 1, innerEccentricity: 0.2, outerSemiMajorAxisAu: 1.1, outerEccentricity: 0.1 });
 assert.equal(radialSafe.status, 'NO_CURRENT_RADIAL_OVERLAP');
 assert.equal(radialOverlap.status, 'RADIAL_OVERLAP_OR_TOUCH');
-assert.equal(dynamicsEscalation({ hillScreenStatus: 'SCREENED_HILL_STABLE', radialOverlapStatus: radialSafe.status, amdDiagnostic: amdCircular }).status, 'LOW_COST_SCREENS_PASSED');
+assert.equal(dynamicsEscalation({ hillScreenStatus: 'SCREENED_HILL_STABLE', radialOverlapStatus: radialSafe.status, amdDiagnostic: amdCircular, collisionAmdScreenStatus: amdStable.status }).status, 'LOW_COST_SCREENS_PASSED');
+assert.equal(dynamicsEscalation({ hillScreenStatus: 'SCREENED_HILL_STABLE', radialOverlapStatus: radialSafe.status, amdDiagnostic: amdCircular, collisionAmdScreenStatus: amdUnstable.status }).status, 'DYNAMICAL_ANALYSIS_REQUIRED');
 assert.equal(dynamicsEscalation({ hillScreenStatus: 'SCREENED_HILL_STABLE', radialOverlapStatus: radialOverlap.status, amdDiagnostic: amdCircular }).status, 'DYNAMICAL_ANALYSIS_REQUIRED');
 
-// Stellar/multiplicity contracts enforce versioning and coupled priors.
+// Stellar/multiplicity contracts enforce versioning, bounds and coupled priors.
 assert.equal(mistInterpolationContract({ releaseId: 'MIST-II-2026', gridHash: 'sha256:test', ageLog10Years: 9, initialMassSolar: 1, feh: 0, alphaFe: 0.2 }).status, 'INTERPOLATION_CONTRACT_READY');
 assert.equal(mistInterpolationContract({ releaseId: 'MIST-II-2026', gridHash: 'sha256:test', ageLog10Years: 9, initialMassSolar: 1, feh: 0, alphaFe: 0.1 }).status, 'RESEARCH_REQUIRED');
+const stellarSlice = interpolateVersionedStellarSlice({ releaseId: 'test-grid', gridHash: 'sha256:test', quantityId: 'synthetic-linear', ageAxisLog10Years: [8, 10], massAxisSolar: [1, 3], values: [[10, 30], [30, 50]], ageLog10Years: 9, initialMassSolar: 2 });
+assert.equal(stellarSlice.status, 'MODEL_DERIVED_INTERPOLATED_SLICE');
+near(stellarSlice.value, 30, 1e-12, 'bilinear stellar slice');
+assert.equal(interpolateVersionedStellarSlice({ releaseId: 'test-grid', gridHash: 'sha256:test', quantityId: 'x', ageAxisLog10Years: [8, 10], massAxisSolar: [1, 3], values: [[10, 30], [30, 50]], ageLog10Years: 11, initialMassSolar: 2 }).status, 'UNSUPPORTED');
 const multi = multiplicityPopulationContract({ primaryMassSolar: 1, periodLog10Days: 3, massRatio: 0.5, eccentricity: 0.2, populationId: 'research-population' });
 assert.equal(multi.couplingRequired, true);
 assert.equal(multi.independentFactorizationAuthorized, false);
+const cells = [
+  { primaryMassMin: 0.5, primaryMassMax: 1.5, periodMin: 0, periodMax: 5, qMin: 0.1, qMax: 0.8, eMin: 0, eMax: 0.5, weight: 0.25 },
+  { primaryMassMin: 0.5, primaryMassMax: 1.5, periodMin: 0, periodMax: 5, qMin: 0.8, qMax: 1.01, eMin: 0, eMax: 0.5, weight: 0.75 }
+];
+const cellMatch = evaluateVersionedMultiplicityCells({ populationId: 'research-population', tableHash: 'sha256:test', cells, primaryMassSolar: 1, periodLog10Days: 3, massRatio: 0.5, eccentricity: 0.2 });
+assert.equal(cellMatch.status, 'VERSIONED_CONDITIONAL_CELL');
+near(cellMatch.weight, 0.25, 0, 'conditional multiplicity cell');
+assert.equal(evaluateVersionedMultiplicityCells({ populationId: 'research-population', tableHash: 'sha256:test', cells, primaryMassSolar: 1, periodLog10Days: 7, massRatio: 0.5, eccentricity: 0.2 }).status, 'RESEARCH_REQUIRED');
+const overlappingCells = [...cells, { ...cells[0] }];
+assert.equal(evaluateVersionedMultiplicityCells({ populationId: 'research-population', tableHash: 'sha256:test', cells: overlappingCells, primaryMassSolar: 1, periodLog10Days: 3, massRatio: 0.5, eccentricity: 0.2 }).status, 'UNSUPPORTED');
 
 // Earth-like ideal-gas hydrostatic scale-height reference.
 near(hydrostaticScaleHeight({ temperatureK: 288, molarMassKgPerMol: 0.02897, gravityMps2: 9.80665 }).scaleHeightMeters, 8428.64, 0.1, 'Earth-like scale height');
@@ -110,6 +138,17 @@ const waterEos = waterEosApplicabilityContract({ eosId: 'Huang-et-al-2021-resear
 assert.equal(waterEos.status, 'EOS_COORDINATE_READY');
 assert.equal(waterEos.phaseContext, 'ICE_X_OR_IONIC_BONDING_RELEVANT');
 assert.equal(waterEosApplicabilityContract({ eosId: 'x', eosHash: 'y', pressurePa: 40e9, temperatureK: 1000 }).status, 'RESEARCH_REQUIRED');
+const eosInterpolation = interpolateVersionedWaterEos({ eosId: 'synthetic-eos', eosHash: 'sha256:test', phaseDiagramId: 'synthetic-phase-map', pressureAxisPa: [1e9, 3e9], temperatureAxisK: [300, 500], densityKgM3: [[1000, 1200], [1400, 1600]], pressurePa: 2e9, temperatureK: 400 });
+assert.equal(eosInterpolation.status, 'MODEL_DERIVED_EOS_INTERPOLATION');
+near(eosInterpolation.densityKgM3, 1300, 1e-12, 'bilinear EOS interpolation');
+assert.equal(interpolateVersionedWaterEos({ eosId: 'synthetic-eos', eosHash: 'sha256:test', phaseDiagramId: 'synthetic-phase-map', pressureAxisPa: [1e9, 3e9], temperatureAxisK: [300, 500], densityKgM3: [[1000, 1200], [1400, 1600]], pressurePa: 4e9, temperatureK: 400 }).status, 'UNSUPPORTED');
+const massAxis = [1, 20], envelopeAxis = [0.0001, 0.2], irradiationAxis = [0.1, 1000], ageAxis = [0.1, 10];
+const flatRadii = [];
+for (const m of massAxis) for (const f of envelopeAxis) for (const irr of irradiationAxis) for (const age of ageAxis) flatRadii.push(1 + 0.01 * m + 2 * f + 0.0001 * irr - 0.01 * age);
+const subNeptune = interpolateVersionedSubNeptuneGrid({ gridId: 'synthetic-linear-grid', gridHash: 'sha256:test', massAxisEarth: massAxis, envelopeFractionAxis: envelopeAxis, irradiationAxisEarth: irradiationAxis, ageAxisGyr: ageAxis, radiusEarthFlat: flatRadii, massEarth: 10.5, envelopeFraction: 0.10005, irradiationEarth: 500.05, ageGyr: 5.05 });
+assert.equal(subNeptune.status, 'MODEL_DERIVED_SUB_NEPTUNE_GRID_INTERPOLATION');
+near(subNeptune.radiusEarth, 1 + 0.01 * 10.5 + 2 * 0.10005 + 0.0001 * 500.05 - 0.01 * 5.05, 1e-12, '4D multilinear sub-Neptune interpolation');
+assert.equal(interpolateVersionedSubNeptuneGrid({ gridId: 'synthetic-linear-grid', gridHash: 'sha256:test', massAxisEarth: massAxis, envelopeFractionAxis: envelopeAxis, irradiationAxisEarth: irradiationAxis, ageAxisGyr: ageAxis, radiusEarthFlat: flatRadii, massEarth: 25, envelopeFraction: 0.1, irradiationEarth: 10, ageGyr: 1 }).status, 'UNSUPPORTED');
 
 // Conservation/metamorphic volatile ledger checks.
 assert.equal(volatileLedger({ surfaceKg: 3, atmosphereKg: 2, interiorKg: 5, deltaSurfaceKg: -1, deltaAtmosphereKg: 0.25, deltaInteriorKg: 0.75 }).status, 'CONSERVED');
