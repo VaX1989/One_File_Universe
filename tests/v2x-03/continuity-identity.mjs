@@ -5,6 +5,7 @@ const sandbox={console};sandbox.globalThis=sandbox;sandbox.OFU={};
 for(const file of [
  'src/v1x-02-spatial-universe/spatial-universe.js',
  'src/rendering/galaxy/galaxy-field.js',
+ 'src/rendering/macro/macrocosm-batches.js',
  'src/rendering/region/region-refinement.js',
  'src/rendering/neighborhood/neighborhood-depth.js',
  'src/rendering/macro/macrocosm-provider.js'
