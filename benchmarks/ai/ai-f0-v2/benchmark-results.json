@@ -1,0 +1,16 @@
+{
+  "schema":"ofu-ai-f0-benchmark-results-2",
+  "capturedOn":"2026-09-07",
+  "authority":"MIXED_EVIDENCE_CLASSES_EXPLICIT_PER_SECTION",
+  "gateway":{"classification":"MEASURED_LOCAL_EXECUTION","runtime":"v22.16.0","tests":40,"pass":40,"fail":0},
+  "corpus":{"classification":"MEASURED_LOCAL_EXECUTION","runtime":"v22.16.0","total":14,"pass":14,"fail":0},
+  "environment":{"classification":"MEASURED_LOCAL_EXECUTION","node":"v22.16.0","python":"3.13.5","platform":"linux-x64","cpuCount":5,"totalMemoryBytes":6236925952,"chromium":"144.0.7559.96","firefoxShellAvailable":false,"nvidiaSmiAvailable":false},
+  "directFile":{"classification":"MEASURED_LOCAL_ATTEMPT_NOT_PRODUCT_SUPPORT_ADJUDICATION","networkPolicy":"ALL_HTTP_AND_HTTPS_REQUESTS_ABORTED","chromium":"ENVIRONMENT_POLICY_BLOCKED_FILE_NAVIGATION","chromiumErrorClass":"ERR_BLOCKED_BY_ADMINISTRATOR","firefox":"ENGINE_UNAVAILABLE_IN_EXECUTION_ENVIRONMENT","webkit":"ENGINE_UNAVAILABLE_IN_EXECUTION_ENVIRONMENT"},
+  "browserHostDiagnostic":{"classification":"HOST_DIAGNOSTIC_NOT_DIRECT_FILE_EVIDENCE","wasm":true,"sharedArrayBuffer":false,"webgpuApi":false,"webgpuAdapter":false},
+  "inferenceReadiness":{"classification":"ENVIRONMENT_ASSET_OR_RUNTIME_BLOCKED","target":"onnxruntime-web-1.29.0-wasm-cpu + smollm2-135m-instruct-onnx-q4f16","ready":false,"blockers":["EXACT_MODEL_BYTES_NOT_MATERIALIZED","ONNXRUNTIME_WEB_PACKAGE_NOT_MATERIALIZED"]},
+  "modelMaterialization":{"classification":"ENVIRONMENT_NETWORK_OR_ASSET_BLOCKED","model":"smollm2-135m-instruct-onnx-q4f16","expectedBytes":117266133,"expectedSha256":"662d0a9d8d5d56e3746a5bf3b3ede96bd2d4d3594d9b2e282baebd4f34cf3589","materialized":false},
+  "payloadProxy":{"classification":"MEASURED_LOCAL_SYNTHETIC_PROXY_NOT_MODEL_INFERENCE","runtime":"v22.16.0","results":[{"payloadBytes":16777216,"base64Bytes":22369624,"encodeMs":153.66684700000002,"decodeMs":69.89974899999999,"rssDelta":40632320,"arrayBuffersDelta":33562624},{"payloadBytes":67108864,"base64Bytes":89478488,"encodeMs":551.329697,"decodeMs":263.09525999999994,"rssDelta":161742848,"arrayBuffersDelta":134250464},{"payloadBytes":117440512,"base64Bytes":156587352,"encodeMs":936.2049870000001,"decodeMs":692.915673,"rssDelta":285868032,"arrayBuffersDelta":234938336}]},
+  "derivedCandidateEstimates":{"classification":"DERIVED_NOT_MEASURED","formula":"2(K,V) * layers * kvHeads * headDim * 2 bytes(fp16) * tokens","results":[{"id":"smollm2-135m-instruct-onnx-q4f16","kvBytesPerToken":23040,"kvMiB512":11.25,"kvMiB2048":45,"kvMiB8192":180},{"id":"smollm2-360m-instruct-onnx-q4f16","kvBytesPerToken":40960,"kvMiB512":20,"kvMiB2048":80,"kvMiB8192":320},{"id":"gemma3-270m-it-onnx-q4f16","kvBytesPerToken":18432,"kvMiB512":9,"kvMiB2048":36,"kvMiB8192":144,"limitation":"Sliding/local attention may reduce realized cache."},{"id":"qwen2.5-0.5b-instruct-onnx-q4f16","kvBytesPerToken":12288,"kvMiB512":6,"kvMiB2048":24,"kvMiB8192":96},{"id":"qwen3-0.6b-onnx-q4f16","kvBytesPerToken":114688,"kvMiB512":56,"kvMiB2048":224,"kvMiB8192":896}]},
+  "realModelInference":{"classification":"NOT_MEASURED","ttftMs":null,"tokensPerSecond":null,"peakInferenceMemoryBytes":null,"gpuBytes":null,"reason":"Exact model bytes and ONNX Runtime Web package were not materialized in the execution environment."},
+  "physicalDeviceEvidence":{"classification":"NOT_MEASURED"}
+}

@@ -1,0 +1,15 @@
+{
+  "schema":"ofu-ai-f0-feasibility-matrix-2","asOf":"2026-09-07","decisionRule":"VIABLE requires real measured inference plus direct-file/offline evidence for the declared baseline. Source metadata or gateway-only success cannot earn VIABLE.",
+  "configurations":[
+    {"backend":"ONNX Runtime Web 1.29.0 WASM/CPU","modelClass":"SmolLM2 135M q4f16","status":"VIABLE_WITH_LIMITS","role":"FIRST_REAL_INFERENCE_TARGET","reason":"Smallest frozen candidate and current ORT API supports model bytes from memory while current upstream source contains a WASM binary override path; real decode/direct-file remains unmeasured."},
+    {"backend":"ONNX Runtime Web 1.29.0 WebGPU","modelClass":"SmolLM2 135M q4f16","status":"VIABLE_WITH_LIMITS","role":"OPTIONAL_ENHANCED","reason":"WebGPU may accelerate but cannot be the required baseline; no adapter or GPU allocation was measured here."},
+    {"backend":"ONNX Runtime Web 1.29.0 WASM/CPU","modelClass":"SmolLM2 360M q4f16","status":"VIABLE_WITH_LIMITS","role":"QUALITY_ESCALATION","reason":"Materially larger payload; only justified if the 135M class fails OFU-native task quality."},
+    {"backend":"ONNX Runtime Web 1.29.0 WASM/CPU","modelClass":"Gemma 3 270M IT q4f16","status":"VIABLE_WITH_LIMITS","role":"RESEARCH_ONLY_LICENSE_GATED","reason":"Technically plausible but custom terms and split external-data packaging require explicit review and exact bundling proof."},
+    {"backend":"ONNX Runtime Web 1.29.0 WASM/CPU","modelClass":"Qwen2.5 0.5B q4f16","status":"VIABLE_WITH_LIMITS","role":"DESKTOP_QUALITY_CEILING","reason":"~483 MB weight payload before tokenizer/runtime/base64/startup amplification; not a rational first one-file baseline."},
+    {"backend":"ONNX Runtime Web 1.29.0 WASM/CPU","modelClass":"Qwen3 0.6B q4f16","status":"VIABLE_WITH_LIMITS","role":"QUALITY_CEILING","reason":"~570 MB payload and much larger simple FP16 KV estimate; not baseline candidate without measured quality benefit."},
+    {"backend":"wllama 3.5.1 WASM/CPU","modelClass":"compact GGUF to be frozen","status":"VIABLE_WITH_LIMITS","role":"SECOND_PORTABLE_BASELINE","reason":"CPU/WASM path is architecturally compatible, but no exact GGUF/runtime package or strict direct-file result was materialized here."},
+    {"backend":"WebLLM 0.2.84","modelClass":"WebGPU-native class","status":"NOT_VIABLE","role":"REQUIRED_BASELINE","reason":"Backend class depends on WebGPU, while OFU requires an AI-unavailable/portable fallback and treats WebGPU as optional enhancement."},
+    {"backend":"WebLLM 0.2.84","modelClass":"WebGPU-native class","status":"VIABLE_WITH_LIMITS","role":"OPTIONAL_ENHANCED","reason":"Worth benchmarking later on supported devices but cannot define liveness or standard AI availability."}
+  ],
+  "aiF1Recommendation":"NO_GO","aiF1Reason":"No real model inference, direct-file success, TTFT, throughput, peak inference memory, model structured-output rate or model adversarial quality was measured on this checkpoint."
+}

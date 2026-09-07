@@ -1,0 +1,4 @@
+import os from 'node:os';import fs from 'node:fs';import {spawnSync} from 'node:child_process';
+function cmd(name,args=['--version']){const r=spawnSync(name,args,{encoding:'utf8',timeout:3000});return r.error?{available:false,error:r.error.code??String(r.error)}:{available:r.status===0,status:r.status,stdout:(r.stdout||r.stderr||'').trim().slice(0,500)};}
+const candidates=['/tmp/smollm2-135m-q4f16.onnx'];
+console.log(JSON.stringify({schema:'ofu-ai-f0-environment-2',capturedAt:new Date().toISOString(),node:process.version,platform:process.platform,arch:process.arch,cpuCount:os.cpus().length,totalMemoryBytes:os.totalmem(),freeMemoryBytes:os.freemem(),python:cmd('python3'),chromium:cmd('chromium',['--version']),firefox:cmd('firefox',['--version']),nvidiaSmi:cmd('nvidia-smi'),modelFiles:candidates.map(path=>({path,exists:fs.existsSync(path),bytes:fs.existsSync(path)?fs.statSync(path).size:null}))},null,2));

@@ -1,0 +1,5 @@
+{
+  "schema":"ofu-ai-f0-source-provenance-2","asOf":"2026-09-07","authority":"RESEARCH_METADATA_ONLY","policy":"No third-party weights, tokenizer payloads, runtime binaries or package archives are committed. Source metadata is not permission to redistribute.",
+  "sourceClasses":{"modelIdentity":"Upstream model cards and exact artifact pages","runtimeIdentity":"Official runtime documentation, package registry and upstream repository","localMeasurements":"benchmarks/ai/ai-f0-v2/benchmark-results.json","derivedEstimates":"Reproducible scripts under benchmarks/ai/ai-f0-v2"},
+  "legalFlags":[{"candidate":"gemma3-270m-it-onnx-q4f16","state":"REVIEW_REQUIRED_BEFORE_REDISTRIBUTION","reason":"Gemma Terms are not Apache-2.0."},{"candidate":"all","state":"EXACT_NOTICES_AND_TRANSITIVE_LICENSE_GRAPH_REQUIRED_BEFORE_ANY_BUNDLED_AI_ARTIFACT","reason":"Research metadata does not freeze a distributable dependency graph."}]
+}

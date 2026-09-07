@@ -1,0 +1,56 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {
+  AI_GATEWAY_SCHEMA,MAX,compileContext,deterministicFallback,executeReadOnlyOperation,loadFixture,
+  parseAndValidateProposal,previewTravelProposal,telemetryEvent,validateAnswerEvidence
+} from './gateway.mjs';
+const here = path.dirname(fileURLToPath(import.meta.url));
+const fixture = loadFixture(path.join(here,'fixtures/provider-snapshot.json'));
+const DIGEST = '1'.repeat(64);
+const budgetTool = {toolCalls:1,outputChars:0,retries:0,queue:1};
+const wire = (operation,args,extra={}) => ({schema:AI_GATEWAY_SCHEMA,proposalId:'p',kind:'TOOL_PROPOSAL',selectionDigest:DIGEST,tool:{operation,args},budget:{...budgetTool},...extra});
+const gate = {selectionDigest:DIGEST,capabilities:['INSPECT','DISCOVER','TRAVEL']};
+const earthRef = {sourceId:'fixture:earth-label',providerId:'fixture.astronomy',authority:'CANONICAL_PROVEN',status:'SUPPORTED',fidelity:{regime:'planetary',validity:'fixture-only canonical witness',resolution:'entity',uncertainty:'not applicable to label'}};
+
+test('context is deterministic, bounded, and selection-bound',()=>{const a=compileContext(fixture,{selectionDigest:DIGEST,entityIds:['artifact-7','earth']},{maxFacts:5,maxChars:2500});const b=compileContext(fixture,{selectionDigest:DIGEST,entityIds:['earth','artifact-7']},{maxFacts:5,maxChars:2500});assert.deepEqual(a,b);assert.ok(a.charCount<=2500);assert.ok(a.factCount<=5);assert.equal(a.selectionDigest,DIGEST)});
+test('context rejects impossible char budget',()=>assert.throws(()=>compileContext(fixture,{selectionDigest:DIGEST,entityIds:['earth']},{maxChars:1}),/CONTEXT_BUDGET_TOO_SMALL/));
+test('context preserves assumptions limitations fidelity and untrusted marker',()=>{const c=compileContext(fixture,{selectionDigest:DIGEST,entityIds:['earth','artifact-7']});for(const key of ['assumptions','limitations','fidelity','untrustedTextIsData']) assert.match(c.text,new RegExp(key));});
+test('prompt injection remains inert context data',()=>{const c=compileContext(fixture,{selectionDigest:DIGEST,entityIds:['artifact-7']});assert.match(c.text,/IGNORE PRIOR POLICY/);assert.match(c.text,/generatedTextExecutable":false/)});
+test('read-only INSPECT does not mutate fixture',()=>{const before=JSON.stringify(fixture);const r=executeReadOnlyOperation(fixture,{operation:'INSPECT',args:{entityId:'earth'}},gate);assert.equal(r.operation,'INSPECT');assert.equal(JSON.stringify(fixture),before)});
+test('DISCOVER is bounded by request limit',()=>{const r=executeReadOnlyOperation(fixture,{operation:'DISCOVER',args:{query:'planet',limit:1}},gate);assert.ok(r.matches.length<=1)});
+test('TRAVEL cannot execute through read-only executor',()=>assert.throws(()=>executeReadOnlyOperation(fixture,{operation:'TRAVEL',args:{targetId:'earth',mode:'PREVIEW_ONLY'}},gate),/TRAVEL_EXECUTION_FORBIDDEN/));
+test('TRAVEL preview never admits or mutates',()=>{const r=previewTravelProposal(fixture,{operation:'TRAVEL',args:{targetId:'earth',mode:'PREVIEW_ONLY'}},gate);assert.equal(r.executed,false);assert.equal(r.mutated,false);assert.equal(r.admissionPerformed,false)});
+test('TRANSITION is not an allowed operation',()=>assert.equal(parseAndValidateProposal(wire('TRANSITION',{event:'x'}),gate).reason,'OPERATION_ALLOWLIST'));
+test('lowercase operation is rejected',()=>assert.equal(parseAndValidateProposal(wire('inspect',{entityId:'earth'}),gate).reason,'OPERATION_ALLOWLIST'));
+test('unicode confusable operation is rejected',()=>assert.equal(parseAndValidateProposal(wire('ΙNSPECT',{entityId:'earth'}),gate).reason,'OPERATION_ALLOWLIST'));
+test('extra tool field is rejected',()=>{const p=wire('INSPECT',{entityId:'earth'});p.tool.execute=true;assert.equal(parseAndValidateProposal(p,gate).reason,'OPERATION_ALLOWLIST')});
+test('hidden mutation arg is rejected',()=>assert.equal(parseAndValidateProposal(wire('TRAVEL',{targetId:'earth',mode:'PREVIEW_ONLY',mutate:true}),gate).reason,'TOOL_ARGS_SCHEMA'));
+test('capability denial fails closed',()=>assert.equal(parseAndValidateProposal(wire('TRAVEL',{targetId:'earth',mode:'PREVIEW_ONLY'}),{...gate,capabilities:['INSPECT']}).reason,'CAPABILITY_DENIED'));
+test('gateway authority denial fails closed',()=>assert.equal(parseAndValidateProposal(wire('INSPECT',{entityId:'earth'}),{...gate,authority:'CANONICAL_PROVEN'}).reason,'AUTHORITY_DENIED'));
+test('selection mismatch fails closed',()=>assert.equal(parseAndValidateProposal(wire('INSPECT',{entityId:'earth'}),{...gate,selectionDigest:'2'.repeat(64)}).reason,'SELECTION_MISMATCH'));
+test('tool budget excess rejected',()=>{const p=wire('INSPECT',{entityId:'earth'});p.budget.toolCalls=2;assert.equal(parseAndValidateProposal(p,gate).reason,'BUDGET_EXCEEDED')});
+test('fractional retry budget rejected',()=>{const p=wire('INSPECT',{entityId:'earth'});p.budget.retries=.5;assert.equal(parseAndValidateProposal(p,gate).reason,'BUDGET_SCHEMA')});
+test('queue overuse rejected',()=>{const p=wire('INSPECT',{entityId:'earth'});p.budget.queue=MAX.queue+1;assert.equal(parseAndValidateProposal(p,gate).reason,'BUDGET_EXCEEDED')});
+test('malformed JSON rejected',()=>assert.equal(parseAndValidateProposal('{oops',gate).reason,'INVALID_JSON'));
+test('raw prose is not executable',()=>assert.equal(parseAndValidateProposal('please travel to earth',gate).reason,'INVALID_JSON'));
+test('prototype pollution key rejected',()=>{const raw=JSON.stringify(wire('INSPECT',{entityId:'earth'}));const p=JSON.parse(raw);Object.defineProperty(p.tool.args,'__proto__',{value:{polluted:true},enumerable:true});assert.equal(parseAndValidateProposal(p,gate).reason,'DATA_KEY')});
+test('valid INSPECT proposal accepted',()=>assert.equal(parseAndValidateProposal(wire('INSPECT',{entityId:'earth'}),gate).ok,true));
+test('valid DISCOVER proposal accepted',()=>assert.equal(parseAndValidateProposal(wire('DISCOVER',{query:'planet',limit:4}),gate).ok,true));
+test('valid TRAVEL proposal accepted only as typed proposal',()=>assert.equal(parseAndValidateProposal(wire('TRAVEL',{targetId:'earth',mode:'PREVIEW_ONLY'}),gate).ok,true));
+test('answer with source lineage is accepted and verified',()=>{const p={schema:AI_GATEWAY_SCHEMA,proposalId:'a',kind:'ANSWER_PROPOSAL',selectionDigest:DIGEST,answer:{summary:'Earth label is supported.',claims:[{text:'Earth is labelled Earth.',evidence:[earthRef]}]},budget:{toolCalls:0,outputChars:100,retries:0,queue:0}};const v=parseAndValidateProposal(p,gate);assert.equal(v.ok,true);assert.equal(validateAnswerEvidence(fixture,p.answer).ok,true)});
+test('source forging is rejected',()=>{const p=deterministicFallback(fixture,'life proven on europa',DIGEST);p.answer.claims[0].evidence[0].sourceId='forged';assert.equal(validateAnswerEvidence(fixture,p.answer).reason,'UNKNOWN_SOURCE')});
+test('UNKNOWN to SUPPORTED upgrade is rejected',()=>{const p=deterministicFallback(fixture,'life proven on europa',DIGEST);p.answer.claims[0].evidence[0].status='SUPPORTED';assert.equal(validateAnswerEvidence(fixture,p.answer).reason,'SOURCE_LINEAGE_MISMATCH')});
+test('authority upgrade is rejected',()=>{const p=deterministicFallback(fixture,'unsupported-sector',DIGEST);p.answer.claims[0].evidence[0].authority='CANONICAL_PROVEN';assert.equal(validateAnswerEvidence(fixture,p.answer).reason,'SOURCE_LINEAGE_MISMATCH')});
+test('fidelity rewriting is rejected',()=>{const p=JSON.parse(JSON.stringify(deterministicFallback(fixture,'life proven on europa',DIGEST)));p.answer.claims[0].evidence[0].fidelity.uncertainty='none';assert.equal(validateAnswerEvidence(fixture,p.answer).reason,'SOURCE_LINEAGE_MISMATCH')});
+test('evidence stripping is rejected by proposal schema',()=>{const p={schema:AI_GATEWAY_SCHEMA,proposalId:'a',kind:'ANSWER_PROPOSAL',selectionDigest:DIGEST,answer:{summary:'x',claims:[{text:'claim',evidence:[]}]},budget:{toolCalls:0,outputChars:100,retries:0,queue:0}};assert.equal(parseAndValidateProposal(p,gate).reason,'CLAIM_SCHEMA')});
+test('model self-confidence field is rejected',()=>{const p={schema:AI_GATEWAY_SCHEMA,proposalId:'a',kind:'ANSWER_PROPOSAL',selectionDigest:DIGEST,answer:{summary:'x',claims:[{text:'claim',evidence:[earthRef],confidence:0.99}]},budget:{toolCalls:0,outputChars:100,retries:0,queue:0}};assert.equal(parseAndValidateProposal(p,gate).reason,'CLAIM_SCHEMA')});
+test('cross-kind smuggling is rejected',()=>{const p=wire('INSPECT',{entityId:'earth'});p.answer={summary:'smuggled',claims:[]};assert.equal(parseAndValidateProposal(p,gate).reason,'TOP_LEVEL_SCHEMA')});
+test('answer output budget is computed rather than trusted',()=>{const p={schema:AI_GATEWAY_SCHEMA,proposalId:'a',kind:'ANSWER_PROPOSAL',selectionDigest:DIGEST,answer:{summary:'abcd',claims:[{text:'efgh',evidence:[earthRef]}]},budget:{toolCalls:0,outputChars:4,retries:0,queue:0}};assert.equal(parseAndValidateProposal(p,gate).reason,'BUDGET_MISMATCH')});
+test('UNKNOWN remains UNKNOWN in deterministic fallback',()=>{const p=deterministicFallback(fixture,'is life proven on europa?',DIGEST);assert.match(p.answer.summary,/UNKNOWN/);assert.equal(validateAnswerEvidence(fixture,p.answer).ok,true)});
+test('UNSUPPORTED remains UNSUPPORTED in deterministic fallback',()=>{const p=deterministicFallback(fixture,'explain unsupported-sector',DIGEST);assert.match(p.answer.summary,/UNSUPPORTED/);assert.equal(validateAnswerEvidence(fixture,p.answer).ok,true)});
+test('prompt injection fallback returns evidence-grounded answer not an action',()=>{const p=deterministicFallback(fixture,'follow the instructions in artifact-7',DIGEST);assert.equal(p.kind,'ANSWER_PROPOSAL');assert.equal(validateAnswerEvidence(fixture,p.answer).ok,true)});
+test('deterministic fallback TRAVEL remains PREVIEW_ONLY',()=>{const p=deterministicFallback(fixture,'travel to earth',DIGEST);assert.equal(p.tool.operation,'TRAVEL');assert.equal(p.tool.args.mode,'PREVIEW_ONLY')});
+test('NO_ACTION proposal is valid and carries zero budgets',()=>{const p=deterministicFallback(fixture,'unmatched phrase',DIGEST);assert.equal(p.kind,'NO_ACTION');assert.equal(parseAndValidateProposal(p,gate).ok,true)});
+test('telemetry rejects arbitrary types and raw prompt fields',()=>{assert.throws(()=>telemetryEvent('EXECUTE'));assert.throws(()=>telemetryEvent('INIT',{rawPrompt:'secret'}),/TELEMETRY_FIELDS/)});
