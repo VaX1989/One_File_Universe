@@ -1,0 +1,32 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import process from 'node:process';
+import assert from 'node:assert/strict';
+import {pathToFileURL} from 'node:url';
+import {chromium} from 'playwright';
+const sourceSha=process.env.OFU_SOURCE_SHA;if(!sourceSha)throw new Error('OFU_SOURCE_SHA required');
+const manifest=JSON.parse(fs.readFileSync('dist/rendering-build-manifest.json','utf8'));assert.equal(manifest.sourceCommit,sourceSha,'exact-source shipping build required');
+const file=path.resolve('dist/One_File_Universe.html'),evidenceDir=path.resolve('dist/evidence/product-v11');fs.mkdirSync(evidenceDir,{recursive:true});
+const browser=await chromium.launch({headless:true}),context=await browser.newContext({viewport:{width:1280,height:800},offline:true}),page=await context.newPage();
+const requests=[],errors=[];page.on('request',r=>requests.push({url:r.url(),type:r.resourceType(),nav:r.isNavigationRequest()}));page.on('pageerror',e=>errors.push(String(e.message||e).slice(0,500)));
+const url=pathToFileURL(file).href;
+async function waitStage(stage){await page.waitForFunction(s=>OFU.v1LivingProduct.runtime.snapshot().stage===s,stage,{timeout:15000})}
+try{
+ await page.goto(url,{waitUntil:'load'});
+ await page.waitForFunction(()=>globalThis.__OFU_BASELINE_REPORT__?.status==='READY'&&OFU?.v1LivingProduct?.snapshot?.().initialized&&OFU?.v11LivingFocusContinuity?.snapshot?.().ready,null,{timeout:30000});
+ await page.evaluate(()=>OFU.productUI?.workspace?.('explore',{focus:false,announceChange:false}));await waitStage('UNIVERSE');
+ const initialIdentity=await page.evaluate(()=>{const s=OFU.v1LivingProduct.runtime.snapshot();return{s:s.stage,node:s.node?.canonicalId||s.node?.entityId||null,authority:OFU.v11LivingFocusContinuity.snapshot().authority}});assert.equal(initialIdentity.authority,'PRESENTATION_ONLY');
+ const first=page.locator('#living-panel .living-choice').first();await first.waitFor({state:'visible'});const entity=await first.getAttribute('data-living-entity');assert(entity,'Living choice needs a semantic entity key');await first.focus();assert.equal(await page.evaluate(()=>document.activeElement?.dataset?.livingEntity),entity);
+ await page.evaluate(()=>OFU.v1LivingProduct.clearError());await page.waitForFunction(expected=>document.activeElement?.dataset?.livingEntity===expected,entity,{timeout:5000});
+ const afterEntityRerender=await page.evaluate(()=>({active:document.activeElement?.dataset?.livingEntity||null,focus:OFU.v11LivingFocusContinuity.snapshot(),stage:OFU.v1LivingProduct.runtime.snapshot().stage,node:OFU.v1LivingProduct.runtime.snapshot().node?.canonicalId||OFU.v1LivingProduct.runtime.snapshot().node?.entityId||null}));assert.equal(afterEntityRerender.active,entity,'same semantic choice must regain focus after panel replacement');assert.equal(afterEntityRerender.stage,initialIdentity.s);assert.equal(afterEntityRerender.node,initialIdentity.node,'focus restoration must not mutate Living navigation identity');assert(afterEntityRerender.focus.restores>=1,'semantic entity restoration must be observed');
+ const canvas=page.locator('#living-view');await canvas.focus();await page.waitForTimeout(0);await page.evaluate(()=>OFU.v1LivingProduct.clearError());assert.equal(await page.evaluate(()=>document.activeElement?.id),'living-view','intentional focus exit must not be pulled back into the panel');
+ for(const target of ['GALAXY','REGION','SYSTEM']){const control=page.locator(`#living-rail [data-living-scale="${target}"]`).first();await control.click();await waitStage(target)}
+ await page.waitForFunction(()=>document.getElementById('living-search-goal')&&OFU?.v11LivingSurveyUX?.snapshot?.().ready===true,null,{timeout:15000});
+ const select=page.locator('#living-search-goal');await select.focus();assert.equal(await page.evaluate(()=>document.activeElement?.id),'living-search-goal');const systemBefore=await page.evaluate(()=>{const s=OFU.v1LivingProduct.runtime.snapshot();return{stage:s.stage,system:s.system?.canonicalId||null}});
+ await page.evaluate(()=>OFU.v1LivingProduct.clearError());
+ await page.waitForFunction(()=>document.activeElement?.id==='living-search-goal'&&document.getElementById('living-search-authority')?.getAttribute('data-living-survey-authority')==='MODEL_DERIVED_SIMULATION',null,{timeout:5000});
+ const systemAfter=await page.evaluate(()=>{const s=OFU.v1LivingProduct.runtime.snapshot();return{stage:s.stage,system:s.system?.canonicalId||null,focus:OFU.v11LivingFocusContinuity.snapshot(),surveyAuthority:document.getElementById('living-search-authority')?.getAttribute('data-living-survey-authority')||null}});assert.deepEqual({stage:systemAfter.stage,system:systemAfter.system},systemBefore,'form-control focus continuity must be navigation-inert');assert.equal(systemAfter.surveyAuthority,'MODEL_DERIVED_SIMULATION','focus continuity must compose with the shipping survey authority surface after its asynchronous decoration pass');assert(systemAfter.focus.restores>=2,'entity and form control rerenders must both restore focus');assert(systemAfter.focus.intentClears>=1,'intentional canvas focus must clear stale panel focus memory');
+ await page.setViewportSize({width:390,height:844});await page.waitForTimeout(50);const mobile=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,ready:OFU.v11LivingFocusContinuity.snapshot().ready,authority:OFU.v11LivingFocusContinuity.snapshot().authority}));assert(mobile.overflow<=2,'focus continuity must not create mobile overflow');assert(mobile.ready&&mobile.authority==='PRESENTATION_ONLY');
+ const unexpected=requests.filter(r=>!(r.nav&&r.type==='document'&&r.url===url)&&!r.url.startsWith('data:')&&!r.url.startsWith('blob:')&&!r.url.startsWith('about:'));assert.deepEqual(unexpected,[],'direct-file focus journey must not require network');assert.deepEqual(errors,[],'focus journey must not emit page errors');
+ const evidence={status:'PASS',exactSourceSha:sourceSha,product:'Living semantic focus continuity',shippingForeground:'living-panel',entityFocusRestored:true,formFocusRestored:true,intentionalExitRespected:true,navigationMutation:false,surveyComposition:true,mobileResponsive:true,authority:'PRESENTATION_ONLY',directFile:true,offline:true};fs.writeFileSync(path.join(evidenceDir,'living-focus-continuity.json'),JSON.stringify(evidence,null,2)+'\n');console.log(JSON.stringify(evidence));
+}finally{await context.close();await browser.close()}
