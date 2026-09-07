@@ -10,29 +10,42 @@ const privilegedWriteKeys=new Set([
 function normalizedPermissionLine(raw){
   return raw.replace(/\s+#.*$/,'').trim();
 }
-
-function hasPrivilegedPermission(text){
-  for(const raw of text.split(/\r?\n/)){
-    const line=normalizedPermissionLine(raw);
-    if(line==='permissions: write-all')return true;
-    const match=line.match(/^([a-z-]+):\s*write$/);
-    if(match&&privilegedWriteKeys.has(match[1]))return true;
+function unquote(value){
+  value=String(value).trim();
+  if((value.startsWith("'")&&value.endsWith("'"))||(value.startsWith('"')&&value.endsWith('"')))return value.slice(1,-1).trim();
+  return value;
+}
+function privilegedPermissionOnLine(raw){
+  const line=normalizedPermissionLine(raw);
+  const scalar=line.match(/^permissions:\s*(.+)$/);
+  if(scalar&&!scalar[1].trim().startsWith('{')&&unquote(scalar[1])==='write-all')return true;
+  const direct=line.match(/^([a-z-]+):\s*(.+)$/);
+  if(direct&&privilegedWriteKeys.has(direct[1])&&unquote(direct[2])==='write')return true;
+  const inline=line.match(/^permissions:\s*\{(.*)\}\s*$/);
+  if(inline){
+    for(const entry of inline[1].split(',')){
+      const pair=entry.trim().match(/^["']?([a-z-]+)["']?\s*:\s*(.+)$/);
+      if(pair&&privilegedWriteKeys.has(pair[1])&&unquote(pair[2])==='write')return true;
+    }
   }
   return false;
 }
+function hasPrivilegedPermission(text){return text.split(/\r?\n/).some(privilegedPermissionOnLine)}
 
 function runtimeVersionValue(line,key){
   const cleaned=line.replace(/\s+#.*$/,'');
   const match=cleaned.match(new RegExp(`^\\s*${key}:\\s*(.*?)\\s*$`));
   if(!match)return null;
-  let value=match[1].trim();
-  if((value.startsWith("'")&&value.endsWith("'"))||(value.startsWith('"')&&value.endsWith('"')))value=value.slice(1,-1).trim();
-  return value;
+  return unquote(match[1]);
 }
 
 const immutableRemoteAction=/\buses:\s+[^\s@]+@[0-9a-f]{40}(?:\s+#.*)?$/;
 function assertPrivilegedDependencies(file,text){
-  assert(!/^\s*permissions:\s*write-all\s*(?:#.*)?$/m.test(text),`${file}: write-all is forbidden; grant only the capability the job needs`);
+  const broad=text.split(/\r?\n/).some(raw=>{
+    const line=normalizedPermissionLine(raw),scalar=line.match(/^permissions:\s*(.+)$/);
+    return Boolean(scalar&&!scalar[1].trim().startsWith('{')&&unquote(scalar[1])==='write-all');
+  });
+  assert(!broad,`${file}: write-all is forbidden; grant only the capability the job needs`);
   let actions=0,runtimes=0;
   for(const raw of text.split(/\r?\n/)){
     const line=raw.trim();
@@ -66,11 +79,13 @@ for(const file of privilegedWorkflows){
 }
 
 assert.equal(hasPrivilegedPermission('permissions:\n  contents: write\n'),true);
-assert.equal(hasPrivilegedPermission('jobs:\n  publish:\n    permissions:\n      pull-requests: write\n'),true);
+assert.equal(hasPrivilegedPermission('jobs:\n  publish:\n    permissions:\n      pull-requests: "write"\n'),true);
 assert.equal(hasPrivilegedPermission('permissions:\n  id-token: write\n'),true,'OIDC minting authority is a privileged credential boundary');
 assert.equal(hasPrivilegedPermission('permissions:\n  attestations: write\n'),true);
 assert.equal(hasPrivilegedPermission('permissions:\n  pages: write\n'),true);
-assert.equal(hasPrivilegedPermission('permissions: write-all\n'),true);
+assert.equal(hasPrivilegedPermission("permissions: 'write-all'\n"),true);
+assert.equal(hasPrivilegedPermission('permissions: {contents: read, id-token: write}\n'),true,'inline permission maps must not evade privilege discovery');
+assert.equal(hasPrivilegedPermission("permissions: {'contents': 'write', actions: read}\n"),true,'quoted inline permission maps must not evade privilege discovery');
 assert.equal(hasPrivilegedPermission('permissions:\n  contents: read\n  # issues: write\n'),false);
 
 const mutableAction=`permissions:\n  contents: write\nsteps:\n  - uses: actions/checkout@v4\n`;
@@ -81,7 +96,9 @@ const expressionRuntime=`permissions:\n  contents: write\nsteps:\n  - uses: acti
 assert.throws(()=>assertPrivilegedDependencies('synthetic-expression.yml',expressionRuntime),/exact patch version/,'matrix/expression runtime selectors must not evade exact privileged runtime pins');
 const broadWrite=`permissions: write-all\nsteps:\n  - uses: actions/checkout@${'a'.repeat(40)}\n`;
 assert.throws(()=>assertPrivilegedDependencies('synthetic-write-all.yml',broadWrite),/write-all is forbidden/);
+const quotedBroadWrite=`permissions: 'write-all'\nsteps:\n  - uses: actions/checkout@${'a'.repeat(40)}\n`;
+assert.throws(()=>assertPrivilegedDependencies('synthetic-quoted-write-all.yml',quotedBroadWrite),/write-all is forbidden/);
 const localAction=`permissions:\n  contents: write\nsteps:\n  - uses: ./.github/actions/release-helper\n`;
 assert.doesNotThrow(()=>assertPrivilegedDependencies('synthetic-local.yml',localAction));
 
-console.log(JSON.stringify({status:'PASS',suite:'privileged-workflow-dependencies',workflows:privilegedWorkflows.length,actions,runtimes,syntheticCases:12}));
+console.log(JSON.stringify({status:'PASS',suite:'privileged-workflow-dependencies',workflows:privilegedWorkflows.length,actions,runtimes,syntheticCases:15}));
