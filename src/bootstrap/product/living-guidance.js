@@ -1,8 +1,8 @@
 (function(root){
 'use strict';
 const O=root.OFU=root.OFU||{};if(typeof document==='undefined')return;
-const VERSION='ofu-v11-living-guidance-1',STORAGE_KEY='ofu:v11:living-guidance:1',MAX_ATTACH_ATTEMPTS=120,MAX_MOBILE_EXPOSURE_ATTEMPTS=80;
-const state={version:VERSION,ready:false,attachStatus:'waiting',attachAttempts:0,storage:'memory',dismissed:false,completed:false,progress:{started:false,world:false,surface:false},guideOpen:false,decorations:0,progressUpdates:0,guideOpens:0,mobileExpands:0,mobileFirstFlightExpands:0,mobileFirstFlightOffered:false,mobileFirstFlightExposureAttempts:0,mobileFirstFlightExposureTimeout:false};
+const VERSION='ofu-v11-living-guidance-1',STORAGE_KEY='ofu:v11:living-guidance:1',MAX_ATTACH_ATTEMPTS=120,MAX_MOBILE_EXPOSURE_ATTEMPTS=80,MOBILE_EXPOSURE_STABLE_MS=200;
+const state={version:VERSION,ready:false,attachStatus:'waiting',attachAttempts:0,storage:'memory',dismissed:false,completed:false,progress:{started:false,world:false,surface:false},guideOpen:false,decorations:0,progressUpdates:0,guideOpens:0,mobileExpands:0,mobileFirstFlightExpands:0,mobileFirstFlightOffered:false,mobileFirstFlightExposureAttempts:0,mobileFirstFlightExposureTimeout:false,mobileFirstFlightVisibleSince:0};
 let runtime=null,panel=null,observer=null,scheduled=false,lastProgress='',mobileExposureTimer=0;
 function storageProbe(){try{const s=root.localStorage,k='__ofu_living_guidance_probe__';s.setItem(k,'1');s.removeItem(k);state.storage='localStorage';return s}catch{return null}}
 const storage=storageProbe();
@@ -16,7 +16,8 @@ function compactMobileTarget(){try{return root.matchMedia?.('(max-width: 700px),
 function makeStep(id,text,done){const li=document.createElement('li');li.dataset.livingGuidanceStep=id;li.dataset.complete=done?'true':'false';li.setAttribute('aria-label',(done?'Completed: ':'Not completed: ')+text);li.textContent=(done?'✓ ':'○ ')+text;return li}
 function primaryActions(){return panel?[...panel.children].find(node=>node.classList?.contains('living-actions'))||null:null}
 function removeFirstFlight(){document.getElementById('living-first-flight')?.remove()}
-function clearMobileExposureRetry(){if(!mobileExposureTimer)return;root.clearTimeout(mobileExposureTimer);mobileExposureTimer=0}
+function resetVisibleExposure(){state.mobileFirstFlightVisibleSince=0}
+function clearMobileExposureRetry(){if(mobileExposureTimer){root.clearTimeout(mobileExposureTimer);mobileExposureTimer=0}resetVisibleExposure()}
 function dismiss(){state.dismissed=true;clearMobileExposureRetry();save();removeFirstFlight();O.productUI?.announce?.('First flight guide dismissed');schedule()}
 function ensureGuideVisible(){const mobile=O.v08MobileInteraction;if(!state.guideOpen||!mobile?.state?.active||mobile.state.sheet==='expanded'||typeof mobile.expand!=='function')return false;mobile.expand();state.mobileExpands++;return true}
 function firstFlightVisibleOnMobile(box,mobile){
@@ -28,14 +29,18 @@ function firstFlightVisibleOnMobile(box,mobile){
 }
 function scheduleFirstFlightExposureRetry(){
  if(mobileExposureTimer||state.mobileFirstFlightOffered||state.dismissed||state.completed||state.progress.started||!compactMobileTarget())return false;
- if(state.mobileFirstFlightExposureAttempts>=MAX_MOBILE_EXPOSURE_ATTEMPTS){state.mobileFirstFlightExposureTimeout=true;return false}
+ if(state.mobileFirstFlightExposureAttempts>=MAX_MOBILE_EXPOSURE_ATTEMPTS){state.mobileFirstFlightExposureTimeout=true;resetVisibleExposure();return false}
  mobileExposureTimer=root.setTimeout(()=>{mobileExposureTimer=0;state.mobileFirstFlightExposureAttempts++;ensureFirstFlightVisible()},50);return true
 }
 function ensureFirstFlightVisible(){
  const box=document.getElementById('living-first-flight');if(state.mobileFirstFlightOffered||!box||state.dismissed||state.completed||state.progress.started||!compactMobileTarget()){clearMobileExposureRetry();return false}
- const mobile=O.v08MobileInteraction;if(!mobile?.state?.active||typeof mobile.expand!=='function'){scheduleFirstFlightExposureRetry();return false}
- if(firstFlightVisibleOnMobile(box,mobile)){clearMobileExposureRetry();state.mobileFirstFlightOffered=true;return true}
- if(mobile.state.sheet!=='expanded'){mobile.expand();state.mobileFirstFlightExpands++}
+ const mobile=O.v08MobileInteraction;if(!mobile?.state?.active||typeof mobile.expand!=='function'){resetVisibleExposure();scheduleFirstFlightExposureRetry();return false}
+ if(firstFlightVisibleOnMobile(box,mobile)){
+  const now=Date.now();if(!state.mobileFirstFlightVisibleSince)state.mobileFirstFlightVisibleSince=now;
+  if(now-state.mobileFirstFlightVisibleSince>=MOBILE_EXPOSURE_STABLE_MS){if(mobileExposureTimer){root.clearTimeout(mobileExposureTimer);mobileExposureTimer=0}state.mobileFirstFlightOffered=true;return true}
+  scheduleFirstFlightExposureRetry();return false
+ }
+ resetVisibleExposure();if(mobile.state.sheet!=='expanded'){mobile.expand();state.mobileFirstFlightExpands++}
  scheduleFirstFlightExposureRetry();return false
 }
 function toggleGuide(force){const next=typeof force==='boolean'?force:!state.guideOpen;if(next===state.guideOpen){if(next)ensureGuideVisible();return}state.guideOpen=next;if(next){state.guideOpens++;ensureGuideVisible()}schedule();O.productUI?.announce?.(next?'Exploration controls opened':'Exploration controls closed')}
@@ -64,5 +69,5 @@ function render(){
 function schedule(){if(scheduled)return;scheduled=true;(root.requestAnimationFrame||((fn)=>root.setTimeout(fn,0)))(()=>{scheduled=false;render()})}
 function onKeydown(event){if(event.defaultPrevented||event.altKey||event.ctrlKey||event.metaKey)return;const tag=event.target?.tagName;if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'||event.target?.isContentEditable)return;if(event.key==='?'){event.preventDefault();toggleGuide()}}
 function attach(){state.attachAttempts++;const product=O.v1LivingProduct,next=document.getElementById('living-panel');if(!product?.runtime||!next){if(state.attachAttempts>=MAX_ATTACH_ATTEMPTS){state.attachStatus='timeout';return}root.setTimeout(attach,50);return}runtime=product.runtime;panel=next;state.attachStatus='attached';runtime.onChange?.(schedule);observer=new MutationObserver(schedule);observer.observe(panel,{childList:true,subtree:true});render()}
-load();root.addEventListener('keydown',onKeydown,false);root.addEventListener('resize',schedule,{passive:true});const api=Object.freeze({VERSION,STORAGE_KEY,MAX_ATTACH_ATTEMPTS,MAX_MOBILE_EXPOSURE_ATTEMPTS,state,progress,render,dismiss,toggleGuide,firstFlightVisibleOnMobile,snapshot:()=>Object.freeze({...state,progress:runtime?progress(runtime.snapshot()):Object.freeze({...state.progress}),input:coarseInput()?'coarse':'fine',compactMobileTarget:compactMobileTarget()})});O.v11LivingGuidance=api;root.__OFU_LIVING_GUIDANCE__=api;attach();
+load();root.addEventListener('keydown',onKeydown,false);root.addEventListener('resize',schedule,{passive:true});const api=Object.freeze({VERSION,STORAGE_KEY,MAX_ATTACH_ATTEMPTS,MAX_MOBILE_EXPOSURE_ATTEMPTS,MOBILE_EXPOSURE_STABLE_MS,state,progress,render,dismiss,toggleGuide,firstFlightVisibleOnMobile,snapshot:()=>Object.freeze({...state,progress:runtime?progress(runtime.snapshot()):Object.freeze({...state.progress}),input:coarseInput()?'coarse':'fine',compactMobileTarget:compactMobileTarget()})});O.v11LivingGuidance=api;root.__OFU_LIVING_GUIDANCE__=api;attach();
 })(typeof globalThis!=='undefined'?globalThis:this);
