@@ -17,7 +17,7 @@ async function measure(){
   const product=OFU.v1LivingProduct,runtime=product.runtime.snapshot(),renderer=product.renderer.state(),canvas=document.getElementById('living-view'),ctx=canvas.getContext('2d'),pixels=ctx.getImageData(0,0,canvas.width,canvas.height).data;
   let hash=2166136261;const sx=Math.max(1,Math.floor(canvas.width/48)),sy=Math.max(1,Math.floor(canvas.height/32));
   for(let y=0;y<canvas.height;y+=sy)for(let x=0;x<canvas.width;x+=sx){const i=(y*canvas.width+x)*4;for(let k=0;k<4;k++){hash^=pixels[i+k];hash=Math.imul(hash,16777619);}}
-  return {runtime:{revision:runtime.revision,stage:runtime.stage,navigationCoordinate:runtime.navigationCoordinate,node:runtime.node?.canonicalId||runtime.node?.entityId||null,body:runtime.body?.canonicalId||runtime.body?.entityId||null,historyDepth:runtime.historyDepth},frames:renderer.metrics.frames,hash:hash>>>0,picks:product.snapshot().render.pickCount,input:product.snapshot().input,continuity:OFU.v11LivingTouchContinuity.snapshot(),dragPacing:product.renderer.dragPacingSnapshot?.()||null};
+  return {runtime:{revision:runtime.revision,stage:runtime.stage,navigationCoordinate:runtime.navigationCoordinate,node:runtime.node?.canonicalId||runtime.node?.entityId||null,body:runtime.body?.canonicalId||runtime.body?.entityId||null,historyDepth:runtime.historyDepth},frames:renderer.metrics.frames,hash:hash>>>0,picks:product.snapshot().render.pickCount,input:product.snapshot().input,continuity:OFU.v11LivingTouchContinuity.snapshot(),dragPacing:product.renderer.dragPacingSnapshot?.()||null,framePacing:renderer.framePacing||null,navigationPacing:product.runtime.navigationPacingSnapshot?.()||null};
  });
 }
 
@@ -57,6 +57,7 @@ try{
  assert.equal(immediate.framesAfter,immediate.framesBefore,'continuation rotation must preserve canonical RAF drag pacing inside the dispatch task');
  await raf2();
  const afterDrag=await measure();
+ console.log(JSON.stringify({probe:'PINCH_TO_DRAG_FRAME_ACCOUNTING',rendererFrameDelta:afterDrag.frames-beforeDrag.frames,dragPacingBefore:beforeDrag.dragPacing,dragPacingAfter:afterDrag.dragPacing,framePacingBefore:beforeDrag.framePacing,framePacingAfter:afterDrag.framePacing,navigationPacingBefore:beforeDrag.navigationPacing,navigationPacingAfter:afterDrag.navigationPacing,inputBefore:beforeDrag.input,inputAfter:afterDrag.input}));
  assert.equal(afterDrag.frames-beforeDrag.frames,1,'pinch-to-drag continuation must produce one paced presentation frame');
  assert.notEqual(afterDrag.hash,beforeDrag.hash,'continued one-finger drag must visibly change the Living canvas');
  assert.deepEqual(afterDrag.runtime,beforeDrag.runtime,'presentation drag continuation must not mutate canonical navigation/history');
