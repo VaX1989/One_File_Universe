@@ -3,7 +3,7 @@
 const O=root.OFU=root.OFU||{};
 const F=O.v2x03GalaxyField,R=O.v2x03RegionRefinement,N=O.v2x03NeighborhoodDepth,S=O.v1x02SpatialUniverse;
 if(!F||!R||!N||!S)throw new Error('V2X-03 macrocosm provider dependencies missing');
-const VERSION='ofu-v2x-03-macrocosm-provider-1',CONTRACT='ofu-v2x-03-macrocosm-consumer-1',AUTHORITY='PRESENTATION_ONLY';
+const VERSION='ofu-v2x-03-macrocosm-provider-2',CONTRACT='ofu-v2x-03-macrocosm-consumer-1',AUTHORITY='PRESENTATION_ONLY';
 const QUALITY=Object.freeze({LOW:Object.freeze({entityLimit:20,field:'LOW'}),MOBILE:Object.freeze({entityLimit:28,field:'MOBILE'}),STANDARD:Object.freeze({entityLimit:48,field:'STANDARD'}),HIGH:Object.freeze({entityLimit:64,field:'HIGH'})});
 const freeze=v=>{if(!v||typeof v!=='object'||Object.isFrozen(v))return v;for(const k of Object.keys(v))freeze(v[k]);return Object.freeze(v)};
 function q(name){const key=String(name||'STANDARD').toUpperCase();if(!QUALITY[key])throw new RangeError('unsupported macrocosm quality '+key);return{key,...QUALITY[key]}}
@@ -19,7 +19,7 @@ function buildGalaxy({galaxy,entities=[],cameraFrame=null,quality='STANDARD',pre
  return freeze({version:VERSION,contract:CONTRACT,status:'READY',scale:'GALAXY',authority:AUTHORITY,galaxyId,morphology,field,objects:rep?rep.objects:Object.freeze([]),camera:freeze({consumedExternalFrame:!!cameraFrame,ownsFrame:false}),bounds:freeze({entities:rep?.objects.length||0,maxEntities:cfg.entityLimit,decorative:field.bounds.total}),claims:freeze({fieldIsCalibratedObservation:false,decorativeSelectable:false,canonicalGalaxyIdentityPreserved:true})});
 }
 function buildRegion({parentId,children,quality='STANDARD',focus=0,parentExtent=1}={}){const cfg=q(quality),scene=R.refine({parentId,children:normalizeEntities(children),quality:cfg.key,focus,parentExtent});return freeze({version:VERSION,contract:CONTRACT,status:'READY',scale:'REGION',authority:AUTHORITY,...scene,claims:freeze({hardReplacementRequired:false,regionBoundaryCanonical:false})})}
-function buildNeighborhood({objects,cameraFrame,quality='STANDARD',scaleUnits=36}={}){const cfg=q(quality),scene=N.project({objects:normalizeEntities(objects).slice(0,cfg.entityLimit),cameraFrame,quality:cfg.key,scaleUnits});return freeze({version:VERSION,contract:CONTRACT,status:'READY',scale:'NEIGHBORHOOD',authority:AUTHORITY,...scene})}
+function buildNeighborhood({objects,cameraFrame,quality='STANDARD',scaleUnits=36}={}){const cfg=q(quality),scene=N.project({objects:normalizeEntities(objects),cameraFrame,quality:cfg.key,scaleUnits});return freeze({version:VERSION,contract:CONTRACT,status:'READY',scale:'NEIGHBORHOOD',authority:AUTHORITY,...scene})}
 function pick(scene,x,y){if(scene?.scale!=='NEIGHBORHOOD')throw new Error('direct pick currently supported for NEIGHBORHOOD scenes only');return N.pick(scene,x,y)}
 function continuityWitness({galaxy,region,neighborhood}={}){return freeze({version:VERSION,contract:CONTRACT,galaxyId:galaxy?.galaxyId||null,regionParent:region?.parentId||null,neighborhoodObjectIds:Object.freeze((neighborhood?.objects||[]).map(o=>o.sourceId)),cameraOwnedHere:false,selectionOwnedHere:false,scaleOwnedHere:false,authority:AUTHORITY})}
 O.v2x03MacrocosmProvider=Object.freeze({VERSION,CONTRACT,AUTHORITY,QUALITY,buildUniverse,buildGalaxy,buildRegion,buildNeighborhood,pick,continuityWitness});
