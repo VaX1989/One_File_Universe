@@ -1,0 +1,81 @@
+{
+  "schema": "ofu-v2x-convergence-base-1",
+  "version": "2026-09-07.1",
+  "status": "ACTIVE",
+  "parallelRestartReady": true,
+  "writerMegaLanesAuthorized": true,
+  "canonicalDevelopmentBranch": "development/v1.1-quality-exploration",
+  "frozenSourceSha": "e0dae058cd5d6fd103cdf5958d781d9b38e1101e",
+  "frozenSourceTree": "d81fbbbe58d74abff1eb99111a059f5282b43de2",
+  "restartAnchorRef": "parallel/v2x-restart-base-2026-09-07",
+  "restartAnchorSha": "e0dae058cd5d6fd103cdf5958d781d9b38e1101e",
+  "restartAnchorTree": "d81fbbbe58d74abff1eb99111a059f5282b43de2",
+  "sourceDecision": "IMMUTABLE_GREEN_RESTART_ANCHOR",
+  "evidence": {
+    "exactSourceCheckRunsObserved": 74,
+    "failureMarkerObserved": false,
+    "cancelledMarkerObserved": false,
+    "inProgressMarkerObserved": false,
+    "queuedWorkflowMarkerObserved": false,
+    "timedOutWorkflowMarkerObserved": false,
+    "claimLimit": "Live GitHub Checks/Actions observations for the exact frozen source SHA. No claim is made that metadata commits created after the anchor were part of the frozen executable evidence set."
+  },
+  "controlPlane": {
+    "superParallelBase": "docs/parallel/SUPER_PARALLEL_BASE_2026-09-07.json",
+    "ownershipMatrix": "docs/parallel/V2X_OWNERSHIP_MATRIX.json",
+    "capabilityRegistry": "docs/parallel/V2X_CAPABILITY_REGISTRY.json",
+    "gapRegistry": "docs/parallel/V2X_GAP_REGISTRY.json",
+    "researchHarvestLedger": "docs/parallel/V2X_RESEARCH_HARVEST_LEDGER.json",
+    "openPrAdjudicationLedger": "docs/parallel/V2X_OPEN_PR_ADJUDICATION_LEDGER.json",
+    "baselineEvidence": "docs/parallel/V2X_BASELINE_EVIDENCE.json"
+  },
+  "restartPolicy": {
+    "newLaneBase": "parallel/v2x-restart-base-2026-09-07",
+    "existingLanePolicy": "FORWARD_RECONCILE_TO_RESTART_ANCHOR_NO_FORCE_NO_SILENT_RESET",
+    "canonicalConvergenceOwner": "PROMPT_01",
+    "sharedSemanticSurfacePolicy": "SINGLE_OWNER_CONVERGENCE_CONTROLLED",
+    "integrationPolicy": "EXACT_HEAD_EVIDENCE_BEFORE_CONVERGENCE",
+    "testWeakeningAllowed": false,
+    "forcePushAllowed": false,
+    "directMainWritesAllowed": false,
+    "v1_0_0MutationAllowed": false,
+    "unknownMayBeFabricated": false
+  },
+  "laneAuthorization": {
+    "writerPrompts": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+    "researchPrompts": [17, 18, 19],
+    "adversarialReadOnlyPrompt": 20,
+    "writerState": "AUTHORIZED_NOW",
+    "researchState": "AUTHORIZED_NOW",
+    "adversarialState": "AUTHORIZED_READ_ONLY_NOW"
+  },
+  "laneBranches": {
+    "03": "parallel/v2x-01-runtime-adaptive-materialization-2026-09-07",
+    "04": "parallel/v2x-02-camera-spatial-travel-2026-09-07",
+    "05": "parallel/v2x-03-macrocosm-galaxy-rendering-2026-09-07",
+    "06": "parallel/v2x-04-system-planet-approach-2026-09-07",
+    "07": "parallel/v2x-05-deep-planet-science-2026-09-07",
+    "08": "parallel/v2x-06-surface-terrain-geology-hydrology-2026-09-07",
+    "09": "parallel/v2x-07-human-scale-local-traversal-2026-09-07",
+    "10": "parallel/v2x-08-life-ecology-evolution-embodiment-2026-09-07",
+    "11": "parallel/v2x-09-civilization-economy-city-2026-09-07",
+    "12": "parallel/v2x-10-persistent-individuals-history-2026-09-07",
+    "13": "parallel/v2x-11-gameplay-causal-engine-2026-09-07",
+    "14": "parallel/v2x-12-matter-cell-molecular-atomic-2026-09-07",
+    "15": "parallel/v2x-13-rendering-platform-webgpu-2026-09-07",
+    "16": "parallel/v2x-14-product-ux-mobile-accessibility-audio-2026-09-07",
+    "17": "research/v2x-15-astronomy-planetology-frontier-2026-09-07",
+    "18": "research/v2x-16-life-civ-matter-frontier-2026-09-07",
+    "19": "research/ai-f0-local-inference-feasibility-v2-2026-09-07"
+  },
+  "terminalProgramStates": [
+    "FOUNDER_TEST_CANDIDATE",
+    "NOT_READY"
+  ],
+  "founderAcceptanceMayBeSelfDeclared": false,
+  "activation": {
+    "effectiveDate": "2026-09-07",
+    "decision": "PARALLEL_RESTART_AUTHORIZED_IMMEDIATELY",
+    "reason": "The serial control plane is ACTIVE, the exact frozen source head has no observed failing, cancelled, running, queued or timed-out GitHub gate markers, and an immutable restart anchor now binds all downstream work to one exact source identity."
+  }
+}
