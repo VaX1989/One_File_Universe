@@ -74,7 +74,7 @@
       "stage": "foundation",
       "placement": "script",
       "source": "src/domains/v1/micro/pipeline.js",
-      "dependencies": ["v1.micro.materials", "v1.micro.microstructure", "v1.micro.molecular", "v1.micro.atomic"],
+      "dependencies": ["v1.micro.materials", "v1.micro.microstructure", "v1.micro.molecular", "v1.micro.molecular-electronic-reference", "v1.micro.atomic"],
       "authority": "MODEL_DERIVED_SIMULATION",
       "provenance": "Late-materialized LOCAL to MATERIAL to MICROSTRUCTURE to MOLECULAR to ATOMIC semantic transitions with REFINE/PROJECT/RECONCILE witnesses.",
       "provides": ["v1.micro.pipeline"]

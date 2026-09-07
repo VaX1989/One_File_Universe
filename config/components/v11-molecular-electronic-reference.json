@@ -1,0 +1,22 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1.micro.molecular-electronic-reference",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/molecular/electronic-reference.js",
+      "dependencies": [
+        "v1.micro.molecular-stoichiometry"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Selective V1X-19 harvest: exact formula-unit nuclear-charge bookkeeping plus a clearly hypothetical neutral-electron reference derived from resolved stoichiometry. Actual charge state, electron count, oxidation, bonding, orbitals, wavefunctions and quantum dynamics remain unknown or unsupported.",
+      "provides": [
+        "v1.micro.molecular-electronic-reference"
+      ]
+    }
+  ]
+}
