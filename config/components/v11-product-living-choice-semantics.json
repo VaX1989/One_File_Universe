@@ -1,0 +1,18 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1.product.living-choice-semantics",
+      "version": "1.1.0",
+      "owner": "product",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/bootstrap/product/living-choice-semantics.js",
+      "dependencies": ["v1.product.living-universe"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Post-v1 accessibility semantics for the shipping Living panel. Navigation choices remain ordinary buttons instead of false toggle buttons; only local object-selection choices expose aria-pressed state derived from the current Living runtime selection. No navigation, selection, simulation, persistence, scientific or canonical authority is created or mutated.",
+      "provides": ["v1.product.living-choice-semantics"]
+    }
+  ]
+}

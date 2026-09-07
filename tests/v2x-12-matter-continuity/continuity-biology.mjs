@@ -6,7 +6,7 @@ for(const f of [
  'src/kernel/sha256.js','src/extensions/contracts.js','src/domains/v1/common.js','src/domains/v1/microscopic.js',
  'src/domains/v1/materials/material-model.js','src/domains/v1/materials/reference-properties.js','src/domains/v1/micro/source-adapters.js','src/domains/v1/micro/microstructure.js',
  'src/domains/v1/molecular/representative.js','src/domains/v1/molecular/reference-mass.js','src/domains/v1/molecular/stoichiometric-reference.js','src/domains/v1/molecular/electronic-reference.js',
- 'src/domains/v1/atomic/representative.js','src/domains/v1/micro/pipeline.js','src/domains/v1/micro/matter-continuity-v2.js','src/rendering/microscopic/matter-continuity-provider.js'
+ 'src/domains/v1/atomic/representative.js','src/domains/v1/micro/pipeline.js','src/domains/v1/micro/matter-continuity-v2.js','src/domains/v1/micro/matter-continuity-unit-contract.js','src/rendering/microscopic/matter-continuity-provider.js'
 ])vm.runInThisContext(fs.readFileSync(f,'utf8'),{filename:f});
 const O=globalThis.OFU,C=O.v2x12MatterContinuity,M=O.v1Materials,A=O.v1MicroSourceAdapters,Legacy=O.v1Microscopic,Render=O.v2x12MicroscopicPresentation;
 let cases=0;
