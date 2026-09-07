@@ -1,6 +1,6 @@
 {
   "schema": "ofu-super-parallel-base-1",
-  "version": "2026-09-07.4",
+  "version": "2026-09-07.5",
   "status": "ACTIVE",
   "canonicalDevelopmentBranch": "development/v1.1-quality-exploration",
   "superParallelBaseSha": "70af4a84bb8cb7c782966bb4b3b8aab8aa86838e",
@@ -11,6 +11,21 @@
   "integrationMergeTree": "1ff670e62be6c21545334ed83fa1299c77d9ed22",
   "baseDecision": "ACTIVE",
   "writerMegaLanesAuthorized": true,
+  "currentConvergenceBase": "docs/parallel/V2X_CONVERGENCE_BASE_CURRENT.json",
+  "parallelRestart": {
+    "state": "ACTIVE",
+    "ready": true,
+    "effectiveDate": "2026-09-07",
+    "restartAnchorRef": "parallel/v2x-restart-base-2026-09-07",
+    "restartAnchorSha": "e0dae058cd5d6fd103cdf5958d781d9b38e1101e",
+    "restartAnchorTree": "d81fbbbe58d74abff1eb99111a059f5282b43de2",
+    "record": "docs/parallel/V2X_CONVERGENCE_BASE_CURRENT.json",
+    "newLanePolicy": "BRANCH_FROM_RESTART_ANCHOR",
+    "existingLanePolicy": "FORWARD_RECONCILE_TO_RESTART_ANCHOR_NO_FORCE_NO_SILENT_RESET",
+    "writerMegaLanesAuthorized": true,
+    "researchLanesAuthorized": true,
+    "adversarialCertificationAuthorizedReadOnly": true
+  },
   "ownershipMatrix": "docs/parallel/V2X_OWNERSHIP_MATRIX.json",
   "capabilityRegistry": "docs/parallel/V2X_CAPABILITY_REGISTRY.json",
   "gapRegistry": "docs/parallel/V2X_GAP_REGISTRY.json",
@@ -30,7 +45,7 @@
     "state": "ACTIVE",
     "effectiveDate": "2026-09-07",
     "scope": "ALL_DOWNSTREAM_DEVELOPMENT_LANES_STARTED_BY_FOUNDER",
-    "controlPlaneCorrection": "The previous writerMegaLanesAuthorized=false state lagged actual founder authorization. Version 2026-09-07.4 synchronizes the machine record to the live operating authority.",
+    "controlPlaneCorrection": "The previous writerMegaLanesAuthorized=false state lagged actual founder authorization. Version 2026-09-07.4 synchronized the machine record to the live operating authority. Version 2026-09-07.5 additionally binds that authority to the immutable V2X restart anchor.",
     "retroactiveInvalidation": false,
     "pathBindingPolicy": "DENY_BEFORE_ALLOW_REMAINS_ACTIVE; exact lane path grants are reconciled from immutable lane checkpoints without blocking already founder-authorized execution.",
     "centralSemanticsRemainConvergenceOwned": true
