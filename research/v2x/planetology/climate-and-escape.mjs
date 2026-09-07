@@ -10,19 +10,25 @@ function finite(name, value) {
   return value;
 }
 
-export function zeroDimensionalEbm({ stellarFluxWm2, bondAlbedo, outgoingLongwaveA = 210, outgoingLongwaveB = 2, referenceTemperatureK = 273.15 }) {
+function parameterProvenance(parameterSetId, parameterSetHash) {
+  return Boolean(parameterSetId && parameterSetHash);
+}
+
+export function zeroDimensionalEbm({ stellarFluxWm2, bondAlbedo, parameterSetId, parameterSetHash, outgoingLongwaveA = 210, outgoingLongwaveB = 2, referenceTemperatureK = 273.15 }) {
   const s = finite('stellarFluxWm2', stellarFluxWm2);
   const a = finite('bondAlbedo', bondAlbedo);
   const A = finite('outgoingLongwaveA', outgoingLongwaveA);
   const B = finite('outgoingLongwaveB', outgoingLongwaveB);
   const tref = finite('referenceTemperatureK', referenceTemperatureK);
+  if (!parameterProvenance(parameterSetId, parameterSetHash)) return Object.freeze({ status: 'RESEARCH_REQUIRED', reason: 'EBM_PARAMETER_SET_ID_AND_HASH_REQUIRED', weatherTruthClaim: false, gcmTruthClaim: false });
   if (s <= 0 || a < 0 || a >= 1 || B <= 0 || tref <= 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'INVALID_EBM_INPUT' });
   const absorbed = s * (1 - a) / 4;
   const temperatureK = tref + (absorbed - A) / B;
-  return Object.freeze({ status: Number.isFinite(temperatureK) && temperatureK > 0 ? 'PRESENT' : 'UNSUPPORTED', temperatureK, absorbedShortwaveWm2: absorbed, outgoingLongwaveAtSolutionWm2: A + B * (temperatureK - tref), assumptions: 'ZERO_DIMENSIONAL_LINEAR_OLR_ENERGY_BALANCE', weatherTruthClaim: false, gcmTruthClaim: false });
+  if (!Number.isFinite(temperatureK) || temperatureK <= 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'NON_PHYSICAL_LINEAR_OLR_EQUILIBRIUM' });
+  return Object.freeze({ status: 'PRESENT', temperatureK, absorbedShortwaveWm2: absorbed, outgoingLongwaveAtSolutionWm2: A + B * (temperatureK - tref), parameterSetId, parameterSetHash, assumptions: 'ZERO_DIMENSIONAL_LINEAR_OLR_ENERGY_BALANCE_WITH_EXPLICIT_PARAMETER_PROVENANCE', weatherTruthClaim: false, gcmTruthClaim: false });
 }
 
-export function transientZeroDimensionalEbmStep({ temperatureK, heatCapacityJm2K, stellarFluxWm2, bondAlbedo, durationSeconds, outgoingLongwaveA = 210, outgoingLongwaveB = 2, referenceTemperatureK = 273.15, maxTemperatureStepK = 1 }) {
+export function transientZeroDimensionalEbmStep({ temperatureK, heatCapacityJm2K, stellarFluxWm2, bondAlbedo, durationSeconds, parameterSetId, parameterSetHash, outgoingLongwaveA = 210, outgoingLongwaveB = 2, referenceTemperatureK = 273.15, maxTemperatureStepK = 1 }) {
   let temperature = finite('temperatureK', temperatureK);
   const heatCapacity = finite('heatCapacityJm2K', heatCapacityJm2K);
   const stellarFlux = finite('stellarFluxWm2', stellarFluxWm2);
@@ -32,9 +38,12 @@ export function transientZeroDimensionalEbmStep({ temperatureK, heatCapacityJm2K
   const B = finite('outgoingLongwaveB', outgoingLongwaveB);
   const tref = finite('referenceTemperatureK', referenceTemperatureK);
   const maxStep = finite('maxTemperatureStepK', maxTemperatureStepK);
+  if (!parameterProvenance(parameterSetId, parameterSetHash)) return Object.freeze({ status: 'RESEARCH_REQUIRED', reason: 'EBM_PARAMETER_SET_ID_AND_HASH_REQUIRED', weatherTruthClaim: false, gcmTruthClaim: false });
   if (temperature <= 0 || heatCapacity <= 0 || stellarFlux <= 0 || albedo < 0 || albedo >= 1 || duration < 0 || B <= 0 || tref <= 0 || maxStep <= 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'INVALID_TRANSIENT_EBM_INPUT' });
   const absorbed = stellarFlux * (1 - albedo) / 4;
-  const initialNet = absorbed - (A + B * (temperature - tref));
+  const initialOutgoing = A + B * (temperature - tref);
+  if (initialOutgoing < 0) return Object.freeze({ status: 'RESEARCH_REQUIRED', reason: 'LINEAR_OLR_OUTSIDE_NON_NEGATIVE_VALIDITY_AT_INITIAL_STATE' });
+  const initialNet = absorbed - initialOutgoing;
   const estimatedDelta = duration === 0 ? 0 : initialNet * duration / heatCapacity;
   const substeps = Math.max(1, Math.ceil(Math.abs(estimatedDelta) / maxStep));
   if (substeps > 10000) return Object.freeze({ status: 'UNSUPPORTED', reason: 'SUBSTEP_RESOURCE_BOUND_EXCEEDED' });
@@ -44,6 +53,7 @@ export function transientZeroDimensionalEbmStep({ temperatureK, heatCapacityJm2K
   let outgoingEnergyJm2 = 0;
   for (let i = 0; i < substeps; i += 1) {
     const outgoing = A + B * (temperature - tref);
+    if (outgoing < 0) return Object.freeze({ status: 'RESEARCH_REQUIRED', reason: 'LINEAR_OLR_OUTSIDE_NON_NEGATIVE_VALIDITY_DURING_STEP', completedSubsteps: i });
     const net = absorbed - outgoing;
     const delta = net * dt / heatCapacity;
     if (!Number.isFinite(delta) || Math.abs(delta) > maxStep * 1.0000001) return Object.freeze({ status: 'UNSUPPORTED', reason: 'NUMERICAL_STEP_BOUND_VIOLATED' });
@@ -54,14 +64,15 @@ export function transientZeroDimensionalEbmStep({ temperatureK, heatCapacityJm2K
   }
   const storageChangeJm2 = heatCapacity * (temperature - initialTemperatureK);
   const expectedStorageChangeJm2 = absorbedEnergyJm2 - outgoingEnergyJm2;
-  return Object.freeze({ status: 'PRESENT', initialTemperatureK, temperatureK: temperature, substeps, absorbedEnergyJm2, outgoingEnergyJm2, storageChangeJm2, energyResidualJm2: storageChangeJm2 - expectedStorageChangeJm2, assumptions: 'TRANSIENT_ZERO_DIMENSIONAL_LINEAR_OLR_EBM_EXPLICIT_BOUNDED_STEP', weatherTruthClaim: false, gcmTruthClaim: false });
+  return Object.freeze({ status: 'PRESENT', initialTemperatureK, temperatureK: temperature, substeps, absorbedEnergyJm2, outgoingEnergyJm2, storageChangeJm2, energyResidualJm2: storageChangeJm2 - expectedStorageChangeJm2, parameterSetId, parameterSetHash, assumptions: 'TRANSIENT_ZERO_DIMENSIONAL_LINEAR_OLR_EBM_EXPLICIT_BOUNDED_STEP_WITH_PARAMETER_PROVENANCE', weatherTruthClaim: false, gcmTruthClaim: false });
 }
 
-export function zonalEbmStep({ temperaturesK, heatCapacitiesJm2K, insolationFactors, bondAlbedos, stellarFluxWm2, durationSeconds, meridionalTransportWm2K = 0.6, outgoingLongwaveA = 210, outgoingLongwaveB = 2, referenceTemperatureK = 273.15, maxTemperatureStepK = 0.5 }) {
+export function zonalEbmStep({ temperaturesK, heatCapacitiesJm2K, insolationFactors, bondAlbedos, stellarFluxWm2, durationSeconds, parameterSetId, parameterSetHash, meridionalTransportWm2K = 0.6, outgoingLongwaveA = 210, outgoingLongwaveB = 2, referenceTemperatureK = 273.15, maxTemperatureStepK = 0.5, insolationMeanTolerance = 1e-9 }) {
   const n = Array.isArray(temperaturesK) ? temperaturesK.length : 0;
   if (n < 2 || n > 256 || !Array.isArray(heatCapacitiesJm2K) || !Array.isArray(insolationFactors) || !Array.isArray(bondAlbedos) || heatCapacitiesJm2K.length !== n || insolationFactors.length !== n || bondAlbedos.length !== n) {
     return Object.freeze({ status: 'UNSUPPORTED', reason: 'EQUAL_LENGTH_2_TO_256_ZONAL_ARRAYS_REQUIRED' });
   }
+  if (!parameterProvenance(parameterSetId, parameterSetHash)) return Object.freeze({ status: 'RESEARCH_REQUIRED', reason: 'EBM_PARAMETER_SET_ID_AND_HASH_REQUIRED', weatherTruthClaim: false, gcmTruthClaim: false });
   const temperatures = temperaturesK.map((x, i) => finite(`temperaturesK[${i}]`, x));
   const capacities = heatCapacitiesJm2K.map((x, i) => finite(`heatCapacitiesJm2K[${i}]`, x));
   const insolation = insolationFactors.map((x, i) => finite(`insolationFactors[${i}]`, x));
@@ -73,25 +84,29 @@ export function zonalEbmStep({ temperaturesK, heatCapacitiesJm2K, insolationFact
   const B = finite('outgoingLongwaveB', outgoingLongwaveB);
   const tref = finite('referenceTemperatureK', referenceTemperatureK);
   const maxStep = finite('maxTemperatureStepK', maxTemperatureStepK);
-  if (temperatures.some((x) => x <= 0) || capacities.some((x) => x <= 0) || insolation.some((x) => x < 0) || albedos.some((x) => x < 0 || x >= 1) || stellarFlux <= 0 || duration < 0 || D < 0 || B <= 0 || tref <= 0 || maxStep <= 0) {
+  const meanTolerance = finite('insolationMeanTolerance', insolationMeanTolerance);
+  if (temperatures.some((x) => x <= 0) || capacities.some((x) => x <= 0) || insolation.some((x) => x < 0) || albedos.some((x) => x < 0 || x >= 1) || stellarFlux <= 0 || duration < 0 || D < 0 || B <= 0 || tref <= 0 || maxStep <= 0 || meanTolerance < 0) {
     return Object.freeze({ status: 'UNSUPPORTED', reason: 'INVALID_ZONAL_EBM_INPUT' });
   }
   const meanInsolationFactor = insolation.reduce((sum, x) => sum + x, 0) / n;
-  if (!(meanInsolationFactor > 0)) return Object.freeze({ status: 'UNSUPPORTED', reason: 'POSITIVE_MEAN_INSOLATION_REQUIRED' });
-  const normalizedInsolation = insolation.map((x) => x / meanInsolationFactor);
+  if (Math.abs(meanInsolationFactor - 1) > meanTolerance) {
+    return Object.freeze({ status: 'RESEARCH_REQUIRED', reason: 'EQUAL_AREA_INSOLATION_FACTORS_MUST_HAVE_MEAN_ONE', meanInsolationFactor, insolationMeanTolerance: meanTolerance, silentRenormalizationPerformed: false });
+  }
   const initialTemperatures = [...temperatures];
   const computeTendency = () => {
-    const absorbed = normalizedInsolation.map((factor, i) => stellarFlux * factor * (1 - albedos[i]) / 4);
+    const absorbed = insolation.map((factor, i) => stellarFlux * factor * (1 - albedos[i]) / 4);
     const outgoing = temperatures.map((temperature) => A + B * (temperature - tref));
+    if (outgoing.some((value) => value < 0)) return { status: 'LINEAR_OLR_OUTSIDE_NON_NEGATIVE_VALIDITY' };
     const transport = Array(n).fill(0);
     for (let i = 0; i < n - 1; i += 1) {
       const flux = D * (temperatures[i + 1] - temperatures[i]);
       transport[i] += flux;
       transport[i + 1] -= flux;
     }
-    return { absorbed, outgoing, transport, net: absorbed.map((value, i) => value - outgoing[i] + transport[i]) };
+    return { status: 'PRESENT', absorbed, outgoing, transport, net: absorbed.map((value, i) => value - outgoing[i] + transport[i]) };
   };
   const first = computeTendency();
+  if (first.status !== 'PRESENT') return Object.freeze({ status: 'RESEARCH_REQUIRED', reason: first.status });
   let estimatedMaxDelta = 0;
   for (let i = 0; i < n; i += 1) estimatedMaxDelta = Math.max(estimatedMaxDelta, Math.abs(first.net[i] * duration / capacities[i]));
   const substeps = Math.max(1, Math.ceil(estimatedMaxDelta / maxStep));
@@ -102,6 +117,7 @@ export function zonalEbmStep({ temperaturesK, heatCapacitiesJm2K, insolationFact
   let transportResidualEnergyMeanJm2 = 0;
   for (let step = 0; step < substeps; step += 1) {
     const tendency = computeTendency();
+    if (tendency.status !== 'PRESENT') return Object.freeze({ status: 'RESEARCH_REQUIRED', reason: tendency.status, completedSubsteps: step });
     let transportSum = 0;
     for (let i = 0; i < n; i += 1) {
       const delta = tendency.net[i] * dt / capacities[i];
@@ -121,13 +137,16 @@ export function zonalEbmStep({ temperaturesK, heatCapacitiesJm2K, insolationFact
     temperaturesK: Object.freeze([...temperatures]),
     initialTemperaturesK: Object.freeze(initialTemperatures),
     substeps,
-    meanInsolationFactorBeforeNormalization: meanInsolationFactor,
+    meanInsolationFactor,
+    silentRenormalizationPerformed: false,
     absorbedEnergyMeanJm2,
     outgoingEnergyMeanJm2,
     storageChangeMeanJm2,
     transportResidualEnergyMeanJm2,
     energyResidualMeanJm2: storageChangeMeanJm2 - expectedStorageChangeMeanJm2,
-    assumptions: 'EQUAL_AREA_1D_ZONAL_LINEAR_OLR_NEAREST_NEIGHBOR_DIFFUSIVE_TRANSPORT',
+    parameterSetId,
+    parameterSetHash,
+    assumptions: 'EQUAL_AREA_1D_ZONAL_LINEAR_OLR_NEAREST_NEIGHBOR_DIFFUSIVE_TRANSPORT_WITH_EXPLICIT_PARAMETER_PROVENANCE',
     weatherTruthClaim: false,
     gcmTruthClaim: false
   });
@@ -150,9 +169,10 @@ export function energyLimitedEscapeApplicability({ planetMassEarth, planetRadius
   if (absorptionRadiusEarth == null || rocheCorrection == null) return Object.freeze({ status: 'RESEARCH_REQUIRED', reason: 'R_XUV_AND_ROCHE_CORRECTION_REQUIRED', rateAuthorized: false });
   const rxuv = finite('absorptionRadiusEarth', absorptionRadiusEarth);
   const K = finite('rocheCorrection', rocheCorrection);
-  if (rxuv <= 0 || K <= 0 || K > 1) return Object.freeze({ status: 'UNSUPPORTED', reason: 'INVALID_ESCAPE_GEOMETRY' });
+  if (rxuv < r || K <= 0 || K > 1) return Object.freeze({ status: 'UNSUPPORTED', reason: 'INVALID_ESCAPE_GEOMETRY_OR_RXUV_BELOW_PLANET_RADIUS' });
   const rateKgPerS = eta * Math.PI * Math.pow(rxuv * R_EARTH, 3) * fxuv / (G * (m * M_EARTH) * K);
-  return Object.freeze({ status: 'MODEL_DERIVED_RATE_CANDIDATE', rateKgPerS, rateAuthorized: true, assumptions: 'ENERGY_LIMITED_ESCAPE_WITH_EXPLICIT_EFFICIENCY_RXUV_AND_ROCHE_CORRECTION', universalEscapeTruthClaim: false });
+  if (!Number.isFinite(rateKgPerS) || rateKgPerS < 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'NON_FINITE_ESCAPE_RATE' });
+  return Object.freeze({ status: 'MODEL_DERIVED_RATE_CANDIDATE', rateKgPerS, rateAuthorized: true, absorptionToPlanetRadiusRatio: rxuv / r, assumptions: 'ENERGY_LIMITED_ESCAPE_WITH_EXPLICIT_EFFICIENCY_RXUV_AND_ROCHE_CORRECTION', universalEscapeTruthClaim: false });
 }
 
 export function atmosphereMassBudgetStep({ atmosphereMassKg, escapeRateKgPerS, sourceRateKgPerS = 0, durationSeconds }) {
@@ -163,10 +183,12 @@ export function atmosphereMassBudgetStep({ atmosphereMassKg, escapeRateKgPerS, s
   if (mass < 0 || escapeRate < 0 || sourceRate < 0 || dt < 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'NEGATIVE_MASS_RATE_OR_TIME' });
   const requestedLossKg = escapeRate * dt;
   const sourceKg = sourceRate * dt;
+  if (!Number.isFinite(requestedLossKg) || !Number.isFinite(sourceKg)) return Object.freeze({ status: 'UNSUPPORTED', reason: 'NON_FINITE_MASS_BUDGET_DELTA' });
   const availableKg = mass + sourceKg;
+  if (!Number.isFinite(availableKg)) return Object.freeze({ status: 'UNSUPPORTED', reason: 'NON_FINITE_AVAILABLE_ATMOSPHERE_MASS' });
   const realizedLossKg = Math.min(requestedLossKg, availableKg);
   const afterKg = availableKg - realizedLossKg;
-  return Object.freeze({ status: requestedLossKg <= availableKg ? 'CONSERVED' : 'DEPLETION_CAPPED', beforeKg: mass, sourceKg, requestedLossKg, realizedLossKg, afterKg, residualKg: afterKg - (mass + sourceKg - realizedLossKg), universalEscapeHistoryClaim: false });
+  return Object.freeze({ status: requestedLossKg <= availableKg ? 'CONSERVED' : 'DEPLETION_CAPPED', beforeKg: mass, sourceKg, requestedLossKg, realizedLossKg, afterKg, residualKg: afterKg - (mass + sourceKg - realizedLossKg), stepSemantics: 'SOURCE_AND_ESCAPE_AGGREGATED_OVER_SAME_INTERVAL_WITH_DEPLETION_FLOOR', universalEscapeHistoryClaim: false });
 }
 
 export function blackbodyEmission({ temperatureK }) {
