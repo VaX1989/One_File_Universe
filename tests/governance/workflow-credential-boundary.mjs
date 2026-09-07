@@ -5,6 +5,7 @@ const protectedWorkflows=[
   '.github/workflows/foundation.yml',
   '.github/workflows/post-v1-development.yml',
   '.github/workflows/source-reproduction.yml',
+  '.github/workflows/certified-preview-release.yml',
 ];
 
 function checkoutBlocks(text){
