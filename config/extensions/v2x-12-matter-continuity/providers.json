@@ -77,7 +77,8 @@
           "Semantic magnification and normalized display coordinates can communicate regime changes without asserting literal Euclidean zoom or new scientific authority.",
           "Bounded tissue cells and cell compartments can be projected with inherited model store/material units while display placement remains presentation-only.",
           "Cell compartments, membranes, gradients, transport capacities and material-flow topology can be exposed as bounded semantic cues without claiming literal morphology, flux rates or metabolic kinetics.",
-          "Reducing a rendering budget must not reposition retained nodes; bounded omission is reported explicitly with available-count and truncation witnesses."
+          "Reducing a rendering budget must not reposition retained nodes; bounded omission is reported explicitly with available-count and truncation witnesses.",
+          "When relation cues exceed the bounded projection limit, deterministic category-preserving projection retains cues from every nonempty relation class before allocating additional slots."
         ],
         "limitations": [
           "Tissue-cell, material, molecular and biological compartment placement is presentation-only.",
@@ -86,6 +87,7 @@
           "Fixed-point structural coordinates are centered and normalized for display while original integer coordinates, source-space coordinates and units remain separately retained.",
           "Computed atomic structure is explicitly distinguished from source-backed experimental structure.",
           "Node and relation budgets can omit otherwise available bounded cues; omission is exposed through truncation witnesses and is never presented as a complete inventory.",
+          "Dense relation classes cannot silently starve every cue from another nonempty class; per-category projected and omitted counts remain explicit.",
           "The provider owns no shared camera, scale, selection, input or canonical mutation authority."
         ],
         "evidence": []
@@ -93,14 +95,14 @@
       "fidelity": {
         "regime": "microscopic-matter",
         "validity": "Authority-labelled bounded presentation spanning tissue cells, provider-supported cell organization, material composition, microstructure descriptors, molecular topology and atomic structures.",
-        "resolution": "TISSUE to CELL semantic continuity plus at most 256 provider nodes and 128 semantic relations per projected representation, with stable retained-node placement and explicit truncation witnesses.",
+        "resolution": "TISSUE to CELL semantic continuity plus at most 256 provider nodes and 128 semantic relations per projected representation, with stable retained-node placement, category-preserving relation projection and explicit truncation witnesses.",
         "uncertainty": "Source-backed, computed/model-derived, unresolved, presentation-only and budget-truncated states remain distinguishable; no visualization upgrades model authority."
       },
       "lifecycle": "SHIPPING",
       "requires": [
         {"id": "v2x12.model.matter-continuity", "version": "1.0.0", "authority": "MODEL_DERIVED_SIMULATION"}
       ],
-      "claims": ["representation.microscopic-matter-v2", "representation.tissue-cell-cues-v1", "representation.biological-matter-cues-v1", "representation.explicit-truncation-witness-v1"],
+      "claims": ["representation.microscopic-matter-v2", "representation.tissue-cell-cues-v1", "representation.biological-matter-cues-v1", "representation.explicit-truncation-witness-v1", "representation.category-preserving-relations-v1", "representation.unresolved-material-fidelity-v1"],
       "operations": ["INSPECT", "REPRESENT"],
       "budget": {"entities": 256, "bytes": 262144, "operations": 2048, "queue": 32},
       "evidence": [
