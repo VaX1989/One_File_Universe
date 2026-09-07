@@ -25,7 +25,10 @@ const state = createLifeState({
     lifecycleStagePpm: { juvenile: 250_000, mature: 650_000, senescent: 100_000 },
   }],
   interactions: [],
-  regions: { 'r-provider': { resourcePool: 10000, nutrientPool: 10000, opportunityPpm: 900_000, disturbancePpm: 0 } },
+  regions: {
+    'r-provider': { resourcePool: 10000, nutrientPool: 10000, opportunityPpm: 900_000, disturbancePpm: 0 },
+    'r-target': { resourcePool: 1000, nutrientPool: 1000, opportunityPpm: 700_000, disturbancePpm: 0 },
+  },
 });
 
 const provider = createLifeProvider({ getState: () => state });
@@ -34,6 +37,8 @@ assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.capabilities.includes('LIFE_SELECTION_CRIT
 assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.capabilities.includes('LIFE_INTERACTION_INSPECTION'));
 assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.capabilities.includes('LIFE_REGION_INSPECTION'));
 assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.capabilities.includes('LIFE_LIFECYCLE_COMPOSITION'));
+assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.capabilities.includes('LIFE_ADVANCE_SIMULATION'));
+assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.capabilities.includes('LIFE_DISPERSAL_SIMULATION'));
 assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.capabilities.includes('LIFE_REPRESENTATIVE_LIFECYCLE_SAMPLE'));
 assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.capabilities.includes('LIFE_BEHAVIOR_OPPORTUNITY'));
 assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.exclusions.includes('P4_EVENT_ADMISSION'));
@@ -48,6 +53,44 @@ assert.equal(provider.inspectPopulation('pop-provider').lifecycleSemantics, 'PRO
 assert.equal(provider.inspectRegion('r-provider').totalRepresentedAbundance, 400n);
 assert.equal(provider.inspectLineage('missing'), null);
 assert.equal(provider.inspectInteraction('missing'), null);
+
+const sourceSnapshot = structuredClone(state);
+const advanceEvent = {
+  type: 'LIFE_ADVANCE',
+  eventKey: 'p4:provider-advance',
+  profile: {
+    birthPpm: 20_000,
+    mortalityPpm: 10_000,
+    resourcePerBirth: 1,
+    nutrientPerBirth: 1,
+    maintenancePerIndividual: 0,
+    disturbanceMortalityPpm: 0,
+    juvenileMaturationPpm: 100_000,
+    matureSenescencePpm: 20_000,
+  },
+};
+const advanceSimulationA = provider.simulateAdvance(advanceEvent);
+const advanceSimulationB = provider.simulateAdvance(advanceEvent);
+assert.deepEqual(advanceSimulationA, advanceSimulationB, 'provider advance simulation must be deterministic for identical source state and external event');
+assert.equal(advanceSimulationA.sourceEventKey, state.eventKey);
+assert.equal(advanceSimulationA.state.eventKey, advanceEvent.eventKey);
+assert.equal(advanceSimulationA.eventAdmissionPerformed, false, 'provider simulation must never claim P4 event admission');
+assert.equal(advanceSimulationA.authorityClass, 'MODEL_DERIVED_SIMULATION');
+assert.deepEqual(state, sourceSnapshot, 'advance simulation must not mutate provider source state');
+
+const dispersalEvent = {
+  type: 'LIFE_DISPERSAL', eventKey: 'p4:provider-dispersal',
+  sourcePopulationId: 'pop-provider', targetRegionId: 'r-target', count: 40,
+};
+const dispersalSimulationA = provider.simulateDispersal(dispersalEvent);
+const dispersalSimulationB = provider.simulateDispersal(dispersalEvent);
+assert.deepEqual(dispersalSimulationA, dispersalSimulationB, 'provider dispersal simulation must be deterministic');
+assert.equal(dispersalSimulationA.sourceEventKey, state.eventKey);
+assert.equal(dispersalSimulationA.state.eventKey, dispersalEvent.eventKey);
+assert.equal(dispersalSimulationA.transfer.eventKey, dispersalEvent.eventKey);
+assert.equal(dispersalSimulationA.eventAdmissionPerformed, false, 'dispersal simulation must never claim temporal admission');
+assert.equal(dispersalSimulationA.authorityClass, 'MODEL_DERIVED_SIMULATION');
+assert.deepEqual(state, sourceSnapshot, 'dispersal simulation must not mutate provider source state');
 
 const interactionState = createLifeState({
   eventKey: 'fixture:provider-interaction',
@@ -123,7 +166,10 @@ assert.ok(descriptorsA.every((descriptor) => descriptor.primitiveFamily === 'CHA
 
 const lowActivityState = createLifeState({
   ...state,
-  regions: { 'r-provider': { resourcePool: 10000, nutrientPool: 10000, opportunityPpm: 100_000, disturbancePpm: 800_000 } },
+  regions: {
+    ...state.regions,
+    'r-provider': { resourcePool: 10000, nutrientPool: 10000, opportunityPpm: 100_000, disturbancePpm: 800_000 },
+  },
 });
 const lowActivitySamples = createLifeProvider({ getState: () => lowActivityState }).localSamples({ regionId: 'r-provider', maxSamples: 6, viewportKey: 'render-test' });
 assert.ok(lowActivitySamples.every((sample, index) => sample.behavior.activityOpportunityPpm < samples[index].behavior.activityOpportunityPpm), 'lower opportunity plus higher disturbance must reduce modeled local activity opportunity under identical lineage traits');
@@ -194,4 +240,4 @@ assert.throws(() => buildOrganismRenderDescriptors([{ ...samples[0], position: {
 assert.throws(() => buildOrganismRenderDescriptors([{ ...samples[0], presentation: { ...samples[0].presentation, motionAmplitude: Number.NaN } }]), /motionAmplitude must be finite/, 'non-finite presentation motion must fail closed');
 assert.throws(() => buildOrganismRenderDescriptors([{ ...samples[0], aggregateAbundance: '400' }]), /aggregate abundance evidence must be a non-negative bigint/, 'render evidence must preserve exact aggregate abundance type');
 
-console.log('V2X-08 life provider renderer: PASS (73 assertions)');
+console.log('V2X-08 life provider renderer: PASS');
