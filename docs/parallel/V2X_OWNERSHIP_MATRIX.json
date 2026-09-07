@@ -1,0 +1,73 @@
+{
+  "schema": "ofu-v2x-ownership-matrix-1",
+  "version": "2026-09-07.1",
+  "status": "BOOTSTRAP_CONSERVATIVE",
+  "writeTarget": "development/v1.1-quality-exploration",
+  "precedence": "DENY_BEFORE_ALLOW",
+  "writerLanesAuthorized": false,
+  "sourceLineage": {
+    "priorMatrix": "docs/parallel/V1X_OWNERSHIP_MATRIX.json",
+    "rule": "Until Prompt 02 establishes and integrates the V2X base checkpoint, preserve all prior shared-semantic ownership constraints and authorize no new mega-lane writer surfaces."
+  },
+  "global": {
+    "convergenceOwnerOnly": [
+      ".github/**",
+      "docs/parallel/V2X_OWNERSHIP_MATRIX.json",
+      "docs/parallel/SUPER_PARALLEL_BASE_2026-09-07.json",
+      "src/extensions/**",
+      "src/bootstrap/**",
+      "src/rendering/v1/**",
+      "src/rendering/planet-framing.js",
+      "src/scenes/v1/**",
+      "src/persistence/**",
+      "src/domains/v1/**",
+      "tools/product-template-compose.mjs",
+      "config/components/product.json",
+      "config/components/exploration-v1.json",
+      "config/components/planetology-environment-v1.json",
+      "config/components/v1-micro.json",
+      "config/components/v1.json",
+      "config/components/wave-a-convergence.json",
+      "config/extensions/*.json",
+      "config/conformance/px.json",
+      "config/conformance/v1.json",
+      "config/conformance/wave-a-convergence.json"
+    ],
+    "historicalFrozenReadOnly": [
+      "src/kernel/**",
+      "src/domains/astronomy/**",
+      "src/temporal/**",
+      "src/domains/planetology/**",
+      "src/domains/biosphere/**",
+      "tests/p1/**",
+      "tests/p2/**",
+      "tests/p3/**",
+      "tests/p4/**",
+      "tests/p5/**",
+      "tests/p5-environment-v2/**",
+      "tests/p6/**",
+      "tests/vectors/**",
+      "docs/spec/**",
+      "docs/p3/**",
+      "docs/p5-environment-v2/**",
+      "docs/P4_TEMPORAL_CONTRACT.md",
+      "docs/P5_PLANET_PHYSICAL_CONTRACT.md",
+      "docs/P6_BIOSPHERE_CONTRACT.md"
+    ]
+  },
+  "sharedSemanticOwners": {
+    "cameraReferenceFrame": {"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER"},
+    "continuousDistanceSemanticScale": {"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER"},
+    "canonicalSelectionContext": {"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER"},
+    "inputIntentRouting": {"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER"},
+    "sceneRepresentationSelection": {"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER"},
+    "providerRegistrySemantics": {"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER"},
+    "p4TemporalEventAdmission": {"semanticOwner":"P4_FROZEN_AUTHORITY","sharedFileMutationOwner":"CONVERGENCE_OWNER"},
+    "capabilityQualityResourceBudgets": {"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER"},
+    "buildComponentComposition": {"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER"},
+    "testConformanceRegistration": {"semanticOwner":"CONVERGENCE_OWNER","sharedFileMutationOwner":"CONVERGENCE_OWNER"}
+  },
+  "lanes": {},
+  "reviewerPolicy": {"branchesRequired":false,"writeAccess":"READ_ONLY","allowedPaths":[]},
+  "activationRule": "Replace BOOTSTRAP_CONSERVATIVE with the Prompt 02 reviewed ownership checkpoint before any V2X writer mega-lane is authorized."
+}
