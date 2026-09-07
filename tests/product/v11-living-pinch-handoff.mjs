@@ -1,0 +1,16 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import {loadComponents} from '../../tools/extensions/components.mjs';
+const source=fs.readFileSync('src/bootstrap/product/living-pinch-handoff.js','utf8'),plan=loadComponents();
+let cases=0;const ok=(value,message)=>{assert.ok(value,message);cases++;};
+const component=plan.find(c=>c.id==='v1.product.living-pinch-handoff');
+ok(component,'pinch handoff component is registered');
+ok(component.authority==='PRESENTATION_ONLY','pinch handoff remains presentation-only');
+ok(component.dependencies.includes('v1.product.living-universe'),'pinch handoff depends on the shipping Living product');
+ok(plan.findIndex(c=>c.id==='v1.product.living-pinch-handoff')>plan.findIndex(c=>c.id==='v1.product.living-universe'),'pinch handoff is emitted after Living input ownership is established');
+assert.match(source,/pointers\.size===1&&hadPinch/);cases++;
+assert.match(source,/coreInput\?\.lastGesture==='drag'/);cases++;
+assert.match(source,/renderer\.rotate\(dx,dy\)/);cases++;
+assert.match(source,/pointercancel/);cases++;
+assert.doesNotMatch(source,/selectPlanet|enterKey|setNavigationCoordinate|runtime\./);cases++;
+console.log(JSON.stringify({status:'PASS',suite:'v11-living-pinch-handoff',cases,version:'ofu-v11-living-pinch-handoff-1'}));
