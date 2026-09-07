@@ -22,7 +22,7 @@
       "stage": "full",
       "placement": "script",
       "source": "src/v2x-09-civilization-economy-city/economy-init.js",
-      "dependencies": ["v2x09.civilization.core@1.0.0"],
+      "dependencies": ["v2x09.civilization.core"],
       "authority": "MODEL_DERIVED_SIMULATION",
       "provenance": "V2X-09 bounded resource, facility, storage and logistics initialization over existing modeled civilization state.",
       "provides": ["v2x09.civilization.economy-init"]
@@ -35,7 +35,7 @@
       "stage": "full",
       "placement": "script",
       "source": "src/v2x-09-civilization-economy-city/economy-step.js",
-      "dependencies": ["v2x09.civilization.core@1.0.0", "v2x09.civilization.economy-init@1.0.0"],
+      "dependencies": ["v2x09.civilization.core", "v2x09.civilization.economy-init"],
       "authority": "MODEL_DERIVED_SIMULATION",
       "provenance": "V2X-09 deterministic extraction, transformation, consumption, logistics, accounting closure and typed environment-impact proposals. Cross-domain outputs never mutate planet or life state.",
       "provides": ["v2x09.civilization.economy-step", "v2x09.civilization.environment-impact-proposals"]
@@ -48,7 +48,7 @@
       "stage": "full",
       "placement": "script",
       "source": "src/v2x-09-civilization-economy-city/institutions.js",
-      "dependencies": ["v2x09.civilization.core@1.0.0"],
+      "dependencies": ["v2x09.civilization.core"],
       "authority": "MODEL_DERIVED_SIMULATION",
       "provenance": "V2X-09 bounded coordination, legitimacy, centralization, scarcity-strain and institutional-transition scenario mechanisms; no universal sociological law claim.",
       "provides": ["v2x09.civilization.institutions"]
@@ -61,7 +61,7 @@
       "stage": "full",
       "placement": "script",
       "source": "src/v2x-09-civilization-economy-city/morphology.js",
-      "dependencies": ["v2x09.civilization.core@1.0.0", "v2x09.civilization.institutions@1.0.0"],
+      "dependencies": ["v2x09.civilization.core", "v2x09.civilization.institutions"],
       "authority": "MODEL_DERIVED_SIMULATION",
       "provenance": "V2X-09 causal city morphology and bounded render-plan descriptors. Every emitted spatial/render primitive declares PRESENTATION_ONLY and no physical geometry claim; ruins require state/history support.",
       "provides": ["v2x09.civilization.city-morphology", "v2x09.civilization.city-render-plan"]
@@ -74,7 +74,7 @@
       "stage": "full",
       "placement": "script",
       "source": "src/v2x-09-civilization-economy-city/index.js",
-      "dependencies": ["v2x09.civilization.economy-step@1.0.0", "v2x09.civilization.institutions@1.0.0", "v2x09.civilization.morphology@1.0.0"],
+      "dependencies": ["v2x09.civilization.economy-step", "v2x09.civilization.institutions", "v2x09.civilization.morphology"],
       "authority": "MODEL_DERIVED_SIMULATION",
       "provenance": "V2X-09 public additive API composition. It creates no canonical history, no persistent persons, no canonical selection/camera/persistence authority, and no direct planet/life mutation.",
       "provides": ["v2x09.civilization.economy-city"]
@@ -87,7 +87,7 @@
       "stage": "full",
       "placement": "script",
       "source": "src/v2x-09-civilization-economy-city/production-network.js",
-      "dependencies": ["v2x09.civilization.core@1.0.0"],
+      "dependencies": ["v2x09.civilization.core"],
       "authority": "MODEL_DERIVED_SIMULATION",
       "provenance": "V2X-09 deterministic multi-stage production graph, bounded logistics capacities, degradation witnesses, service satisfaction and accounting-unit closure. It mutates no canonical economy, infrastructure or history state.",
       "provides": ["v2x09.civilization.production-network", "v2x09.civilization.logistics-bottlenecks"]
@@ -100,7 +100,7 @@
       "stage": "full",
       "placement": "script",
       "source": "src/v2x-09-civilization-economy-city/society-dynamics.js",
-      "dependencies": ["v2x09.civilization.core@1.0.0", "v2x09.civilization.production-network@1.0.0"],
+      "dependencies": ["v2x09.civilization.core", "v2x09.civilization.production-network"],
       "authority": "MODEL_DERIVED_SIMULATION",
       "provenance": "V2X-09 aggregate scarcity, opportunity, migration-pressure and institutional-response proposals. No persistent person is created and no population, polity, planet, life or P4 authority is mutated.",
       "provides": ["v2x09.civilization.aggregate-migration-pressure", "v2x09.civilization.institution-response-proposals"]
@@ -113,7 +113,7 @@
       "stage": "full",
       "placement": "script",
       "source": "src/v2x-09-civilization-economy-city/urban-evolution.js",
-      "dependencies": ["v2x09.civilization.core@1.0.0", "v2x09.civilization.production-network@1.0.0", "v2x09.civilization.society-dynamics@1.0.0"],
+      "dependencies": ["v2x09.civilization.core", "v2x09.civilization.production-network", "v2x09.civilization.society-dynamics"],
       "authority": "MODEL_DERIVED_SIMULATION",
       "provenance": "V2X-09 causal urban-family and specialization model with history/infrastructure-backed evidence layers. Render cues are explicitly PRESENTATION_ONLY and claim neither physical geometry nor empirical archaeology.",
       "provides": ["v2x09.civilization.urban-evolution", "v2x09.civilization.urban-evolution-render-cues"]
@@ -126,7 +126,7 @@
       "stage": "full",
       "placement": "script",
       "source": "src/v2x-09-civilization-economy-city/advanced.js",
-      "dependencies": ["v2x09.civilization.production-network@1.0.0", "v2x09.civilization.society-dynamics@1.0.0", "v2x09.civilization.urban-evolution@1.0.0"],
+      "dependencies": ["v2x09.civilization.production-network", "v2x09.civilization.society-dynamics", "v2x09.civilization.urban-evolution"],
       "authority": "MODEL_DERIVED_SIMULATION",
       "provenance": "V2X-09 additive advanced composition over production/logistics, aggregate society dynamics and urban evolution. Shared-renderer integration remains convergence-owner work.",
       "provides": ["v2x09.civilization.advanced-composition"]
