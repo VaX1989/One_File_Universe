@@ -11,7 +11,7 @@
       "source": "src/v2x-09-civilization-economy-city/core.js",
       "dependencies": [],
       "authority": "MODEL_DERIVED_SIMULATION",
-      "provenance": "V2X-09 bounded civilization technology prerequisite and utility core; model-derived scenario logic only.",
+      "provenance": "V2X-09 bounded civilization technology prerequisite and utility core; model-derived scenario logic only. Trade degree counts only explicitly active trade edges whose two modeled settlement endpoints are active.",
       "provides": ["v2x09.civilization.technology-prerequisites"]
     },
     {
@@ -89,8 +89,8 @@
       "source": "src/v2x-09-civilization-economy-city/production-network.js",
       "dependencies": ["v2x09.civilization.core"],
       "authority": "MODEL_DERIVED_SIMULATION",
-      "provenance": "V2X-09 deterministic multi-stage production graph, bounded logistics capacities, degradation witnesses, service satisfaction and accounting-unit closure. It mutates no canonical economy, infrastructure or history state.",
-      "provides": ["v2x09.civilization.production-network", "v2x09.civilization.logistics-bottlenecks"]
+      "provenance": "V2X-09 deterministic multi-stage production graph with direct allocation followed by bounded residual widest-path logistics. Only explicitly active trade edges between active modeled settlements can carry capacity; inactive, unknown or missing-endpoint routes remain visible as disabled witnesses. Routing is bounded to 48 settlements, 96 routes, 47 simple-path hops, 1024 path searches and 48000 operations, preserves per-edge capacity/accounting closure, and makes no physical route-geometry or shortest-physical-path claim.",
+      "provides": ["v2x09.civilization.production-network", "v2x09.civilization.logistics-bottlenecks", "v2x09.civilization.residual-widest-routing"]
     },
     {
       "id": "v2x09.civilization.society-dynamics",
@@ -102,7 +102,7 @@
       "source": "src/v2x-09-civilization-economy-city/society-dynamics.js",
       "dependencies": ["v2x09.civilization.core", "v2x09.civilization.production-network"],
       "authority": "MODEL_DERIVED_SIMULATION",
-      "provenance": "V2X-09 aggregate scarcity, opportunity, migration-pressure and institutional-response proposals. No persistent person is created and no population, polity, planet, life or P4 authority is mutated.",
+      "provenance": "V2X-09 aggregate scarcity, opportunity, migration-pressure and institutional-response proposals. Social route-stress averages only usable modeled routes and treats absence of usable routes as bounded isolation pressure. No persistent person is created and no population, polity, planet, life or P4 authority is mutated.",
       "provides": ["v2x09.civilization.aggregate-migration-pressure", "v2x09.civilization.institution-response-proposals"]
     },
     {
@@ -115,7 +115,7 @@
       "source": "src/v2x-09-civilization-economy-city/urban-evolution.js",
       "dependencies": ["v2x09.civilization.core", "v2x09.civilization.production-network", "v2x09.civilization.society-dynamics"],
       "authority": "MODEL_DERIVED_SIMULATION",
-      "provenance": "V2X-09 causal urban-family and specialization model with history/infrastructure-backed evidence layers. Render cues are explicitly PRESENTATION_ONLY and claim neither physical geometry nor empirical archaeology.",
+      "provenance": "V2X-09 causal urban-family and specialization model with history/infrastructure-backed evidence layers. Corridor-degradation presentation layers require explicit MODELED_INFRASTRUCTURE_CONDITION evidence plus a source infrastructure identifier; trade-only fallback routes cannot masquerade as archaeological or infrastructure remnants. Render cues remain PRESENTATION_ONLY and claim neither physical geometry nor empirical archaeology.",
       "provides": ["v2x09.civilization.urban-evolution", "v2x09.civilization.urban-evolution-render-cues"]
     },
     {
