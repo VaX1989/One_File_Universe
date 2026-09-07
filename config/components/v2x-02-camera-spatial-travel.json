@@ -42,7 +42,7 @@
     {
       "id": "v2x02.camera.living-binding",
       "version": "1.0.0",
-      "owner": "v2x-02-camera-spatial-travel",
+      "owner": "product",
       "kind": "code",
       "stage": "full",
       "placement": "script",
