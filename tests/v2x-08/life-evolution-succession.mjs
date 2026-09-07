@@ -193,9 +193,13 @@ throws(() => applyLineageEvent(zeroExtinctState, {
   type: 'EXTINCTION', eventKey: 'p4:duplicate-extinction', lineageId: 'lin-extinct',
 }), /already formally extinct/, 'formal extinction identity must be single-assignment');
 
+throws(() => applyDispersal(base, { type: 'LIFE_DISPERSAL', eventKey: 'p4:missing-count', sourcePopulationId: 'pop-a', targetRegionId: 'r2' }), /dispersal count required/, 'dispersal must require an explicit bounded transfer count');
 const dispersedA = applyDispersal(base, { type: 'LIFE_DISPERSAL', eventKey: 'p4:dispersal-1', sourcePopulationId: 'pop-a', targetRegionId: 'r2', count: 30 });
 const dispersedB = applyDispersal(base, { type: 'LIFE_DISPERSAL', eventKey: 'p4:dispersal-1', sourcePopulationId: 'pop-a', targetRegionId: 'r2', count: 30 });
 equal(dispersedA, dispersedB, 'dispersal must be deterministic');
+equal(dispersedA.transfer.eventKey, 'p4:dispersal-1', 'dispersal transfer witness must retain exact external event identity');
+equal(dispersedA.transfer.sourceStateEventKey, base.eventKey, 'dispersal witness must identify its exact source-state event key');
+equal(dispersedA.transfer.causationClaimedBeyondTransfer, false, 'dispersal witness must not infer downstream ecological causation');
 const dispersedState = dispersedA.state;
 equal(dispersedState.populations.reduce((sum, population) => sum + population.abundance, 0n), 100n, 'aggregate dispersal must conserve represented abundance');
 equal(dispersedState.populations.reduce((sum, population) => sum + population.energyStore, 0n), 1000n, 'aggregate dispersal must conserve represented energy store');
@@ -207,6 +211,7 @@ const sterileRegionDescriptor = describeSuccession(base, 'r2', {
   profileId: 'fixture-succession-v1', pioneerMaxAbundance: 50, establishedMinLineages: 1, networkedMinInteractions: 1,
 });
 equal(sterileRegionDescriptor.stage, 'NO_REPRESENTED_LIFE', 'uncolonized represented region must stay empty');
+equal(sterileRegionDescriptor.eventKey, base.eventKey, 'succession descriptor must bind to inspected state event identity');
 const pioneer = describeSuccession(dispersedState, 'r2', {
   profileId: 'fixture-succession-v1', pioneerMaxAbundance: 50, establishedMinLineages: 1, networkedMinInteractions: 1,
 });
@@ -216,6 +221,10 @@ equal(pioneer.authorityClass, 'MODEL_DERIVED_SIMULATION', 'succession stage must
 const recovery = compareRecovery(base, dispersedState, 'r2');
 equal(recovery.direction, 'INCREASED_REPRESENTED_ABUNDANCE', 'colonization should increase represented abundance in target region');
 equal(recovery.causationClaimed, false, 'recovery comparison must not overclaim causation');
+equal(recovery.beforeEventKey, base.eventKey, 'recovery comparison must identify before-state event key');
+equal(recovery.afterEventKey, dispersedState.eventKey, 'recovery comparison must identify after-state event key');
+const missingRegionState = createLifeState({ eventKey: 'fixture:no-r2', lineages: [], populations: [], interactions: [], regions: { r1: { resourcePool: 0, nutrientPool: 0 } } });
+throws(() => compareRecovery(base, missingRegionState, 'r2'), /after-state region r2 missing/, 'recovery comparison must fail closed when region identity is absent in either compared state');
 
 const replayed = replayLifeTransitions(base, [
   { type: 'LIFE_DISPERSAL', eventKey: 'p4:dispersal-1', sourcePopulationId: 'pop-a', targetRegionId: 'r2', count: 30 },
