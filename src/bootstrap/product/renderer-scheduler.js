@@ -2,7 +2,7 @@
 'use strict';
 if(typeof root.requestAnimationFrame!=='function'||root.__OFU_WAVE_IV_RAF_GATE__)return;
 const native=root.requestAnimationFrame.bind(root),nativeCancel=typeof root.cancelAnimationFrame==='function'?root.cancelAnimationFrame.bind(root):()=>{};
-const state={version:'ofu-wave-iv-render-scheduler-1',suspendedPlanetFrames:0,executedPlanetFrames:0,livingPacerInstalled:false,livingRotationInputs:0,livingRotationFrames:0,livingRotationCoalesced:0,livingNavigationPacerInstalled:false,livingPinchInputs:0,livingPinchFrames:0,livingPinchCoalesced:0,livingPinchStaleDrops:0,livingPinchBoundaryCommits:0,livingPinchTerminalCommits:0,livingPinchCancelledEvents:0};
+const state={version:'ofu-wave-iv-render-scheduler-1',suspendedPlanetFrames:0,executedPlanetFrames:0,livingPacerInstalled:false,livingRotationInputs:0,livingRotationFrames:0,livingRotationCoalesced:0,livingNavigationPacerInstalled:false,livingPinchInputs:0,livingPinchFrames:0,livingPinchCoalesced:0,livingPinchStaleDrops:0,livingPinchBoundaryCommits:0,livingPinchTerminalCommits:0,livingPinchCancelledEvents:0,livingRendererFactoryArmed:false,livingRuntimeFactoryArmed:false};
 function isPlanetFrame(fn){if(typeof fn!=='function'||fn.name!=='frame')return false;try{return /inspectorTarget\(\)/.test(Function.prototype.toString.call(fn))&&/localFrame\(now\)/.test(Function.prototype.toString.call(fn))}catch{return false}}
 function gated(fn){if(!isPlanetFrame(fn))return native(fn);const proxy=t=>{const scale=root.OFU?.waveIVScaleRuntime?.snapshot?.().semanticScale,macro=scale==='galaxy'||scale==='galactic_region'||scale==='stellar_neighborhood'||scale==='system';if(macro){state.suspendedPlanetFrames++;native(proxy);return}state.executedPlanetFrames++;fn(t)};return native(proxy)}
 function installLivingPacer(){
@@ -61,8 +61,17 @@ function installLivingNavigationPacer(){
  }
  O.v1LivingRuntime=Object.freeze({...living,NAVIGATION_PACING_VERSION:version,create});state.livingNavigationPacerInstalled=true;return true;
 }
+function v1PacingEligible(){const O=root.OFU;return !!(O?.v1PresentationCore||O?.v1WorldPresentation||O?.v1WorldContext)}
+function armFactory(name,installer){
+ const O=root.OFU;if(!O||!v1PacingEligible()||Object.prototype.hasOwnProperty.call(O,name))return false;
+ try{
+  Object.defineProperty(O,name,{configurable:true,enumerable:true,get(){return undefined;},set(value){Object.defineProperty(O,name,{configurable:true,enumerable:true,writable:true,value});installer();}});return true;
+ }catch{return false}
+}
 let attempts=0;function install(){const rendering=installLivingPacer(),navigation=installLivingNavigationPacer();if(rendering&&navigation)return;if(++attempts<100)root.setTimeout(install,0)}
 root.requestAnimationFrame=gated;
-root.__OFU_WAVE_IV_RAF_GATE__=Object.freeze({VERSION:state.version,state,snapshot:()=>Object.freeze({...state})});
+root.__OFU_WAVE_IV_RAF_GATE__=Object.freeze({VERSION:state.version,state,factoryInterception:'SYNC_ASSIGNMENT_WRAP',snapshot:()=>Object.freeze({...state})});
+state.livingRendererFactoryArmed=armFactory('v1LivingRenderer',installLivingPacer);
+state.livingRuntimeFactoryArmed=armFactory('v1LivingRuntime',installLivingNavigationPacer);
 install();
 })(typeof globalThis!=='undefined'?globalThis:this);
