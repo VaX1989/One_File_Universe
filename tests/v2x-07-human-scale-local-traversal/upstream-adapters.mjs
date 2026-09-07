@@ -1,0 +1,9 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';import vm from 'node:vm';
+const file=new URL('../../src/rendering/local/upstream-adapters.js',import.meta.url).pathname;vm.runInThisContext(fs.readFileSync(file,'utf8'),{filename:file});const A=globalThis.OFU.v2x07UpstreamAdapters;
+const surface=A.cameraFromPlanetSurface({camera:{planetId:'p',anchorToken:'a',currentBand:'HUMAN',absolutePresentationPositionM:[1,2,3],headingRad:.2,pitchRad:-.3,authority:'PRESENTATION_ONLY'}});assert.deepEqual(surface.absolutePresentationPositionM,[1,2,3]);assert.equal(surface.claims.cameraAuthorityOwned,false);
+const journey=A.cameraFromV1x06Journey({planetId:'p',scale:'HUMAN',altitudeMeters:120,localOffsetMeters:[4,5,6],selection:{selectedId:'p'},surfaceTarget:{face:'PZ',u:.1,v:.2},referenceFrameRef:{id:'r'}});assert.deepEqual(journey.absolutePresentationPositionM,[4,6,125]);assert.equal(journey.selectionToken,'p');assert.equal(journey.claims.v1x06JourneyReinterpretedAsCanonicalCamera,false);
+const terrain={AUTHORITY:'PRESENTATION_ONLY',height(anchor,x,y){assert.equal(anchor,'a');return x+y}};const ground=A.groundProviderFromPlanetSurfaceTerrain(terrain,{anchorToken:'a'});const sample=ground.sampleGround({xM:2,yM:3});assert.equal(sample.heightM,5);assert.equal(sample.physicalElevationCanonical,false);
+const nonMetric=A.nonMetricProjection('life.v1x07',{authority:'PRESENTATION_ONLY'}).materializeLocal();assert.equal(nonMetric.unsupported,'UPSTREAM_PROJECTION_HAS_NO_LOCAL_METRIC_POSITION');assert.equal(nonMetric.objects.length,0);
+const request=A.integrationContractRequest();assert.equal(request.requiresConvergenceBinding,true);assert.equal(request.claims.centralComposerMutated,false);assert.ok(request.requestedBindings.some(x=>x.kind==='LIVING_RENDERER_PROVIDER_BIND'));
+console.log(JSON.stringify({schema:'ofu-v2x-07-upstream-adapters-test-1',status:'PASS',request}));
