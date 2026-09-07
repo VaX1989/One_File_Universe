@@ -24,6 +24,9 @@ export function buildOrganismRenderDescriptors(samples, options = {}) {
 
   return Object.freeze(samples.slice(0, maxDescriptors).map((sample) => {
     assert(sample?.morphology?.authorityClass === 'MODEL_DERIVED_SIMULATION', 'semantic morphology descriptor required');
+    assert(sample?.lifecycle?.authorityClass === 'MODEL_DERIVED_SIMULATION', 'representative lifecycle descriptor required');
+    assert(sample.lifecycle.representativeOnly === true && sample.lifecycle.persistentIndividualFact === false, 'representative lifecycle semantics required');
+    assert(['JUVENILE', 'MATURE', 'SENESCENT'].includes(sample.lifecycle.stage), 'unsupported representative lifecycle stage');
     assert(sample?.presentation?.authorityClass === 'PRESENTATION_ONLY', 'presentation-only motion descriptor required');
     assert(sample?.representativeOfAggregate === true, 'representative aggregate sample required');
     assert(String(sample.id ?? '').length > 0, 'sample id required');
@@ -38,9 +41,13 @@ export function buildOrganismRenderDescriptors(samples, options = {}) {
     });
     const orientationTurns = boundedNumber(sample.orientationTurns, 'orientationTurns', 0, 1);
     const motionPhase = boundedNumber(sample.presentation.motionPhase ?? 0, 'motionPhase', 0, 1);
-    const motionAmplitude = boundedNumber(sample.presentation.motionAmplitude ?? 0, 'motionAmplitude', 0, 1);
-    const sizeScale = sample.morphology.sizeBand === 'TINY' ? 0.35 : sample.morphology.sizeBand === 'LARGE' ? 1.35 : 0.8;
+    const baseMotionAmplitude = boundedNumber(sample.presentation.motionAmplitude ?? 0, 'motionAmplitude', 0, 1);
+    const baseSizeScale = sample.morphology.sizeBand === 'TINY' ? 0.35 : sample.morphology.sizeBand === 'LARGE' ? 1.35 : 0.8;
+    const lifecycleScale = sample.lifecycle.stage === 'JUVENILE' ? 0.65 : sample.lifecycle.stage === 'SENESCENT' ? 0.9 : 1;
+    const lifecycleMotionScale = sample.lifecycle.stage === 'SENESCENT' ? 0.65 : sample.lifecycle.stage === 'JUVENILE' ? 0.85 : 1;
+    const sizeScale = baseSizeScale * lifecycleScale;
     const defenseScale = sample.morphology.defenseBand === 'HIGH' ? 1 : sample.morphology.defenseBand === 'MODERATE' ? 0.65 : 0.3;
+    const motionAmplitude = baseMotionAmplitude * lifecycleMotionScale;
 
     return Object.freeze({
       id: `render:${sample.id}`,
@@ -60,6 +67,7 @@ export function buildOrganismRenderDescriptors(samples, options = {}) {
       motion: Object.freeze({
         phase: motionPhase,
         amplitude: motionAmplitude,
+        activityCue: String(sample.presentation.activityCue ?? 'BASELINE_ACTIVITY_PRESENTATION'),
         authorityClass: 'PRESENTATION_ONLY',
       }),
       visualGrammar: Object.freeze({
@@ -67,17 +75,19 @@ export function buildOrganismRenderDescriptors(samples, options = {}) {
         supportMode: sample.morphology.supportMode,
         locomotionMode: sample.morphology.locomotionMode,
         feedingMode: sample.morphology.feedingMode,
+        representativeLifecycleStage: sample.lifecycle.stage,
       }),
       authorityClass: 'PRESENTATION_ONLY',
       evidenceLink: Object.freeze({
         populationId: sample.populationId,
         aggregateAbundance: sample.aggregateAbundance,
+        representativeLifecycleStage: sample.lifecycle.stage,
         representativeOnly: true,
       }),
       limitations: Object.freeze([
         'Geometry is a deterministic presentation of semantic modeled traits.',
-        'Rendered body plan is not an empirical prediction of alien anatomy.',
-        'Motion is presentation-only and does not establish physiology or cognition.',
+        'Rendered body plan and lifecycle scaling are not empirical predictions of alien anatomy or ontogeny.',
+        'Motion and lifecycle activity cues are presentation-only and do not establish physiology or cognition.',
       ]),
     });
   }));
