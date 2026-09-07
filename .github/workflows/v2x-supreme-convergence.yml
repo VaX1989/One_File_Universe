@@ -9,6 +9,9 @@ on:
 permissions:
   contents: read
 
+env:
+  OFU_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
 jobs:
   exact-head-certification:
     runs-on: ubuntu-latest
@@ -16,7 +19,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ env.OFU_EXPECTED_SHA }}
           fetch-depth: 0
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: 24.20.0
@@ -24,9 +29,9 @@ jobs:
       - name: Exact source identity
         shell: bash
         run: |
-          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          test "$(git rev-parse HEAD)" = "$OFU_EXPECTED_SHA"
           git diff --exit-code
-          git status --porcelain
+          test -z "$(git status --porcelain)"
       - name: Full repository test and reproducible build stack
         run: npm test
       - name: V2X-10 convergence blocker regressions
@@ -35,5 +40,5 @@ jobs:
         run: node tests/v2x-convergence/macrocosm-composition.mjs
       - name: Progressive release conformance exact source
         env:
-          OFU_SOURCE_SHA: ${{ github.sha }}
+          OFU_SOURCE_SHA: ${{ env.OFU_EXPECTED_SHA }}
         run: node tools/extensions/conformance.mjs RELEASE --exact
