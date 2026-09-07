@@ -5,7 +5,7 @@ const {AUTHORITY,LIMITATIONS,freeze,text,int,clamp,arr,sortId,validateCivilizati
 const CONTRACT='ofu-v2x-09-aggregate-society-dynamics-1';
 const LIMITS=Object.freeze({settlementPressures:48,migrationProposals:96,institutionProposals:256,operations:16000});
 function satisfactionMap(network){const out=new Map();for(const s of arr(network?.settlements))out.set(text(s.settlementId),s.serviceSatisfaction||{overallPpm:0,services:[]});return out}
-function routeStressFor(network,settlementId){const routes=arr(network?.routes).filter(r=>r.from===settlementId||r.to===settlementId);if(!routes.length)return 700000;return clamp(Math.floor(routes.reduce((n,r)=>n+Math.max(clamp(r.degradationPpm||0),clamp(r.utilizationPpm||0)),0)/routes.length))}
+function routeStressFor(network,settlementId){const routes=arr(network?.routes).filter(r=>(r.from===settlementId||r.to===settlementId)&&r.routingEligible!==false);if(!routes.length)return 700000;return clamp(Math.floor(routes.reduce((n,r)=>n+Math.max(clamp(r.degradationPpm||0),clamp(r.utilizationPpm||0)),0)/routes.length))}
 function stockCoveragePpm(row){const p=Math.max(1,int(row.population));const stocks=row?.stocks||{};const subs=Math.max(0,int(stocks.SUBSISTENCE_GOODS||0)),energy=Math.max(0,int(stocks.ENERGY_SERVICE||0));return clamp(Math.floor(Math.min(1,(subs/p)/1.5,(energy/p)/.35)*1000000))}
 function settlementPressures(state,network){
   const sat=satisfactionMap(network),networkById=new Map(arr(network?.settlements).map(s=>[text(s.settlementId),s])),rows=[];
@@ -29,6 +29,7 @@ function polityInstitutionProposals(state,pressures,network){
     const mechanisms=[];if(scarcity>500000)mechanisms.push('DISTRIBUTION_RATIONING_OR_REALLOCATION');if(routeStress>500000||damaged.length)mechanisms.push('REPAIR_PRIORITY');if(service<500000)mechanisms.push('SERVICE_RESTORATION');if(legitimacy<300000||cohesion<300000)mechanisms.push('LEGITIMACY_AND_COHESION_RISK');if(!mechanisms.length)mechanisms.push('ROUTINE_COORDINATION');
     const legitimacyDelta=clamp(Math.floor((service-500000)/12-(scarcity-400000)/14),-120000,120000),cohesionDelta=clamp(Math.floor((service-500000)/14-(routeStress-400000)/16),-120000,120000);
     proposals.push(freeze({proposalId:deriveId('institution-response',p.polityId,state.epoch),polityId:text(p.polityId),institutionId:text(p.institutionId||''),settlementIds:members.map(x=>x.settlementId).sort(),mechanisms:mechanisms.slice(0,8),scarcityPressurePpm:scarcity,routeStressPpm:routeStress,serviceSatisfactionPpm:service,legitimacyDeltaPpm:legitimacyDelta,cohesionDeltaPpm:cohesionDelta,transitionRisk:legitimacy<180000||cohesion<180000?'FRAGMENTATION_RISK':scarcity>700000&&service<350000?'ALLOCATIVE_CRISIS':'BOUNDED_RESPONSE',sourceBottleneckIds:damaged.map(x=>x.bottleneckId).sort(),authority:AUTHORITY.MODEL_DERIVED_SIMULATION,mutationPerformed:false,universalSociologicalClaim:false,canonicalHistoryAdmissionRequested:false}));if(proposals.length>=LIMITS.institutionProposals)break}
+  }
   return proposals;
 }
 function societyDynamics(state,network){
