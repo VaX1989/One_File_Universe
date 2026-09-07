@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 const workflowDir='.github/workflows';
 const baselineProtectedWorkflows=[
   `${workflowDir}/foundation.yml`,
+  `${workflowDir}/p1-conformance.yml`,
   `${workflowDir}/post-v1-development.yml`,
   `${workflowDir}/source-reproduction.yml`,
   `${workflowDir}/certified-preview-release.yml`,
