@@ -1,4 +1,5 @@
 const PPM = 1_000_000n;
+const MAX_INT = 2n ** 63n - 1n;
 
 export const LIFE_V2_AUTHORITY = Object.freeze({
   class: 'MODEL_DERIVED_SIMULATION',
@@ -21,7 +22,7 @@ function assert(condition, message) {
   if (!condition) throw new Error(`LIFE_V2_INVALID: ${message}`);
 }
 
-function asInt(value, name, min = 0n, max = 2n ** 63n - 1n) {
+function asInt(value, name, min = 0n, max = MAX_INT) {
   const out = typeof value === 'bigint' ? value : BigInt(value);
   assert(out >= min && out <= max, `${name} out of bounds`);
   return out;
@@ -33,6 +34,10 @@ function asPpm(value, name) {
 
 function clamp(value, min, max) {
   return value < min ? min : value > max ? max : value;
+}
+
+function boundedAdd(value, delta) {
+  return clamp(value + delta, 0n, MAX_INT);
 }
 
 function sortedCopy(items, key = (x) => x.id) {
@@ -51,6 +56,23 @@ function deterministicHash(text) {
 function deriveId(prefix, ...parts) {
   const material = parts.map((part) => String(part)).join('|');
   return `${prefix}-${deterministicHash(material).toString(16).padStart(8, '0')}`;
+}
+
+function sumBigInt(values) {
+  let total = 0n;
+  for (const value of values) total += value;
+  return total;
+}
+
+function proportionalAllocations(requests, capacity) {
+  const totalDemand = sumBigInt(requests.map((request) => request.demand));
+  const boundedCapacity = clamp(capacity, 0n, totalDemand);
+  if (totalDemand === 0n) return new Map(requests.map((request) => [request.id, 0n]));
+  if (boundedCapacity === totalDemand) return new Map(requests.map((request) => [request.id, request.demand]));
+  return new Map(requests.map((request) => [
+    request.id,
+    request.demand * boundedCapacity / totalDemand,
+  ]));
 }
 
 export function createLifeState(input) {
@@ -170,6 +192,7 @@ function lineageMap(state) {
 export function advanceEcology(state, event) {
   assert(state?.schema === 'ofu-v2x-08-life-state-1', 'invalid source state');
   assert(event?.type === 'LIFE_ADVANCE', 'expected LIFE_ADVANCE event');
+  assert(event?.eventKey, 'eventKey required');
   const populations = populationMap(state);
   const lineages = lineageMap(state);
   const regionBudgets = new Map(Object.entries(state.regions).map(([id, region]) => [id, { ...region }]));
@@ -182,62 +205,157 @@ export function advanceEcology(state, event) {
   const maintenancePerIndividual = asInt(profile.maintenancePerIndividual ?? 1, 'maintenancePerIndividual', 0n);
   const disturbanceMortalityPpm = asPpm(profile.disturbanceMortalityPpm ?? 250_000, 'disturbanceMortalityPpm');
 
+  const demographicPlans = new Map();
   const diagnostics = [];
 
-  for (const population of sortedCopy(populations.values())) {
-    if (population.abundance === 0n) continue;
-    const lineage = lineages.get(population.lineageId);
-    const region = regionBudgets.get(population.regionId);
-    assert(region, `missing region ${population.regionId}`);
+  for (const [regionId, region] of regionBudgets.entries()) {
+    const regionPopulations = state.populations.filter((population) => population.regionId === regionId && population.abundance > 0n);
+    if (regionPopulations.length === 0) continue;
 
-    const fecundity = traitValue(lineage, 'fecundity', 500_000n);
-    const resilience = traitValue(lineage, 'resilience', 500_000n);
-    const effectiveBirthPpm = birthPpm * fecundity / PPM * region.opportunityPpm / PPM;
-    const requestedBirths = population.abundance * effectiveBirthPpm / PPM;
-    const resourceCeiling = resourcePerBirth === 0n ? requestedBirths : region.resourcePool / resourcePerBirth;
-    const nutrientCeiling = nutrientPerBirth === 0n ? requestedBirths : region.nutrientPool / nutrientPerBirth;
-    const births = clamp(requestedBirths, 0n, resourceCeiling < nutrientCeiling ? resourceCeiling : nutrientCeiling);
+    const requests = regionPopulations.map((population) => {
+      const lineage = lineages.get(population.lineageId);
+      assert(lineage, `missing lineage ${population.lineageId}`);
+      const fecundity = traitValue(lineage, 'fecundity', 500_000n);
+      const resilience = traitValue(lineage, 'resilience', 500_000n);
+      const effectiveBirthPpm = birthPpm * fecundity / PPM * region.opportunityPpm / PPM;
+      const requestedBirths = population.abundance * effectiveBirthPpm / PPM;
+      const disturbanceExposurePpm = region.disturbancePpm * (PPM - resilience) / PPM;
+      const disturbanceDeaths = population.abundance * disturbanceExposurePpm / PPM * disturbanceMortalityPpm / PPM;
+      const baselineDeaths = population.abundance * mortalityPpm / PPM;
+      return {
+        id: population.id,
+        abundance: population.abundance,
+        requestedBirths,
+        disturbanceDeaths,
+        baselineDeaths,
+      };
+    });
 
-    const disturbanceExposurePpm = region.disturbancePpm * (PPM - resilience) / PPM;
-    const disturbanceDeaths = population.abundance * disturbanceExposurePpm / PPM * disturbanceMortalityPpm / PPM;
-    const baselineDeaths = population.abundance * mortalityPpm / PPM;
-    const maintenanceDemand = population.abundance * maintenancePerIndividual;
-    const maintenanceShortfall = maintenanceDemand > region.resourcePool ? maintenanceDemand - region.resourcePool : 0n;
-    const starvationDeaths = maintenancePerIndividual === 0n ? 0n : clamp(maintenanceShortfall / maintenancePerIndividual, 0n, population.abundance);
-    const deaths = clamp(baselineDeaths + disturbanceDeaths + starvationDeaths, 0n, population.abundance + births);
+    const totalAbundance = sumBigInt(requests.map((request) => request.abundance));
+    let maintenanceSupported;
+    let maintenanceConsumed = 0n;
+    if (maintenancePerIndividual === 0n) {
+      maintenanceSupported = new Map(requests.map((request) => [request.id, request.abundance]));
+    } else {
+      const maintenanceCapacity = region.resourcePool / maintenancePerIndividual;
+      maintenanceSupported = proportionalAllocations(
+        requests.map((request) => ({ id: request.id, demand: request.abundance })),
+        clamp(maintenanceCapacity, 0n, totalAbundance),
+      );
+      maintenanceConsumed = sumBigInt([...maintenanceSupported.values()]) * maintenancePerIndividual;
+    }
 
-    region.resourcePool = clamp(region.resourcePool - births * resourcePerBirth - (maintenanceDemand < region.resourcePool ? maintenanceDemand : region.resourcePool), 0n, 2n ** 63n - 1n);
-    region.nutrientPool = clamp(region.nutrientPool - births * nutrientPerBirth, 0n, 2n ** 63n - 1n);
-    population.abundance = population.abundance + births - deaths;
-    population.energyStore = population.energyStore + births;
+    const resourceAfterMaintenance = clamp(region.resourcePool - maintenanceConsumed, 0n, MAX_INT);
+    const totalRequestedBirths = sumBigInt(requests.map((request) => request.requestedBirths));
+    const resourceBirthCapacity = resourceAfterMaintenance / resourcePerBirth;
+    const nutrientBirthCapacity = region.nutrientPool / nutrientPerBirth;
+    const birthCapacity = clamp(
+      resourceBirthCapacity < nutrientBirthCapacity ? resourceBirthCapacity : nutrientBirthCapacity,
+      0n,
+      totalRequestedBirths,
+    );
+    const birthAllocations = proportionalAllocations(
+      requests.map((request) => ({ id: request.id, demand: request.requestedBirths })),
+      birthCapacity,
+    );
+    const totalBirths = sumBigInt([...birthAllocations.values()]);
 
-    diagnostics.push(Object.freeze({ populationId: population.id, births, deaths, abundance: population.abundance }));
+    for (const request of requests) {
+      const births = birthAllocations.get(request.id) ?? 0n;
+      const supported = maintenanceSupported.get(request.id) ?? 0n;
+      const starvationDeaths = clamp(request.abundance - supported, 0n, request.abundance);
+      const deaths = clamp(
+        request.baselineDeaths + request.disturbanceDeaths + starvationDeaths,
+        0n,
+        request.abundance + births,
+      );
+      demographicPlans.set(request.id, Object.freeze({ births, deaths }));
+    }
+
+    region.resourcePool = clamp(resourceAfterMaintenance - totalBirths * resourcePerBirth, 0n, MAX_INT);
+    region.nutrientPool = clamp(region.nutrientPool - totalBirths * nutrientPerBirth, 0n, MAX_INT);
   }
+
+  for (const population of state.populations) {
+    if (population.abundance === 0n) continue;
+    assert(regionBudgets.has(population.regionId), `missing region ${population.regionId}`);
+    const mutable = populations.get(population.id);
+    const plan = demographicPlans.get(population.id) ?? Object.freeze({ births: 0n, deaths: 0n });
+    mutable.abundance = population.abundance + plan.births - plan.deaths;
+    mutable.energyStore = boundedAdd(population.energyStore, plan.births);
+    diagnostics.push(Object.freeze({
+      populationId: population.id,
+      births: plan.births,
+      deaths: plan.deaths,
+      abundance: mutable.abundance,
+    }));
+  }
+
+  const interactionSnapshot = new Map([...populations.entries()].map(([id, population]) => [id, { ...population }]));
+  const rawLossByPopulation = new Map(state.populations.map((population) => [population.id, 0n]));
+  const interactionPlans = [];
 
   for (const edge of state.interactions) {
     if (edge.kind === 'ASSOCIATION_ONLY' || edge.intensityPpm === 0n) continue;
-    const source = populations.get(edge.sourcePopulationId);
-    const target = populations.get(edge.targetPopulationId);
+    const source = interactionSnapshot.get(edge.sourcePopulationId);
+    const target = interactionSnapshot.get(edge.targetPopulationId);
     if (!source || !target || source.abundance === 0n || target.abundance === 0n) continue;
 
     const encounterBase = source.abundance < target.abundance ? source.abundance : target.abundance;
     const pressure = encounterBase * edge.intensityPpm / PPM;
+    let sourceLoss = 0n;
+    let targetLoss = 0n;
     if (edge.kind === 'PREDATION' || edge.kind === 'PARASITISM') {
-      const removed = clamp(pressure, 0n, target.abundance);
-      target.abundance -= removed;
-      source.energyStore += removed * edge.assimilationPpm / PPM;
+      targetLoss = pressure;
     } else if (edge.kind === 'COMPETITION') {
-      const sourceLoss = clamp(pressure / 2n, 0n, source.abundance);
-      const targetLoss = clamp(pressure - sourceLoss, 0n, target.abundance);
-      source.abundance -= sourceLoss;
-      target.abundance -= targetLoss;
-    } else if (edge.kind === 'MUTUALISM') {
-      source.energyStore += pressure * edge.assimilationPpm / PPM;
-      target.energyStore += pressure * edge.assimilationPpm / PPM;
-    } else if (edge.kind === 'RECYCLING') {
-      const region = regionBudgets.get(target.regionId);
-      if (region) region.nutrientPool += pressure;
+      sourceLoss = pressure / 2n;
+      targetLoss = pressure - sourceLoss;
     }
+    if (sourceLoss > 0n) rawLossByPopulation.set(source.id, (rawLossByPopulation.get(source.id) ?? 0n) + sourceLoss);
+    if (targetLoss > 0n) rawLossByPopulation.set(target.id, (rawLossByPopulation.get(target.id) ?? 0n) + targetLoss);
+    interactionPlans.push(Object.freeze({ edge, pressure, sourceLoss, targetLoss }));
+  }
+
+  function scaledInteractionLoss(populationId, rawLoss) {
+    if (rawLoss === 0n) return 0n;
+    const population = interactionSnapshot.get(populationId);
+    const totalRawLoss = rawLossByPopulation.get(populationId) ?? 0n;
+    if (!population || totalRawLoss === 0n) return 0n;
+    if (totalRawLoss <= population.abundance) return rawLoss;
+    return rawLoss * population.abundance / totalRawLoss;
+  }
+
+  const interactionDeltas = new Map(state.populations.map((population) => [population.id, { abundanceLoss: 0n, energyGain: 0n }]));
+
+  for (const plan of interactionPlans) {
+    const { edge, pressure } = plan;
+    const sourceDelta = interactionDeltas.get(edge.sourcePopulationId);
+    const targetDelta = interactionDeltas.get(edge.targetPopulationId);
+    if (!sourceDelta || !targetDelta) continue;
+
+    if (edge.kind === 'PREDATION' || edge.kind === 'PARASITISM') {
+      const removed = scaledInteractionLoss(edge.targetPopulationId, plan.targetLoss);
+      targetDelta.abundanceLoss += removed;
+      sourceDelta.energyGain += removed * edge.assimilationPpm / PPM;
+    } else if (edge.kind === 'COMPETITION') {
+      sourceDelta.abundanceLoss += scaledInteractionLoss(edge.sourcePopulationId, plan.sourceLoss);
+      targetDelta.abundanceLoss += scaledInteractionLoss(edge.targetPopulationId, plan.targetLoss);
+    } else if (edge.kind === 'MUTUALISM') {
+      const gain = pressure * edge.assimilationPpm / PPM;
+      sourceDelta.energyGain += gain;
+      targetDelta.energyGain += gain;
+    } else if (edge.kind === 'RECYCLING') {
+      const target = interactionSnapshot.get(edge.targetPopulationId);
+      const region = target ? regionBudgets.get(target.regionId) : null;
+      if (region) region.nutrientPool = boundedAdd(region.nutrientPool, pressure);
+    }
+  }
+
+  for (const [populationId, snapshot] of interactionSnapshot.entries()) {
+    const delta = interactionDeltas.get(populationId) ?? { abundanceLoss: 0n, energyGain: 0n };
+    const mutable = populations.get(populationId);
+    mutable.abundance = clamp(snapshot.abundance - delta.abundanceLoss, 0n, MAX_INT);
+    mutable.energyStore = boundedAdd(snapshot.energyStore, delta.energyGain);
   }
 
   const next = createLifeState({
