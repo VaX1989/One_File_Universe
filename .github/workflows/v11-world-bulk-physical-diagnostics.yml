@@ -34,7 +34,7 @@ env:
 jobs:
   bulk-physical-diagnostics:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5 / Node 24 runtime
         with:
@@ -82,6 +82,10 @@ jobs:
           if(e<0||g<=e||a<=g||b<=a)throw new Error('planetology/environment wrapper ordering invalid');
           console.log(JSON.stringify({status:'PASS',planned:ids,worldDependsOnGiant:true,worldDependsOnAtmosphere:true,worldDependsOnBulkDiagnostics:true}));
           NODE
+      - name: Install browser runtime required by RELEASE exact conformance
+        run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium
       - name: Full component integrity
         run: node tools/extensions/conformance.mjs RELEASE --exact
       - name: Workflow reproducibility guard
