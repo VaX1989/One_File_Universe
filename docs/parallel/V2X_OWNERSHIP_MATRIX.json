@@ -1,7 +1,7 @@
 {
   "schema": "ofu-v2x-ownership-matrix-1",
-  "version": "2026-09-07.4",
-  "status": "ACTIVE_FOUNDER_MANUAL_AUTHORIZATION",
+  "version": "2026-09-07.5",
+  "status": "ACTIVE_EXACT_PATH_BINDINGS",
   "writeTarget": "parallel/v2x-00-super-parallel-base-2026-09-07",
   "integrationTarget": "development/v1.1-quality-exploration",
   "baseSha": "70af4a84bb8cb7c782966bb4b3b8aab8aa86838e",
@@ -11,20 +11,19 @@
   "sourceLineage": {
     "priorMatrix": "docs/parallel/V1X_OWNERSHIP_MATRIX.json",
     "bootstrapVersion": "2026-09-07.1",
-    "rule": "Preserve prior shared-semantic constraints. Founder manually authorized the downstream V2X development lanes after V2X-00 activation. Global writer authorization is therefore active; machine path grants remain fail-closed and are reconciled from exact lane checkpoints rather than broadened speculatively."
+    "rule": "Preserve prior shared-semantic constraints. Founder manually authorized downstream V2X execution after V2X-00 activation. Version 2026-09-07.5 binds every observed V2X-01..V2X-16 lane to immutable changed-path evidence while preserving convergence-only and historical deny sets."
   },
   "founderManualAuthorization": {
     "state": "ACTIVE",
     "effectiveDate": "2026-09-07",
-    "scope": "ALL_DOWNSTREAM_DEVELOPMENT_LANES_STARTED_BY_FOUNDER",
+    "scope": "ALL_OBSERVED_DOWNSTREAM_DEVELOPMENT_AND_RESEARCH_LANES",
     "authority": "FOUNDER_MANUAL_OVERRIDE",
-    "reason": "Founder explicitly reported that all development lanes were manually authorized and started because the machine control plane remained globally closed after Prompt 02 integration.",
     "retroactiveInvalidation": false,
-    "pathGrantPolicy": "OBSERVE_EXACT_CHECKPOINT_PATHS_THEN_RECONCILE_MACHINE_ALLOWLIST_NO_FORCE_NO_HISTORY_REWRITE",
+    "pathGrantPolicy": "EXACT_CHECKPOINT_PATHS_ONLY_NO_SPECULATIVE_BROADENING",
     "sharedSemanticPolicy": "DENY_BEFORE_ALLOW_REMAINS_IN_FORCE",
     "centralAuthorityPolicy": "CONVERGENCE_OWNER_ONLY_REMAINS_IN_FORCE"
   },
-  "activationRule": "SATISFIED_BY_PROMPT02_INTEGRATION_AND_FOUNDER_MANUAL_DOWNSTREAM_AUTHORIZATION. New lane checkpoints may proceed. Exact machine path binding is reconciled from immutable checkpoint evidence and may not weaken shared or historical deny sets.",
+  "activationRule": "SATISFIED_BY_PROMPT02_INTEGRATION_AND_FOUNDER_MANUAL_DOWNSTREAM_AUTHORIZATION. Every observed lane is machine-bound below; convergence-only paths remain denied to lane writers and require explicit convergence adoption.",
   "global": {
     "convergenceOwnerOnly": [
       ".github/**",
@@ -114,91 +113,66 @@
     "V2X-00": {
       "laneClass": "ENABLER",
       "writerAuthorized": true,
-      "allowedPatterns": [
-        "docs/parallel/SUPER_PARALLEL_BASE_2026-09-07.json",
-        "docs/parallel/V2X_OWNERSHIP_MATRIX.json",
-        "docs/parallel/V2X_CAPABILITY_REGISTRY.json",
-        "docs/parallel/V2X_GAP_REGISTRY.json",
-        "docs/parallel/V2X_RESEARCH_HARVEST_LEDGER.json",
-        "docs/parallel/V2X_OPEN_PR_ADJUDICATION_LEDGER.json",
-        "docs/parallel/V2X_BASELINE_EVIDENCE.json",
-        "tools/validate-v2x-ownership.mjs",
-        "tests/governance/v2x-ownership-validator.mjs"
-      ],
+      "allowedPatterns": ["docs/parallel/SUPER_PARALLEL_BASE_2026-09-07.json","docs/parallel/V2X_OWNERSHIP_MATRIX.json","docs/parallel/V2X_CAPABILITY_REGISTRY.json","docs/parallel/V2X_GAP_REGISTRY.json","docs/parallel/V2X_RESEARCH_HARVEST_LEDGER.json","docs/parallel/V2X_OPEN_PR_ADJUDICATION_LEDGER.json","docs/parallel/V2X_BASELINE_EVIDENCE.json","tools/validate-v2x-ownership.mjs","tests/governance/v2x-ownership-validator.mjs"],
       "authorityExceptions": ["docs/parallel/SUPER_PARALLEL_BASE_2026-09-07.json","docs/parallel/V2X_OWNERSHIP_MATRIX.json"],
       "reservedPatterns": []
     },
+    "V2X-01": {
+      "laneClass":"DEVELOPMENT","writerAuthorized":true,"branch":"parallel/v2x-01-runtime-adaptive-materialization-2026-09-07","bindingEvidence":"PR #188 changed paths @ ffbab3ae12e05a615de1fe1ec94fb68aff32f9ac",
+      "allowedPatterns":["config/components/v2x-01-runtime-adaptive-materialization.json","config/conformance/v2x-01-runtime-adaptive-materialization.json","src/runtime/lifecycle/lifecycle-coordinator.js","src/runtime/prefetch/bounded-prefetch.js","src/runtime/resources/resource-ledger.js","src/runtime/scheduling/adaptive-scheduler.js","src/runtime/v2x-01-contracts.js","src/runtime/workers/worker-executor.js","src/simulation/materialization/cache-key.js","src/simulation/materialization/materialization-runtime.js","tests/v2x-01-runtime-adaptive-materialization/browser-stress.mjs","tests/v2x-01-runtime-adaptive-materialization/soak.mjs","tests/v2x-01-runtime-adaptive-materialization/targeted.mjs"],"authorityExceptions":[],"reservedPatterns":["config/components/v2x-01-runtime-adaptive-materialization.json","config/conformance/v2x-01-runtime-adaptive-materialization.json","src/runtime/lifecycle/lifecycle-coordinator.js","src/runtime/prefetch/bounded-prefetch.js","src/runtime/resources/resource-ledger.js","src/runtime/scheduling/adaptive-scheduler.js","src/runtime/v2x-01-contracts.js","src/runtime/workers/worker-executor.js","src/simulation/materialization/cache-key.js","src/simulation/materialization/materialization-runtime.js","tests/v2x-01-runtime-adaptive-materialization/browser-stress.mjs","tests/v2x-01-runtime-adaptive-materialization/soak.mjs","tests/v2x-01-runtime-adaptive-materialization/targeted.mjs"]
+    },
+    "V2X-02": {
+      "laneClass":"DEVELOPMENT","writerAuthorized":true,"branch":"parallel/v2x-02-camera-spatial-travel-2026-09-07","bindingEvidence":"PR #185 changed paths @ 05165e844137d505faea61bb6faf9e54070bdac9","allowedPatterns":["config/components/v2x-02-camera-spatial-travel.json","config/conformance/v2x-02-camera-spatial-travel.json","src/v2x-02-camera-spatial-travel/continuous-travel.js","src/v2x-02-camera-spatial-travel/provider-catalog.json","tests/v2x-02-camera-spatial-travel/real-camera-journey.mjs","tests/v2x-02-camera-spatial-travel/registry-binding.mjs"],"authorityExceptions":[],"reservedPatterns":["config/components/v2x-02-camera-spatial-travel.json","config/conformance/v2x-02-camera-spatial-travel.json","src/v2x-02-camera-spatial-travel/continuous-travel.js","src/v2x-02-camera-spatial-travel/provider-catalog.json","tests/v2x-02-camera-spatial-travel/real-camera-journey.mjs","tests/v2x-02-camera-spatial-travel/registry-binding.mjs"]
+    },
     "V2X-03": {
-      "laneClass": "DEVELOPMENT",
-      "writerAuthorized": true,
-      "branch": "parallel/v2x-03-macrocosm-galaxy-rendering-2026-09-07",
-      "bindingEvidence": "PR #183 exact changed-path observation",
-      "allowedPatterns": [
-        "config/components/v2x-03-macrocosm.json",
-        "config/conformance/v2x-03-macrocosm.json",
-        "config/extensions/v2x-03-macrocosm/**",
-        "src/rendering/galaxy/**",
-        "src/rendering/macro/**",
-        "src/rendering/neighborhood/**",
-        "src/rendering/region/**",
-        "tests/v2x-03/**"
-      ],
-      "authorityExceptions": [],
-      "reservedPatterns": [
-        "config/components/v2x-03-macrocosm.json",
-        "config/conformance/v2x-03-macrocosm.json",
-        "config/extensions/v2x-03-macrocosm/**",
-        "src/rendering/galaxy/**",
-        "src/rendering/macro/**",
-        "src/rendering/neighborhood/**",
-        "src/rendering/region/**",
-        "tests/v2x-03/**"
-      ]
+      "laneClass":"DEVELOPMENT","writerAuthorized":true,"branch":"parallel/v2x-03-macrocosm-galaxy-rendering-2026-09-07","bindingEvidence":"PR #183 exact changed-path observation; convergence repair stays inside bound paths","allowedPatterns":["config/components/v2x-03-macrocosm.json","config/conformance/v2x-03-macrocosm.json","config/extensions/v2x-03-macrocosm/provider-catalog.json","src/rendering/galaxy/galaxy-field.js","src/rendering/macro/macrocosm-batches.js","src/rendering/macro/macrocosm-provider.js","src/rendering/neighborhood/neighborhood-depth.js","src/rendering/region/region-refinement.js","tests/v2x-03/continuity-identity.mjs","tests/v2x-03/macrocosm-oracles.mjs"],"authorityExceptions":[],"reservedPatterns":["config/components/v2x-03-macrocosm.json","config/conformance/v2x-03-macrocosm.json","config/extensions/v2x-03-macrocosm/provider-catalog.json","src/rendering/galaxy/galaxy-field.js","src/rendering/macro/macrocosm-batches.js","src/rendering/macro/macrocosm-provider.js","src/rendering/neighborhood/neighborhood-depth.js","src/rendering/region/region-refinement.js","tests/v2x-03/continuity-identity.mjs","tests/v2x-03/macrocosm-oracles.mjs"]
+    },
+    "V2X-04": {
+      "laneClass":"DEVELOPMENT","writerAuthorized":true,"branch":"parallel/v2x-04-system-planet-approach-2026-09-07","bindingEvidence":"frozen-base comparison @ 370364daf24b9685ef896833dfd7b4b8f9d6ca48","allowedPatterns":["src/rendering/orbit/orbit-3d.js","src/rendering/planet/approach/approach-continuity.js","src/rendering/planet/approach/approach-lod.js","src/rendering/planet/approach/body-cues.js","src/rendering/stellar/multi-star-illumination.js","src/rendering/stellar/stellar-appearance.js","tests/v2x-04-system-planet-approach/approach-continuity-oracle.mjs","tests/v2x-04-system-planet-approach/illumination-body-lod-oracle.mjs","tests/v2x-04-system-planet-approach/orbit-stellar-oracle.mjs"],"authorityExceptions":[],"reservedPatterns":["src/rendering/orbit/orbit-3d.js","src/rendering/planet/approach/approach-continuity.js","src/rendering/planet/approach/approach-lod.js","src/rendering/planet/approach/body-cues.js","src/rendering/stellar/multi-star-illumination.js","src/rendering/stellar/stellar-appearance.js","tests/v2x-04-system-planet-approach/approach-continuity-oracle.mjs","tests/v2x-04-system-planet-approach/illumination-body-lod-oracle.mjs","tests/v2x-04-system-planet-approach/orbit-stellar-oracle.mjs"]
+    },
+    "V2X-05": {
+      "laneClass":"DEVELOPMENT","writerAuthorized":true,"branch":"parallel/v2x-05-deep-planet-science-2026-09-07","bindingEvidence":"frozen-base comparison @ 542237facd9aa1218e4b0a4e38137dd174d63e2c","allowedPatterns":["config/components/v2x-05-deep-planet-science.json","config/conformance/v2x-05-deep-planet-science.json","config/extensions/v2x-05-deep-planet-science/catalog.json","src/v2x-05-deep-planet-science/climate-volatile.js","src/v2x-05-deep-planet-science/deep-planet-provider.js","src/v2x-05-deep-planet-science/interior-atmosphere.js","src/v2x-05-deep-planet-science/regime-core.js","tests/v2x-05/deep-planet-oracles.mjs","tests/v2x-05/metamorphic-extended.mjs"],"authorityExceptions":[],"reservedPatterns":["config/components/v2x-05-deep-planet-science.json","config/conformance/v2x-05-deep-planet-science.json","config/extensions/v2x-05-deep-planet-science/catalog.json","src/v2x-05-deep-planet-science/climate-volatile.js","src/v2x-05-deep-planet-science/deep-planet-provider.js","src/v2x-05-deep-planet-science/interior-atmosphere.js","src/v2x-05-deep-planet-science/regime-core.js","tests/v2x-05/deep-planet-oracles.mjs","tests/v2x-05/metamorphic-extended.mjs"]
+    },
+    "V2X-06": {
+      "laneClass":"DEVELOPMENT","writerAuthorized":true,"branch":"parallel/v2x-06-surface-terrain-geology-hydrology-2026-09-07","bindingEvidence":"PR #191 changed paths @ 0ce2ec3e0572bfefa605b27ca769e81b70819186","convergenceAdoptionRequired":["src/domains/v1/surface/address.js","src/domains/v1/surface/cross-scale-adapter.js","src/domains/v1/surface/geography.js","src/domains/v1/surface/hydrology.js"],"allowedPatterns":["config/components/v2x-06-surface-terrain-geology-hydrology.json","config/conformance/v2x-06-surface-terrain-geology-hydrology.json","config/extensions/v2x-06-surface-terrain-geology-hydrology/catalog.json","src/rendering/surface/living-surface.js","src/rendering/terrain/hierarchical-terrain.js","tests/v2x-06-surface/cross-scale-integration.mjs","tests/v2x-06-surface/surface-terrain-geology-hydrology.mjs"],"authorityExceptions":[],"reservedPatterns":["config/components/v2x-06-surface-terrain-geology-hydrology.json","config/conformance/v2x-06-surface-terrain-geology-hydrology.json","config/extensions/v2x-06-surface-terrain-geology-hydrology/catalog.json","src/rendering/surface/living-surface.js","src/rendering/terrain/hierarchical-terrain.js","tests/v2x-06-surface/cross-scale-integration.mjs","tests/v2x-06-surface/surface-terrain-geology-hydrology.mjs"]
+    },
+    "V2X-07": {
+      "laneClass":"DEVELOPMENT","writerAuthorized":true,"branch":"parallel/v2x-07-human-scale-local-traversal-2026-09-07","bindingEvidence":"PR #190 changed paths @ 68d0609c63122154e662139661e477e257e9978b","allowedPatterns":["src/product/exploration/local/local-traversal.js","src/rendering/local/ground-presence.js","src/rendering/local/local-experience-provider.js","src/rendering/local/local-renderer.js","src/rendering/local/spatial-embodiment.js","src/rendering/local/upstream-adapters.js","tests/v2x-07-human-scale-local-traversal/environment-matrix.mjs","tests/v2x-07-human-scale-local-traversal/local-experience.mjs","tests/v2x-07-human-scale-local-traversal/upstream-adapters.mjs"],"authorityExceptions":[],"reservedPatterns":["src/product/exploration/local/local-traversal.js","src/rendering/local/ground-presence.js","src/rendering/local/local-experience-provider.js","src/rendering/local/local-renderer.js","src/rendering/local/spatial-embodiment.js","src/rendering/local/upstream-adapters.js","tests/v2x-07-human-scale-local-traversal/environment-matrix.mjs","tests/v2x-07-human-scale-local-traversal/local-experience.mjs","tests/v2x-07-human-scale-local-traversal/upstream-adapters.mjs"]
+    },
+    "V2X-08": {
+      "laneClass":"DEVELOPMENT","writerAuthorized":true,"branch":"parallel/v2x-08-life-ecology-evolution-embodiment-2026-09-07","bindingEvidence":"PR #189 changed paths @ 1915f0da475274f9b748008f9928ce8304861ddc","allowedPatterns":["src/v2x-08-life-ecology-evolution-embodiment/embodiment.js","src/v2x-08-life-ecology-evolution-embodiment/evolution.js","src/v2x-08-life-ecology-evolution-embodiment/model.js","src/v2x-08-life-ecology-evolution-embodiment/provider.js","src/v2x-08-life-ecology-evolution-embodiment/renderer.js","src/v2x-08-life-ecology-evolution-embodiment/succession.js","tests/v2x-08/life-ecology-evolution-embodiment.mjs","tests/v2x-08/life-evolution-succession.mjs","tests/v2x-08/life-provider-renderer.mjs"],"authorityExceptions":[],"reservedPatterns":["src/v2x-08-life-ecology-evolution-embodiment/embodiment.js","src/v2x-08-life-ecology-evolution-embodiment/evolution.js","src/v2x-08-life-ecology-evolution-embodiment/model.js","src/v2x-08-life-ecology-evolution-embodiment/provider.js","src/v2x-08-life-ecology-evolution-embodiment/renderer.js","src/v2x-08-life-ecology-evolution-embodiment/succession.js","tests/v2x-08/life-ecology-evolution-embodiment.mjs","tests/v2x-08/life-evolution-succession.mjs","tests/v2x-08/life-provider-renderer.mjs"]
+    },
+    "V2X-09": {
+      "laneClass":"DEVELOPMENT","writerAuthorized":true,"branch":"parallel/v2x-09-civilization-economy-city-2026-09-07","bindingEvidence":"frozen-base comparison @ 8aef680e72072a2d56fc329a023d61ed9b6f1dd9","allowedPatterns":["config/components/v2x-09-civilization-economy-city.json","config/conformance/v2x-09-civilization-economy-city.json","reports/v2x-09-civilization-economy-city/advanced-comparison.svg","reports/v2x-09-civilization-economy-city/evidence-v2.json","reports/v2x-09-civilization-economy-city/evidence.json","reports/v2x-09-civilization-economy-city/morphology-comparison.svg","src/v2x-09-civilization-economy-city/advanced.js","src/v2x-09-civilization-economy-city/core.js","src/v2x-09-civilization-economy-city/economy-init.js","src/v2x-09-civilization-economy-city/economy-step.js","src/v2x-09-civilization-economy-city/index.js","src/v2x-09-civilization-economy-city/institutions.js","src/v2x-09-civilization-economy-city/morphology.js","src/v2x-09-civilization-economy-city/production-network.js","src/v2x-09-civilization-economy-city/society-dynamics.js","src/v2x-09-civilization-economy-city/urban-evolution.js","tests/v2x-09-civilization-economy-city/advanced-systems.mjs","tests/v2x-09-civilization-economy-city/civilization-economy-city.mjs"],"authorityExceptions":[],"reservedPatterns":["config/components/v2x-09-civilization-economy-city.json","config/conformance/v2x-09-civilization-economy-city.json","reports/v2x-09-civilization-economy-city/advanced-comparison.svg","reports/v2x-09-civilization-economy-city/evidence-v2.json","reports/v2x-09-civilization-economy-city/evidence.json","reports/v2x-09-civilization-economy-city/morphology-comparison.svg","src/v2x-09-civilization-economy-city/advanced.js","src/v2x-09-civilization-economy-city/core.js","src/v2x-09-civilization-economy-city/economy-init.js","src/v2x-09-civilization-economy-city/economy-step.js","src/v2x-09-civilization-economy-city/index.js","src/v2x-09-civilization-economy-city/institutions.js","src/v2x-09-civilization-economy-city/morphology.js","src/v2x-09-civilization-economy-city/production-network.js","src/v2x-09-civilization-economy-city/society-dynamics.js","src/v2x-09-civilization-economy-city/urban-evolution.js","tests/v2x-09-civilization-economy-city/advanced-systems.mjs","tests/v2x-09-civilization-economy-city/civilization-economy-city.mjs"]
+    },
+    "V2X-10": {
+      "laneClass":"DEVELOPMENT","writerAuthorized":true,"branch":"parallel/v2x-10-persistent-individuals-history-2026-09-07","bindingEvidence":"frozen-base comparison @ ee4197d1fcb1c9bc30727fde7933b84970e2136d","convergenceAdoptionRequired":["src/domains/v1/culture/transmission.js","src/domains/v1/demography/ledger.js","src/domains/v1/individuals/households.js","src/domains/v1/individuals/identity.js","src/domains/v1/individuals/learning.js","src/domains/v1/individuals/reconcile.js","src/domains/v1/individuals/relationships.js","src/domains/v1/individuals/runtime.js"],"allowedPatterns":["tests/v2x10/continuity-and-performance.mjs","tests/v2x10/persistent-individuals.mjs"],"authorityExceptions":[],"reservedPatterns":["tests/v2x10/continuity-and-performance.mjs","tests/v2x10/persistent-individuals.mjs"]
+    },
+    "V2X-11": {
+      "laneClass":"DEVELOPMENT","writerAuthorized":true,"branch":"parallel/v2x-11-gameplay-causal-engine-2026-09-07","bindingEvidence":"PR #187 changed paths @ 449d700a557616f2292eafe4873b2b5233e8e2e1","allowedPatterns":["config/components/v2x-11-gameplay-causal-engine.json","config/conformance/v2x-11-gameplay-causal-engine.json","src/gameplay/contracts.js","src/gameplay/runtime.js","src/simulation/cross-domain/causal-engine.js","src/simulation/temporal-adapters/p4-gameplay-bridge.js","tests/v2x-11-gameplay-causal-engine/core.mjs","tests/v2x-11-gameplay-causal-engine/cross-domain-journey.mjs"],"authorityExceptions":[],"reservedPatterns":["config/components/v2x-11-gameplay-causal-engine.json","config/conformance/v2x-11-gameplay-causal-engine.json","src/gameplay/contracts.js","src/gameplay/runtime.js","src/simulation/cross-domain/causal-engine.js","src/simulation/temporal-adapters/p4-gameplay-bridge.js","tests/v2x-11-gameplay-causal-engine/core.mjs","tests/v2x-11-gameplay-causal-engine/cross-domain-journey.mjs"]
+    },
+    "V2X-12": {
+      "laneClass":"DEVELOPMENT","writerAuthorized":true,"branch":"parallel/v2x-12-matter-cell-molecular-atomic-2026-09-07","bindingEvidence":"PR #186 changed paths @ 2b9263eedfc850a1e2674e03aa91cd5f87955e48","convergenceAdoptionRequired":["src/domains/v1/micro/matter-continuity-v2.js"],"allowedPatterns":["config/components/v2x-12-matter-continuity.json","config/conformance/v2x-12-matter-continuity.json","config/extensions/v2x-12-matter-continuity/providers.json","src/rendering/microscopic/matter-continuity-provider.js","tests/v2x-12-matter-continuity/authority-provenance.mjs","tests/v2x-12-matter-continuity/continuity-biology.mjs","tests/v2x-12-matter-continuity/run.mjs"],"authorityExceptions":[],"reservedPatterns":["config/components/v2x-12-matter-continuity.json","config/conformance/v2x-12-matter-continuity.json","config/extensions/v2x-12-matter-continuity/providers.json","src/rendering/microscopic/matter-continuity-provider.js","tests/v2x-12-matter-continuity/authority-provenance.mjs","tests/v2x-12-matter-continuity/continuity-biology.mjs","tests/v2x-12-matter-continuity/run.mjs"]
+    },
+    "V2X-13": {
+      "laneClass":"DEVELOPMENT","writerAuthorized":true,"branch":"parallel/v2x-13-rendering-platform-webgpu-2026-09-07","bindingEvidence":"PR #194 changed paths @ 23d48e94f924b8b0a66bf3982d628af391a1c25e","allowedPatterns":["src/rendering/core/platform.js","src/rendering/effects/fxaa.js","src/rendering/effects/shadows.js","src/rendering/effects/volumetrics.js","src/rendering/materials/presentation-shaders.js","src/rendering/webgl2/resources.js","src/rendering/webgl2/timer-query.js","src/rendering/webgpu/primitive-pass.js","tests/render-platform/run-render-platform-convergence-tests.mjs","tests/render-platform/run-render-platform-depth-tests.mjs","tests/render-platform/run-render-platform-tests.mjs"],"authorityExceptions":[],"reservedPatterns":["src/rendering/core/platform.js","src/rendering/effects/fxaa.js","src/rendering/effects/shadows.js","src/rendering/effects/volumetrics.js","src/rendering/materials/presentation-shaders.js","src/rendering/webgl2/resources.js","src/rendering/webgl2/timer-query.js","src/rendering/webgpu/primitive-pass.js","tests/render-platform/run-render-platform-convergence-tests.mjs","tests/render-platform/run-render-platform-depth-tests.mjs","tests/render-platform/run-render-platform-tests.mjs"]
+    },
+    "V2X-14": {
+      "laneClass":"DEVELOPMENT","writerAuthorized":true,"branch":"parallel/v2x-14-product-ux-mobile-accessibility-audio-2026-09-07","bindingEvidence":"PR #192 changed paths @ 0bb3ae07a55fd09293180df30fcab7ad3c707d95","allowedPatterns":["config/components/v2x-14-product-experience.json","config/components/v2x-14-systemic-audio.json","src/audio/v2x14/audio-controller.js","src/audio/v2x14/living-audio-context.js","src/product/v2x14/discovery.js","src/product/v2x14/product-experience.css","src/product/v2x14/product-experience.js","tests/v2x-14-product-experience/browser-journey.mjs","tests/v2x-14-product-experience/contracts.mjs"],"authorityExceptions":[],"reservedPatterns":["config/components/v2x-14-product-experience.json","config/components/v2x-14-systemic-audio.json","src/audio/v2x14/audio-controller.js","src/audio/v2x14/living-audio-context.js","src/product/v2x14/discovery.js","src/product/v2x14/product-experience.css","src/product/v2x14/product-experience.js","tests/v2x-14-product-experience/browser-journey.mjs","tests/v2x-14-product-experience/contracts.mjs"]
+    },
+    "V2X-15": {
+      "laneClass":"RESEARCH","writerAuthorized":true,"branch":"research/v2x-15-astronomy-planetology-frontier-2026-09-07","bindingEvidence":"frozen-base comparison @ 06bf59698b293c670d8b33f20bc006f848eba025","allowedPatterns":["research/v2x/PROMOTION_PACKETS.json","research/v2x/astronomy/HANDOFF.json","research/v2x/astronomy/README.md","research/v2x/astronomy/SOURCE_LEDGER.json","research/v2x/astronomy/dynamics.mjs","research/v2x/astronomy/oracles.mjs","research/v2x/astronomy/stellar-contracts.mjs","research/v2x/planetology/README.md","research/v2x/planetology/SOURCE_LEDGER.json","research/v2x/planetology/bulk-and-geodynamics.mjs","research/v2x/planetology/climate-and-escape.mjs","research/v2x/planetology/oracles.mjs","research/v2x/reference-oracle.py","research/v2x/run-tests.mjs"],"authorityExceptions":[],"reservedPatterns":["research/v2x/PROMOTION_PACKETS.json","research/v2x/astronomy/HANDOFF.json","research/v2x/astronomy/README.md","research/v2x/astronomy/SOURCE_LEDGER.json","research/v2x/astronomy/dynamics.mjs","research/v2x/astronomy/oracles.mjs","research/v2x/astronomy/stellar-contracts.mjs","research/v2x/planetology/README.md","research/v2x/planetology/SOURCE_LEDGER.json","research/v2x/planetology/bulk-and-geodynamics.mjs","research/v2x/planetology/climate-and-escape.mjs","research/v2x/planetology/oracles.mjs","research/v2x/reference-oracle.py","research/v2x/run-tests.mjs"]
+    },
+    "V2X-16": {
+      "laneClass":"RESEARCH","writerAuthorized":true,"branch":"research/v2x-16-life-civ-matter-frontier-2026-09-07","bindingEvidence":"PR #193 changed paths @ 358d78bde0b9d1dc3e8ed7aacd44ec343e79258b","allowedPatterns":["research/v2x/civilization/conventions.mjs","research/v2x/civilization/coordination.mjs","research/v2x/civilization/history.mjs","research/v2x/civilization/knowledge.mjs","research/v2x/civilization/production.mjs","research/v2x/civilization/tests/frontier.test.mjs","research/v2x/fixtures/CROSS_DOMAIN_CASES.json","research/v2x/fixtures/cross-domain.mjs","research/v2x/fixtures/tests/cross-domain.test.mjs","research/v2x/individuals/frontier.mjs","research/v2x/individuals/tests/frontier.test.mjs","research/v2x/life/energetics.mjs","research/v2x/life/evolution.mjs","research/v2x/life/landscape.mjs","research/v2x/life/tests/life-frontier.test.mjs","research/v2x/matter/microstructure.mjs","research/v2x/matter/reaction-network.mjs","research/v2x/matter/reference-record.mjs","research/v2x/matter/regime-boundary.mjs","research/v2x/matter/structure-representation.mjs","research/v2x/matter/tests/frontier.test.mjs","research/v2x/reference/BOUNDS_AND_COMPLEXITY.md","research/v2x/reference/HARVEST_LEDGER.json","research/v2x/reference/HARVEST_PACKETS.json","research/v2x/reference/README.md","research/v2x/reference/RESEARCH_DAG.json","research/v2x/reference/SCIENTIFIC_CONTRACT.md","research/v2x/reference/SOURCE_LEDGER.json","research/v2x/reference/bounded-math.mjs","research/v2x/reference/tests/research-ledgers.test.mjs"],"authorityExceptions":[],"reservedPatterns":["research/v2x/civilization/conventions.mjs","research/v2x/civilization/coordination.mjs","research/v2x/civilization/history.mjs","research/v2x/civilization/knowledge.mjs","research/v2x/civilization/production.mjs","research/v2x/civilization/tests/frontier.test.mjs","research/v2x/fixtures/CROSS_DOMAIN_CASES.json","research/v2x/fixtures/cross-domain.mjs","research/v2x/fixtures/tests/cross-domain.test.mjs","research/v2x/individuals/frontier.mjs","research/v2x/individuals/tests/frontier.test.mjs","research/v2x/life/energetics.mjs","research/v2x/life/evolution.mjs","research/v2x/life/landscape.mjs","research/v2x/life/tests/life-frontier.test.mjs","research/v2x/matter/microstructure.mjs","research/v2x/matter/reaction-network.mjs","research/v2x/matter/reference-record.mjs","research/v2x/matter/regime-boundary.mjs","research/v2x/matter/structure-representation.mjs","research/v2x/matter/tests/frontier.test.mjs","research/v2x/reference/BOUNDS_AND_COMPLEXITY.md","research/v2x/reference/HARVEST_LEDGER.json","research/v2x/reference/HARVEST_PACKETS.json","research/v2x/reference/README.md","research/v2x/reference/RESEARCH_DAG.json","research/v2x/reference/SCIENTIFIC_CONTRACT.md","research/v2x/reference/SOURCE_LEDGER.json","research/v2x/reference/bounded-math.mjs","research/v2x/reference/tests/research-ledgers.test.mjs"]
     }
   },
   "observedDownstreamBranches": {
-    "V2X-01": "parallel/v2x-01-runtime-adaptive-materialization-2026-09-07",
-    "V2X-02": "parallel/v2x-02-camera-spatial-travel-2026-09-07",
-    "V2X-03": "parallel/v2x-03-macrocosm-galaxy-rendering-2026-09-07",
-    "V2X-04": "parallel/v2x-04-system-planet-approach-2026-09-07",
-    "V2X-06": "parallel/v2x-06-surface-terrain-geology-hydrology-2026-09-07",
-    "V2X-07": "parallel/v2x-07-human-scale-local-traversal-2026-09-07",
-    "V2X-09": "parallel/v2x-09-civilization-economy-city-2026-09-07",
-    "V2X-10": "parallel/v2x-10-persistent-individuals-history-2026-09-07",
-    "V2X-11": "parallel/v2x-11-gameplay-causal-engine-2026-09-07",
-    "V2X-12": "parallel/v2x-12-matter-cell-molecular-atomic-2026-09-07",
-    "V2X-13": "parallel/v2x-13-rendering-platform-webgpu-2026-09-07",
-    "V2X-14": "parallel/v2x-14-product-ux-mobile-accessibility-audio-2026-09-07",
-    "V2X-15": "research/v2x-15-astronomy-planetology-frontier-2026-09-07",
-    "V2X-16": "research/v2x-16-life-civ-matter-frontier-2026-09-07"
+    "V2X-01":"parallel/v2x-01-runtime-adaptive-materialization-2026-09-07","V2X-02":"parallel/v2x-02-camera-spatial-travel-2026-09-07","V2X-03":"parallel/v2x-03-macrocosm-galaxy-rendering-2026-09-07","V2X-04":"parallel/v2x-04-system-planet-approach-2026-09-07","V2X-05":"parallel/v2x-05-deep-planet-science-2026-09-07","V2X-06":"parallel/v2x-06-surface-terrain-geology-hydrology-2026-09-07","V2X-07":"parallel/v2x-07-human-scale-local-traversal-2026-09-07","V2X-08":"parallel/v2x-08-life-ecology-evolution-embodiment-2026-09-07","V2X-09":"parallel/v2x-09-civilization-economy-city-2026-09-07","V2X-10":"parallel/v2x-10-persistent-individuals-history-2026-09-07","V2X-11":"parallel/v2x-11-gameplay-causal-engine-2026-09-07","V2X-12":"parallel/v2x-12-matter-cell-molecular-atomic-2026-09-07","V2X-13":"parallel/v2x-13-rendering-platform-webgpu-2026-09-07","V2X-14":"parallel/v2x-14-product-ux-mobile-accessibility-audio-2026-09-07","V2X-15":"research/v2x-15-astronomy-planetology-frontier-2026-09-07","V2X-16":"research/v2x-16-life-civ-matter-frontier-2026-09-07"
   },
-  "authorizedExpectedBranchesNotYetObserved": {
-    "V2X-05": "parallel/v2x-05-deep-planet-science-2026-09-07",
-    "V2X-08": "parallel/v2x-08-life-ecology-evolution-embodiment-2026-09-07"
-  },
+  "authorizedExpectedBranchesNotYetObserved": {},
   "downstreamLaneSlots": [
-    {"slot":1,"binding":"V2X-01","writerAuthorized":true,"machinePathBinding":"PENDING_FIRST_CHECKPOINT"},
-    {"slot":2,"binding":"V2X-02","writerAuthorized":true,"machinePathBinding":"PENDING_FIRST_CHECKPOINT"},
-    {"slot":3,"binding":"V2X-03","writerAuthorized":true,"machinePathBinding":"BOUND_FROM_PR_183"},
-    {"slot":4,"binding":"V2X-04","writerAuthorized":true,"machinePathBinding":"PENDING_FIRST_CHECKPOINT"},
-    {"slot":5,"binding":"V2X-05","writerAuthorized":true,"machinePathBinding":"FOUNDER_AUTHORIZED_BRANCH_NOT_YET_OBSERVED"},
-    {"slot":6,"binding":"V2X-06","writerAuthorized":true,"machinePathBinding":"PENDING_FIRST_CHECKPOINT"},
-    {"slot":7,"binding":"V2X-07","writerAuthorized":true,"machinePathBinding":"PENDING_FIRST_CHECKPOINT"},
-    {"slot":8,"binding":"V2X-08","writerAuthorized":true,"machinePathBinding":"FOUNDER_AUTHORIZED_BRANCH_NOT_YET_OBSERVED"},
-    {"slot":9,"binding":"V2X-09","writerAuthorized":true,"machinePathBinding":"PENDING_FIRST_CHECKPOINT"},
-    {"slot":10,"binding":"V2X-10","writerAuthorized":true,"machinePathBinding":"PENDING_FIRST_CHECKPOINT"},
-    {"slot":11,"binding":"V2X-11","writerAuthorized":true,"machinePathBinding":"PENDING_FIRST_CHECKPOINT"},
-    {"slot":12,"binding":"V2X-12","writerAuthorized":true,"machinePathBinding":"PENDING_FIRST_CHECKPOINT"},
-    {"slot":13,"binding":"V2X-13","writerAuthorized":true,"machinePathBinding":"PENDING_FIRST_CHECKPOINT"},
-    {"slot":14,"binding":"V2X-14","writerAuthorized":true,"machinePathBinding":"PENDING_FIRST_CHECKPOINT"},
-    {"slot":15,"binding":"V2X-15","writerAuthorized":true,"machinePathBinding":"PENDING_FIRST_CHECKPOINT"},
-    {"slot":16,"binding":"V2X-16","writerAuthorized":true,"machinePathBinding":"PENDING_FIRST_CHECKPOINT"},
-    {"slot":17,"binding":"FOUNDER_AUTHORIZED_IDENTITY_PENDING_OBSERVATION","writerAuthorized":true,"machinePathBinding":"PENDING_IDENTITY"}
+    {"slot":1,"binding":"V2X-01","writerAuthorized":true,"machinePathBinding":"BOUND_EXACT_CHECKPOINT"},{"slot":2,"binding":"V2X-02","writerAuthorized":true,"machinePathBinding":"BOUND_EXACT_CHECKPOINT"},{"slot":3,"binding":"V2X-03","writerAuthorized":true,"machinePathBinding":"BOUND_EXACT_CHECKPOINT"},{"slot":4,"binding":"V2X-04","writerAuthorized":true,"machinePathBinding":"BOUND_EXACT_CHECKPOINT"},{"slot":5,"binding":"V2X-05","writerAuthorized":true,"machinePathBinding":"BOUND_EXACT_CHECKPOINT"},{"slot":6,"binding":"V2X-06","writerAuthorized":true,"machinePathBinding":"BOUND_NONCENTRAL_PATHS_CENTRAL_ADOPTION_REQUIRED"},{"slot":7,"binding":"V2X-07","writerAuthorized":true,"machinePathBinding":"BOUND_EXACT_CHECKPOINT"},{"slot":8,"binding":"V2X-08","writerAuthorized":true,"machinePathBinding":"BOUND_EXACT_CHECKPOINT"},{"slot":9,"binding":"V2X-09","writerAuthorized":true,"machinePathBinding":"BOUND_EXACT_CHECKPOINT"},{"slot":10,"binding":"V2X-10","writerAuthorized":true,"machinePathBinding":"BOUND_TEST_PATHS_CENTRAL_ADOPTION_REQUIRED"},{"slot":11,"binding":"V2X-11","writerAuthorized":true,"machinePathBinding":"BOUND_EXACT_CHECKPOINT"},{"slot":12,"binding":"V2X-12","writerAuthorized":true,"machinePathBinding":"BOUND_NONCENTRAL_PATHS_CENTRAL_ADOPTION_REQUIRED"},{"slot":13,"binding":"V2X-13","writerAuthorized":true,"machinePathBinding":"BOUND_EXACT_CHECKPOINT"},{"slot":14,"binding":"V2X-14","writerAuthorized":true,"machinePathBinding":"BOUND_EXACT_CHECKPOINT"},{"slot":15,"binding":"V2X-15","writerAuthorized":true,"machinePathBinding":"BOUND_EXACT_CHECKPOINT_RESEARCH_ONLY"},{"slot":16,"binding":"V2X-16","writerAuthorized":true,"machinePathBinding":"BOUND_EXACT_CHECKPOINT_RESEARCH_ONLY"},{"slot":17,"binding":"FOUNDER_AUTHORIZED_IDENTITY_PENDING_OBSERVATION","writerAuthorized":true,"machinePathBinding":"PENDING_IDENTITY_NO_ACTIVE_BRANCH_OBSERVED"}
   ],
-  "reviewerPolicy": {
-    "branchesRequired": false,
-    "writeAccess": "READ_ONLY",
-    "allowedPaths": [],
-    "allowedPatterns": []
-  }
+  "reviewerPolicy": {"branchesRequired":false,"writeAccess":"READ_ONLY","allowedPaths":[],"allowedPatterns":[]}
 }

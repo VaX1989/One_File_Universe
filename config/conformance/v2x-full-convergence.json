@@ -1,0 +1,14 @@
+{
+  "schema":"ofu-conformance-1",
+  "tests":[
+    {
+      "id":"v2x.convergence.full-product-release",
+      "owner":"v1",
+      "tier":"RELEASE",
+      "command":["node","tests/v2x-convergence/full-convergence.mjs"],
+      "providers":["v1.scene.living-world","v1.query.environment","v1.query.local-world","v1.query.material-source","v1.query.model-history","v1.query.ecology","v1.query.body-world"],
+      "oracle":"V2X_FULL_PRODUCT_EXACT_SHA_SINGLE_HTML_RELEASE_2026_09_07",
+      "timeoutMs":900000
+    }
+  ]
+}

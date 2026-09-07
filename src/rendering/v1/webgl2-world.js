@@ -31,8 +31,8 @@ function link(gl,vs,fs){const p=gl.createProgram();let a=null,b=null;try{a=compi
 function create(canvas,{maxDpr=2,mobile=null}={}){
  if(!canvas?.getContext)throw new TypeError('canvas required');
  if(!O.v1WorldShaders)throw new Error('v1 world shaders required');
- let profile=resourceProfile({maxDpr,mobile}),budget=O.v1RenderBudget?.create(profile)||null,gl=null,point=null,globe=null,buffer=null,texture=null,textureKey=null,lost=false,last=null,frame=0,lastAdmission=null;
- const metrics={frames:0,drawCalls:0,restores:0,resizes:0,profileChanges:0,resourceResets:0,admissionAttempts:0,admissionRejections:0,lodCulledObjects:0,maxLodCulledPerFrame:0,surfaceMapFallbacks:0,submittedObjects:0};
+ let profile=resourceProfile({maxDpr,mobile}),budget=O.v1RenderBudget?.create(profile)||null,gl=null,point=null,globe=null,buffer=null,texture=null,textureKey=null,lost=false,last=null,frame=0,lastAdmission=null,surface=null,lastSurfaceKey=null;
+ const metrics={frames:0,drawCalls:0,restores:0,resizes:0,profileChanges:0,resourceResets:0,admissionAttempts:0,admissionRejections:0,lodCulledObjects:0,maxLodCulledPerFrame:0,surfaceMapFallbacks:0,submittedObjects:0,surfacePlanChanges:0,surfaceConstraintEvents:0,maxSurfacePixels:0};
  function resetSharedResources(){
   if(!gl)return;
   if(buffer){gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,new Uint8Array(0),gl.DYNAMIC_DRAW)}
@@ -70,7 +70,9 @@ function create(canvas,{maxDpr=2,mobile=null}={}){
   gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);lost=false;
  }
  function resize(){
-  const active=syncProfile(),dpr=active.dpr,w=Math.max(1,Math.floor((canvas.clientWidth||canvas.width||1)*dpr)),h=Math.max(1,Math.floor((canvas.clientHeight||canvas.height||1)*dpr));
+  const active=syncProfile(),cssWidth=Math.max(1,canvas.clientWidth||canvas.width||1),cssHeight=Math.max(1,canvas.clientHeight||canvas.height||1),plan=O.v1RenderBudget?.surfacePlan?.({cssWidth,cssHeight,dpr:active.dpr,mobile:active.mobile,maxDpr})||null,dpr=active.dpr,w=plan?.width??Math.max(1,Math.floor(cssWidth*dpr)),h=plan?.height??Math.max(1,Math.floor(cssHeight*dpr));
+  surface=plan||Object.freeze({cssWidth,cssHeight,requestedDpr:dpr,effectiveDpr:dpr,width:w,height:h,pixels:w*h,pixelCeiling:null,maxDimension:null,constrained:false,modeledColorBytes:w*h*4,accounting:null});
+  const key=[w,h,surface.effectiveDpr,surface.pixelCeiling].join(':');if(key!==lastSurfaceKey){metrics.surfacePlanChanges++;if(surface.constrained)metrics.surfaceConstraintEvents++;lastSurfaceKey=key;}metrics.maxSurfacePixels=Math.max(metrics.maxSurfacePixels,surface.pixels);
   if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;metrics.resizes++}
   gl.viewport(0,0,w,h);
  }
@@ -109,19 +111,16 @@ function create(canvas,{maxDpr=2,mobile=null}={}){
   gl.clearColor(.008,.014,.028,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
   if(['PLANET','APPROACH'].includes(scene.scale))drawGlobe(scene);else drawPoints(scene);
   const error=gl.getError();if(error!==gl.NO_ERROR)throw new Error('WebGL draw error '+error);
-  return{status:'RENDERED',frame,scale:scene.scale,authority:AUTHORITY,resourceProfile:profile,admission:lastAdmission,measurements:{...metrics},budget:budget?.snapshot()||null};
+  return{status:'RENDERED',frame,scale:scene.scale,authority:AUTHORITY,resourceProfile:profile,surface,admission:lastAdmission,measurements:{...metrics},budget:budget?.snapshot()||null};
  }
  function onLost(e){
   e?.preventDefault?.();lost=true;budget?.clear('context-lost');
-  // WebGL resource objects become invalid when the context is lost. Drop the
-  // renderer's handles immediately so runtime accounting never presents those
-  // invalid objects as live allocations while recovery is pending.
   point=globe=buffer=texture=null;textureKey=null;gl=null;
  }
  function onRestored(){metrics.restores++;init();if(last)render(last)}
  canvas.addEventListener?.('webglcontextlost',onLost,false);canvas.addEventListener?.('webglcontextrestored',onRestored,false);
  function dispose(){canvas.removeEventListener?.('webglcontextlost',onLost,false);canvas.removeEventListener?.('webglcontextrestored',onRestored,false);budget?.clear('dispose');if(gl){if(point)gl.deleteProgram(point);if(globe)gl.deleteProgram(globe);if(buffer)gl.deleteBuffer(buffer);if(texture)gl.deleteTexture(texture)}gl=point=globe=buffer=texture=null;textureKey=null}
- function snapshot(){const live=!!(gl&&!lost);return Object.freeze({version:VERSION,authority:AUTHORITY,contextLost:lost,frame,allocatedPrograms:live?2:0,allocatedBuffers:live?1:0,allocatedTextures:live?1:0,resourceProfile:profile,admission:lastAdmission,measurements:{...metrics},budget:budget?.snapshot()||null})}
+ function snapshot(){const live=!!(gl&&!lost);return Object.freeze({version:VERSION,authority:AUTHORITY,contextLost:lost,frame,allocatedPrograms:live?2:0,allocatedBuffers:live?1:0,allocatedTextures:live?1:0,resourceProfile:profile,surface,admission:lastAdmission,measurements:{...metrics},budget:budget?.snapshot()||null})}
  return Object.freeze({render,resize,dispose,snapshot});
 }
 O.v1WorldWebGL2=Object.freeze({VERSION,AUTHORITY,resourceProfile,pointAdmissionPlan,globeAdmissionCost,create});

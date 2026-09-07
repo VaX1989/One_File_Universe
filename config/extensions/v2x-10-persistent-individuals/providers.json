@@ -1,0 +1,60 @@
+{
+  "schema": "ofu-provider-catalog-1",
+  "owners": [
+    {
+      "id": "v2x-10-persistent-individuals",
+      "prefixes": ["v2x10"],
+      "kinds": ["model"],
+      "authorities": ["MODEL_DERIVED_SIMULATION", "DERIVED"]
+    }
+  ],
+  "canonicalAdmissions": [],
+  "providers": [
+    {
+      "contract": "ofu-px-contracts-1",
+      "id": "v2x10.model.persistent-individuals",
+      "version": "1.0.0",
+      "owner": "v2x-10-persistent-individuals",
+      "kind": "model",
+      "authority": {
+        "class": "MODEL_DERIVED_SIMULATION",
+        "contract": "ofu-px-contracts-1",
+        "model": "v2x10.model.persistent-individuals",
+        "version": "1.0.0",
+        "sources": [
+          "src/domains/v1/individuals/provider.js",
+          "src/domains/v1/individuals/runtime.js",
+          "src/domains/v1/demography/ledger.js",
+          "src/domains/v1/culture/transmission.js"
+        ],
+        "assumptions": [
+          "Persons are deterministically addressable from world, settlement and birth ordinal when the aggregate model provides the required addressable population context.",
+          "Only explicitly retained bounded state persists across eviction/revisit."
+        ],
+        "limitations": [
+          "Household grouping is model-derived and is not a kinship claim.",
+          "Genealogy remains UNKNOWN unless explicit retained lineage exists.",
+          "Culture represents bounded structured conventions and knowledge topics, not real language, belief or historical truth.",
+          "Individual actions are proposals only and require governed P4/gameplay admission."
+        ],
+        "evidence": []
+      },
+      "fidelity": {
+        "regime": "persistent-individuals",
+        "validity": "Bounded deterministic individual refinement over an already modeled civilization/demography aggregate.",
+        "resolution": "At most 128 simultaneously materialized persons per refinement call with bounded memories, ties, skills and conventions.",
+        "uncertainty": "Unretained genealogy, detailed biography, beliefs, language and unsupported demographic facts remain unknown rather than fabricated."
+      },
+      "lifecycle": "SHIPPING",
+      "requires": [],
+      "claims": ["model.persistent-individuals"],
+      "operations": ["INSPECT", "REFINE", "PROJECT", "RECONCILE"],
+      "budget": {"entities": 128, "bytes": 262144, "operations": 4096, "queue": 64},
+      "evidence": [
+        {"id": "v2x10.shipping-provider", "tier": "FAST_LOCAL"},
+        {"id": "v2x10.persistent-individuals", "tier": "LANE_TARGETED"}
+      ],
+      "mandatory": false
+    }
+  ]
+}

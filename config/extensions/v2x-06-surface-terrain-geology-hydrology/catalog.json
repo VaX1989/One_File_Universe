@@ -1,0 +1,31 @@
+{
+  "schema":"ofu-provider-catalog-1",
+  "owners":[{"id":"v2x-06-surface-terrain-geology-hydrology","prefixes":["v2x-06"],"kinds":["model","query","representation","renderer"],"authorities":["DERIVED","MODEL_DERIVED_SIMULATION","PRESENTATION_ONLY"]}],
+  "canonicalAdmissions":[],
+  "providers":[
+    {
+      "contract":"ofu-px-contracts-1","id":"v2x-06.model.surface-geography","version":"1.0.0","owner":"v2x-06-surface-terrain-geology-hydrology","kind":"model",
+      "authority":{"class":"MODEL_DERIVED_SIMULATION","contract":"ofu-px-contracts-1","model":"v2x-06.model.surface-geography","version":"1.0.0","sources":["src/domains/v1/surface/geography.js","src/domains/v1/surface/hydrology.js"],"assumptions":["Consumes caller-supplied planet/environment model cues and stable planet/location identities read-only."],"limitations":["Generated relief is not canonical elevation or surveyed topography.","Tectonic, volcanic, impact, erosion, drainage, lake, wetland, coastline and substrate outputs are bounded model cues, not measured physical truth."],"evidence":[]},
+      "fidelity":{"regime":"surface","validity":"Supported solid, oceanic, airless, icy and arid surface presentation contexts; giant no-surface states fail closed","resolution":"Continuous spherical field plus bounded local drainage probes and traces","uncertainty":"Heuristic model-derived morphology; exact plate histories, measured elevations, physical flow rates and canonical watershed boundaries are not claimed"},
+      "lifecycle":"SHIPPING","requires":[],"claims":["model.surface-geography-v2x06","model.surface-hydrology-v2x06"],"operations":["DISCOVER","INSPECT","REFINE","PROJECT","RECONCILE"],"budget":{"entities":4096,"bytes":1048576,"operations":1048576,"queue":256},"evidence":[{"id":"v2x-06.surface-terrain-geology-hydrology","tier":"LANE_TARGETED"}],"mandatory":false
+    },
+    {
+      "contract":"ofu-px-contracts-1","id":"v2x-06.query.surface-address","version":"1.0.0","owner":"v2x-06-surface-terrain-geology-hydrology","kind":"query",
+      "authority":{"class":"DERIVED","contract":"ofu-px-contracts-1","model":"v2x-06.query.surface-address","version":"1.0.0","sources":["src/domains/v1/surface/address.js","src/domains/v1/surface/cross-scale-adapter.js","src/extensions/cross-scale.js"],"assumptions":["Selected planet, canonical identity, selection, temporal history and parent commitment are supplied by their existing authorities."],"limitations":["Surface location and patch identities are deterministic derived addresses, not replacement canonical geodesy or selection authority.","PX context refinement does not promote presentation terrain into physical truth."],"evidence":[]},
+      "fidelity":{"regime":"surface","validity":"Supported normalized microdegree latitude/longitude and cube-sphere LOD addresses","resolution":"LOD 0 through 20 with LOD-independent normalized location identity","uncertainty":"Address mapping is mathematical/derived; it is not a terrain or camera measurement"},
+      "lifecycle":"SHIPPING","requires":[],"claims":["query.surface-address-v2x06","cross-scale.surface-context-v2x06"],"operations":["DISCOVER","REFINE","PROJECT","RECONCILE"],"budget":{"entities":512,"bytes":262144,"operations":262144,"queue":128},"evidence":[{"id":"v2x-06.surface-cross-scale","tier":"LANE_TARGETED"}],"mandatory":false
+    },
+    {
+      "contract":"ofu-px-contracts-1","id":"v2x-06.representation.hierarchical-terrain","version":"1.0.0","owner":"v2x-06-surface-terrain-geology-hydrology","kind":"representation",
+      "authority":{"class":"PRESENTATION_ONLY","contract":"ofu-px-contracts-1","model":"v2x-06.representation.hierarchical-terrain","version":"1.0.0","sources":["src/rendering/terrain/hierarchical-terrain.js"],"assumptions":["Consumes V2X-06 model-derived surface geography/hydrology and caller-owned surface location context read-only."],"limitations":["Grid heights, coast lines, river paths, substrate hooks and LOD patch boundaries are presentation representations.","No central renderer, camera, selection, persistence or event-admission authority is owned by this provider."],"evidence":[]},
+      "fidelity":{"regime":"surface","validity":"Bounded active regional/local terrain materialization","resolution":"Odd-grid cube-sphere patches with deterministic shared spherical edge samples and adaptive patch working set","uncertainty":"Visual morphology is model/presentation-derived and not canonical elevation"},
+      "lifecycle":"SHIPPING","requires":[{"id":"v2x-06.model.surface-geography","version":"1.0.0","authority":"MODEL_DERIVED_SIMULATION"}],"claims":["representation.hierarchical-terrain-v2x06"],"operations":["REPRESENT","REFINE","PROJECT","RECONCILE"],"budget":{"entities":4096,"bytes":1048576,"operations":1048576,"queue":256},"evidence":[{"id":"v2x-06.surface-terrain-geology-hydrology","tier":"LANE_TARGETED"}],"mandatory":false
+    },
+    {
+      "contract":"ofu-px-contracts-1","id":"v2x-06.renderer.living-surface","version":"1.0.0","owner":"v2x-06-surface-terrain-geology-hydrology","kind":"renderer",
+      "authority":{"class":"PRESENTATION_ONLY","contract":"ofu-px-contracts-1","model":"v2x-06.renderer.living-surface","version":"1.0.0","sources":["src/rendering/surface/living-surface.js"],"assumptions":["Consumes a bounded hierarchical terrain materialization and emits Canvas2D/SVG presentation only."],"limitations":["SVG/Canvas output is not scientific measurement or GPU certification.","Integration into the convergence-owned central renderer router is not performed by this lane."],"evidence":[]},
+      "fidelity":{"regime":"surface","validity":"Regional/local model-derived terrain frames and explicit no-solid-surface states","resolution":"Bounded patch mosaics with terrain cells, coastline cues and river polylines","uncertainty":"Rendered scale, colors, coastlines and flow paths are presentation cues"},
+      "lifecycle":"SHIPPING","requires":[{"id":"v2x-06.representation.hierarchical-terrain","version":"1.0.0","authority":"PRESENTATION_ONLY"}],"claims":["renderer.living-surface-v2x06"],"operations":["REPRESENT"],"budget":{"entities":4096,"bytes":1048576,"operations":1048576,"queue":256},"evidence":[{"id":"v2x-06.surface-terrain-geology-hydrology","tier":"LANE_TARGETED"}],"mandatory":false
+    }
+  ]
+}
