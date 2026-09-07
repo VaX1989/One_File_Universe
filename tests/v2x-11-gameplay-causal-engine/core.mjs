@@ -4,6 +4,12 @@ for(const f of ['src/kernel/sha256.js','src/kernel/p2-unicode.js','src/kernel/p2
 const O=globalThis.OFU,P=O.p2,C=O.v2x11GameplayContracts,E=O.v2x11CausalEngine,B=O.v2x11P4GameplayBridge,G=O.v2x11Gameplay;
 const id=s=>P.hex(O.sha256.digest(new TextEncoder().encode(s))),universe=id('v2x11-universe'),target=id('v2x11-target'),context={targetId:target,modelWorld:null,source:'TEST'};
 let cases=0;
+const numericPayload={nested:[60000000n,9007199254740992n],bytes:new Uint8Array([1,2])},normalized=C.safe(numericPayload);
+assert.equal(normalized.nested[0],60000000);assert.equal(normalized.nested[1],9007199254740992n);
+assert.deepEqual(P.encode(normalized),P.encode(numericPayload));assert.deepEqual(normalized.bytes,numericPayload.bytes);
+assert.equal(C.cost({resources:[],timeMicros:60000000n}).timeMicros,60000000);
+assert.throws(()=>C.cost({resources:[],timeMicros:BigInt(C.LIMITS.timeMicros)+1n}),/out of range/);
+assert.throws(()=>C.cost({resources:[],timeMicros:-1n}),/out of range/);cases+=7;
 assert.deepEqual(C.resourceVector([{resourceId:'energy',units:7n}]),[{resourceId:'energy',units:7}]);assert.throws(()=>C.resourceVector([{resourceId:'energy',units:1000000001n}]),/out of range/);cases+=2;
 let session=G.createSession({universeIdentity:universe,targetId:target,initialResources:[{resourceId:'energy',units:200},{resourceId:'supplies',units:20},{resourceId:'storage_capacity',units:20}]});
 const p1=G.propose({session,actorId:'founder',kind:'SURVEY',parameters:{mode:'baseline'},context}).proposal,p2=G.propose({session,actorId:'founder',kind:'SURVEY',parameters:{mode:'baseline'},context}).proposal;assert.equal(p1.proposalId,p2.proposalId);cases++;

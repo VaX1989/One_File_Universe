@@ -33,9 +33,12 @@ function exact(value,required,optional=[],label='record'){
   for(const k of required)if(!Object.prototype.hasOwnProperty.call(value,k))fail(label+' missing field '+k);
 }
 function text(value,label,max=160){if(typeof value!=='string')fail(label+' must be text');const v=value.normalize('NFC').trim();if(!v.length||v.length>max)fail(label+' invalid length');return v}
-function integer(value,label,min=0,max=Number.MAX_SAFE_INTEGER){if(!Number.isSafeInteger(value)||value<min||value>max)fail(label+' out of range');return value}
+function integer(value,label,min=0,max=Number.MAX_SAFE_INTEGER){if(typeof value==='bigint'){if(value<BigInt(min)||value>BigInt(max))fail(label+' out of range');value=Number(value)}if(!Number.isSafeInteger(value)||value<min||value>max)fail(label+' out of range');return value}
 function hex32(value,label,nullable=false){if(nullable&&value===null)return null;if(typeof value!=='string'||!/^[0-9a-f]{64}$/.test(value))fail(label+' must be lowercase 32-byte hex');return value}
-function safe(value,label='value',maxBytes=LIMITS.parameterBytes){let bytes;try{bytes=P.encode(value)}catch(error){fail(label+' is not canonically encodable: '+String(error?.message||error))}if(bytes.length>maxBytes)fail(label+' exceeds byte bound');return P.decode(bytes)}
+// P2 decodes integers as BigInt; model APIs consume safe JS numbers. Preserve
+// larger integers and byte arrays exactly, without changing canonical encoding.
+function modelNumbers(value){if(typeof value==='bigint')return value>=BigInt(Number.MIN_SAFE_INTEGER)&&value<=BigInt(Number.MAX_SAFE_INTEGER)?Number(value):value;if(Array.isArray(value))return value.map(modelNumbers);if(value&&typeof value==='object'&&!(value instanceof Uint8Array)){for(const key of Object.keys(value))value[key]=modelNumbers(value[key])}return value}
+function safe(value,label='value',maxBytes=LIMITS.parameterBytes){let bytes;try{bytes=P.encode(value)}catch(error){fail(label+' is not canonically encodable: '+String(error?.message||error))}if(bytes.length>maxBytes)fail(label+' exceeds byte bound');return modelNumbers(P.decode(bytes))}
 function digest(tag,value){const body=P.encode(value),prefix=enc.encode(tag+'\0'),all=new Uint8Array(prefix.length+body.length);all.set(prefix);all.set(body,prefix.length);return P.hex(O.sha256.digest(all))}
 function normalizeKind(kind){const k=String(kind||'').toUpperCase();if(!ACTIONS.includes(k))fail('unsupported action '+k);return k}
 function capability(input){exact(input,['id','version','authority'],[],'capability');const out={id:text(input.id,'capability.id',160),version:text(input.version,'capability.version',64),authority:text(input.authority,'capability.authority',64)};if(out.authority!==AUTHORITY&&out.authority!=='DERIVED')fail('capability authority mismatch');return Object.freeze(out)}
