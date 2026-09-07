@@ -38,6 +38,25 @@
         "v2x02.camera.input-accumulator",
         "v2x02.camera.reversible-travel"
       ]
+    },
+    {
+      "id": "v2x02.camera.living-binding",
+      "version": "1.0.0",
+      "owner": "v2x-02-camera-spatial-travel",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/rendering/v2x-convergence/living-camera-authority.js",
+      "dependencies": [
+        "v2x02.camera.continuous-travel",
+        "v1.rendering.living-renderer"
+      ],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Convergence-owned Living binding. Pointer look is admitted by the V2X-02 controller and frozen V1X camera authority; Living distance is consumed only as a derived runtime snapshot. The wrapped renderer retains projection cache state but owns no independent input or travel authority.",
+      "provides": [
+        "v2x02.camera.living-binding",
+        "v2x02.camera.single-living-authority"
+      ]
     }
   ]
 }
