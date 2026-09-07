@@ -2,8 +2,8 @@
 'use strict';
 const DOC=root.document,O=root.OFU=root.OFU||{};
 if(!DOC||root.__OFU_V11_TOUCH_CONTINUITY__)return;
-const VERSION='ofu-v11-touch-continuity-1',THRESHOLD_PX=5,pointers=new Map();
-const state={version:VERSION,authority:'PRESENTATION_ONLY',strategy:'PINCH_RELEASE_PROMOTES_REMAINING_TOUCH_TO_PRESENTATION_DRAG',installed:false,promotions:0,continuationMoves:0,cancellations:0,activePointers:0,continuationPointer:null};
+const VERSION='ofu-v11-touch-continuity-1',THRESHOLD_PX=5,pointers=new Map(),defer=root.queueMicrotask?.bind(root)||(fn=>Promise.resolve().then(fn));
+const state={version:VERSION,authority:'PRESENTATION_ONLY',strategy:'PINCH_RELEASE_PROMOTES_REMAINING_TOUCH_TO_PRESENTATION_DRAG',installed:false,promotions:0,continuationMoves:0,cancellations:0,lostCaptureChecks:0,activePointers:0,continuationPointer:null};
 let canvas=null,continuation=null,hadPinch=false,observer=null;
 const point=e=>{const rect=canvas?.getBoundingClientRect?.();return{x:Number(e.clientX)-(rect?.left||0),y:Number(e.clientY)-(rect?.top||0),pointerType:String(e.pointerType||'')};};
 const supported=e=>e.pointerType==='touch'||e.pointerType==='pen';
@@ -16,7 +16,7 @@ function onDown(e){
 }
 function onMove(e){
  if(!supported(e)||!pointers.has(e.pointerId))return;
- const p=point(e),previous=pointers.get(e.pointerId);pointers.set(e.pointerId,p);state.activePointers=pointers.size;
+ const p=point(e);pointers.set(e.pointerId,p);state.activePointers=pointers.size;
  if(!continuation||continuation.id!==e.pointerId||pointers.size!==1)return;
  const total=Math.hypot(p.x-continuation.startX,p.y-continuation.startY),dx=p.x-continuation.lastX,dy=p.y-continuation.lastY;
  continuation.lastX=p.x;continuation.lastY=p.y;
@@ -36,6 +36,14 @@ function finish(e,cancelled=false){
  if(continuation?.id===e.pointerId)clearContinuation();
  if(!pointers.size){hadPinch=false;clearContinuation();}
 }
+function onLostCapture(e){
+ if(!supported(e))return;
+ const pending={pointerId:e.pointerId,pointerType:e.pointerType,clientX:e.clientX,clientY:e.clientY};state.lostCaptureChecks++;
+ // releasePointerCapture during a normal pointerup can synchronously emit
+ // lostpointercapture before our later pointerup listener runs. Defer the
+ // cancellation decision until that normal pointerup had a chance to remove it.
+ defer(()=>{if(pointers.has(pending.pointerId))finish(pending,true);});
+}
 function install(){
  if(state.installed)return true;
  const target=DOC.getElementById('living-view'),renderer=O.v1LivingProduct?.renderer;
@@ -45,7 +53,7 @@ function install(){
  canvas.addEventListener('pointermove',onMove,false);
  canvas.addEventListener('pointerup',e=>finish(e,false),false);
  canvas.addEventListener('pointercancel',e=>finish(e,true),false);
- canvas.addEventListener('lostpointercapture',e=>finish(e,true),false);
+ canvas.addEventListener('lostpointercapture',onLostCapture,false);
  state.installed=true;observer?.disconnect?.();observer=null;return true;
 }
 const api=Object.freeze({VERSION,AUTHORITY:'PRESENTATION_ONLY',strategy:state.strategy,snapshot,install});
