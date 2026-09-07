@@ -1,0 +1,27 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+globalThis.OFU={};
+for(const f of [
+  'src/kernel/sha256.js','src/extensions/contracts.js','src/domains/v1/common.js',
+  'src/domains/v1/planetology/causal-system.js','src/domains/v1/environment/world-system.js',
+  'src/domains/v1/planetology/giant-family.js','src/domains/v1/environment/atmospheric-column.js'
+])vm.runInThisContext(fs.readFileSync(f,'utf8'),{filename:f});
+const E=OFU.v1PlanetEnvironment,A=OFU.v1AtmosphericColumn,id=c=>c.repeat(64);
+const synthetic=({identity='a',temperatureMilliK=288000,meanMolecularMassMilliAmu=28970,surfaceGravityMilliMs2=9810,radiusKm=6371,pressureProxyPpm=1000000,compositionFamily='N2_CO2_H2O_OUTGASSED'}={})=>({planetIdentity:id(identity),causal:{inputs:{radiusKm},formation:{equilibriumTemperatureMilliK:temperatureMilliK},gravity:{surfaceGravityMilliMs2},atmosphere:{pressureProxyPpm,compositionFamily,meanMolecularMassMilliAmu}}});
+const earth=A.diagnose(synthetic()),earth2=A.diagnose(synthetic());
+assert.deepEqual(earth,earth2);assert.equal(earth.supported,true);assert.equal(earth.authority.class,'MODEL_DERIVED_SIMULATION');assert.equal(earth.referenceScaleHeightMeters,8426);assert.equal(earth.fiveScaleHeightReferenceMeters,42130);assert.equal(earth.scaleHeightToRadiusPpm,1323);
+assert.equal(earth.referenceInputs.temperatureSource,'MODELED_FORMATION_EQUILIBRIUM_TEMPERATURE_PROXY');assert.equal(earth.referenceInputs.molecularMassSource,'MODELED_ATMOSPHERIC_COMPOSITION_FAMILY_PROXY');assert.equal(earth.referenceInputs.gravitySource,'MODELED_SPHERICAL_SURFACE_GRAVITY');
+assert.equal(earth.validity.relation,'IDEAL_GAS_ISOTHERMAL_HYDROSTATIC_REFERENCE');assert.equal(earth.validity.verticalPressureProfileClaim,false);assert.equal(earth.validity.atmosphericExtentClaim,false);assert.equal(earth.validity.temperatureMeasurementClaim,false);assert.equal(earth.validity.compositionMeasurementClaim,false);assert.equal(earth.canonicalPromotion,false);assert.equal(earth.p4Mutation,false);assert.equal(earth.canonicalP5Unchanged,true);assert.equal(earth.canonicalP6Unchanged,true);assert.equal(earth.researchLineage.researchAuthorityPromoted,false);
+const light=A.diagnose(synthetic({identity:'h',meanMolecularMassMilliAmu:2500})),heavy=A.diagnose(synthetic({identity:'c',meanMolecularMassMilliAmu:44000}));assert.equal(light.supported,true);assert.equal(heavy.supported,true);assert.ok(light.referenceScaleHeightMeters>earth.referenceScaleHeightMeters);assert.ok(earth.referenceScaleHeightMeters>heavy.referenceScaleHeightMeters);
+const stronger=A.diagnose(synthetic({identity:'g',surfaceGravityMilliMs2:19620}));assert.equal(stronger.supported,true);assert.ok(stronger.referenceScaleHeightMeters<earth.referenceScaleHeightMeters);
+const hotter=A.diagnose(synthetic({identity:'t',temperatureMilliK:576000}));assert.equal(hotter.supported,true);assert.ok(hotter.referenceScaleHeightMeters>earth.referenceScaleHeightMeters);
+const airless=A.diagnose(synthetic({identity:'v',pressureProxyPpm:11999,compositionFamily:'AIRLESS_OR_TRACE_EXOSPHERE'}));assert.equal(airless.supported,false);assert.equal(airless.reason,'NO_MODELED_COLLISIONAL_ATMOSPHERE');
+const trace=A.diagnose(synthetic({identity:'q',pressureProxyPpm:50000,compositionFamily:'AIRLESS_OR_TRACE_EXOSPHERE'}));assert.equal(trace.supported,false);assert.equal(trace.reason,'NO_MODELED_COLLISIONAL_ATMOSPHERE');
+const extended=A.diagnose(synthetic({identity:'x',temperatureMilliK:1000000,meanMolecularMassMilliAmu:2500,surfaceGravityMilliMs2:1000,radiusKm:1000}));assert.equal(extended.supported,false);assert.equal(extended.reason,'OUTSIDE_THIN_LAYER_REFERENCE_ENVELOPE');assert.ok(extended.scaleHeightToRadiusPpm>100000);
+assert.equal(A.divHalfEven(5n,2n),2n);assert.equal(A.divHalfEven(7n,2n),4n);assert.equal(A.divHalfEven(6n,4n),2n);assert.throws(()=>A.divHalfEven(1n,0n),/positive bigint division/);
+const giantInput={planetIdentity:id('j'),bulkPriorClass:'GAS_GIANT',stellarLuminosityMilliSolar:1000,stellarTemperatureK:5772,orbitMilliAu:5200,massMilliEarth:318000,radiusKm:69911,ageMyr:4500,eccentricityPpm:48000,obliquityMilliDeg:3100,rotationPeriodMilliHours:9900,tidalHeatingPpm:0,xuvMilliWm2:1200};
+const giant=E.enrich({},giantInput),giantReplay=E.enrich({},giantInput);assert.deepEqual(giant,giantReplay);assert.equal(giant.giantFamily.supported,true);assert.equal(giant.atmosphericColumn.supported,true);assert.equal(giant.atmosphericColumn.worldIdentity,giant.planetIdentity);assert.equal(giant.atmosphericColumn.validity.atmosphericExtentClaim,false);
+const terrestrialInput={...giantInput,planetIdentity:id('e'),bulkPriorClass:'TERRESTRIAL',orbitMilliAu:1000,massMilliEarth:1000,radiusKm:6371,rotationPeriodMilliHours:23934,xuvMilliWm2:4500};const terrestrial=E.enrich({},terrestrialInput);assert.ok(terrestrial.atmosphericColumn);assert.equal(terrestrial.atmosphericColumn.authority.class,'MODEL_DERIVED_SIMULATION');
+const core=JSON.parse(fs.readFileSync('config/components/v1.json','utf8')).components.find(x=>x.id==='v1.models.world');assert.ok(core);assert.ok(core.dependencies.includes('v1.environment.atmospheric-column'));
+console.log(JSON.stringify({status:'PASS',suite:'v1.1 atmospheric column context',version:A.VERSION,earthReferenceScaleHeightMeters:earth.referenceScaleHeightMeters,giantSupported:giant.atmosphericColumn.supported,terrestrialSupported:terrestrial.atmosphericColumn.supported}));
