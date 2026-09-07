@@ -1,0 +1,18 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1.product.living-skip-routing",
+      "version": "1.0.0",
+      "owner": "product",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/bootstrap/product/living-skip-routing.js",
+      "dependencies": ["v1.product.living-universe", "v1x10.ux.accessibility"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Post-v1 accessibility routing from the existing V1X viewport skip link to the actual shipping Living viewport. The adapter changes only presentation/focus routing and creates no navigation, canonical, model or scientific authority.",
+      "provides": ["v1.product.living-skip-routing"]
+    }
+  ]
+}
