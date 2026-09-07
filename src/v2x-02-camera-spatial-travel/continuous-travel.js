@@ -102,7 +102,7 @@ function createController({camera,reducedMotion=false,maxPendingLogDelta=.9,maxL
  const initialCamera=camera.snapshot();let trackedCommandCount=initialCamera.commandCount,trackedSequence=initialCamera.sequence,trackedSelection=initialCamera.selectionToken;
  let observedPayloadRecord=normalizeContextPayload({});
  const reverseAnchors=[],journal=[];
- const metrics={distanceInputs:0,lookInputs:0,flushes:0,interruptions:0,resumes:0,translations:0,reverseAnchors:0,reverseEvictions:0,reverseInvalidations:0,externalCameraMutations:0,rewinds:0,rewindFailures:0,rollbackAttempts:0,rollbackFailures:0,reverseOperations:0,boundaryCrossings:0};
+ const metrics={distanceInputs:0,lookInputs:0,flushes:0,interruptions:0,resumes:0,translations:0,reverseAnchors:0,reverseEvictions:0,reverseInvalidations:0,externalCameraMutations:0,rewinds:0,rewindFailures:0,rollbackAttempts:0,rollbackFailures:0,reverseOperations:0,hysteresisExcursions:0,boundaryCrossings:0};
 
  function normalizeContextPayload(input={}){
   const record=ownDataRecord(input,'journey context',CONTEXT_KEYS),c=camera.snapshot();
@@ -157,7 +157,14 @@ function createController({camera,reducedMotion=false,maxPendingLogDelta=.9,maxL
   reverseAnchors.push(Object.freeze({value:publicAnchor,bytes,journalIndex:journal.length,payloadRecord:observedPayloadRecord,cameraDigest:anchorDigest}));anchorBytes+=bytes;metrics.reverseAnchors++;sequence++;return publicAnchor;
  }
  function popReverseAnchor(){const entry=reverseAnchors.pop()||null;if(entry)anchorBytes-=entry.bytes;compactJournal();sequence++;return entry?.value||null;}
- function applyInverse(entry,source){const current=camera.snapshot();if(entry.kind==='DISTANCE')camera.applyDistanceDelta(entry.before.logDistanceM-current.logDistanceM,{source:source+':distance'});else if(entry.kind==='TRANSLATE')camera.translateLocal(entry.frameDelta.map(v=>-v),{source:source+':translate'});else if(entry.kind==='LOOK'){if(entry.pitchRadians!==0)camera.look({yawRadians:0,pitchRadians:-entry.pitchRadians,source:source+':pitch'});if(entry.yawRadians!==0)camera.look({yawRadians:-entry.yawRadians,pitchRadians:0,source:source+':yaw'});}else throw new Error('unsupported reverse journal operation: '+entry.kind);noteCamera();metrics.reverseOperations++;}
+ function restoreDistanceDigest(target,source){
+  let current=camera.snapshot();camera.applyDistanceDelta(target.logDistanceM-current.logDistanceM,{source:source+':target'});noteCamera();current=camera.snapshot();if(current.semanticScale===target.semanticScale)return current;
+  const ladder=S.LADDER,fromIndex=ladder.indexOf(current.semanticScale),targetIndex=ladder.indexOf(target.semanticScale);if(fromIndex<0||targetIndex<0||Math.abs(fromIndex-targetIndex)!==1)throw new Error('distance reverse could not reconcile semantic band');
+  const boundary=camera.scaleModel.boundaryLogM[Math.min(fromIndex,targetIndex)].logM,dead=Math.log10(1+camera.scaleModel.hysteresisFraction),epsilon=Math.max(1e-12,dead*1e-6),forceLog=camera.scaleModel.clampLog(targetIndex<fromIndex?boundary+dead+epsilon:boundary-dead-epsilon);
+  camera.applyDistanceDelta(forceLog-current.logDistanceM,{source:source+':hysteresis-force'});noteCamera();const forced=camera.snapshot();if(forced.semanticScale!==target.semanticScale)throw new Error('distance reverse hysteresis force did not reach recorded semantic band');
+  camera.applyDistanceDelta(target.logDistanceM-forced.logDistanceM,{source:source+':hysteresis-settle'});noteCamera();metrics.hysteresisExcursions++;return camera.snapshot();
+ }
+ function applyInverse(entry,source){if(entry.kind==='DISTANCE')restoreDistanceDigest(entry.before,source+':distance');else if(entry.kind==='TRANSLATE')camera.translateLocal(entry.frameDelta.map(v=>-v),{source:source+':translate'});else if(entry.kind==='LOOK'){if(entry.pitchRadians!==0)camera.look({yawRadians:0,pitchRadians:-entry.pitchRadians,source:source+':pitch'});if(entry.yawRadians!==0)camera.look({yawRadians:-entry.yawRadians,pitchRadians:0,source:source+':yaw'});}else throw new Error('unsupported reverse journal operation: '+entry.kind);noteCamera();metrics.reverseOperations++;}
  function applyForward(entry,source){const current=camera.snapshot();if(entry.kind==='DISTANCE')camera.applyDistanceDelta(entry.after.logDistanceM-current.logDistanceM,{source:source+':distance'});else if(entry.kind==='TRANSLATE')camera.translateLocal(entry.frameDelta,{source:source+':translate'});else if(entry.kind==='LOOK')camera.look({yawRadians:entry.yawRadians,pitchRadians:entry.pitchRadians,source:source+':look'});else throw new Error('unsupported reverse journal operation: '+entry.kind);noteCamera();}
  function preflightRewind(target,operations,current){
   if(!operations.length){if(!digestMatches(current,target.cameraDigest))throw new Error('reverse anchor no longer matches current camera state');return;}
