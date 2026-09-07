@@ -5,6 +5,14 @@ if(!original||!provider)throw new Error('V2X convergence macrocosm composition d
 if(original.__v2x03Composed)return;
 const originalRepresentation=original.representation.bind(original);
 let calls=0,providerCalls=0,fallbacks=0,last=null;
+function regionScene(args){
+ const profile=original.profile({context:'REGION'}),extent=Number(args.parentExtent??profile.scaleUnits);
+ if(!(Number.isFinite(extent)&&extent>0))throw new TypeError('REGION presentation extent must be positive finite');
+ const value=provider.buildRegion({parentId:args.scopeId,children:args.entities||[],quality:'STANDARD',focus:args.focus??0,parentExtent:extent});
+ const cameraFrame=args.cameraFrame||null;
+ const objects=Object.freeze((value.objects||[]).map(object=>Object.freeze({...object,view:cameraFrame?original.projectPoint(object.position,cameraFrame):null})));
+ return Object.freeze({...value,objects,camera:Object.freeze({consumedExternalFrame:cameraFrame!==null,ownsFrame:false}),composition:Object.freeze({projection:'EXTERNAL_V1X02_CAMERA_FRAME',regionExtent:extent})});
+}
 function representation(args={}){
  calls++;
  const context=String(args.context||'').toUpperCase();
@@ -12,12 +20,12 @@ function representation(args={}){
   let scene=null;
   if(context==='UNIVERSE')scene=provider.buildUniverse(args);
   else if(context==='GALAXY')scene=provider.buildGalaxy({galaxy:{canonicalId:args.scopeId,metadata:{modelProfile:{morphology:args.morphology||'UNKNOWN'}}},entities:args.entities||[],cameraFrame:args.cameraFrame,quality:'STANDARD',presentationSeed:args.presentationSeed,densityHint:args.densityHint});
-  else if(context==='REGION')scene=provider.buildRegion({parentId:args.scopeId,children:args.entities||[],quality:'STANDARD',focus:args.focus??0,parentExtent:args.parentExtent??1});
+  else if(context==='REGION')scene=regionScene(args);
   else if(context==='NEIGHBORHOOD')scene=provider.buildNeighborhood({objects:args.entities||[],cameraFrame:args.cameraFrame,quality:'STANDARD',scaleUnits:original.profile({context:'NEIGHBORHOOD'}).scaleUnits});
   if(scene&&Array.isArray(scene.objects)){
    providerCalls++;
-   last=Object.freeze({context,status:'PROVIDER',objects:scene.objects.length,authority:provider.AUTHORITY,contract:provider.CONTRACT});
-   return Object.freeze({...scene,objects:scene.objects,composition:Object.freeze({provider:'v2x03.macrocosm-provider',fallback:false})});
+   last=Object.freeze({context,status:'PROVIDER',objects:scene.objects.length,authority:provider.AUTHORITY,contract:provider.CONTRACT,cameraConsumed:Boolean(scene.camera?.consumedExternalFrame)});
+   return Object.freeze({...scene,objects:scene.objects,composition:Object.freeze({...scene.composition,provider:'v2x03.macrocosm-provider',fallback:false})});
   }
  }catch(error){
   // The original bounded representation remains the fail-safe presentation path.
