@@ -7,8 +7,19 @@ on:
     paths:
       - 'tools/ci/phase-router.mjs'
       - 'tools/ci/git-phase-router.mjs'
+      - 'tools/ci/phase-gate.mjs'
       - 'tests/governance/phase-router.mjs'
       - 'tests/governance/git-phase-router.mjs'
+      - 'tests/governance/phase-gate.mjs'
+      - 'tests/governance/historical-phase-workflows.mjs'
+      - '.github/workflows/p1-conformance.yml'
+      - '.github/workflows/p1-p4-baseline.yml'
+      - '.github/workflows/p2-conformance.yml'
+      - '.github/workflows/p3-conformance.yml'
+      - '.github/workflows/p4-conformance.yml'
+      - '.github/workflows/p5-conformance.yml'
+      - '.github/workflows/p5-environment-v2-canonical.yml'
+      - '.github/workflows/p6-v1-conformance.yml'
       - '.github/workflows/reliability-phase-router.yml'
   pull_request:
     branches:
@@ -16,8 +27,19 @@ on:
     paths:
       - 'tools/ci/phase-router.mjs'
       - 'tools/ci/git-phase-router.mjs'
+      - 'tools/ci/phase-gate.mjs'
       - 'tests/governance/phase-router.mjs'
       - 'tests/governance/git-phase-router.mjs'
+      - 'tests/governance/phase-gate.mjs'
+      - 'tests/governance/historical-phase-workflows.mjs'
+      - '.github/workflows/p1-conformance.yml'
+      - '.github/workflows/p1-p4-baseline.yml'
+      - '.github/workflows/p2-conformance.yml'
+      - '.github/workflows/p3-conformance.yml'
+      - '.github/workflows/p4-conformance.yml'
+      - '.github/workflows/p5-conformance.yml'
+      - '.github/workflows/p5-environment-v2-canonical.yml'
+      - '.github/workflows/p6-v1-conformance.yml'
       - '.github/workflows/reliability-phase-router.yml'
 
 concurrency:
@@ -49,6 +71,10 @@ jobs:
         run: node tests/governance/phase-router.mjs
       - name: Git range adapter adversarial regression
         run: node tests/governance/git-phase-router.mjs
+      - name: Historical phase gate adversarial regression
+        run: node tests/governance/phase-gate.mjs
+      - name: Historical workflow routing contract
+        run: node tests/governance/historical-phase-workflows.mjs
       - name: Exercise fail-closed CLI examples
         shell: bash
         run: |
@@ -61,3 +87,9 @@ jobs:
           OFU_BASE_REF: ${{ github.event.pull_request.base.ref || github.ref_name }}
           OFU_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
         run: node tools/ci/git-phase-router.mjs --base-ref "$OFU_BASE_REF" --base-sha "$OFU_BASE_SHA" --head-sha "$OFU_SOURCE_SHA"
+      - name: Exercise historical phase gate on exact Git range
+        shell: bash
+        env:
+          OFU_BASE_REF: ${{ github.event.pull_request.base.ref || github.ref_name }}
+          OFU_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: node tools/ci/phase-gate.mjs --phases P1,P2,P3,P4,P5,P6 --base-ref "$OFU_BASE_REF" --base-sha "$OFU_BASE_SHA" --head-sha "$OFU_SOURCE_SHA"

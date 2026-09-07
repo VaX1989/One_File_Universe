@@ -2,9 +2,8 @@ name: P6 v1 Conformance
 
 on:
   push:
-    branches: [feature/p6-biosphere-evolution-v1, main]
+    branches: [feature/p6-biosphere-evolution-v1, main, 'development/v1.*']
   pull_request:
-    branches: [main]
   workflow_dispatch:
 
 concurrency:
@@ -16,7 +15,32 @@ permissions:
 env:
   OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 jobs:
+  route:
+    runs-on: ubuntu-latest
+    outputs:
+      run: ${{ steps.phase-gate.outputs.run }}
+      adapter_status: ${{ steps.phase-gate.outputs.adapter_status }}
+      fail_closed: ${{ steps.phase-gate.outputs.fail_closed }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: '${{ env.OFU_SOURCE_SHA }}'
+          fetch-depth: 0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with: {node-version: '24.20.0'}
+      - name: Verify exact source
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Route historical P6 evidence
+        id: phase-gate
+        shell: bash
+        env:
+          OFU_BASE_REF: ${{ github.event.pull_request.base.ref || github.ref_name }}
+          OFU_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: node tools/ci/phase-gate.mjs --phases P6 --base-ref "$OFU_BASE_REF" --base-sha "$OFU_BASE_SHA" --head-sha "$OFU_SOURCE_SHA"
   node:
+    needs: route
+    if: ${{ needs.route.outputs.run == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -78,6 +102,8 @@ jobs:
             dist/p6-build-manifest.json
             dist/One_File_Universe.html
   browser-linux:
+    needs: route
+    if: ${{ needs.route.outputs.run == 'true' }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -101,6 +127,8 @@ jobs:
           name: p6-v1-linux-${{ matrix.browser }}-${{ env.OFU_SOURCE_SHA }}
           path: dist/evidence/p6/
   browser-platform:
+    needs: route
+    if: ${{ needs.route.outputs.run == 'true' }}
     strategy:
       fail-fast: false
       matrix:
@@ -127,8 +155,8 @@ jobs:
           name: p6-v1-${{ runner.os }}-${{ runner.arch }}-${{ matrix.browser }}-${{ env.OFU_SOURCE_SHA }}
           path: dist/evidence/p6/
   seal:
-    if: ${{ always() }}
-    needs: [node, browser-linux, browser-platform]
+    if: ${{ always() && needs.route.outputs.run == 'true' }}
+    needs: [route, node, browser-linux, browser-platform]
     runs-on: ubuntu-latest
     steps:
       - name: Require all exact-head jobs

@@ -1,7 +1,7 @@
 name: P1 Conformance
 on:
   push:
-    branches: [main, 'feature/**']
+    branches: [main, 'feature/**', 'development/v1.*']
   pull_request:
 concurrency:
   group: p1-conformance-${{ github.event_name }}-${{ github.event.pull_request.head.ref || github.ref_name }}
@@ -11,7 +11,32 @@ env:
 permissions:
   contents: read
 jobs:
+  route:
+    runs-on: ubuntu-latest
+    outputs:
+      run: ${{ steps.phase-gate.outputs.run }}
+      adapter_status: ${{ steps.phase-gate.outputs.adapter_status }}
+      fail_closed: ${{ steps.phase-gate.outputs.fail_closed }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: '${{ env.OFU_SOURCE_SHA }}'
+          fetch-depth: 0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with: {node-version: '24.20.0'}
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Route historical P1 evidence
+        id: phase-gate
+        shell: bash
+        env:
+          OFU_BASE_REF: ${{ github.event.pull_request.base.ref || github.ref_name }}
+          OFU_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: node tools/ci/phase-gate.mjs --phases P1 --base-ref "$OFU_BASE_REF" --base-sha "$OFU_BASE_SHA" --head-sha "$OFU_SOURCE_SHA"
   node-and-build:
+    needs: route
+    if: ${{ needs.route.outputs.run == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -29,6 +54,8 @@ jobs:
           name: p1-build
           path: dist/
   browser-direct-open:
+    needs: route
+    if: ${{ needs.route.outputs.run == 'true' }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -54,6 +81,8 @@ jobs:
           name: p1-browser-linux-${{ matrix.browser }}
           path: dist/evidence/
   platform-direct-open:
+    needs: route
+    if: ${{ needs.route.outputs.run == 'true' }}
     strategy:
       fail-fast: false
       matrix:
@@ -83,8 +112,8 @@ jobs:
           name: p1-browser-${{ matrix.os }}-${{ matrix.browser }}
           path: dist/evidence/
   aggregate-evidence:
-    if: ${{ always() }}
-    needs: [node-and-build, browser-direct-open, platform-direct-open]
+    if: ${{ always() && needs.route.outputs.run == 'true' }}
+    needs: [route, node-and-build, browser-direct-open, platform-direct-open]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
