@@ -24,6 +24,7 @@ on:
       - 'config/components/v11-atmospheric-column.json'
       - 'src/domains/v1/planetology/causal-system.js'
       - 'src/domains/v1/environment/world-system.js'
+      - 'tests/v2x-03/continuity-identity.mjs'
 permissions:
   contents: read
 concurrency:

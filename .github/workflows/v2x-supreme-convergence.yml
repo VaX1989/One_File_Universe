@@ -36,6 +36,10 @@ jobs:
           test -z "$(git status --porcelain)"
       - name: Full repository test and reproducible build stack
         run: npm test
+      - name: V2.0 central authority freeze
+        run: node tests/governance/v2-central-authority-map.mjs
+      - name: V2.0 artifact composition and reproducibility audit
+        run: node tests/governance/v2-parallel-base-artifact-audit.mjs
       - name: Rebuild actual Living shipping product
         run: node tools/build-ofu-rendering-v09.mjs
       - name: V2X-10 convergence blocker regressions

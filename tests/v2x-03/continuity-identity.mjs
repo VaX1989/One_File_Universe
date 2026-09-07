@@ -29,7 +29,7 @@ const n2=P.buildNeighborhood({objects:shuffled,cameraFrame:frame,quality:'STANDA
 assert.equal(n1.objects.length,48,'STANDARD neighborhood must exercise a real bounded subset');
 assert.deepEqual(n1.objects,n2.objects,'neighborhood bounded subset and ordering must be query-order stable');
 assert.deepEqual(n1.drawOrder,n2.drawOrder,'far-to-near draw ordering must remain query-order stable');
-assert.deepEqual(n1.objects.map(o=>o.sourceId),systems.slice(0,48).map(s=>s.canonicalId),'stable identity ordering must determine bounded subset');
+assert.deepEqual(Array.from(n1.objects,o=>o.sourceId),systems.slice(0,48).map(s=>s.canonicalId),'stable identity ordering must determine bounded subset');
 assert.equal(n1.stability.queryOrderIndependent,true);
 assert.equal(n1.stability.invalidPlacementDoesNotConsumeCap,true);
 assert.equal(n1.stability.drawOrderStable,true);
