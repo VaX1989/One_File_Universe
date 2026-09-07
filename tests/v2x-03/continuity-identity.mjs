@@ -42,14 +42,17 @@ for(const o of n1.objects){assert.ok(ids.has(o.sourceId),'neighborhood identity 
 for(const d of g1.field.particles)assert.equal(d.selectable,false);
 for(const d of g1.field.clusters)assert.equal(d.selectable,false);
 for(const d of g1.field.dust)assert.equal(d.selectable,false);
+const locked={canonicalId:'locked-decorative',presentationPosition:{x:0,y:0,z:0},selectable:false,navigable:false,sourceAuthority:'PRESENTATION_ONLY'};
+const lockedN=P.buildNeighborhood({objects:[locked],cameraFrame:frame,quality:'LOW'});assert.equal(lockedN.objects[0].selectable,false);assert.equal(lockedN.objects[0].navigable,false);assert.equal(lockedN.objects[0].claims.sourceInteractionConstraintsPreserved,true);assert.equal(P.pick(lockedN,lockedN.objects[0].view.x,lockedN.objects[0].view.y).handled,false,'non-selectable upstream objects must never become picks');
+const lockedR=P.buildRegion({parentId:'locked-parent',children:[locked],quality:'LOW'});assert.equal(lockedR.objects[0].selectable,false);assert.equal(lockedR.objects[0].navigable,false);assert.equal(lockedR.objects[0].claims.sourceInteractionConstraintsPreserved,true);
 const starvation=[...Array.from({length:16},(_,i)=>({canonicalId:'a-missing-'+String(i).padStart(2,'0')})),...Array.from({length:64},(_,i)=>({canonicalId:'z-valid-'+String(i).padStart(2,'0'),presentationPosition:{x:i*.2,y:0,z:i*.1}}))];
 const starvationScene=N.project({objects:starvation,cameraFrame:frame,quality:'STANDARD'});
 assert.equal(starvationScene.bounds.eligible,64);
 assert.equal(starvationScene.objects.length,48,'missing placements must not consume the materialization cap');
 assert.ok(starvationScene.objects.every(o=>o.sourceId.startsWith('z-valid-')));
 const tieScene={objects:[
- {objectId:'b',sourceId:'sys-b',canonicalId:'sys-b',view:{visible:true,x:.25,y:.25}},
- {objectId:'a',sourceId:'sys-a',canonicalId:'sys-a',view:{visible:true,x:.25,y:.25}}
+ {objectId:'b',sourceId:'sys-b',canonicalId:'sys-b',selectable:true,view:{visible:true,x:.25,y:.25}},
+ {objectId:'a',sourceId:'sys-a',canonicalId:'sys-a',selectable:true,view:{visible:true,x:.25,y:.25}}
 ]};
 assert.equal(N.pick(tieScene,.25,.25,{radius:.1}).sourceId,'sys-a','equal-distance picks must resolve deterministically by stable identity');
 assert.throws(()=>N.project({objects:[{canonicalId:'bad',presentationPosition:{x:NaN,y:0,z:0}}],cameraFrame:frame}),/finite/,'non-finite coordinates must fail closed through spatial projection');
@@ -71,4 +74,4 @@ const w=P.continuityWitness({galaxy:g1,region:r1,neighborhood:n1});
 assert.equal(w.galaxyId,g1.galaxyId);assert.equal(w.regionParent,g1.galaxyId);
 assert.ok(w.neighborhoodObjectIds.every(id=>ids.has(id)));
 assert.equal(w.cameraOwnedHere,false);assert.equal(w.selectionOwnedHere,false);assert.equal(w.scaleOwnedHere,false);
-console.log(JSON.stringify({status:'PASS',oracle:'V2X03_CONTINUITY_IDENTITY',galaxyId:w.galaxyId,regionParent:w.regionParent,neighborhoodObjects:w.neighborhoodObjectIds.length,queryOrderStable:true,nonVacuousNeighborhood:true,capStarvationClosed:true,nestedCanonicalKeyStable:true,canonicalKeyInputIsolation:true,cyclicCanonicalKeyFailClosed:true,stableFarToNearDrawOrder:true,deterministicPickTieBreak:true,decorativeNonSelectable:true,externalAuthoritiesPreserved:true}));
+console.log(JSON.stringify({status:'PASS',oracle:'V2X03_CONTINUITY_IDENTITY',galaxyId:w.galaxyId,regionParent:w.regionParent,neighborhoodObjects:w.neighborhoodObjectIds.length,queryOrderStable:true,nonVacuousNeighborhood:true,capStarvationClosed:true,nestedCanonicalKeyStable:true,canonicalKeyInputIsolation:true,cyclicCanonicalKeyFailClosed:true,sourceInteractionConstraintsPreserved:true,stableFarToNearDrawOrder:true,deterministicPickTieBreak:true,decorativeNonSelectable:true,externalAuthoritiesPreserved:true}));
