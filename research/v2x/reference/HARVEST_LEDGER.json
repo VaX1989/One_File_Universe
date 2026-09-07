@@ -1,1 +1,31 @@
-{"schema":"ofu-v2x16-harvest-ledger-1","version":"2026-09-07.1","authority":"RESEARCH_ONLY","entries":[{"concept":"post-genesis life separation","status":"ALREADY_HARVESTED_PRINCIPLE_PRESERVED"},{"concept":"bounded ecological energy/material accounting","status":"HARVESTED_AND_EXTENDED","target":"research/v2x/life/energetics.mjs"},{"concept":"universal alien metabolic scaling law","status":"DELIBERATELY_NOT_HARVESTED","reason":"scientifically overbroad"},{"concept":"universal speciation threshold","status":"REJECTED","reason":"criterion-dependent witness only"},{"concept":"bounded dispersal and succession","status":"NEW_HARVESTABLE","target":"research/v2x/life/landscape.mjs"},{"concept":"aggregate cohort demography","status":"HARVESTED_AND_EXTENDED","target":"research/v2x/individuals/frontier.mjs"},{"concept":"persistent universe-wide persons","status":"DELIBERATELY_NOT_HARVESTED","reason":"violates adaptive-resolution bounds"},{"concept":"exact deep genealogy","status":"DELIBERATELY_NOT_HARVESTED","reason":"unbounded state"},{"concept":"production/logistics stock-flow","status":"NEW_HARVESTABLE","target":"research/v2x/civilization/production.mjs"},{"concept":"predictive sociology/governance law","status":"REJECTED","reason":"scenario abstraction only"},{"concept":"generated ruins without causal history","status":"REJECTED","reason":"trace requires originEventId"},{"concept":"grammar or psychology inference","status":"REJECTED","reason":"conventions only"},{"concept":"semantic micro-regime ladder","status":"ALREADY_HARVESTED_PRINCIPLE_PRESERVED"},{"concept":"balanced reaction/transport network","status":"NEW_HARVESTABLE","target":"research/v2x/matter/reaction-network.mjs"},{"concept":"microstructure representative evolution","status":"NEW_HARVESTABLE","target":"research/v2x/matter/microstructure.mjs"},{"concept":"strict source/computed reference authority","status":"NEW_HARVESTABLE","target":"research/v2x/matter/reference-record.mjs"},{"concept":"pseudo-quantum electron orbit visuals","status":"REJECTED","reason":"scientifically misleading"},{"concept":"direct cross-domain canonical mutation","status":"REJECTED","reason":"P4/convergence authority owned elsewhere"},{"concept":"directional cross-domain falsifiers","status":"NEW_HARVESTABLE","target":"research/v2x/fixtures"}]}
+{
+  "schema":"ofu-v2x16-harvest-ledger-1",
+  "version":"2026-09-07.2",
+  "authority":"RESEARCH_ONLY",
+  "entries":[
+    {"concept":"post-genesis life separation","status":"ALREADY_HARVESTED_PRINCIPLE_PRESERVED"},
+    {"concept":"bounded ecological energy/material accounting","status":"HARVESTED_AND_EXTENDED","target":"research/v2x/life/energetics.mjs"},
+    {"concept":"source-backed opportunity without provenance","status":"REJECTED","reason":"SOURCE_BACKED label requires explicit source id/reference/version"},
+    {"concept":"universal alien metabolic scaling law","status":"DELIBERATELY_NOT_HARVESTED","reason":"scientifically overbroad"},
+    {"concept":"universal speciation threshold","status":"REJECTED","reason":"criterion-dependent witness only"},
+    {"concept":"noncryptographic deterministic research fingerprints","status":"NEW_HARVESTABLE","target":"research/v2x/life/evolution.mjs","reason":"lookup hint only; metadata verification required"},
+    {"concept":"bounded dispersal with simultaneous contention allocation","status":"NEW_HARVESTABLE","target":"research/v2x/life/landscape.mjs"},
+    {"concept":"aggregate cohort demography","status":"HARVESTED_AND_EXTENDED","target":"research/v2x/individuals/frontier.mjs"},
+    {"concept":"state-bound ephemeral person reconciliation","status":"NEW_HARVESTABLE","target":"research/v2x/individuals/frontier.mjs"},
+    {"concept":"persistent universe-wide persons","status":"DELIBERATELY_NOT_HARVESTED","reason":"violates adaptive-resolution bounds"},
+    {"concept":"exact deep genealogy","status":"DELIBERATELY_NOT_HARVESTED","reason":"unbounded state"},
+    {"concept":"production/logistics stock-flow","status":"NEW_HARVESTABLE","target":"research/v2x/civilization/production.mjs"},
+    {"concept":"order-sensitive logistics contention without declared authority","status":"REJECTED","reason":"capacity contention uses deterministic simultaneous allocation"},
+    {"concept":"predictive sociology/governance law","status":"REJECTED","reason":"scenario abstraction only"},
+    {"concept":"generated ruins without causal history","status":"REJECTED","reason":"trace requires bounded originEventId"},
+    {"concept":"grammar or psychology inference","status":"REJECTED","reason":"conventions only"},
+    {"concept":"semantic micro-regime ladder","status":"ALREADY_HARVESTED_PRINCIPLE_PRESERVED"},
+    {"concept":"balanced reaction network with explicit sequential scenario operator","status":"NEW_HARVESTABLE","target":"research/v2x/matter/reaction-network.mjs"},
+    {"concept":"simultaneous conservative compartment transport","status":"NEW_HARVESTABLE","target":"research/v2x/matter/reaction-network.mjs"},
+    {"concept":"microstructure representative evolution with simultaneous contention","status":"NEW_HARVESTABLE","target":"research/v2x/matter/microstructure.mjs"},
+    {"concept":"strict source/computed reference authority","status":"NEW_HARVESTABLE","target":"research/v2x/matter/reference-record.mjs"},
+    {"concept":"pseudo-quantum electron orbit visuals","status":"REJECTED","reason":"scientifically misleading"},
+    {"concept":"direct cross-domain canonical mutation","status":"REJECTED","reason":"P4/convergence authority owned elsewhere"},
+    {"concept":"directional cross-domain falsifiers","status":"NEW_HARVESTABLE","target":"research/v2x/fixtures"}
+  ]
+}

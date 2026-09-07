@@ -1,4 +1,6 @@
 export const MAX_SAFE = Number.MAX_SAFE_INTEGER;
+const ID_PATTERN = /^[a-z0-9][a-z0-9._:-]{0,63}$/;
+const PRINTABLE_ASCII = /^[\x20-\x7e]*$/;
 
 export function assertRecord(value, label = 'value') {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
@@ -26,6 +28,33 @@ export function boundedArray(value, label, max) {
   if (!Array.isArray(value)) throw new TypeError(`${label} must be an array`);
   if (value.length > max) throw new RangeError(`${label} exceeds cap ${max}`);
   return value;
+}
+
+export function boundedAscii(value, label = 'value', max = 128, { allowEmpty = false } = {}) {
+  if (typeof value !== 'string') throw new TypeError(`${label} must be a string`);
+  if ((!allowEmpty && value.length === 0) || value.length > max || !PRINTABLE_ASCII.test(value)) {
+    throw new TypeError(`${label} must be ${allowEmpty ? 'a' : 'a non-empty'} printable ASCII string no longer than ${max}`);
+  }
+  return value;
+}
+
+export function identifier(value, label = 'id') {
+  if (typeof value !== 'string' || !ID_PATTERN.test(value)) throw new TypeError(`${label} is invalid`);
+  return value;
+}
+
+export function asciiCompare(a, b) {
+  boundedAscii(a, 'asciiCompare.a', 4096, { allowEmpty: true });
+  boundedAscii(b, 'asciiCompare.b', 4096, { allowEmpty: true });
+  return a < b ? -1 : a > b ? 1 : 0;
+}
+
+export function encodeFields(fields, label = 'fields', maxFieldLength = 4096) {
+  boundedArray(fields, label, 64);
+  return fields.map((field, index) => {
+    const value = boundedAscii(field, `${label}[${index}]`, maxFieldLength, { allowEmpty: true });
+    return `${value.length}:${value}`;
+  }).join('|');
 }
 
 export function mulDivFloor(a, b, divisor, label = 'mulDivFloor') {
@@ -65,15 +94,30 @@ export function fnv1a32(text) {
   return hash >>> 0;
 }
 
+export function fnv1a64Hex(text) {
+  if (typeof text !== 'string') throw new TypeError('fnv1a64Hex text must be a string');
+  if (!PRINTABLE_ASCII.test(text)) throw new TypeError('fnv1a64Hex text must be printable ASCII');
+  let hash = 0xcbf29ce484222325n;
+  const prime = 0x100000001b3n;
+  const mask = 0xffffffffffffffffn;
+  for (let i = 0; i < text.length; i += 1) {
+    hash ^= BigInt(text.charCodeAt(i));
+    hash = (hash * prime) & mask;
+  }
+  return hash.toString(16).padStart(16, '0');
+}
+
+export function stableFingerprint64(fields, label = 'fingerprint', maxFieldLength = 4096) {
+  return fnv1a64Hex(encodeFields(fields, label, maxFieldLength));
+}
+
 export function uniqueIds(items, label = 'items') {
   const seen = new Set();
   for (const item of items) {
     assertRecord(item, `${label} item`);
-    if (typeof item.id !== 'string' || !/^[a-z0-9][a-z0-9._:-]{0,63}$/.test(item.id)) {
-      throw new TypeError(`${label} item id is invalid`);
-    }
-    if (seen.has(item.id)) throw new Error(`${label} duplicate id ${item.id}`);
-    seen.add(item.id);
+    const id = identifier(item.id, `${label} item id`);
+    if (seen.has(id)) throw new Error(`${label} duplicate id ${id}`);
+    seen.add(id);
   }
   return seen;
 }

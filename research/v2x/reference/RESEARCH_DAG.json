@@ -1,1 +1,22 @@
-{"schema":"ofu-v2x16-research-dag-1","version":"2026-09-07.1","authority":"RESEARCH_ONLY","baseSha":"70af4a84bb8cb7c782966bb4b3b8aab8aa86838e","nodes":[{"id":"WV-C","domain":"life","kind":"prior","checkpoint":"ccc1f91d5c6cd26e7b89b74433e4712755073e5a"},{"id":"V1X-17","domain":"life","kind":"prior","checkpoint":"9454fb760641cdcab91125124c9dba1ee0721666","dependsOn":["WV-C"]},{"id":"V2X16-L","domain":"life","kind":"current","dependsOn":["V1X-17"],"provides":["thermodynamic opportunity nonclaim","bounded ecology","selection/speciation witnesses","dispersal/succession"]},{"id":"WV-D","domain":"civilization","kind":"prior","checkpoint":"082d8c558ad56c36a894a4ca381d01b10c5697d4"},{"id":"V1X-18","domain":"civilization-individuals","kind":"prior","checkpoint":"88af26323505381d423d17d9da4ed8c2a283034d","dependsOn":["WV-D"]},{"id":"V2X16-I","domain":"individuals","kind":"current","dependsOn":["V1X-18"],"provides":["cohort balancing","late persons","bounded kinship"]},{"id":"V2X16-C","domain":"civilization","kind":"current","dependsOn":["V1X-18","V2X16-I"],"provides":["production/logistics","technology DAG","knowledge","history","conventions","collapse/recovery"]},{"id":"WV-E","domain":"matter","kind":"prior","checkpoint":"6aeecf2ccc564d7f0f316711d07710e74e667e27"},{"id":"V1X-19","domain":"matter","kind":"prior","checkpoint":"9fb5e65e75bb21515f3c541033da25f8fc4d94a6","dependsOn":["WV-E"]},{"id":"V2X16-M","domain":"matter","kind":"current","dependsOn":["V1X-19"],"provides":["balanced reactions","transport","microstructure","reference authority","classical/nonclassical boundary"]},{"id":"V2X16-X","domain":"cross-domain","kind":"current","dependsOn":["V2X16-L","V2X16-C","V2X16-M"],"provides":["four directional falsification cases"]}],"promotionRule":"Research nodes have no canonical or shipping authority; harvest requires separate convergence/promotion review."}
+{
+  "schema":"ofu-v2x16-research-dag-1",
+  "version":"2026-09-07.2",
+  "authority":"RESEARCH_ONLY",
+  "baseSha":"e0dae058cd5d6fd103cdf5958d781d9b38e1101e",
+  "baseTree":"d81fbbbe58d74abff1eb99111a059f5282b43de2",
+  "reconciliationPolicy":"FORWARD_RECONCILE_TO_RESTART_ANCHOR_NO_FORCE_NO_SILENT_RESET",
+  "nodes":[
+    {"id":"WV-C","domain":"life","kind":"prior","checkpoint":"ccc1f91d5c6cd26e7b89b74433e4712755073e5a"},
+    {"id":"V1X-17","domain":"life","kind":"prior","checkpoint":"9454fb760641cdcab91125124c9dba1ee0721666","dependsOn":["WV-C"]},
+    {"id":"V2X16-L","domain":"life","kind":"current","dependsOn":["V1X-17"],"provides":["source-bounded thermodynamic opportunity nonclaim","bounded ecology closure","selection/speciation witnesses","simultaneous bounded dispersal/succession"]},
+    {"id":"WV-D","domain":"civilization","kind":"prior","checkpoint":"082d8c558ad56c36a894a4ca381d01b10c5697d4"},
+    {"id":"V1X-18","domain":"civilization-individuals","kind":"prior","checkpoint":"88af26323505381d423d17d9da4ed8c2a283034d","dependsOn":["WV-D"]},
+    {"id":"V2X16-I","domain":"individuals","kind":"current","dependsOn":["V1X-18"],"provides":["cohort balancing","state-bound late persons","bounded kinship"]},
+    {"id":"V2X16-C","domain":"civilization","kind":"current","dependsOn":["V1X-18","V2X16-I"],"provides":["integer-safe production","permutation-invariant logistics contention","technology DAG","bounded knowledge copying","causal history","conventions","collapse/recovery witnesses"]},
+    {"id":"WV-E","domain":"matter","kind":"prior","checkpoint":"6aeecf2ccc564d7f0f316711d07710e74e667e27"},
+    {"id":"V1X-19","domain":"matter","kind":"prior","checkpoint":"9fb5e65e75bb21515f3c541033da25f8fc4d94a6","dependsOn":["WV-E"]},
+    {"id":"V2X16-M","domain":"matter","kind":"current","dependsOn":["V1X-19"],"provides":["balanced reactions","simultaneous conservative transport","permutation-invariant representative microstructure transfer","strict reference provenance","classical/nonclassical boundary"]},
+    {"id":"V2X16-X","domain":"cross-domain","kind":"current","dependsOn":["V2X16-L","V2X16-C","V2X16-M"],"provides":["four directional falsification cases"]}
+  ],
+  "promotionRule":"Research nodes have no canonical or shipping authority; harvest requires separate convergence/promotion review. Fingerprints and deterministic allocation do not confer scientific truth."
+}

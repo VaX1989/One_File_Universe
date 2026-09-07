@@ -1,25 +1,41 @@
-import { assertRecord, boundedArray, fnv1a32, int, mulDivFloor, nonNegativeInt, ppm, uniqueIds } from '../reference/bounded-math.mjs';
+import { assertRecord, boundedArray, boundedAscii, encodeFields, fnv1a32, identifier, int, mulDivFloor, nonNegativeInt, ppm, stableFingerprint64, uniqueIds } from '../reference/bounded-math.mjs';
 import { LIFE_AUTHORITY, LIFE_LIMITS } from './energetics.mjs';
 
 export const EVOLUTION_LIMITS = Object.freeze({ lineages: LIFE_LIMITS.lineages, candidatesPerLineage: 4, traitMin: -1_000_000, traitMax: 1_000_000, maxPopulation: LIFE_LIMITS.maxPopulation });
 
 function mutationPolicyFingerprint(policy) {
   const maxStep = int(policy.maxMutationStep, 'policy.maxMutationStep', 0, 100_000);
-  const salt = String(policy.salt ?? 'v2x16');
-  const version = String(policy.version ?? 'mutation-policy-v1');
-  return Object.freeze({ maxStep, salt, version, key: `${version}|maxStep:${maxStep}|salt:${salt}` });
+  const salt = boundedAscii(policy.salt ?? 'v2x16', 'policy.salt', 64, { allowEmpty: true });
+  const version = boundedAscii(policy.version ?? 'mutation-policy-v2', 'policy.version', 64);
+  const key = encodeFields([version, String(maxStep), salt], 'mutationPolicy', 128);
+  return Object.freeze({ maxStep, salt, version, key, fingerprint64: stableFingerprint64([key], 'mutationPolicyFingerprint', 256) });
 }
 
 export function deterministicVariant(lineage, generation, policy) {
   assertRecord(lineage, 'lineage'); assertRecord(policy, 'policy');
-  if (typeof lineage.id !== 'string' || lineage.id.length === 0) throw new Error('lineage.id must be a non-empty string');
+  const parentId = identifier(lineage.id, 'lineage.id');
   const trait = int(lineage.trait, 'lineage.trait', EVOLUTION_LIMITS.traitMin, EVOLUTION_LIMITS.traitMax);
-  nonNegativeInt(generation, 'generation', 1_000_000_000);
+  const generationValue = nonNegativeInt(generation, 'generation', 1_000_000_000);
   const fingerprint = mutationPolicyFingerprint(policy);
-  const h = fnv1a32(`${lineage.id}|${generation}|${fingerprint.key}`);
-  const span = fingerprint.maxStep * 2 + 1; const delta = fingerprint.maxStep === 0 ? 0 : (h % span) - fingerprint.maxStep;
+  const identityFields = [parentId, String(generationValue), fingerprint.key];
+  const identityKey = encodeFields(identityFields, 'variantIdentity', 256);
+  const identityFingerprint64 = stableFingerprint64(identityFields, 'variantIdentity', 256);
+  const h = fnv1a32(identityKey);
+  const span = fingerprint.maxStep * 2 + 1;
+  const delta = fingerprint.maxStep === 0 ? 0 : (h % span) - fingerprint.maxStep;
   const variantTrait = Math.max(EVOLUTION_LIMITS.traitMin, Math.min(EVOLUTION_LIMITS.traitMax, trait + delta));
-  return Object.freeze({ authority: LIFE_AUTHORITY, parentId: lineage.id, candidateId: `${lineage.id}:g${generation}:${h.toString(16).padStart(8, '0')}`, trait: variantTrait, delta: variantTrait - trait, hashHint32: h, mutationPolicy: Object.freeze({ version: fingerprint.version, maxMutationStep: fingerprint.maxStep, salt: fingerprint.salt }), identityClaim: 'RESEARCH_DETERMINISTIC_ADDRESS_HINT_NOT_CANONICAL_IDENTITY' });
+  return Object.freeze({
+    authority: LIFE_AUTHORITY,
+    parentId,
+    candidateId: `rv:${identityFingerprint64}:g${generationValue}`,
+    trait: variantTrait,
+    delta: variantTrait - trait,
+    hashHint32: h,
+    identityFingerprint64,
+    mutationPolicy: Object.freeze({ version: fingerprint.version, maxMutationStep: fingerprint.maxStep, salt: fingerprint.salt, fingerprint64: fingerprint.fingerprint64 }),
+    identityClaim: 'RESEARCH_DETERMINISTIC_ADDRESS_HINT_NOT_CANONICAL_IDENTITY',
+    collisionClaim: 'NONCRYPTOGRAPHIC_64_BIT_RESEARCH_FINGERPRINT_VERIFY_METADATA_ON_MATCH'
+  });
 }
 
 export function selectionStep(lineages, environment, policy) {
@@ -38,6 +54,6 @@ export function evaluateSpeciationWitness(candidate, policy) {
 
 export function validateInnovationGraph(innovations) {
   boundedArray(innovations, 'innovations', 64); const ids = uniqueIds(innovations, 'innovations'); const indegree = new Map([...ids].map((id) => [id, 0])); const outgoing = new Map([...ids].map((id) => [id, []]));
-  for (const innovation of innovations) { boundedArray(innovation.requires ?? [], `${innovation.id}.requires`, 8); for (const dep of innovation.requires ?? []) { if (!ids.has(dep)) throw new Error(`innovation ${innovation.id} missing dependency ${dep}`); indegree.set(innovation.id, indegree.get(innovation.id) + 1); outgoing.get(dep).push(innovation.id); } }
+  for (const innovation of innovations) { boundedArray(innovation.requires ?? [], `${innovation.id}.requires`, 8); if (new Set(innovation.requires ?? []).size !== (innovation.requires ?? []).length) throw new Error(`innovation ${innovation.id} has duplicate dependencies`); for (const dep of innovation.requires ?? []) { if (!ids.has(dep)) throw new Error(`innovation ${innovation.id} missing dependency ${dep}`); indegree.set(innovation.id, indegree.get(innovation.id) + 1); outgoing.get(dep).push(innovation.id); } }
   const queue = [...ids].filter((id) => indegree.get(id) === 0).sort(); let visited = 0; while (queue.length) { const id = queue.shift(); visited += 1; for (const next of outgoing.get(id)) { indegree.set(next, indegree.get(next) - 1); if (indegree.get(next) === 0) { queue.push(next); queue.sort(); } } } if (visited !== ids.size) throw new Error('innovation graph contains a cycle'); return true;
 }

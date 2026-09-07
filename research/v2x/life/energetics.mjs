@@ -1,5 +1,5 @@
 import {
-  assertRecord, boundedArray, int, mulDivFloor, nonNegativeInt, ppm, sumSafe, uniqueIds
+  assertRecord, boundedArray, boundedAscii, int, mulDivFloor, nonNegativeInt, ppm, sumSafe, uniqueIds
 } from '../reference/bounded-math.mjs';
 
 export const LIFE_LIMITS = Object.freeze({
@@ -46,6 +46,15 @@ export function validateEcologyState(state) {
   return true;
 }
 
+function normalizeSource(source) {
+  assertRecord(source, 'source');
+  return Object.freeze({
+    id: boundedAscii(source.id, 'source.id', 64),
+    reference: boundedAscii(source.reference, 'source.reference', 256),
+    version: boundedAscii(source.version, 'source.version', 64)
+  });
+}
+
 export function thermodynamicOpportunity(input) {
   assertRecord(input, 'input');
   const donor = Boolean(input.donorAvailable);
@@ -53,10 +62,13 @@ export function thermodynamicOpportunity(input) {
   const gradient = int(input.freeEnergyGradientProxy ?? 0, 'freeEnergyGradientProxy', -1_000_000, 1_000_000);
   const pathway = input.pathwayAuthority ?? 'UNKNOWN';
   if (!['SOURCE_BACKED', 'MODEL_DERIVED', 'UNKNOWN'].includes(pathway)) throw new Error('invalid pathwayAuthority');
+  const source = pathway === 'SOURCE_BACKED' ? normalizeSource(input.source) : input.source == null ? null : normalizeSource(input.source);
 
   if (!donor || !acceptor || gradient <= 0) {
     return Object.freeze({
       authority: LIFE_AUTHORITY,
+      pathwayAuthority: pathway,
+      source,
       state: 'INSUFFICIENT_OPPORTUNITY',
       canInferLife: false,
       reason: !donor ? 'NO_DONOR' : !acceptor ? 'NO_ACCEPTOR' : 'NO_POSITIVE_GRADIENT_PROXY'
@@ -64,9 +76,11 @@ export function thermodynamicOpportunity(input) {
   }
   return Object.freeze({
     authority: LIFE_AUTHORITY,
+    pathwayAuthority: pathway,
+    source,
     state: pathway === 'SOURCE_BACKED' ? 'SOURCE_BACKED_OPPORTUNITY' : 'OPPORTUNITY_ONLY',
     canInferLife: false,
-    reason: pathway === 'SOURCE_BACKED' ? 'DECLARED_PATHWAY_AND_GRADIENT' : 'GRADIENT_WITHOUT_SOURCE_BACKED_PATHWAY'
+    reason: pathway === 'SOURCE_BACKED' ? 'DECLARED_PATHWAY_GRADIENT_AND_EXPLICIT_SOURCE' : 'GRADIENT_WITHOUT_SOURCE_BACKED_PATHWAY'
   });
 }
 
@@ -75,7 +89,7 @@ function proportionalAllocations(stock, requests) {
   const totalRequest = sumSafe(requests.map(({ request }) => request), 'totalRequest');
   if (totalRequest <= stock) return new Map(requests.map(({ id, request }) => [id, request]));
 
-  const sorted = [...requests].sort((a, b) => a.id.localeCompare(b.id));
+  const sorted = [...requests].sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
   const allocations = new Map();
   let used = 0;
   for (const item of sorted) {
@@ -100,6 +114,10 @@ export function stepEcology(state, forcing = {}) {
   assertRecord(forcing, 'forcing');
   const resourceDelta = forcing.resourceDelta ?? {};
   assertRecord(resourceDelta, 'forcing.resourceDelta');
+  const resourceIds = new Set(state.resources.map((resource) => resource.id));
+  const deltaKeys = Object.keys(resourceDelta);
+  if (deltaKeys.length > LIFE_LIMITS.resources) throw new RangeError('forcing.resourceDelta exceeds resource cap');
+  for (const id of deltaKeys) if (!resourceIds.has(id)) throw new Error(`forcing.resourceDelta references unknown resource ${id}`);
 
   const resources = state.resources.map((resource) => {
     const delta = int(resourceDelta[resource.id] ?? 0, `resourceDelta.${resource.id}`, -LIFE_LIMITS.maxStock, LIFE_LIMITS.maxStock);
@@ -139,6 +157,7 @@ export function stepEcology(state, forcing = {}) {
     const uptake = allocationByGuild.get(guild.id) ?? 0;
     const assimilated = mulDivFloor(uptake, guild.assimilationPpm, 1_000_000, `assimilated.${guild.id}`);
     const dissipated = uptake - assimilated;
+    if (uptake !== assimilated + dissipated) throw new Error(`assimilation ledger failure for ${guild.id}`);
     const available = guild.reserve + assimilated;
     if (!Number.isSafeInteger(available) || available > LIFE_LIMITS.maxStock) throw new RangeError(`guild ${guild.id} reserve overflow`);
     const maintenanceDemand = mulDivFloor(guild.population, guild.maintenancePerCapita, 1, `maintenance.${guild.id}`);
@@ -149,6 +168,7 @@ export function stepEcology(state, forcing = {}) {
     const maxBirthsByEnergy = guild.reproductionCost > 0 ? Math.floor(reserve / guild.reproductionCost) : 0;
     const maxBirthsByBound = Math.max(0, LIFE_LIMITS.maxPopulation - guild.population);
     const births = Math.min(maxBirthsByEnergy, maxBirthsByBound);
+    const capacityRejectedBirths = Math.max(0, maxBirthsByEnergy - maxBirthsByBound);
     const reproductionSpent = births * guild.reproductionCost;
     reserve -= reproductionSpent;
 
@@ -176,16 +196,24 @@ export function stepEcology(state, forcing = {}) {
         maintenanceSpent,
         maintenanceDeficit,
         births,
+        capacityRejectedBirths,
         deaths,
         reproductionSpent
       }
     };
   });
 
+  const totalResourceConsumed = sumSafe(resources.map((resource) => resource.consumed), 'totalResourceConsumed');
+  const totalUptake = sumSafe(guilds.map((guild) => guild.evidence.uptake), 'totalUptake');
+  const totalAssimilated = sumSafe(guilds.map((guild) => guild.evidence.assimilated), 'totalAssimilated');
+  const totalDissipated = sumSafe(guilds.map((guild) => guild.evidence.dissipated), 'totalDissipated');
+  if (totalResourceConsumed !== totalUptake || totalUptake !== totalAssimilated + totalDissipated) throw new Error('global ecology resource-energy ledger failure');
+
   return Object.freeze({
     authority: LIFE_AUTHORITY,
     currencyClaim: 'ABSTRACT_RESOURCE_AND_ENERGY_QUANTA_NOT_JOULES',
     resources: resources.map(({ openingWithForcing, ...rest }) => rest),
-    guilds
+    guilds,
+    evidence: Object.freeze({ totalResourceConsumed, totalUptake, totalAssimilated, totalDissipated })
   });
 }
