@@ -38,4 +38,17 @@ for(const name of ['p1-conformance.yml','p1-p4-baseline.yml','p2-conformance.yml
   assert(/if:\s*\$\{\{\s*always\(\)\s*&&\s*needs\.route\.outputs\.run\s*==\s*'true'\s*\}\}/.test(text),`${name}: aggregate/seal must remain dormant when historical evidence is not routed`);checks++;
 }
 
+const dedicated=fs.readFileSync(`${workflowDir}/reliability-phase-router.yml`,'utf8');
+for(const path of [
+  'tools/ci/phase-gate.mjs',
+  'tests/governance/phase-gate.mjs',
+  'tests/governance/historical-phase-workflows.mjs',
+  ...routed.map(spec=>`.github/workflows/${spec.name}`),
+]){
+  assert(dedicated.includes(`- '${path}'`),`reliability-phase-router.yml: missing self-certification path ${path}`);checks++;
+}
+assert(dedicated.includes('run: node tests/governance/phase-gate.mjs'),'reliability phase router must execute phase-gate adversarial regression');checks++;
+assert(dedicated.includes('run: node tests/governance/historical-phase-workflows.mjs'),'reliability phase router must execute historical workflow contract');checks++;
+assert(dedicated.includes('node tools/ci/phase-gate.mjs --phases P1,P2,P3,P4,P5,P6'),'reliability phase router must exercise exact historical gate CLI');checks++;
+
 console.log(JSON.stringify({status:'PASS',suite:'historical-phase-workflows',workflows:routed.length,checks}));
