@@ -102,7 +102,7 @@ function createController({camera,reducedMotion=false,maxPendingLogDelta=.9,maxL
  const initialCamera=camera.snapshot();let trackedCommandCount=initialCamera.commandCount,trackedSequence=initialCamera.sequence,trackedSelection=initialCamera.selectionToken;
  let observedPayloadRecord=normalizeContextPayload({});
  const reverseAnchors=[],journal=[];
- const metrics={distanceInputs:0,lookInputs:0,flushes:0,interruptions:0,resumes:0,translations:0,reverseAnchors:0,reverseEvictions:0,reverseInvalidations:0,externalCameraMutations:0,rewinds:0,rewindFailures:0,rollbackAttempts:0,rollbackFailures:0,reverseOperations:0,hysteresisExcursions:0,boundaryCrossings:0};
+ const metrics={distanceInputs:0,lookInputs:0,flushes:0,interruptions:0,resumes:0,translations:0,reverseAnchors:0,reverseEvictions:0,reverseInvalidations:0,externalCameraMutations:0,rewinds:0,rewindFailures:0,rollbackAttempts:0,rollbackFailures:0,reverseOperations:0,operationRecoveries:0,operationRecoveryFailures:0,hysteresisExcursions:0,boundaryCrossings:0};
 
  function normalizeContextPayload(input={}){
   const record=ownDataRecord(input,'journey context',CONTEXT_KEYS),c=camera.snapshot();
@@ -164,7 +164,21 @@ function createController({camera,reducedMotion=false,maxPendingLogDelta=.9,maxL
   camera.applyDistanceDelta(forceLog-current.logDistanceM,{source:source+':hysteresis-force'});noteCamera();const forced=camera.snapshot();if(forced.semanticScale!==target.semanticScale)throw new Error('distance reverse hysteresis force did not reach recorded semantic band');
   camera.applyDistanceDelta(target.logDistanceM-forced.logDistanceM,{source:source+':hysteresis-settle'});noteCamera();metrics.hysteresisExcursions++;return camera.snapshot();
  }
- function applyInverse(entry,source){if(entry.kind==='DISTANCE')restoreDistanceDigest(entry.before,source+':distance');else if(entry.kind==='TRANSLATE')camera.translateLocal(entry.frameDelta.map(v=>-v),{source:source+':translate'});else if(entry.kind==='LOOK'){if(entry.pitchRadians!==0)camera.look({yawRadians:0,pitchRadians:-entry.pitchRadians,source:source+':pitch'});if(entry.yawRadians!==0)camera.look({yawRadians:-entry.yawRadians,pitchRadians:0,source:source+':yaw'});}else throw new Error('unsupported reverse journal operation: '+entry.kind);noteCamera();metrics.reverseOperations++;}
+ function applyInverse(entry,source){
+  if(entry.kind==='DISTANCE')restoreDistanceDigest(entry.before,source+':distance');
+  else if(entry.kind==='TRANSLATE')camera.translateLocal(entry.frameDelta.map(v=>-v),{source:source+':translate'});
+  else if(entry.kind==='LOOK'){
+   let pitchApplied=false;
+   try{
+    if(entry.pitchRadians!==0){camera.look({yawRadians:0,pitchRadians:-entry.pitchRadians,source:source+':pitch'});noteCamera();pitchApplied=true;}
+    if(entry.yawRadians!==0){camera.look({yawRadians:-entry.yawRadians,pitchRadians:0,source:source+':yaw'});noteCamera();}
+   }catch(error){
+    if(pitchApplied){let recovered=false;try{camera.look({yawRadians:0,pitchRadians:entry.pitchRadians,source:source+':pitch-recover'});noteCamera();recovered=digestMatches(camera.snapshot(),entry.after);}catch{}if(recovered)metrics.operationRecoveries++;else metrics.operationRecoveryFailures++;throw new Error('look inverse failed; local recovery '+(recovered?'restored':'FAILED')+': '+String(error&&error.message||error));}
+    throw error;
+   }
+  }else throw new Error('unsupported reverse journal operation: '+entry.kind);
+  noteCamera();metrics.reverseOperations++;
+ }
  function applyForward(entry,source){if(entry.kind==='DISTANCE')restoreDistanceDigest(entry.after,source+':distance');else if(entry.kind==='TRANSLATE')camera.translateLocal(entry.frameDelta,{source:source+':translate'});else if(entry.kind==='LOOK')camera.look({yawRadians:entry.yawRadians,pitchRadians:entry.pitchRadians,source:source+':look'});else throw new Error('unsupported reverse journal operation: '+entry.kind);noteCamera();}
  function preflightRewind(target,operations,current){
   if(!operations.length){if(!digestMatches(current,target.cameraDigest))throw new Error('reverse anchor no longer matches current camera state');return;}
