@@ -59,6 +59,20 @@ assert.equal(immutablePlan.batches[0].data[0],original,'mutating an exposed type
 assert.equal(immutablePlan.batches[0].claims.internalBufferExposed,false);
 assert.equal(immutablePlan.batches[0].claims.componentCodePhysical,false);
 const nearCue=B.depthCue(2,{near:1,far:1000}),farCue=B.depthCue(800,{near:1,far:1000});assert.ok(nearCue.sizeScale>farCue.sizeScale);assert.ok(nearCue.opacity>farCue.opacity);assert.ok(nearCue.fog<farCue.fog);assert.equal(farCue.claims.physicalExtinction,false);
+const packet=P.buildGalaxyPacket({galaxy,entities,cameraFrame:frame,quality:'STANDARD',presentationSeed:'packet-seed',viewport:{width:1440,height:900,dpr:2,memoryClass:'NORMAL',coarse:false}});
+assert.equal(packet.kind,'V2X03_GALAXY_RENDER_PACKET');
+assert.equal(packet.authority,'PRESENTATION_ONLY');
+assert.equal(packet.scene.galaxyId,'galaxy-alpha');
+assert.ok(packet.batchPlan.usage.draws<=3);
+assert.equal(packet.batchPlan.claims.gpuMemoryMeasured,false);
+assert.equal(packet.interaction.decorativeSelectable,false);
+assert.equal(packet.interaction.decorativeNavigable,false);
+assert.equal(packet.externalAuthorities.camera,true);
+assert.equal(packet.externalAuthorities.selection,true);
+assert.equal(packet.externalAuthorities.scale,true);
+assert.equal(packet.externalAuthorities.resourceAdmission,true);
+assert.equal(packet.claims.rendererBackendOwnedHere,false);
+assert.equal(packet.claims.centralBudgetAdmissionOwnedHere,false);
 
 const children=entities.slice(0,70).map((e,i)=>({...e,entityId:'region-child-'+i}));
 const region=P.buildRegion({parentId:'galaxy-alpha',children,quality:'STANDARD'}),regionAgain=P.buildRegion({parentId:'galaxy-alpha',children:[...children].reverse(),quality:'STANDARD'});
@@ -85,4 +99,4 @@ assert.throws(()=>R.refine({parentId:'x',children:[{}]}),/stable child identity/
 assert.throws(()=>R.refine({parentId:'x',children:[entities[0]],parentExtent:Infinity}),/finite/);
 const witness=P.continuityWitness({galaxy:galaxyScene,region,neighborhood});
 assert.equal(witness.cameraOwnedHere,false);assert.equal(witness.selectionOwnedHere,false);assert.equal(witness.scaleOwnedHere,false);
-console.log(JSON.stringify({status:'PASS',oracle:'V2X03_MACROCOSM_ORACLES',contract:P.CONTRACT,bounds:{galaxyParticles:galaxyScene.field.bounds.particles,galaxyDecorative:galaxyScene.field.bounds.total,regionObjects:region.objects.length,neighborhoodObjects:neighborhood.objects.length,maxGalaxyDraws:3},noGrid:true,deterministicRevisit:true,explicitMorphologyLayers:true,decorativeNonSelectable:true,externalCamera:true,qualityProfiles:true,reducedMotion:true,stableIdentityFailClosed:true,immutablePackedData:true}));
+console.log(JSON.stringify({status:'PASS',oracle:'V2X03_MACROCOSM_ORACLES',contract:P.CONTRACT,bounds:{galaxyParticles:galaxyScene.field.bounds.particles,galaxyDecorative:galaxyScene.field.bounds.total,regionObjects:region.objects.length,neighborhoodObjects:neighborhood.objects.length,maxGalaxyDraws:3},noGrid:true,deterministicRevisit:true,explicitMorphologyLayers:true,integrationRenderPacket:true,decorativeNonSelectable:true,externalCamera:true,qualityProfiles:true,reducedMotion:true,stableIdentityFailClosed:true,immutablePackedData:true}));
