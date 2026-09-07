@@ -26,7 +26,7 @@ function onKeydown(event){
  }
 }
 function attach(){
- state.attachAttempts++;canvas=document.getElementById('living-view');if(!canvas||!O.v1LivingProduct?.snapshot?.().initialized||!O.v1x10ViewportUX?.snapshot?.().initialized){if(state.attachAttempts<MAX_ATTACH_ATTEMPTS)root.setTimeout(attach,50);return false}
+ state.attachAttempts++;canvas=document.getElementById('living-view');if(!canvas||!O.v1LivingProduct?.snapshot?.().initialized||!O.v1x10ViewportUX?.snapshot?.().initialized)return false;
  canvas.setAttribute('aria-keyshortcuts','I Escape');root.addEventListener('keydown',onKeydown,true);state.ready=true;root.__OFU_LIVING_KEYBOARD_WORKSPACE__=api;return true;
 }
 function snapshot(){return Object.freeze({...state,workspace:workspace(),canvasFocused:document.activeElement===document.getElementById('living-view')})}
