@@ -2,7 +2,7 @@
 'use strict';
 const O=root.OFU=root.OFU||{};if(typeof document==='undefined')return;
 const VERSION='ofu-v11-living-guidance-1',STORAGE_KEY='ofu:v11:living-guidance:1',MAX_ATTACH_ATTEMPTS=120;
-const state={version:VERSION,ready:false,attachStatus:'waiting',attachAttempts:0,storage:'memory',dismissed:false,completed:false,progress:{started:false,world:false,surface:false},guideOpen:false,decorations:0,progressUpdates:0,guideOpens:0,mobileExpands:0};
+const state={version:VERSION,ready:false,attachStatus:'waiting',attachAttempts:0,storage:'memory',dismissed:false,completed:false,progress:{started:false,world:false,surface:false},guideOpen:false,decorations:0,progressUpdates:0,guideOpens:0,mobileExpands:0,mobileFirstFlightExpands:0,mobileFirstFlightOffered:false};
 let runtime=null,panel=null,observer=null,scheduled=false,lastProgress='';
 function storageProbe(){try{const s=root.localStorage,k='__ofu_living_guidance_probe__';s.setItem(k,'1');s.removeItem(k);state.storage='localStorage';return s}catch{return null}}
 const storage=storageProbe();
@@ -17,6 +17,10 @@ function primaryActions(){return panel?[...panel.children].find(node=>node.class
 function removeFirstFlight(){document.getElementById('living-first-flight')?.remove()}
 function dismiss(){state.dismissed=true;save();removeFirstFlight();O.productUI?.announce?.('First flight guide dismissed');schedule()}
 function ensureGuideVisible(){const mobile=O.v08MobileInteraction;if(!state.guideOpen||!mobile?.state?.active||mobile.state.sheet==='expanded'||typeof mobile.expand!=='function')return false;mobile.expand();state.mobileExpands++;return true}
+function ensureFirstFlightVisible(){
+ const box=document.getElementById('living-first-flight'),mobile=O.v08MobileInteraction;if(state.mobileFirstFlightOffered||!box||state.dismissed||state.completed||state.progress.started||!mobile?.state?.active)return false;
+ state.mobileFirstFlightOffered=true;if(mobile.state.sheet==='expanded'||typeof mobile.expand!=='function')return false;mobile.expand();state.mobileFirstFlightExpands++;return true
+}
 function toggleGuide(force){const next=typeof force==='boolean'?force:!state.guideOpen;if(next===state.guideOpen){if(next)ensureGuideVisible();return}state.guideOpen=next;if(next){state.guideOpens++;ensureGuideVisible()}schedule();O.productUI?.announce?.(next?'Exploration controls opened':'Exploration controls closed')}
 function ensureControlButton(){
  const actions=primaryActions();if(!actions)return null;let button=actions.querySelector('[data-living-guidance-toggle]');
@@ -38,7 +42,7 @@ function renderGuide(anchor){
 function render(){
  if(!runtime||!panel)return false;const s=runtime.snapshot(),p=progress(s),nextProgress={started:p.started,world:p.world,surface:p.surface};if(nextProgress.started!==state.progress.started||nextProgress.world!==state.progress.world||nextProgress.surface!==state.progress.surface){state.progress=nextProgress;state.progressUpdates++;save()}const stamp=JSON.stringify(state.progress);if(stamp!==lastProgress)lastProgress=stamp;
  if(state.progress.started&&state.progress.world&&state.progress.surface&&!state.completed){state.completed=true;save();removeFirstFlight();O.productUI?.announce?.('First flight complete')}
- if(state.guideOpen)ensureGuideVisible();const control=ensureControlButton(),anchor=control?.closest('.living-actions')||primaryActions();renderFirstFlight(state.progress,stamp,anchor);renderGuide(anchor);state.ready=true;return true
+ if(state.guideOpen)ensureGuideVisible();const control=ensureControlButton(),anchor=control?.closest('.living-actions')||primaryActions();renderFirstFlight(state.progress,stamp,anchor);ensureFirstFlightVisible();renderGuide(anchor);state.ready=true;return true
 }
 function schedule(){if(scheduled)return;scheduled=true;(root.requestAnimationFrame||((fn)=>root.setTimeout(fn,0)))(()=>{scheduled=false;render()})}
 function onKeydown(event){if(event.defaultPrevented||event.altKey||event.ctrlKey||event.metaKey)return;const tag=event.target?.tagName;if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'||event.target?.isContentEditable)return;if(event.key==='?'){event.preventDefault();toggleGuide()}}
