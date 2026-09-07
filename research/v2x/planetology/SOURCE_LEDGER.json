@@ -1,0 +1,48 @@
+{
+  "schema": "ofu-v2x15-science-source-ledger-1",
+  "authority": "RESEARCH_ONLY",
+  "sources": [
+    {
+      "id": "SOLOMATOV_1995",
+      "doi": "10.1063/1.868624",
+      "supports": ["temperature/stress-dependent viscosity convection regime context"],
+      "doesNotSupport": ["automatic plate-tectonics truth"]
+    },
+    {
+      "id": "ONEILL_2020",
+      "doi": "10.1016/j.pss.2020.105059",
+      "supports": ["parameterized thermal-evolution and tectonic-regime scenario context"],
+      "doesNotSupport": ["instantaneous deterministic tectonic-history classification"]
+    },
+    {
+      "id": "GRONOFF_ET_AL_2020",
+      "doi": "10.1029/2019JA027639",
+      "supports": ["multi-regime atmospheric escape and limitations of energy-limited approximations"],
+      "doesNotSupport": ["single universal atmospheric escape law"]
+    },
+    {
+      "id": "NORTH_CAHALAN_COAKLEY_1981",
+      "doi": "10.1029/RG019i001p00091",
+      "supports": ["reduced energy-balance climate model hierarchy"],
+      "doesNotSupport": ["weather or GCM-equivalent local climate truth"]
+    },
+    {
+      "id": "COWAN_ABBOT_2014",
+      "doi": "10.1088/0004-637X/781/1/27",
+      "supports": ["surface/interior water cycling under explicit tectonic assumptions"],
+      "doesNotSupport": ["universal stagnant-lid water cycling"]
+    },
+    {
+      "id": "SCHLICHTING_SARI_YALINEWICH_2015",
+      "doi": "10.1016/j.icarus.2014.09.053",
+      "supports": ["bounded analytic impact-driven atmospheric-loss scenarios"],
+      "doesNotSupport": ["universal impact-history reconstruction"]
+    },
+    {
+      "id": "LOPEZ_FORTNEY_2014",
+      "doi": "10.1088/0004-637X/792/1/1",
+      "supports": ["sub-Neptune radius dependence on envelope fraction, age and irradiation"],
+      "doesNotSupport": ["single composition-independent mass-radius law"]
+    }
+  ]
+}
