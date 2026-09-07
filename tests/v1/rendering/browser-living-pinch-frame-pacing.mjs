@@ -30,6 +30,7 @@ try{
  assert.equal(before.renderer.authority,'PRESENTATION_ONLY');
  assert.equal(before.pacing.strategy,'RAF_LATEST_PINCH_COORDINATE_WITH_SYNC_BOUNDARIES_AND_TERMINAL_FLUSH');
  assert.ok(before.canvas.nonEmpty>0);
+ await page.evaluate(()=>{const proto=CanvasRenderingContext2D.prototype,original=proto.clearRect;globalThis.__OFU_PINCH_TRACE__={stacks:[]};proto.clearRect=function(...args){if(this.canvas?.id==='living-view'&&globalThis.__OFU_PINCH_TRACE__.stacks.length<8)globalThis.__OFU_PINCH_TRACE__.stacks.push(String(new Error('living clearRect').stack||''));return original.apply(this,args);};});
 
  const active=await page.evaluate(()=>{
   const product=OFU.v1LivingProduct,runtime=product.runtime,canvas=document.getElementById('living-view'),rect=canvas.getBoundingClientRect(),before=runtime.snapshot(),p0=runtime.navigationPacingSnapshot(),r0=product.renderer.state();
@@ -37,10 +38,10 @@ try{
   fire('pointerdown',1201,cx-half,1);fire('pointerdown',1202,cx+half,1);let span=100;
   for(let i=1;i<=24;i++){const d=i*.375;fire('pointermove',1201,cx-half-d,1);fire('pointermove',1202,cx+half+d,1);span=100+d*2;}
   const p1=runtime.navigationPacingSnapshot(),after=runtime.snapshot(),r1=product.renderer.state();
-  return {beforeRevision:before.revision,beforeCoordinate:before.navigationCoordinate,afterRevision:after.revision,afterCoordinate:after.navigationCoordinate,target:before.navigationCoordinate+Math.log2(span/100)*1.5,inputEvents:p1.inputEvents-p0.inputEvents,frames:p1.frames-p0.frames,pending:p1.pendingEvents,boundaries:p1.boundaryCommits-p0.boundaryCommits,terminals:p1.terminalCommits-p0.terminalCommits,rendererFrames:r1.metrics.frames-r0.metrics.frames,input:product.snapshot().input};
+  return {beforeRevision:before.revision,beforeCoordinate:before.navigationCoordinate,afterRevision:after.revision,afterCoordinate:after.navigationCoordinate,target:before.navigationCoordinate+Math.log2(span/100)*1.5,inputEvents:p1.inputEvents-p0.inputEvents,frames:p1.frames-p0.frames,pending:p1.pendingEvents,boundaries:p1.boundaryCommits-p0.boundaryCommits,terminals:p1.terminalCommits-p0.terminalCommits,rendererFrames:r1.metrics.frames-r0.metrics.frames,input:product.snapshot().input,trace:globalThis.__OFU_PINCH_TRACE__?.stacks||[]};
  });
  assert.ok(active.inputEvents>=40);
- assert.equal(active.frames,0);assert.equal(active.boundaries,0);assert.equal(active.terminals,0);assert.equal(active.rendererFrames,0);
+ assert.equal(active.frames,0);assert.equal(active.boundaries,0);assert.equal(active.terminals,0);assert.equal(active.rendererFrames,0,'unexpected synchronous Living redraws during paced pinch: '+JSON.stringify(active.trace));
  assert.equal(active.afterRevision,active.beforeRevision);assert.equal(active.afterCoordinate,active.beforeCoordinate);assert.ok(active.pending>=active.inputEvents);
  assert.equal(active.input.activePointers,2);assert.equal(active.input.pinchActive,true);
 
