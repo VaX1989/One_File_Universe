@@ -1,0 +1,23 @@
+{
+  "schema":"ofu-ai-f0-runtime-distribution-snapshot-1",
+  "capturedOn":"2026-09-07",
+  "classification":"SOURCE_OBSERVED_DISTRIBUTION_STATE_NOT_LOCAL_PACKAGE_MATERIALIZATION",
+  "observations":[
+    {"source":"npm","package":"onnxruntime-web","observedLatest":"1.29.0","license":"MIT","url":"https://www.npmjs.com/package/onnxruntime-web"},
+    {"source":"jsDelivr package catalogue","package":"onnxruntime-web","observedCatalogueVersion":"1.29.0","url":"https://www.jsdelivr.com/package/npm/onnxruntime-web"},
+    {"source":"jsDelivr browsed CDN directory","package":"onnxruntime-web","observedResolvedDirectoryVersion":"1.27.0","url":"https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/","limitation":"Crawler/CDN resolution was inconsistent with catalogue metadata during this research session."},
+    {"source":"microsoft/onnxruntime issue #32195","state":"OPEN_OBSERVED","claim":"Reporter documents that v1.28/v1.29 CDN/unpkg release assets lagged and latest resolved to v1.27.","url":"https://github.com/microsoft/onnxruntime/issues/32195"}
+  ],
+  "policy":{
+    "forbidLatestAlias":true,
+    "requireExactVersion":true,
+    "requireExactAssetSha256":true,
+    "requireLocalMaterializationBeforeRuntimeClaim":true,
+    "reason":"Single-file offline reproducibility cannot depend on mutable or inconsistently resolved distribution aliases."
+  },
+  "adjudication":{
+    "apiResearchCandidate":"onnxruntime-web-1.29.0",
+    "publicCdnFallbackCandidate":"1.27.0 only if exact bytes are independently materialized and hashed",
+    "shippingDecision":"NONE_RESEARCH_ONLY"
+  }
+}

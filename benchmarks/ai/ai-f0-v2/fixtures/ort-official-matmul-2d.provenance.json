@@ -1,0 +1,12 @@
+{
+  "schema":"ofu-ai-f0-third-party-fixture-provenance-1",
+  "role":"ORT_WEB_RUNTIME_SMOKE_MODEL_ONLY",
+  "sourceRepository":"microsoft/onnxruntime-inference-examples",
+  "sourcePath":"js/quick-start_onnxruntime-web-script-tag/model.onnx",
+  "sourceGitBlobSha1":"088124bd486245109d6aeefb7f097fe156763975",
+  "bytes":120,
+  "sha256":"8b047f514b304d849a6bfd8e2e758777dd0935812e0cd78ac31513be1fe657a5",
+  "licenseContext":"Microsoft onnxruntime-inference-examples repository license; research fixture only",
+  "classification":"SOURCE_IDENTITY_VERIFIED_OFFICIAL_MINIMAL_ONNX_FIXTURE",
+  "notEvidenceOf":"LLM quality or SmolLM2 inference"
+}
