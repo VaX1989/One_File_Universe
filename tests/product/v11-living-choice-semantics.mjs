@@ -12,6 +12,7 @@ assert.match(source,/AUTHORITY='PRESENTATION_ONLY'/);
 assert.match(source,/snapshot\.local\?\.objects/,'local selection membership must come from the current Living runtime snapshot');
 assert.match(source,/button\.removeAttribute\('aria-pressed'\)/,'non-selection navigation choices must lose false toggle semantics');
 assert.match(source,/button\.setAttribute\('aria-pressed',value\)/,'local object selection choices retain explicit selected state');
+assert.match(source,/selectionChoicesVerified=local/,'observability must distinguish verified local semantics from corrective mutations');
 assert.match(source,/MutationObserver/,'dynamic Living panel replacement must be observed');
 assert.match(source,/runtime\.onChange\?\.\(snapshot=>sync\(snapshot\)\)/,'runtime navigation/selection changes must resynchronize semantics');
 assert.match(source,/MAX_ATTACH_ATTEMPTS=120/,'startup attachment must remain bounded');

@@ -2,7 +2,7 @@
 'use strict';
 const O=root.OFU=root.OFU||{};if(typeof document==='undefined')return;
 const VERSION='ofu-v11-living-choice-semantics-1',AUTHORITY='PRESENTATION_ONLY',MAX_ATTACH_ATTEMPTS=120;
-const state={version:VERSION,authority:AUTHORITY,ready:false,attachAttempts:0,syncs:0,navigationPressedRemoved:0,selectionPressedApplied:0,lastStage:null,localChoiceCount:0,navigationChoiceCount:0};
+const state={version:VERSION,authority:AUTHORITY,ready:false,attachAttempts:0,syncs:0,navigationPressedRemoved:0,selectionPressedApplied:0,selectionChoicesVerified:0,lastStage:null,localChoiceCount:0,navigationChoiceCount:0};
 let panel=null,runtime=null,observer=null,pending=false;
 function entityId(button){return String(button?.dataset?.livingEntity||'')}
 function schedule(){if(pending)return;pending=true;root.queueMicrotask?root.queueMicrotask(sync):Promise.resolve().then(sync)}
@@ -19,7 +19,7 @@ function sync(snapshot=runtime?.snapshot?.()){
    navigation++;if(button.hasAttribute('aria-pressed')){button.removeAttribute('aria-pressed');state.navigationPressedRemoved++}
   }
  }
- state.syncs++;state.lastStage=snapshot.stage||null;state.localChoiceCount=local;state.navigationChoiceCount=navigation;return true;
+ state.syncs++;state.lastStage=snapshot.stage||null;state.localChoiceCount=local;state.navigationChoiceCount=navigation;state.selectionChoicesVerified=local;return true;
 }
 function attach(){
  state.attachAttempts++;panel=document.getElementById('living-panel');runtime=O.v1LivingProduct?.runtime;if(!panel||!runtime){if(state.attachAttempts<MAX_ATTACH_ATTEMPTS)root.setTimeout(attach,50);return false}
