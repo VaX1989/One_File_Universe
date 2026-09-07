@@ -36,6 +36,7 @@
           "Reaction networks are topology descriptors only; kinetics and thermodynamics are not solved.",
           "Source-backed structure requires explicit provenance and licensing metadata before V2X-12 treats the source claim as eligible.",
           "Computed structural coordinates remain model-derived and never inherit source-backed experimental authority.",
+          "Nested V2X-12 per-field caps are independent ceilings subject to the global PX data budget; simultaneous saturation of every nested maximum is not claimed, and oversized compound records fail closed.",
           "No molecular dynamics, reactive molecular dynamics, electron-orbit, orbital, wavefunction or quantum-dynamics claim is made."
         ],
         "evidence": []
@@ -44,7 +45,7 @@
         "regime": "matter-continuity-v2",
         "validity": "Bounded source-aware material, tissue/cell organization, representative microstructure, chemistry topology and atomic structural continuity layered over shipping v1 matter providers.",
         "resolution": "Tissue/cell descriptor bridge plus MATERIAL, MICROSTRUCTURE, MOLECULAR and ATOMIC semantic regimes with explicit finite caps and fail-closed source-unit conversion.",
-        "uncertainty": "Unknown chemistry, unsupported source provenance, unmeasured kinetics and non-classical states remain explicitly unresolved or unsupported."
+        "uncertainty": "Unknown chemistry, unsupported source provenance, global data-budget rejection, unmeasured kinetics and non-classical states remain explicitly unresolved or unsupported."
       },
       "lifecycle": "SHIPPING",
       "requires": [],
