@@ -114,12 +114,20 @@ export function materializeLocalOrganisms(state, request) {
 
   const viewportKey = String(request.viewportKey ?? 'local');
   const quotas = apportionSampleQuotas(populations, cap, totalAbundance, viewportKey);
+  const lineageById = new Map(state.lineages.map((lineage) => [lineage.id, lineage]));
+  const morphologyByLineageId = new Map();
   const samples = [];
 
   for (const { population, quota } of quotas) {
     if (quota === 0) continue;
-    const lineage = state.lineages.find((candidate) => candidate.id === population.lineageId);
+    const lineage = lineageById.get(population.lineageId);
     assert(lineage, `lineage ${population.lineageId} missing`);
+    let morphology = morphologyByLineageId.get(lineage.id);
+    if (!morphology) {
+      morphology = morphologyDescriptor(lineage);
+      morphologyByLineageId.set(lineage.id, morphology);
+    }
+    const motionAmplitude = Number(traitValue(lineage, 'mobility')) / 1_000_000;
 
     for (let index = 0; index < quota; index += 1) {
       const sampleId = `sample:${population.id}:${state.eventKey}:${index}`;
@@ -141,10 +149,10 @@ export function materializeLocalOrganisms(state, request) {
           z: unitFromHash(`${seed}|z`) * 2 - 1,
         }),
         orientationTurns: unitFromHash(`${seed}|orientation`),
-        morphology: morphologyDescriptor(lineage),
+        morphology,
         presentation: Object.freeze({
           motionPhase: unitFromHash(`${seed}|motion`),
-          motionAmplitude: Number(traitValue(lineage, 'mobility')) / 1_000_000,
+          motionAmplitude,
           activityCue: lifecycle.stage === 'JUVENILE'
             ? 'DEVELOPMENTAL_ACTIVITY_PRESENTATION'
             : lifecycle.stage === 'SENESCENT'
