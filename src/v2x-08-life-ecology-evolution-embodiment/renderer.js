@@ -6,18 +6,26 @@ function clamp01(value) {
   return Math.max(0, Math.min(1, Number(value)));
 }
 
+function boundedDescriptorCount(value) {
+  const numeric = Number(value);
+  assert(Number.isFinite(numeric) && numeric >= 0, 'maxDescriptors must be a non-negative finite number');
+  return Math.max(0, Math.min(Math.floor(numeric), 128));
+}
+
 export function buildOrganismRenderDescriptors(samples, options = {}) {
   assert(Array.isArray(samples), 'samples array required');
-  const maxDescriptors = Math.max(0, Math.min(Number(options.maxDescriptors ?? 128), 128));
+  const maxDescriptors = boundedDescriptorCount(options.maxDescriptors ?? 128);
   const quality = String(options.quality ?? 'BALANCED');
   assert(['LOW', 'BALANCED', 'HIGH'].includes(quality), 'unsupported quality profile');
   const segmentBudget = quality === 'LOW' ? 3 : quality === 'BALANCED' ? 5 : 8;
 
   return Object.freeze(samples.slice(0, maxDescriptors).map((sample) => {
     assert(sample?.morphology?.authorityClass === 'MODEL_DERIVED_SIMULATION', 'semantic morphology descriptor required');
+    assert(sample?.presentation?.authorityClass === 'PRESENTATION_ONLY', 'presentation-only motion descriptor required');
+    assert(sample?.representativeOfAggregate === true, 'representative aggregate sample required');
     const sizeScale = sample.morphology.sizeBand === 'TINY' ? 0.35 : sample.morphology.sizeBand === 'LARGE' ? 1.35 : 0.8;
     const defenseScale = sample.morphology.defenseBand === 'HIGH' ? 1 : sample.morphology.defenseBand === 'MODERATE' ? 0.65 : 0.3;
-    const motionAmplitude = clamp01(sample.presentation?.motionAmplitude ?? 0);
+    const motionAmplitude = clamp01(sample.presentation.motionAmplitude ?? 0);
 
     return Object.freeze({
       id: `render:${sample.id}`,
@@ -35,7 +43,7 @@ export function buildOrganismRenderDescriptors(samples, options = {}) {
       position: sample.position,
       orientationTurns: sample.orientationTurns,
       motion: Object.freeze({
-        phase: sample.presentation?.motionPhase ?? 0,
+        phase: sample.presentation.motionPhase ?? 0,
         amplitude: motionAmplitude,
         authorityClass: 'PRESENTATION_ONLY',
       }),
