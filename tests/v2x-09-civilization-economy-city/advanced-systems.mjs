@@ -195,10 +195,16 @@ check(inactiveRoute.capacityUnits===0&&inactiveRoute.routingEligible===false&&in
 check(!inactiveNet.flows.some(f=>f.pathEdgeIds.includes('edge-1')),'inactive trade edge never carries direct or residual flow');
 check(K.tradeDegree(inactive.state,'ridge-town')===0,'inactive trade edge does not inflate modeled trade degree');
 const inactiveDyn=SOC.societyDynamics(inactive.state,inactiveNet),inactiveInstitution=inactiveDyn.institutionProposals.find(p=>p.polityId==='polity-a');
-check(inactiveDyn.settlementPressures.find(x=>x.settlementId==='ridge-town').routeStressPpm===700000,'social route stress treats settlement with no usable routes as isolated rather than averaging disabled routes');
+check(inactiveDyn.settlementPressures.find(x=>x.settlementId==='ridge-town').routeStressPpm===700000,'social route stress treats modeled-but-unusable access as bounded disruption');
 check(inactiveInstitution.mechanisms.includes('NETWORK_ACCESS_OR_REDUNDANCY_PRIORITY')&&!inactiveInstitution.mechanisms.includes('REPAIR_PRIORITY'),'institution distinguishes network isolation from physical infrastructure repair');
 const inactiveRecovery=ADV.projectRecoveryEnvelope(inactive.state,inactive.economy,{edgeId:'edge-1',maxEpochs:4});
 check(inactiveRecovery.status==='EDGE_NOT_ACTIVE_FOR_RECOVERY'&&inactiveRecovery.trajectory.length===0,'inactive trade edge cannot receive a fabricated recovery trajectory');
+
+const noTrade=fixture();
+noTrade.state.tradeEdges=[];noTrade.state.infrastructure=[];
+const noTradeNet=PROD.productionNetwork(noTrade.state,noTrade.economy),noTradeDyn=SOC.societyDynamics(noTrade.state,noTradeNet),noTradePolity=noTradeDyn.institutionProposals.find(p=>p.polityId==='polity-a');
+check(noTradeDyn.settlementPressures.every(x=>x.status!=='ACTIVE'||x.routeStressPpm===0),'absence of modeled trade routes does not invent logistics stress');
+check(!noTradePolity.mechanisms.includes('NETWORK_ACCESS_OR_REDUNDANCY_PRIORITY')&&!noTradePolity.mechanisms.includes('REPAIR_PRIORITY'),'self-contained/no-trade polity receives neither access-disruption nor repair priority without supporting evidence');
 
 const stale=fixture({energyStarvedRidge:true});
 stale.state.settlements.find(x=>x.settlementId==='ridge-town').status='ABANDONED';
@@ -232,6 +238,10 @@ const duplicateEdge=fixture();duplicateEdge.state.tradeEdges.push({...duplicateE
 assert.throws(()=>PROD.productionNetwork(duplicateEdge.state,duplicateEdge.economy),/duplicate trade edge id/);cases++;
 const duplicateEconomy=fixture();duplicateEconomy.economy.settlements.push({...duplicateEconomy.economy.settlements[0]});
 assert.throws(()=>PROD.productionNetwork(duplicateEconomy.state,duplicateEconomy.economy),/duplicate economy settlement id/);cases++;
+const duplicateInfrastructure=fixture();duplicateInfrastructure.state.infrastructure.push({...duplicateInfrastructure.state.infrastructure[0]});
+assert.throws(()=>PROD.productionNetwork(duplicateInfrastructure.state,duplicateInfrastructure.economy),/duplicate infrastructure asset id/);cases++;
+const duplicateHistory=fixture();duplicateHistory.state.history.proposals.push({...duplicateHistory.state.history.proposals[0]});
+assert.throws(()=>PROD.productionNetwork(duplicateHistory.state,duplicateHistory.economy),/duplicate history proposal id/);cases++;
 
 const widestState={
   state:'MODELED_CIVILIZATION',worldIdentity:'world-widest',lineageId:'lineage-widest',epoch:1,
@@ -265,10 +275,18 @@ check(widest1.routing.policy==='DIRECT_THEN_RESIDUAL_WIDEST_PATH'&&widest1.routi
 check(widest1.closure.allClosed&&widest1.routes.every(r=>r.usedUnits<=r.capacityUnits),'widest routing preserves closure and per-edge capacity bounds');
 for(const route of widest1.routes){const traversed=widest1.flows.filter(f=>f.pathEdgeIds.includes(route.edgeId)).reduce((n,f)=>n+f.amountUnits,0);check(traversed===route.usedUnits,'route usedUnits equals all direct/residual flow traversals for '+route.edgeId)}
 
+const resilienceSettlements=Array.from({length:48},(_,idx)=>({settlementId:'rs-'+idx,status:'ACTIVE'}));
+const resilienceRoutes=[];
+for(let idx=0;idx<48;idx++)resilienceRoutes.push({edgeId:'rr-'+idx,from:'rs-'+idx,to:'rs-'+((idx+1)%48),capacityUnits:100+idx,usedUnits:10,conditionPpm:800000,degradationPpm:200000,utilizationPpm:100000,routingEligible:true,operational:true});
+for(let idx=0;idx<48;idx++)resilienceRoutes.push({edgeId:'rc-'+idx,from:'rs-'+idx,to:'rs-'+((idx+2)%48),capacityUnits:200+idx,usedUnits:10,conditionPpm:780000,degradationPpm:220000,utilizationPpm:80000,routingEligible:true,operational:true});
+const resilienceStress=ADV.networkResilience({status:'MODELED',settlements:resilienceSettlements,routes:resilienceRoutes});
+check(resilienceStress.routes.length===96&&resilienceStress.settlements.length===48,'resilience consumes the full declared 48-settlement/96-route bound');
+check(resilienceStress.operations<=ADV.RESILIENCE_LIMITS.operations&&resilienceStress.operationAccountingScope.includes('BRIDGE_DETECTION'),'resilience stress remains under one global operation budget with explicit accounting scope');
+
 const ghost=fixture({energyStarvedRidge:true});
 ghost.state.infrastructure=[];
 const ghostNet=PROD.productionNetwork(ghost.state,ghost.economy),ghostDyn=SOC.societyDynamics(ghost.state,ghostNet),ghostUrban=URB.urbanEvolution(ghost.state,ghostNet,ghostDyn),ghostDelta=ghostUrban.settlements.find(x=>x.settlementId==='delta-city');
 check(ghostNet.routes.some(r=>r.evidenceClass==='TRADE_EDGE_WITHOUT_MODELED_INFRASTRUCTURE_ASSET'&&r.degradationPpm>=450000),'trade-only fallback route remains an explicit degraded network witness');
 check(!ghostDelta.evidenceLayers.some(x=>x.kind==='CORRIDOR_DEGRADATION'),'trade-only fallback cannot masquerade as modeled infrastructure/archaeological corridor evidence');
 
-console.log(JSON.stringify({status:'PASS',cases,contracts:[PROD.CONTRACT,SOC.CONTRACT,URB.CONTRACT,ADV.RESILIENCE_CONTRACT,ADV.RECOVERY_CONTRACT],healthyRouteCapacity:routeHealthy.capacityUnits,damagedRouteCapacity:routeDamaged.capacityUnits,starvedFlows:starvedNet.flows.length,stressedMigrationProposals:stressedDyn.migrationProposals.length,deltaFamily:deltaUrban.family,dryDeltaFamily:dryDelta.family,abandonedFamily:abandonedDelta.family,criticalRoutes:baseResilience.criticalRouteIds.length,redundantCriticalRoutes:redundantComposed.resilience.criticalRouteIds.length,recoveryEpochs:recovery.trajectory.length-1,recoveryCapacityDelta:recovery.summary.capacityDeltaUnits,recoveryConditionDeltaPpm:recovery.summary.conditionDeltaPpm,widestPath:widestFlow?.pathEdgeIds||[],evidenceGaps:missingComposed.evidence.societyGaps.length}));
+console.log(JSON.stringify({status:'PASS',cases,contracts:[PROD.CONTRACT,SOC.CONTRACT,URB.CONTRACT,ADV.RESILIENCE_CONTRACT,ADV.RECOVERY_CONTRACT],healthyRouteCapacity:routeHealthy.capacityUnits,damagedRouteCapacity:routeDamaged.capacityUnits,starvedFlows:starvedNet.flows.length,stressedMigrationProposals:stressedDyn.migrationProposals.length,deltaFamily:deltaUrban.family,dryDeltaFamily:dryDelta.family,abandonedFamily:abandonedDelta.family,criticalRoutes:baseResilience.criticalRouteIds.length,redundantCriticalRoutes:redundantComposed.resilience.criticalRouteIds.length,recoveryEpochs:recovery.trajectory.length-1,recoveryCapacityDelta:recovery.summary.capacityDeltaUnits,recoveryConditionDeltaPpm:recovery.summary.conditionDeltaPpm,widestPath:widestFlow?.pathEdgeIds||[],evidenceGaps:missingComposed.evidence.societyGaps.length,resilienceStressOperations:resilienceStress.operations}));
