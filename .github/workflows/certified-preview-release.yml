@@ -146,6 +146,7 @@ jobs:
           test "$(jq -r .draft <<<"$RELEASE_JSON")" = true
           test "$(jq -r .prerelease <<<"$RELEASE_JSON")" = true
           test "$(jq -r .target_commitish <<<"$RELEASE_JSON")" = "$SOURCE_SHA"
+          test "$(jq -r .tag_name <<<"$RELEASE_JSON")" = "$RELEASE_TAG"
           rm -rf remote-release && mkdir remote-release
           gh release download "$RELEASE_TAG" -p One_File_Universe.html -D remote-release
           REMOTE_SHA="$(sha256sum remote-release/One_File_Universe.html | cut -d' ' -f1)"
@@ -165,28 +166,27 @@ jobs:
             echo "main advanced from $SOURCE_SHA to $LIVE_MAIN before publication; refusing stale preview publication" >&2
             exit 1
           fi
-      - name: Cleanup failed staged preview transaction
-        if: failure() && steps.draft.outputs.release_id != ''
+      - name: Reconfirm staged release and tag ownership immediately before publication
         shell: bash
         env:
           RELEASE_ID: ${{ steps.draft.outputs.release_id }}
         run: |
           set -euo pipefail
-          if RELEASE_JSON="$(gh api "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" 2>/dev/null)"; then
-            if test "$(jq -r .draft <<<"$RELEASE_JSON")" != true || test "$(jq -r .target_commitish <<<"$RELEASE_JSON")" != "$SOURCE_SHA"; then
-              echo 'refusing cleanup: staged release identity is no longer the exact draft created by this transaction' >&2
-              exit 1
-            fi
-            gh api "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" -X DELETE
+          RELEASE_JSON="$(gh api "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID")"
+          test "$(jq -r .draft <<<"$RELEASE_JSON")" = true
+          test "$(jq -r .prerelease <<<"$RELEASE_JSON")" = true
+          test "$(jq -r .target_commitish <<<"$RELEASE_JSON")" = "$SOURCE_SHA"
+          test "$(jq -r .tag_name <<<"$RELEASE_JSON")" = "$RELEASE_TAG"
+          TAG_REF_JSON="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$RELEASE_TAG")"
+          TAG_OBJECT_TYPE="$(jq -r .object.type <<<"$TAG_REF_JSON")"
+          TAG_OBJECT_SHA="$(jq -r .object.sha <<<"$TAG_REF_JSON")"
+          if test "$TAG_OBJECT_TYPE" = tag; then
+            TAG_OBJECT_SHA="$(gh api "repos/$GITHUB_REPOSITORY/git/tags/$TAG_OBJECT_SHA" --jq .object.sha)"
+          elif test "$TAG_OBJECT_TYPE" != commit; then
+            echo "unexpected release tag object type: $TAG_OBJECT_TYPE" >&2
+            exit 1
           fi
-          TAG_SHA="$(git ls-remote origin refs/tags/$RELEASE_TAG | cut -f1)"
-          if test -n "$TAG_SHA"; then
-            if test "$TAG_SHA" != "$SOURCE_SHA"; then
-              echo 'refusing cleanup: release tag no longer points to this transaction source' >&2
-              exit 1
-            fi
-            gh api "repos/$GITHUB_REPOSITORY/git/refs/tags/$RELEASE_TAG" -X DELETE
-          fi
+          test "$TAG_OBJECT_SHA" = "$SOURCE_SHA"
       - name: Publish only after verified draft
         shell: bash
         env:
@@ -198,12 +198,69 @@ jobs:
           test "$(jq -r .draft /tmp/published.json)" = false
           test "$(jq -r .prerelease /tmp/published.json)" = true
           test "$(jq -r .target_commitish /tmp/published.json)" = "$SOURCE_SHA"
-      - name: Final published-asset verification
+          test "$(jq -r .tag_name /tmp/published.json)" = "$RELEASE_TAG"
+      - name: Final published release, tag and asset verification
         shell: bash
+        env:
+          RELEASE_ID: ${{ steps.draft.outputs.release_id }}
         run: |
           set -euo pipefail
+          RELEASE_JSON="$(gh api "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID")"
+          test "$(jq -r .draft <<<"$RELEASE_JSON")" = false
+          test "$(jq -r .prerelease <<<"$RELEASE_JSON")" = true
+          test "$(jq -r .target_commitish <<<"$RELEASE_JSON")" = "$SOURCE_SHA"
+          test "$(jq -r .tag_name <<<"$RELEASE_JSON")" = "$RELEASE_TAG"
+          TAG_REF_JSON="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$RELEASE_TAG")"
+          TAG_OBJECT_TYPE="$(jq -r .object.type <<<"$TAG_REF_JSON")"
+          TAG_OBJECT_SHA="$(jq -r .object.sha <<<"$TAG_REF_JSON")"
+          if test "$TAG_OBJECT_TYPE" = tag; then
+            TAG_OBJECT_SHA="$(gh api "repos/$GITHUB_REPOSITORY/git/tags/$TAG_OBJECT_SHA" --jq .object.sha)"
+          elif test "$TAG_OBJECT_TYPE" != commit; then
+            echo "unexpected release tag object type: $TAG_OBJECT_TYPE" >&2
+            exit 1
+          fi
+          test "$TAG_OBJECT_SHA" = "$SOURCE_SHA"
           rm -rf published-release && mkdir published-release
           gh release download "$RELEASE_TAG" -p One_File_Universe.html -D published-release
           test "$(sha256sum published-release/One_File_Universe.html | cut -d' ' -f1)" = "$(tr -d '\n' < expected-sha256.txt)"
           test "$(stat -c%s published-release/One_File_Universe.html)" = "$(tr -d '\n' < expected-bytes.txt)"
           cmp -s release-build/One_File_Universe.html published-release/One_File_Universe.html
+      - name: Cleanup failed unpublished preview transaction
+        if: failure() && steps.draft.outputs.release_id != ''
+        shell: bash
+        env:
+          RELEASE_ID: ${{ steps.draft.outputs.release_id }}
+        run: |
+          set -euo pipefail
+          RELEASE_JSON=''
+          if RELEASE_JSON="$(gh api "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" 2>/dev/null)"; then
+            if test "$(jq -r .draft <<<"$RELEASE_JSON")" != true || \
+               test "$(jq -r .target_commitish <<<"$RELEASE_JSON")" != "$SOURCE_SHA" || \
+               test "$(jq -r .tag_name <<<"$RELEASE_JSON")" != "$RELEASE_TAG"; then
+              echo 'refusing cleanup: staged release identity is no longer the exact unpublished draft created by this transaction' >&2
+              exit 1
+            fi
+          fi
+          TAG_EXISTS=false
+          TAG_REF_JSON=''
+          if TAG_REF_JSON="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$RELEASE_TAG" 2>/dev/null)"; then
+            TAG_EXISTS=true
+            TAG_OBJECT_TYPE="$(jq -r .object.type <<<"$TAG_REF_JSON")"
+            TAG_OBJECT_SHA="$(jq -r .object.sha <<<"$TAG_REF_JSON")"
+            if test "$TAG_OBJECT_TYPE" = tag; then
+              TAG_OBJECT_SHA="$(gh api "repos/$GITHUB_REPOSITORY/git/tags/$TAG_OBJECT_SHA" --jq .object.sha)"
+            elif test "$TAG_OBJECT_TYPE" != commit; then
+              echo "refusing cleanup: unexpected release tag object type $TAG_OBJECT_TYPE" >&2
+              exit 1
+            fi
+            if test "$TAG_OBJECT_SHA" != "$SOURCE_SHA"; then
+              echo 'refusing cleanup: release tag no longer points to this transaction source' >&2
+              exit 1
+            fi
+          fi
+          if test -n "$RELEASE_JSON"; then
+            gh api "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" -X DELETE
+          fi
+          if test "$TAG_EXISTS" = true; then
+            gh api "repos/$GITHUB_REPOSITORY/git/refs/tags/$RELEASE_TAG" -X DELETE
+          fi
