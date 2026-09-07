@@ -1,0 +1,54 @@
+{
+  "schema": "ofu-v2x15-science-source-ledger-1",
+  "authority": "RESEARCH_ONLY",
+  "sources": [
+    {
+      "id": "GLADMAN_1993",
+      "doi": "10.1006/icar.1993.1169",
+      "supports": ["pairwise circular/coplanar Hill-stability screening"],
+      "doesNotSupport": ["general N-body stability", "Lagrange stability", "resonance safety"]
+    },
+    {
+      "id": "LASKAR_PETIT_2017_AMD",
+      "arxiv": "1703.07125",
+      "supports": ["AMD-based a-priori dynamical screening concept"],
+      "doesNotSupport": ["replacement for integration in all systems"]
+    },
+    {
+      "id": "PETIT_LASKAR_BOUE_2018",
+      "doi": "10.1051/0004-6361/201833088",
+      "supports": ["Hill criterion in AMD framework"],
+      "doesNotSupport": ["outer-body ejection exclusion", "universal high-mass validity"]
+    },
+    {
+      "id": "ZENG_SASSELOV_JACOBSEN_2016",
+      "doi": "10.3847/0004-637X/819/2/127",
+      "supports": ["PREM-style rocky mass-radius relation for 1-8 Earth masses and CMF 0-0.4"],
+      "doesNotSupport": ["0.5-1 Earth-mass source-backed extrapolation", "unique composition inference"]
+    },
+    {
+      "id": "DUCHENE_KRAUS_2013",
+      "doi": "10.1146/annurev-astro-081710-102602",
+      "supports": ["primary-mass-dependent multiplicity context"],
+      "doesNotSupport": ["uncalibrated independent period/q/e priors as survey truth"]
+    },
+    {
+      "id": "MOE_DISTEFANO_2017",
+      "doi": "10.3847/1538-4365/aa6fb6",
+      "supports": ["coupled period, mass-ratio and eccentricity population structure"],
+      "doesNotSupport": ["factorized universal binary prior"]
+    },
+    {
+      "id": "MIST_I_2016",
+      "doi": "10.3847/0004-637X/823/2/102",
+      "supports": ["stellar evolutionary track and isochrone grid context"],
+      "doesNotSupport": ["implicit unversioned interpolation"]
+    },
+    {
+      "id": "MIST_II_2026",
+      "doi": "10.3847/1538-4365/ae48f3",
+      "supports": ["alpha-enhanced stellar grids and abundance-sensitive interpolation requirements"],
+      "doesNotSupport": ["silent solar-scaled chemistry assumptions"]
+    }
+  ]
+}
