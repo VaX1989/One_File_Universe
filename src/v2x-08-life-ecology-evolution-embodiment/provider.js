@@ -15,6 +15,48 @@ function assert(condition, message) {
   if (!condition) throw new Error(`LIFE_V2_PROVIDER_INVALID: ${message}`);
 }
 
+function buildAdvanceWitness(source, result, event) {
+  const diagnosticByPopulation = new Map(result.diagnostics.map((entry) => [entry.populationId, entry]));
+  const regions = Object.keys(source.regions).sort().map((regionId) => {
+    const before = source.regions[regionId];
+    const after = result.state.regions[regionId];
+    assert(after, `simulation removed upstream region ${regionId}`);
+    const sourcePopulations = source.populations.filter((population) => population.regionId === regionId);
+    let births = 0n;
+    let demographicDeaths = 0n;
+    for (const population of sourcePopulations) {
+      const diagnostic = diagnosticByPopulation.get(population.id);
+      if (!diagnostic) continue;
+      births += diagnostic.births;
+      demographicDeaths += diagnostic.deaths;
+    }
+    return Object.freeze({
+      regionId,
+      resourceBefore: before.resourcePool,
+      resourceAfter: after.resourcePool,
+      resourceDelta: after.resourcePool - before.resourcePool,
+      nutrientBefore: before.nutrientPool,
+      nutrientAfter: after.nutrientPool,
+      nutrientDelta: after.nutrientPool - before.nutrientPool,
+      representedBirths: births,
+      representedDemographicDeaths: demographicDeaths,
+      authorityClass: 'MODEL_DERIVED_SIMULATION',
+    });
+  });
+
+  return Object.freeze({
+    schema: 'ofu-v2x-08-life-advance-witness-1',
+    sourceEventKey: source.eventKey,
+    eventKey: String(event.eventKey),
+    regions: Object.freeze(regions),
+    empiricalCausationClaimed: false,
+    environmentMutationAuthorityClaimed: false,
+    eventAdmissionPerformed: false,
+    authorityClass: 'MODEL_DERIVED_SIMULATION',
+    limitation: 'This witness reports exact bounded model transition deltas; it does not establish empirical ecological causation or authority over the upstream environment.',
+  });
+}
+
 export const LIFE_V2_PROVIDER_DESCRIPTOR = Object.freeze({
   id: 'ofu.v2x-08.life-ecology-evolution-embodiment',
   version: '2.0.0-exploration',
@@ -27,6 +69,7 @@ export const LIFE_V2_PROVIDER_DESCRIPTOR = Object.freeze({
     'LIFE_REGION_INSPECTION',
     'LIFE_LIFECYCLE_COMPOSITION',
     'LIFE_ADVANCE_SIMULATION',
+    'LIFE_ADVANCE_TRANSITION_WITNESS',
     'LIFE_DISPERSAL_SIMULATION',
     'LIFE_LOCAL_REPRESENTATIVE_SAMPLES',
     'LIFE_REPRESENTATIVE_LIFECYCLE_SAMPLE',
@@ -151,6 +194,7 @@ export function createLifeProvider({ getState }) {
       const result = advanceEcology(current, event);
       return Object.freeze({
         ...result,
+        transitionWitness: buildAdvanceWitness(current, result, event),
         sourceEventKey: current.eventKey,
         eventAdmissionPerformed: false,
         authorityClass: 'MODEL_DERIVED_SIMULATION',
