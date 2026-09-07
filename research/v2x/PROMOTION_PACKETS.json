@@ -1,228 +1,92 @@
 {
-  "schema": "ofu-v2x15-promotion-packets-5",
+  "schema": "ofu-v2x15-promotion-packets-6",
   "authority": "RESEARCH_ONLY",
   "canonicalPromotionPerformed": false,
   "postConvergenceAnchor": {
     "sha": "e0dae058cd5d6fd103cdf5958d781d9b38e1101e",
     "tree": "d81fbbbe58d74abff1eb99111a059f5282b43de2"
   },
-  "packetLaw": "Every packet is selective research evidence only. A convergence owner must bind exact source data, authority, units, resource bounds and conformance before any shipping promotion.",
+  "packetLaw": "Selective research evidence only. Promotion requires an authority-mapped shipping adapter plus exact source-data identity, units, applicability, uncertainty, resource bounds, persistence/replay implications and exact-head conformance. No packet may silently widen a RESEARCH_ONLY or UNSUPPORTED domain.",
   "packets": [
     {
-      "id": "ASTRO-STABILITY-05",
+      "id": "ASTRO-STABILITY-06",
       "target": "stellar/system dynamics consumer",
-      "candidateSurfaces": [
-        "pairwiseHillScreen",
-        "minimumOuterAxisForCircularHillScreen",
-        "radialOrbitOverlapScreen",
-        "angularMomentumDeficit",
-        "collisionCriticalAmd",
-        "pairwiseCollisionAmdScreen",
-        "circularCoplanarPlanetState",
-        "shortHorizonNBodyDiagnostic",
-        "shortHorizonNBodyStepConvergence",
-        "dynamicsEscalation"
-      ],
-      "implementedEvidence": [
-        "Gladman 2 sqrt(3) screen now fail-closes outside initially circular/coplanar inputs",
-        "conservative low-mass planet/star guard on the simple mutual-Hill approximation",
-        "pairwise coplanar collision-critical AMD bounded root solver",
-        "independent critical-AMD numerical oracle",
-        "barycentricized 2D Newtonian kick-drift-kick short-horizon diagnostic",
-        "energy angular-momentum linear-momentum and minimum-separation diagnostics",
-        "coarse/fine same-horizon step-convergence diagnostic",
-        "explicit escalation rather than any long-term stability promotion"
-      ],
-      "promotionPrerequisites": [
-        "multi-planet adversarial reference systems",
-        "trusted long-horizon integration comparison",
-        "mean-motion-resonance and secular-chaos escalation policy",
-        "collision tide and relativistic policy",
-        "consumer-specific authority mapping",
-        "exact-head conformance on promoted adapter"
-      ],
+      "candidateSurfaces": ["pairwiseHillScreen", "minimumOuterAxisForCircularHillScreen", "angularMomentumDeficit", "collisionCriticalAmd", "pairwiseCollisionAmdScreen", "radialOrbitOverlapScreen", "circularCoplanarPlanetState", "shortHorizonNBodyDiagnostic", "shortHorizonNBodyStepConvergence", "dynamicsEscalation"],
+      "implementedEvidence": ["circular/coplanar source-domain gate for Gladman 2 sqrt(3)", "conservative low-mass planet/star guard", "bounded collision-critical AMD root solver", "barycentric 2D Newtonian KDK short-horizon diagnostic", "energy angular linear-momentum and minimum-separation evidence", "explicit Msun-AU-year invariant units", "coarse/fine same-horizon step-convergence diagnostic"],
+      "promotionPrerequisites": ["multi-planet trusted reference fixtures", "long-horizon integration comparison", "mean-motion-resonance and secular-chaos escalation policy", "collision tide and relativistic policy", "consumer authority mapping", "exact-head conformance"],
       "forbiddenClaims": ["N_BODY_STABLE", "LONG_TERM_STABLE", "LAGRANGE_STABLE", "RESONANCE_SAFE", "SECULAR_CHAOS_FREE"]
     },
     {
-      "id": "ASTRO-OBSERVABILITY-02",
+      "id": "ASTRO-OBSERVABILITY-03",
       "target": "astronomy observability consumer",
       "candidateSurfaces": ["bandpassDistanceModulus", "angularObservabilityGeometry"],
-      "implementedEvidence": [
-        "explicit bandpass and magnitude-system requirement",
-        "explicit extinction input without extinction-model claim",
-        "Euclidean distance modulus",
-        "parallax and projected-separation geometry"
-      ],
-      "promotionPrerequisites": [
-        "versioned photometric bandpass definitions",
-        "magnitude-system zero-point provenance",
-        "extinction model provenance when extinction is predicted rather than supplied",
-        "instrument response and survey selection function before detection claims"
-      ],
-      "forbiddenClaims": ["SURVEY_COMPLETENESS", "DETECTION_PROBABILITY", "CALIBRATED_EXTINCTION_WITHOUT_MODEL"]
+      "implementedEvidence": ["explicit bandpass and magnitude-system identity", "caller-supplied extinction only", "exact atan2 parallax geometry", "exact atan2 projected-separation geometry", "inverse-distance/small-angle forms retained only with explicit approximation error"],
+      "promotionPrerequisites": ["versioned bandpass definitions", "magnitude zero-point provenance", "distance-definition contract", "extinction-model provenance when predicted", "instrument response and selection function before detectability claims"],
+      "forbiddenClaims": ["SURVEY_COMPLETENESS", "DETECTION_PROBABILITY", "CALIBRATED_EXTINCTION_WITHOUT_MODEL", "COSMOLOGICAL_DISTANCE_WITHOUT_CONTRACT"]
     },
     {
-      "id": "STELLAR-TRACK-05",
-      "target": "stellar evolution consumer",
+      "id": "STELLAR-TRACK-06",
+      "target": "stellar-evolution consumer",
       "candidateSurfaces": ["mistInterpolationContract", "interpolateVersionedStellarSlice"],
-      "implementedEvidence": [
-        "release/hash gate",
-        "exact grid-domain metadata requirement",
-        "MIST II alpha-grid gate",
-        "current rotation-grid gate",
-        "explicit rejection of unpublished Fe/H=+0.5 alpha/Fe=+0.6 combination",
-        "bounded deterministic bilinear slice interpolation",
-        "quantity-units requirement",
-        "no extrapolation"
-      ],
-      "promotionPrerequisites": [
-        "licensed or redistributable exact MIST fixture",
-        "exact release identifier digest and exact fixture bounds",
-        "quantity definitions and units",
-        "interpolation error witnesses against source grid",
-        "coverage policy for chemistry rotation and evolutionary phases"
-      ],
-      "forbiddenClaims": ["unversioned stellar truth", "silent solar-scaled abundance", "invented MIST values", "interpolation outside exact fixture"]
+      "implementedEvidence": ["release/hash/exact-grid-domain gate", "exact-grid domain constrained inside published MIST family", "alpha and rotation grid gates", "explicit unpublished chemistry-hole rejection", "quantity-units requirement", "bounded bilinear interpolation", "no extrapolation"],
+      "promotionPrerequisites": ["licensed/redistributable exact MIST fixture", "release digest and exact fixture bounds", "quantity definitions/units", "interpolation-error witnesses", "evolutionary-phase applicability metadata"],
+      "forbiddenClaims": ["UNVERSIONED_STELLAR_TRUTH", "SILENT_SOLAR_SCALED_ABUNDANCE", "INVENTED_MIST_VALUES", "DECLARED_GRID_DOMAIN_WIDER_THAN_SOURCE_FAMILY"]
     },
     {
-      "id": "STELLAR-MULTIPLICITY-05",
-      "target": "system architecture consumer",
+      "id": "STELLAR-MULTIPLICITY-06",
+      "target": "system-architecture consumer",
       "candidateSurfaces": ["multiplicityPopulationContract", "evaluateVersionedMultiplicityCells"],
-      "implementedEvidence": [
-        "coupled period-q-e coordinate contract",
-        "version/hash requirement",
-        "physical q in (0,1] and e in [0,1) table bounds",
-        "closed q=1 physical boundary without q>1 workaround",
-        "explicit weight semantics",
-        "bounded non-overlapping conditional-cell evaluator"
-      ],
-      "promotionPrerequisites": [
-        "population-conditioned empirical table fixture",
-        "selection-function provenance",
-        "normalization and uncertainty validation",
-        "primary-mass evolutionary-state and survey-domain metadata"
-      ],
-      "forbiddenClaims": ["universal factorized binary prior", "survey completeness", "invented empirical weights", "selection-corrected without selection evidence"]
+      "implementedEvidence": ["coupled period-q-e coordinate contract", "physical q/e table bounds", "closed q=1 boundary", "explicit RELATIVE_WEIGHT / PROBABILITY_MASS / DENSITY_PROXY semantics", "probability cell and table totals bounded by one", "overlap rejection", "table digest requirement"],
+      "promotionPrerequisites": ["population-conditioned empirical table", "selection-function provenance", "normalization/uncertainty validation", "primary-mass/evolutionary-state/survey-domain metadata"],
+      "forbiddenClaims": ["UNIVERSAL_FACTORIZED_BINARY_PRIOR", "SURVEY_COMPLETENESS", "INVENTED_EMPIRICAL_WEIGHTS", "SELECTION_CORRECTED_WITHOUT_SELECTION_EVIDENCE"]
     },
     {
-      "id": "PLANET-BULK-05",
-      "target": "deep planet consumer",
+      "id": "PLANET-BULK-06",
+      "target": "deep-planet consumer",
       "candidateSurfaces": ["rockyRadiusPrem", "rockyRadiusPremInterval", "compositionRegimeContract", "waterEosApplicabilityContract", "interpolateVersionedWaterEos", "interpolateVersionedSubNeptuneGrid"],
-      "implementedEvidence": [
-        "rocky source domain 1-8 Earth masses and CMF 0-0.4",
-        "monotonic rocky uncertainty envelope",
-        "mass-radius composition degeneracy contract",
-        "water EOS requires exact hash phase source and P-T validity envelope",
-        "no pressure-only water phase inference",
-        "EOS density lookup never authorizes radius prediction by itself",
-        "bounded 4D sub-Neptune interpolation locked to LOPEZ_FORTNEY_2014 source family and envelope"
-      ],
-      "promotionPrerequisites": [
-        "exact high-pressure water EOS fixture with P-T and phase validity",
-        "exact sub-Neptune evolution grid fixture",
-        "source-specific units normalization and error witnesses",
-        "interior integration model before converting EOS lookup into radius prediction",
-        "uncertainty representation"
-      ],
-      "forbiddenClaims": ["unique composition from mass-radius", "source-backed rocky extrapolation below 1 Earth mass", "pressure-only water phase", "EOS_LOOKUP_EQUALS_RADIUS_MODEL", "invented EOS or sub-Neptune values"]
+      "implementedEvidence": ["rocky 1-8 Earth-mass / CMF 0-0.4 source domain", "monotonic rocky envelope", "mass-radius degeneracy contract", "P-T/phase-source/hash-gated water EOS", "no pressure-only phase inference", "EOS density lookup separated from radius authority", "bounded Lopez-Fortney-family 4D interpolation"],
+      "promotionPrerequisites": ["exact high-pressure water EOS and phase-map data", "interior integration model before radius inference from EOS", "exact Lopez-Fortney-compatible evolution grid", "source-specific units/normalization/error witnesses", "uncertainty representation"],
+      "forbiddenClaims": ["UNIQUE_COMPOSITION_FROM_MASS_RADIUS", "ROCKY_EXTRAPOLATION_BELOW_1_EARTH_MASS", "PRESSURE_ONLY_WATER_PHASE", "EOS_LOOKUP_EQUALS_RADIUS_MODEL", "INVENTED_GRID_VALUES"]
     },
     {
-      "id": "ATMOSPHERE-ESCAPE-05",
-      "target": "deep planet atmosphere consumer",
+      "id": "ATMOSPHERE-ESCAPE-06",
+      "target": "deep-planet atmosphere consumer",
       "candidateSurfaces": ["classifyEscapeRegime", "energyLimitedEscapeApplicability", "atmosphereMassBudgetStep"],
-      "implementedEvidence": [
-        "escape threshold-set ID/hash requirement",
-        "threshold semantics explicitly non-universal",
-        "explicit R_XUV Roche and efficiency requirements",
-        "R_XUV must be at least the modeled planet radius",
-        "diffusion and boil-off rejection paths",
-        "finite rate checks",
-        "mass-conserving depletion-capped atmosphere ledger"
-      ],
-      "promotionPrerequisites": [
-        "explicit stellar XUV history input contract",
-        "R_XUV Roche efficiency and threshold provenance",
-        "regime transition policy",
-        "validated species composition cooling and diffusion coupling"
-      ],
-      "forbiddenClaims": ["universal Jeans thresholds", "universal energy-limited escape", "complete atmospheric history"]
+      "implementedEvidence": ["threshold-set ID/hash and non-universal semantics", "diffusion/boil-off escalation", "explicit R_XUV/Roche/efficiency requirements", "R_XUV >= R_p guard", "single explicit radiusConventionId ERKAEV2007_RP_RXUV2", "Erkaev/Salz-form pi*eta*F_XUV*R_p*R_XUV^2/(G*M_p*K)", "finite-rate guards", "depletion-capped mass ledger", "independent Python cross-language witness"],
+      "promotionPrerequisites": ["stellar XUV history contract", "R_XUV/Roche/efficiency provenance", "species composition/cooling/diffusion coupling", "regime-transition validation", "uncertainty model"],
+      "forbiddenClaims": ["UNIVERSAL_JEANS_THRESHOLDS", "UNIVERSAL_ENERGY_LIMITED_ESCAPE", "ALTERNATIVE_RADIUS_CONVENTION_BY_IMPLICATION", "COMPLETE_ATMOSPHERIC_HISTORY"]
     },
     {
-      "id": "CLIMATE-EBM-05",
-      "target": "deep planet climate consumer",
-      "candidateSurfaces": ["zeroDimensionalEbm", "transientZeroDimensionalEbmStep", "zonalEbmStep", "orbitalMeanFluxFactor", "greyAtmosphereSurfaceTemperature"],
-      "implementedEvidence": [
-        "parameter-set ID/hash required for linear-OLR EBM coefficients",
-        "0D equilibrium energy closure",
-        "bounded transient heat-capacity integration",
-        "2-256 zone equal-area reduced climate model",
-        "internally conservative nearest-neighbor meridional transport",
-        "no silent insolation normalization",
-        "fail-closed when linear OLR becomes negative",
-        "explicit storage radiative and transport residuals"
-      ],
-      "promotionPrerequisites": [
-        "validated OLR albedo transport and heat-capacity parameter families",
-        "seasonal obliquity eccentric-orbit forcing fixtures",
-        "comparison against trusted reduced-climate references",
-        "parameter-domain applicability metadata"
-      ],
-      "forbiddenClaims": ["weather", "GCM-equivalent local climate", "habitability truth", "unproven universal EBM coefficients"]
+      "id": "CLIMATE-EBM-06",
+      "target": "deep-planet climate consumer",
+      "candidateSurfaces": ["greyAtmosphereSurfaceTemperature", "zeroDimensionalEbm", "transientZeroDimensionalEbmStep", "zonalEbmStep", "orbitalMeanFluxFactor", "blackbodyEmission"],
+      "implementedEvidence": ["parameter-set provenance", "0D equilibrium closure", "bounded transient heat-capacity integration", "2-256 equal-area zonal model", "conservative nearest-neighbor transport", "no silent insolation normalization", "negative-linear-OLR fail-closed gate", "explicit energy residuals"],
+      "promotionPrerequisites": ["validated OLR/albedo/transport/heat-capacity parameter families", "seasonal/obliquity/eccentric-orbit forcing fixtures", "trusted reduced-climate comparisons", "parameter-domain metadata"],
+      "forbiddenClaims": ["WEATHER", "GCM_EQUIVALENT_LOCAL_CLIMATE", "HABITABILITY_TRUTH", "UNIVERSAL_EBM_COEFFICIENTS"]
     },
     {
-      "id": "GEODYNAMICS-05",
-      "target": "deep planet interior consumer",
+      "id": "GEODYNAMICS-06",
+      "target": "deep-planet interior consumer",
       "candidateSurfaces": ["thermalLedgerStep", "convectionDiagnostic", "nusseltRayleighScenario", "laggedNusseltRayleighScenario"],
-      "implementedEvidence": [
-        "exact thermal ledger",
-        "versioned convection-threshold parameter set requirement",
-        "regime-only viscosity diagnostic",
-        "mobile/stagnant Nu-Ra exponent scenarios",
-        "context-ID/hash-bound 200-300 Myr lag sensitivity"
-      ],
-      "promotionPrerequisites": [
-        "rheology contract",
-        "internal heating provenance",
-        "geometry and boundary conditions",
-        "Nu-Ra normalization calibration",
-        "validated lag applicability and parameter domains"
-      ],
-      "forbiddenClaims": ["plate tectonics present", "deterministic tectonic history", "universal viscosity thresholds", "universal fixed thermal lag"]
+      "implementedEvidence": ["thermal bookkeeping rejects every non-finite derived term instead of false CONSERVED", "convection classifier requires threshold-set provenance and explicit critical Rayleigh", "at/below-onset returns RESEARCH_REQUIRED", "mobile/stagnant Nu-Ra scaling-shape scenarios remain explicitly unnormalized", "200-300 Myr lag sensitivity bound to context ID/hash"],
+      "promotionPrerequisites": ["rheology/geometry/boundary-condition contract", "critical-Rayleigh provenance", "internal-heating provenance", "Nu-Ra normalization calibration", "validated lag applicability"],
+      "forbiddenClaims": ["PLATE_TECTONICS_PRESENT", "DETERMINISTIC_TECTONIC_HISTORY", "UNIVERSAL_CRITICAL_RAYLEIGH", "UNIVERSAL_VISCOSITY_THRESHOLDS", "UNIVERSAL_FIXED_THERMAL_LAG"]
     },
     {
-      "id": "VOLATILE-SURFACE-05",
+      "id": "VOLATILE-SURFACE-06",
       "target": "surface/hydrology consumer",
       "candidateSurfaces": ["volatileLedger", "waterEosApplicabilityContract", "interpolateVersionedWaterEos"],
-      "implementedEvidence": [
-        "exact total reservoir conservation check",
-        "post-step non-negative individual reservoir invariant",
-        "high-pressure water EOS provenance and P-T validity gate"
-      ],
-      "promotionPrerequisites": [
-        "transfer-law authority separated from conservation ledger",
-        "tectonic-regime assumptions",
-        "versioned water and ice phase data",
-        "cross-scale reservoir mapping"
-      ],
-      "forbiddenClaims": ["universal ocean-mantle cycling", "habitability from reservoir partition", "conservation ledger implies physical transfer law"]
+      "implementedEvidence": ["total-reservoir conservation", "non-negative individual post-step reservoir invariant", "water EOS provenance/P-T validity gate"],
+      "promotionPrerequisites": ["transfer-law authority separated from bookkeeping", "tectonic-regime assumptions", "versioned water/ice phase data", "cross-scale reservoir mapping"],
+      "forbiddenClaims": ["UNIVERSAL_OCEAN_MANTLE_CYCLING", "HABITABILITY_FROM_RESERVOIR_PARTITION", "CONSERVATION_IMPLIES_PHYSICAL_TRANSFER_LAW"]
     },
     {
-      "id": "IMPACT-EROSION-04",
-      "target": "surface evolution consumer",
+      "id": "IMPACT-EROSION-06",
+      "target": "surface-evolution consumer",
       "candidateSurfaces": ["schlichtingIsothermalImpactLoss", "streamPowerIncisionScenario", "upliftIncisionElevationStep"],
-      "implementedEvidence": [
-        "bounded momentum-ratio impact-loss scenario",
-        "provenance-gated E=K A^m S^n stream-power incision",
-        "explicit time-unit identity because K units depend on m n and the unit system",
-        "bounded uplift-minus-incision elevation step"
-      ],
-      "promotionPrerequisites": [
-        "impactor target geometry and atmosphere-state contracts",
-        "planet-specific lithology climate hydrology calibration for K m n",
-        "threshold sediment width and process policy where relevant",
-        "surface coupling and numerical convergence fixtures"
-      ],
-      "forbiddenClaims": ["universal impact history", "unique reconstructed atmospheric loss", "universal erosion rate", "calibrated terrain history without parameter provenance"]
+      "implementedEvidence": ["bounded impact-loss scenario", "provenance-gated E=K A^m S^n incision", "explicit time-unit identity", "bounded uplift-minus-incision elevation step"],
+      "promotionPrerequisites": ["impactor/target/atmosphere contracts", "planet-specific lithology/climate/hydrology calibration", "threshold/sediment/width/process policy", "surface coupling and numerical-convergence fixtures"],
+      "forbiddenClaims": ["UNIVERSAL_IMPACT_HISTORY", "UNIQUE_RECONSTRUCTED_ATMOSPHERIC_LOSS", "UNIVERSAL_EROSION_RATE", "CALIBRATED_TERRAIN_HISTORY_WITHOUT_PROVENANCE"]
     }
   ]
 }
