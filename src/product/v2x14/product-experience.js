@@ -18,7 +18,7 @@ function derive(s={}){
  const point=pointLabel(s);if(point)crumbs.push({stage,label:point});
  if(!crumbs.some(x=>x.stage===stage)&&stage==='APPROACH')crumbs.push({stage,label:'Approach '+short(s.world?.planetIdentity||s.body?.canonicalId||s.body?.entityId)});
  if(!crumbs.some(x=>x.stage===stage)&&MICRO.has(stage)&&!point)crumbs.push({stage,label:title(stage)});
- const current=crumbs.slice().reverse().find(x=>x.stage===stage),resolved=current||crumbs[crumbs.length-1]||Object.freeze({stage:'UNKNOWN',label:'unknown'});
+ const unknown=Object.freeze({stage:'UNKNOWN',label:'unknown'}),current=crumbs.slice().reverse().find(x=>x.stage===stage),resolved=stage==='UNKNOWN'?unknown:(current||crumbs[crumbs.length-1]||unknown);
  return Object.freeze({schema:'ofu-v2x14-product-snapshot-8',version:VERSION,authority:AUTHORITY,stage,currentLocation:resolved.label,selection:selectedLabel(s),selectionId:s.selectedObjectId||null,locationIdentity:s.point?.locationIdentity||s.world?.planetIdentity||s.body?.canonicalId||s.system?.canonicalId||s.region?.canonicalId||s.region?.entityId||s.galaxy?.canonicalId||null,breadcrumbs:Object.freeze(crumbs.map(x=>Object.freeze({...x,current:x===resolved}))),routesNativeInput:false,mutatesCanonicalState:false,canonicalSelectionAuthority:false,scaleAuthority:false,cameraAuthority:false,preservesCanonicalAriaPressed:true,createsDuplicateProductChrome:false,unknownStageStaysUnknown:stage==='UNKNOWN'});
 }
 function safeSnapshot(api){try{return api?.snapshot?.()||null}catch{return null}}
@@ -34,7 +34,7 @@ function mount(options={}){
  function applyCurrent(node,value){
   let record=managedCurrent.get(node);if(!record){const baseline=node.getAttribute('aria-current');record={baseline,applied:null,externalOwner:baseline!=null};managedCurrent.set(node,record);}
   if(record.externalOwner)return;
-  const live=node.getAttribute('aria-current');if(record.applied!==null&&live!==record.applied){record.applied=null;record.externalOwner=true;return;}
+  const live=node.getAttribute('aria-current');if(record.applied===null&&live!==record.baseline){record.externalOwner=true;return;}if(record.applied!==null&&live!==record.applied){record.applied=null;record.externalOwner=true;return;}
   if(value){node.setAttribute('aria-current',value);record.applied=value;return;}
   if(record.applied!==null&&live===record.applied){if(record.baseline==null)node.removeAttribute('aria-current');else node.setAttribute('aria-current',record.baseline);}record.applied=null;
  }
