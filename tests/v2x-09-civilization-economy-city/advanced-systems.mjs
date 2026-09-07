@@ -153,4 +153,34 @@ check(absentSoc.status==='NO_MODELED_CIVILIZATION_OR_NETWORK','society dynamics 
 const absentUrban=URB.urbanEvolution({state:'NO_CIVILIZATION_MODEL'},absent,absentSoc);
 check(absentUrban.status==='NO_MODELED_INPUT'&&absentUrban.renderCues.length===0,'urban evolution produces no unsupported decoration');
 
-console.log(JSON.stringify({status:'PASS',cases,contracts:[PROD.CONTRACT,SOC.CONTRACT,URB.CONTRACT],healthyRouteCapacity:routeHealthy.capacityUnits,damagedRouteCapacity:routeDamaged.capacityUnits,starvedFlows:starvedNet.flows.length,stressedMigrationProposals:stressedDyn.migrationProposals.length,deltaFamily:deltaUrban.family,dryDeltaFamily:dryDelta.family,abandonedFamily:abandonedDelta.family}));
+const baseResilience=composed1.resilience;
+check(baseResilience.status==='MODELED'&&baseResilience.criticalRouteIds.length===2,'tree-like three-settlement network exposes both single-path routes as critical');
+check(baseResilience.settlements.find(x=>x.settlementId==='delta-city').isolationRiskPpm===1000000,'hub with only bridge-like incident routes exposes full modeled isolation risk');
+check(baseResilience.routes.every(r=>r.usedUnits<=r.capacityUnits&&r.spareCapacityUnits===r.capacityUnits-r.usedUnits),'resilience accounting preserves route capacity/spare identities');
+check(baseResilience.physicalTransportGeometryClaim===false&&baseResilience.mutationPerformed===false,'network resilience does not claim physical transport geometry or mutate state');
+
+const redundant=fixture();
+redundant.state.tradeEdges.push({edgeId:'edge-3',from:'ridge-town',to:'harbor-village',costPpm:180000,flowUnits:750,status:'ACTIVE'});
+redundant.state.infrastructure.push({infrastructureId:'road-3',kind:'ROUTE_CORRIDOR',fromSettlementId:'ridge-town',toSettlementId:'harbor-village',status:'ACTIVE',conditionPpm:840000,builtEpoch:20,lastActiveEpoch:40});
+const redundantComposed=ADV.modelAdvancedCivilization(redundant.state,redundant.economy);
+check(redundantComposed.resilience.criticalRouteIds.length===0,'triangulated modeled network provides alternate paths and no false bridge classification');
+check(redundantComposed.resilience.routes.every(r=>r.alternatePathAvailable===true),'each route in a three-edge triangle has a modeled alternate path');
+
+const recoveryFixture=fixture({stressedDelta:true,energyStarvedRidge:true});
+const recoveryStateBefore=JSON.stringify(recoveryFixture.state),recoveryEconomyBefore=JSON.stringify(recoveryFixture.economy);
+const recovery=ADV.projectRecoveryEnvelope(recoveryFixture.state,recoveryFixture.economy,{edgeId:'edge-1',shockSeverityPpm:800000,maxEpochs:16});
+check(recovery.status==='PROJECTED'&&recovery.counterfactual===true&&recovery.canonicalForecast===false,'recovery envelope is explicit bounded counterfactual, never canonical forecast');
+check(recovery.trajectory.length>=2&&recovery.trajectory.length<=ADV.RESILIENCE_LIMITS.projectionEpochs+1,'recovery trajectory stays inside hard epoch bound');
+check(recovery.trajectory[0].conditionPpm<recovery.originalConditionPpm,'configured shock lowers modeled infrastructure condition');
+check(recovery.trajectory.at(-1).conditionPpm>recovery.trajectory[0].conditionPpm,'bounded repair dynamics improve infrastructure condition across projected epochs');
+check(recovery.trajectory.at(-1).routeCapacityUnits>=recovery.trajectory[0].routeCapacityUnits,'route capacity recovers monotonically with modeled condition envelope');
+check(recovery.trajectory.every(x=>x.authority==='MODEL_DERIVED_SIMULATION'&&Array.isArray(x.urbanPhases)),'each recovery epoch recomposes society and urban phase under model-derived authority');
+check(recovery.mutationPerformed===false&&recovery.persistentPersonIdentityCreated===false&&recovery.canonicalHistoryMutation===false&&recovery.planetOrLifeMutation===false,'counterfactual recovery preserves all semantic ownership boundaries');
+check(JSON.stringify(recoveryFixture.state)===recoveryStateBefore&&JSON.stringify(recoveryFixture.economy)===recoveryEconomyBefore,'recovery envelope leaves source state/economy byte-logically unchanged');
+
+const noEdgeRecovery=ADV.projectRecoveryEnvelope({...base.state,tradeEdges:[]},base.economy,{maxEpochs:4});
+check(noEdgeRecovery.status==='NO_MODELED_EDGE'&&noEdgeRecovery.trajectory.length===0,'recovery refuses to fabricate an edge when no modeled route exists');
+const noInfraRecovery=ADV.projectRecoveryEnvelope({...base.state,infrastructure:[]},base.economy,{edgeId:'edge-1',maxEpochs:4});
+check(noInfraRecovery.status==='NO_MODELED_INFRASTRUCTURE_FOR_EDGE'&&noInfraRecovery.trajectory.length===0,'recovery refuses to fabricate infrastructure when route lacks modeled asset');
+
+console.log(JSON.stringify({status:'PASS',cases,contracts:[PROD.CONTRACT,SOC.CONTRACT,URB.CONTRACT,ADV.RESILIENCE_CONTRACT,ADV.RECOVERY_CONTRACT],healthyRouteCapacity:routeHealthy.capacityUnits,damagedRouteCapacity:routeDamaged.capacityUnits,starvedFlows:starvedNet.flows.length,stressedMigrationProposals:stressedDyn.migrationProposals.length,deltaFamily:deltaUrban.family,dryDeltaFamily:dryDelta.family,abandonedFamily:abandonedDelta.family,criticalRoutes:baseResilience.criticalRouteIds.length,redundantCriticalRoutes:redundantComposed.resilience.criticalRouteIds.length,recoveryEpochs:recovery.trajectory.length-1,recoveryCapacityDelta:recovery.summary.capacityDeltaUnits,recoveryConditionDeltaPpm:recovery.summary.conditionDeltaPpm}));
