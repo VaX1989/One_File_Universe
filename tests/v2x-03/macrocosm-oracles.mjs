@@ -6,11 +6,12 @@ const sandbox={console};sandbox.globalThis=sandbox;sandbox.OFU={};
 vm.runInNewContext(fs.readFileSync('src/v1x-02-spatial-universe/spatial-universe.js','utf8'),sandbox,{filename:'spatial-universe.js'});
 for(const file of [
  'src/rendering/galaxy/galaxy-field.js',
+ 'src/rendering/macro/macrocosm-batches.js',
  'src/rendering/region/region-refinement.js',
  'src/rendering/neighborhood/neighborhood-depth.js',
  'src/rendering/macro/macrocosm-provider.js'
 ])vm.runInNewContext(fs.readFileSync(file,'utf8'),sandbox,{filename:file});
-const O=sandbox.OFU,F=O.v2x03GalaxyField,R=O.v2x03RegionRefinement,N=O.v2x03NeighborhoodDepth,P=O.v2x03MacrocosmProvider,S=O.v1x02SpatialUniverse;
+const O=sandbox.OFU,F=O.v2x03GalaxyField,B=O.v2x03MacrocosmBatches,R=O.v2x03RegionRefinement,N=O.v2x03NeighborhoodDepth,P=O.v2x03MacrocosmProvider,S=O.v1x02SpatialUniverse;
 const galaxy={canonicalId:'galaxy-alpha',sourceAuthority:'CANONICAL_PROVEN',metadata:{modelProfile:{morphology:'SPIRAL'}}};
 const entities=Array.from({length:80},(_,i)=>({canonicalId:'entity-'+String(i).padStart(3,'0'),sourceAuthority:'CANONICAL_PROVEN'}));
 const frame={origin:{x:0,y:0,z:-1200},right:{x:1,y:0,z:0},up:{x:0,y:1,z:0},forward:{x:0,y:0,z:1},focalLength:1.2,near:.01};
@@ -36,6 +37,16 @@ assert.equal(galaxyScene.galaxyId,'galaxy-alpha');
 assert.equal(galaxyScene.claims.decorativeSelectable,false);
 assert.ok(galaxyScene.bounds.entities<=64);
 assert.ok(galaxyScene.field.bounds.particles<=F.PROFILES.HIGH.particles);
+for(const args of [
+ {width:320,height:700,dpr:3,memoryClass:'NORMAL',coarse:true,expected:'LOW'},
+ {width:390,height:844,dpr:2,memoryClass:'NORMAL',coarse:true,expected:'MOBILE'},
+ {width:1440,height:900,dpr:2,memoryClass:'NORMAL',coarse:false,expected:'STANDARD'},
+ {width:2560,height:1440,dpr:1.5,memoryClass:'HIGH',coarse:false,expected:'HIGH'},
+ {width:2560,height:480,dpr:2,memoryClass:'NORMAL',coarse:true,expected:'LOW'}
+]){
+ const qp=B.qualityFor(args);assert.equal(qp.name,args.expected);const plan=B.planGalaxy(galaxyScene.field,args);assert.ok(plan.usage.draws<=3);assert.ok(plan.usage.instances<=plan.bounds.maxInstances);assert.ok(plan.usage.bytes<=plan.bounds.maxBytes);assert.equal(plan.claims.gpuMemoryMeasured,false);assert.equal(plan.claims.driverMemoryMeasured,false)
+}
+const nearCue=B.depthCue(2,{near:1,far:1000}),farCue=B.depthCue(800,{near:1,far:1000});assert.ok(nearCue.sizeScale>farCue.sizeScale);assert.ok(nearCue.opacity>farCue.opacity);assert.ok(nearCue.fog<farCue.fog);assert.equal(farCue.claims.physicalExtinction,false);
 
 const children=entities.slice(0,70).map((e,i)=>({...e,entityId:'region-child-'+i}));
 const region=P.buildRegion({parentId:'galaxy-alpha',children,quality:'STANDARD'}),regionAgain=P.buildRegion({parentId:'galaxy-alpha',children:[...children].reverse(),quality:'STANDARD'});
@@ -57,4 +68,4 @@ for(const quality of ['LOW','MOBILE','STANDARD','HIGH']){
 assert.throws(()=>P.buildUniverse({scopeId:'dup',entities:[entities[0],entities[0]],cameraFrame:frame}),/duplicate upstream identity/);
 const witness=P.continuityWitness({galaxy:galaxyScene,region,neighborhood});
 assert.equal(witness.cameraOwnedHere,false);assert.equal(witness.selectionOwnedHere,false);assert.equal(witness.scaleOwnedHere,false);
-console.log(JSON.stringify({status:'PASS',oracle:'V2X03_MACROCOSM_ORACLES',contract:P.CONTRACT,bounds:{galaxyParticles:galaxyScene.field.bounds.particles,galaxyDecorative:galaxyScene.field.bounds.total,regionObjects:region.objects.length,neighborhoodObjects:neighborhood.objects.length},noGrid:true,deterministicRevisit:true,decorativeNonSelectable:true,externalCamera:true}));
+console.log(JSON.stringify({status:'PASS',oracle:'V2X03_MACROCOSM_ORACLES',contract:P.CONTRACT,bounds:{galaxyParticles:galaxyScene.field.bounds.particles,galaxyDecorative:galaxyScene.field.bounds.total,regionObjects:region.objects.length,neighborhoodObjects:neighborhood.objects.length,maxGalaxyDraws:3},noGrid:true,deterministicRevisit:true,decorativeNonSelectable:true,externalCamera:true,qualityProfiles:true}));

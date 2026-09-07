@@ -15,6 +15,19 @@
       "provides": ["v2x03.galaxy-field"]
     },
     {
+      "id": "v2x03.macrocosm-batches.runtime",
+      "version": "1.0.0",
+      "owner": "product",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/rendering/macro/macrocosm-batches.js",
+      "dependencies": ["v2x03.galaxy-field.runtime"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "V2X-03 bounded batch/LOD planning for macrocosm decorative presentation; reported bytes are modeled upload accounting, not GPU memory measurements.",
+      "provides": ["v2x03.macrocosm-batches"]
+    },
+    {
       "id": "v2x03.region-refinement.runtime",
       "version": "1.0.0",
       "owner": "product",
@@ -61,7 +74,7 @@
       "stage": "full",
       "placement": "resource",
       "source": "config/extensions/v2x-03-macrocosm/provider-catalog.json",
-      "dependencies": ["v2x03.macrocosm-provider.runtime"],
+      "dependencies": ["v2x03.macrocosm-provider.runtime","v2x03.macrocosm-batches.runtime"],
       "authority": "PRESENTATION_ONLY",
       "provenance": "Lane-owned additive provider catalog for V2X-03 macrocosm presentation.",
       "provides": ["v2x03.macrocosm-provider-catalog"]
