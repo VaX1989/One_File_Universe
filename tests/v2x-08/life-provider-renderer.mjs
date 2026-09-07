@@ -29,11 +29,41 @@ const state = createLifeState({
 
 const provider = createLifeProvider({ getState: () => state });
 assert.equal(LIFE_V2_PROVIDER_DESCRIPTOR.authorityClass, 'MODEL_DERIVED_SIMULATION');
+assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.capabilities.includes('LIFE_SELECTION_CRITERION_WITNESS'));
+assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.exclusions.includes('P4_EVENT_ADMISSION'));
+assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.exclusions.includes('UNIVERSAL_MUTATION_RATE'));
 assert.equal(provider.summary().totalAbundance, 400n);
 assert.equal(provider.inspectLineage('lin-provider').aggregateAbundance, 400n);
 assert.deepEqual(provider.inspectPopulation('pop-provider').incomingInteractionIds, []);
 assert.equal(provider.inspectRegion('r-provider').totalRepresentedAbundance, 400n);
 assert.equal(provider.inspectLineage('missing'), null);
+
+const variation = provider.proposeTraitVariation({
+  lineageId: 'lin-provider', eventKey: 'p4:provider-variation', allowedTraitKeys: ['mobility'], maxAbsoluteDeltaPpm: 25_000,
+});
+assert.equal(variation.status, 'PROPOSAL_ONLY');
+const witness = provider.evaluateSelection(variation, {
+  regionId: 'r-provider',
+  criterion: {
+    profileId: 'provider-selection-fixture', traitKey: 'mobility',
+    targetPpm: variation.resultingValuePpm, minimumImprovementPpm: 1, minimumOpportunityPpm: 500_000,
+  },
+});
+assert.equal(witness.satisfied, true);
+const speciationProposal = provider.proposeSpeciation(variation, witness, { eventKey: 'p4:provider-speciation' });
+assert.equal(speciationProposal.status, 'EVENT_PROPOSAL_REQUIRES_EXTERNAL_P4_ADMISSION');
+
+const succession = provider.inspectSuccession('r-provider', {
+  profileId: 'provider-succession-fixture', pioneerMaxAbundance: 50, establishedMinLineages: 1, networkedMinInteractions: 1,
+});
+assert.equal(succession.stage, 'ESTABLISHED');
+assert.equal(succession.authorityClass, 'MODEL_DERIVED_SIMULATION');
+const emptyBefore = createLifeState({
+  eventKey: 'fixture:empty-before', lineages: state.lineages, populations: [], interactions: [], regions: state.regions,
+});
+const recovery = provider.compareRecovery(emptyBefore, 'r-provider');
+assert.equal(recovery.direction, 'INCREASED_REPRESENTED_ABUNDANCE');
+assert.equal(recovery.causationClaimed, false);
 
 const samples = provider.localSamples({ regionId: 'r-provider', maxSamples: 6, viewportKey: 'render-test' });
 assert.equal(samples.length, 6);
@@ -54,4 +84,4 @@ const capped = buildOrganismRenderDescriptors([...samples, ...samples, ...sample
 assert.equal(capped.length, 4);
 assert.ok(capped.every((descriptor) => descriptor.segmentBudget === 3));
 
-console.log('V2X-08 life provider renderer: PASS (17 assertions)');
+console.log('V2X-08 life provider renderer: PASS (27 assertions)');
