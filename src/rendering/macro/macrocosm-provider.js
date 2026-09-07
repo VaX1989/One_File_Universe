@@ -3,11 +3,12 @@
 const O=root.OFU=root.OFU||{};
 const F=O.v2x03GalaxyField,R=O.v2x03RegionRefinement,N=O.v2x03NeighborhoodDepth,S=O.v1x02SpatialUniverse;
 if(!F||!R||!N||!S)throw new Error('V2X-03 macrocosm provider dependencies missing');
-const VERSION='ofu-v2x-03-macrocosm-provider-3',CONTRACT='ofu-v2x-03-macrocosm-consumer-1',AUTHORITY='PRESENTATION_ONLY';
+const VERSION='ofu-v2x-03-macrocosm-provider-4',CONTRACT='ofu-v2x-03-macrocosm-consumer-1',AUTHORITY='PRESENTATION_ONLY';
 const QUALITY=Object.freeze({LOW:Object.freeze({entityLimit:20,field:'LOW'}),MOBILE:Object.freeze({entityLimit:28,field:'MOBILE'}),STANDARD:Object.freeze({entityLimit:48,field:'STANDARD'}),HIGH:Object.freeze({entityLimit:64,field:'HIGH'})});
 const freeze=v=>{if(!v||typeof v!=='object'||Object.isFrozen(v))return v;for(const k of Object.keys(v))freeze(v[k]);return Object.freeze(v)};
+function stableValue(value){if(value===null)return'null';const t=typeof value;if(t==='string')return's:'+value.length+':'+value;if(t==='number'){if(!Number.isFinite(value))throw new TypeError('canonicalKey numbers must be finite');return'n:'+String(Object.is(value,-0)?0:value)}if(t==='boolean')return value?'t':'f';if(Array.isArray(value))return'['+value.map(stableValue).join(',')+']';if(t==='object')return'{'+Object.keys(value).sort().map(k=>stableValue(k)+':'+stableValue(value[k])).join(',')+'}';throw new TypeError('canonicalKey contains unsupported value')}
 function q(name){const key=String(name||'STANDARD').toUpperCase();if(!QUALITY[key])throw new RangeError('unsupported macrocosm quality '+key);return{key,...QUALITY[key]}}
-function upstreamIdentity(e){for(const k of ['canonicalId','entityId','id'])if(typeof e?.[k]==='string'&&e[k])return e[k];if(e?.canonicalKey&&typeof e.canonicalKey==='object')return JSON.stringify(e.canonicalKey,Object.keys(e.canonicalKey).sort());throw new TypeError('stable upstream identity required')}
+function upstreamIdentity(e){for(const k of ['canonicalId','entityId','id'])if(typeof e?.[k]==='string'&&e[k])return e[k];if(e?.canonicalKey&&typeof e.canonicalKey==='object')return'canonicalKey:'+stableValue(e.canonicalKey);throw new TypeError('stable upstream identity required')}
 function normalizeEntities(entities){if(!Array.isArray(entities))throw new TypeError('entities array required');const seen=new Set(),out=[];for(const e of entities){const id=upstreamIdentity(e);if(seen.has(id))throw new Error('duplicate upstream identity '+id);seen.add(id);out.push(e)}return out}
 function buildUniverse({scopeId,entities,cameraFrame,quality='STANDARD',presentationSeed='OFU-V2X03',morphology='UNKNOWN',densityHint=.5}={}){
  const cfg=q(quality),input=normalizeEntities(entities),rep=S.representation({context:'UNIVERSE',scopeId,entities:input,cameraFrame,presentationSeed,morphology,densityHint,limit:cfg.entityLimit});
