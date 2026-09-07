@@ -3,9 +3,15 @@
   "owners": [
     {
       "id": "v2x-05-deep-planet-science",
-      "prefixes": ["v2x05"],
-      "kinds": ["model"],
-      "authorities": ["MODEL_DERIVED_SIMULATION"]
+      "prefixes": [
+        "v2x05"
+      ],
+      "kinds": [
+        "model"
+      ],
+      "authorities": [
+        "MODEL_DERIVED_SIMULATION"
+      ]
     }
   ],
   "canonicalAdmissions": [],
@@ -38,7 +44,8 @@
           "Geodynamic and volcanic outputs are reduced potentials only; resolved plate tectonics and tectonic history remain unsupported.",
           "Optional XUV history changes contextual escape weighting only; no escape rate or integrated physical mass loss is inferred.",
           "Volatile reservoir units preserve exact bounded internal model accounting but are not kilograms, moles, ocean depth or observed inventory.",
-          "Normalized planetary causal attribution is explanatory weighting and must not be interpreted as conserved energy, conserved mass or causal identification."
+          "Normalized planetary causal attribution is explanatory weighting and must not be interpreted as conserved energy, conserved mass or causal identification.",
+          "V2X-06 surface integration withholds water/ice area and surface-owned erosion/aridity/impact inputs; volatile inventory is never converted into area."
         ],
         "evidence": []
       },
@@ -50,7 +57,11 @@
       },
       "lifecycle": "SHIPPING",
       "requires": [
-        {"id": "v1.model.planetology", "version": "1.0.0", "authority": "MODEL_DERIVED_SIMULATION"}
+        {
+          "id": "v1.model.planetology",
+          "version": "1.0.0",
+          "authority": "MODEL_DERIVED_SIMULATION"
+        }
       ],
       "claims": [
         "model.deep-planet-regimes",
@@ -58,15 +69,35 @@
         "model.climate-envelope-not-gcm",
         "model.volatile-partition-exact-ledger",
         "model.geodynamic-potentials",
-        "model.giant-first-class"
+        "model.giant-first-class",
+        "model.surface-integration-honest-withholding"
       ],
-      "operations": ["INSPECT"],
-      "budget": {"entities": 64, "bytes": 262144, "operations": 20000, "queue": 64},
+      "operations": [
+        "INSPECT"
+      ],
+      "budget": {
+        "entities": 64,
+        "bytes": 262144,
+        "operations": 20000,
+        "queue": 64
+      },
       "evidence": [
-        {"id": "v2x05.deep-planet.determinism", "tier": "FAST_LOCAL"},
-        {"id": "v2x05.deep-planet.metamorphic", "tier": "LANE_TARGETED"},
-        {"id": "v2x05.deep-planet.consumer-integration", "tier": "LANE_TARGETED"},
-        {"id": "v2x05.deep-planet.metamorphic-extended", "tier": "LANE_TARGETED"}
+        {
+          "id": "v2x05.deep-planet.determinism",
+          "tier": "FAST_LOCAL"
+        },
+        {
+          "id": "v2x05.deep-planet.metamorphic",
+          "tier": "LANE_TARGETED"
+        },
+        {
+          "id": "v2x05.deep-planet.consumer-integration",
+          "tier": "LANE_TARGETED"
+        },
+        {
+          "id": "v2x05.deep-planet.metamorphic-extended",
+          "tier": "LANE_TARGETED"
+        }
       ],
       "mandatory": false
     }

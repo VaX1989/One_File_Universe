@@ -14,7 +14,7 @@ function freeze(v,seen){
 }
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,Math.round(Number.isFinite(Number(v))?Number(v):0)));
 const safe=(v,a=Number.MIN_SAFE_INTEGER,b=Number.MAX_SAFE_INTEGER)=>Number.isSafeInteger(v)&&v>=a&&v<=b;
-const nonNegativeFinite=v=>Number.isFinite(Number(v))&&Number(v)>=0;
+const nonNegativeFinite=v=>typeof v==='number'&&Number.isFinite(v)&&v>=0;
 function roundDivBigInt(numerator,denominator){
   if(typeof numerator!=='bigint'||typeof denominator!=='bigint'||denominator<=0n)throw new RangeError('positive bigint denominator required');
   const negative=numerator<0n,abs=negative?-numerator:numerator,offset=negative?(denominator-1n)/2n:denominator/2n,q=(abs+offset)/denominator,result=negative?-q:q;
@@ -33,10 +33,10 @@ function ratioPpm(numerator,denominator,maxPpm=Number.MAX_SAFE_INTEGER){
 }
 function normalizePpm(values){
   if(!Array.isArray(values)||values.length===0||values.length>LIMITS.constituents)throw new RangeError('bounded ppm vector required');
-  if(!values.every(v=>nonNegativeFinite(v)&&Number.isSafeInteger(Number(v))))throw new RangeError('finite non-negative safe-integer ppm weights required');
-  const clean=values.map(Number),numericSum=clean.reduce((a,b)=>a+b,0);
+  if(!values.every(v=>nonNegativeFinite(v)&&Number.isSafeInteger(v)))throw new RangeError('finite non-negative safe-integer ppm weights required');
+  const clean=values.slice(),numericSum=clean.reduce((a,b)=>a+b,0);
   if(numericSum===0)return Object.freeze(clean.map(()=>0));
-  const numericFast=Number.isSafeInteger(numericSum)&&clean.every(v=>v===0||v<=Math.floor(Number.MAX_SAFE_INTEGER/PPM));
+  const numericFast=Number.isSafeInteger(numericSum)&&numericSum<=Math.floor(Number.MAX_SAFE_INTEGER/PPM);
   const rows=numericFast?clean.map((v,i)=>{const numerator=v*PPM,q=Math.floor(numerator/numericSum);return {i,q,r:numerator-q*numericSum};}):(()=>{const sum=clean.reduce((a,b)=>a+BigInt(b),0n);return clean.map((v,i)=>{const numerator=BigInt(v)*BigInt(PPM);return {i,q:Number(numerator/sum),r:numerator%sum};});})();
   const base=rows.map(row=>row.q);let left=PPM-base.reduce((a,b)=>a+b,0);
   const rank=rows.slice().sort((a,b)=>a.r===b.r?a.i-b.i:(a.r>b.r?-1:1));
@@ -65,19 +65,19 @@ function validatePpmClosure(values){return values.every(v=>safe(v,0,PPM))&&value
 function classify(planet){
   const x=extract(planet);if(!x.supported)return x;
   const i=x.inputs,c=x.composition,a=x.atmosphere,f=x.formation,n=x.interior;
-  const mass=Number(i.massMilliEarth),radius=Number(i.radiusKm),age=Number(i.ageMyr),bulk=String(i.bulkPriorClass||'UNKNOWN');
+  const mass=i.massMilliEarth,radius=i.radiusKm,age=i.ageMyr,bulk=typeof i.bulkPriorClass==='string'?i.bulkPriorClass:'UNKNOWN';
   if(!BULK.includes(bulk))return unsupported(x.worldIdentity,'UNSUPPORTED_BULK_PRIOR',{bulkPriorClass:bulk});
   if(!safe(mass,10,6356000)||!safe(radius,100,200000))return unsupported(x.worldIdentity,'OUTSIDE_V2X05_MASS_RADIUS_ENVELOPE',{massMilliEarth:safe(mass)?mass:null,radiusKm:safe(radius)?radius:null});
   if(!safe(age,0,20000))return unsupported(x.worldIdentity,'OUTSIDE_V2X05_AGE_ENVELOPE',{ageMyr:Number.isSafeInteger(age)?age:null});
-  const composition=[Number(c.metalPpm),Number(c.silicatePpm),Number(c.icePpm),Number(c.lightVolatilePpm)];
-  if(!validatePpmClosure(composition)||('sumPpm' in c&&Number(c.sumPpm)!==PPM))return unsupported(x.worldIdentity,'COMPOSITION_PPM_NOT_CLOSED',{compositionSumPpm:composition.every(Number.isSafeInteger)?composition.reduce((a,b)=>a+b,0):null});
-  const layers=[Number(n.coreFractionPpm),Number(n.mantleFractionPpm),Number(n.crustFractionPpm)];
+  const composition=[c.metalPpm,c.silicatePpm,c.icePpm,c.lightVolatilePpm];
+  if(!validatePpmClosure(composition)||('sumPpm' in c&&c.sumPpm!==PPM))return unsupported(x.worldIdentity,'COMPOSITION_PPM_NOT_CLOSED',{compositionSumPpm:composition.every(Number.isSafeInteger)?composition.reduce((a,b)=>a+b,0):null});
+  const layers=[n.coreFractionPpm,n.mantleFractionPpm,n.crustFractionPpm];
   if(!validatePpmClosure(layers))return unsupported(x.worldIdentity,'INTERIOR_LAYER_PPM_NOT_CLOSED',{interiorLayerSumPpm:layers.every(Number.isSafeInteger)?layers.reduce((a,b)=>a+b,0):null});
-  const pressure=Number(a.pressureProxyPpm),light=Number(c.lightVolatilePpm),ice=Number(c.icePpm),initial=Number(a.initialInventoryUnits),condensed=Number(a.surfaceCondensedUnits),eq=Number(f.equilibriumTemperatureMilliK);
+  const pressure=a.pressureProxyPpm,light=c.lightVolatilePpm,ice=c.icePpm,initial=a.initialInventoryUnits,condensed=a.surfaceCondensedUnits,eq=f.equilibriumTemperatureMilliK;
   if(!safe(pressure,0,12000000)||!safe(initial,1,LIMITS.exactInventoryUnits)||!safe(condensed,0,LIMITS.exactInventoryUnits)||!safe(eq,20000,3000000))return unsupported(x.worldIdentity,'INVALID_V1_MODELED_STATE');
   const giant=bulk==='ICE_GIANT'||bulk==='GAS_GIANT';
   const subNeptune=!giant&&bulk==='VOLATILE_RICH'&&mass>=2000&&radius>=9000&&light>=220000;
-  const airless=!giant&&!subNeptune&&(pressure<12000||String(a.compositionFamily)==='AIRLESS_OR_TRACE_EXOSPHERE');
+  const airless=!giant&&!subNeptune&&(pressure<12000||a.compositionFamily==='AIRLESS_OR_TRACE_EXOSPHERE');
   const condensedSharePpm=clamp(ratioPpm(condensed,initial,PPM),0,PPM);
   const oceanCandidate=!giant&&!subNeptune&&!airless&&condensedSharePpm>=250000&&eq>=180000&&eq<=390000;
   let regime;
