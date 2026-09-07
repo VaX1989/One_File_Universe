@@ -39,6 +39,26 @@ export function pairwiseHillScreen({ starMassSolar, innerMassEarth, outerMassEar
   });
 }
 
+export function minimumOuterAxisForCircularHillScreen({ starMassSolar, innerMassEarth, outerMassEarth, innerSemiMajorAxisAu }) {
+  const mStar = finite('starMassSolar', starMassSolar);
+  const m1 = finite('innerMassEarth', innerMassEarth);
+  const m2 = finite('outerMassEarth', outerMassEarth);
+  const a1 = finite('innerSemiMajorAxisAu', innerSemiMajorAxisAu);
+  if (mStar <= 0 || m1 <= 0 || m2 <= 0 || a1 <= 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'NON_POSITIVE_INPUT' });
+  const muThird = Math.cbrt((((m1 + m2) * M_EARTH_KG) / (mStar * M_SUN_KG)) / 3);
+  const k = Math.sqrt(3) * muThird;
+  if (k >= 1) return Object.freeze({ status: 'UNSUPPORTED', reason: 'LOW_MASS_HILL_APPROXIMATION_BREAKDOWN' });
+  const minimumAxisRatio = (1 + k) / (1 - k);
+  return Object.freeze({
+    status: 'PRESENT',
+    minimumOuterSemiMajorAxisAu: a1 * minimumAxisRatio,
+    minimumAxisRatio,
+    threshold: 2 * Math.sqrt(3),
+    claim: 'ALGEBRAIC_INVERSION_OF_CIRCULAR_COPLANAR_MUTUAL_HILL_SCREEN',
+    nBodyTruthClaim: false
+  });
+}
+
 export function rockyRadiusPrem({ massEarth, coreMassFraction }) {
   const mass = finite('massEarth', massEarth);
   const cmf = finite('coreMassFraction', coreMassFraction);
@@ -46,6 +66,24 @@ export function rockyRadiusPrem({ massEarth, coreMassFraction }) {
   if (cmf < 0 || cmf > 0.4) return Object.freeze({ status: 'UNSUPPORTED', reason: 'SOURCE_DOMAIN_CMF_0_TO_0_4' });
   const radiusEarth = (1.07 - 0.21 * cmf) * Math.pow(mass, 1 / 3.7);
   return Object.freeze({ status: 'PRESENT', radiusEarth, radiusMeters: radiusEarth * R_EARTH_M, relation: 'PREM_STYLE_ROCKY_REFERENCE', uniqueCompositionInference: false });
+}
+
+export function rockyRadiusPremInterval({ massEarthMin, massEarthMax, coreMassFractionMin, coreMassFractionMax }) {
+  const mLo = finite('massEarthMin', massEarthMin);
+  const mHi = finite('massEarthMax', massEarthMax);
+  const cLo = finite('coreMassFractionMin', coreMassFractionMin);
+  const cHi = finite('coreMassFractionMax', coreMassFractionMax);
+  if (mLo > mHi || cLo > cHi) return Object.freeze({ status: 'UNSUPPORTED', reason: 'REVERSED_INTERVAL' });
+  if (mLo < 1 || mHi > 8 || cLo < 0 || cHi > 0.4) return Object.freeze({ status: 'UNSUPPORTED', reason: 'INTERVAL_EXCEEDS_SOURCE_DOMAIN' });
+  const lower = rockyRadiusPrem({ massEarth: mLo, coreMassFraction: cHi });
+  const upper = rockyRadiusPrem({ massEarth: mHi, coreMassFraction: cLo });
+  return Object.freeze({
+    status: 'PRESENT',
+    radiusEarthMin: lower.radiusEarth,
+    radiusEarthMax: upper.radiusEarth,
+    propagation: 'MONOTONIC_ENDPOINT_ENVELOPE_NO_PROBABILISTIC_POSTERIOR',
+    uniqueCompositionInference: false
+  });
 }
 
 export function hydrostaticScaleHeight({ temperatureK, molarMassKgPerMol, gravityMps2 }) {
