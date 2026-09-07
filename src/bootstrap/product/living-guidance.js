@@ -2,7 +2,7 @@
 'use strict';
 const O=root.OFU=root.OFU||{};if(typeof document==='undefined')return;
 const VERSION='ofu-v11-living-guidance-1',STORAGE_KEY='ofu:v11:living-guidance:1',MAX_ATTACH_ATTEMPTS=120,MAX_MOBILE_EXPOSURE_ATTEMPTS=80,MOBILE_EXPOSURE_STABLE_MS=200;
-const state={version:VERSION,ready:false,attachStatus:'waiting',attachAttempts:0,storage:'memory',dismissed:false,completed:false,progress:{started:false,world:false,surface:false},guideOpen:false,decorations:0,progressUpdates:0,guideOpens:0,mobileExpands:0,mobileFirstFlightExpands:0,mobileFirstFlightOffered:false,mobileFirstFlightExposureAttempts:0,mobileFirstFlightExposureTimeout:false,mobileFirstFlightVisibleSince:0};
+const state={version:VERSION,ready:false,attachStatus:'waiting',attachAttempts:0,storage:'memory',dismissed:false,completed:false,progress:{started:false,world:false,surface:false},guideOpen:false,decorations:0,progressUpdates:0,guideOpens:0,mobileExpands:0,mobileFirstFlightExpands:0,mobileFirstFlightOffered:false,mobileFirstFlightCueVisible:false,mobileFirstFlightExposureAttempts:0,mobileFirstFlightExposureTimeout:false,mobileFirstFlightVisibleSince:0};
 let runtime=null,panel=null,observer=null,scheduled=false,lastProgress='',mobileExposureTimer=0;
 function storageProbe(){try{const s=root.localStorage,k='__ofu_living_guidance_probe__';s.setItem(k,'1');s.removeItem(k);state.storage='localStorage';return s}catch{return null}}
 const storage=storageProbe();
@@ -17,30 +17,33 @@ function makeStep(id,text,done){const li=document.createElement('li');li.dataset
 function primaryActions(){return panel?[...panel.children].find(node=>node.classList?.contains('living-actions'))||null:null}
 function removeFirstFlight(){document.getElementById('living-first-flight')?.remove()}
 function resetVisibleExposure(){state.mobileFirstFlightVisibleSince=0}
+function mobileFirstFlightCue(){return document.querySelector('[data-living-first-flight-cue]')}
+function removeMobileFirstFlightCue(){
+ const cue=mobileFirstFlightCue();cue?.remove();state.mobileFirstFlightCueVisible=false;
+ const toggle=document.querySelector('.mobile-sheet-toggle');if(toggle){const current=String(toggle.getAttribute('aria-label')||'').replace(/; First flight guide available$/,'');if(current)toggle.setAttribute('aria-label',current)}
+}
 function clearMobileExposureRetry(){if(mobileExposureTimer){root.clearTimeout(mobileExposureTimer);mobileExposureTimer=0}resetVisibleExposure()}
-function dismiss(){state.dismissed=true;clearMobileExposureRetry();save();removeFirstFlight();O.productUI?.announce?.('First flight guide dismissed');schedule()}
+function dismiss(){state.dismissed=true;clearMobileExposureRetry();removeMobileFirstFlightCue();save();removeFirstFlight();O.productUI?.announce?.('First flight guide dismissed');schedule()}
 function ensureGuideVisible(){const mobile=O.v08MobileInteraction;if(!state.guideOpen||!mobile?.state?.active||mobile.state.sheet==='expanded'||typeof mobile.expand!=='function')return false;mobile.expand();state.mobileExpands++;return true}
-function firstFlightVisibleOnMobile(box,mobile){
- if(!box||!mobile?.state?.active||mobile.state.sheet!=='expanded')return false;
- const body=box.closest?.('#mobile-sheet-body');if(body&&(body.inert===true||body.getAttribute('aria-hidden')==='true'))return false;
- const rect=box.getBoundingClientRect?.();if(!rect||rect.width<=0||rect.height<=0)return false;
- const style=typeof root.getComputedStyle==='function'?root.getComputedStyle(box):null;if(style&&(style.display==='none'||style.visibility==='hidden'))return false;
+function firstFlightCueVisibleOnMobile(cue,mobile){
+ if(!cue||!mobile?.state?.active||mobile.state.sheet!=='peek')return false;
+ const rect=cue.getBoundingClientRect?.();if(!rect||rect.width<=0||rect.height<=0)return false;
+ const style=typeof root.getComputedStyle==='function'?root.getComputedStyle(cue):null;if(style&&(style.display==='none'||style.visibility==='hidden'))return false;
  return true
 }
 function scheduleFirstFlightExposureRetry(){
  if(mobileExposureTimer||state.mobileFirstFlightOffered||state.dismissed||state.completed||state.progress.started||!compactMobileTarget())return false;
  if(state.mobileFirstFlightExposureAttempts>=MAX_MOBILE_EXPOSURE_ATTEMPTS){state.mobileFirstFlightExposureTimeout=true;resetVisibleExposure();return false}
- mobileExposureTimer=root.setTimeout(()=>{mobileExposureTimer=0;state.mobileFirstFlightExposureAttempts++;ensureFirstFlightVisible()},50);return true
+ mobileExposureTimer=root.setTimeout(()=>{mobileExposureTimer=0;state.mobileFirstFlightExposureAttempts++;ensureMobileFirstFlightCue()},50);return true
 }
-function ensureFirstFlightVisible(){
- const box=document.getElementById('living-first-flight');if(state.mobileFirstFlightOffered||!box||state.dismissed||state.completed||state.progress.started||!compactMobileTarget()){clearMobileExposureRetry();return false}
- const mobile=O.v08MobileInteraction;if(!mobile?.state?.active||typeof mobile.expand!=='function'){resetVisibleExposure();scheduleFirstFlightExposureRetry();return false}
- if(firstFlightVisibleOnMobile(box,mobile)){
-  const now=Date.now();if(!state.mobileFirstFlightVisibleSince)state.mobileFirstFlightVisibleSince=now;
-  if(now-state.mobileFirstFlightVisibleSince>=MOBILE_EXPOSURE_STABLE_MS){if(mobileExposureTimer){root.clearTimeout(mobileExposureTimer);mobileExposureTimer=0}state.mobileFirstFlightOffered=true;return true}
-  scheduleFirstFlightExposureRetry();return false
- }
- resetVisibleExposure();if(mobile.state.sheet!=='expanded'){mobile.expand();state.mobileFirstFlightExpands++}
+function ensureMobileFirstFlightCue(){
+ const mobile=O.v08MobileInteraction;if(state.dismissed||state.completed||state.progress.started||!compactMobileTarget()){clearMobileExposureRetry();removeMobileFirstFlightCue();return false}
+ if(!mobile?.state?.active){removeMobileFirstFlightCue();scheduleFirstFlightExposureRetry();return false}
+ const toggle=document.querySelector('.mobile-sheet-toggle'),label=toggle?.querySelector('.mobile-sheet-toggle-label');if(!toggle||!label){removeMobileFirstFlightCue();scheduleFirstFlightExposureRetry();return false}
+ let cue=mobileFirstFlightCue();if(!cue){cue=document.createElement('span');cue.dataset.livingFirstFlightCue='';cue.textContent=' · First flight';label.append(cue);state.decorations++}
+ const aria=String(toggle.getAttribute('aria-label')||'').replace(/; First flight guide available$/,'');toggle.setAttribute('aria-label',aria+'; First flight guide available');state.mobileFirstFlightCueVisible=firstFlightCueVisibleOnMobile(cue,mobile);
+ if(state.mobileFirstFlightOffered)return state.mobileFirstFlightCueVisible;
+ if(state.mobileFirstFlightCueVisible){const now=Date.now();if(!state.mobileFirstFlightVisibleSince)state.mobileFirstFlightVisibleSince=now;if(now-state.mobileFirstFlightVisibleSince>=MOBILE_EXPOSURE_STABLE_MS){if(mobileExposureTimer){root.clearTimeout(mobileExposureTimer);mobileExposureTimer=0}state.mobileFirstFlightOffered=true;return true}}else resetVisibleExposure();
  scheduleFirstFlightExposureRetry();return false
 }
 function toggleGuide(force){const next=typeof force==='boolean'?force:!state.guideOpen;if(next===state.guideOpen){if(next)ensureGuideVisible();return}state.guideOpen=next;if(next){state.guideOpens++;ensureGuideVisible()}schedule();O.productUI?.announce?.(next?'Exploration controls opened':'Exploration controls closed')}
@@ -63,11 +66,11 @@ function renderGuide(anchor){
 }
 function render(){
  if(!runtime||!panel)return false;const s=runtime.snapshot(),p=progress(s),nextProgress={started:p.started,world:p.world,surface:p.surface};if(nextProgress.started!==state.progress.started||nextProgress.world!==state.progress.world||nextProgress.surface!==state.progress.surface){state.progress=nextProgress;state.progressUpdates++;save()}const stamp=JSON.stringify(state.progress);if(stamp!==lastProgress)lastProgress=stamp;
- if(state.progress.started&&state.progress.world&&state.progress.surface&&!state.completed){state.completed=true;clearMobileExposureRetry();save();removeFirstFlight();O.productUI?.announce?.('First flight complete')}
- if(state.guideOpen)ensureGuideVisible();const control=ensureControlButton(),anchor=control?.closest('.living-actions')||primaryActions();renderFirstFlight(state.progress,stamp,anchor);ensureFirstFlightVisible();renderGuide(anchor);state.ready=true;return true
+ if(state.progress.started&&state.progress.world&&state.progress.surface&&!state.completed){state.completed=true;clearMobileExposureRetry();removeMobileFirstFlightCue();save();removeFirstFlight();O.productUI?.announce?.('First flight complete')}
+ if(state.guideOpen)ensureGuideVisible();const control=ensureControlButton(),anchor=control?.closest('.living-actions')||primaryActions();renderFirstFlight(state.progress,stamp,anchor);ensureMobileFirstFlightCue();renderGuide(anchor);state.ready=true;return true
 }
 function schedule(){if(scheduled)return;scheduled=true;(root.requestAnimationFrame||((fn)=>root.setTimeout(fn,0)))(()=>{scheduled=false;render()})}
 function onKeydown(event){if(event.defaultPrevented||event.altKey||event.ctrlKey||event.metaKey)return;const tag=event.target?.tagName;if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'||event.target?.isContentEditable)return;if(event.key==='?'){event.preventDefault();toggleGuide()}}
 function attach(){state.attachAttempts++;const product=O.v1LivingProduct,next=document.getElementById('living-panel');if(!product?.runtime||!next){if(state.attachAttempts>=MAX_ATTACH_ATTEMPTS){state.attachStatus='timeout';return}root.setTimeout(attach,50);return}runtime=product.runtime;panel=next;state.attachStatus='attached';runtime.onChange?.(schedule);observer=new MutationObserver(schedule);observer.observe(panel,{childList:true,subtree:true});render()}
-load();root.addEventListener('keydown',onKeydown,false);root.addEventListener('resize',schedule,{passive:true});const api=Object.freeze({VERSION,STORAGE_KEY,MAX_ATTACH_ATTEMPTS,MAX_MOBILE_EXPOSURE_ATTEMPTS,MOBILE_EXPOSURE_STABLE_MS,state,progress,render,dismiss,toggleGuide,firstFlightVisibleOnMobile,snapshot:()=>Object.freeze({...state,progress:runtime?progress(runtime.snapshot()):Object.freeze({...state.progress}),input:coarseInput()?'coarse':'fine',compactMobileTarget:compactMobileTarget()})});O.v11LivingGuidance=api;root.__OFU_LIVING_GUIDANCE__=api;attach();
+load();root.addEventListener('keydown',onKeydown,false);root.addEventListener('resize',schedule,{passive:true});const api=Object.freeze({VERSION,STORAGE_KEY,MAX_ATTACH_ATTEMPTS,MAX_MOBILE_EXPOSURE_ATTEMPTS,MOBILE_EXPOSURE_STABLE_MS,state,progress,render,dismiss,toggleGuide,firstFlightCueVisibleOnMobile,snapshot:()=>Object.freeze({...state,progress:runtime?progress(runtime.snapshot()):Object.freeze({...state.progress}),input:coarseInput()?'coarse':'fine',compactMobileTarget:compactMobileTarget()})});O.v11LivingGuidance=api;root.__OFU_LIVING_GUIDANCE__=api;attach();
 })(typeof globalThis!=='undefined'?globalThis:this);
