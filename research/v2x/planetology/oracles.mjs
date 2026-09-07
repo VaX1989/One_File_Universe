@@ -15,34 +15,53 @@ export function greyAtmosphereSurfaceTemperature({ effectiveTemperatureK, infrar
   return Object.freeze({ status: 'PRESENT', temperatureK: teff * factor, assumptions: 'PLANE_PARALLEL_GREY_RADIATIVE_EQUILIBRIUM_REFERENCE', climateTruthClaim: false });
 }
 
-export function classifyEscapeRegime({ jeansParameter, hydrogenSupplyLimited = false, xuvInputsAvailable = false, postDiskBoilOffPossible = false }) {
+export function classifyEscapeRegime({ jeansParameter, hydrogenSupplyLimited = false, xuvInputsAvailable = false, postDiskBoilOffPossible = false, thresholdSetId, thresholdSetHash, hydrodynamicJeansMax = 3, jeansLikeMin = 30, boilOffJeansMax = 20 }) {
   const lambda = finite('jeansParameter', jeansParameter);
-  if (lambda <= 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'INVALID_JEANS_PARAMETER' });
-  if (hydrogenSupplyLimited) return Object.freeze({ status: 'PRESENT', regime: 'DIFFUSION_LIMITED_CANDIDATE', rateModelAuthorized: false });
-  if (postDiskBoilOffPossible && lambda < 20) return Object.freeze({ status: 'PRESENT', regime: 'BOIL_OFF_OR_HYDRODYNAMIC_CANDIDATE', rateModelAuthorized: false });
-  if (lambda < 3) return Object.freeze({ status: 'PRESENT', regime: 'HYDRODYNAMIC_ESCAPE_CANDIDATE', rateModelAuthorized: false });
-  if (lambda > 30) return Object.freeze({ status: 'PRESENT', regime: 'JEANS_LIKE_CANDIDATE', rateModelAuthorized: false });
-  if (xuvInputsAvailable) return Object.freeze({ status: 'PRESENT', regime: 'ENERGY_LIMITED_EVALUATION_CANDIDATE', rateModelAuthorized: false });
-  return Object.freeze({ status: 'RESEARCH_REQUIRED', regime: 'AMBIGUOUS_ESCAPE_REGIME', rateModelAuthorized: false });
+  const hydroMax = finite('hydrodynamicJeansMax', hydrodynamicJeansMax);
+  const jeansMin = finite('jeansLikeMin', jeansLikeMin);
+  const boilMax = finite('boilOffJeansMax', boilOffJeansMax);
+  if (!thresholdSetId || !thresholdSetHash) return Object.freeze({ status: 'RESEARCH_REQUIRED', reason: 'ESCAPE_THRESHOLD_SET_ID_AND_HASH_REQUIRED', rateModelAuthorized: false });
+  if (lambda <= 0 || hydroMax <= 0 || jeansMin <= hydroMax || boilMax <= 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'INVALID_JEANS_PARAMETER_OR_THRESHOLD_SET' });
+  const thresholdSemantics = Object.freeze({ hydrodynamicJeansMax: hydroMax, jeansLikeMin: jeansMin, boilOffJeansMax: boilMax, universalThresholdClaim: false });
+  if (hydrogenSupplyLimited) return Object.freeze({ status: 'PRESENT', regime: 'DIFFUSION_LIMITED_CANDIDATE', thresholdSetId, thresholdSetHash, thresholdSemantics, rateModelAuthorized: false });
+  if (postDiskBoilOffPossible && lambda < boilMax) return Object.freeze({ status: 'PRESENT', regime: 'BOIL_OFF_OR_HYDRODYNAMIC_CANDIDATE', thresholdSetId, thresholdSetHash, thresholdSemantics, rateModelAuthorized: false });
+  if (lambda < hydroMax) return Object.freeze({ status: 'PRESENT', regime: 'HYDRODYNAMIC_ESCAPE_CANDIDATE', thresholdSetId, thresholdSetHash, thresholdSemantics, rateModelAuthorized: false });
+  if (lambda > jeansMin) return Object.freeze({ status: 'PRESENT', regime: 'JEANS_LIKE_CANDIDATE', thresholdSetId, thresholdSetHash, thresholdSemantics, rateModelAuthorized: false });
+  if (xuvInputsAvailable) return Object.freeze({ status: 'PRESENT', regime: 'ENERGY_LIMITED_EVALUATION_CANDIDATE', thresholdSetId, thresholdSetHash, thresholdSemantics, rateModelAuthorized: false });
+  return Object.freeze({ status: 'RESEARCH_REQUIRED', regime: 'AMBIGUOUS_ESCAPE_REGIME', thresholdSetId, thresholdSetHash, thresholdSemantics, rateModelAuthorized: false });
 }
 
-export function convectionDiagnostic({ rayleighNumber, nusseltNumber, viscosityContrast }) {
+export function convectionDiagnostic({ rayleighNumber, nusseltNumber, viscosityContrast, parameterSetId, parameterSetHash, smallContrastMax = 1e2, stagnantContrastMin = 1e5 }) {
   const ra = finite('rayleighNumber', rayleighNumber);
   const nu = finite('nusseltNumber', nusseltNumber);
   const contrast = finite('viscosityContrast', viscosityContrast);
-  if (ra <= 0 || nu <= 0 || contrast <= 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'NON_POSITIVE_DIMENSIONLESS_INPUT' });
-  const regime = contrast < 1e2 ? 'SMALL_VISCOSITY_CONTRAST' : contrast < 1e5 ? 'TRANSITIONAL' : 'STAGNANT_LID_LIKE';
-  return Object.freeze({ status: 'PRESENT', rayleighNumber: ra, nusseltNumber: nu, viscosityContrast: contrast, regime, plateTectonicsTruthClaim: false });
+  const smallMax = finite('smallContrastMax', smallContrastMax);
+  const stagnantMin = finite('stagnantContrastMin', stagnantContrastMin);
+  if (!parameterSetId || !parameterSetHash) return Object.freeze({ status: 'RESEARCH_REQUIRED', reason: 'CONVECTION_REGIME_PARAMETER_SET_REQUIRED', plateTectonicsTruthClaim: false });
+  if (ra <= 0 || nu <= 0 || contrast <= 0 || smallMax <= 0 || stagnantMin <= smallMax) return Object.freeze({ status: 'UNSUPPORTED', reason: 'NON_POSITIVE_OR_INVALID_DIMENSIONLESS_INPUT' });
+  const regime = contrast < smallMax ? 'SMALL_VISCOSITY_CONTRAST' : contrast < stagnantMin ? 'TRANSITIONAL' : 'STAGNANT_LID_LIKE';
+  return Object.freeze({ status: 'PRESENT', rayleighNumber: ra, nusseltNumber: nu, viscosityContrast: contrast, regime, parameterSetId, parameterSetHash, thresholds: Object.freeze({ smallContrastMax: smallMax, stagnantContrastMin: stagnantMin, universalThresholdClaim: false }), plateTectonicsTruthClaim: false });
 }
 
 export function volatileLedger({ surfaceKg, atmosphereKg, interiorKg, deltaSurfaceKg = 0, deltaAtmosphereKg = 0, deltaInteriorKg = 0, externalSourceKg = 0, externalSinkKg = 0 }) {
   const values = { surfaceKg, atmosphereKg, interiorKg, deltaSurfaceKg, deltaAtmosphereKg, deltaInteriorKg, externalSourceKg, externalSinkKg };
   for (const [name, value] of Object.entries(values)) finite(name, value);
   if (surfaceKg < 0 || atmosphereKg < 0 || interiorKg < 0 || externalSourceKg < 0 || externalSinkKg < 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'NEGATIVE_RESERVOIR_OR_EXTERNAL_FLUX' });
+  const afterSurfaceKg = surfaceKg + deltaSurfaceKg;
+  const afterAtmosphereKg = atmosphereKg + deltaAtmosphereKg;
+  const afterInteriorKg = interiorKg + deltaInteriorKg;
+  if (afterSurfaceKg < 0 || afterAtmosphereKg < 0 || afterInteriorKg < 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'NEGATIVE_POST_STEP_RESERVOIR', afterSurfaceKg, afterAtmosphereKg, afterInteriorKg });
   const before = surfaceKg + atmosphereKg + interiorKg;
-  const after = before + deltaSurfaceKg + deltaAtmosphereKg + deltaInteriorKg;
+  const after = afterSurfaceKg + afterAtmosphereKg + afterInteriorKg;
   const expectedAfter = before + externalSourceKg - externalSinkKg;
-  return Object.freeze({ status: Math.abs(after - expectedAfter) <= Math.max(1e-9 * Math.max(before, expectedAfter, 1), 1e-6) ? 'CONSERVED' : 'NON_CONSERVING', beforeKg: before, afterKg: after, expectedAfterKg: expectedAfter, residualKg: after - expectedAfter });
+  return Object.freeze({
+    status: Math.abs(after - expectedAfter) <= Math.max(1e-9 * Math.max(before, expectedAfter, 1), 1e-6) ? 'CONSERVED' : 'NON_CONSERVING',
+    beforeKg: before,
+    afterKg: after,
+    expectedAfterKg: expectedAfter,
+    residualKg: after - expectedAfter,
+    reservoirsAfterKg: Object.freeze({ surface: afterSurfaceKg, atmosphere: afterAtmosphereKg, interior: afterInteriorKg })
+  });
 }
 
 export function schlichtingIsothermalImpactLoss({ momentumRatioX }) {
@@ -52,35 +71,37 @@ export function schlichtingIsothermalImpactLoss({ momentumRatioX }) {
   return Object.freeze({ status: 'PRESENT', lossFraction: Math.max(0, Math.min(1, lossFraction)), assumptions: 'SCHLICHTING_SARI_YALINEWICH_2015_ISOTHERMAL_SCENARIO', universalImpactHistoryClaim: false });
 }
 
-export function streamPowerIncisionScenario({ erodibilityK, drainageAreaM2, slope, areaExponentM, slopeExponentN, parameterSetId, parameterSetHash }) {
+export function streamPowerIncisionScenario({ erodibilityK, drainageAreaM2, slope, areaExponentM, slopeExponentN, parameterSetId, parameterSetHash, timeUnitId }) {
   const K = finite('erodibilityK', erodibilityK);
   const area = finite('drainageAreaM2', drainageAreaM2);
   const s = finite('slope', slope);
   const m = finite('areaExponentM', areaExponentM);
   const n = finite('slopeExponentN', slopeExponentN);
-  if (!parameterSetId || !parameterSetHash) return Object.freeze({ status: 'UNSUPPORTED', reason: 'PARAMETER_SET_ID_AND_HASH_REQUIRED' });
+  if (!parameterSetId || !parameterSetHash || !timeUnitId) return Object.freeze({ status: 'UNSUPPORTED', reason: 'PARAMETER_SET_ID_HASH_AND_TIME_UNIT_REQUIRED' });
   if (K < 0 || area < 0 || s < 0 || m < 0 || n <= 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'INVALID_STREAM_POWER_PARAMETER' });
   const incisionRateMPerTimeUnit = K * Math.pow(area, m) * Math.pow(s, n);
   if (!Number.isFinite(incisionRateMPerTimeUnit)) return Object.freeze({ status: 'UNSUPPORTED', reason: 'NON_FINITE_INCISION_RATE' });
   return Object.freeze({
     status: 'MODEL_DERIVED_SCENARIO',
     incisionRateMPerTimeUnit,
+    timeUnitId,
     parameterSetId,
     parameterSetHash,
     exponents: Object.freeze({ m, n }),
     assumptions: 'DETACHMENT_LIMITED_STREAM_POWER_E_EQUALS_K_A_POW_M_S_POW_N',
-    unitsRequireExternalBinding: true,
+    coefficientUnitsDependOnExponents: true,
     lithologyClimateCalibrationClaim: false,
     universalErosionTruthClaim: false
   });
 }
 
-export function upliftIncisionElevationStep({ elevationM, upliftRateMPerTimeUnit, incisionRateMPerTimeUnit, durationTimeUnits, maxAbsoluteElevationStepM = 1000 }) {
+export function upliftIncisionElevationStep({ elevationM, upliftRateMPerTimeUnit, incisionRateMPerTimeUnit, durationTimeUnits, timeUnitId, maxAbsoluteElevationStepM = 1000 }) {
   const z0 = finite('elevationM', elevationM);
   const uplift = finite('upliftRateMPerTimeUnit', upliftRateMPerTimeUnit);
   const incision = finite('incisionRateMPerTimeUnit', incisionRateMPerTimeUnit);
   const dt = finite('durationTimeUnits', durationTimeUnits);
   const maxStep = finite('maxAbsoluteElevationStepM', maxAbsoluteElevationStepM);
+  if (!timeUnitId) return Object.freeze({ status: 'UNSUPPORTED', reason: 'TIME_UNIT_ID_REQUIRED' });
   if (uplift < 0 || incision < 0 || dt < 0 || maxStep <= 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'NEGATIVE_RATE_TIME_OR_INVALID_STEP_BOUND' });
   const upliftM = uplift * dt;
   const incisionM = incision * dt;
@@ -93,6 +114,7 @@ export function upliftIncisionElevationStep({ elevationM, upliftRateMPerTimeUnit
     upliftM,
     incisionM,
     deltaM,
+    timeUnitId,
     terrainHistoryTruthClaim: false
   });
 }
