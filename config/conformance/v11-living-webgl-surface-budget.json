@@ -1,0 +1,33 @@
+{
+  "schema": "ofu-conformance-1",
+  "tests": [
+    {
+      "id": "v1.render-surface-budget",
+      "owner": "v1",
+      "tier": "LANE_TARGETED",
+      "command": [
+        "node",
+        "tests/v1/rendering/surface-budget-conformance.mjs"
+      ],
+      "providers": [
+        "v1.scene.living-world"
+      ],
+      "oracle": "v1-render-surface-budget-oracle-1",
+      "timeoutMs": 30000
+    },
+    {
+      "id": "v1.living-webgl-surface-budget",
+      "owner": "v1",
+      "tier": "LANE_TARGETED",
+      "command": [
+        "node",
+        "tests/v1/rendering/browser-living-webgl-surface-budget.mjs"
+      ],
+      "providers": [
+        "v1.scene.living-world"
+      ],
+      "oracle": "v1-living-webgl-surface-budget-browser-1",
+      "timeoutMs": 45000
+    }
+  ]
+}
