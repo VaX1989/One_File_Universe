@@ -20,23 +20,14 @@ export function pairwiseHillScreen({ starMassSolar, innerMassEarth, outerMassEar
   const e1 = finite('eccentricityInner', eccentricityInner);
   const e2 = finite('eccentricityOuter', eccentricityOuter);
   const inc = finite('mutualInclinationDeg', mutualInclinationDeg);
-
   if (mStar <= 0 || m1 <= 0 || m2 <= 0 || a1 <= 0 || a2 <= a1) return Object.freeze({ status: 'UNSUPPORTED', reason: 'NON_POSITIVE_OR_UNORDERED_INPUT' });
   if (e1 < 0 || e2 < 0 || e1 >= 1 || e2 >= 1 || inc < 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'INVALID_ORBIT_ELEMENT' });
   if (e1 > 0.05 || e2 > 0.05 || inc > 2) return Object.freeze({ status: 'DYNAMICAL_ANALYSIS_REQUIRED', reason: 'OUTSIDE_CIRCULAR_COPLANAR_SCREEN_DOMAIN' });
-
   const planetToStarMassRatio = ((m1 + m2) * M_EARTH_KG) / (mStar * M_SUN_KG);
   const mutualHillRadiusAu = ((a1 + a2) / 2) * Math.cbrt(planetToStarMassRatio / 3);
   const delta = (a2 - a1) / mutualHillRadiusAu;
   const threshold = 2 * Math.sqrt(3);
-  return Object.freeze({
-    status: delta > threshold ? 'SCREENED_HILL_STABLE' : 'DYNAMICAL_ANALYSIS_REQUIRED',
-    deltaMutualHill: delta,
-    threshold,
-    mutualHillRadiusAu,
-    claim: 'PAIRWISE_LOW_E_LOW_I_HILL_SCREEN_ONLY',
-    nBodyTruthClaim: false
-  });
+  return Object.freeze({ status: delta > threshold ? 'SCREENED_HILL_STABLE' : 'DYNAMICAL_ANALYSIS_REQUIRED', deltaMutualHill: delta, threshold, mutualHillRadiusAu, claim: 'PAIRWISE_LOW_E_LOW_I_HILL_SCREEN_ONLY', nBodyTruthClaim: false });
 }
 
 export function minimumOuterAxisForCircularHillScreen({ starMassSolar, innerMassEarth, outerMassEarth, innerSemiMajorAxisAu }) {
@@ -49,14 +40,7 @@ export function minimumOuterAxisForCircularHillScreen({ starMassSolar, innerMass
   const k = Math.sqrt(3) * muThird;
   if (k >= 1) return Object.freeze({ status: 'UNSUPPORTED', reason: 'LOW_MASS_HILL_APPROXIMATION_BREAKDOWN' });
   const minimumAxisRatio = (1 + k) / (1 - k);
-  return Object.freeze({
-    status: 'PRESENT',
-    minimumOuterSemiMajorAxisAu: a1 * minimumAxisRatio,
-    minimumAxisRatio,
-    threshold: 2 * Math.sqrt(3),
-    claim: 'ALGEBRAIC_INVERSION_OF_CIRCULAR_COPLANAR_MUTUAL_HILL_SCREEN',
-    nBodyTruthClaim: false
-  });
+  return Object.freeze({ status: 'PRESENT', minimumOuterSemiMajorAxisAu: a1 * minimumAxisRatio, minimumAxisRatio, threshold: 2 * Math.sqrt(3), claim: 'ALGEBRAIC_INVERSION_OF_CIRCULAR_COPLANAR_MUTUAL_HILL_SCREEN', nBodyTruthClaim: false });
 }
 
 export function rockyRadiusPrem({ massEarth, coreMassFraction }) {
@@ -77,13 +61,7 @@ export function rockyRadiusPremInterval({ massEarthMin, massEarthMax, coreMassFr
   if (mLo < 1 || mHi > 8 || cLo < 0 || cHi > 0.4) return Object.freeze({ status: 'UNSUPPORTED', reason: 'INTERVAL_EXCEEDS_SOURCE_DOMAIN' });
   const lower = rockyRadiusPrem({ massEarth: mLo, coreMassFraction: cHi });
   const upper = rockyRadiusPrem({ massEarth: mHi, coreMassFraction: cLo });
-  return Object.freeze({
-    status: 'PRESENT',
-    radiusEarthMin: lower.radiusEarth,
-    radiusEarthMax: upper.radiusEarth,
-    propagation: 'MONOTONIC_ENDPOINT_ENVELOPE_NO_PROBABILISTIC_POSTERIOR',
-    uniqueCompositionInference: false
-  });
+  return Object.freeze({ status: 'PRESENT', radiusEarthMin: lower.radiusEarth, radiusEarthMax: upper.radiusEarth, propagation: 'MONOTONIC_ENDPOINT_ENVELOPE_NO_PROBABILISTIC_POSTERIOR', uniqueCompositionInference: false });
 }
 
 export function hydrostaticScaleHeight({ temperatureK, molarMassKgPerMol, gravityMps2 }) {
@@ -92,6 +70,42 @@ export function hydrostaticScaleHeight({ temperatureK, molarMassKgPerMol, gravit
   const g = finite('gravityMps2', gravityMps2);
   if (t <= 0 || mu <= 0 || g <= 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'NON_POSITIVE_THERMODYNAMIC_INPUT' });
   return Object.freeze({ status: 'PRESENT', scaleHeightMeters: (R_GAS * t) / (mu * g), assumptions: 'IDEAL_GAS_ISOTHERMAL_HYDROSTATIC_REFERENCE' });
+}
+
+export function bandpassDistanceModulus({ absoluteMagnitude, distancePc, extinctionMagnitude, bandpassId, magnitudeSystem = 'UNSPECIFIED' }) {
+  const M = finite('absoluteMagnitude', absoluteMagnitude);
+  const d = finite('distancePc', distancePc);
+  const extinction = finite('extinctionMagnitude', extinctionMagnitude);
+  if (!bandpassId) return Object.freeze({ status: 'UNSUPPORTED', reason: 'BANDPASS_ID_REQUIRED' });
+  if (d <= 0 || extinction < 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'INVALID_DISTANCE_OR_EXTINCTION' });
+  const distanceModulus = 5 * Math.log10(d) - 5;
+  return Object.freeze({
+    status: 'PRESENT',
+    bandpassId,
+    magnitudeSystem,
+    absoluteMagnitude: M,
+    distancePc: d,
+    extinctionMagnitude: extinction,
+    distanceModulus,
+    apparentMagnitude: M + distanceModulus + extinction,
+    assumptions: 'EUCLIDEAN_DISTANCE_MODULUS_WITH_EXPLICIT_BANDPASS_EXTINCTION_INPUT',
+    surveyCompletenessClaim: false,
+    extinctionModelClaim: false
+  });
+}
+
+export function angularObservabilityGeometry({ distancePc, projectedSeparationAu }) {
+  const d = finite('distancePc', distancePc);
+  const separation = finite('projectedSeparationAu', projectedSeparationAu);
+  if (d <= 0 || separation < 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'INVALID_GEOMETRY_INPUT' });
+  return Object.freeze({
+    status: 'PRESENT',
+    parallaxArcsec: 1 / d,
+    projectedAngularSeparationArcsec: separation / d,
+    assumptions: 'SMALL_ANGLE_GEOMETRY_1_AU_AT_1_PC_EQUALS_1_ARCSEC',
+    instrumentResolutionClaim: false,
+    detectionProbabilityClaim: false
+  });
 }
 
 export const constants = Object.freeze({ G_SI, M_EARTH_KG, M_SUN_KG, R_EARTH_M, R_GAS });
