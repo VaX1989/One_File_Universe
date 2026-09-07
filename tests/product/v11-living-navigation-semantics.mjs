@@ -16,6 +16,7 @@ assert.match(source,/setCurrent\(button,active\?'step':null\)/,'active scale mus
 assert.match(source,/setCurrent\(button,button===exact\?'location':null\)/,'exact breadcrumb stage must expose current location semantics');
 assert.match(source,/data-living-current-context|livingCurrentContext/,'deeper stages missing from the legacy breadcrumb trail need a real current-context node');
 assert.match(source,/STAGE_LABELS=Object\.freeze\(\{NEIGHBORHOOD:'Stellar neighborhood',APPROACH:'Approach'/,'deeper navigation context labels must be explicit and product-readable');
+assert.match(source,/if\(current\.textContent!==label\)current\.textContent=label/,'synthetic current context updates must be idempotent so their MutationObserver cannot self-schedule forever');
 assert.match(source,/snapshot\.micro\?'MICRO'/,'micro regimes must map to the single Micro rail destination');
 assert.match(source,/MutationObserver/,'deterministically replaced chrome must be resynchronized');
 assert.match(source,/runtime\.onChange\?\.\(snapshot=>sync\(snapshot\)\)/,'runtime navigation must resynchronize semantics');
