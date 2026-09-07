@@ -3,6 +3,7 @@
 const O=root.OFU=root.OFU||{};
 const MAX_SAVE_BYTES=1024*1024,SCHEMA=1,PROTOCOL='ofu-canonical-v1';
 const LIMITS=Object.freeze({events:1024,depth:16,nodes:4096,arrayItems:1024,objectKeys:256,stringBytes:16384,keyBytes:256,eventTypeBytes:256});
+const MAX_PARSE_DEPTH=LIMITS.depth+8;
 const enc=new TextEncoder(),reservedKeys=new Set(['__proto__','prototype','constructor']);
 function fail(message){throw new Error('portable save validation: '+message);}
 function isRecord(v){if(!v||typeof v!=='object'||Array.isArray(v))return false;const p=Object.getPrototypeOf(v);return p===Object.prototype||p===null;}
@@ -34,9 +35,10 @@ function normalizeEvent(e,i){if(!isRecord(e))fail('event '+i+' must be an object
 function payload({masterSeed256,manifestHash,events=[]}){if(typeof masterSeed256!=='string'||!/^[0-9a-f]{64}$/i.test(masterSeed256))fail('invalid seed');if(typeof manifestHash!=='string'||!/^[0-9a-f]{64}$/i.test(manifestHash))fail('invalid manifest');if(!Array.isArray(events)||events.length>LIMITS.events)fail('invalid events');return {schemaVersion:SCHEMA,canonicalProtocolVersion:PROTOCOL,universeIdentity:{masterSeed256:masterSeed256.toLowerCase(),generatorManifestHash:manifestHash.toLowerCase()},events:events.map(normalizeEvent)};}
 function stableJson(v){if(v===null)return'null';if(typeof v==='boolean')return v?'true':'false';if(typeof v==='number'){if(!Number.isSafeInteger(v))fail('non-safe number in save container');return String(v);}if(typeof v==='string')return JSON.stringify(v);if(Array.isArray(v))return'['+v.map(stableJson).join(',')+']';if(!isRecord(v))fail('unsupported value in save container');return'{'+Object.keys(v).sort().map(k=>JSON.stringify(k)+':'+stableJson(v[k])).join(',')+'}';}
 function assertSaveTextBound(text){if(text.length>MAX_SAVE_BYTES)fail('save exceeds limit');if(enc.encode(text).length>MAX_SAVE_BYTES)fail('save exceeds limit');}
+function assertSaveParseBound(text){let depth=0,inString=false,escaped=false;for(let i=0;i<text.length;i++){const c=text.charCodeAt(i);if(inString){if(escaped){escaped=false;continue;}if(c===0x5c){escaped=true;continue;}if(c===0x22)inString=false;continue;}if(c===0x22){inString=true;continue;}if(c===0x7b||c===0x5b){depth++;if(depth>MAX_PARSE_DEPTH)fail('save JSON exceeds parser nesting limit');continue;}if((c===0x7d||c===0x5d)&&depth>0)depth--;}}
 function exportPortable(input){const p=payload(input),digest=O.canonical.digestObject(p),text=stableJson({format:'OFU-SAVE',schemaVersion:SCHEMA,payload:p,integrity:{algorithm:'SHA-256',digest}});assertSaveTextBound(text);return text;}
 function importPortable(text,expected={}){
-  if(typeof text!=='string')fail('save must be text');assertSaveTextBound(text);let c;try{c=JSON.parse(text);}catch{fail('malformed save');}
+  if(typeof text!=='string')fail('save must be text');assertSaveTextBound(text);assertSaveParseBound(text);let c;try{c=JSON.parse(text);}catch{fail('malformed save');}
   assertExactKeys(c,['format','schemaVersion','payload','integrity'],'save container');if(c.format!=='OFU-SAVE')fail('unsupported save format');if(c.schemaVersion!==SCHEMA)fail('unsupported save version');
   assertExactKeys(c.payload,['schemaVersion','canonicalProtocolVersion','universeIdentity','events'],'save payload');if(c.payload.schemaVersion!==SCHEMA)fail('payload schema version mismatch');if(c.payload.canonicalProtocolVersion!==PROTOCOL)fail('unsupported canonical protocol version');
   assertExactKeys(c.payload.universeIdentity,['masterSeed256','generatorManifestHash'],'Universe Identity');
@@ -47,5 +49,5 @@ function importPortable(text,expected={}){
   if(expected.manifestHash&&p.universeIdentity.generatorManifestHash!==String(expected.manifestHash).toLowerCase())fail('manifest mismatch');if(expected.masterSeed256&&p.universeIdentity.masterSeed256!==String(expected.masterSeed256).toLowerCase())fail('universe identity mismatch');return p;
 }
 function stateDigest(p){return O.canonical.digestObject(p);}
-O.save={SCHEMA,PROTOCOL,MAX_SAVE_BYTES,LIMITS,payload,exportPortable,importPortable,stateDigest,normalizeData,stableJson};
+O.save={SCHEMA,PROTOCOL,MAX_SAVE_BYTES,MAX_PARSE_DEPTH,LIMITS,payload,exportPortable,importPortable,stateDigest,normalizeData,stableJson};
 })(typeof globalThis!=='undefined'?globalThis:this);
