@@ -3,7 +3,7 @@
   "components": [
     {
       "id": "px.providers.v2x02-camera-spatial-travel",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "owner": "v2x-02-camera-spatial-travel",
       "kind": "data",
       "stage": "foundation",
@@ -11,12 +11,12 @@
       "source": "src/v2x-02-camera-spatial-travel/provider-catalog.json",
       "dependencies": [],
       "authority": "PRESENTATION_ONLY",
-      "provenance": "V2X-02 additive provider catalog. It exposes presentation travel capability only and does not alter canonical identity, selection, scientific state, persistence or central routing authority.",
+      "provenance": "V2X-02 additive provider catalog for bounded continuous and reversible presentation travel. It exposes no canonical identity, selection, scientific state, persistence or central routing authority.",
       "provides": ["px.providers.v2x02-camera-spatial-travel"]
     },
     {
       "id": "v2x02.camera.continuous-travel",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "owner": "v2x-02-camera-spatial-travel",
       "kind": "code",
       "stage": "foundation",
@@ -31,11 +31,12 @@
         "v1.rendering.transition-runtime"
       ],
       "authority": "PRESENTATION_ONLY",
-      "provenance": "V2X-02 bounded controller layered over the frozen V1X camera/distance/reference-frame authorities. It accumulates input intents, preserves observed journey context and exposes camera-relative travel without creating a competing camera or scientific position authority.",
+      "provenance": "V2X-02 bounded controller layered over the frozen V1X camera/distance/reference-frame authorities. Version 2 delegates semantic input conversion to V1X, adds strict bounded journey context, fail-closed external-mutation detection and executable reversible operation journaling without creating a competing camera or scientific position authority.",
       "provides": [
         "v2x02.camera.continuous-travel",
         "v2x02.camera.journey-context",
-        "v2x02.camera.input-accumulator"
+        "v2x02.camera.input-accumulator",
+        "v2x02.camera.reversible-travel"
       ]
     }
   ]
