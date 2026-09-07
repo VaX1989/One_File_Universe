@@ -14,7 +14,7 @@ const required=['v1.life.provider','v1.civilization.runtime','v1.convergence.wor
 const descriptors=plan.map(({id,version,owner,kind,stage,placement,source,dependencies,authority,provenance,provides})=>({id,version,owner,kind,stage,placement,source,dependencies,authority,provenance,provides}));
 assert.throws(()=>planComponents([...descriptors,descriptors[0]]),/duplicate|collision/);cases++;
 const hash=p=>crypto.createHash('sha256').update(JSON.stringify(p.map(c=>({id:c.id,hash:c.sourceSha256,deps:c.dependencies})))).digest('hex');ok(hash(planComponents([...descriptors].reverse()))===hash(plan),'input fragment order does not alter sealed build order');
-const {O}=load(),seal=O.pxProduct.registry.snapshot();ok(seal.sealed&&seal.bindingsSealed,'actual runtime registry metadata and implementations are sealed');ok(seal.entries===seal.bound.length,'no detached unbound providers');
+const {O}=load(),seal=O.pxProduct.registry.snapshot();ok(seal.sealed&&seal.bindingsSealed,'actual runtime registry metadata and implementations are sealed');const unbound=seal.order.filter(id=>!seal.bound.includes(id));ok(seal.entries===seal.bound.length,'no detached unbound providers: '+JSON.stringify(unbound));
 ok(catalogs.every(c=>c.canonicalAdmissions.length===0),'no model provider self-promotes canonical authority');
 for(const source of ['src/kernel/p2-canonical.js','src/temporal/p4-temporal.js','src/domains/biosphere/p6-canonical.js'])ok(fs.existsSync(source),'frozen authority root remains in assembly');
 for(const source of ['src/shaders/v1/world-shaders.js','src/rendering/v1/webgl2-world.js','src/rendering/v1/living-renderer.js'])vm.runInThisContext(fs.readFileSync(source,'utf8'),{filename:source});
