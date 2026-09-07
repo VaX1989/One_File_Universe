@@ -85,7 +85,10 @@ function goodForResource(r){
   if(c.includes('ENERGY')||c.includes('FUEL'))return 'ENERGY_SERVICE';
   return 'MATERIAL_GOODS';
 }
-function tradeDegree(state,settlementId){return arr(state?.tradeEdges).filter(e=>e.from===settlementId||e.to===settlementId).length}
+function tradeDegree(state,settlementId){
+  const activeSettlements=new Set(arr(state?.settlements).filter(s=>text(s?.status||'UNKNOWN').toUpperCase()==='ACTIVE').map(s=>text(s.settlementId)));
+  return arr(state?.tradeEdges).filter(e=>text(e?.status||'UNKNOWN').toUpperCase()==='ACTIVE'&&activeSettlements.has(text(e.from))&&activeSettlements.has(text(e.to))&&(e.from===settlementId||e.to===settlementId)).length;
+}
 
 O.v2x09CivilizationCore=Object.freeze({VERSION,ECONOMY_CONTRACT,MORPHOLOGY_CONTRACT,IMPACT_CONTRACT,AUTHORITY,LIMITS,GOODS,TECH_KEYS,CAPABILITY_GRAPH,LIMITATIONS,freeze,text,int,clamp,arr,assertBound,hash32,deriveId,unit,sortId,sourceAuthority,validateCivilization,techLevel,technologyProfile,goodForResource,tradeDegree});
 })(typeof globalThis!=='undefined'?globalThis:this);
