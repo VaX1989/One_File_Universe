@@ -73,6 +73,7 @@ const nativeNode24Pins=Object.freeze({
   setupNode:'actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444',
   setupPython:'actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1',
   uploadArtifact:'actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f',
+  downloadArtifact:'actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131',
 });
 const nativeRuntimeContracts=[
   {file:`${workflowDir}/foundation.yml`,pins:['checkout','setupNode','setupPython']},
@@ -88,4 +89,29 @@ for(const contract of nativeRuntimeContracts){
   }
 }
 
-console.log(JSON.stringify({status:'PASS',suite:'workflow-reproducibility',workflows:workflows.length,featureWorkflows:featureWorkflows.length,v11WorldWorkflows:v11WorldWorkflows.length,reliabilityWorkflows:reliabilityWorkflows.length,nativeRuntimeContracts:nativeRuntimeContracts.length,checks}));
+// Every continuously evolving post-v1 feature/reliability workflow inherits the
+// native-runtime contract whenever it uses one of the governed first-party Actions.
+// Immutable SHA pinning alone is insufficient: a perfectly immutable legacy Action
+// can still pull the runner back onto the Node 20 compatibility shim.
+const governedNativeActions=Object.freeze([
+  ['actions/checkout@',nativeNode24Pins.checkout],
+  ['actions/setup-node@',nativeNode24Pins.setupNode],
+  ['actions/setup-python@',nativeNode24Pins.setupPython],
+  ['actions/upload-artifact@',nativeNode24Pins.uploadArtifact],
+  ['actions/download-artifact@',nativeNode24Pins.downloadArtifact],
+]);
+function assertNativeGovernedActions(file,text){
+  for(const [prefix,pin] of governedNativeActions){
+    const occurrences=text.split(/\r?\n/).filter(line=>line.includes(`uses: ${prefix}`));
+    for(const line of occurrences){
+      assert(line.includes(`uses: ${pin}`),`${file}: governed Action must use authenticated native Node 24 pin: ${line.trim()}`);
+      checks++;
+    }
+  }
+}
+for(const file of featureWorkflows)assertNativeGovernedActions(file,fs.readFileSync(file,'utf8'));
+const legacyCheckout='      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # immutable but legacy runtime';
+assert.throws(()=>assertNativeGovernedActions('synthetic-legacy.yml',legacyCheckout),/native Node 24 pin/,'immutable legacy Action pins must fail the post-v1 native-runtime contract');
+checks++;
+
+console.log(JSON.stringify({status:'PASS',suite:'workflow-reproducibility',workflows:workflows.length,featureWorkflows:featureWorkflows.length,v11WorldWorkflows:v11WorldWorkflows.length,reliabilityWorkflows:reliabilityWorkflows.length,nativeRuntimeContracts:nativeRuntimeContracts.length,nativeFeatureWorkflows:featureWorkflows.length,checks}));
