@@ -52,6 +52,8 @@ jobs:
       - name: Verify exact source
         shell: bash
         run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Browser evidence matrix verifier regressions
+        run: node tests/governance/browser-evidence-matrix-seal.mjs
       - name: Foundation
         run: node tools/validate-foundation.mjs && node tests/governance/adr-hygiene.mjs
       - name: P1
@@ -165,29 +167,19 @@ jobs:
           test '${{ needs.node.result }}' = success
           test '${{ needs.browser-linux.result }}' = success
           test '${{ needs.browser-platform.result }}' = success
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # Node 24 runtime
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # Node 24 runtime
+        with: {node-version: '24.20.0'}
+      - name: Verify exact source
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
       - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7 / Node 24 runtime
         with:
           pattern: p6-v1-*-${{ env.OFU_SOURCE_SHA }}
           path: evidence
           merge-multiple: true
-      - name: Cross-runtime canonical seal
-        shell: bash
-        run: |
-          count=$(find evidence -name 'browser-*.json' -type f | wc -l)
-          test "$count" -eq 5
-          test "$(jq -r '.status' evidence/browser-*.json | sort -u)" = PASS
-          test "$(jq -r '.manifestHash' evidence/browser-*.json | sort -u | wc -l)" -eq 1
-          test "$(jq -r '.biosphereId' evidence/browser-*.json | sort -u | wc -l)" -eq 1
-          test "$(jq -r '.lineageId' evidence/browser-*.json | sort -u | wc -l)" -eq 1
-          test "$(jq -r '.speciesId' evidence/browser-*.json | sort -u | wc -l)" -eq 1
-          test "$(jq -r '.stateDigest' evidence/browser-*.json | sort -u | wc -l)" -eq 1
-          test "$(jq -r '.artifactSha256' evidence/browser-*.json | sort -u | wc -l)" -eq 1
-          test "$(jq -r '.goldenCorpusDigest' evidence/browser-*.json | sort -u | wc -l)" -eq 1
-          test "$(jq -r '.sourceCommit' evidence/browser-*.json | sort -u)" = "$OFU_SOURCE_SHA"
-          test "$(jq -r 'select(.hostPlatform=="darwin") | .hostArch' evidence/browser-*.json)" = arm64
-          test "$(jq -r '.realSafariVerified' evidence/browser-*.json | sort -u)" = false
-          test "$(jq -r '.artifactContainsConformanceAuthority' evidence/browser-*.json | sort -u)" = false
-          test "$(jq -r '.shippedConformanceConstructor' evidence/browser-*.json | sort -u)" = false
-          test "$(jq -r '.canonicalGenesisAvailable' evidence/browser-*.json | sort -u)" = false
-          test "$(jq -r '.persistentLineageTransitions' evidence/browser-*.json | sort -u)" = false
-          echo 'P6 v1 cross-runtime exact-head seal PASS'
+      - name: Require bounded exact-source cross-runtime authority evidence
+        run: node tools/ci/verify-browser-evidence-matrix.mjs --mode p6 --root evidence --source-sha "$OFU_SOURCE_SHA"
