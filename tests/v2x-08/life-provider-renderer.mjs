@@ -1,0 +1,57 @@
+import assert from 'node:assert/strict';
+import { createLifeState } from '../../src/v2x-08-life-ecology-evolution-embodiment/model.js';
+import { createLifeProvider, LIFE_V2_PROVIDER_DESCRIPTOR } from '../../src/v2x-08-life-ecology-evolution-embodiment/provider.js';
+import { buildOrganismRenderDescriptors, cullOrganismRenderDescriptors } from '../../src/v2x-08-life-ecology-evolution-embodiment/renderer.js';
+
+const state = createLifeState({
+  eventKey: 'fixture:provider',
+  lineages: [{
+    id: 'lin-provider',
+    traits: [
+      { key: 'body-size', valuePpm: 800_000 },
+      { key: 'mobility', valuePpm: 850_000 },
+      { key: 'structural-defense', valuePpm: 800_000 },
+    ],
+    morphology: {
+      symmetry: 'BILATERAL_LIKE_MODEL_DESCRIPTOR',
+      supportMode: 'STRUCTURAL_SUPPORT_MODELED',
+      locomotionMode: 'ACTIVE_SURFACE_TRAVEL',
+      feedingMode: 'RESOURCE_CAPTURE',
+    },
+  }],
+  populations: [{
+    id: 'pop-provider', lineageId: 'lin-provider', regionId: 'r-provider', abundance: 400,
+    lifecycleStagePpm: { juvenile: 250_000, mature: 650_000, senescent: 100_000 },
+  }],
+  interactions: [],
+  regions: { 'r-provider': { resourcePool: 10000, nutrientPool: 10000, opportunityPpm: 900_000 } },
+});
+
+const provider = createLifeProvider({ getState: () => state });
+assert.equal(LIFE_V2_PROVIDER_DESCRIPTOR.authorityClass, 'MODEL_DERIVED_SIMULATION');
+assert.equal(provider.summary().totalAbundance, 400n);
+assert.equal(provider.inspectLineage('lin-provider').aggregateAbundance, 400n);
+assert.deepEqual(provider.inspectPopulation('pop-provider').incomingInteractionIds, []);
+assert.equal(provider.inspectRegion('r-provider').totalRepresentedAbundance, 400n);
+assert.equal(provider.inspectLineage('missing'), null);
+
+const samples = provider.localSamples({ regionId: 'r-provider', maxSamples: 6, viewportKey: 'render-test' });
+assert.equal(samples.length, 6);
+const descriptorsA = buildOrganismRenderDescriptors(samples, { quality: 'HIGH' });
+const descriptorsB = buildOrganismRenderDescriptors(samples, { quality: 'HIGH' });
+assert.deepEqual(descriptorsA, descriptorsB);
+assert.equal(descriptorsA.length, 6);
+assert.ok(descriptorsA.every((descriptor) => descriptor.authorityClass === 'PRESENTATION_ONLY'));
+assert.ok(descriptorsA.every((descriptor) => descriptor.evidenceLink.representativeOnly === true));
+assert.ok(descriptorsA.every((descriptor) => descriptor.segmentBudget === 8));
+assert.ok(descriptorsA.every((descriptor) => descriptor.primitiveFamily === 'CHAINED_ELLIPSOIDS'));
+
+const culled = cullOrganismRenderDescriptors(descriptorsA, (position) => position.x >= 0);
+assert.ok(culled.length <= descriptorsA.length);
+assert.ok(culled.every((descriptor) => descriptor.position.x >= 0));
+
+const capped = buildOrganismRenderDescriptors([...samples, ...samples, ...samples], { quality: 'LOW', maxDescriptors: 4 });
+assert.equal(capped.length, 4);
+assert.ok(capped.every((descriptor) => descriptor.segmentBudget === 3));
+
+console.log('V2X-08 life provider renderer: PASS (17 assertions)');
