@@ -7,7 +7,7 @@
       "tier": "FAST_LOCAL",
       "command": ["node", "tests/v2x-02-camera-spatial-travel/real-camera-journey.mjs"],
       "providers": ["v2x02.interaction.continuous-travel"],
-      "oracle": "v2x02-real-camera-journey-oracle-3",
+      "oracle": "v2x02-real-camera-journey-oracle-4",
       "timeoutMs": 30000
     },
     {
