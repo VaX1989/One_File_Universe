@@ -19,12 +19,12 @@
       "version": "1.0.0",
       "owner": "v2x-08-life-ecology-evolution-embodiment",
       "kind": "data",
-      "stage": "full",
+      "stage": "foundation",
       "placement": "resource",
       "source": "config/extensions/v2x-08-life-ecology-evolution-embodiment/catalog.json",
-      "dependencies": ["v2x08.model.life-single-file-facade"],
+      "dependencies": [],
       "authority": "MODEL_DERIVED_SIMULATION",
-      "provenance": "Convergence registration of the bounded V2X-08 shipping facade with no canonical admissions.",
+      "provenance": "Convergence registration metadata for the bounded V2X-08 shipping facade. It is bound at foundation without executing the full-stage runtime and has no canonical admissions.",
       "provides": ["v2x08.model.life-provider-catalog"]
     }
   ]
