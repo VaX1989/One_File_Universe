@@ -2,7 +2,7 @@
 'use strict';
 if(typeof root.requestAnimationFrame!=='function'||root.__OFU_WAVE_IV_RAF_GATE__)return;
 const native=root.requestAnimationFrame.bind(root),nativeCancel=typeof root.cancelAnimationFrame==='function'?root.cancelAnimationFrame.bind(root):()=>{};
-const state={version:'ofu-wave-iv-render-scheduler-1',suspendedPlanetFrames:0,executedPlanetFrames:0,livingPacerInstalled:false,livingRotationInputs:0,livingRotationFrames:0,livingRotationCoalesced:0,livingNavigationPacerInstalled:false,livingPinchInputs:0,livingPinchFrames:0,livingPinchCoalesced:0,livingPinchStaleDrops:0,livingPinchBoundaryCommits:0,livingPinchTerminalCommits:0,livingPinchCancelledEvents:0,livingRendererFactoryArmed:false,livingRuntimeFactoryArmed:false};
+const state={version:'ofu-wave-iv-render-scheduler-1',suspendedPlanetFrames:0,executedPlanetFrames:0,livingPacerInstalled:false,livingRotationInputs:0,livingRotationFrames:0,livingRotationCoalesced:0,livingNavigationPacerInstalled:false,livingPinchInputs:0,livingPinchFrames:0,livingPinchCoalesced:0,livingPinchStaleDrops:0,livingPinchBoundaryCommits:0,livingPinchTerminalCommits:0,livingPinchCancelledEvents:0,livingWheelInputs:0,livingWheelFrames:0,livingWheelCoalesced:0,livingWheelStaleDrops:0,livingWheelBoundaryCommits:0,livingRendererFactoryArmed:false,livingRuntimeFactoryArmed:false};
 function isPlanetFrame(fn){if(typeof fn!=='function'||fn.name!=='frame')return false;try{return /inspectorTarget\(\)/.test(Function.prototype.toString.call(fn))&&/localFrame\(now\)/.test(Function.prototype.toString.call(fn))}catch{return false}}
 function gated(fn){if(!isPlanetFrame(fn))return native(fn);const proxy=t=>{const scale=root.OFU?.waveIVScaleRuntime?.snapshot?.().semanticScale,macro=scale==='galaxy'||scale==='galactic_region'||scale==='stellar_neighborhood'||scale==='system';if(macro){state.suspendedPlanetFrames++;native(proxy);return}state.executedPlanetFrames++;fn(t)};return native(proxy)}
 function installLivingPacer(){
@@ -25,12 +25,16 @@ function installLivingNavigationPacer(){
  if(living.NAVIGATION_PACING_VERSION){state.livingNavigationPacerInstalled=true;return true;}
  const originalCreate=living.create.bind(living),version='ofu-living-navigation-pacer-2',navigationStages=Array.from(living.NAVIGATION_STAGES||[]),runtimes=new Set(),pinchPointers=new Set();
  function create(...args){
-  const runtime=originalCreate(...args);let frame=0,coordinate=null,options=null,queuedStage=null,events=0;
+  const runtime=originalCreate(...args);let frame=0,coordinate=null,options=null,queuedStage=null,events=0,wheelFrame=0,wheelDelta=0,wheelOptions=null,wheelStage=null,wheelRevision=null,wheelEvents=0;
   const pacing={version,strategy:'RAF_LATEST_PINCH_COORDINATE_WITH_RUNTIME_NORMALIZED_SYNC_BOUNDARIES_AND_TERMINAL_FLUSH',inputEvents:0,frames:0,boundaryCommits:0,terminalCommits:0,coalescedEvents:0,pendingEvents:0,staleDrops:0,cancelledEvents:0};
+  const wheelPacing={version:'ofu-living-wheel-pacer-2',strategy:'RAF_ACCUMULATED_WHEEL_DELTA_WITH_RUNTIME_NORMALIZED_SYNC_BOUNDARIES',inputEvents:0,frames:0,boundaryCommits:0,coalescedEvents:0,pendingEvents:0,staleDrops:0};
   const reset=()=>{coordinate=null;options=null;queuedStage=null;events=0;pacing.pendingEvents=0;};
   const cancelFrame=()=>{if(frame){nativeCancel(frame);frame=0;}};
   const cancelPendingAsSuperseded=()=>{cancelFrame();if(events){pacing.coalescedEvents+=events;state.livingPinchCoalesced+=events;}reset();};
   const cancelPendingAsInterrupted=()=>{cancelFrame();if(events){pacing.cancelledEvents+=events;state.livingPinchCancelledEvents+=events;}reset();};
+  const resetWheel=()=>{wheelDelta=0;wheelOptions=null;wheelStage=null;wheelRevision=null;wheelEvents=0;wheelPacing.pendingEvents=0;};
+  const cancelWheelFrame=()=>{if(wheelFrame){nativeCancel(wheelFrame);wheelFrame=0;}};
+  const dropPendingWheel=()=>{cancelWheelFrame();if(wheelEvents){wheelPacing.staleDrops++;state.livingWheelStaleDrops++;}resetWheel();};
   const commitPending=(terminal=false)=>{
    if(terminal)cancelFrame();else frame=0;
    const target=coordinate,opts=options,stage=queuedStage,count=events;reset();if(target===null||!count)return runtime.snapshot();
@@ -47,6 +51,20 @@ function installLivingNavigationPacer(){
     return navigationStages[index]||current.stage;
    }catch{return null;}
   };
+  const flushWheel=()=>{
+   wheelFrame=0;const delta=wheelDelta,opts=wheelOptions,stage=wheelStage,revision=wheelRevision,count=wheelEvents;resetWheel();if(!count||delta===0)return runtime.snapshot();
+   const current=runtime.snapshot();if(current.stage!==stage||current.revision!==revision){wheelPacing.staleDrops++;state.livingWheelStaleDrops++;return current;}
+   wheelPacing.frames++;wheelPacing.coalescedEvents+=Math.max(0,count-1);state.livingWheelFrames++;state.livingWheelCoalesced+=Math.max(0,count-1);return runtime.travelBy(delta,opts);
+  };
+  const travelBy=(value,opts={})=>{
+   if(opts?.source!=='living-active-wheel')return runtime.travelBy(value,opts);
+   const delta=Number(value);if(!Number.isFinite(delta))throw new TypeError('Living wheel navigation delta must be finite');if(delta===0)return runtime.snapshot();
+   const current=runtime.snapshot();wheelPacing.inputEvents++;state.livingWheelInputs++;
+   if(wheelEvents&&(current.stage!==wheelStage||current.revision!==wheelRevision))dropPendingWheel();
+   const total=wheelDelta+delta,targetStage=stageForCoordinate(current.navigationCoordinate+total,current);
+   if(targetStage===null||targetStage!==current.stage){cancelWheelFrame();const count=wheelEvents+1;if(wheelEvents)wheelPacing.coalescedEvents+=wheelEvents;resetWheel();wheelPacing.boundaryCommits++;state.livingWheelBoundaryCommits++;state.livingWheelCoalesced+=Math.max(0,count-1);return runtime.travelBy(total,opts);}
+   wheelDelta=total;wheelOptions=Object.freeze({...opts});wheelStage=current.stage;wheelRevision=current.revision;wheelEvents++;wheelPacing.pendingEvents=wheelEvents;if(!wheelFrame)wheelFrame=native(flushWheel);return current;
+  };
   const setNavigationCoordinate=(value,opts={})=>{
    if(opts?.source!=='living-active-pinch')return runtime.setNavigationCoordinate(value,opts);
    const target=Number(value);if(!Number.isFinite(target))throw new TypeError('Living pinch navigation coordinate must be finite');
@@ -57,7 +75,8 @@ function installLivingNavigationPacer(){
   };
   const finishPinchNavigation=({cancelled=false}={})=>{if(cancelled){cancelPendingAsInterrupted();return runtime.snapshot();}return events?commitPending(true):runtime.snapshot();};
   const navigationPacingSnapshot=()=>Object.freeze({...pacing});
-  const wrapped=Object.freeze({...runtime,setNavigationCoordinate,finishPinchNavigation,navigationPacingSnapshot});runtimes.add(wrapped);return wrapped;
+  const wheelPacingSnapshot=()=>Object.freeze({...wheelPacing});
+  const wrapped=Object.freeze({...runtime,setNavigationCoordinate,travelBy,finishPinchNavigation,navigationPacingSnapshot,wheelPacingSnapshot});runtimes.add(wrapped);return wrapped;
  }
  const doc=root.document,isLivingPointer=e=>e?.pointerType==='touch'&&(e.target?.id==='living-view'||e.composedPath?.().some?.(node=>node?.id==='living-view'));
  if(doc?.addEventListener){
@@ -65,7 +84,7 @@ function installLivingNavigationPacer(){
   const end=(e,cancelled)=>{if(!pinchPointers.has(e.pointerId))return;pinchPointers.delete(e.pointerId);if(pinchPointers.size<2)for(const runtime of runtimes)runtime.finishPinchNavigation({cancelled});};
   doc.addEventListener('pointerup',e=>end(e,false),true);doc.addEventListener('pointercancel',e=>end(e,true),true);doc.addEventListener('lostpointercapture',e=>end(e,true),true);
  }
- O.v1LivingRuntime=Object.freeze({...living,NAVIGATION_PACING_VERSION:version,create});state.livingNavigationPacerInstalled=true;return true;
+ O.v1LivingRuntime=Object.freeze({...living,NAVIGATION_PACING_VERSION:version,WHEEL_PACING_VERSION:'ofu-living-wheel-pacer-2',create});state.livingNavigationPacerInstalled=true;return true;
 }
 function v1PacingEligible(){const O=root.OFU;return !!(O?.v1PresentationCore||O?.v1WorldPresentation||O?.v1WorldContext)}
 function armFactory(name,installer){
