@@ -4,6 +4,7 @@ on:
     paths:
       - 'src/domains/v1/ecology/local-trophic-context.js'
       - 'tests/v1/ecology/local-trophic-context.mjs'
+      - 'tests/v1/ecology/local-context-composition.mjs'
       - 'config/components/v11-local-interaction-network.json'
       - '.github/workflows/v11-world-local-interaction-network.yml'
   workflow_dispatch:
@@ -36,10 +37,13 @@ jobs:
         run: |
           node --check src/domains/v1/ecology/local-trophic-context.js
           node --check tests/v1/ecology/local-trophic-context.mjs
+          node --check tests/v1/ecology/local-context-composition.mjs
       - name: Upstream local biogeography regression
         run: node tests/v1/ecology/biogeography-context.mjs
       - name: Local interaction network oracle
         run: node tests/v1/ecology/local-trophic-context.mjs
+      - name: Local ecology wrapper composition
+        run: node tests/v1/ecology/local-context-composition.mjs
       - name: Component descriptor integration
         run: |
           node --input-type=module <<'NODE'
