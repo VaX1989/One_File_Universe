@@ -1,0 +1,44 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v2x14.audio.living-context",
+      "version": "1.0.0",
+      "owner": "v2x-14-product-experience",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/audio/v2x14/living-audio-context.js",
+      "dependencies": ["v1.product.living-universe"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "V2X-14 fail-closed projection from Living snapshot to optional systemic-audio context. Unsupported atmosphere, life or civilization remains absent/silent.",
+      "provides": ["v2x14.audio.living-context"]
+    },
+    {
+      "id": "v2x14.audio.controller",
+      "version": "1.0.0",
+      "owner": "v2x-14-product-experience",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/audio/v2x14/audio-controller.js",
+      "dependencies": ["v2x14.audio.living-context", "v1x13.audio.runtime"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "V2X-14 user-activated orchestration around the bounded V1X-13 systemic-audio runtime. Audio remains optional, independently mutable and non-navigational.",
+      "provides": ["v2x14.audio.controller"]
+    },
+    {
+      "id": "v2x14.audio.adapter",
+      "version": "1.0.0",
+      "owner": "v2x-14-product-experience",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/bootstrap/product/v2x14-systemic-audio-adapter.js",
+      "dependencies": ["v2x14.audio.controller", "v1x13.audio.controls", "v1.product.living-universe"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Exact bootstrap exception granted to V2X-14. Adds optional enable/volume/mute/reduced-sensory controls to Lab without becoming a navigation or world-state dependency.",
+      "provides": ["v2x14.audio.adapter"]
+    }
+  ]
+}
