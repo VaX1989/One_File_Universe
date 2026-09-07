@@ -2,7 +2,7 @@
   "schema": "ofu-components-1",
   "components": [
     {
-      "id": "px.providers.v2x02-camera-spatial-travel",
+      "id": "v2x.frontier.providers.v2x02-camera-spatial-travel",
       "version": "2.1.0",
       "owner": "v2x-02-camera-spatial-travel",
       "kind": "data",
@@ -11,7 +11,7 @@
       "source": "src/v2x-02-camera-spatial-travel/provider-catalog.json",
       "dependencies": [],
       "authority": "PRESENTATION_ONLY",
-      "provenance": "V2X-02 additive provider catalog for bounded continuous and reversible presentation travel. It exposes no canonical identity, selection, scientific state, persistence or central routing authority.",
+      "provenance": "V2X-02 additive frontier provider catalog for bounded continuous and reversible presentation travel. It remains outside the active PX shipping-provider namespace until a release consumer binding is ratified; it exposes no canonical identity, selection, scientific state, persistence or central routing authority.",
       "provides": ["px.providers.v2x02-camera-spatial-travel"]
     },
     {
@@ -23,7 +23,7 @@
       "placement": "script",
       "source": "src/v2x-02-camera-spatial-travel/continuous-travel.js",
       "dependencies": [
-        "px.providers.v2x02-camera-spatial-travel",
+        "v2x.frontier.providers.v2x02-camera-spatial-travel",
         "ofu.extensions.product-bindings",
         "v1x-01.camera.reference-frames",
         "v1x-01.camera.semantic-distance",
