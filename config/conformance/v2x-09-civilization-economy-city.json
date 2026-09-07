@@ -1,0 +1,23 @@
+{
+  "schema": "ofu-conformance-1",
+  "tests": [
+    {
+      "id": "v2x09.civilization-economy-city",
+      "owner": "v2x-09-civilization-economy-city",
+      "tier": "LANE_TARGETED",
+      "command": ["node", "tests/v2x-09-civilization-economy-city/civilization-economy-city.mjs"],
+      "providers": ["v1.model.civilization"],
+      "oracle": "ofu-v2x-09-civilization-economy-city-oracle-1",
+      "timeoutMs": 30000
+    },
+    {
+      "id": "v2x09.civilization-economy-city-advanced",
+      "owner": "v2x-09-civilization-economy-city",
+      "tier": "LANE_TARGETED",
+      "command": ["node", "tests/v2x-09-civilization-economy-city/advanced-systems.mjs"],
+      "providers": ["v1.model.civilization"],
+      "oracle": "ofu-v2x-09-civilization-advanced-oracle-1",
+      "timeoutMs": 30000
+    }
+  ]
+}

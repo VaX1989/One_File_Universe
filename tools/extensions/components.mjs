@@ -10,7 +10,7 @@ const authorities=new Set(['CANONICAL_PROVEN','DERIVED','MODEL_DERIVED_SIMULATIO
 const fields=['id','version','owner','kind','stage','placement','source','dependencies','authority','provenance','provides'];
 function check(ok,message){if(!ok)throw new Error('PX component: '+message);}
 function identifier(v){return typeof v==='string'&&/^[a-z][a-z0-9._:/-]{0,127}$/.test(v);}
-function ownerAllows(owner,source){if(!/^[a-z][a-z0-9_-]{0,63}$/.test(owner))return false;const prefixes=owner==='px'?['src/extensions/','config/extensions/','config/conformance/']:owner==='product'?['src/bootstrap/product/','src/rendering/']:['src/domains/'+owner+'/','src/providers/'+owner+'/','src/'+owner+'/','assets/'+owner+'/','data/'+owner+'/','config/extensions/'+owner+'/'];return prefixes.some(p=>source.startsWith(p))||source==='config/extensions/'+owner+'.json';}
+function ownerAllows(owner,source){if(!/^[a-z][a-z0-9_-]{0,63}$/.test(owner))return false;const prefixes=owner==='px'?['src/extensions/','config/extensions/','config/conformance/']:owner==='product'?['src/bootstrap/product/','src/rendering/']:owner==='v2x-14-product-experience'?['src/product/v2x14/','src/audio/v2x14/','config/extensions/v2x-14-product-experience/']:['src/domains/'+owner+'/','src/providers/'+owner+'/','src/'+owner+'/','assets/'+owner+'/','data/'+owner+'/','config/extensions/'+owner+'/'];return prefixes.some(p=>source.startsWith(p))||source==='config/extensions/'+owner+'.json';}
 function relative(v){return typeof v==='string'&&v.length<=256&&/^[A-Za-z0-9_./-]+$/.test(v)&&!v.startsWith('/')&&!v.split('/').some(s=>s==='..'||s==='.'||s==='');}
 export function planComponents(inputs,{root=ROOT,read=rel=>fs.readFileSync(path.join(root,rel)),maxBytes=64*1024*1024}={}) {
   check(Array.isArray(inputs)&&inputs.length>0&&inputs.length<=512,'bounded component list required');
@@ -27,7 +27,6 @@ export function planComponents(inputs,{root=ROOT,read=rel=>fs.readFileSync(path.
     check(['script','style','resource','body','fragment:workspace-nav','fragment:viewport','fragment:explore-panel','fragment:inspect-panel','fragment:lab-panel'].includes(d.placement),'placement');
     check(d.kind==='code'?d.placement==='script':d.kind==='style'?d.placement==='style':d.kind==='html'?d.placement==='body'||d.placement.startsWith('fragment:'):d.placement==='resource','kind/placement mismatch');
     if(['style','glsl','wgsl','image','audio'].includes(d.kind))check(d.authority==='PRESENTATION_ONLY','rendering asset authority');
-    // Canonical kernels remain in the frozen baseline composer, not self-promoted additions.
     check(d.authority!=='CANONICAL_PROVEN','canonical additions require a separate governed promotion');
     check(!entries.has(d.id),'duplicate component '+d.id);
     check(Array.isArray(d.dependencies)&&d.dependencies.length<=128&&d.dependencies.every(identifier)&&new Set(d.dependencies).size===d.dependencies.length,'dependencies');
@@ -65,7 +64,6 @@ export function emittedComponent(c){
 export function manifestOf(plan){return plan.map(c=>{const {content,...d}=c;return {...d,emittedSha256:sha(emittedComponent(c)),emittedBytes:Buffer.byteLength(emittedComponent(c))};});}
 export function addComponents(html,plan,stage){
  const components=plan.filter(c=>c.stage===stage&&!c.placement.startsWith('fragment:'));
- // Fixed insertion locations are checked, never guessed.
  check(html.split('</body>').length===2&&html.split('</style>').length>=2,'output slots');
  const css=components.filter(c=>c.placement==='style').map(emittedComponent).join('\n');
  if(css)html=html.replace('</style>',css+'\n</style>');

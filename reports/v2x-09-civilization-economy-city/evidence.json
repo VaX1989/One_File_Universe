@@ -1,0 +1,95 @@
+{
+  "schema": "ofu-v2x-09-evidence-1",
+  "status": "PASS",
+  "oracle": {
+    "command": "node tests/v2x-09-civilization-economy-city/civilization-economy-city.mjs",
+    "cases": 32,
+    "nodeRuntime": "v22.16.0"
+  },
+  "sourceSha256": {
+    "core.js": "6cb89a55cb83be12e8cd193dec36cad0dee6d92a02fb77d43217ce6a1c4a455f",
+    "economy-init.js": "99009d5949abb71e93d92b296835a2aaa6de99e2fecc4fd37818774fb7d3f238",
+    "economy-step.js": "e4d37152576bb759306ced6821cd7ce5cfaad1ca90f288c0709890ad398e7beb",
+    "institutions.js": "dafabbcd63728ffdfaa4dc0ad5ccfec1e75c67789581761e73000e3a1cf8622d",
+    "morphology.js": "73a0bbf64448fb7fd4d27824c33fb3ab6503657e8db205e7d77b1264303152af",
+    "index.js": "8d1d3cd7d41802747fde4474a98083bf9109f8c896fc074ac91442c8d3378824"
+  },
+  "testSha256": "29b546d79e5c8fcf9bfec1bf18cf91520eef6dfde64e3afbfe63e8cdb8961d04",
+  "manifestSha256": "d963f72b3acf207c410abdd4965adcae65d82c5e254b51de49c3beeec985802e",
+  "conformanceSha256": "d50b7b8cd7caf245854b1f836995ad3b26938461df5cf22f7c3227158d140279",
+  "scenarios": [
+    {
+      "label": "Wet / advanced",
+      "layoutClass": "DENSE_NETWORKED_CENTER",
+      "districts": [
+        "CORE",
+        "RESIDENTIAL",
+        "AGRICULTURAL_HINTERLAND",
+        "PRODUCTION",
+        "MARKET_AND_STORAGE",
+        "PORT_OR_WATER_TERMINAL",
+        "CIVIC_COORDINATION",
+        "RUIN_OR_DAMAGE_LAYER"
+      ],
+      "historicalLayers": [
+        "FOUNDATION",
+        "INFRASTRUCTURE_ADDITION",
+        "DAMAGE_OR_STRESS"
+      ],
+      "roadHierarchy": "LOCAL_OR_REGIONAL_CORRIDORS",
+      "closure": true,
+      "impactProposals": 2
+    },
+    {
+      "label": "Dry / advanced",
+      "layoutClass": "DENSE_NETWORKED_CENTER",
+      "districts": [
+        "CORE",
+        "RESIDENTIAL",
+        "AGRICULTURAL_HINTERLAND",
+        "PRODUCTION",
+        "MARKET_AND_STORAGE",
+        "CIVIC_COORDINATION",
+        "RUIN_OR_DAMAGE_LAYER"
+      ],
+      "historicalLayers": [
+        "FOUNDATION",
+        "INFRASTRUCTURE_ADDITION",
+        "DAMAGE_OR_STRESS"
+      ],
+      "roadHierarchy": "LOCAL_OR_REGIONAL_CORRIDORS",
+      "closure": true,
+      "impactProposals": 2
+    },
+    {
+      "label": "Abandoned / layered",
+      "layoutClass": "ABANDONED_LAYERED",
+      "districts": [
+        "RUIN_OR_DAMAGE_LAYER"
+      ],
+      "historicalLayers": [
+        "FOUNDATION",
+        "INFRASTRUCTURE_ADDITION",
+        "DAMAGE_OR_STRESS",
+        "ABANDONMENT"
+      ],
+      "roadHierarchy": "RELICT_OR_UNSUPPORTED",
+      "closure": true,
+      "impactProposals": 2
+    }
+  ],
+  "authority": {
+    "economy": "MODEL_DERIVED_SIMULATION",
+    "institutions": "MODEL_DERIVED_SIMULATION",
+    "impactProposals": "MODEL_DERIVED_SIMULATION_PROPOSAL_ONLY",
+    "morphology": "PRESENTATION_ONLY"
+  },
+  "limitations": [
+    "All economy, institution and city outputs are bounded model-derived scenario state, not empirical social prediction.",
+    "Goods are accounting units; closure witnesses are unit-accounting identities, not conservation of physical mass or energy.",
+    "City placements and district geometry are presentation schematics unless an upstream spatial model supplies physical geometry.",
+    "Cross-domain impact outputs are proposals only and never mutate planet, climate, ecology, life or canonical P4 history.",
+    "Institutional legitimacy, cohesion and centralization are scenario proxies and not universal sociological laws.",
+    "No persistent-person identity, genealogy, private mental state or individual historical actor is created here."
+  ]
+}

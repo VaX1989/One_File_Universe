@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
+  <title id="t">V2X-09 Civilization 2.0 advanced causal witnesses</title>
+  <desc id="d">Comparison of healthy versus damaged route capacity and wet, dry, and abandoned urban morphology families. All urban geometry is presentation-only.</desc>
+  <rect width="960" height="540" fill="#ffffff"/>
+  <text x="48" y="52" font-family="system-ui, sans-serif" font-size="28" font-weight="700">V2X-09 Civilization 2.0 — Advanced witnesses</text>
+  <text x="48" y="82" font-family="system-ui, sans-serif" font-size="15">MODEL_DERIVED_SIMULATION • render cues PRESENTATION_ONLY • Node v22.16.0 • oracle 48/48 PASS</text>
+  <text x="48" y="132" font-family="system-ui, sans-serif" font-size="20" font-weight="600">Route capacity under modeled infrastructure condition</text>
+  <text x="48" y="174" font-family="system-ui, sans-serif" font-size="15">Healthy</text>
+  <rect x="150" y="153" width="590" height="28" rx="4" fill="#222222"/>
+  <text x="754" y="174" font-family="system-ui, sans-serif" font-size="15" font-weight="600">842 units</text>
+  <text x="48" y="222" font-family="system-ui, sans-serif" font-size="15">Damaged</text>
+  <rect x="150" y="201" width="118" height="28" rx="4" fill="#777777"/>
+  <text x="282" y="222" font-family="system-ui, sans-serif" font-size="15" font-weight="600">168 units</text>
+  <text x="48" y="268" font-family="system-ui, sans-serif" font-size="14">Capacity falls to 19.95% of healthy witness; no route exceeds modeled capacity.</text>
+  <text x="48" y="322" font-family="system-ui, sans-serif" font-size="20" font-weight="600">Causal urban-family divergence</text>
+  <rect x="48" y="350" width="260" height="116" rx="8" fill="#f3f3f3" stroke="#999999"/>
+  <text x="68" y="382" font-family="system-ui, sans-serif" font-size="16" font-weight="600">Wet + advanced + connected</text>
+  <text x="68" y="416" font-family="system-ui, sans-serif" font-size="22">PORT_CLUSTER</text>
+  <text x="68" y="446" font-family="system-ui, sans-serif" font-size="13">Water terminal supported by modeled context</text>
+  <rect x="350" y="350" width="260" height="116" rx="8" fill="#f3f3f3" stroke="#999999"/>
+  <text x="370" y="382" font-family="system-ui, sans-serif" font-size="16" font-weight="600">Dry + advanced + connected</text>
+  <text x="370" y="416" font-family="system-ui, sans-serif" font-size="22">CORRIDOR_SPINE</text>
+  <text x="370" y="446" font-family="system-ui, sans-serif" font-size="13">No water-terminal decoration</text>
+  <rect x="652" y="350" width="260" height="116" rx="8" fill="#f3f3f3" stroke="#999999"/>
+  <text x="672" y="382" font-family="system-ui, sans-serif" font-size="16" font-weight="600">Abandoned + witnessed history</text>
+  <text x="672" y="416" font-family="system-ui, sans-serif" font-size="22">POST_COLLAPSE_RELICT</text>
+  <text x="672" y="446" font-family="system-ui, sans-serif" font-size="13">Relict layer requires abandonment witness</text>
+  <text x="48" y="510" font-family="system-ui, sans-serif" font-size="13">No physical city geometry, persistent building, empirical archaeology, persistent person, canonical history, planet or life mutation is claimed.</text>
+</svg>
