@@ -23,8 +23,6 @@ on:
       - '.github/workflows/p6-v1-conformance.yml'
       - '.github/workflows/reliability-phase-router.yml'
   pull_request:
-    branches:
-      - 'development/v1.*'
     paths:
       - 'tools/ci/phase-router.mjs'
       - 'tools/ci/git-phase-router.mjs'
