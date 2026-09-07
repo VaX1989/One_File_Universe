@@ -1,13 +1,144 @@
 {
-  "schema":"ofu-components-1",
-  "components":[
-    {"id":"ofu.v2x01.runtime.contracts","version":"1.0.0","owner":"runtime","kind":"code","stage":"foundation","placement":"script","source":"src/runtime/v2x-01-contracts.js","dependencies":["ofu.extensions.contracts"],"authority":"MEASURED_RUNTIME_EVIDENCE","provenance":"Bounded runtime-only contracts; scheduling and materialization never acquire canonical world authority.","provides":["ofu.v2x01.runtime.contracts"]},
-    {"id":"ofu.v2x01.runtime.scheduler","version":"1.0.0","owner":"runtime","kind":"code","stage":"foundation","placement":"script","source":"src/runtime/scheduling/adaptive-scheduler.js","dependencies":["ofu.v2x01.runtime.contracts"],"authority":"MEASURED_RUNTIME_EVIDENCE","provenance":"Deterministic weighted bounded scheduler with cooperative interaction preemption, cancellation and backpressure.","provides":["ofu.v2x01.runtime.scheduler"]},
-    {"id":"ofu.v2x01.runtime.resources","version":"1.0.0","owner":"runtime","kind":"code","stage":"foundation","placement":"script","source":"src/runtime/resources/resource-ledger.js","dependencies":["ofu.v2x01.runtime.contracts"],"authority":"MEASURED_RUNTIME_EVIDENCE","provenance":"Finite runtime ledger; GPU values are estimates, heap is measured only when exposed, CPU time otherwise remains UNKNOWN with bounded operations as proxy.","provides":["ofu.v2x01.runtime.resources"]},
-    {"id":"ofu.v2x01.runtime.workers","version":"1.0.0","owner":"runtime","kind":"code","stage":"foundation","placement":"script","source":"src/runtime/workers/worker-executor.js","dependencies":["ofu.v2x01.runtime.contracts"],"authority":"MEASURED_RUNTIME_EVIDENCE","provenance":"Package-controlled Blob Worker execution with bounded payloads, timeout, cancellation and safe synchronous fallback.","provides":["ofu.v2x01.runtime.workers"]},
-    {"id":"ofu.v2x01.runtime.prefetch","version":"1.0.0","owner":"runtime","kind":"code","stage":"foundation","placement":"script","source":"src/runtime/prefetch/bounded-prefetch.js","dependencies":["ofu.v2x01.runtime.contracts"],"authority":"MEASURED_RUNTIME_EVIDENCE","provenance":"Bounded prefetch consumes read-only intent and cannot create INTERACTION or IMMEDIATE authority.","provides":["ofu.v2x01.runtime.prefetch"]},
-    {"id":"ofu.v2x01.runtime.lifecycle","version":"1.0.0","owner":"runtime","kind":"code","stage":"foundation","placement":"script","source":"src/runtime/lifecycle/lifecycle-coordinator.js","dependencies":["ofu.v2x01.runtime.contracts"],"authority":"MEASURED_RUNTIME_EVIDENCE","provenance":"Visibility, page suspension/resume, coalesced resize, memory-pressure hints and WebGL context events without persistence/navigation authority.","provides":["ofu.v2x01.runtime.lifecycle"]},
-    {"id":"ofu.v2x01.materialization.cache-key","version":"1.0.0","owner":"simulation","kind":"code","stage":"foundation","placement":"script","source":"src/simulation/materialization/cache-key.js","dependencies":["ofu.v2x01.runtime.contracts"],"authority":"MEASURED_RUNTIME_EVIDENCE","provenance":"Evictable cache identity binds entity, model/representation versions and upstream commitment/history/semantic digests.","provides":["ofu.v2x01.materialization.cache-key"]},
-    {"id":"ofu.v2x01.materialization.runtime","version":"1.0.0","owner":"simulation","kind":"code","stage":"foundation","placement":"script","source":"src/simulation/materialization/materialization-runtime.js","dependencies":["ofu.v2x01.materialization.cache-key","ofu.v2x01.runtime.resources","ofu.v2x01.runtime.scheduler","ofu.v2x01.runtime.workers"],"authority":"MEASURED_RUNTIME_EVIDENCE","provenance":"Durable identity/commitment/history are immutable inputs; eviction, cancellation, worker completion and context loss cannot rewrite them or commit stale lineage.","provides":["ofu.v2x01.materialization.runtime"]}
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "ofu.v2x01.runtime.contracts",
+      "version": "1.2.0",
+      "owner": "runtime",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/runtime/v2x-01-contracts.js",
+      "dependencies": [
+        "ofu.extensions.contracts"
+      ],
+      "authority": "MEASURED_RUNTIME_EVIDENCE",
+      "provenance": "Bounded runtime-only contracts with strict option/budget schemas and explicit synchronous-fallback operation ceilings; scheduling and materialization never acquire canonical world authority.",
+      "provides": [
+        "ofu.v2x01.runtime.contracts"
+      ]
+    },
+    {
+      "id": "ofu.v2x01.runtime.scheduler",
+      "version": "1.2.0",
+      "owner": "runtime",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/runtime/scheduling/adaptive-scheduler.js",
+      "dependencies": [
+        "ofu.v2x01.runtime.contracts"
+      ],
+      "authority": "MEASURED_RUNTIME_EVIDENCE",
+      "provenance": "Deterministic weighted bounded scheduler with bounded same-class lifecycle starvation, distinct cooperative interaction preemption, idempotent cancellation and fail-closed backpressure.",
+      "provides": [
+        "ofu.v2x01.runtime.scheduler"
+      ]
+    },
+    {
+      "id": "ofu.v2x01.runtime.resources",
+      "version": "1.0.0",
+      "owner": "runtime",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/runtime/resources/resource-ledger.js",
+      "dependencies": [
+        "ofu.v2x01.runtime.contracts"
+      ],
+      "authority": "MEASURED_RUNTIME_EVIDENCE",
+      "provenance": "Finite runtime ledger; GPU values are estimates, heap is measured only when exposed, CPU time otherwise remains UNKNOWN with bounded operations as proxy.",
+      "provides": [
+        "ofu.v2x01.runtime.resources"
+      ]
+    },
+    {
+      "id": "ofu.v2x01.runtime.workers",
+      "version": "1.2.0",
+      "owner": "runtime",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/runtime/workers/worker-executor.js",
+      "dependencies": [
+        "ofu.v2x01.runtime.contracts"
+      ],
+      "authority": "MEASURED_RUNTIME_EVIDENCE",
+      "provenance": "Package-controlled Blob Worker execution with bounded payloads, capability introspection, cancellation/timeouts, and direct-fallback races that expose detached late work for conservative resource cleanup.",
+      "provides": [
+        "ofu.v2x01.runtime.workers"
+      ]
+    },
+    {
+      "id": "ofu.v2x01.runtime.prefetch",
+      "version": "1.2.0",
+      "owner": "runtime",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/runtime/prefetch/bounded-prefetch.js",
+      "dependencies": [
+        "ofu.v2x01.runtime.contracts"
+      ],
+      "authority": "MEASURED_RUNTIME_EVIDENCE",
+      "provenance": "Bounded prefetch validates complete runtime requests, deterministically deduplicates logical identities, consumes read-only intent, remains in PREFETCH scheduling class and cannot create IMMEDIATE/interaction authority.",
+      "provides": [
+        "ofu.v2x01.runtime.prefetch"
+      ]
+    },
+    {
+      "id": "ofu.v2x01.runtime.lifecycle",
+      "version": "1.1.0",
+      "owner": "runtime",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/runtime/lifecycle/lifecycle-coordinator.js",
+      "dependencies": [
+        "ofu.v2x01.runtime.contracts"
+      ],
+      "authority": "MEASURED_RUNTIME_EVIDENCE",
+      "provenance": "Visibility, initial-hidden state, page suspension/resume, coalesced resize, memory-pressure hints and WebGL context events without persistence/navigation authority.",
+      "provides": [
+        "ofu.v2x01.runtime.lifecycle"
+      ]
+    },
+    {
+      "id": "ofu.v2x01.materialization.cache-key",
+      "version": "1.0.0",
+      "owner": "simulation",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/simulation/materialization/cache-key.js",
+      "dependencies": [
+        "ofu.v2x01.runtime.contracts"
+      ],
+      "authority": "MEASURED_RUNTIME_EVIDENCE",
+      "provenance": "Evictable cache identity binds entity, model/representation versions and upstream commitment/history/semantic digests.",
+      "provides": [
+        "ofu.v2x01.materialization.cache-key"
+      ]
+    },
+    {
+      "id": "ofu.v2x01.materialization.runtime",
+      "version": "1.2.0",
+      "owner": "simulation",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/simulation/materialization/materialization-runtime.js",
+      "dependencies": [
+        "ofu.v2x01.materialization.cache-key",
+        "ofu.v2x01.runtime.resources",
+        "ofu.v2x01.runtime.scheduler",
+        "ofu.v2x01.runtime.workers"
+      ],
+      "authority": "MEASURED_RUNTIME_EVIDENCE",
+      "provenance": "Durable identity/commitment/history are immutable inputs; lifecycle state and request schemas are verified, WARM GPU reservation is forbidden, heavy sync fallback is admission-bounded before destructive invalidation, late direct fallbacks retain reservations until cleanup, failed releases quarantine conservative accounting, and eviction/cancellation/worker completion/context loss cannot rewrite durable truth or commit stale lineage.",
+      "provides": [
+        "ofu.v2x01.materialization.runtime"
+      ]
+    }
   ]
 }
