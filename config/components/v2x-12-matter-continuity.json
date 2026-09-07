@@ -1,0 +1,49 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v2x12.matter.continuity",
+      "version": "1.0.0",
+      "owner": "v2x-12-matter-continuity",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/micro/matter-continuity-v2.js",
+      "dependencies": [
+        "v1.micro.pipeline",
+        "v1.models.microscopic",
+        "v1.material.reference-properties",
+        "v1.micro.molecular-electronic-reference"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "V2X-12 additive source-aware bounded matter-continuity layer. Preserves v1 material/micro/molecular/atomic authority, adds explicit provenance, biological compartment descriptors, mixture/reaction topology, bonding/coordination descriptors, fixed-point source atom records and cross-regime commitment witnesses without MD or quantum claims.",
+      "provides": ["v2x12.matter.continuity"]
+    },
+    {
+      "id": "v2x12.matter.presentation",
+      "version": "1.0.0",
+      "owner": "v2x-12-matter-continuity",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/rendering/microscopic/matter-continuity-provider.js",
+      "dependencies": ["v2x12.matter.continuity"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "V2X-12 bounded microscopic presentation provider exposing material/microstructure/molecular/atomic fidelity and source-coordinate cues without owning camera, scale, selection, input or canonical mutation authority.",
+      "provides": ["v2x12.matter.presentation"]
+    },
+    {
+      "id": "px.providers.v2x12-matter-continuity",
+      "version": "1.0.0",
+      "owner": "v2x-12-matter-continuity",
+      "kind": "data",
+      "stage": "foundation",
+      "placement": "resource",
+      "source": "config/extensions/v2x-12-matter-continuity/providers.json",
+      "dependencies": [],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "V2X-12 provider catalog for additive matter-continuity model and presentation capabilities.",
+      "provides": ["v2x12.matter.provider-catalog"]
+    }
+  ]
+}
