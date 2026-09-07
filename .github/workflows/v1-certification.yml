@@ -18,13 +18,13 @@ jobs:
   exact-head:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # Node 24 runtime
         with:
           ref: '${{ env.OFU_SOURCE_SHA }}'
           fetch-depth: 0
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # Node 24 runtime
         with: {node-version: '24.20.0'}
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # Node 24 runtime
         with: {python-version: '3.13.15'}
       - name: Verify exact source
         run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
@@ -72,7 +72,7 @@ jobs:
           cmp /tmp/v1-first-manifest.json dist/rendering-build-manifest.json
           ! grep -Eiq "(src|href)=[\"'][^\"']*https?://" dist/One_File_Universe.html
           grep -q "connect-src 'none'" dist/One_File_Universe.html
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # Node 24 runtime
         with:
           name: v1-candidate-${{ env.OFU_SOURCE_SHA }}
           path: |
@@ -84,9 +84,9 @@ jobs:
       fail-fast: false
       matrix: {browser: [chromium, firefox, webkit]}
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # Node 24 runtime
         with: {ref: '${{ env.OFU_SOURCE_SHA }}'}
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # Node 24 runtime
         with: {node-version: '24.20.0'}
       - run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
       - run: node tools/build-ofu-rendering-v09.mjs
@@ -100,7 +100,7 @@ jobs:
         env: {BROWSER: '${{ matrix.browser }}'}
       - name: Preserve V1 browser diagnostics
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # Node 24 runtime
         with:
           name: v1-browser-log-${{ runner.os }}-${{ matrix.browser }}-${{ env.OFU_SOURCE_SHA }}
           path: v1-browser-${{ matrix.browser }}.log
@@ -117,9 +117,9 @@ jobs:
           - {os: macos-latest, browser: webkit}
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # Node 24 runtime
         with: {ref: '${{ env.OFU_SOURCE_SHA }}'}
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # Node 24 runtime
         with: {node-version: '24.20.0'}
       - shell: bash
         run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
@@ -134,7 +134,7 @@ jobs:
         env: {BROWSER: '${{ matrix.browser }}'}
       - name: Preserve V1 browser diagnostics
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # Node 24 runtime
         with:
           name: v1-browser-log-${{ runner.os }}-${{ matrix.browser }}-${{ env.OFU_SOURCE_SHA }}
           path: v1-browser-${{ matrix.browser }}.log
