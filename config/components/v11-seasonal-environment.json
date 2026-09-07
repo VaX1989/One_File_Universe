@@ -1,0 +1,22 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1.environment.seasonal-envelope",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/environment/seasonal-envelope.js",
+      "dependencies": [
+        "v1.convergence.world-context"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Selective post-v1 implementation harvest from V1X-16. Adds a bounded deterministic four-phase seasonal inspection envelope over the existing reduced-order local environment; no measured weather/climate, P4 admission, or P5/P6 canonical promotion.",
+      "provides": [
+        "v1.environment.seasonal-envelope"
+      ]
+    }
+  ]
+}
