@@ -1,13 +1,15 @@
 {
   "schema": "ofu-super-parallel-base-1",
-  "version": "2026-09-07.2",
-  "status": "PREPARED_FOR_PROMPT_01_CONVERGENCE",
+  "version": "2026-09-07.3",
+  "status": "ACTIVE",
   "canonicalDevelopmentBranch": "development/v1.1-quality-exploration",
   "superParallelBaseSha": "70af4a84bb8cb7c782966bb4b3b8aab8aa86838e",
   "superParallelBaseTree": "44b2cf8a40cb3e8acaa79f41acf5faa77d152a96",
-  "enablingCheckpointSha": "2489f283b74d4306d79d390b6bb0d7ce458cbf26",
-  "enablingCheckpointTree": "f97becfd708778171f4f0e40a49e9183e1a4e924",
-  "baseDecision": "READY_FOR_CONVERGENCE_REVIEW",
+  "enablingCheckpointSha": "fa73a8eea966490d0e796a21e143282ac32fdeb9",
+  "enablingCheckpointTree": "1ff670e62be6c21545334ed83fa1299c77d9ed22",
+  "integrationMergeSha": "f6c74d240b2a63ba8dd73264ff4412e940e0c7ca",
+  "integrationMergeTree": "1ff670e62be6c21545334ed83fa1299c77d9ed22",
+  "baseDecision": "ACTIVE",
   "writerMegaLanesAuthorized": false,
   "ownershipMatrix": "docs/parallel/V2X_OWNERSHIP_MATRIX.json",
   "capabilityRegistry": "docs/parallel/V2X_CAPABILITY_REGISTRY.json",
@@ -17,15 +19,19 @@
   "baselineEvidence": "docs/parallel/V2X_BASELINE_EVIDENCE.json",
   "prompt02Gate": {
     "required": true,
-    "state": "READY_FOR_PROMPT_01_INTEGRATION",
-    "reason": "V2X-00 enabling architecture/governance checkpoint exists. Prompt 01 must integrate/reconcile it and explicitly bind/authorize downstream lane identities before any writer mega-lane may write."
+    "state": "INTEGRATED_ACTIVE",
+    "checkpointSha": "fa73a8eea966490d0e796a21e143282ac32fdeb9",
+    "checkpointTree": "1ff670e62be6c21545334ed83fa1299c77d9ed22",
+    "pr": 180,
+    "mergeSha": "f6c74d240b2a63ba8dd73264ff4412e940e0c7ca",
+    "reason": "Prompt 01 authenticated and integrated the exact V2X-00 enabling checkpoint. The super-parallel base control plane is ACTIVE. Downstream writer authorization remains a separate explicit binding step and is still fail-closed."
   },
-  "liveRealityAtPreparation": {
-    "canonicalSha": "ddc91b11769e8d3b61a9d840ab27faf606cd5394",
-    "canonicalTree": "9621ff5d27c88df77515d0ec47d4e25e75b47acf",
-    "postBaseDeltaPolicy": "FORWARD_RECONCILE_BY_PROMPT_01_NO_SILENT_REBASE",
-    "currentCandidatePr": 178,
-    "mergedPostBasePr": 177
+  "liveRealityAtActivation": {
+    "preIntegrationCanonicalSha": "ddc91b11769e8d3b61a9d840ab27faf606cd5394",
+    "preIntegrationCanonicalTree": "9621ff5d27c88df77515d0ec47d4e25e75b47acf",
+    "integrationMergeSha": "f6c74d240b2a63ba8dd73264ff4412e940e0c7ca",
+    "integrationMergeTree": "1ff670e62be6c21545334ed83fa1299c77d9ed22",
+    "postBaseDeltaPolicy": "FORWARD_RECONCILE_NO_FORCE_NO_SILENT_RESET"
   },
   "preExistingCiTruth": {
     "baseCheckRunsObserved": 75,
@@ -33,17 +39,30 @@
     "baseCancelledMarkerObserved": false,
     "legacyStatusState": "pending",
     "legacyStatusesCount": 0,
-    "claimLimit": "Repository-observed GitHub Checks evidence only; this session did not independently rerun every base workflow."
+    "claimLimit": "Repository-observed GitHub Checks evidence only; this session did not independently rerun every historical base workflow."
   },
   "prompt02Evidence": {
+    "exactHeadSha": "fa73a8eea966490d0e796a21e143282ac32fdeb9",
+    "exactHeadWorkflowRunsObserved": 11,
+    "exactHeadWorkflowConclusion": "SUCCESS",
+    "exactSourceReproduction": "SUCCESS",
+    "foundationIntegrity": "SUCCESS",
+    "p1Conformance": "SUCCESS",
+    "p2Conformance": "SUCCESS",
+    "p3Conformance": "SUCCESS",
+    "p4Conformance": "SUCCESS",
+    "p1P4CanonicalBaseline": "SUCCESS",
+    "p5ControlledPromotion": "SUCCESS",
+    "p5EnvironmentV2CanonicalPromotion": "SUCCESS",
+    "p6V1Conformance": "SUCCESS",
+    "postV1DevelopmentGate": "SUCCESS",
     "standaloneOwnershipValidatorReplay": "PASS",
     "standaloneNodeRuntime": "v22.16.0",
     "canonicalNodeRequirement": "24.20.x",
     "fullLocalCheckoutGate": "ENVIRONMENT_BLOCKED_DNS",
     "fullLocalCheckoutFailure": "Could not resolve host github.com",
-    "prePrExactHeadCheckRuns": 0,
     "browserEvidenceRequired": false,
-    "reasonBrowserEvidenceNotRequired": "No production renderer/provider/runtime behavior or build composition was changed by V2X-00."
+    "reasonBrowserEvidenceNotRequired": "V2X-00 changed architecture/governance control records and validator evidence only; it did not change production renderer/provider/runtime visual behavior or central build composition."
   },
   "invariants": {
     "mainDirectWrites": false,
