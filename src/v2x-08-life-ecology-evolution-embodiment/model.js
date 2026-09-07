@@ -69,10 +69,31 @@ function proportionalAllocations(requests, capacity) {
   const boundedCapacity = clamp(capacity, 0n, totalDemand);
   if (totalDemand === 0n) return new Map(requests.map((request) => [request.id, 0n]));
   if (boundedCapacity === totalDemand) return new Map(requests.map((request) => [request.id, request.demand]));
-  return new Map(requests.map((request) => [
-    request.id,
-    request.demand * boundedCapacity / totalDemand,
-  ]));
+
+  const allocations = requests.map((request) => {
+    const scaled = request.demand * boundedCapacity;
+    return {
+      id: request.id,
+      tieKey: String(request.tieKey ?? request.id),
+      allocation: scaled / totalDemand,
+      remainder: scaled % totalDemand,
+    };
+  });
+  const assigned = sumBigInt(allocations.map((entry) => entry.allocation));
+  const residual = boundedCapacity - assigned;
+  assert(residual >= 0n && residual <= BigInt(allocations.length), 'proportional allocation residual out of bounds');
+
+  if (residual > 0n) {
+    const ranked = [...allocations].sort((a, b) => {
+      if (a.remainder !== b.remainder) return a.remainder > b.remainder ? -1 : 1;
+      const byTieKey = a.tieKey.localeCompare(b.tieKey);
+      if (byTieKey !== 0) return byTieKey;
+      return String(a.id).localeCompare(String(b.id));
+    });
+    for (let index = 0; index < Number(residual); index += 1) ranked[index].allocation += 1n;
+  }
+
+  return new Map(allocations.map((entry) => [entry.id, entry.allocation]));
 }
 
 export function createLifeState(input) {
@@ -87,20 +108,24 @@ export function createLifeState(input) {
 
   const lineageIds = new Set();
   const normalizedLineages = lineages.map((lineage) => {
-    assert(lineage.id && !lineageIds.has(lineage.id), 'duplicate lineage id');
-    lineageIds.add(lineage.id);
+    assert(lineage.id && !lineageIds.has(String(lineage.id)), 'duplicate lineage id');
+    lineageIds.add(String(lineage.id));
     const traits = sortedCopy(lineage.traits ?? [], (trait) => trait.key);
     assert(traits.length <= LIFE_V2_LIMITS.maxTraitsPerLineage, 'trait limit exceeded');
+    const traitKeys = new Set();
+    const normalizedTraits = traits.map((trait) => {
+      const key = String(trait.key);
+      assert(key && !traitKeys.has(key), `duplicate trait key ${key}`);
+      traitKeys.add(key);
+      return Object.freeze({ key, valuePpm: asPpm(trait.valuePpm, `trait ${trait.key}`) });
+    });
     return Object.freeze({
       id: String(lineage.id),
       parentId: lineage.parentId == null ? null : String(lineage.parentId),
       originEventKey: String(lineage.originEventKey ?? 'fixture:seed'),
       extinctionEventKey: lineage.extinctionEventKey == null ? null : String(lineage.extinctionEventKey),
       speciationWitness: lineage.speciationWitness ?? null,
-      traits: Object.freeze(traits.map((trait) => Object.freeze({
-        key: String(trait.key),
-        valuePpm: asPpm(trait.valuePpm, `trait ${trait.key}`),
-      }))),
+      traits: Object.freeze(normalizedTraits),
       morphology: Object.freeze({
         symmetry: String(lineage.morphology?.symmetry ?? 'RADIAL_OR_BILATERAL_UNRESOLVED'),
         supportMode: String(lineage.morphology?.supportMode ?? 'UNRESOLVED'),
@@ -110,10 +135,26 @@ export function createLifeState(input) {
     });
   });
 
+  const lineageById = new Map(normalizedLineages.map((lineage) => [lineage.id, lineage]));
+  for (const lineage of normalizedLineages) {
+    if (lineage.parentId == null) continue;
+    assert(lineage.parentId !== lineage.id, `lineage ${lineage.id} cannot parent itself`);
+    assert(lineageById.has(lineage.parentId), `lineage ${lineage.id} parent missing`);
+    const visited = new Set([lineage.id]);
+    let cursor = lineage.parentId;
+    while (cursor != null) {
+      assert(!visited.has(cursor), `lineage parent cycle detected at ${cursor}`);
+      visited.add(cursor);
+      const parent = lineageById.get(cursor);
+      assert(parent, `lineage ${cursor} parent missing`);
+      cursor = parent.parentId;
+    }
+  }
+
   const populationIds = new Set();
   const normalizedPopulations = populations.map((population) => {
-    assert(population.id && !populationIds.has(population.id), 'duplicate population id');
-    populationIds.add(population.id);
+    assert(population.id && !populationIds.has(String(population.id)), 'duplicate population id');
+    populationIds.add(String(population.id));
     assert(lineageIds.has(String(population.lineageId)), 'population lineage missing');
     return Object.freeze({
       id: String(population.id),
@@ -135,10 +176,20 @@ export function createLifeState(input) {
     assert(sum === PPM, `population ${population.id} lifecycle fractions must total 1e6 ppm`);
   }
 
+  const representedByLineage = new Map(normalizedLineages.map((lineage) => [lineage.id, 0n]));
+  for (const population of normalizedPopulations) {
+    representedByLineage.set(population.lineageId, (representedByLineage.get(population.lineageId) ?? 0n) + population.abundance);
+  }
+  for (const lineage of normalizedLineages) {
+    if (lineage.extinctionEventKey != null) {
+      assert((representedByLineage.get(lineage.id) ?? 0n) === 0n, `formally extinct lineage ${lineage.id} has represented abundance`);
+    }
+  }
+
   const interactionIds = new Set();
   const normalizedInteractions = interactions.map((edge) => {
-    assert(edge.id && !interactionIds.has(edge.id), 'duplicate interaction id');
-    interactionIds.add(edge.id);
+    assert(edge.id && !interactionIds.has(String(edge.id)), 'duplicate interaction id');
+    interactionIds.add(String(edge.id));
     assert(populationIds.has(String(edge.sourcePopulationId)), 'interaction source missing');
     assert(populationIds.has(String(edge.targetPopulationId)), 'interaction target missing');
     const kind = String(edge.kind);
@@ -159,6 +210,10 @@ export function createLifeState(input) {
     disturbancePpm: asPpm(region.disturbancePpm ?? 0, `region ${id} disturbancePpm`),
     opportunityPpm: asPpm(region.opportunityPpm ?? PPM, `region ${id} opportunityPpm`),
   })])));
+
+  for (const population of normalizedPopulations) {
+    assert(Object.hasOwn(regions, population.regionId), `population ${population.id} region missing`);
+  }
 
   return Object.freeze({
     schema: 'ofu-v2x-08-life-state-1',
@@ -224,6 +279,7 @@ export function advanceEcology(state, event) {
       const baselineDeaths = population.abundance * mortalityPpm / PPM;
       return {
         id: population.id,
+        tieKey: population.lineageId,
         abundance: population.abundance,
         requestedBirths,
         disturbanceDeaths,
@@ -239,7 +295,7 @@ export function advanceEcology(state, event) {
     } else {
       const maintenanceCapacity = region.resourcePool / maintenancePerIndividual;
       maintenanceSupported = proportionalAllocations(
-        requests.map((request) => ({ id: request.id, demand: request.abundance })),
+        requests.map((request) => ({ id: request.id, tieKey: request.tieKey, demand: request.abundance })),
         clamp(maintenanceCapacity, 0n, totalAbundance),
       );
       maintenanceConsumed = sumBigInt([...maintenanceSupported.values()]) * maintenancePerIndividual;
@@ -247,7 +303,7 @@ export function advanceEcology(state, event) {
 
     const resourceAfterMaintenance = clamp(region.resourcePool - maintenanceConsumed, 0n, MAX_INT);
     const totalRequestedBirths = sumBigInt(requests.map((request) => request.requestedBirths));
-    const resourceBirthCapacity = resourceAfterMaintenance / resourcePerBirth;
+    const resourceBirthCapacity = region.resourcePool < maintenanceConsumed ? 0n : resourceAfterMaintenance / resourcePerBirth;
     const nutrientBirthCapacity = region.nutrientPool / nutrientPerBirth;
     const birthCapacity = clamp(
       resourceBirthCapacity < nutrientBirthCapacity ? resourceBirthCapacity : nutrientBirthCapacity,
@@ -255,7 +311,7 @@ export function advanceEcology(state, event) {
       totalRequestedBirths,
     );
     const birthAllocations = proportionalAllocations(
-      requests.map((request) => ({ id: request.id, demand: request.requestedBirths })),
+      requests.map((request) => ({ id: request.id, tieKey: request.tieKey, demand: request.requestedBirths })),
       birthCapacity,
     );
     const totalBirths = sumBigInt([...birthAllocations.values()]);
@@ -292,7 +348,6 @@ export function advanceEcology(state, event) {
   }
 
   const interactionSnapshot = new Map([...populations.entries()].map(([id, population]) => [id, { ...population }]));
-  const rawLossByPopulation = new Map(state.populations.map((population) => [population.id, 0n]));
   const interactionPlans = [];
 
   for (const edge of state.interactions) {
@@ -311,18 +366,31 @@ export function advanceEcology(state, event) {
       sourceLoss = pressure / 2n;
       targetLoss = pressure - sourceLoss;
     }
-    if (sourceLoss > 0n) rawLossByPopulation.set(source.id, (rawLossByPopulation.get(source.id) ?? 0n) + sourceLoss);
-    if (targetLoss > 0n) rawLossByPopulation.set(target.id, (rawLossByPopulation.get(target.id) ?? 0n) + targetLoss);
-    interactionPlans.push(Object.freeze({ edge, pressure, sourceLoss, targetLoss }));
+    interactionPlans.push(Object.freeze({
+      edge,
+      pressure,
+      sourceLoss,
+      targetLoss,
+      sourceClaimId: `${edge.id}:source-loss`,
+      targetClaimId: `${edge.id}:target-loss`,
+      sourceTieKey: `${edge.kind}|${source.lineageId}|${target.lineageId}|source`,
+      targetTieKey: `${edge.kind}|${source.lineageId}|${target.lineageId}|target`,
+    }));
   }
 
-  function scaledInteractionLoss(populationId, rawLoss) {
-    if (rawLoss === 0n) return 0n;
-    const population = interactionSnapshot.get(populationId);
-    const totalRawLoss = rawLossByPopulation.get(populationId) ?? 0n;
-    if (!population || totalRawLoss === 0n) return 0n;
-    if (totalRawLoss <= population.abundance) return rawLoss;
-    return rawLoss * population.abundance / totalRawLoss;
+  const allocatedInteractionLoss = new Map();
+  for (const [populationId, population] of interactionSnapshot.entries()) {
+    const claims = [];
+    for (const plan of interactionPlans) {
+      if (plan.sourceLoss > 0n && plan.edge.sourcePopulationId === populationId) {
+        claims.push({ id: plan.sourceClaimId, tieKey: plan.sourceTieKey, demand: plan.sourceLoss });
+      }
+      if (plan.targetLoss > 0n && plan.edge.targetPopulationId === populationId) {
+        claims.push({ id: plan.targetClaimId, tieKey: plan.targetTieKey, demand: plan.targetLoss });
+      }
+    }
+    const allocations = proportionalAllocations(claims, population.abundance);
+    for (const [claimId, loss] of allocations.entries()) allocatedInteractionLoss.set(claimId, loss);
   }
 
   const interactionDeltas = new Map(state.populations.map((population) => [population.id, { abundanceLoss: 0n, energyGain: 0n }]));
@@ -334,12 +402,12 @@ export function advanceEcology(state, event) {
     if (!sourceDelta || !targetDelta) continue;
 
     if (edge.kind === 'PREDATION' || edge.kind === 'PARASITISM') {
-      const removed = scaledInteractionLoss(edge.targetPopulationId, plan.targetLoss);
+      const removed = allocatedInteractionLoss.get(plan.targetClaimId) ?? 0n;
       targetDelta.abundanceLoss += removed;
       sourceDelta.energyGain += removed * edge.assimilationPpm / PPM;
     } else if (edge.kind === 'COMPETITION') {
-      sourceDelta.abundanceLoss += scaledInteractionLoss(edge.sourcePopulationId, plan.sourceLoss);
-      targetDelta.abundanceLoss += scaledInteractionLoss(edge.targetPopulationId, plan.targetLoss);
+      sourceDelta.abundanceLoss += allocatedInteractionLoss.get(plan.sourceClaimId) ?? 0n;
+      targetDelta.abundanceLoss += allocatedInteractionLoss.get(plan.targetClaimId) ?? 0n;
     } else if (edge.kind === 'MUTUALISM') {
       const gain = pressure * edge.assimilationPpm / PPM;
       sourceDelta.energyGain += gain;
@@ -377,6 +445,7 @@ export function applyLineageEvent(state, event) {
   if (event.type === 'SPECIATION') {
     const parent = state.lineages.find((lineage) => lineage.id === event.parentLineageId);
     assert(parent, 'speciation parent missing');
+    assert(parent.extinctionEventKey == null, 'cannot speciate from a formally extinct lineage');
     assert(event.criterionWitness?.satisfied === true, 'speciation requires explicit satisfied criterion witness');
     assert(state.lineages.length < LIFE_V2_LIMITS.maxLineages, 'lineage lifetime bound reached');
     const childId = event.childLineageId ?? deriveId('lineage', parent.id, event.eventKey, JSON.stringify(event.criterionWitness));
@@ -384,7 +453,8 @@ export function applyLineageEvent(state, event) {
     const traits = parent.traits.map((trait) => ({ ...trait }));
     for (const delta of event.traitDeltasPpm ?? []) {
       const trait = traits.find((candidate) => candidate.key === delta.key);
-      if (trait) trait.valuePpm = clamp(trait.valuePpm + BigInt(delta.deltaPpm), 0n, PPM);
+      assert(trait, `trait delta target ${delta.key} missing from parent lineage`);
+      trait.valuePpm = clamp(trait.valuePpm + BigInt(delta.deltaPpm), 0n, PPM);
     }
     lineages.push({
       ...parent,
@@ -402,6 +472,7 @@ export function applyLineageEvent(state, event) {
   if (event.type === 'EXTINCTION') {
     const lineage = state.lineages.find((candidate) => candidate.id === event.lineageId);
     assert(lineage, 'extinction lineage missing');
+    assert(lineage.extinctionEventKey == null, 'lineage already formally extinct');
     const total = state.populations.filter((population) => population.lineageId === lineage.id).reduce((sum, population) => sum + population.abundance, 0n);
     assert(total === 0n, 'formal extinction requires represented aggregate abundance exactly zero');
     const replaced = lineages.map((candidate) => candidate.id === lineage.id
