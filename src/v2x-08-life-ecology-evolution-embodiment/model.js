@@ -64,36 +64,103 @@ function sumBigInt(values) {
   return total;
 }
 
-function proportionalAllocations(requests, capacity) {
-  const totalDemand = sumBigInt(requests.map((request) => request.demand));
-  const boundedCapacity = clamp(capacity, 0n, totalDemand);
-  if (totalDemand === 0n) return new Map(requests.map((request) => [request.id, 0n]));
-  if (boundedCapacity === totalDemand) return new Map(requests.map((request) => [request.id, request.demand]));
+function largestRemainderShares(items, totalUnits) {
+  const units = asInt(totalUnits, 'share totalUnits');
+  const totalWeight = sumBigInt(items.map((item) => item.weight));
+  if (totalWeight === 0n) {
+    assert(units === 0n, 'cannot distribute positive units across zero total weight');
+    return new Map(items.map((item) => [item.id, 0n]));
+  }
 
-  const allocations = requests.map((request) => {
-    const scaled = request.demand * boundedCapacity;
+  const shares = items.map((item) => {
+    const scaled = item.weight * units;
     return {
-      id: request.id,
-      tieKey: String(request.tieKey ?? request.id),
-      allocation: scaled / totalDemand,
-      remainder: scaled % totalDemand,
+      id: item.id,
+      tieKey: String(item.tieKey ?? item.id),
+      share: scaled / totalWeight,
+      remainder: scaled % totalWeight,
     };
   });
-  const assigned = sumBigInt(allocations.map((entry) => entry.allocation));
-  const residual = boundedCapacity - assigned;
-  assert(residual >= 0n && residual <= BigInt(allocations.length), 'proportional allocation residual out of bounds');
+  const assigned = sumBigInt(shares.map((entry) => entry.share));
+  const residual = units - assigned;
+  assert(residual >= 0n && residual <= BigInt(shares.length), 'largest-remainder residual out of bounds');
 
   if (residual > 0n) {
-    const ranked = [...allocations].sort((a, b) => {
+    const ranked = [...shares].sort((a, b) => {
       if (a.remainder !== b.remainder) return a.remainder > b.remainder ? -1 : 1;
       const byTieKey = a.tieKey.localeCompare(b.tieKey);
       if (byTieKey !== 0) return byTieKey;
       return String(a.id).localeCompare(String(b.id));
     });
-    for (let index = 0; index < Number(residual); index += 1) ranked[index].allocation += 1n;
+    for (let index = 0; index < Number(residual); index += 1) ranked[index].share += 1n;
   }
 
-  return new Map(allocations.map((entry) => [entry.id, entry.allocation]));
+  return new Map(shares.map((entry) => [entry.id, entry.share]));
+}
+
+function proportionalAllocations(requests, capacity) {
+  const totalDemand = sumBigInt(requests.map((request) => request.demand));
+  const boundedCapacity = clamp(capacity, 0n, totalDemand);
+  if (totalDemand === 0n) return new Map(requests.map((request) => [request.id, 0n]));
+  if (boundedCapacity === totalDemand) return new Map(requests.map((request) => [request.id, request.demand]));
+  return largestRemainderShares(
+    requests.map((request) => ({ id: request.id, tieKey: request.tieKey, weight: request.demand })),
+    boundedCapacity,
+  );
+}
+
+function lifecycleStageCounts(population) {
+  return largestRemainderShares([
+    { id: 'juvenile', tieKey: '0-juvenile', weight: population.lifecycleStagePpm.juvenile },
+    { id: 'mature', tieKey: '1-mature', weight: population.lifecycleStagePpm.mature },
+    { id: 'senescent', tieKey: '2-senescent', weight: population.lifecycleStagePpm.senescent },
+  ], population.abundance);
+}
+
+function lifecycleStagePpmFromCounts(counts, priorStagePpm) {
+  const total = counts.juvenile + counts.mature + counts.senescent;
+  if (total === 0n) return Object.freeze({ ...priorStagePpm });
+  const ppm = largestRemainderShares([
+    { id: 'juvenile', tieKey: '0-juvenile', weight: counts.juvenile },
+    { id: 'mature', tieKey: '1-mature', weight: counts.mature },
+    { id: 'senescent', tieKey: '2-senescent', weight: counts.senescent },
+  ], PPM);
+  return Object.freeze({
+    juvenile: ppm.get('juvenile') ?? 0n,
+    mature: ppm.get('mature') ?? 0n,
+    senescent: ppm.get('senescent') ?? 0n,
+  });
+}
+
+function advanceLifecycleComposition(population, births, deaths, juvenileMaturationPpm, matureSenescencePpm) {
+  const priorCounts = lifecycleStageCounts(population);
+  const counts = {
+    juvenile: (priorCounts.get('juvenile') ?? 0n) + births,
+    mature: priorCounts.get('mature') ?? 0n,
+    senescent: priorCounts.get('senescent') ?? 0n,
+  };
+  const postBirthTotal = counts.juvenile + counts.mature + counts.senescent;
+  assert(postBirthTotal === population.abundance + births, 'lifecycle birth accounting mismatch');
+
+  const deathShares = proportionalAllocations([
+    { id: 'juvenile', tieKey: '0-juvenile', demand: counts.juvenile },
+    { id: 'mature', tieKey: '1-mature', demand: counts.mature },
+    { id: 'senescent', tieKey: '2-senescent', demand: counts.senescent },
+  ], deaths);
+  counts.juvenile -= deathShares.get('juvenile') ?? 0n;
+  counts.mature -= deathShares.get('mature') ?? 0n;
+  counts.senescent -= deathShares.get('senescent') ?? 0n;
+
+  const matureBeforeTransition = counts.mature;
+  const maturation = counts.juvenile * juvenileMaturationPpm / PPM;
+  const senescence = matureBeforeTransition * matureSenescencePpm / PPM;
+  counts.juvenile -= maturation;
+  counts.mature = counts.mature + maturation - senescence;
+  counts.senescent += senescence;
+
+  const survivorTotal = counts.juvenile + counts.mature + counts.senescent;
+  assert(survivorTotal === population.abundance + births - deaths, 'lifecycle survivor accounting mismatch');
+  return lifecycleStagePpmFromCounts(counts, population.lifecycleStagePpm);
 }
 
 export function createLifeState(input) {
@@ -152,14 +219,20 @@ export function createLifeState(input) {
   }
 
   const populationIds = new Set();
+  const aggregateKeys = new Set();
   const normalizedPopulations = populations.map((population) => {
     assert(population.id && !populationIds.has(String(population.id)), 'duplicate population id');
     populationIds.add(String(population.id));
     assert(lineageIds.has(String(population.lineageId)), 'population lineage missing');
+    const lineageId = String(population.lineageId);
+    const regionId = String(population.regionId);
+    const aggregateKey = `${lineageId}\u0000${regionId}`;
+    assert(!aggregateKeys.has(aggregateKey), `multiple population aggregates for lineage ${lineageId} in region ${regionId}`);
+    aggregateKeys.add(aggregateKey);
     return Object.freeze({
       id: String(population.id),
-      lineageId: String(population.lineageId),
-      regionId: String(population.regionId),
+      lineageId,
+      regionId,
       abundance: asInt(population.abundance, `population ${population.id} abundance`),
       energyStore: asInt(population.energyStore ?? 0, `population ${population.id} energyStore`),
       nutrientStore: asInt(population.nutrientStore ?? 0, `population ${population.id} nutrientStore`),
@@ -225,7 +298,7 @@ export function createLifeState(input) {
     regions,
     limitations: Object.freeze([
       'No abiogenesis inference.',
-      'No universal alien biochemistry, morphology, behavior, or speciation threshold is asserted.',
+      'No universal alien biochemistry, morphology, behavior, lifecycle rate, or speciation threshold is asserted.',
       'Persistent state is aggregate population/lineage state; local organism samples are representative only.',
       'P4 remains temporal/event admission authority.',
     ]),
@@ -259,6 +332,8 @@ export function advanceEcology(state, event) {
   const nutrientPerBirth = asInt(profile.nutrientPerBirth ?? 1, 'nutrientPerBirth', 1n);
   const maintenancePerIndividual = asInt(profile.maintenancePerIndividual ?? 1, 'maintenancePerIndividual', 0n);
   const disturbanceMortalityPpm = asPpm(profile.disturbanceMortalityPpm ?? 250_000, 'disturbanceMortalityPpm');
+  const juvenileMaturationPpm = asPpm(profile.juvenileMaturationPpm ?? 0, 'juvenileMaturationPpm');
+  const matureSenescencePpm = asPpm(profile.matureSenescencePpm ?? 0, 'matureSenescencePpm');
 
   const demographicPlans = new Map();
   const diagnostics = [];
@@ -303,7 +378,7 @@ export function advanceEcology(state, event) {
 
     const resourceAfterMaintenance = clamp(region.resourcePool - maintenanceConsumed, 0n, MAX_INT);
     const totalRequestedBirths = sumBigInt(requests.map((request) => request.requestedBirths));
-    const resourceBirthCapacity = region.resourcePool < maintenanceConsumed ? 0n : resourceAfterMaintenance / resourcePerBirth;
+    const resourceBirthCapacity = resourceAfterMaintenance / resourcePerBirth;
     const nutrientBirthCapacity = region.nutrientPool / nutrientPerBirth;
     const birthCapacity = clamp(
       resourceBirthCapacity < nutrientBirthCapacity ? resourceBirthCapacity : nutrientBirthCapacity,
@@ -339,11 +414,19 @@ export function advanceEcology(state, event) {
     const plan = demographicPlans.get(population.id) ?? Object.freeze({ births: 0n, deaths: 0n });
     mutable.abundance = population.abundance + plan.births - plan.deaths;
     mutable.energyStore = boundedAdd(population.energyStore, plan.births);
+    mutable.lifecycleStagePpm = advanceLifecycleComposition(
+      population,
+      plan.births,
+      plan.deaths,
+      juvenileMaturationPpm,
+      matureSenescencePpm,
+    );
     diagnostics.push(Object.freeze({
       populationId: population.id,
       births: plan.births,
       deaths: plan.deaths,
       abundance: mutable.abundance,
+      lifecycleStagePpm: mutable.lifecycleStagePpm,
     }));
   }
 
