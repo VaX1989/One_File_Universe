@@ -1,12 +1,13 @@
 (function(root){
 'use strict';
 const O=root.OFU=root.OFU||{};
-const VERSION='ofu-v2x-03-region-refinement-2',AUTHORITY='PRESENTATION_ONLY',MAX_CHILDREN=96;
+const VERSION='ofu-v2x-03-region-refinement-3',AUTHORITY='PRESENTATION_ONLY',MAX_CHILDREN=96;
 const freeze=v=>{if(!v||typeof v!=='object'||Object.isFrozen(v))return v;for(const k of Object.keys(v))freeze(v[k]);return Object.freeze(v)};
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,Number(v)));
 function finite(v,label){const n=Number(v);if(!Number.isFinite(n))throw new TypeError(label+' must be finite');return n}
+function stableValue(value){if(value===null)return'null';const t=typeof value;if(t==='string')return's:'+value.length+':'+value;if(t==='number'){if(!Number.isFinite(value))throw new TypeError('canonicalKey numbers must be finite');return'n:'+String(Object.is(value,-0)?0:value)}if(t==='boolean')return value?'t':'f';if(Array.isArray(value))return'['+value.map(stableValue).join(',')+']';if(t==='object')return'{'+Object.keys(value).sort().map(k=>stableValue(k)+':'+stableValue(value[k])).join(',')+'}';throw new TypeError('canonicalKey contains unsupported value')}
 function hash32(input){let h=2166136261>>>0;for(const c of String(input)){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
-function stableId(entity){for(const k of ['canonicalId','entityId','id'])if(typeof entity?.[k]==='string'&&entity[k])return entity[k];if(entity?.canonicalKey&&typeof entity.canonicalKey==='object')return JSON.stringify(entity.canonicalKey,Object.keys(entity.canonicalKey).sort());throw new TypeError('stable child identity required')}
+function stableId(entity){for(const k of ['canonicalId','entityId','id'])if(typeof entity?.[k]==='string'&&entity[k])return entity[k];if(entity?.canonicalKey&&typeof entity.canonicalKey==='object')return'canonicalKey:'+stableValue(entity.canonicalKey);throw new TypeError('stable child identity required')}
 function refine({parentId,children=[],parentExtent=1,focus=0,quality='STANDARD'}={}){
  if(typeof parentId!=='string'||!parentId)throw new TypeError('parentId required');if(!Array.isArray(children))throw new TypeError('children array required');const extent=finite(parentExtent,'parentExtent'),focusValue=finite(focus,'focus');if(!(extent>0))throw new RangeError('parentExtent must be positive');const cap={LOW:24,MOBILE:36,STANDARD:64,HIGH:96}[String(quality).toUpperCase()]||64,seen=new Set(),stable=[];
  for(const entity of children){const id=stableId(entity);if(seen.has(id))throw new Error('duplicate child identity '+id);seen.add(id);stable.push({entity,id})}
