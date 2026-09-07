@@ -17,16 +17,32 @@ const LIMITS = Object.freeze({
   maxTotalBrowserBytes: 8_388_608,
 });
 
+const DEFAULT_TARGET_FIELDS = Object.freeze({platform: 'platform', arch: 'arch', browser: 'browser'});
 const POLICIES = Object.freeze({
   p5: Object.freeze({
+    targetFields: DEFAULT_TARGET_FIELDS,
     goldenCorpusVersion: 'golden-p5-corpus-v1',
     agreement: ['physicalDigest', 'terrainDigest', 'artifactSha256', 'artifactBytes'],
     fixed: Object.freeze({}),
   }),
   'p5-environment-v2': Object.freeze({
+    targetFields: DEFAULT_TARGET_FIELDS,
     goldenCorpusVersion: 'golden-p5-environment-v2-corpus-v1',
     agreement: ['manifestHash', 'environmentDigest', 'physicalDigest', 'artifactSha256'],
     fixed: Object.freeze({earthAnchorMilliK: '254578'}),
+  }),
+  p6: Object.freeze({
+    targetFields: Object.freeze({platform: 'hostPlatform', arch: 'hostArch', browser: 'browser'}),
+    goldenCorpusVersion: null,
+    agreement: ['manifestHash', 'biosphereId', 'lineageId', 'speciesId', 'stateDigest', 'artifactSha256', 'goldenCorpusDigest'],
+    fixed: Object.freeze({
+      realSafariVerified: false,
+      artifactContainsConformanceAuthority: false,
+      shippedConformanceConstructor: false,
+      canonicalGenesisAvailable: false,
+      persistentLineageTransitions: false,
+      privateClock: false,
+    }),
   }),
 });
 
@@ -42,8 +58,13 @@ function fail(code, message, source = null) {
   throw error;
 }
 
-function targetKey(record) {
-  return `${record.platform}/${record.arch}/${record.browser}`;
+function targetKey(record, policy, source = null) {
+  const {platform, arch, browser} = policy.targetFields;
+  const values = [record[platform], record[arch], record[browser]];
+  if (values.some(value => typeof value !== 'string' || value.length === 0)) {
+    fail('MALFORMED_TARGET', 'browser evidence target fields must be non-empty strings', source);
+  }
+  return values.join('/');
 }
 
 function collectBrowserEvidence(root) {
@@ -130,9 +151,11 @@ function verify({mode, root, sourceSha}) {
     const record = item.data;
     if (record.status !== 'PASS') fail('NON_PASS_INPUT', 'browser evidence status must be PASS', item.file);
     if (record.sourceCommit !== sourceSha) fail('SOURCE_SHA_MISMATCH', 'browser evidence sourceCommit does not match exact source SHA', item.file);
-    if (record.goldenCorpusVersion !== policy.goldenCorpusVersion) fail('GOLDEN_CORPUS_MISMATCH', 'browser evidence Golden corpus version mismatch', item.file);
+    if (policy.goldenCorpusVersion && record.goldenCorpusVersion !== policy.goldenCorpusVersion) {
+      fail('GOLDEN_CORPUS_MISMATCH', 'browser evidence Golden corpus version mismatch', item.file);
+    }
     if (record.unexpectedNetworkRequests !== 0) fail('NETWORK_INVARIANT', 'browser evidence reports unexpected network requests', item.file);
-    const key = targetKey(record);
+    const key = targetKey(record, policy, item.file);
     if (byTarget.has(key)) fail('DUPLICATE_TARGET', `duplicate browser evidence target ${key}`, item.file);
     byTarget.set(key, item);
   }
@@ -154,7 +177,7 @@ function verify({mode, root, sourceSha}) {
   }
   for (const [field, expected] of Object.entries(policy.fixed)) {
     for (const item of records) {
-      if (item.data[field] !== expected) fail('FIXED_INVARIANT_MISMATCH', `browser evidence ${field} does not equal ${expected}`, item.file);
+      if (item.data[field] !== expected) fail('FIXED_INVARIANT_MISMATCH', `browser evidence ${field} does not equal ${JSON.stringify(expected)}`, item.file);
     }
   }
 
