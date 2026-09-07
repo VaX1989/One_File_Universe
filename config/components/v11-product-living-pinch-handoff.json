@@ -1,0 +1,18 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1.product.living-pinch-handoff",
+      "version": "1.0.0",
+      "owner": "product",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/bootstrap/product/living-pinch-handoff.js",
+      "dependencies": ["v1.product.living-universe"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Post-v1 mobile interaction continuity controller. After a multi-pointer pinch ends with one pointer still active, it preserves direct-manipulation drag continuity in the shipping Living viewport without changing canonical identity, semantic scale, scientific state, or navigation authority.",
+      "provides": ["v1.product.living-pinch-handoff"]
+    }
+  ]
+}
