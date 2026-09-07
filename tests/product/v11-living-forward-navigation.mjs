@@ -11,6 +11,11 @@ ok(componentIndex('v1.exploration.living-runtime')>=0&&componentIndex('v1.explor
 ok(componentIndex('v1.product.living-universe')>componentIndex('v1.exploration.living-forward-navigation'),'forward controller is ordered before shipping Living product boot');
 eq(r.snapshot().forwardDepth,0,'initial forward history is empty');
 
+let noOpNotifications=0;const stopNoOpProbe=r.onChange(()=>noOpNotifications++),noOpBefore=r.snapshot();
+r.setCanonicalSelection(r.seedGraph.body.canonicalKey,{source:'forward-oracle-noop-selection'});
+eq(r.snapshot().revision,noOpBefore.revision,'same retained canonical selection leaves Living revision unchanged');
+eq(noOpNotifications,0,'unchanged wrapped runtime call must not fan out a synthetic Living change');stopNoOpProbe();
+
 r.enterGalaxy(r.seedGraph.galaxy);const galaxyId=id();
 r.enterRegion(r.seedGraph.region);const regionId=id();
 eq(r.snapshot().stage,'REGION','known navigation reaches seed region');
