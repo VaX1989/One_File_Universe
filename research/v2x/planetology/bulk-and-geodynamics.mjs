@@ -47,6 +47,27 @@ export function compositionRegimeContract({ massEarth, radiusEarth, ageGyr = nul
   });
 }
 
+export function waterEosApplicabilityContract({ eosId, eosHash, pressurePa, temperatureK, phaseDiagramId = null, extrapolationDeclared = false }) {
+  const pressure = finite('pressurePa', pressurePa);
+  const temperature = finite('temperatureK', temperatureK);
+  if (!eosId || !eosHash) return Object.freeze({ status: 'UNSUPPORTED', reason: 'EOS_ID_AND_HASH_REQUIRED' });
+  if (pressure < 0 || temperature <= 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'INVALID_PRESSURE_OR_TEMPERATURE' });
+  const phaseContext = pressure >= 30e9 ? 'ICE_X_OR_IONIC_BONDING_RELEVANT' : pressure >= 2.1e9 ? 'HIGH_PRESSURE_ICE_VII_FAMILY_RELEVANT' : 'LOWER_PRESSURE_WATER_ICE_LIQUID_REGIME';
+  return Object.freeze({
+    status: phaseDiagramId ? 'EOS_COORDINATE_READY' : 'RESEARCH_REQUIRED',
+    eosId,
+    eosHash,
+    pressurePa: pressure,
+    temperatureK: temperature,
+    phaseDiagramId,
+    phaseContext,
+    extrapolationDeclared: Boolean(extrapolationDeclared),
+    radiusPredictionAuthorized: Boolean(phaseDiagramId) && !extrapolationDeclared,
+    compositionTruthClaim: false,
+    requiredEvidence: Object.freeze(['EOS_VERSION', 'EOS_HASH', 'P_T_VALIDITY', 'PHASE_BOUNDARY_SOURCE', 'EXTRAPOLATION_POLICY'])
+  });
+}
+
 export function thermalLedgerStep({ mantleEnergyJ, radiogenicPowerW, corePowerW, surfaceHeatLossW, durationSeconds }) {
   const e0 = finite('mantleEnergyJ', mantleEnergyJ);
   const hr = finite('radiogenicPowerW', radiogenicPowerW);
@@ -79,5 +100,25 @@ export function nusseltRayleighScenario({ rayleighNumber, regime }) {
     normalizationSpecified: false,
     plateTectonicsTruthClaim: false,
     interpretation: 'SCALING_SHAPE_ONLY_UNTIL_NORMALIZATION_AND_RHEOLOGY_ARE_BOUND'
+  });
+}
+
+export function laggedNusseltRayleighScenario({ rayleighNumberNow, rayleighNumberPast, lagMyr, regime }) {
+  const raNow = finite('rayleighNumberNow', rayleighNumberNow);
+  const raPast = finite('rayleighNumberPast', rayleighNumberPast);
+  const lag = finite('lagMyr', lagMyr);
+  if (raNow <= 0 || raPast <= 0 || lag < 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'INVALID_LAGGED_RA_INPUT' });
+  if (lag < 200 || lag > 300) return Object.freeze({ status: 'RESEARCH_REQUIRED', reason: 'OUTSIDE_ONEILL_REPORTED_LAG_CONTEXT' });
+  const now = nusseltRayleighScenario({ rayleighNumber: raNow, regime });
+  const past = nusseltRayleighScenario({ rayleighNumber: raPast, regime });
+  if (now.status !== 'MODEL_DERIVED_SCENARIO' || past.status !== 'MODEL_DERIVED_SCENARIO') return Object.freeze({ status: 'RESEARCH_REQUIRED', reason: 'REGIME_SCALING_UNAVAILABLE' });
+  return Object.freeze({
+    status: 'MODEL_DERIVED_SCENARIO',
+    instantaneousProxy: now.nusseltProportionalTo,
+    laggedSurfaceProxy: past.nusseltProportionalTo,
+    lagMyr: lag,
+    exponentBeta: now.exponentBeta,
+    interpretation: 'RESEARCH_LAG_SENSITIVITY_BRACKET_NOT_HISTORY_RECONSTRUCTION',
+    tectonicHistoryTruthClaim: false
   });
 }
