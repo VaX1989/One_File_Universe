@@ -1,7 +1,7 @@
 (function(root){
 'use strict';
 const O=root.OFU=root.OFU||{};if(typeof document==='undefined')return;
-const VERSION='ofu-v11-living-pinch-handoff-2',MAX_ATTACH_ATTEMPTS=120,DRAG_THRESHOLD_PX=5;
+const VERSION='ofu-v11-living-pinch-handoff-3',MAX_ATTACH_ATTEMPTS=120,DRAG_THRESHOLD_PX=5;
 const state={version:VERSION,ready:false,attachStatus:'waiting',attachAttempts:0,pinchStarts:0,handoffs:0,handoffMoves:0,coreOwnedMoves:0,cancellations:0,captureLosses:0,thresholdWaits:0,lastRemainingPointer:null,lastGesture:null};
 let product=null,renderer=null,canvas=null,handoff=null,pinchSeen=false;
 const pointers=new Map();
@@ -15,13 +15,15 @@ function move(event){
  if(!handoff||handoff.pointerId!==event.pointerId||pointers.size!==1)return;
  const coreInput=product?.snapshot?.().input;
  if(coreInput?.lastGesture==='drag'){state.coreOwnedMoves++;handoff=null;state.lastGesture='core-drag';return}
+ const fromReleaseX=p.x-handoff.startX,fromReleaseY=p.y-handoff.startY;
+ if(!Number.isFinite(fromReleaseX)||!Number.isFinite(fromReleaseY))return;
+ // The release anchor remains a real dead zone for the entire handoff. This
+ // prevents sub-threshold post-pinch jitter from enqueueing presentation work
+ // even if an earlier event transiently engaged the continuation path.
+ if(Math.hypot(fromReleaseX,fromReleaseY)<DRAG_THRESHOLD_PX){state.thresholdWaits++;state.lastGesture='handoff-threshold';handoff.x=p.x;handoff.y=p.y;return}
  let dx,dy;
- if(!handoff.engaged){
-  dx=p.x-handoff.startX;dy=p.y-handoff.startY;
-  if(!Number.isFinite(dx)||!Number.isFinite(dy))return;
-  if(Math.hypot(dx,dy)<DRAG_THRESHOLD_PX){state.thresholdWaits++;state.lastGesture='handoff-threshold';return}
-  handoff.engaged=true;
- }else{dx=p.x-handoff.x;dy=p.y-handoff.y;}
+ if(!handoff.engaged){dx=fromReleaseX;dy=fromReleaseY;handoff.engaged=true;}
+ else{dx=p.x-handoff.x;dy=p.y-handoff.y;}
  handoff.x=p.x;handoff.y=p.y;
  if(!Number.isFinite(dx)||!Number.isFinite(dy)||(dx===0&&dy===0))return;
  renderer.rotate(dx,dy);state.handoffMoves++;state.lastGesture='handoff-drag';
