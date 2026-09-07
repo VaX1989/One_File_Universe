@@ -1,54 +1,16 @@
 {
-  "schema": "ofu-v2x15-science-source-ledger-2",
+  "schema": "ofu-v2x15-science-source-ledger-3",
   "authority": "RESEARCH_ONLY",
   "sources": [
-    {
-      "id": "SOLOMATOV_1995",
-      "doi": "10.1063/1.868624",
-      "supports": ["temperature/stress-dependent viscosity convection regime context"],
-      "doesNotSupport": ["automatic plate-tectonics truth"]
-    },
-    {
-      "id": "ONEILL_2020",
-      "doi": "10.1016/j.pss.2020.105059",
-      "supports": ["parameterized thermal-evolution and tectonic-regime scenario context", "reported 200-300 Myr lag context between interior Rayleigh-state changes and surface heat-flow response"],
-      "doesNotSupport": ["instantaneous deterministic tectonic-history classification", "universal fixed lag for arbitrary planets"]
-    },
-    {
-      "id": "GRONOFF_ET_AL_2020",
-      "doi": "10.1029/2019JA027639",
-      "supports": ["multi-regime atmospheric escape and limitations of energy-limited approximations"],
-      "doesNotSupport": ["single universal atmospheric escape law"]
-    },
-    {
-      "id": "NORTH_CAHALAN_COAKLEY_1981",
-      "doi": "10.1029/RG019i001p00091",
-      "supports": ["reduced energy-balance climate model hierarchy"],
-      "doesNotSupport": ["weather or GCM-equivalent local climate truth", "unique linear OLR coefficients for arbitrary atmospheres"]
-    },
-    {
-      "id": "COWAN_ABBOT_2014",
-      "doi": "10.1088/0004-637X/781/1/27",
-      "supports": ["surface/interior water cycling under explicit tectonic assumptions"],
-      "doesNotSupport": ["universal stagnant-lid water cycling"]
-    },
-    {
-      "id": "SCHLICHTING_SARI_YALINEWICH_2015",
-      "doi": "10.1016/j.icarus.2014.09.053",
-      "supports": ["bounded analytic impact-driven atmospheric-loss scenarios"],
-      "doesNotSupport": ["universal impact-history reconstruction"]
-    },
-    {
-      "id": "LOPEZ_FORTNEY_2014",
-      "doi": "10.1088/0004-637X/792/1/1",
-      "supports": ["sub-Neptune radius dependence on envelope fraction, age and irradiation", "research-grid envelope of 1-20 Earth masses, 0.01%-20% H/He, 0.1-1000 Earth irradiation and 0.1-10 Gyr"],
-      "doesNotSupport": ["single composition-independent mass-radius law", "radius prediction without the actual versioned evolution grid"]
-    },
-    {
-      "id": "HUANG_ET_AL_2021_WATER_EOS",
-      "doi": "10.1093/mnras/stab645",
-      "supports": ["high-pressure water EOS materially affects modeled water-rich planet interiors and radii", "explicit pressure-temperature validity and phase-boundary provenance requirements"],
-      "doesNotSupport": ["invented EOS values without a versioned table", "unique water-rich composition inference from mass-radius alone", "unbounded extrapolation across unvalidated pressure-temperature regimes"]
-    }
+    {"id":"SOLOMATOV_1995","doi":"10.1063/1.868624","supports":["temperature/stress-dependent viscosity convection regime context"],"doesNotSupport":["automatic plate-tectonics truth"]},
+    {"id":"ONEILL_2020","doi":"10.1016/j.pss.2020.105059","supports":["parameterized thermal-evolution and tectonic-regime scenario context","reported 200-300 Myr lag context between interior Rayleigh-state changes and surface heat-flow response"],"doesNotSupport":["instantaneous deterministic tectonic-history classification","universal fixed lag for arbitrary planets"]},
+    {"id":"GRONOFF_ET_AL_2020","doi":"10.1029/2019JA027639","supports":["multi-regime atmospheric escape and limitations of energy-limited approximations"],"doesNotSupport":["single universal atmospheric escape law"]},
+    {"id":"NORTH_CAHALAN_COAKLEY_1981","doi":"10.1029/RG019i001p00091","supports":["reduced global and zonal energy-balance climate model hierarchy","diffusive parameterization of meridional heat transport as a reduced-model construct"],"doesNotSupport":["weather or GCM-equivalent local climate truth","unique linear OLR or transport coefficients for arbitrary atmospheres"]},
+    {"id":"COWAN_ABBOT_2014","doi":"10.1088/0004-637X/781/1/27","supports":["surface/interior water cycling under explicit tectonic assumptions"],"doesNotSupport":["universal stagnant-lid water cycling"]},
+    {"id":"SCHLICHTING_SARI_YALINEWICH_2015","doi":"10.1016/j.icarus.2014.09.053","supports":["bounded analytic impact-driven atmospheric-loss scenarios"],"doesNotSupport":["universal impact-history reconstruction"]},
+    {"id":"LOPEZ_FORTNEY_2014","doi":"10.1088/0004-637X/792/1/1","supports":["sub-Neptune radius dependence on envelope fraction, age and irradiation","research-grid envelope of 1-20 Earth masses, 0.01%-20% H/He, 0.1-1000 Earth irradiation and 0.1-10 Gyr"],"doesNotSupport":["single composition-independent mass-radius law","radius prediction without the actual versioned evolution grid"]},
+    {"id":"HUANG_ET_AL_2021_WATER_EOS","doi":"10.1093/mnras/stab645","supports":["high-pressure water EOS materially affects modeled water-rich planet interiors and radii","explicit pressure-temperature validity and phase-boundary provenance requirements"],"doesNotSupport":["invented EOS values without a versioned table","unique water-rich composition inference from mass-radius alone","unbounded extrapolation across unvalidated pressure-temperature regimes"]},
+    {"id":"WHIPPLE_TUCKER_1999_STREAM_POWER","doi":"10.1029/1999JB900120","supports":["stream-power incision model sensitivity and landscape response-time context","parameterized E proportional to K A^m S^n scenario structure"],"doesNotSupport":["universal K m n values","all-process landscape evolution","calibrated exoplanet erosion rates"]},
+    {"id":"LAGUE_2014_STREAM_POWER_REVIEW","doi":"10.1002/esp.3462","supports":["stream-power incision model as a useful but limited quantitative geomorphology model","need for thresholds width sediment and process-aware refinements"],"doesNotSupport":["unqualified universal bedrock incision law","parameter transfer across arbitrary lithology climate or planetary regime"]}
   ]
 }
