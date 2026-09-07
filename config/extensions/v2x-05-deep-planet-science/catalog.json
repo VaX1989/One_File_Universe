@@ -29,21 +29,22 @@
           "research/v2x-15-astronomy-planetology-frontier-2026-09-07@f659463f5f5287ef23ee4ef66062a3f14bd60b95"
         ],
         "assumptions": [
-          "Consumes existing V1 MODEL_DERIVED_SIMULATION planetology state read-only inside explicit finite mass, radius, climate-cell, constituent and history bounds.",
+          "Consumes existing V1 MODEL_DERIVED_SIMULATION planetology state read-only inside explicit finite mass, radius, age, climate-cell, constituent, exact-ledger and history bounds.",
+          "Input world identity and exact modeled composition/interior closures are validated fail-closed before downstream context is emitted.",
           "V2X-15 research is limitation and falsification lineage only; its RESEARCH_ONLY kernels are not silently promoted into this shipping provider."
         ],
         "limitations": [
           "No calibrated equation of state, mass-radius retrieval, atmospheric abundance retrieval, photochemistry, general circulation model or weather forecast is claimed.",
           "Geodynamic and volcanic outputs are reduced potentials only; resolved plate tectonics and tectonic history remain unsupported.",
           "Optional XUV history changes contextual escape weighting only; no escape rate or integrated physical mass loss is inferred.",
-          "Volatile reservoir units preserve exact internal model accounting but are not kilograms, moles, ocean depth or observed inventory.",
+          "Volatile reservoir units preserve exact bounded internal model accounting but are not kilograms, moles, ocean depth or observed inventory.",
           "Normalized planetary causal attribution is explanatory weighting and must not be interpreted as conserved energy, conserved mass or causal identification."
         ],
         "evidence": []
       },
       "fidelity": {
         "regime": "deep-planet-reduced-order",
-        "validity": "Known V1 terrestrial, volatile-rich, sub-Neptune, ice-giant and gas-giant modeled states inside the explicit V2X-05 applicability envelope.",
+        "validity": "Known V1 terrestrial, volatile-rich, sub-Neptune, ice-giant and gas-giant modeled states inside the explicit V2X-05 applicability and integrity envelope.",
         "resolution": "One modeled world; at most 24 climate cells, 6 constituent families, 64 optional XUV-history samples and 4 downstream consumer contexts per evaluation surface.",
         "uncertainty": "Deterministic scenario depth only; unsupported physics remains explicitly UNSUPPORTED or RESEARCH_REQUIRED rather than being filled with calibrated-looking precision."
       },
@@ -64,7 +65,8 @@
       "evidence": [
         {"id": "v2x05.deep-planet.determinism", "tier": "FAST_LOCAL"},
         {"id": "v2x05.deep-planet.metamorphic", "tier": "LANE_TARGETED"},
-        {"id": "v2x05.deep-planet.consumer-integration", "tier": "LANE_TARGETED"}
+        {"id": "v2x05.deep-planet.consumer-integration", "tier": "LANE_TARGETED"},
+        {"id": "v2x05.deep-planet.metamorphic-extended", "tier": "LANE_TARGETED"}
       ],
       "mandatory": false
     }
