@@ -5,6 +5,12 @@ const MAX_PATH_BYTES=512;
 function fail(message){throw new Error('OFU phase router: '+message);}
 function phaseClosure(earliest){if(earliest==null)return[];const index=PHASES.indexOf(earliest);if(index<0)fail('unknown phase '+earliest);return PHASES.slice(index);}
 function minPhase(a,b){if(a==null)return b;if(b==null)return a;return PHASES[Math.min(PHASES.indexOf(a),PHASES.indexOf(b))];}
+function isPostV1V2XLanePath(path){
+  return /^config\/(?:components|conformance)\/v2x-(?:0[1-9]|1[0-6])-[a-z0-9][a-z0-9-]*\.json$/.test(path)
+    || /^config\/extensions\/v2x-(?:0[1-9]|1[0-6])-[a-z0-9][a-z0-9-]*(?:\/|\.json$)/.test(path)
+    || /^tests\/v2x-(?:0[1-9]|1[0-6])(?:-[a-z0-9][a-z0-9-]*)?\//.test(path)
+    || /^src\/(?:product|audio)\/v2x(?:0[1-9]|1[0-6])\//.test(path);
+}
 
 export function normalizeChangedPaths(input){
   if(!Array.isArray(input))fail('changed paths must be an array');
@@ -24,28 +30,20 @@ export function normalizeChangedPaths(input){
 }
 
 function classifyPath(path){
-  // Frozen foundation / deterministic kernel / generic build inputs fail closed to P1.
   if(/^(src\/(kernel|persistence|generators|bootstrap|workers)\/|tests\/(p1|build)\/|tools\/build-|package\.json$|package-lock\.json$)/.test(path))return['P1','foundation-or-deterministic-core'];
   if(/^tests\/p2\//.test(path)||/^tools\/.*p2/i.test(path)||/^\.github\/workflows\/p2-/.test(path))return['P2','p2-contract'];
   if(/^tests\/p3\//.test(path)||/^tools\/.*p3/i.test(path)||/^\.github\/workflows\/p3-/.test(path)||/^src\/domains\/astronomy\//.test(path))return['P3','p3-spatial-or-astronomy'];
   if(/^tests\/p4\//.test(path)||/^tools\/.*p4/i.test(path)||/^\.github\/workflows\/p4-/.test(path))return['P4','p4-temporal'];
   if(/^tests\/p5(?:-environment-v2)?\//.test(path)||/^tools\/.*p5/i.test(path)||/^\.github\/workflows\/p5-/.test(path)||/^src\/domains\/planetology\//.test(path))return['P5','p5-planetology'];
   if(/^tests\/p6\//.test(path)||/^tools\/.*p6/i.test(path)||/^\.github\/workflows\/p6-/.test(path)||/^src\/domains\/biosphere\//.test(path))return['P6','p6-biosphere'];
-
-  // Cross-cutting shipping-domain code spans phase ownership and therefore fails closed.
   if(/^src\/domains\/v1\//.test(path))return['P1','cross-cutting-v1-domain'];
   if(/^tests\/integration\//.test(path))return['P1','cross-phase-integration'];
+  if(isPostV1V2XLanePath(path))return[null,'post-v1-v2x-lane-local'];
   if(/^config\/(?!conformance\/)/.test(path))return['P1','generic-config'];
   if(/^docs\/(adr|foundation)\//.test(path)||/^tools\/(validate-foundation|validate-frontier-docs)\.mjs$/.test(path))return['P1','governance-foundation'];
-
-  // Post-v1 presentation/product surfaces still require the Post-v1 Development Gate,
-  // but they do not independently require historical P1-P6 matrices.
   if(/^(src\/(rendering|navigation|exploration|extensions)\/|tests\/(product|wave-iv|extensions)\/|config\/conformance\/)/.test(path))return[null,'post-v1-product-surface'];
   if(/^\.github\/workflows\/(post-v1-development|v11-world-|product-v11-|reliability-phase-router)/.test(path))return[null,'post-v1-workflow'];
   if(/^docs\//.test(path))return[null,'post-v1-documentation'];
-
-  // Unknown repository inputs are deliberately cumulative. This is the fail-closed rule
-  // that makes future unclassified files safe until the router is explicitly extended.
   return['P1','unclassified-fail-closed'];
 }
 
