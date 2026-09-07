@@ -1,0 +1,11 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {kvBytesPerTokenFp16,planContextBudget} from './context-budget.mjs';
+const arch={layers:30,kvHeads:3,headDim:64,maxContext:8192};
+const plan=(o={})=>planContextBudget({modelBytes:117266133,runtimeBytes:16000000,tokenizerBytes:3520000,fixedReserveBytes:64000000,workingSetBudgetBytes:512*1024*1024,architecture:arch,requestedTokens:2048,...o});
+test('SmolLM2 135M simple fp16 KV cost is 23040 bytes/token',()=>assert.equal(kvBytesPerTokenFp16(arch),23040));
+test('bounded request within model and memory is admitted exactly',()=>{const r=plan();assert.equal(r.admittedTokens,2048);assert.equal(r.reason,'REQUEST_ADMITTED');assert.equal(r.canInitialize,true);});
+test('request above model max context is clamped',()=>{const r=plan({requestedTokens:9000,workingSetBudgetBytes:1024*1024*1024});assert.equal(r.admittedTokens,8192);assert.equal(r.reason,'CLAMPED_MODEL_MAX_CONTEXT');});
+test('memory budget clamps context independently of model max',()=>{const fixed=117266133+16000000+3520000+64000000;const budget=fixed+1000*23040;const r=plan({requestedTokens:2048,workingSetBudgetBytes:budget});assert.equal(r.admittedTokens,1000);assert.equal(r.reason,'CLAMPED_WORKING_SET_BUDGET');});
+test('fixed working set above budget refuses initialization',()=>{const r=plan({workingSetBudgetBytes:1});assert.equal(r.canInitialize,false);assert.equal(r.admittedTokens,0);assert.equal(r.reason,'FIXED_WORKING_SET_EXCEEDS_BUDGET');});
+test('zero requested tokens remains valid and bounded',()=>{const r=plan({requestedTokens:0});assert.equal(r.admittedTokens,0);assert.equal(r.requiredBytesAtAdmission,r.fixedBytes);});
+test('invalid architecture fails closed',()=>assert.throws(()=>kvBytesPerTokenFp16({layers:0,kvHeads:3,headDim:64}),/INVALID_LAYERS/));
+test('result never carries shipping promotion',()=>assert.equal(plan().shippingPromotion,false));
