@@ -64,4 +64,28 @@ assert(/push:[\s\S]*?-\s+['"]development\/v1\.\*['"]/.test(sourceReproduction),'
 assert(/pull_request:[\s\S]*?-\s+['"]development\/v1\.\*['"]/.test(sourceReproduction),'source reproduction must cover proposed post-v1 heads');
 assert(/name:\s+source-reproduction-\$\{\{\s*env\.OFU_SOURCE_SHA\s*\}\}/.test(sourceReproduction),'source reproduction artifact must be named by exact source SHA');
 checks+=3;
-console.log(JSON.stringify({status:'PASS',suite:'workflow-reproducibility',workflows:workflows.length,featureWorkflows:featureWorkflows.length,v11WorldWorkflows:v11WorldWorkflows.length,reliabilityWorkflows:reliabilityWorkflows.length,checks}));
+
+// Primary post-v1 control-plane workflows must not regress to GitHub Actions
+// whose JavaScript runtime requires the hosted runner's Node 20 compatibility shim.
+// These immutable commits were independently verified to declare `runs.using: node24`.
+const nativeNode24Pins=Object.freeze({
+  checkout:'actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09',
+  setupNode:'actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444',
+  setupPython:'actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1',
+  uploadArtifact:'actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f',
+});
+const nativeRuntimeContracts=[
+  {file:`${workflowDir}/foundation.yml`,pins:['checkout','setupNode','setupPython']},
+  {file:`${workflowDir}/post-v1-development.yml`,pins:['checkout','setupNode','setupPython']},
+  {file:sourceReproductionFile,pins:['checkout','uploadArtifact']},
+  {file:`${workflowDir}/reliability-phase-router.yml`,pins:['checkout','setupNode']},
+];
+for(const contract of nativeRuntimeContracts){
+  const text=fs.readFileSync(contract.file,'utf8');
+  for(const key of contract.pins){
+    assert(text.includes(nativeNode24Pins[key]),`${contract.file}: ${key} must use the authenticated native Node 24 action pin`);
+    checks++;
+  }
+}
+
+console.log(JSON.stringify({status:'PASS',suite:'workflow-reproducibility',workflows:workflows.length,featureWorkflows:featureWorkflows.length,v11WorldWorkflows:v11WorldWorkflows.length,reliabilityWorkflows:reliabilityWorkflows.length,nativeRuntimeContracts:nativeRuntimeContracts.length,checks}));
