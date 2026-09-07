@@ -1,0 +1,32 @@
+{
+  "schema": "ofu-conformance-1",
+  "tests": [
+    {
+      "id": "v2x05.deep-planet.determinism",
+      "owner": "v2x-05-deep-planet-science",
+      "tier": "FAST_LOCAL",
+      "command": ["node", "tests/v2x-05/deep-planet-oracles.mjs"],
+      "providers": ["v2x05.model.deep-planet"],
+      "oracle": "v2x05-deep-planet-deterministic-regime-closure",
+      "timeoutMs": 30000
+    },
+    {
+      "id": "v2x05.deep-planet.metamorphic",
+      "owner": "v2x-05-deep-planet-science",
+      "tier": "LANE_TARGETED",
+      "command": ["node", "tests/v2x-05/deep-planet-oracles.mjs"],
+      "providers": ["v2x05.model.deep-planet"],
+      "oracle": "v2x05-deep-planet-metamorphic-envelope",
+      "timeoutMs": 30000
+    },
+    {
+      "id": "v2x05.deep-planet.consumer-integration",
+      "owner": "v2x-05-deep-planet-science",
+      "tier": "LANE_TARGETED",
+      "command": ["node", "tests/v2x-05/deep-planet-oracles.mjs"],
+      "providers": ["v2x05.model.deep-planet"],
+      "oracle": "v2x05-deep-planet-read-only-consumer-contexts",
+      "timeoutMs": 30000
+    }
+  ]
+}
