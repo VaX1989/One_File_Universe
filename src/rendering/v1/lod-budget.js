@@ -3,7 +3,7 @@
 const O=root.OFU=root.OFU||{},VERSION='ofu-v1-render-budget-1',AUTHORITY='RUNTIME_ACCOUNTING';
 const ACCOUNTING=Object.freeze({class:'MODELED_ALLOCATION_ACCOUNTING',byteSemantics:'CALLER_DECLARED_NORMALIZED_ESTIMATE',driverMemoryMeasured:false,gpuMemoryMeasured:false,heapMemoryMeasured:false,limitsAreAdmissionCeilings:true});
 const SURFACE_ACCOUNTING=Object.freeze({class:'MODELED_BACKING_SURFACE_ACCOUNTING',pixelSemantics:'CANVAS_BACKING_STORE_DIMENSIONS',byteSemantics:'RGBA8_EQUIVALENT_COLOR_BYTES_ONLY',driverMemoryMeasured:false,gpuMemoryMeasured:false,heapMemoryMeasured:false,framebufferAttachmentsMeasured:false});
-const SURFACE_LIMITS=Object.freeze({desktopPixels:4194304,mobilePixels:2097152,maxDimension:4096,colorBytesPerPixel:4});
+const SURFACE_LIMITS=Object.freeze({desktopPixels:8388608,mobilePixels:2097152,maxDimension:4096,colorBytesPerPixel:4});
 const BASE=Object.freeze({COSMIC:{objects:96,bytes:2097152,draws:10},SYSTEM:{objects:80,bytes:2097152,draws:12},GLOBE:{objects:24,bytes:12582912,draws:14},TERRAIN:{objects:224,bytes:25165824,draws:24},ECOLOGY:{objects:96,bytes:5242880,draws:12},SETTLEMENT:{objects:160,bytes:6291456,draws:14},MICRO:{objects:512,bytes:8388608,draws:16}});
 function freeze(v){if(!v||typeof v!=='object'||Object.isFrozen(v))return v;for(const k of Object.keys(v))freeze(v[k]);return Object.freeze(v)}
 function config({mobile=false,dpr=1,memoryClass='NORMAL'}={}){const f=(mobile?.62:1)*(Number(dpr)>2?.82:1)*(memoryClass==='LOW'?.64:memoryClass==='HIGH'?1.2:1),out={};for(const [k,v] of Object.entries(BASE))out[k]=freeze({objects:Math.max(8,Math.floor(v.objects*f)),bytes:Math.max(262144,Math.floor(v.bytes*f)),draws:Math.max(4,Math.floor(v.draws*f))});return freeze(out)}
