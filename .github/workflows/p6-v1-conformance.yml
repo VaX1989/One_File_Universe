@@ -184,7 +184,7 @@ jobs:
           test "$(jq -r '.artifactSha256' evidence/browser-*.json | sort -u | wc -l)" -eq 1
           test "$(jq -r '.goldenCorpusDigest' evidence/browser-*.json | sort -u | wc -l)" -eq 1
           test "$(jq -r '.sourceCommit' evidence/browser-*.json | sort -u)" = "$OFU_SOURCE_SHA"
-          test "$(jq -r 'select(.hostPlatform==\"darwin\") | .hostArch' evidence/browser-*.json)" = arm64
+          test "$(jq -r 'select(.hostPlatform=="darwin") | .hostArch' evidence/browser-*.json)" = arm64
           test "$(jq -r '.realSafariVerified' evidence/browser-*.json | sort -u)" = false
           test "$(jq -r '.artifactContainsConformanceAuthority' evidence/browser-*.json | sort -u)" = false
           test "$(jq -r '.shippedConformanceConstructor' evidence/browser-*.json | sort -u)" = false
