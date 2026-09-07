@@ -1,6 +1,6 @@
 {
   "schema": "ofu-super-parallel-base-1",
-  "version": "2026-09-07.3",
+  "version": "2026-09-07.4",
   "status": "ACTIVE",
   "canonicalDevelopmentBranch": "development/v1.1-quality-exploration",
   "superParallelBaseSha": "70af4a84bb8cb7c782966bb4b3b8aab8aa86838e",
@@ -10,7 +10,7 @@
   "integrationMergeSha": "f6c74d240b2a63ba8dd73264ff4412e940e0c7ca",
   "integrationMergeTree": "1ff670e62be6c21545334ed83fa1299c77d9ed22",
   "baseDecision": "ACTIVE",
-  "writerMegaLanesAuthorized": false,
+  "writerMegaLanesAuthorized": true,
   "ownershipMatrix": "docs/parallel/V2X_OWNERSHIP_MATRIX.json",
   "capabilityRegistry": "docs/parallel/V2X_CAPABILITY_REGISTRY.json",
   "gapRegistry": "docs/parallel/V2X_GAP_REGISTRY.json",
@@ -24,7 +24,16 @@
     "checkpointTree": "1ff670e62be6c21545334ed83fa1299c77d9ed22",
     "pr": 180,
     "mergeSha": "f6c74d240b2a63ba8dd73264ff4412e940e0c7ca",
-    "reason": "Prompt 01 authenticated and integrated the exact V2X-00 enabling checkpoint. The super-parallel base control plane is ACTIVE. Downstream writer authorization remains a separate explicit binding step and is still fail-closed."
+    "reason": "Prompt 01 authenticated and integrated the exact V2X-00 enabling checkpoint. The super-parallel base control plane is ACTIVE. Founder subsequently manually authorized and started all downstream development lanes; the global writer gate is therefore ACTIVE."
+  },
+  "founderManualWriterAuthorization": {
+    "state": "ACTIVE",
+    "effectiveDate": "2026-09-07",
+    "scope": "ALL_DOWNSTREAM_DEVELOPMENT_LANES_STARTED_BY_FOUNDER",
+    "controlPlaneCorrection": "The previous writerMegaLanesAuthorized=false state lagged actual founder authorization. Version 2026-09-07.4 synchronizes the machine record to the live operating authority.",
+    "retroactiveInvalidation": false,
+    "pathBindingPolicy": "DENY_BEFORE_ALLOW_REMAINS_ACTIVE; exact lane path grants are reconciled from immutable lane checkpoints without blocking already founder-authorized execution.",
+    "centralSemanticsRemainConvergenceOwned": true
   },
   "liveRealityAtActivation": {
     "preIntegrationCanonicalSha": "ddc91b11769e8d3b61a9d840ab27faf606cd5394",
@@ -73,6 +82,8 @@
     "unknownStaysUnknown": true,
     "authorityBoundariesPreserved": true,
     "physicalDeviceEvidenceClaimed": false,
-    "downstreamWritersFailClosed": true
+    "downstreamWritersFailClosed": false,
+    "downstreamWritersFounderAuthorized": true,
+    "downstreamPathValidationFailClosed": true
   }
 }
