@@ -59,15 +59,38 @@ equal(variationA.status, 'PROPOSAL_ONLY', 'variation must remain proposal-only')
 check(BigInt(variationA.resultingValuePpm) >= 0n && BigInt(variationA.resultingValuePpm) <= 1_000_000n, 'variation must remain bounded');
 
 const target = BigInt(variationA.resultingValuePpm);
-const witness = evaluateSelectionCriterion(base, variationA, {
+const selectionRequest = {
   regionId: 'r1',
   criterion: {
     profileId: 'fixture-selection-v1', traitKey: 'mobility', targetPpm: target,
     minimumImprovementPpm: 1, minimumOpportunityPpm: 500_000,
   },
-});
+};
+const witness = evaluateSelectionCriterion(base, variationA, selectionRequest);
 equal(witness.satisfied, true, 'explicit fixture criterion should recognize a closer proposed trait value');
 equal(witness.kind, 'PROFILE_BOUND_SELECTION_WITNESS', 'selection must expose profile-bound witness semantics');
+equal(witness.proposalEventKey, variationA.eventKey, 'selection witness must bind to exact variation proposal event identity');
+equal(witness.proposalPriorValuePpm, variationA.priorValuePpm, 'selection witness must bind exact proposal prior value');
+equal(witness.proposalDeltaPpm, variationA.deltaPpm, 'selection witness must bind exact proposal delta');
+equal(witness.proposalResultingValuePpm, variationA.resultingValuePpm, 'selection witness must bind exact proposal result');
+
+const tamperedPrior = { ...variationA, priorValuePpm: '399999' };
+throws(() => evaluateSelectionCriterion(base, tamperedPrior, selectionRequest), /stale or tampered/, 'selection must reject proposal prior values not matching current lineage state');
+const tamperedResult = { ...variationA, resultingValuePpm: String(BigInt(variationA.resultingValuePpm) === 1_000_000n ? 999_999n : BigInt(variationA.resultingValuePpm) + 1n) };
+throws(() => evaluateSelectionCriterion(base, tamperedResult, selectionRequest), /inconsistent with prior value and delta/, 'selection must reject proposal results inconsistent with proposal delta');
+const tamperedAuthority = { ...variationA, authorityClass: 'CANONICAL_PROVEN' };
+throws(() => evaluateSelectionCriterion(base, tamperedAuthority, selectionRequest), /authority class mismatch/, 'selection must reject authority escalation in variation proposal');
+const tamperedStatus = { ...variationA, status: 'ADMITTED' };
+throws(() => evaluateSelectionCriterion(base, tamperedStatus, selectionRequest), /status mismatch/, 'selection must reject proposal status escalation');
+
+const changedTraitState = createLifeState({
+  ...base,
+  lineages: [{
+    ...base.lineages[0],
+    traits: base.lineages[0].traits.map((trait) => trait.key === 'mobility' ? { ...trait, valuePpm: trait.valuePpm + 1n } : trait),
+  }],
+});
+throws(() => evaluateSelectionCriterion(changedTraitState, variationA, selectionRequest), /stale or tampered/, 'proposal must become stale when current lineage trait state has advanced');
 
 const unsatisfied = evaluateSelectionCriterion(base, variationA, {
   regionId: 'r1',
@@ -79,8 +102,18 @@ const unsatisfied = evaluateSelectionCriterion(base, variationA, {
 equal(unsatisfied.satisfied, false, 'insufficient explicit opportunity must fail the criterion');
 throws(() => buildSpeciationProposal(variationA, unsatisfied, { eventKey: 'p4:speciation-1' }), /satisfied selection witness required/, 'unsatisfied selection must not produce speciation event proposal');
 
+const forgedWitnessTrait = { ...witness, traitKey: 'resilience' };
+throws(() => buildSpeciationProposal(variationA, forgedWitnessTrait, { eventKey: 'p4:speciation-forged-trait' }), /trait mismatch/, 'speciation proposal must reject witness bound to a different trait');
+const forgedWitnessEvent = { ...witness, proposalEventKey: 'p4:variation-other' };
+throws(() => buildSpeciationProposal(variationA, forgedWitnessEvent, { eventKey: 'p4:speciation-forged-event' }), /event mismatch/, 'speciation proposal must reject witness bound to another proposal event');
+const forgedWitnessDelta = { ...witness, proposalDeltaPpm: '0' };
+throws(() => buildSpeciationProposal(variationA, forgedWitnessDelta, { eventKey: 'p4:speciation-forged-delta' }), /delta mismatch/, 'speciation proposal must reject witness whose bound proposal delta was altered');
+const forgedWitnessAuthority = { ...witness, authorityClass: 'CANONICAL_PROVEN' };
+throws(() => buildSpeciationProposal(variationA, forgedWitnessAuthority, { eventKey: 'p4:speciation-forged-authority' }), /authority class mismatch/, 'speciation proposal must reject witness authority escalation');
+
 const speciationProposal = buildSpeciationProposal(variationA, witness, { eventKey: 'p4:speciation-1' });
 equal(speciationProposal.status, 'EVENT_PROPOSAL_REQUIRES_EXTERNAL_P4_ADMISSION', 'speciation proposal must require external admission');
+equal(speciationProposal.criterionWitness.proposalEventKey, variationA.eventKey, 'speciation criterion witness must preserve original proposal identity');
 const speciated = applyLineageEvent(base, speciationProposal);
 equal(speciated.lineages.length, 2, 'admitted proposal must append a lineage through model lineage event semantics');
 
