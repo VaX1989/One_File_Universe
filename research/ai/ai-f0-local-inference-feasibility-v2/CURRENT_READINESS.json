@@ -1,0 +1,98 @@
+{
+  "schema": "ofu-ai-f0-current-readiness-1",
+  "asOf": "2026-09-07",
+  "authority": "RESEARCH_ONLY",
+  "branch": "research/ai-f0-local-inference-feasibility-v2-2026-09-07",
+  "restartAnchor": {
+    "sha": "e0dae058cd5d6fd103cdf5958d781d9b38e1101e",
+    "tree": "d81fbbbe58d74abff1eb99111a059f5282b43de2"
+  },
+  "parentCheckpoint": {
+    "sha": "6e418b7dbf0a82a5b4dae768401bc710382de2a1",
+    "purpose": "post-convergence AI-F0 implementation before readiness snapshot"
+  },
+  "laneState": {
+    "forwardReconciliation": "IMPLEMENTED_NO_FORCE_HISTORY_PRESERVED",
+    "shippingPromotion": false,
+    "aiF0ExitGate": "NOT_MET",
+    "aiF1Activation": "NOT_AUTHORIZED"
+  },
+  "implemented": {
+    "typedReadOnlyGateway": true,
+    "deterministicFallback": true,
+    "deterministicZeroFetchPacker": true,
+    "boundedChunkedBase64Decode": true,
+    "largeAssetBudgetAdmission": true,
+    "runtimeDistributionPinning": true,
+    "ort129SingleThreadWasmPolicy": true,
+    "ort129BundlePlusInMemoryWasmBinaryPolicy": true,
+    "ortZeroFetchSmokeHarness": true,
+    "completeAssetSetAdmission": true,
+    "workingSetContextAdmission": true,
+    "runtimeAdmissionFallback": true,
+    "realModelEvaluationGate": true,
+    "runtimeSoakGate": true,
+    "directFileEvidenceAdjudication": true,
+    "structuredPackagingEvidence": true,
+    "composedAiF0ExitGate": true
+  },
+  "localEvidence": {
+    "postConvergenceHarnessAggregate": {
+      "classification": "MEASURED_LOCAL_EXECUTION_ACROSS_EXACT_UPLOADED_BLOBS",
+      "tests": 145,
+      "pass": 145,
+      "fail": 0,
+      "singleMonolithicRunClaimed": false
+    },
+    "historicalGatewayOriginalCommittedBytesExecution": "NOT_CERTIFIED",
+    "reason": "The original pre-convergence locally tested gateway workspace no longer exists; no retroactive exact-head execution claim is made."
+  },
+  "sourceVerifiedNotRuntimeMeasured": {
+    "onnxruntimeWebTargetVersion": "1.29.0",
+    "portableBaseline": "WASM_CPU",
+    "bundleStrategy": "ort.wasm.bundle.min.mjs + exact in-memory ort-wasm-simd-threaded.wasm",
+    "numThreads": 1,
+    "proxy": false,
+    "wasmPathsConfigured": false,
+    "webgpuRequired": false
+  },
+  "notMeasured": {
+    "stableOrt129ExactRuntimeAssetsMaterialized": false,
+    "smollm2135mExactModelBytesMaterialized": false,
+    "smollm2135mExactTokenizerBytesMaterialized": false,
+    "realOrt129MatmulInference": false,
+    "realSmollm2ModelInitialization": false,
+    "realSmollm2Ttft": false,
+    "realSmollm2TokensPerSecond": false,
+    "realInferencePeakMemory": false,
+    "realModelStructuredOutputQuality": false,
+    "realModelPromptInjectionBehavior": false,
+    "genuineDirectFileBrowserMatrix": false,
+    "physicalDeviceEvidence": false
+  },
+  "environmentBlockers": [
+    "EXACT_STABLE_ORT_1_29_BUNDLE_AND_WASM_BYTES_NOT_MATERIALIZED",
+    "EXACT_SMOLLM2_135M_MODEL_AND_TOKENIZER_BYTES_NOT_MATERIALIZED",
+    "CURRENT_HOST_EXTERNAL_PACKAGE_AND_MODEL_DOWNLOAD_PATHS_BLOCKED_OR_INCONSISTENT",
+    "CURRENT_HOST_CHROMIUM_FILE_NAVIGATION_BLOCKED_BY_ADMINISTRATOR_POLICY",
+    "CURRENT_HOST_FIREFOX_AND_WEBKIT_ENGINES_UNAVAILABLE",
+    "PHYSICAL_DEVICE_ENVIRONMENT_UNAVAILABLE"
+  ],
+  "integrationRequirement": {
+    "ordinaryPxComponentLimitsMustRemainUnchanged": true,
+    "smollm2135mFitsOrdinaryPxComponentChannel": false,
+    "futureRequirement": "SEPARATE_BOUNDED_AI_LARGE_ASSET_CHANNEL",
+    "semanticOwner": "CONVERGENCE_OWNER_IF_AND_ONLY_IF_AI_F0_REAL_EVIDENCE_LATER_PASSES",
+    "standardEditionMayDependOnAiChannel": false
+  },
+  "nextEligibleEvidenceTransaction": [
+    "materialize exact stable onnxruntime-web 1.29.0 bundle JS and WASM bytes",
+    "freeze exact hashes, byte lengths, licenses and redistribution notices",
+    "run zero-fetch official MatMul smoke with fetch denied before runtime import",
+    "materialize exact SmolLM2-135M q4f16 model plus tokenizer",
+    "measure model init, TTFT, sustained generation, working-set and soak behavior",
+    "run OFU structured-output and adversarial corpus against the real model",
+    "run genuine file:// zero-network browser matrix",
+    "obtain physical-device evidence before any maturity claim"
+  ]
+}
