@@ -24,6 +24,13 @@ assert.equal(a.claims.morphologyComponentsArePhysical,false);
 assert.ok(a.particles.length<=F.PROFILES.STANDARD.particles);
 assert.ok(a.bounds.total<=F.PROFILES.STANDARD.particles+F.PROFILES.STANDARD.clusters+F.PROFILES.STANDARD.dust);
 assert.equal(Object.values(a.components).reduce((sum,n)=>sum+n,0),a.particles.length,'component census must account for every decorative particle');
+const zeroParticles=F.build({galaxyId:'zero-particles',morphology:'SPIRAL',quality:'STANDARD',particleLimit:0});
+assert.equal(zeroParticles.particles.length,0,'particleLimit=0 must not silently materialize the default particle population');
+assert.equal(zeroParticles.bounds.requestedParticles,0);
+assert.throws(()=>F.build({galaxyId:'bad-particle-limit',particleLimit:-1}),/particleLimit outside bounds/);
+assert.throws(()=>F.build({galaxyId:'bad-particle-limit',particleLimit:1.5}),/particleLimit outside bounds/);
+assert.throws(()=>F.build({galaxyId:'bad-particle-limit',particleLimit:NaN}),/particleLimit outside bounds/);
+assert.throws(()=>F.build({galaxyId:'bad-morphology',morphology:'X'.repeat(129)}),/morphology must be bounded text/);
 const diskComponents=new Set(['SPIRAL_ARM','DISK','BULGE','HALO']);
 for(const item of a.particles){assert.ok(diskComponents.has(item.component));assert.ok(Number.isInteger(item.componentCode));assert.equal(item.claims.componentIsPhysicalDecomposition,false)}
 for(const item of [...a.particles,...a.clusters,...a.dust]){assert.equal(item.canonical,false);assert.equal(item.selectable,false);assert.equal(item.navigable,false);assert.equal(item.authority,'PRESENTATION_ONLY')}
@@ -89,6 +96,8 @@ const neighborhood=P.buildNeighborhood({objects:spatial.objects,cameraFrame:fram
 assert.ok(neighborhood.objects.length<=N.MAX_OBJECTS);
 assert.equal(neighborhood.camera.ownsFrame,false);
 assert.equal(neighborhood.stability.queryOrderIndependent,true);
+assert.equal(neighborhood.stability.drawOrderStable,true);
+assert.equal(neighborhood.claims.physicalOcclusionClaim,false);
 for(const object of neighborhood.objects){assert.equal(object.authority,'PRESENTATION_ONLY');assert.equal(object.claims.positionPhysical,false)}
 const visible=neighborhood.objects.find(o=>o.view.visible);if(visible){const hit=P.pick(neighborhood,visible.view.x,visible.view.y);assert.equal(hit.handled,true);assert.equal(hit.decorative,false);assert.equal(hit.sourceId,visible.sourceId)}
 
@@ -99,4 +108,4 @@ assert.throws(()=>R.refine({parentId:'x',children:[{}]}),/stable child identity/
 assert.throws(()=>R.refine({parentId:'x',children:[entities[0]],parentExtent:Infinity}),/finite/);
 const witness=P.continuityWitness({galaxy:galaxyScene,region,neighborhood});
 assert.equal(witness.cameraOwnedHere,false);assert.equal(witness.selectionOwnedHere,false);assert.equal(witness.scaleOwnedHere,false);
-console.log(JSON.stringify({status:'PASS',oracle:'V2X03_MACROCOSM_ORACLES',contract:P.CONTRACT,bounds:{galaxyParticles:galaxyScene.field.bounds.particles,galaxyDecorative:galaxyScene.field.bounds.total,regionObjects:region.objects.length,neighborhoodObjects:neighborhood.objects.length,maxGalaxyDraws:3},noGrid:true,deterministicRevisit:true,explicitMorphologyLayers:true,integrationRenderPacket:true,decorativeNonSelectable:true,externalCamera:true,qualityProfiles:true,reducedMotion:true,stableIdentityFailClosed:true,immutablePackedData:true}));
+console.log(JSON.stringify({status:'PASS',oracle:'V2X03_MACROCOSM_ORACLES',contract:P.CONTRACT,bounds:{galaxyParticles:galaxyScene.field.bounds.particles,galaxyDecorative:galaxyScene.field.bounds.total,regionObjects:region.objects.length,neighborhoodObjects:neighborhood.objects.length,maxGalaxyDraws:3},noGrid:true,deterministicRevisit:true,particleLimitFailClosed:true,explicitMorphologyLayers:true,integrationRenderPacket:true,decorativeNonSelectable:true,externalCamera:true,qualityProfiles:true,reducedMotion:true,stableIdentityFailClosed:true,stableOcclusionDrawOrder:true,immutablePackedData:true}));
