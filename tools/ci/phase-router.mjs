@@ -5,6 +5,12 @@ const MAX_PATH_BYTES=512;
 function fail(message){throw new Error('OFU phase router: '+message);}
 function phaseClosure(earliest){if(earliest==null)return[];const index=PHASES.indexOf(earliest);if(index<0)fail('unknown phase '+earliest);return PHASES.slice(index);}
 function minPhase(a,b){if(a==null)return b;if(b==null)return a;return PHASES[Math.min(PHASES.indexOf(a),PHASES.indexOf(b))];}
+function isPostV1V2XLanePath(path){
+  return /^config\/(?:components|conformance)\/v2x-(?:0[1-9]|1[0-7])-[a-z0-9][a-z0-9-]*\.json$/.test(path)
+    || /^config\/extensions\/v2x-(?:0[1-9]|1[0-7])-[a-z0-9][a-z0-9-]*(?:\/|\.json$)/.test(path)
+    || /^tests\/v2x-(?:0[1-9]|1[0-7])(?:-[a-z0-9][a-z0-9-]*)?\//.test(path)
+    || /^src\/(?:product|audio)\/v2x(?:0[1-9]|1[0-7])\//.test(path);
+}
 
 export function normalizeChangedPaths(input){
   if(!Array.isArray(input))fail('changed paths must be an array');
@@ -35,6 +41,12 @@ function classifyPath(path){
   // Cross-cutting shipping-domain code spans phase ownership and therefore fails closed.
   if(/^src\/domains\/v1\//.test(path))return['P1','cross-cutting-v1-domain'];
   if(/^tests\/integration\//.test(path))return['P1','cross-phase-integration'];
+
+  // V2X lane-local descriptors/tests and explicitly namespaced presentation/audio code
+  // are exercised by the exact-head Post-v1 gate. Frozen/cross-cutting paths in the same
+  // packet still widen the route through the rules above or the generic fail-closed rules below.
+  if(isPostV1V2XLanePath(path))return[null,'post-v1-v2x-lane-local'];
+
   if(/^config\/(?!conformance\/)/.test(path))return['P1','generic-config'];
   if(/^docs\/(adr|foundation)\//.test(path)||/^tools\/(validate-foundation|validate-frontier-docs)\.mjs$/.test(path))return['P1','governance-foundation'];
 

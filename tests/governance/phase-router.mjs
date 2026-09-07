@@ -29,6 +29,36 @@ const expectPhases=(paths,expected,earliest=expected[0]??null)=>{const result=ro
   expectPhases(['docs/product/v1.1-notes.md'],[]);
 }
 
+// Exact V2X lane-local descriptors, tests and explicitly namespaced Product/Audio surfaces
+// are covered by the exact-head Post-v1 gate without replaying every frozen historical matrix.
+{
+  const result=expectPhases([
+    'config/components/v2x-14-product-experience.json',
+    'config/components/v2x-14-systemic-audio.json',
+    'src/audio/v2x14/audio-controller.js',
+    'src/product/v2x14/product-experience.js',
+    'tests/v2x-14-product-experience/browser-journey.mjs',
+  ],[]);
+  assert.equal(result.failClosed,false);cases++;
+}
+{
+  const result=expectPhases([
+    'config/components/v2x-03-macrocosm.json',
+    'config/conformance/v2x-03-macrocosm.json',
+    'config/extensions/v2x-03-macrocosm/provider-catalog.json',
+    'src/rendering/galaxy/galaxy-field.js',
+    'tests/v2x-03/macrocosm-oracles.mjs',
+  ],[]);
+  assert.equal(result.failClosed,false);cases++;
+}
+// V2X naming never overrides frozen/cross-cutting ownership or future/unbound namespaces.
+{
+  const result=expectPhases(['config/components/v2x-14-product-experience.json','src/domains/v1/micro/matter-continuity-v2.js'],all,'P1');assert.equal(result.failClosed,true);
+}
+for(const path of ['config/components/v2x-99-future.json','tests/v2x-99/future.mjs','src/product/v2x99/future.js']){
+  const result=expectPhases([path],all,'P1');assert.equal(result.failClosed,true);
+}
+
 // Domain ownership maps to the earliest affected historical phase and closes downstream.
 expectPhases(['src/domains/astronomy/observability.js'],['P3','P4','P5','P6'],'P3');
 expectPhases(['src/domains/planetology/volatile-ledger.js'],['P5','P6'],'P5');
