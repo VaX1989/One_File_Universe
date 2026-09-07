@@ -27,7 +27,7 @@ function assertCredentialBoundary(file,text){
   const blocks=checkoutBlocks(text);
   assert(blocks.length>0,`${file}: expected at least one exact-source checkout`);
   for(const block of blocks){
-    assert(/\bpersist-credentials:\s*false\b/.test(block),`${file}: checkout must not persist GITHUB_TOKEN credentials into the repository`);
+    assert(/^\s*persist-credentials:\s*false\s*(?:#.*)?$/m.test(block),`${file}: checkout must not persist GITHUB_TOKEN credentials into the repository`);
   }
   return blocks.length;
 }
@@ -37,7 +37,9 @@ for(const file of protectedWorkflows)checkouts+=assertCredentialBoundary(file,fs
 
 const unsafe=`steps:\n  - uses: actions/checkout@${'a'.repeat(40)}\n    with:\n      ref: deadbeef\n  - name: Untrusted repository test\n    run: node test.mjs\n`;
 assert.throws(()=>assertCredentialBoundary('synthetic-unsafe.yml',unsafe),/must not persist GITHUB_TOKEN/);
-const safe=`steps:\n  - uses: actions/checkout@${'a'.repeat(40)}\n    with:\n      ref: deadbeef\n      persist-credentials: false\n  - name: Test\n    run: node test.mjs\n`;
+const commentSpoof=`steps:\n  - uses: actions/checkout@${'a'.repeat(40)}\n    with:\n      ref: deadbeef\n      # persist-credentials: false\n  - name: Untrusted repository test\n    run: node test.mjs\n`;
+assert.throws(()=>assertCredentialBoundary('synthetic-comment-spoof.yml',commentSpoof),/must not persist GITHUB_TOKEN/);
+const safe=`steps:\n  - uses: actions/checkout@${'a'.repeat(40)}\n    with:\n      ref: deadbeef\n      persist-credentials: false # credential is intentionally ephemeral\n  - name: Test\n    run: node test.mjs\n`;
 assert.equal(assertCredentialBoundary('synthetic-safe.yml',safe),1);
 
-console.log(JSON.stringify({status:'PASS',suite:'workflow-credential-boundary',workflows:protectedWorkflows.length,checkouts,syntheticCases:2}));
+console.log(JSON.stringify({status:'PASS',suite:'workflow-credential-boundary',workflows:protectedWorkflows.length,checkouts,syntheticCases:3}));
