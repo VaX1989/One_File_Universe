@@ -25,7 +25,7 @@ const state = createLifeState({
     lifecycleStagePpm: { juvenile: 250_000, mature: 650_000, senescent: 100_000 },
   }],
   interactions: [],
-  regions: { 'r-provider': { resourcePool: 10000, nutrientPool: 10000, opportunityPpm: 900_000 } },
+  regions: { 'r-provider': { resourcePool: 10000, nutrientPool: 10000, opportunityPpm: 900_000, disturbancePpm: 0 } },
 });
 
 const provider = createLifeProvider({ getState: () => state });
@@ -35,9 +35,12 @@ assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.capabilities.includes('LIFE_INTERACTION_IN
 assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.capabilities.includes('LIFE_REGION_INSPECTION'));
 assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.capabilities.includes('LIFE_LIFECYCLE_COMPOSITION'));
 assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.capabilities.includes('LIFE_REPRESENTATIVE_LIFECYCLE_SAMPLE'));
+assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.capabilities.includes('LIFE_BEHAVIOR_OPPORTUNITY'));
 assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.exclusions.includes('P4_EVENT_ADMISSION'));
 assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.exclusions.includes('UNIVERSAL_MUTATION_RATE'));
 assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.exclusions.includes('UNIVERSAL_LIFECYCLE_RATE'));
+assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.exclusions.includes('EMPIRICAL_ETHOLOGY'));
+assert.ok(LIFE_V2_PROVIDER_DESCRIPTOR.exclusions.includes('COGNITION_INFERENCE'));
 assert.equal(provider.summary().totalAbundance, 400n);
 assert.equal(provider.inspectLineage('lin-provider').aggregateAbundance, 400n);
 assert.deepEqual(provider.inspectPopulation('pop-provider').incomingInteractionIds, []);
@@ -104,6 +107,9 @@ assert.equal(samples.length, 6);
 assert.ok(samples.every((sample) => sample.lifecycle.authorityClass === 'MODEL_DERIVED_SIMULATION'));
 assert.ok(samples.every((sample) => sample.lifecycle.representativeOnly === true && sample.lifecycle.persistentIndividualFact === false));
 assert.ok(samples.every((sample) => ['JUVENILE', 'MATURE', 'SENESCENT'].includes(sample.lifecycle.stage)));
+assert.ok(samples.every((sample) => sample.behavior.authorityClass === 'MODEL_DERIVED_SIMULATION'));
+assert.ok(samples.every((sample) => sample.behavior.cognitionClaimed === false && sample.behavior.empiricalEthologyClaimed === false));
+assert.ok(samples.every((sample) => sample.presentation.motionAmplitude === Number(sample.behavior.activityOpportunityPpm) / 1_000_000));
 const descriptorsA = buildOrganismRenderDescriptors(samples, { quality: 'HIGH' });
 const descriptorsB = buildOrganismRenderDescriptors(samples, { quality: 'HIGH' });
 assert.deepEqual(descriptorsA, descriptorsB);
@@ -111,8 +117,18 @@ assert.equal(descriptorsA.length, 6);
 assert.ok(descriptorsA.every((descriptor) => descriptor.authorityClass === 'PRESENTATION_ONLY'));
 assert.ok(descriptorsA.every((descriptor) => descriptor.evidenceLink.representativeOnly === true));
 assert.ok(descriptorsA.every((descriptor) => ['JUVENILE', 'MATURE', 'SENESCENT'].includes(descriptor.evidenceLink.representativeLifecycleStage)));
+assert.ok(descriptorsA.every((descriptor) => descriptor.evidenceLink.modeledBehaviorClass === samples.find((sample) => sample.id === descriptor.sampleId).behavior.behaviorClass));
 assert.ok(descriptorsA.every((descriptor) => descriptor.segmentBudget === 8));
 assert.ok(descriptorsA.every((descriptor) => descriptor.primitiveFamily === 'CHAINED_ELLIPSOIDS'));
+
+const lowActivityState = createLifeState({
+  ...state,
+  regions: { 'r-provider': { resourcePool: 10000, nutrientPool: 10000, opportunityPpm: 100_000, disturbancePpm: 800_000 } },
+});
+const lowActivitySamples = createLifeProvider({ getState: () => lowActivityState }).localSamples({ regionId: 'r-provider', maxSamples: 6, viewportKey: 'render-test' });
+assert.ok(lowActivitySamples.every((sample, index) => sample.behavior.activityOpportunityPpm < samples[index].behavior.activityOpportunityPpm), 'lower opportunity plus higher disturbance must reduce modeled local activity opportunity under identical lineage traits');
+const lowActivityDescriptors = buildOrganismRenderDescriptors(lowActivitySamples, { quality: 'HIGH' });
+assert.ok(lowActivityDescriptors.every((descriptor, index) => descriptor.motion.amplitude < descriptorsA[index].motion.amplitude), 'presentation motion must decrease when bounded modeled activity opportunity decreases');
 
 const matureState = createLifeState({
   ...state,
@@ -170,9 +186,12 @@ assert.throws(() => buildOrganismRenderDescriptors([{ ...samples[0], representat
 assert.throws(() => buildOrganismRenderDescriptors([{ ...samples[0], presentation: { ...samples[0].presentation, authorityClass: 'MODEL_DERIVED_SIMULATION' } }]), /presentation-only motion descriptor required/);
 assert.throws(() => buildOrganismRenderDescriptors([{ ...samples[0], lifecycle: { ...samples[0].lifecycle, authorityClass: 'CANONICAL_PROVEN' } }]), /representative lifecycle descriptor required/, 'lifecycle representative must not escalate authority');
 assert.throws(() => buildOrganismRenderDescriptors([{ ...samples[0], lifecycle: { ...samples[0].lifecycle, stage: 'UNKNOWN_MAGIC_STAGE' } }]), /unsupported representative lifecycle stage/, 'unknown lifecycle stage must fail closed at render handoff');
+assert.throws(() => buildOrganismRenderDescriptors([{ ...samples[0], behavior: { ...samples[0].behavior, authorityClass: 'CANONICAL_PROVEN' } }]), /modeled behavior opportunity descriptor required/, 'behavior opportunity must not escalate authority');
+assert.throws(() => buildOrganismRenderDescriptors([{ ...samples[0], behavior: { ...samples[0].behavior, cognitionClaimed: true } }]), /behavior claim guards required/, 'renderer must reject behavior descriptors that overclaim cognition');
+assert.throws(() => buildOrganismRenderDescriptors([{ ...samples[0], presentation: { ...samples[0].presentation, motionAmplitude: Math.max(0, samples[0].presentation.motionAmplitude - 0.1) } }]), /motion amplitude must remain bound/, 'presentation motion must stay causally bound to modeled activity opportunity before lifecycle presentation scaling');
 assert.throws(() => buildOrganismRenderDescriptors([{ ...samples[0], position: { ...samples[0].position, x: Number.NaN } }]), /position.x must be finite/, 'non-finite spatial evidence must fail closed before renderer handoff');
 assert.throws(() => buildOrganismRenderDescriptors([{ ...samples[0], position: { ...samples[0].position, y: 2 } }]), /position.y out of bounds/, 'out-of-domain local position must fail closed before renderer handoff');
 assert.throws(() => buildOrganismRenderDescriptors([{ ...samples[0], presentation: { ...samples[0].presentation, motionAmplitude: Number.NaN } }]), /motionAmplitude must be finite/, 'non-finite presentation motion must fail closed');
 assert.throws(() => buildOrganismRenderDescriptors([{ ...samples[0], aggregateAbundance: '400' }]), /aggregate abundance evidence must be a non-negative bigint/, 'render evidence must preserve exact aggregate abundance type');
 
-console.log('V2X-08 life provider renderer: PASS (62 assertions)');
+console.log('V2X-08 life provider renderer: PASS (73 assertions)');
