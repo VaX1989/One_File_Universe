@@ -1,0 +1,18 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1.product.living-transition-feedback",
+      "version": "1.0.0",
+      "owner": "product",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/bootstrap/product/living-transition-feedback.js",
+      "dependencies": ["v1.product.living-universe"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Post-v1 assistive transition feedback for meaningful changes in the shipping Living runtime. Announcements describe existing runtime navigation/selection state only and never create canonical, scientific, model, persistence or navigation authority.",
+      "provides": ["v1.product.living-transition-feedback"]
+    }
+  ]
+}
