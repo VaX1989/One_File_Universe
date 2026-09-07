@@ -22,6 +22,13 @@ assert.ok(a.objects.filter(x=>!x.persistentEntity).every(x=>x.pickKey.startsWith
 assert.ok(a.resources.decorativeInstances<=E.PROFILES.compact.maxDecorativeInstances);
 assert.ok(a.resources.pickTargets<=E.PROFILES.compact.maxPickTargets);
 assert.equal(a.claims.decorativeInstancesArePersistentEntities,false);
+const pathological={id:'pathological.presentation',authority:'PRESENTATION_ONLY',materializeLocal(){return{objects:Array.from({length:5000},(_,i)=>({entityId:'bulk:'+i,kind:'MODELED_OBJECT',positionM:[i%10,5+Math.floor(i/10)%20,0],radiusM:.1,heightM:.2})),decorations:Array.from({length:20000},(_,i)=>({kind:'DECORATIVE_FORM',presentationSeed:'bulk-decor-'+i,positionM:[i%10,6+Math.floor(i/10)%20,0],radiusM:.1,heightM:.2}))}}};
+const bounded=E.materialize({camera,providers:[pathological],profileName:'minimal'});
+assert.equal(bounded.claims.inputAdmissionBounded,true);
+assert.equal(bounded.resources.modeledInputsSeen,E.PROFILES.minimal.maxModeledObjects*E.INPUT_MULTIPLIER);
+assert.equal(bounded.resources.decorativeInputsSeen,E.PROFILES.minimal.maxDecorativeInstances*E.INPUT_MULTIPLIER);
+assert.ok(bounded.resources.modeledInputsDropped>0&&bounded.resources.decorativeInputsDropped>0);
+assert.ok(bounded.objects.length<=E.PROFILES.minimal.maxModeledObjects+E.PROFILES.minimal.maxDecorativeInstances);
 assert.throws(()=>E.materialize({camera,providers:[{id:'bad',materializeLocal(){return{objects:[{kind:'ORGANISM',positionM:[0,1,0]}]}}}]}),/entityId/);
 assert.equal(E.resolveInterior(civ,{entityId:'structure:1'}).supported,false);
 const terrain=G.sampleGrid({camera,groundProvider:flatGround,profileName:'compact'});
@@ -42,6 +49,7 @@ const clipView=R.view({positionM:[0,0,0],headingRad:0,pitchRad:0},{width:960,hei
 const clipped=R.clipTriangleNear(clipView,[-1,.01,0],[1,1,0],[0,1,1]);
 assert.ok(clipped.length>=1);
 assert.ok(clipped.flat().every(p=>Number.isFinite(p.x)&&Number.isFinite(p.y)&&Number.isFinite(p.depthM)));
+assert.equal(R.triangleTouchesViewport({width:960,height:600},{x:-100,y:300},{x:480,y:-100},{x:1060,y:300}),true);
 const ridgeEmbodiment={objects:[{id:'behind-ridge',pickKey:'entity:behind-ridge',persistentEntity:true,kind:'ORGANISM',positionM:[0,25,0],radiusM:.3,heightM:1,sourceAuthority:'MODEL_DERIVED_SIMULATION',claims:{}}]};
 const ridgeTerrain=G.sampleGrid({camera,groundProvider:flatGround,profileName:'minimal'});
 const ridgeFrame=R.buildFrame({camera,terrain:ridgeTerrain,occlusionTerrain:ridgeTerrain,embodiment:ridgeEmbodiment,width:960,height:600,profileName:'minimal'});
@@ -60,6 +68,6 @@ const reverse=T.reverseTraversalRequest(moved,{targetBand:'REGIONAL_SURFACE'});a
 const reduced=T.touchGesture({dx:80,dy:40,kind:'LOOK',reducedMotion:true});assert.ok(Math.abs(reduced.intent.yawRadians)<LIMIT_SAFE());
 function LIMIT_SAFE(){return .18+.000001}
 const ops=[],gradient={addColorStop(...x){ops.push(['stop',...x])}},ctx={fillStyle:null,font:'',createLinearGradient(){return gradient},fillRect(...x){ops.push(['fillRect',...x])},beginPath(){ops.push(['begin'])},moveTo(...x){ops.push(['move',...x])},lineTo(...x){ops.push(['line',...x])},closePath(){ops.push(['close'])},fill(){ops.push(['fill'])},fillText(...x){ops.push(['text',...x])}};
-const renderWitness=provider.render(ctx);assert.equal(renderWitness.authority,'MEASURED_RUNTIME_EVIDENCE');assert.ok(ops.length>10);assert.equal(renderWitness.claims.pixelOutputVisuallyInspected,false);assert.equal(renderWitness.claims.nearPlaneClippingApplied,true);
-console.log(JSON.stringify({schema:'ofu-v2x-07-local-experience-test-2',status:'PASS',objectsCompact:a.resources,terrain:terrain.resources,frame:frame.resources,provider:provider.snapshot(),continuity,renderWitness,clippedTriangles:clipped.length,blockedStep:blocking(blockedStep)}));
+const renderWitness=provider.render(ctx);assert.equal(renderWitness.authority,'MEASURED_RUNTIME_EVIDENCE');assert.ok(ops.length>10);assert.equal(renderWitness.claims.pixelOutputVisuallyInspected,false);assert.equal(renderWitness.claims.nearPlaneClippingApplied,true);assert.equal(renderWitness.claims.viewportIntersectionConservative,true);
+console.log(JSON.stringify({schema:'ofu-v2x-07-local-experience-test-3',status:'PASS',objectsCompact:a.resources,boundedInputs:bounded.resources,terrain:terrain.resources,frame:frame.resources,provider:provider.snapshot(),continuity,renderWitness,clippedTriangles:clipped.length,blockedStep:blocking(blockedStep)}));
 function blocking(x){return{reason:x.reason,stepDeltaM:x.stepDeltaM,maxStepHeightM:x.maxStepHeightM}}
