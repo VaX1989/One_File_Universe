@@ -76,8 +76,8 @@
       "source": "src/v2x-09-civilization-economy-city/index.js",
       "dependencies": ["v2x09.civilization.economy-step", "v2x09.civilization.institutions", "v2x09.civilization.morphology"],
       "authority": "MODEL_DERIVED_SIMULATION",
-      "provenance": "V2X-09 public additive API composition. It creates no canonical history, no persistent persons, no canonical selection/camera/persistence authority, and no direct planet/life mutation.",
-      "provides": ["v2x09.civilization.economy-city"]
+      "provenance": "V2X-09 public additive API composition plus bounded route-failure envelope analysis. Failure scenarios are topology/capacity witnesses only: no guaranteed flow substitution, no physical transport geometry, no canonical history, no persistent persons, and no planet/life mutation.",
+      "provides": ["v2x09.civilization.economy-city", "v2x09.civilization.network-failure-envelope"]
     },
     {
       "id": "v2x09.civilization.production-network",
@@ -128,8 +128,8 @@
       "source": "src/v2x-09-civilization-economy-city/advanced.js",
       "dependencies": ["v2x09.civilization.production-network", "v2x09.civilization.society-dynamics", "v2x09.civilization.urban-evolution"],
       "authority": "MODEL_DERIVED_SIMULATION",
-      "provenance": "V2X-09 additive advanced composition over production/logistics, aggregate society dynamics and urban evolution. Shared-renderer integration remains convergence-owner work.",
-      "provides": ["v2x09.civilization.advanced-composition"]
+      "provenance": "V2X-09 advanced composition with bounded network-resilience metrics and infrastructure-only counterfactual recovery envelopes. Alternate-path capacity is explicitly topology-only, recovery holds the economy snapshot constant, and neither surface claims canonical forecasting or mutates shared authority.",
+      "provides": ["v2x09.civilization.advanced-composition", "v2x09.civilization.network-resilience", "v2x09.civilization.recovery-envelope"]
     }
   ]
 }
