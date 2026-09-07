@@ -15,6 +15,19 @@
       "provides": ["v2x11.gameplay.contracts"]
     },
     {
+      "id": "v2x11.gameplay.p2-resource-normalizer",
+      "version": "1.0.0",
+      "owner": "gameplay",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/gameplay/p2-resource-normalizer.js",
+      "dependencies": ["v2x11.gameplay.contracts"],
+      "authority": "DERIVED",
+      "provenance": "V2X-11 deterministic compatibility boundary for P2-decoded canonical integers. BigInt resource units are accepted only within the existing resource-unit and JavaScript safe-integer bounds, then normalized to Number; no budget widening or authority promotion.",
+      "provides": ["v2x11.gameplay.p2-resource-normalizer"]
+    },
+    {
       "id": "v2x11.simulation.cross-domain",
       "version": "1.0.0",
       "owner": "simulation",
@@ -22,7 +35,7 @@
       "stage": "full",
       "placement": "script",
       "source": "src/simulation/cross-domain/causal-engine.js",
-      "dependencies": ["v2x11.gameplay.contracts"],
+      "dependencies": ["v2x11.gameplay.p2-resource-normalizer"],
       "authority": "MODEL_DERIVED_SIMULATION",
       "provenance": "V2X-11 bounded deterministic causal DAG router. Domain equations remain owned by domain adapters.",
       "provides": ["v2x11.simulation.cross-domain"]
@@ -35,7 +48,7 @@
       "stage": "full",
       "placement": "script",
       "source": "src/simulation/temporal-adapters/p4-gameplay-bridge.js",
-      "dependencies": ["v2x11.gameplay.contracts", "v1.session.runtime"],
+      "dependencies": ["v2x11.gameplay.p2-resource-normalizer", "v1.session.runtime"],
       "authority": "MODEL_DERIVED_SIMULATION",
       "provenance": "V2X-11 additive exact-compatibility P4 transition contract for bounded gameplay overlay state, resource costs, causal receipts and compactable/replayable consequences; P4 core remains unchanged.",
       "provides": ["v2x11.simulation.p4-gameplay-bridge"]
