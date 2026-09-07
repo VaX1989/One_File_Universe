@@ -191,10 +191,15 @@ export function thermalLedgerStep({ mantleEnergyJ, radiogenicPowerW, corePowerW,
   const q = finite('surfaceHeatLossW', surfaceHeatLossW);
   const dt = finite('durationSeconds', durationSeconds);
   if (e0 < 0 || hr < 0 || hc < 0 || q < 0 || dt < 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'NEGATIVE_ENERGY_POWER_OR_TIME' });
-  const deltaJ = (hr + hc - q) * dt;
+  const sourceJ = (hr + hc) * dt;
+  const sinkJ = q * dt;
+  const deltaJ = sourceJ - sinkJ;
   const e1 = e0 + deltaJ;
+  if (![sourceJ, sinkJ, deltaJ, e1].every(Number.isFinite)) return Object.freeze({ status: 'UNSUPPORTED', reason: 'NON_FINITE_THERMAL_LEDGER_DERIVED_TERM' });
   if (e1 < 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'STEP_DRAINS_MORE_ENERGY_THAN_AVAILABLE' });
-  return Object.freeze({ status: 'CONSERVED', beforeJ: e0, afterJ: e1, sourceJ: (hr + hc) * dt, sinkJ: q * dt, residualJ: e1 - (e0 + (hr + hc - q) * dt) });
+  const residualJ = e1 - (e0 + sourceJ - sinkJ);
+  if (!Number.isFinite(residualJ)) return Object.freeze({ status: 'UNSUPPORTED', reason: 'NON_FINITE_THERMAL_LEDGER_RESIDUAL' });
+  return Object.freeze({ status: 'CONSERVED', beforeJ: e0, afterJ: e1, sourceJ, sinkJ, residualJ });
 }
 
 export function nusseltRayleighScenario({ rayleighNumber, regime }) {
