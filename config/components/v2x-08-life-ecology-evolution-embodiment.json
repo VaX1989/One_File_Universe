@@ -1,0 +1,18 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v2x08.model.life-single-file-facade",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/domains/v1/life/v2x08-life-facade.js",
+      "dependencies": [],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Convergence-owned single-file facade over the safe V2X-08 ecology/evolution boundary. It preserves explicit input, bounded populations/lineages/interactions, proposal-only evolutionary changes and the frozen P6 canonical biosphere boundary; it does not model abiogenesis or promote alien biology to canonical truth.",
+      "provides": ["v2x08.model.life-single-file-facade"]
+    }
+  ]
+}
