@@ -1,0 +1,61 @@
+name: Product v1.1 Living Keyboard Workspace
+
+on:
+  pull_request:
+    paths:
+      - 'src/bootstrap/product/living-keyboard-workspace.js'
+      - 'config/components/v11-product-living-keyboard-workspace.json'
+      - 'tests/product/v11-living-keyboard-workspace.mjs'
+      - 'tests/product/browser-v11-living-keyboard-workspace.mjs'
+      - '.github/workflows/product-v11-living-keyboard-workspace.yml'
+  push:
+    branches:
+      - 'development/v1.*'
+    paths:
+      - 'src/bootstrap/product/living-keyboard-workspace.js'
+      - 'config/components/v11-product-living-keyboard-workspace.json'
+      - 'tests/product/v11-living-keyboard-workspace.mjs'
+      - 'tests/product/browser-v11-living-keyboard-workspace.mjs'
+      - '.github/workflows/product-v11-living-keyboard-workspace.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: product-v11-living-keyboard-workspace-${{ github.event_name }}-${{ github.event.pull_request.head.ref || github.ref }}
+  cancel-in-progress: true
+
+env:
+  OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+permissions:
+  contents: read
+
+jobs:
+  exact-head-product:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: '${{ env.OFU_SOURCE_SHA }}'
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.20.0'
+      - name: Verify exact source
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Living keyboard workspace contract
+        run: node tests/product/v11-living-keyboard-workspace.mjs
+      - name: Workflow reproducibility guard
+        run: node tests/governance/workflow-reproducibility.mjs
+      - name: Build shipping single-file product
+        run: |
+          node tools/build-ofu-rendering-v09.mjs
+          test "$(grep -Eoc "(src|href)=[\"']https?://" dist/One_File_Universe.html)" -eq 0
+          grep -q "connect-src 'none'" dist/One_File_Universe.html
+      - name: Install pinned Chromium oracle
+        run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium
+      - name: Visible Living keyboard workspace evidence
+        run: node tests/product/browser-v11-living-keyboard-workspace.mjs

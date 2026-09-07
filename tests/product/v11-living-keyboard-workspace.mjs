@@ -1,0 +1,15 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import {loadComponents} from '../../tools/extensions/components.mjs';
+const root=new URL('../../',import.meta.url),read=rel=>fs.readFileSync(new URL(rel,root),'utf8');
+const legacy=read('src/v1x-10-ux-mobile-accessibility/viewport-ux.js');
+const source=read('src/bootstrap/product/living-keyboard-workspace.js');
+const descriptor=JSON.parse(read('config/components/v11-product-living-keyboard-workspace.json'));
+assert.match(legacy,/getElementById\('planet-view'\)/,'legacy viewport keyboard shortcut remains bound to planet-view');
+assert.match(legacy,/getElementById\('planet-view'\)\?\.focus/,'legacy Escape return still targets planet-view');
+assert.match(source,/VERSION='ofu-v11-living-keyboard-workspace-1'/);assert.match(source,/AUTHORITY='PRESENTATION_ONLY'/);assert.match(source,/MAX_ATTACH_ATTEMPTS=120/);
+assert.match(source,/getElementById\('living-view'\)/);assert.match(source,/String\(event\.key\)\.toLowerCase\(\)==='i'/);assert.match(source,/event\.key==='Escape'/);assert.match(source,/stopImmediatePropagation\(\)/,'window capture must suppress stale document-level planet-view routing');assert.match(source,/aria-keyshortcuts','I Escape'/);
+assert.equal(descriptor.schema,'ofu-components-1');const component=descriptor.components[0];assert.equal(component.id,'v1.product.living-keyboard-workspace');assert.equal(component.authority,'PRESENTATION_ONLY');assert.deepEqual(component.dependencies,['v1.product.living-universe','v1.product.living-forward-controls','v1x10.ux.viewport']);
+const plan=loadComponents(),ids=plan.map(c=>c.id),index=ids.indexOf(component.id);assert(index>=0,'Living keyboard adapter planned');for(const dep of component.dependencies)assert(ids.indexOf(dep)>=0&&ids.indexOf(dep)<index,'dependency must precede Living keyboard adapter: '+dep);assert.equal(plan[index].source,'src/bootstrap/product/living-keyboard-workspace.js');
+assert.doesNotMatch(source,/fetch\(|XMLHttpRequest|WebSocket|https?:\/\//,'keyboard adapter must not create a network path');
+console.log('v1.1 Living keyboard workspace contract: PASS');
