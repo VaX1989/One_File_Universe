@@ -1,111 +1,178 @@
 {
-  "schema": "ofu-v2x15-post-convergence-handoff-3",
+  "schema": "ofu-v2x15-definitive-convergence-handoff-1",
   "lane": "V2X-15_ASTRONOMY_PLANETOLOGY_FRONTIER",
-  "laneStatus": "POST_CONVERGENCE_INTEGRATION_READY_RESEARCH_ONLY",
+  "laneStatus": "DEFINITIVE_CONVERGENCE_READY_RESEARCH_ONLY",
   "branch": "research/v2x-15-astronomy-planetology-frontier-2026-09-07",
   "authority": "RESEARCH_ONLY",
+  "canonicalPromotionPerformed": false,
   "restartAnchor": {
     "sha": "e0dae058cd5d6fd103cdf5958d781d9b38e1101e",
     "tree": "d81fbbbe58d74abff1eb99111a059f5282b43de2",
     "ref": "parallel/v2x-restart-base-2026-09-07"
   },
   "forwardReconcileCommit": "9c058bcb5b16cdd187c9c9ef9f676797d90e3a75",
-  "preHandoffImplementationHead": {
-    "sha": "5972b81a4febd545ad41cb2ccea4de477f5c284d",
-    "tree": "f2ccb9634e7666c81b143053f33cfce70c9ca85f",
-    "compareToRestartAnchor": "ahead_by=37 behind_by=0 merge_base=restart_anchor; only 14 exact V2X-15 allowed paths changed"
+  "supersedesResearchCheckpoint": {
+    "sha": "e88efaf41b1d3c13651bf6c9d7372e2355ee7c17",
+    "tree": "b2e343fe63c48f8c274b7b591f977ffd3cfe4b53",
+    "reason": "deep pre-convergence falsification exposed and repaired additional validity/provenance defects and added stronger exact-head evidence"
+  },
+  "certifiedImplementationHead": {
+    "sha": "cf743a1e2aa7bd473cf4a5c775d4bbbd20a8a9f4",
+    "tree": "790247b6063fcd09798516bd78b8dca3cf59a0b4",
+    "compareToRestartAnchor": {
+      "status": "ahead",
+      "aheadBy": 50,
+      "behindBy": 0,
+      "mergeBase": "e0dae058cd5d6fd103cdf5958d781d9b38e1101e",
+      "changedPathCount": 14,
+      "pathScope": "research/v2x/** exact V2X-15 research paths only"
+    }
+  },
+  "exactBlobCertification": {
+    "method": "GitHub file contents were materialized locally and git hash-object was required to equal the GitHub blob SHA before execution",
+    "nodeRuntime": "v22.16.0",
+    "blobs": {
+      "research/v2x/astronomy/oracles.mjs": "3de224e590d7c5717b78e70cd9a85438657f6898",
+      "research/v2x/astronomy/stellar-contracts.mjs": "e1405e77d62e358d022214a6411c1c17af144e84",
+      "research/v2x/astronomy/dynamics.mjs": "f61da472a7b93a360ac43e9f94a58a90b8ea6361",
+      "research/v2x/planetology/bulk-and-geodynamics.mjs": "093afc1cbe10de26cc926373d0e889184da4eeee",
+      "research/v2x/planetology/climate-and-escape.mjs": "390ed3dfe658e98a59a26585637a8e94432b189b",
+      "research/v2x/planetology/oracles.mjs": "edf6d66c7017ff4eabeb7467574ad406b38949a9",
+      "research/v2x/run-tests.mjs": "694277990d670642ee84e15be6fe6f483f9c6fb7",
+      "research/v2x/reference-oracle.py": "1021256fc78c79e182555d888acae124a363b772"
+    }
   },
   "implemented": [
-    "forward reconciliation onto immutable convergence restart anchor without force-push or history rewrite",
-    "bounded pairwise mutual-Hill screen plus algebraic threshold inversion",
-    "AMD definition diagnostic, pairwise collision-critical AMD root solver and collision-AMD screen",
-    "bounded 2D Newtonian kick-drift-kick short-horizon N-body diagnostic with energy/angular-momentum drift and minimum-separation evidence",
-    "versioned/hash-bound MIST slice interpolation evaluator with no extrapolation",
-    "versioned/hash-bound coupled multiplicity conditional-cell evaluator with overlap rejection",
-    "bandpass-aware distance modulus and angular observability geometry with explicit extinction input",
+    "forward reconciliation onto the immutable convergence restart anchor without force-push or history rewrite",
+    "source-domain-correct Gladman 2 sqrt(3) pairwise Hill screen restricted to initially circular/coplanar inputs plus conservative low-mass guard",
+    "algebraic circular Hill threshold inversion",
+    "AMD definition diagnostic plus bounded pairwise collision-critical AMD root solver and collision-AMD screen",
+    "barycentricized bounded 2D Newtonian kick-drift-kick short-horizon N-body diagnostic",
+    "N-body energy angular-momentum linear-momentum and minimum-separation diagnostics",
+    "coarse/fine same-horizon N-body step-convergence diagnostic",
+    "version/hash/domain-bound MIST interpolation contract with alpha/rotation-grid guards and explicit unpublished chemistry-hole rejection",
+    "bounded deterministic stellar bilinear interpolation requiring quantity units and no extrapolation",
+    "version/hash-bound coupled multiplicity conditional-cell evaluator with physical q/e bounds explicit weight semantics and overlap rejection",
+    "bandpass plus magnitude-system distance-modulus contract and bounded geometric observability diagnostics",
     "source-bounded rocky PREM relation and monotonic uncertainty envelope",
     "mass-radius composition-degeneracy contract",
-    "versioned P-T water-EOS bilinear evaluator with phase/provenance gating",
-    "bounded four-dimensional sub-Neptune grid interpolator over mass/envelope/irradiation/age",
-    "0D equilibrium and transient heat-capacity EBM",
-    "2-256 zone equal-area 1D reduced EBM with conservative diffusive meridional transport and explicit energy residual",
-    "atmospheric escape-regime gate, conditional energy-limited rate and depletion-capped atmosphere mass ledger",
-    "thermal energy ledger, Nu-Ra regime scenarios and bounded 200-300 Myr lag sensitivity",
-    "volatile reservoir conservation ledger",
-    "bounded impact-loss scenario",
-    "provenance-gated stream-power incision and bounded uplift-incision elevation step",
-    "post-convergence source ledgers and selective promotion packets"
+    "versioned water-EOS P-T evaluator requiring EOS hash phase source and exact P-T validity envelope without pressure-only phase inference",
+    "EOS density lookup explicitly separated from any planetary-radius authorization",
+    "bounded four-dimensional Lopez-Fortney-family sub-Neptune grid interpolator over mass/envelope/irradiation/age",
+    "0D equilibrium and transient heat-capacity reduced EBM requiring parameter-set provenance",
+    "2-256 zone equal-area reduced EBM with conservative diffusive transport explicit energy residual and no silent insolation renormalization",
+    "atmospheric escape threshold-set provenance gate conditional energy-limited rate R_XUV >= R_planet guard and depletion-capped atmosphere mass ledger",
+    "convection diagnostic requiring versioned thresholds plus explicit critical Rayleigh number and rejecting at/below-onset regime classification",
+    "thermal energy ledger Nu-Ra scaling-shape scenarios and context-bound 200-300 Myr lag sensitivity",
+    "volatile reservoir ledger with total conservation and non-negative individual post-step reservoir invariants",
+    "bounded Schlichting-style impact-loss scenario",
+    "provenance/time-unit-gated stream-power incision and bounded uplift-incision elevation step",
+    "source and limitation ledgers revised to encode the repaired validity boundaries",
+    "selective promotion packets revised to version 5"
+  ],
+  "defectsRepairedInDefinitivePass": [
+    "Hill 2 sqrt(3) criterion had previously been accepted for small nonzero eccentricity/inclination; now fail-closed to the circular/coplanar source domain",
+    "simple Hill approximation lacked an explicit low-mass guard; a conservative total planet/star mass-ratio guard is now enforced",
+    "MIST readiness was not bound to the exact downloaded-grid domain; exact grid-domain metadata is now mandatory",
+    "MIST chemistry/rotation support was under-specified; exact alpha/rotation grids and the unpublished Fe/H=+0.5 alpha/Fe=+0.6 combination are handled explicitly",
+    "multiplicity cells used a qMax>1 workaround to include q=1; physical q<=1 bounds and closed q=1 semantics now replace it",
+    "multiplicity weights lacked explicit semantics; RELATIVE_WEIGHT/PROBABILITY_MASS/DENSITY_PROXY identity is now mandatory",
+    "distance modulus lacked explicit magnitude-system identity; bandpass and magnitude system are now both required",
+    "water phase context had been inferred from pressure alone; phase resolution is now delegated to exact versioned P-T phase data",
+    "EOS lookup could be misread as radius authority; density lookup and radius-model authority are now explicitly separated",
+    "sub-Neptune grid evaluator was not tied to an exact source family/domain; LOPEZ_FORTNEY_2014 identity and envelope are now enforced",
+    "volatile conservation could pass while an individual reservoir became negative; post-step reservoir non-negativity is now invariant",
+    "energy-limited escape could accept R_XUV below R_planet; invalid geometry now fails closed",
+    "escape regime thresholds were anonymous constants; threshold-set ID/hash and non-universal semantics are now explicit",
+    "zonal EBM silently renormalized insolation; malformed equal-area forcing now returns RESEARCH_REQUIRED without mutation",
+    "EBM coefficients lacked provenance and could enter negative linear-OLR regimes silently; parameter-set provenance and OLR validity gates are now required",
+    "convection regime thresholds lacked onset information; critical Rayleigh is now explicit and at/below-onset classification fails closed",
+    "stream-power erosion lacked explicit time-unit identity even though K dimensions depend on exponent/unit choices; timeUnitId is now mandatory",
+    "short-horizon N-body diagnostics lacked barycentric and linear-momentum evidence and coarse/fine convergence; all are now present"
   ],
   "testsExecuted": [
     {
-      "scope": "prior exact-blob full suite before post-convergence deepening",
+      "scope": "current implementation exact-blob full research runner",
+      "command": "node research/v2x/run-tests.mjs",
+      "runtime": "Node v22.16.0",
       "result": "PASS",
-      "commands": ["node research/v2x/run-tests.mjs", "python3 research/v2x/reference-oracle.py"],
-      "limitation": "This PASS predates the newest post-restart capabilities and is not represented as current-head full-suite evidence."
+      "runnerBlob": "694277990d670642ee84e15be6fe6f483f9c6fb7",
+      "evidence": "runner and all imported research modules were locally materialized from the exact GitHub contents and git hash-object matched the recorded GitHub blob SHA before execution"
     },
     {
-      "scope": "post-convergence targeted critical-AMD cross-language witness",
+      "scope": "deterministic adversarial/metamorphic campaign outside the committed runner",
       "result": "PASS",
-      "witness": {"alpha":0.8,"gamma":1,"criticalInnerEccentricity":0.10435607626104001,"criticalOuterEccentricity":0.11651513899116794,"relativeCriticalAmd":0.01169465771712036,"rootResidual":"numerically zero"}
+      "totalCases": 5787,
+      "coverage": {
+        "hillMonotonicityAndBounds": 1000,
+        "criticalAmdAlphaGammaGrid": 285,
+        "stellarAffineInterpolation": 500,
+        "waterEosAffineInterpolation": 500,
+        "subNeptune4dAffineInterpolation": 300,
+        "volatileConservationAndNonnegativity": 1000,
+        "zonalEbmConservation": 200,
+        "nbodyRefinementComparisons": 2,
+        "convectionOnsetBelowAboveCritical": 2000
+      },
+      "claim": "synthetic falsification evidence only; not physical-device or observational validation"
     },
     {
-      "scope": "post-convergence targeted zonal EBM conservation witness",
-      "result": "PASS",
-      "witness": {"zones":4,"transportResidualEnergyMeanJm2":0,"energyResidualMeanJm2":"approximately -1.6e-6"}
+      "scope": "independent reference oracle lineage",
+      "path": "research/v2x/reference-oracle.py",
+      "blob": "1021256fc78c79e182555d888acae124a363b772",
+      "result": "PASS_IN_PRIOR_EXACT_REFERENCE_EXECUTION",
+      "notes": "independent cross-language witnesses cover rocky PREM mutual-Hill geometry hydrostatic scale height grey atmosphere impact loss mean orbital flux energy-limited escape and critical AMD; current definitive runner adds further independent metamorphic coverage"
     },
     {
-      "scope": "post-convergence targeted short-horizon N-body integrator sanity",
-      "result": "PASS",
-      "witness": {"system":"1 Msun + 1 Earth mass at 1 AU","durationYears":1,"steps":365,"relativeEnergyDrift":"approximately 4.6e-15","relativeAngularMomentumDrift":"approximately 2.0e-15","minimumPairSeparationAu":"approximately 1"},
-      "limitation": "Integrator sanity only; not long-horizon scientific validation or stability proof."
-    },
-    {
-      "scope": "persistent research runner",
-      "result": "UPDATED_NOT_FULLY_REEXECUTED_ON_PRE_HANDOFF_HEAD",
-      "path": "research/v2x/run-tests.mjs",
-      "coverage": ["Hill/AMD", "versioned stellar/multiplicity evaluators", "observability", "rocky bounds", "0D/transient/zonal EBM", "escape budgets", "geodynamics", "EOS/sub-Neptune interpolation", "volatile conservation", "impact and stream-power erosion"],
-      "knownCoverageGap": "Newest short-horizon N-body diagnostic has targeted cross-language evidence but is not yet persisted in the runner."
-    },
-    {
-      "scope": "hosted PR workflows",
-      "result": "QUEUED_OR_PENDING_AT_HANDOFF_TIME",
-      "claim": "No hosted PASS or hosted failure is fabricated."
+      "scope": "hosted GitHub exact implementation head",
+      "head": "cf743a1e2aa7bd473cf4a5c775d4bbbd20a8a9f4",
+      "observed": [
+        {"workflow":"Foundation Integrity","conclusion":"SUCCESS"},
+        {"workflow":"Exact Source Reproduction Bundle","conclusion":"SUCCESS"}
+      ],
+      "remainingAtHandoff": "other standard PR workflows were pending queued or in progress and are not represented as PASS"
     }
   ],
-  "visualOrMeasuredEvidence": {
-    "visualRuntimeChange": false,
-    "scientificValidationClaim": false,
-    "measuredEvidenceType": "deterministic numerical/reference witnesses only"
-  },
   "authorityAndLimitations": [
-    "No canonical shipping provider registration or authority promotion was performed.",
-    "Hill, AMD and short-horizon N-body diagnostics do not establish long-term, resonance, secular-chaos or Lagrange stability.",
-    "Stellar and multiplicity evaluators operate only on externally supplied exact versioned tables; no empirical grid values were invented.",
-    "Mass-radius does not uniquely infer composition; EOS and sub-Neptune outputs require exact external source grids.",
-    "Reduced climate models do not assert weather, GCM-equivalent local climate or habitability.",
-    "Atmospheric escape rates remain applicability-gated and do not reconstruct universal atmospheric history.",
-    "Geodynamics does not assert plate tectonics or deterministic tectonic history.",
-    "Stream-power erosion requires planet-specific parameter provenance and is not universal terrain history."
+    "All new capability remains RESEARCH_ONLY; no shipping provider registration or canonical scientific authority promotion was performed.",
+    "Hill AMD radial-overlap and short-horizon N-body diagnostics do not establish long-term resonance secular-chaos Lagrange or N-body stability.",
+    "The N-body diagnostic excludes collision physics general relativity tides and long-horizon validated integration.",
+    "Stellar and multiplicity evaluators require externally supplied exact versioned data; no empirical grid or table values were invented.",
+    "Distance-modulus and angular-geometry outputs are geometry/photometry transforms only and do not imply calibrated selection or detection probability.",
+    "Rocky mass-radius does not uniquely infer composition and is source-bounded to 1-8 Earth masses and CMF 0-0.4.",
+    "Water EOS density interpolation is not an interior integration or radius model and phase must come from versioned P-T phase data.",
+    "Sub-Neptune radius interpolation requires an exact Lopez-Fortney-family evolution grid and does not imply unique composition.",
+    "Reduced climate models do not assert weather GCM-equivalent local climate or habitability and require versioned parameter families before promotion.",
+    "Atmospheric escape remains regime/applicability gated and does not reconstruct universal atmospheric history.",
+    "Convection/geodynamics does not assert plate tectonics; critical Rayleigh viscosity thresholds Nu-Ra scaling and lag applicability are geometry/rheology/context dependent.",
+    "Stream-power erosion remains parameterized and cannot be treated as universal or calibrated exoplanet terrain history."
   ],
-  "knownDefects": [],
-  "externalDependencyBlockers": [
-    "exact licensed/redistributable MIST grid data plus release digest and error witnesses",
-    "population-conditioned multiplicity table plus survey-selection provenance",
-    "exact high-pressure water EOS grid and versioned phase map",
-    "exact sub-Neptune evolution grid",
-    "validated stellar XUV histories, escape efficiencies and absorption-radius/Roche applicability data",
-    "validated OLR/albedo/meridional-transport parameter families for climate",
-    "planet-specific lithology/climate/hydrology calibration for stream-power K,m,n",
-    "long-horizon dynamics reference integrations including resonances, secular chaos, collisions, tides and relativity where applicable",
-    "canonical promotion/consumer adapter transaction remains convergence-owner authority"
+  "knownCodeDefectsAfterDefinitivePass": [],
+  "externalScientificDependencies": [
+    "exact licensed/redistributable MIST grid data with release digest exact fixture domain quantity units and interpolation-error witnesses",
+    "population-conditioned multiplicity tables with selection-function provenance normalization and uncertainty",
+    "exact high-pressure water EOS and P-T phase-map data",
+    "exact Lopez-Fortney-compatible sub-Neptune evolution-grid data",
+    "validated stellar XUV histories escape efficiencies absorption radii Roche corrections species cooling and diffusion data",
+    "validated OLR albedo heat-capacity meridional-transport and seasonal/orbital reduced-climate parameter families",
+    "rheology/geometry/boundary-condition-specific convection thresholds and Nu-Ra normalization data",
+    "planet-specific lithology climate hydrology sediment threshold and channel-width calibration for physical erosion",
+    "trusted long-horizon N-body reference integrations including resonances secular chaos collisions tides and relativity where applicable"
   ],
-  "nextInScopeBacklog": [
-    "persist short-horizon N-body sanity in the lane runner if a safe exact-file patch path is available",
-    "add N-body step-convergence and multi-planet adversarial fixtures without upgrading authority",
-    "consume exact versioned scientific grids when externally available and run interpolation/error witnesses",
-    "extend escape history only when source-backed XUV/rate-regime input series are available"
+  "minimalShippingIntegrationContract": [
+    "do not copy research functions directly into canonical providers without an explicit authority-mapped adapter",
+    "bind exact source dataset ID version digest units domain and uncertainty before a data-driven evaluator is exposed",
+    "preserve every UNSUPPORTED and RESEARCH_REQUIRED fail-closed branch unless the promoted source contract explicitly resolves it",
+    "preserve deterministic resource bounds",
+    "add consumer-level conformance for authority provenance persistence/replay and exact-head evidence",
+    "retain RESEARCH_ONLY provenance in any shipping analogue unless a separate scientific promotion review grants stronger authority"
   ],
+  "promotionPacket": {
+    "path": "research/v2x/PROMOTION_PACKETS.json",
+    "schema": "ofu-v2x15-promotion-packets-5",
+    "blob": "76768fa734278f744d31c77fc9d019d6a5394707"
+  },
   "canConvergenceConsumeThisCheckpoint": true,
-  "canonicalPromotionPerformed": false,
-  "promotionPacketSchema": "ofu-v2x15-promotion-packets-4"
+  "recommendedConvergenceAction": "CONSUME_AS_RESEARCH_ONLY_EXACT_HEAD_INPUT; selectively harvest only packets whose external scientific data and shipping-authority prerequisites are satisfied",
+  "nextMaterialFrontier": "further scientific fidelity now primarily requires external versioned datasets/calibrations or a different semantic owner for canonical shipping promotion; inventing those inputs would reduce scientific credibility"
 }
