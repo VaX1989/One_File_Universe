@@ -18,8 +18,11 @@ assert.equal(large.constrained,true);assert.ok(large.effectiveDpr<2);assert.ok(l
 assert.equal(large.modeledColorBytes,large.pixels*4);
 const mobile=B.surfacePlan({cssWidth:390,cssHeight:844,dpr:3,mobile:true,maxDpr:2});
 assert.equal(mobile.requestedDpr,2);assert.equal(mobile.width,780);assert.equal(mobile.height,1688);assert.equal(mobile.constrained,false);assert.ok(mobile.pixels<=B.SURFACE_LIMITS.mobilePixels);
-const extreme=B.surfacePlan({cssWidth:10000,cssHeight:6000,dpr:2,mobile:false});
-assert.equal(extreme.constrained,true);assert.ok(extreme.pixels<=B.SURFACE_LIMITS.desktopPixels);assert.ok(extreme.width<=B.SURFACE_LIMITS.maxDimension&&extreme.height<=B.SURFACE_LIMITS.maxDimension);
+for(const extreme of [
+ B.surfacePlan({cssWidth:10000,cssHeight:6000,dpr:2,mobile:false}),
+ B.surfacePlan({cssWidth:1000000,cssHeight:1000000,dpr:2,mobile:false})
+]){assert.equal(extreme.constrained,true);assert.ok(extreme.pixels<=B.SURFACE_LIMITS.desktopPixels);assert.ok(extreme.width<=B.SURFACE_LIMITS.maxDimension&&extreme.height<=B.SURFACE_LIMITS.maxDimension);assert.ok(extreme.effectiveDpr>0);}
+const malformed=B.surfacePlan({cssWidth:Infinity,cssHeight:NaN,dpr:Infinity,mobile:false});assert.equal(malformed.cssWidth,1);assert.equal(malformed.cssHeight,1);assert.equal(malformed.requestedDpr,1);assert.ok(malformed.pixels<=B.SURFACE_LIMITS.desktopPixels);
 assert.deepEqual(JSON.parse(JSON.stringify(B.surfacePlan({cssWidth:2560,cssHeight:1440,dpr:2,mobile:false}))),JSON.parse(JSON.stringify(large)),'surface plan must be deterministic');
 
 const webgl=fs.readFileSync('src/rendering/v1/webgl2-world.js','utf8');
@@ -36,4 +39,4 @@ assert.match(living,/resourceProfile:budgetProfile,surface,budget/,'Living rende
 assert.match(living,/surfaceConstraintEvents/,'Living surface constraint events must be observable');
 assert.match(living,/maxSurfacePixels/,'maximum observed Living backing pixels must be accounted');
 
-console.log(JSON.stringify({status:'PASS',suite:'v1-render-surface-budget',baseline,large,mobile,extreme,surfaces:['living-canvas2d','living-webgl2'],authority:'RUNTIME_ACCOUNTING',driverMemoryMeasured:false,gpuMemoryMeasured:false,heapMemoryMeasured:false}));
+console.log(JSON.stringify({status:'PASS',suite:'v1-render-surface-budget',baseline,large,mobile,pathologicalCeilingVerified:true,malformedNormalized:true,surfaces:['living-canvas2d','living-webgl2'],authority:'RUNTIME_ACCOUNTING',driverMemoryMeasured:false,gpuMemoryMeasured:false,heapMemoryMeasured:false}));
