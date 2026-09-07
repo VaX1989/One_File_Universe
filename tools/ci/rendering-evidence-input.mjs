@@ -9,6 +9,13 @@ export const RENDERING_EVIDENCE_LIMITS=Object.freeze({
  maxJsonBytes:32*1024*1024,
  maxArtifactBytes:8*1024*1024,
 });
+export const REQUIRED_RENDERING_BROWSER_TUPLES=Object.freeze([
+ 'darwin/arm64/webkit',
+ 'linux/x64/chromium',
+ 'linux/x64/firefox',
+ 'linux/x64/webkit',
+ 'win32/x64/chromium',
+]);
 
 function fail(message){throw new Error('rendering evidence input: '+message);}
 function statRegular(file,label){
@@ -16,6 +23,18 @@ function statRegular(file,label){
  if(stat.isSymbolicLink())fail(label+' must not be a symbolic link');
  if(!stat.isFile())fail(label+' must be a regular file');
  return stat;
+}
+
+export function assertExactRenderingBrowserMatrix(rows,label='rendering browser evidence'){
+ if(!Array.isArray(rows))fail(label+' must be an array');
+ const actual=rows.map((row,index)=>{
+  if(!row||typeof row!=='object')fail(label+' row '+index+' must be an object');
+  for(const key of ['platform','arch','browser'])if(typeof row[key]!=='string'||!row[key])fail(label+' row '+index+' missing '+key);
+  return [row.platform,row.arch,row.browser].join('/');
+ }).sort();
+ const required=[...REQUIRED_RENDERING_BROWSER_TUPLES].sort();
+ if(actual.length!==required.length||new Set(actual).size!==actual.length||actual.some((value,index)=>value!==required[index]))fail(label+' must contain the exact required browser matrix');
+ return actual;
 }
 
 export function readBoundedRegularFile(file,maxBytes=RENDERING_EVIDENCE_LIMITS.maxArtifactBytes){
@@ -32,7 +51,7 @@ export function collectRenderingEvidence(root,limits=RENDERING_EVIDENCE_LIMITS){
  const records=[];let entries=0,totalJsonBytes=0;
  function walk(directory,depth){
   if(depth>limits.maxDepth)fail('evidence tree exceeds depth limit');
-  let children;try{children=fs.readdirSync(directory,{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name,'en'));}catch(error){fail('cannot enumerate evidence tree: '+String(error?.message||error));}
+  let children;try{children=fs.readdirSync(directory,{withFileTypes:true}).sort((a,b)=>a.name<b.name?-1:a.name>b.name?1:0);}catch(error){fail('cannot enumerate evidence tree: '+String(error?.message||error));}
   for(const entry of children){
    entries++;if(entries>limits.maxEntries)fail('evidence tree exceeds entry limit');
    const file=path.join(directory,entry.name);let stat;try{stat=fs.lstatSync(file);}catch(error){fail('cannot inspect '+entry.name+': '+String(error?.message||error));}

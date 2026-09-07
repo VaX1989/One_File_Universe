@@ -2,12 +2,18 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {collectRenderingEvidence,readBoundedRegularFile,RENDERING_EVIDENCE_LIMITS as L} from '../../tools/ci/rendering-evidence-input.mjs';
+import {assertExactRenderingBrowserMatrix,collectRenderingEvidence,readBoundedRegularFile,RENDERING_EVIDENCE_LIMITS as L,REQUIRED_RENDERING_BROWSER_TUPLES} from '../../tools/ci/rendering-evidence-input.mjs';
 
 let cases=0;
 const temp=()=>fs.mkdtempSync(path.join(os.tmpdir(),'ofu-render-evidence-'));
 const cleanup=root=>fs.rmSync(root,{recursive:true,force:true});
 
+{
+ const rows=REQUIRED_RENDERING_BROWSER_TUPLES.map(tuple=>{const [platform,arch,browser]=tuple.split('/');return{platform,arch,browser};});
+ assert.deepEqual(assertExactRenderingBrowserMatrix(rows),[...REQUIRED_RENDERING_BROWSER_TUPLES].sort());cases++;
+ const wrongArch=structuredClone(rows);wrongArch.find(row=>row.platform==='linux'&&row.browser==='firefox').arch='arm64';assert.throws(()=>assertExactRenderingBrowserMatrix(wrongArch),/exact required browser matrix/);cases++;
+ const duplicate=structuredClone(rows);duplicate[4]={...duplicate[3]};assert.throws(()=>assertExactRenderingBrowserMatrix(duplicate),/exact required browser matrix/);cases++;
+}
 {
  const root=temp();try{
   fs.mkdirSync(path.join(root,'b'));fs.mkdirSync(path.join(root,'a'));
@@ -41,4 +47,4 @@ const cleanup=root=>fs.rmSync(root,{recursive:true,force:true});
 {
  const root=temp();try{const artifact=path.join(root,'One_File_Universe.html');fs.writeFileSync(artifact,'<!doctype html>');assert.equal(readBoundedRegularFile(artifact).toString(),'<!doctype html>');assert.throws(()=>readBoundedRegularFile(artifact,4),/exceeds byte limit/);cases+=2;}finally{cleanup(root)}
 }
-console.log(JSON.stringify({status:'PASS',suite:'rendering-evidence-input-bounds',cases,limits:L}));
+console.log(JSON.stringify({status:'PASS',suite:'rendering-evidence-input-bounds',cases,limits:L,requiredBrowserTuples:REQUIRED_RENDERING_BROWSER_TUPLES}));
