@@ -6,6 +6,7 @@ on:
       - 'development/v1.*'
     paths:
       - 'tests/rendering/seal-production-evidence.mjs'
+      - 'tests/rendering/seal-v1-production-evidence.mjs'
       - 'tests/rendering/evidence-input-bounds.mjs'
       - 'tools/ci/rendering-evidence-input.mjs'
       - '.github/workflows/reliability-rendering-evidence-bounds.yml'
@@ -14,6 +15,7 @@ on:
       - 'development/v1.*'
     paths:
       - 'tests/rendering/seal-production-evidence.mjs'
+      - 'tests/rendering/seal-v1-production-evidence.mjs'
       - 'tests/rendering/evidence-input-bounds.mjs'
       - 'tools/ci/rendering-evidence-input.mjs'
       - '.github/workflows/reliability-rendering-evidence-bounds.yml'
@@ -47,5 +49,7 @@ jobs:
         run: node tests/governance/workflow-reproducibility.mjs
       - name: Rendering evidence ingestion resource and trust-boundary regression
         run: node tests/rendering/evidence-input-bounds.mjs
-      - name: Production rendering seal parser check
-        run: node --check tests/rendering/seal-production-evidence.mjs
+      - name: Production rendering seal parser checks
+        run: |
+          node --check tests/rendering/seal-production-evidence.mjs
+          node --check tests/rendering/seal-v1-production-evidence.mjs
