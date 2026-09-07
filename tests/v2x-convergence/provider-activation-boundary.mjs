@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import {loadComponents} from '../../tools/extensions/components.mjs';
+import {loadConformance,providerCatalogsForConformance,validateCoverage} from '../../tools/extensions/conformance.mjs';
 
 const plan=loadComponents();
 const byId=new Map(plan.map(component=>[component.id,component]));
@@ -41,4 +42,16 @@ const travel=byId.get('v2x02.camera.continuous-travel');
 assert.ok(travel?.dependencies.includes('v2x.frontier.providers.v2x02-camera-spatial-travel'),'V2X-02 runtime must retain its frontier metadata dependency');
 assert.ok(!travel.dependencies.includes('px.providers.v2x02-camera-spatial-travel'),'V2X-02 runtime must not reactivate the old shipping catalog id');
 
-console.log(JSON.stringify({status:'PASS',frontierCatalogs:frontierCatalogs.length,activeV2xShippingCatalogs:forbiddenShippingIds.filter(id=>byId.has(id)).length}));
+const catalogs=providerCatalogsForConformance(plan);
+const tests=loadConformance();
+const coveredProviders=validateCoverage(catalogs,tests);
+const frontierProviderIds=new Set(frontierCatalogs.flatMap(id=>{
+  const value=JSON.parse(byId.get(id).content);
+  return value.providers.map(provider=>provider.id);
+}));
+assert.ok(frontierProviderIds.size>0,'frontier catalogs must retain provider identities for conformance');
+for(const test of tests)for(const providerId of test.providers){
+  if(frontierProviderIds.has(providerId))assert.ok(coveredProviders.some(provider=>provider.id===providerId),`frontier test provider must remain covered: ${providerId}`);
+}
+
+console.log(JSON.stringify({status:'PASS',frontierCatalogs:frontierCatalogs.length,activeV2xShippingCatalogs:forbiddenShippingIds.filter(id=>byId.has(id)).length,conformanceCatalogs:catalogs.length,coveredProviders:coveredProviders.length}));
