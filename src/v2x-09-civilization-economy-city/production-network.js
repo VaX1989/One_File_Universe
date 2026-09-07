@@ -59,19 +59,49 @@ function demandFor(row,good,state){
   if(good==='URBAN_MAINTENANCE_SERVICE')return Math.max(1,Math.floor(pop/160)+Math.floor(infra/13000));
   return 0;
 }
+function findResidualPath(routeRows,fromId,toId,operationCounter){
+  if(fromId===toId)return [];
+  const adjacency=new Map();for(const r of routeRows){if(r.remainingUnits<=0)continue;if(!adjacency.has(r.from))adjacency.set(r.from,[]);if(!adjacency.has(r.to))adjacency.set(r.to,[]);adjacency.get(r.from).push(r);adjacency.get(r.to).push(r)}
+  for(const list of adjacency.values())list.sort((a,b)=>a.edgeId.localeCompare(b.edgeId));
+  const seen=new Set([fromId]),queue=[fromId],previous=new Map();
+  while(queue.length){const current=queue.shift();for(const route of adjacency.get(current)||[]){operationCounter.count++;if(operationCounter.count>NETWORK_LIMITS.operations)throw new RangeError('V2X-09 operation bound exceeded');const next=route.from===current?route.to:route.from;if(seen.has(next))continue;seen.add(next);previous.set(next,{settlementId:current,route});if(next===toId){const path=[];let cursor=toId;while(cursor!==fromId){const step=previous.get(cursor);if(!step)return [];path.push(step.route);cursor=step.settlementId}return path.reverse()}queue.push(next)}}
+  return [];
+}
 function moveIntermediateGoods(state,rows,tech,operationCounter){
   const byId=new Map(rows.map(r=>[r.settlementId,r]));const demands=new Map(rows.map(r=>[r.settlementId,Object.fromEntries(INTERMEDIATE_GOODS.map(g=>[g,demandFor(r,g,state)]))]));
-  const routes=[];const flows=[];const enabled=tech.activeCapabilities.includes('ROUTE_LOGISTICS');
+  const routeRows=[];const flows=[];const enabled=tech.activeCapabilities.includes('ROUTE_LOGISTICS');
   for(const edge of sortId(arr(state?.tradeEdges).slice(0,NETWORK_LIMITS.routes),'edgeId')){
     const a=byId.get(text(edge.from)),b=byId.get(text(edge.to));if(!a||!b)continue;
-    const condition=modeledRouteCondition(state,edge),cost=clamp(edge.costPpm||0),base=Math.max(0,int(edge.flowUnits||0));const capacity=enabled?Math.max(0,Math.floor(base*(1000000-cost)*condition.conditionPpm/1000000000000)):0;let remaining=capacity;
-    for(const g of INTERMEDIATE_GOODS){
-      if(remaining<=0)break;const da=demands.get(a.settlementId)[g],db=demands.get(b.settlementId)[g],sa=Math.max(0,a.stocks[g]-da),sb=Math.max(0,b.stocks[g]-db),na=Math.max(0,da-a.stocks[g]),nb=Math.max(0,db-b.stocks[g]);let from=null,to=null,amount=0;
-      if(sa>0&&nb>0){from=a;to=b;amount=Math.min(sa,nb,remaining)}else if(sb>0&&na>0){from=b;to=a;amount=Math.min(sb,na,remaining)}
-      if(amount>0){from.stocks[g]-=amount;to.stocks[g]+=amount;from.ledger[g].outbound+=amount;to.ledger[g].inbound+=amount;remaining-=amount;flows.push(freeze({flowId:deriveId('flow',edge.edgeId,g,from.settlementId,to.settlementId),edgeId:text(edge.edgeId),good:g,fromSettlementId:from.settlementId,toSettlementId:to.settlementId,amountUnits:amount,authority:AUTHORITY.MODEL_DERIVED_SIMULATION}));operationCounter.count+=5}
-    }
-    const used=capacity-remaining;routes.push(freeze({edgeId:text(edge.edgeId||deriveId('edge',edge.from,edge.to)),from:text(edge.from),to:text(edge.to),capacityUnits:capacity,usedUnits:used,remainingUnits:remaining,utilizationPpm:capacity?clamp(Math.floor(used*1000000/capacity)):0,costPpm:cost,conditionPpm:condition.conditionPpm,degradationPpm:condition.degradationPpm,evidenceClass:condition.evidenceClass,sourceInfrastructureIds:condition.sourceInfrastructureIds,logisticsCapabilityActive:enabled,authority:AUTHORITY.MODEL_DERIVED_SIMULATION}));
+    const condition=modeledRouteCondition(state,edge),cost=clamp(edge.costPpm||0),base=Math.max(0,int(edge.flowUnits||0));const capacity=enabled?Math.max(0,Math.floor(base*(1000000-cost)*condition.conditionPpm/1000000000000)):0;
+    routeRows.push({edgeId:text(edge.edgeId||deriveId('edge',edge.from,edge.to)),from:text(edge.from),to:text(edge.to),capacityUnits:capacity,usedUnits:0,remainingUnits:capacity,costPpm:cost,conditionPpm:condition.conditionPpm,degradationPpm:condition.degradationPpm,evidenceClass:condition.evidenceClass,sourceInfrastructureIds:condition.sourceInfrastructureIds,logisticsCapabilityActive:enabled});
   }
+  // Preserve the original direct-edge allocation first for compatibility and locality.
+  for(const route of routeRows){
+    const a=byId.get(route.from),b=byId.get(route.to);if(!a||!b)continue;
+    for(const g of INTERMEDIATE_GOODS){
+      if(route.remainingUnits<=0)break;const da=demands.get(a.settlementId)[g],db=demands.get(b.settlementId)[g],sa=Math.max(0,a.stocks[g]-da),sb=Math.max(0,b.stocks[g]-db),na=Math.max(0,da-a.stocks[g]),nb=Math.max(0,db-b.stocks[g]);let from=null,to=null,amount=0;
+      if(sa>0&&nb>0){from=a;to=b;amount=Math.min(sa,nb,route.remainingUnits)}else if(sb>0&&na>0){from=b;to=a;amount=Math.min(sb,na,route.remainingUnits)}
+      if(amount>0){from.stocks[g]-=amount;to.stocks[g]+=amount;from.ledger[g].outbound+=amount;to.ledger[g].inbound+=amount;route.remainingUnits-=amount;route.usedUnits+=amount;flows.push(freeze({flowId:deriveId('flow',route.edgeId,g,from.settlementId,to.settlementId),edgeId:route.edgeId,pathEdgeIds:[route.edgeId],hopCount:1,good:g,fromSettlementId:from.settlementId,toSettlementId:to.settlementId,amountUnits:amount,authority:AUTHORITY.MODEL_DERIVED_SIMULATION}));operationCounter.count+=5}
+    }
+  }
+  // Then use residual route capacity for deterministic multi-hop deficit relief.
+  if(enabled){
+    const ids=rows.filter(r=>r.status==='ACTIVE').map(r=>r.settlementId).sort();
+    for(const g of INTERMEDIATE_GOODS){
+      for(const sourceId of ids){
+        const source=byId.get(sourceId);if(!source)continue;
+        let surplus=Math.max(0,source.stocks[g]-demands.get(sourceId)[g]);if(surplus<=0)continue;
+        for(const targetId of ids){
+          if(targetId===sourceId||surplus<=0)continue;const target=byId.get(targetId);if(!target)continue;const need=Math.max(0,demands.get(targetId)[g]-target.stocks[g]);if(need<=0)continue;
+          const path=findResidualPath(routeRows,sourceId,targetId,operationCounter);if(path.length<2)continue;const bottleneck=Math.min(...path.map(r=>r.remainingUnits));const amount=Math.min(surplus,need,bottleneck);if(amount<=0)continue;
+          source.stocks[g]-=amount;target.stocks[g]+=amount;source.ledger[g].outbound+=amount;target.ledger[g].inbound+=amount;for(const route of path){route.remainingUnits-=amount;route.usedUnits+=amount}surplus-=amount;
+          const pathEdgeIds=path.map(r=>r.edgeId);flows.push(freeze({flowId:deriveId('multihop-flow',g,sourceId,targetId,pathEdgeIds.join('+')),edgeId:null,pathEdgeIds,hopCount:path.length,good:g,fromSettlementId:sourceId,toSettlementId:targetId,amountUnits:amount,transitSettlementIds:path.slice(0,-1).map((r,index)=>r.to===path[index+1]?.from||r.to===path[index+1]?.to?r.to:r.from).filter(id=>id!==sourceId&&id!==targetId),authority:AUTHORITY.MODEL_DERIVED_SIMULATION,physicalRouteGeometryClaim:false}));operationCounter.count+=6+path.length;
+          if(operationCounter.count>NETWORK_LIMITS.operations)throw new RangeError('V2X-09 operation bound exceeded');
+        }
+      }
+    }
+  }
+  const routes=routeRows.map(r=>freeze({...r,utilizationPpm:r.capacityUnits?clamp(Math.floor(r.usedUnits*1000000/r.capacityUnits)):0,authority:AUTHORITY.MODEL_DERIVED_SIMULATION}));
   return {demands,routes,flows};
 }
 function consumeServices(rows,demands,operationCounter){
