@@ -59,8 +59,16 @@ const keyA={canonicalKey:{realm:'x',nested:{b:2,a:1}},presentationPosition:{x:0,
 assert.throws(()=>N.project({objects:[keyA,keyB],cameraFrame:frame}),/duplicate upstream identity/,'nested canonicalKey property order must not change identity');
 assert.throws(()=>P.buildUniverse({scopeId:'nested-keys',entities:[keyA,keyB],cameraFrame:frame}),/duplicate upstream identity/);
 assert.throws(()=>R.refine({parentId:'nested-keys',children:[keyA,keyB]}),/duplicate child identity/);
+function mutableKeyEntity(suffix){return{canonicalKey:{realm:'mutable-'+suffix,nested:{value:1}},presentationPosition:{x:1,y:2,z:3}}}
+const mutableN=mutableKeyEntity('n');N.project({objects:[mutableN],cameraFrame:frame});assert.equal(Object.isFrozen(mutableN.canonicalKey),false);assert.equal(Object.isFrozen(mutableN.canonicalKey.nested),false);mutableN.canonicalKey.nested.value=2;
+const mutableR=mutableKeyEntity('r');R.refine({parentId:'mutable-parent',children:[mutableR]});assert.equal(Object.isFrozen(mutableR.canonicalKey),false);assert.equal(Object.isFrozen(mutableR.canonicalKey.nested),false);mutableR.canonicalKey.nested.value=2;
+const mutableP=mutableKeyEntity('p');P.buildUniverse({scopeId:'mutable-provider',entities:[mutableP],cameraFrame:frame});assert.equal(Object.isFrozen(mutableP.canonicalKey),false);assert.equal(Object.isFrozen(mutableP.canonicalKey.nested),false);mutableP.canonicalKey.nested.value=2;
+const cyclic={realm:'cycle'};cyclic.self=cyclic;const cyclicEntity={canonicalKey:cyclic,presentationPosition:{x:0,y:0,z:0}};
+assert.throws(()=>N.project({objects:[cyclicEntity],cameraFrame:frame}),/acyclic/);
+assert.throws(()=>P.buildUniverse({scopeId:'cycle',entities:[cyclicEntity],cameraFrame:frame}),/acyclic/);
+assert.throws(()=>R.refine({parentId:'cycle',children:[cyclicEntity]}),/acyclic/);
 const w=P.continuityWitness({galaxy:g1,region:r1,neighborhood:n1});
 assert.equal(w.galaxyId,g1.galaxyId);assert.equal(w.regionParent,g1.galaxyId);
 assert.ok(w.neighborhoodObjectIds.every(id=>ids.has(id)));
 assert.equal(w.cameraOwnedHere,false);assert.equal(w.selectionOwnedHere,false);assert.equal(w.scaleOwnedHere,false);
-console.log(JSON.stringify({status:'PASS',oracle:'V2X03_CONTINUITY_IDENTITY',galaxyId:w.galaxyId,regionParent:w.regionParent,neighborhoodObjects:w.neighborhoodObjectIds.length,queryOrderStable:true,nonVacuousNeighborhood:true,capStarvationClosed:true,nestedCanonicalKeyStable:true,stableFarToNearDrawOrder:true,deterministicPickTieBreak:true,decorativeNonSelectable:true,externalAuthoritiesPreserved:true}));
+console.log(JSON.stringify({status:'PASS',oracle:'V2X03_CONTINUITY_IDENTITY',galaxyId:w.galaxyId,regionParent:w.regionParent,neighborhoodObjects:w.neighborhoodObjectIds.length,queryOrderStable:true,nonVacuousNeighborhood:true,capStarvationClosed:true,nestedCanonicalKeyStable:true,canonicalKeyInputIsolation:true,cyclicCanonicalKeyFailClosed:true,stableFarToNearDrawOrder:true,deterministicPickTieBreak:true,decorativeNonSelectable:true,externalAuthoritiesPreserved:true}));
