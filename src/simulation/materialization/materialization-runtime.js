@@ -1,6 +1,6 @@
 (function(root){
 'use strict';
-const O=root.OFU=root.OFU||{},C=O.pxContracts,R=O.v2x01Contracts,K=O.v2x01CacheKey,S=O.v2x01AdaptiveScheduler,L=O.v2x01ResourceLedger,W=O.v2x01WorkerExecutor,V='ofu-v2x01-materialization-runtime-3';
+const O=root.OFU=root.OFU||{},C=O.pxContracts,R=O.v2x01Contracts,K=O.v2x01CacheKey,S=O.v2x01AdaptiveScheduler,L=O.v2x01ResourceLedger,W=O.v2x01WorkerExecutor,V='ofu-v2x01-materialization-runtime-4';
 if(!C||!R||!K||!S||!L)throw Error('V2X-01 materialization dependencies');
 function fail(c,m){const e=Error('OFU V2X-01 '+c+': '+m);e.code=c;return e}
 function create(o={}){
@@ -48,7 +48,7 @@ function create(o={}){
     if(r.targetState==='COLD'){invalidateLogical(k,'cold');return witness(r,null,false)}
     const hit=entries.get(r.cache.digest);if(hit&&hit.state===r.targetState){hit.lastUse=++clock;hit.pinned=r.targetState==='IMMEDIATE';m.hits++;return witness(r,hit,true,hit.executionMode)}
     const workerCapable=!!(workers&&r.preferWorker&&r.provider.workerProgram&&workers.canRunWorker(r.provider.handlerId));if(!workerCapable&&r.estimate.operations>b.syncFallbackOperations){m.fallbackAdmissionRejects++;throw fail('SYNC_FALLBACK_BUDGET','declared operations '+r.estimate.operations+' exceed '+b.syncFallbackOperations)}
-    m.misses++;invalidateLogical(k,'superseded');room(k);
+    m.misses++;invalidateLogical(k,'superseded');
     const g=(gen.get(k)||0)+1;gen.set(k,g);const rid='v2x01.resource.'+(++seq),jid='v2x01.task.'+seq;reserve(rid,r.estimate,k);let h;
     try{
       h=scheduler.schedule({id:jid,taskClass:r.taskClass,state:r.targetState,preemptible:r.taskClass!=='INTERACTION',run:async signal=>{
