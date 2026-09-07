@@ -1,20 +1,48 @@
-# V2X-15 Astronomy Frontier Research
+# V2X-15 Astronomy Frontier — RESEARCH_ONLY
 
-Authority: `RESEARCH_ONLY`
+This directory is a bounded physical-science research lane. It is **not** a shipping provider and does not upgrade canonical scientific authority.
 
-This lane provides bounded, falsifiable astronomy diagnostics and promotion packets. It does not register shipping providers, alter canonical runtime state, or claim calibrated observational truth.
+## Implemented research capability
 
-## Implemented research kernels
+- source-domain-correct circular/coplanar low-mass mutual-Hill screening;
+- algebraic circular Hill-threshold inversion;
+- AMD definition diagnostic and pairwise coplanar collision-critical AMD screen;
+- barycentric bounded 2-D Newtonian kick-drift-kick short-horizon N-body diagnostic;
+- explicit energy, angular-momentum and linear-momentum drift in `Msun–AU–yr` code units;
+- coarse/fine same-horizon N-body step-convergence diagnostic;
+- version/hash/exact-domain MIST interpolation contract with alpha/rotation/chemistry guards;
+- bounded unit-tagged stellar-slice interpolation with no extrapolation;
+- versioned coupled multiplicity-cell evaluator with physical `q/e` bounds and explicit weight semantics;
+- bandpass + magnitude-system distance modulus;
+- exact `atan2` parallax and projected angular geometry, with inverse-distance/small-angle values exposed only as approximation diagnostics;
+- source-bounded rocky PREM relation and monotonic uncertainty envelope.
 
-- `pairwiseHillScreen`: low-cost circular/coplanar two-planet mutual-Hill screening. Output is a diagnostic classification, never an N-body stability claim.
-- `rockyRadiusPrem`: source-bounded PREM-style rocky mass-radius reference for 1-8 Earth masses and CMF 0-0.4.
-- `hydrostaticScaleHeight`: ideal-gas isothermal atmospheric reference.
-- source/authority ledger in `SOURCE_LEDGER.json`.
+## Authority / non-claims
 
-## Scientific boundary
+A green result does **not** mean long-term N-body stability, Lagrange stability, resonance safety, secular-chaos absence, survey completeness, detectability, calibrated extinction, or unique planetary composition.
 
-Unknown stays unknown. Inputs outside declared source domains return `UNSUPPORTED` instead of extrapolating silently. Pairwise Hill stability does not establish Lagrange stability, resonance safety, or long-horizon multi-planet stability. The rocky relation is not a unique composition inference and must not be used below 1 Earth mass or above 8 Earth masses as source-backed truth.
+The N-body diagnostic excludes collision physics, tides and general relativity. MIST and multiplicity evaluators require externally supplied exact versioned data; this lane does not invent empirical table values.
 
-## Promotion packet
+## Verification
 
-`ASTRO-STABILITY-01` is suitable for later review as a research diagnostic only: a mutual-Hill screen for low-eccentricity, approximately coplanar two-planet systems. Richer systems require AMD/N-body analysis and remain outside this packet.
+Primary executable gate:
+
+```text
+node research/v2x/run-tests.mjs
+```
+
+Independent cross-language witnesses:
+
+```text
+python3 research/v2x/reference-oracle.py
+```
+
+Exact-head certification requires the locally executed file bytes to hash to the recorded GitHub blob SHAs before execution.
+
+## Convergence
+
+- Source/limitation provenance: `research/v2x/astronomy/SOURCE_LEDGER.json`
+- Selective promotion contracts: `research/v2x/PROMOTION_PACKETS.json`
+- Definitive lane handoff: `research/v2x/astronomy/HANDOFF.json`
+
+Promotion must preserve every fail-closed `UNSUPPORTED` / `RESEARCH_REQUIRED` boundary unless a versioned promoted source contract explicitly resolves it.
