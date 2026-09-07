@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import assert from 'node:assert/strict';
 
-const workflowDir='.github/workflows',repoRoot=path.resolve('.');
+const workflowDir='.github/workflows',repoRoot=fs.realpathSync('.');
 const privilegedWriteKeys=new Set([
   'actions','attestations','checks','contents','deployments','discussions','id-token',
   'issues','packages','pages','pull-requests','repository-projects','security-events','statuses',
