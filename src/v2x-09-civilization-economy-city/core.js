@@ -56,9 +56,10 @@ function sortId(xs,key){return xs.slice().sort((a,b)=>text(a?.[key]).localeCompa
 function sourceAuthority(v){const a=v?.authority;const candidate=typeof a==='string'?a:(a?.authorityClass??a?.class??a?.authority??v?.authorityClass);return text(candidate||'MODEL_DERIVED_SIMULATION').toUpperCase()}
 function validateCivilization(state){
   if(!state||state.state!=='MODELED_CIVILIZATION')return false;
-  const settlements=arr(state.settlements),resources=arr(state.resources),tradeEdges=arr(state.tradeEdges);
+  const settlements=arr(state.settlements),resources=arr(state.resources),tradeEdges=arr(state.tradeEdges),regions=arr(state.regions),polities=arr(state.polities),infrastructure=arr(state.infrastructure),historyProposals=arr(state?.history?.proposals);
   assertBound('settlements',settlements.length,LIMITS.settlements);assertBound('resources',resources.length,LIMITS.resources);assertBound('tradeEdges',tradeEdges.length,LIMITS.tradeEdges);
   assertUniqueIds('settlement',settlements,'settlementId');assertUniqueIds('resource',resources,'resourceId');assertUniqueIds('trade edge',tradeEdges,'edgeId');
+  assertUniqueIds('region',regions,'regionId');assertUniqueIds('polity',polities,'polityId');assertUniqueIds('infrastructure asset',infrastructure,'infrastructureId');assertUniqueIds('history proposal',historyProposals,'eventProposalId');
   return true;
 }
 function techLevel(t,key){return clamp(t?.[key]??0,0,8)}
