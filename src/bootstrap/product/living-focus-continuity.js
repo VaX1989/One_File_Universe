@@ -73,7 +73,6 @@ function restore(){
  restoreScheduled=false;if(!remembered)return false;
  const active=document.activeElement;
  if(owned(active)){const current=descriptor(active);if(current)remembered=current;return false}
- if(active&&active!==document.body&&active!==document.documentElement&&active.isConnected){clearRemembered('intentional-focus-exit');state.intentClears++;return false}
  const {target,fallback}=findRemembered();if(!available(target)){state.misses++;clearRemembered('target-unavailable');return false}
  try{target.focus({preventScroll:true})}catch{return false}
  if(document.activeElement===target){state.restores++;if(remembered.key.surface!=='panel')state.chromeRestores++;if(fallback)state.fallbackRestores++;state.lastRestore=remembered.key.surface+':'+remembered.key.value;remembered=descriptor(target)||remembered;return true}
