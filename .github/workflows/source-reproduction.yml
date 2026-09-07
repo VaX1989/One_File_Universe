@@ -53,12 +53,14 @@ jobs:
 
           # Do not bundle --all: ambient remote branches/tags may change while the
           # exact source commit remains identical. Anchor ancestry to one private,
-          # deterministic local ref and prove repeated bundle creation is stable.
+          # deterministic local ref. Disable bitmap-driven and multi-threaded pack
+          # heuristics so repeated bundle creation is byte-stable as well as
+          # semantically identical.
           source_ref="refs/ofu/source/$EXPECTED_SHA"
           git update-ref "$source_ref" "$EXPECTED_SHA"
           trap 'git update-ref -d "$source_ref" >/dev/null 2>&1 || true' EXIT
-          git bundle create dist/source-reproduction/source.bundle "$source_ref"
-          git bundle create /tmp/source-repeat.bundle "$source_ref"
+          git -c pack.threads=1 -c pack.useBitmaps=false bundle create dist/source-reproduction/source.bundle "$source_ref"
+          git -c pack.threads=1 -c pack.useBitmaps=false bundle create /tmp/source-repeat.bundle "$source_ref"
           cmp dist/source-reproduction/source.bundle /tmp/source-repeat.bundle
           git bundle verify dist/source-reproduction/source.bundle
           printf '%s %s\n' "$EXPECTED_SHA" "$source_ref" > dist/source-reproduction/source-ref.txt
