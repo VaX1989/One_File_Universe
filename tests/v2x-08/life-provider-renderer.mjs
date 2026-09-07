@@ -84,4 +84,11 @@ const capped = buildOrganismRenderDescriptors([...samples, ...samples, ...sample
 assert.equal(capped.length, 4);
 assert.ok(capped.every((descriptor) => descriptor.segmentBudget === 3));
 
-console.log('V2X-08 life provider renderer: PASS (27 assertions)');
+const fractionalCap = buildOrganismRenderDescriptors(samples, { quality: 'BALANCED', maxDescriptors: 2.9 });
+assert.equal(fractionalCap.length, 2, 'fractional descriptor budgets must be floored deterministically');
+assert.throws(() => buildOrganismRenderDescriptors(samples, { maxDescriptors: Number.NaN }), /maxDescriptors must be a non-negative finite number/);
+assert.throws(() => buildOrganismRenderDescriptors(samples, { maxDescriptors: -1 }), /maxDescriptors must be a non-negative finite number/);
+assert.throws(() => buildOrganismRenderDescriptors([{ ...samples[0], representativeOfAggregate: false }]), /representative aggregate sample required/);
+assert.throws(() => buildOrganismRenderDescriptors([{ ...samples[0], presentation: { ...samples[0].presentation, authorityClass: 'MODEL_DERIVED_SIMULATION' } }]), /presentation-only motion descriptor required/);
+
+console.log('V2X-08 life provider renderer: PASS (32 assertions)');
