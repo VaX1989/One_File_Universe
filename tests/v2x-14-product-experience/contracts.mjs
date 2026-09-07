@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+const ROOT=new URL('../../',import.meta.url),read=p=>fs.readFileSync(new URL(p,ROOT),'utf8');
+const sandbox={console,Math,Number,Object,Array,Set,Map,Promise,JSON,setInterval:()=>1,clearInterval:()=>{}};sandbox.globalThis=sandbox;vm.createContext(sandbox);
+for(const p of ['src/product/v2x14/product-experience.js','src/audio/v2x14/living-audio-context.js'])vm.runInContext(read(p),sandbox,{filename:p});
+const ux=sandbox.OFU.v2x14ProductExperience,map=sandbox.OFU.v2x14LivingAudioContext;
+assert.equal(ux.AUTHORITY,'PRESENTATION_ONLY');assert.equal(map.AUTHORITY,'PRESENTATION_ONLY');
+const base={stage:'HUMAN',system:{canonicalId:'sys-123456789'},world:{planetIdentity:'planet-123456789',planetology:{atmosphere:{compositionFamily:'N2'}},biology:{occupancy:{biosphereEstablished:true}},civilization:{state:'MODELED_CIVILIZATION'}},point:{locationIdentity:'loc-123456789'},selectedObjectId:'obj-123456789',local:{surface:{climate:{}},life:{local:{populations:[{id:1}]}},objects:[{kind:'SETTLEMENT'}]}};
+const p=ux.derive(base);assert.equal(p.routesNativeInput,false);assert.equal(p.mutatesCanonicalState,false);assert.match(p.currentLocation,/Human scale/);assert.match(p.selection,/Selected/);
+const a=map.fromLiving(base);assert.equal(a.medium.supportsSound,true);assert.equal(a.life.present,true);assert.equal(a.civilization.present,true);
+const vacuum=map.fromLiving({stage:'ORBIT',world:{planetology:{atmosphere:{}}}});assert.equal(vacuum.medium.supportsSound,false);assert.equal(vacuum.medium.vacuum,true);assert.equal(vacuum.life.present,false);assert.equal(vacuum.civilization.present,false);
+const unknown=map.fromLiving({stage:'HUMAN'});assert.equal(unknown.medium.supportsSound,false);assert.equal(unknown.life.present,false);assert.equal(unknown.civilization.present,false);
+for(const file of ['src/bootstrap/product/v2x14-product-experience-adapter.js','src/bootstrap/product/v2x14-systemic-audio-adapter.js','src/audio/v2x14/audio-controller.js'])new vm.Script(read(file),{filename:file});
+const matrix=JSON.parse(read('docs/parallel/V2X_OWNERSHIP_MATRIX.json')),lane=matrix.lanes['V2X-14'];assert.equal(matrix.writerLanesAuthorized,true);assert.equal(lane.writerAuthorized,true);assert.equal(lane.branch,'parallel/v2x-14-product-ux-mobile-accessibility-audio-2026-09-07');
+console.log(JSON.stringify({schema:'ofu-v2x14-contract-test-1',status:'PASS',authority:'PRESENTATION_ONLY',nativeInputAuthority:false,unknownStaysUnknown:true,physicalDeviceEvidence:'NOT_VERIFIED'}));
