@@ -61,6 +61,8 @@ jobs:
       - name: Verify exact source checkout
         shell: bash
         run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Browser evidence matrix verifier regressions
+        run: node tests/governance/browser-evidence-matrix-seal.mjs
       - name: Foundation
         run: node tools/validate-foundation.mjs
       - name: P1
@@ -144,3 +146,32 @@ jobs:
         with:
           name: p3-${{ matrix.os }}-${{ matrix.browser }}-${{ env.OFU_SOURCE_SHA }}
           path: dist/evidence/p3-*.json
+
+  seal:
+    if: ${{ always() && needs.route.outputs.run == 'true' }}
+    needs: [route, node, browser, platform]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require all exact-head P3 jobs
+        shell: bash
+        run: |
+          test '${{ needs.node.result }}' = success
+          test '${{ needs.browser.result }}' = success
+          test '${{ needs.platform.result }}' = success
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # Node 24 runtime
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # Node 24 runtime
+        with:
+          node-version: '24.20.0'
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7 / Node 24 runtime
+        with:
+          pattern: p3-*-${{ env.OFU_SOURCE_SHA }}
+          path: evidence
+          merge-multiple: true
+      - name: Require bounded exact-source cross-runtime P3 agreement
+        run: node tools/ci/verify-browser-evidence-matrix.mjs --mode p3 --root evidence --source-sha "$OFU_SOURCE_SHA"
