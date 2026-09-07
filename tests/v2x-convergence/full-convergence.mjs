@@ -11,6 +11,8 @@ assert.equal(execFileSync('git',['status','--porcelain'],{encoding:'utf8'}).trim
 const suites=[
  ['macro-to-micro-and-reverse','tests/v1/integration/world-journey.mjs'],
  ['provider-micro-tissue-cell-molecular-atomic','tests/v1/provider-integration.mjs'],
+ ['v2x01-cancellation-stale-resource','tests/v2x-01-runtime-adaptive-materialization/targeted.mjs'],
+ ['v2x01-resource-soak','tests/v2x-01-runtime-adaptive-materialization/soak.mjs'],
  ['v2x04-orbit-stellar','tests/v2x-04-system-planet-approach/orbit-stellar-oracle.mjs'],
  ['v2x04-approach','tests/v2x-04-system-planet-approach/approach-continuity-oracle.mjs'],
  ['v2x04-illumination-lod','tests/v2x-04-system-planet-approach/illumination-body-lod-oracle.mjs'],
@@ -20,12 +22,16 @@ const suites=[
  ['v2x07-upstream','tests/v2x-07-human-scale-local-traversal/upstream-adapters.mjs'],
  ['v2x08-esm-core','tests/v2x-08/life-ecology-evolution-embodiment.mjs'],
  ['v2x08-esm-evolution','tests/v2x-08/life-evolution-succession.mjs'],
+ ['v2x08-provider-renderer','tests/v2x-08/life-provider-renderer.mjs'],
  ['v2x08-single-file-facade','tests/v2x-08/single-file-facade.mjs'],
  ['v2x09-civilization','tests/v2x-09-civilization-economy-city/civilization-economy-city.mjs'],
  ['v2x10-individuals','tests/v2x10/run.mjs'],
  ['v2x11-cross-domain-gameplay','tests/v2x-11-gameplay-causal-engine/cross-domain-journey.mjs'],
  ['v2x12-matter','tests/v2x-12-matter-continuity/run.mjs'],
  ['v2x12-units-authority','tests/v2x-12-matter-continuity/authority-provenance.mjs'],
+ ['v2x13-render-core','tests/render-platform/run-render-platform-tests.mjs'],
+ ['v2x13-render-depth','tests/render-platform/run-render-platform-depth-tests.mjs'],
+ ['v2x13-render-convergence','tests/render-platform/run-render-platform-convergence-tests.mjs'],
  ['v2x14-contracts','tests/v2x-14-product-experience/contracts.mjs']
 ];
 const passed=[];
@@ -39,8 +45,8 @@ for(const [name,file] of suites){
 
 const componentFiles=[
  'v2x-01-runtime-adaptive-materialization.json',
- 'v2x-02-cosmic-structure-navigation.json',
- 'v2x-03-macrocosm-rendering.json',
+ 'v2x-02-camera-spatial-travel.json',
+ 'v2x-03-macrocosm.json',
  'v2x-04-system-planet-approach.json',
  'v2x-05-deep-planet-science.json',
  'v2x-06-surface-terrain-geology-hydrology.json',
@@ -51,7 +57,8 @@ const componentFiles=[
  'v2x-11-gameplay-causal-engine.json',
  'v2x-12-matter-continuity.json',
  'v2x-13-rendering-platform.json',
- 'v2x-14-product-experience.json'
+ 'v2x-14-product-experience.json',
+ 'v2x-14-systemic-audio.json'
 ];
 const plan=loadComponents();
 const byId=new Map(plan.map(c=>[c.id,c]));
@@ -69,4 +76,4 @@ assert.ok(!/(?:src|href)=["']https?:\/\//i.test(html),'mandatory external URL le
 assert.ok(html.includes("connect-src 'none'"),'offline CSP missing');
 
 const traversal=['Universe','Galaxy','Region','Neighborhood','System','Planet','Approach','Surface','Regional','Local','Human','Life','Tissue/Cell','Molecular','Atomic','reverse traversal'];
-console.log(JSON.stringify({status:'PASS',suite:'v2x-full-convergence-release',sourceSha:head,sourceTree:tree,traversal,criticalSuites:passed,componentManifests:componentFiles,finalSingleHtml:true,mandatoryNetwork:false,exactSource:true}));
+console.log(JSON.stringify({status:'PASS',suite:'v2x-full-convergence-release',sourceSha:head,sourceTree:tree,traversal,criticalSuites:passed,componentManifests:componentFiles,finalSingleHtml:true,mandatoryNetwork:false,exactSource:true,cancellationAndStaleWork:true,resourceSoak:true}));
