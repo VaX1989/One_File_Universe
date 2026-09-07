@@ -1,0 +1,14 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {aggregateModelEval,adjudicateResearchGate,validateEvalRecord} from './model-eval-score.mjs';
+const rec=(id,o={})=>({caseId:id,rawJsonValid:true,gatewayAccepted:true,evidenceValid:true,toolCorrect:true,unknownPreserved:true,latencyMs:100,generatedTokens:10,...o});
+const threshold={minCases:3,minRawJsonValidPpm:900000,minGatewayAcceptedPpm:900000,minEvidenceValidPpm:1000000,minToolCorrectPpm:900000,minUnknownPreservedPpm:1000000,maxP95LatencyMs:1000};
+test('exact record schema rejects smuggling',()=>{assert.equal(validateEvalRecord({...rec('a'),extra:true}),false);});
+test('aggregate uses deterministic integer ppm and percentiles',()=>{const s=aggregateModelEval([rec('a',{latencyMs:10}),rec('b',{latencyMs:20,toolCorrect:false}),rec('c',{latencyMs:30})],{realInference:true});assert.equal(s.ratesPpm.toolCorrect,666666);assert.deepEqual(s.latencyMs,{min:10,p50:20,p95:30,max:30});});
+test('duplicate cases fail closed',()=>{assert.throws(()=>aggregateModelEval([rec('a'),rec('a')],{realInference:true}),/EVAL_DUPLICATE_CASE/);});
+test('dry-run metrics can never satisfy research gate',()=>{const s=aggregateModelEval([rec('a'),rec('b'),rec('c')],{realInference:false});assert.equal(adjudicateResearchGate(s,threshold).reason,'REAL_INFERENCE_REQUIRED');});
+test('insufficient real cases fail',()=>{const s=aggregateModelEval([rec('a')],{realInference:true});assert.equal(adjudicateResearchGate(s,threshold).reason,'INSUFFICIENT_CASES');});
+test('UNKNOWN preservation is independently mandatory',()=>{const s=aggregateModelEval([rec('a'),rec('b'),rec('c',{unknownPreserved:false})],{realInference:true});assert.equal(adjudicateResearchGate(s,threshold).reason,'BELOW_UNKNOWNPRESERVED');});
+test('latency can fail an otherwise perfect real-model evaluation',()=>{const s=aggregateModelEval([rec('a'),rec('b'),rec('c',{latencyMs:1001})],{realInference:true});assert.equal(adjudicateResearchGate(s,threshold).reason,'P95_LATENCY_EXCEEDED');});
+test('meeting research thresholds never implies shipping promotion',()=>{const s=aggregateModelEval([rec('a'),rec('b'),rec('c')],{realInference:true});const r=adjudicateResearchGate(s,threshold);assert.equal(r.eligible,true);assert.equal(r.shippingPromotion,false);});
+test('evidence validity threshold can be exact 100%',()=>{const s=aggregateModelEval([rec('a'),rec('b',{evidenceValid:false}),rec('c')],{realInference:true});assert.equal(adjudicateResearchGate(s,threshold).reason,'BELOW_EVIDENCEVALID');});
