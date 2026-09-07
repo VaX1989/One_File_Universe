@@ -7,6 +7,8 @@ const R_EARTH_M = 6_371_000;
 const R_GAS = 8.31446261815324;
 const HILL_CIRCULAR_EPSILON = 1e-12;
 const HILL_LOW_MASS_RATIO_MAX = 1e-3;
+const ARCSEC_PER_RADIAN = 648000 / Math.PI;
+const AU_PER_PARSEC = ARCSEC_PER_RADIAN;
 
 function finite(name, value) {
   if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
@@ -132,14 +134,22 @@ export function angularObservabilityGeometry({ distancePc, projectedSeparationAu
   const d = finite('distancePc', distancePc);
   const separation = finite('projectedSeparationAu', projectedSeparationAu);
   if (d <= 0 || separation < 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'INVALID_GEOMETRY_INPUT' });
+  const lineOfSightDistanceAu = d * AU_PER_PARSEC;
+  const exactProjectedAngularSeparationArcsec = Math.atan2(separation, lineOfSightDistanceAu) * ARCSEC_PER_RADIAN;
+  const smallAngleApproxArcsec = separation / d;
+  const approximationAbsoluteErrorArcsec = smallAngleApproxArcsec - exactProjectedAngularSeparationArcsec;
+  const approximationRelativeError = exactProjectedAngularSeparationArcsec > 0 ? approximationAbsoluteErrorArcsec / exactProjectedAngularSeparationArcsec : 0;
   return Object.freeze({
     status: 'PRESENT',
     parallaxArcsec: 1 / d,
-    projectedAngularSeparationArcsec: separation / d,
-    assumptions: 'SMALL_ANGLE_GEOMETRY_1_AU_AT_1_PC_EQUALS_1_ARCSEC',
+    projectedAngularSeparationArcsec: exactProjectedAngularSeparationArcsec,
+    smallAngleApproxArcsec,
+    smallAngleApproximationAbsoluteErrorArcsec: approximationAbsoluteErrorArcsec,
+    smallAngleApproximationRelativeError: approximationRelativeError,
+    assumptions: 'EXACT_RIGHT_TRIANGLE_PROJECTED_SEPARATION_ANGLE_WITH_IAU_PARSEC_AU_CONVERSION; PARALLAX_1_OVER_D_PC_REFERENCE',
     instrumentResolutionClaim: false,
     detectionProbabilityClaim: false
   });
 }
 
-export const constants = Object.freeze({ G_SI, M_EARTH_KG, M_SUN_KG, R_EARTH_M, R_GAS, HILL_LOW_MASS_RATIO_MAX });
+export const constants = Object.freeze({ G_SI, M_EARTH_KG, M_SUN_KG, R_EARTH_M, R_GAS, HILL_LOW_MASS_RATIO_MAX, ARCSEC_PER_RADIAN, AU_PER_PARSEC });
