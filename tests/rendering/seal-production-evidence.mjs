@@ -1,18 +1,11 @@
-import fs from 'node:fs';
-import {validatePXEvidence} from '../../tools/extensions/seal.mjs';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
+import {validatePXEvidence} from '../../tools/extensions/seal.mjs';
+import {collectRenderingEvidence,readBoundedRegularFile} from '../../tools/ci/rendering-evidence-input.mjs';
 
-const root=process.argv[2]||'evidence',files=[];
-function walk(directory){
- for(const entry of fs.readdirSync(directory,{withFileTypes:true})){
-  const file=path.join(directory,entry.name);
-  if(entry.isDirectory())walk(file);
-  else if(entry.name.endsWith('.json'))files.push(file);
- }
-}
-walk(root);
-const rows=files.map(file=>JSON.parse(fs.readFileSync(file,'utf8'))).filter(value=>value.sourceCommit&&value.browser);
+const root=process.argv[2]||'evidence';
+const evidence=collectRenderingEvidence(root),records=evidence.records,files=records.map(record=>record.file),docs=records.map(record=>record.doc);
+const rows=docs.filter(value=>value.sourceCommit&&value.browser);
 if(rows.length!==5)throw new Error('expected exactly five browser evidence records, got '+rows.length);
 
 for(const row of rows){
@@ -44,17 +37,17 @@ if(!chromium||chromium.backend!=='webgl2'||chromium.visual.pixelCheck!=='MEASURE
 
 // A foundation proof and a full-product proof are separate artifacts at one
 // source commit. Never relabel the foundation hash as the shipping-product hash.
-const uniqueFile=name=>{const matches=files.filter(f=>path.basename(f)===name);if(matches.length!==1)throw new Error('expected one '+name);return matches[0]};
-const fullManifestPath=uniqueFile('rendering-build-manifest.json'),foundationManifestPath=uniqueFile('rendering-foundation-manifest.json');
-const fullManifest=JSON.parse(fs.readFileSync(fullManifestPath,'utf8')),foundationManifest=JSON.parse(fs.readFileSync(foundationManifestPath,'utf8'));
+const uniqueRecord=name=>{const matches=records.filter(record=>path.basename(record.file)===name);if(matches.length!==1)throw new Error('expected one '+name);return matches[0]};
+const fullManifestRecord=uniqueRecord('rendering-build-manifest.json'),foundationManifestRecord=uniqueRecord('rendering-foundation-manifest.json');
+const fullManifest=fullManifestRecord.doc,foundationManifest=foundationManifestRecord.doc,fullManifestPath=fullManifestRecord.file,foundationManifestPath=foundationManifestRecord.file;
 const expectedSource=process.env.OFU_SOURCE_SHA;if(!expectedSource||expectedSource!==[...commits][0])throw new Error('seal source pin mismatch');
 for(const [manifest,html] of [[fullManifest,path.join(path.dirname(fullManifestPath),'One_File_Universe.html')],[foundationManifest,path.join(path.dirname(foundationManifestPath),'One_File_Universe-foundation.html')]]){
- const bytes=fs.readFileSync(html),hash=createHash('sha256').update(bytes).digest('hex');
+ const bytes=readBoundedRegularFile(html),hash=createHash('sha256').update(bytes).digest('hex');
  if(manifest.sourceCommit!==expectedSource||manifest.artifactBytes!==bytes.length||manifest.artifactSha256!==hash||manifest.componentManifestHash!==[...manifests][0])throw new Error('artifact bytes/source/component pin mismatch');
 }
 if(foundationManifest.artifactSha256!==[...artifacts][0])throw new Error('foundation browser/artifact hash mismatch');
 if(fullManifest.waveIVRuntime?.version!=='ofu-wave-iv-scale-runtime-3'||fullManifest.surfacePresentation?.coverageArchitecture!=='FRUSTUM_GROUND_FOOTPRINT_BOUNDED')throw new Error('full product composition missing');
-const fullRows=files.map(f=>JSON.parse(fs.readFileSync(f,'utf8'))).filter(v=>v.artifactScope==='FULL_WAVE_IV_PRODUCT');
+const fullRows=docs.filter(v=>v.artifactScope==='FULL_WAVE_IV_PRODUCT');
 const tuple=r=>[r.platform,r.arch,r.browser].join('/');
 if(fullRows.length!==5||new Set(fullRows.map(tuple)).size!==5)throw new Error('expected five distinct full-product visual records');
 for(const row of rows){
@@ -76,7 +69,7 @@ for(const row of rows){
  }
 }
 
-const pxSeal=fullManifest.px?validatePXEvidence(files.map(f=>JSON.parse(fs.readFileSync(f,'utf8'))).filter(r=>r.schema==='ofu-px-browser-evidence-1'),fullManifest,expectedSource):null;
+const pxSeal=fullManifest.px?validatePXEvidence(docs.filter(r=>r.schema==='ofu-px-browser-evidence-1'),fullManifest,expectedSource):null;
 console.log(JSON.stringify({
  pxSeal,
  status:'PASS',
