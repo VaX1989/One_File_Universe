@@ -1,0 +1,23 @@
+{
+  "schema": "ofu-conformance-1",
+  "tests": [
+    {
+      "id": "v2x-06.surface-terrain-geology-hydrology",
+      "owner": "v2x-06-surface-terrain-geology-hydrology",
+      "tier": "LANE_TARGETED",
+      "command": ["node", "tests/v2x-06-surface/surface-terrain-geology-hydrology.mjs"],
+      "providers": ["v2x-06.model.surface-geography", "v2x-06.representation.hierarchical-terrain", "v2x-06.renderer.living-surface"],
+      "oracle": "ofu-v2x-06-surface-terrain-geology-hydrology-oracle-1",
+      "timeoutMs": 30000
+    },
+    {
+      "id": "v2x-06.surface-cross-scale",
+      "owner": "v2x-06-surface-terrain-geology-hydrology",
+      "tier": "LANE_TARGETED",
+      "command": ["node", "tests/v2x-06-surface/cross-scale-integration.mjs"],
+      "providers": ["v2x-06.query.surface-address"],
+      "oracle": "ofu-v2x-06-cross-scale-oracle-1",
+      "timeoutMs": 30000
+    }
+  ]
+}

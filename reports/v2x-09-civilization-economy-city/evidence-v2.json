@@ -1,0 +1,54 @@
+{
+  "schema": "ofu-v2x-09-advanced-evidence-1",
+  "status": "PASS",
+  "parentCheckpoint": {
+    "sha": "5d51b2964bc26e383802316736473e9fd3475d82",
+    "tree": "8d0e4626e76b424061bc910c06f4e4af3cadd435"
+  },
+  "oracle": {
+    "command": "node tests/v2x-09-civilization-economy-city/advanced-systems.mjs",
+    "cases": 48,
+    "runtime": "v22.16.0",
+    "result": "PASS"
+  },
+  "measuredWitnesses": {
+    "healthyRouteCapacityUnits": 842,
+    "damagedRouteCapacityUnits": 168,
+    "damagedToHealthyCapacityRatioPpm": 199524,
+    "energyStarvedInterSettlementFlows": 4,
+    "stressedAggregateMigrationProposals": 1,
+    "wetAdvancedFamily": "PORT_CLUSTER",
+    "dryAdvancedFamily": "CORRIDOR_SPINE",
+    "abandonedFamily": "POST_COLLAPSE_RELICT"
+  },
+  "implemented": [
+    "deterministic multi-stage production recipe DAG",
+    "intermediate-good accounting closure",
+    "bounded route capacity and utilization",
+    "infrastructure-condition degradation witnesses",
+    "service-demand satisfaction and bottleneck detection",
+    "aggregate scarcity/opportunity/migration-pressure proposals",
+    "institution response and repair-priority proposals",
+    "causal urban morphology families and specializations",
+    "history/infrastructure-backed urban evidence layers",
+    "presentation-only advanced render cues",
+    "single advanced composition API"
+  ],
+  "authority": {
+    "simulation": "MODEL_DERIVED_SIMULATION",
+    "render": "PRESENTATION_ONLY",
+    "mutationPerformed": false,
+    "persistentPersonIdentityCreated": false,
+    "canonicalHistoryMutation": false,
+    "planetOrLifeMutation": false,
+    "sharedRendererMutation": false
+  },
+  "limitations": [
+    "Accounting units do not claim physical mass or energy conservation.",
+    "Migration is aggregate pressure/proposal state; no persistent person is created or moved.",
+    "Institution responses are bounded scenario mechanisms, not universal sociological laws.",
+    "Urban families, specializations and render cues are model-derived/presentation-only and do not claim empirical city geometry.",
+    "History layers require modeled witnesses and do not claim canonical archaeology.",
+    "Shared scene/renderer composition remains convergence-owner work."
+  ]
+}

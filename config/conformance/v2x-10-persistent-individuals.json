@@ -1,0 +1,23 @@
+{
+  "schema": "ofu-conformance-1",
+  "tests": [
+    {
+      "id": "v2x10.shipping-provider",
+      "owner": "v2x-10-persistent-individuals",
+      "tier": "FAST_LOCAL",
+      "command": ["node", "tests/v2x10/shipping-provider.mjs"],
+      "providers": ["v2x10.model.persistent-individuals"],
+      "oracle": "v2x10-shipping-provider-parity-1",
+      "timeoutMs": 180000
+    },
+    {
+      "id": "v2x10.persistent-individuals",
+      "owner": "v2x-10-persistent-individuals",
+      "tier": "LANE_TARGETED",
+      "command": ["node", "tests/v2x10/run.mjs"],
+      "providers": ["v2x10.model.persistent-individuals"],
+      "oracle": "v2x10-persistent-individuals-1",
+      "timeoutMs": 180000
+    }
+  ]
+}
