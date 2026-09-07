@@ -50,7 +50,7 @@
       "budget": {"entities": 768, "bytes": 393216, "operations": 4096, "queue": 64},
       "evidence": [
         {"id": "v2x12.matter.authority-provenance", "tier": "FAST_LOCAL"},
-        {"id": "v2x12.matter.continuity-biology", "tier": "INTEGRATION"}
+        {"id": "v2x12.matter.continuity-biology", "tier": "LANE_TARGETED"}
       ],
       "mandatory": false
     },
@@ -94,7 +94,7 @@
       "budget": {"entities": 256, "bytes": 262144, "operations": 2048, "queue": 32},
       "evidence": [
         {"id": "v2x12.matter.authority-provenance", "tier": "FAST_LOCAL"},
-        {"id": "v2x12.matter.continuity-biology", "tier": "INTEGRATION"}
+        {"id": "v2x12.matter.continuity-biology", "tier": "LANE_TARGETED"}
       ],
       "mandatory": false
     }
