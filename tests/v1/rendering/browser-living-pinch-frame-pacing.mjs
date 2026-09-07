@@ -28,7 +28,7 @@ try{
  const before=await sample();
  assert.equal(before.runtime.stage,'REGION');
  assert.equal(before.renderer.authority,'PRESENTATION_ONLY');
- assert.equal(before.pacing.strategy,'RAF_LATEST_PINCH_COORDINATE');
+ assert.equal(before.pacing.strategy,'RAF_LATEST_PINCH_COORDINATE_WITH_SYNC_BOUNDARIES');
  assert.equal(before.pacing.pendingEvents,0);
  assert.ok(before.canvas.nonEmpty>0,'Living canvas must contain visible pixels before the pinch pacing probe');
 
@@ -45,10 +45,11 @@ try{
   const finalTarget=before.navigationCoordinate+Math.log2(finalSpan/100)*1.5;
   fire('pointerup',1201,cx-startHalf-9,0);fire('pointerup',1202,cx+startHalf+9,0);
   const after=runtime.snapshot(),pacingAfter=runtime.navigationPacingSnapshot(),rendererAfter=product.renderer.state(),input=product.snapshot().input;
-  return {before:{revision:before.revision,stage:before.stage,node:before.node?.canonicalId||before.node?.entityId||null,body:before.body?.canonicalId||before.body?.entityId||null,historyDepth:before.historyDepth,navigationCoordinate:before.navigationCoordinate},after:{revision:after.revision,stage:after.stage,node:after.node?.canonicalId||after.node?.entityId||null,body:after.body?.canonicalId||after.body?.entityId||null,historyDepth:after.historyDepth,navigationCoordinate:after.navigationCoordinate},pacing:{inputEvents:pacingAfter.inputEvents-pacingBefore.inputEvents,frames:pacingAfter.frames-pacingBefore.frames,coalesced:pacingAfter.coalescedEvents-pacingBefore.coalescedEvents,pending:pacingAfter.pendingEvents,staleDrops:pacingAfter.staleDrops-pacingBefore.staleDrops},rendererFrames:rendererAfter.metrics.frames-rendererBefore.metrics.frames,finalTarget,input};
+  return {before:{revision:before.revision,stage:before.stage,node:before.node?.canonicalId||before.node?.entityId||null,body:before.body?.canonicalId||before.body?.entityId||null,historyDepth:before.historyDepth,navigationCoordinate:before.navigationCoordinate},after:{revision:after.revision,stage:after.stage,node:after.node?.canonicalId||after.node?.entityId||null,body:after.body?.canonicalId||after.body?.entityId||null,historyDepth:after.historyDepth,navigationCoordinate:after.navigationCoordinate},pacing:{inputEvents:pacingAfter.inputEvents-pacingBefore.inputEvents,frames:pacingAfter.frames-pacingBefore.frames,boundaryCommits:pacingAfter.boundaryCommits-pacingBefore.boundaryCommits,coalesced:pacingAfter.coalescedEvents-pacingBefore.coalescedEvents,pending:pacingAfter.pendingEvents,staleDrops:pacingAfter.staleDrops-pacingBefore.staleDrops},rendererFrames:rendererAfter.metrics.frames-rendererBefore.metrics.frames,finalTarget,input};
  });
  assert.ok(immediate.pacing.inputEvents>=40,'touch pinch burst must enqueue substantial continuous-navigation input');
  assert.equal(immediate.pacing.frames,0,'pinch navigation must not execute once per pointermove inside the dispatch task');
+ assert.equal(immediate.pacing.boundaryCommits,0,'bounded same-stage pinch probe must not need a synchronous boundary commit');
  assert.equal(immediate.rendererFrames,0,'Living renderer must not redraw once per pinch pointermove inside the dispatch task');
  assert.equal(immediate.after.revision,immediate.before.revision,'runtime revision must remain unchanged until the animation-frame navigation commit');
  assert.equal(immediate.after.navigationCoordinate,immediate.before.navigationCoordinate,'continuous navigation coordinate must remain unchanged until the animation frame');
@@ -77,7 +78,7 @@ try{
  assert.equal(after.input.pinchActive,false);
  assert.equal(errors.length,0,errors.join('\n'));
  assert.equal(requests.length,0,requests.join('\n'));
- console.log(JSON.stringify({status:'PASS',suite:'v1-living-pinch-frame-pacing',navigationPacingVersion:after.scheduler,inputEvents:inputDelta,navigationFrames:pacingFrames,coalescedEvents:coalesced,rendererFrameDelta:renderFrames,visibleCanvasDelta:true,runtimeRevisionDelta:after.runtime.revision-before.runtime.revision,canonicalNodePreserved:true,historyPreserved:true,offline:true,physicalDevice:false}));
+ console.log(JSON.stringify({status:'PASS',suite:'v1-living-pinch-frame-pacing',navigationPacingVersion:after.scheduler,inputEvents:inputDelta,navigationFrames:pacingFrames,boundaryCommits:after.pacing.boundaryCommits-before.pacing.boundaryCommits,coalescedEvents:coalesced,rendererFrameDelta:renderFrames,visibleCanvasDelta:true,runtimeRevisionDelta:after.runtime.revision-before.runtime.revision,canonicalNodePreserved:true,historyPreserved:true,offline:true,physicalDevice:false}));
 }finally{
  await context.close();
  await browser.close();
