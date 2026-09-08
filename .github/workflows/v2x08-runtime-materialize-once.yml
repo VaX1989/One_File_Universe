@@ -1,0 +1,43 @@
+name: V2X08 Runtime Materialization Once
+
+on:
+  push:
+    branches:
+      - integration/v2x-supreme-total-convergence-2026-09-07
+    paths:
+      - .github/workflows/v2x08-runtime-materialize-once.yml
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: integration/v2x-supreme-total-convergence-2026-09-07
+          fetch-depth: 0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24.20.0
+      - name: Generate and verify deterministic V2X-08 runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          target='src/v2x-08-life-ecology-evolution-embodiment/shipping-runtime.js'
+          node src/v2x-08-life-ecology-evolution-embodiment/shipping-bundle.mjs --output "$target"
+          node src/v2x-08-life-ecology-evolution-embodiment/shipping-bundle.mjs --stdout > /tmp/v2x08-shipping-runtime.regenerated.js
+          cmp -s "$target" /tmp/v2x08-shipping-runtime.regenerated.js
+          node --check "$target"
+          bytes="$(wc -c < "$target")"
+          test "$bytes" -le 524288
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$target"
+          if git diff --cached --quiet; then
+            echo 'V2X-08 runtime already materialized byte-for-byte.'
+            exit 0
+          fi
+          git commit -m 'V2X-08 materialize deterministic shipping runtime'
+          git push origin HEAD:integration/v2x-supreme-total-convergence-2026-09-07
