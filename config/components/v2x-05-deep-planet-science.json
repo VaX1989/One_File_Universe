@@ -42,7 +42,7 @@
     },
     {
       "id": "v2x05.deep-planet.provider",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "owner": "v2x-05-deep-planet-science",
       "kind": "code",
       "stage": "full",
@@ -50,12 +50,12 @@
       "source": "src/v2x-05-deep-planet-science/deep-planet-provider.js",
       "dependencies": ["v1.models.planetology.causal-system", "v2x05.deep-planet.regime-core", "v2x05.deep-planet.interior-atmosphere", "v2x05.deep-planet.climate-volatile"],
       "authority": "MODEL_DERIVED_SIMULATION",
-      "provenance": "V2X-05 additive read-only deep-planet provider exposing bounded rendering, ecology, gameplay and Prompt-08 consumer contexts without owning shared registries or canonical state.",
-      "provides": ["v2x05.deep-planet.provider", "ofu-v2x-05-deep-planet-consumer-1"]
+      "provenance": "V2X-05 additive read-only deep-planet runtime exposing bounded rendering, inspection, environment, ecology, gameplay and Prompt-08 packets with deterministic coherence digest. Runtime scripts remain artifact-reachable while catalog activation remains convergence-governed.",
+      "provides": ["v2x05.deep-planet.provider", "ofu-v2x-05-deep-planet-consumer-1", "ofu-v2x-05-deep-planet-vertical-2", "v2x05.deep-planet.inspection", "v2x05.deep-planet.environment-eligibility"]
     },
     {
-      "id": "px.providers.v2x05-deep-planet",
-      "version": "1.0.0",
+      "id": "v2x.frontier.providers.v2x05-deep-planet",
+      "version": "2.0.0",
       "owner": "v2x-05-deep-planet-science",
       "kind": "data",
       "stage": "foundation",
@@ -63,7 +63,7 @@
       "source": "config/extensions/v2x-05-deep-planet-science/catalog.json",
       "dependencies": [],
       "authority": "MODEL_DERIVED_SIMULATION",
-      "provenance": "Lane-owned additive V2X-05 provider catalog bound at foundation as metadata only; runtime provider code is composed at full stage and canonical admissions remain empty.",
+      "provenance": "Lane-owned additive V2X-05 frontier provider catalog metadata. It remains outside the active PX shipping-provider namespace until a convergence-owned release consumer binding is ratified; runtime provider code is composed at full stage and canonical admissions remain empty.",
       "provides": ["v2x05.deep-planet.provider-catalog"]
     }
   ]
