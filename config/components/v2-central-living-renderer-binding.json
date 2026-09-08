@@ -1,0 +1,23 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v2.central.living-v2x13-bridge",
+      "version": "1.0.0",
+      "owner": "rendering",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/rendering/v1/living-v2x13-bridge.js",
+      "dependencies": [
+        "v1.rendering.living-renderer",
+        "v2x13.render.webgl2-resources"
+      ],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Central convergence-owned binding. The Living renderer remains the single primary renderer authority; V2X-13 consumes externally composed scene, camera and semantic-scale presentation packets and owns no canonical truth or independent navigation authority.",
+      "provides": [
+        "v2.central.living-v2x13-bridge"
+      ]
+    }
+  ]
+}

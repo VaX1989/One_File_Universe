@@ -1,0 +1,20 @@
+{
+  "schema": "ofu-conformance-1",
+  "tests": [
+    {
+      "id": "v2.central.living-v2x13-pixel-binding",
+      "owner": "convergence",
+      "tier": "RELEASE",
+      "command": [
+        "node",
+        "tests/v2x-convergence/living-v2x13-pixel-binding.mjs"
+      ],
+      "providers": [
+        "v2.central.living-v2x13-bridge",
+        "v2x13.render.webgl2-resources"
+      ],
+      "oracle": "v2-central-living-v2x13-real-browser-pixel-oracle-1",
+      "timeoutMs": 120000
+    }
+  ]
+}
