@@ -4,7 +4,7 @@ import vm from 'node:vm';
 const sandbox={console,TextEncoder,Object,Array,Map,Set,WeakMap,WeakSet,BigInt,Number,String,Math,JSON};sandbox.globalThis=sandbox;vm.createContext(sandbox);
 for(const file of [
  'src/domains/v1/life/v2x08-life-facade.js',
- 'src/v2x-09-civilization-economy-city/core.js','src/v2x-09-civilization-economy-city/economy-init.js','src/v2x-09-civilization-economy-city/economy-step.js','src/v2x-09-civilization-economy-city/institutions.js','src/v2x-09-civilization-economy-city/morphology.js','src/v2x-09-civilization-economy-city/index.js',
+ 'src/v2x-09-civilization-economy-city/core.js','src/v2x-09-civilization-economy-city/economy-init.js','src/v2x-09-civilization-economy-city/economy-step.js','src/v2x-09-civilization-economy-city/institutions.js','src/v2x-09-civilization-economy-city/morphology.js','src/v2x-09-civilization-economy-city/production-network.js','src/v2x-09-civilization-economy-city/society-dynamics.js','src/v2x-09-civilization-economy-city/urban-evolution.js','src/v2x-09-civilization-economy-city/advanced.js','src/v2x-09-civilization-economy-city/index.js',
  'src/domains/v1/individuals/provider.js','src/bootstrap/product/v2x-context-inspector.js'
 ])vm.runInContext(fs.readFileSync(new URL('../../'+file,import.meta.url),'utf8'),sandbox,{filename:file});
 const I=sandbox.OFU.v2xLivingContextInspector;
