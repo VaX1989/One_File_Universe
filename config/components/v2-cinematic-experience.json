@@ -26,6 +26,32 @@
       "authority": "PRESENTATION_ONLY",
       "provenance": "V2 cinematic lane. Non-owning observer of Living stage metadata that classifies presentation regime, transient arrival phase and first-run visual guidance. User input immediately dismisses transient presentation; no semantic API is invoked.",
       "provides": ["v2.cinematic.experience"]
+    },
+    {
+      "id": "v2.cinematic.depth-style",
+      "version": "1.0.0",
+      "owner": "cinematic",
+      "kind": "style",
+      "stage": "full",
+      "placement": "style",
+      "source": "src/cinematic/v2/depth-compositor.css",
+      "dependencies": ["v2.cinematic.style"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "V2 cinematic lane. Presentation-only depth compositor surface with bounded opacity, balanced-tier reduction, reduced-motion behavior and forced-colors suppression.",
+      "provides": ["v2.cinematic.depth-style"]
+    },
+    {
+      "id": "v2.cinematic.depth",
+      "version": "1.0.0",
+      "owner": "cinematic",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/cinematic/v2/depth-compositor.js",
+      "dependencies": ["v2.cinematic.experience", "v2.cinematic.depth-style"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "V2 cinematic lane. Bounded deterministic non-animated atmospheric/depth accents derived only from already-public presentation identifiers. Maximum star accents are fixed; no navigation, camera, selection, model or history API is called.",
+      "provides": ["v2.cinematic.depth"]
     }
   ]
 }
