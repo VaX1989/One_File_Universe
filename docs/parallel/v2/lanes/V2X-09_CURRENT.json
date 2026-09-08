@@ -1,0 +1,132 @@
+{
+  "schema": "ofu-v2-lane-checkpoint-1",
+  "lane": "V2X-09",
+  "title": "Civilization 2.0 - economy, institutions, infrastructure, settlements and city embodiment",
+  "status": "IMPLEMENTED_TESTING_AND_CONVERGENCE_HOOK_PENDING",
+  "branch": "parallel/v2.0-09-civilization-economy-city-2026-09-07",
+  "base": {
+    "sha": "2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7",
+    "tree": "99e6b5ff6229d9c34d381e778c5689bf2367d256",
+    "authorizedLaunchStatus": "FULL"
+  },
+  "implementationCheckpoint": {
+    "sha": "1300e43f5275cb8413b16a8e126452acf90737b4",
+    "tree": "4d52ae24a00eb6719295051fb7476941729cbc40",
+    "ancestry": {
+      "mergeBase": "2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7",
+      "aheadBy": 4,
+      "behindBy": 0
+    }
+  },
+  "pullRequest": {
+    "number": 246,
+    "baseBranch": "integration/v2x-supreme-total-convergence-2026-09-07",
+    "headBranch": "parallel/v2.0-09-civilization-economy-city-2026-09-07"
+  },
+  "changedFiles": [
+    "config/components/v2x-09-civilization-economy-city.json",
+    "src/v2x-09-civilization-economy-city/index.js",
+    "src/v2x-09-civilization-economy-city/morphology.js",
+    "tests/v2x-09-civilization-economy-city/civilization-economy-city.mjs"
+  ],
+  "capabilities": [
+    "deterministic civilization embodiment packet",
+    "settlement embodiment with active/abandoned/damaged/ruined model-supported visual state",
+    "bounded district hierarchy presentation",
+    "history-backed visible state without canonical-history or archaeology promotion",
+    "infrastructure condition embodiment",
+    "route/network capacity, resilience and criticality embodiment",
+    "production flow embodiment",
+    "resource relationship embodiment using current modeled economy snapshot",
+    "public runtime export backed by advanced production/society/urban/resilience composition",
+    "fail-closed no-legacy-fallback behavior",
+    "one-file HTML artifact reachability witness"
+  ],
+  "limits": {
+    "settlements": 48,
+    "routes": 96,
+    "infrastructureAssets": 256,
+    "districtsPerSettlement": 12,
+    "resourceLinksPerSettlement": 8,
+    "historyLayersPerSettlement": 24,
+    "commands": 4096,
+    "operations": 64000
+  },
+  "authority": {
+    "modelState": "MODEL_DERIVED_SIMULATION",
+    "productionSocietyUrbanResilience": "MODEL_DERIVED_SIMULATION_OR_DERIVED_AS_DECLARED_BY_SOURCE_MODEL",
+    "renderPacketCommands": "PRESENTATION_ONLY",
+    "deterministicAnchors": "PRESENTATION_ONLY",
+    "claimsExplicitlyRejected": [
+      "physical city geometry",
+      "physical transport path geometry",
+      "physical resource/deposit geometry",
+      "canonical history",
+      "empirical forecast",
+      "persistent person identity"
+    ],
+    "ownershipPreserved": {
+      "persistentPersonIdentity": "V2X-10",
+      "localPlacement": "V2X-07_OR_CONVERGENCE",
+      "selectionScaleCameraSceneRendererInputPersistence": "CONVERGENCE_OWNER"
+    }
+  },
+  "tests": {
+    "localScratchSyntax": "PASS",
+    "localAdversarialEmbodimentHarness": {
+      "status": "PASS",
+      "commands": 16,
+      "operations": 16,
+      "commandKinds": [
+        "DISTRICT_EMBODIMENT",
+        "HISTORICAL_STATE_EMBODIMENT",
+        "INFRASTRUCTURE_EMBODIMENT",
+        "RESOURCE_RELATIONSHIP_EMBODIMENT",
+        "ROUTE_NETWORK_EMBODIMENT",
+        "SETTLEMENT_EMBODIMENT"
+      ]
+    },
+    "repositoryCommands": [
+      "node tests/v2x-09-civilization-economy-city/civilization-economy-city.mjs",
+      "node tests/v2x-09-civilization-economy-city/advanced-systems.mjs",
+      "node tools/build-ofu-rendering-v09.mjs"
+    ],
+    "githubActions": {
+      "sourceSha": "1300e43f5275cb8413b16a8e126452acf90737b4",
+      "stateAtPublication": "QUEUED",
+      "note": "PR-triggered repository workflows were queued when this checkpoint was published; exact results must supersede this field after completion."
+    }
+  },
+  "reachability": {
+    "source": [
+      "src/v2x-09-civilization-economy-city/morphology.js",
+      "src/v2x-09-civilization-economy-city/index.js"
+    ],
+    "shippingManifest": "config/components/v2x-09-civilization-economy-city.json",
+    "manifestCapability": "v2x09.civilization.embodiment-packet",
+    "oneFileBuildCommand": "node tools/build-ofu-rendering-v09.mjs",
+    "oneFileArtifact": "dist/One_File_Universe.html",
+    "runtimeExport": "OFU.v2x09CivilizationEconomyCity.civilizationEmbodimentPacket",
+    "runtimeDependency": "OFU.v2x09CivilizationAdvanced.modelAdvancedCivilization",
+    "artifactWitness": "tests/v2x-09-civilization-economy-city/civilization-economy-city.mjs asserts advanced component ordering plus embodiment contract/export bytes in the built HTML",
+    "actualCurrentConsumer": "central V2X context Inspector consumes V2X-09 morphology/inspector but does not yet compose the new embodiment packet into the Living scene",
+    "livingViewport": "CENTRAL_HOOK_REQUIRED",
+    "centralHook": "Call OFU.v2x09CivilizationEconomyCity.civilizationEmbodimentPacket(civilizationState,economy,{settlementId}) and compose returned PRESENTATION_ONLY commands through the governed additive rendering seam; reconcile anchors through V2X-07/local placement before final scene composition.",
+    "persistenceRevisit": "NOT_LANE_AUTHORIZED; packet is deterministic projection from persisted civilization/economy state and introduces no independent mutable lane state",
+    "exactArtifactBrowserEvidence": "PENDING_CENTRAL_LIVING_CONSUMER_AND_PR_CI"
+  },
+  "knownGaps": [
+    {
+      "id": "V2X09-LIVING-CONSUMER",
+      "owner": "CONVERGENCE_OWNER",
+      "kind": "EXTERNAL_AUTHORITY_BOUNDARY",
+      "description": "The new embodiment packet is manifested and artifact-reachable but central Living scene composition has not yet adopted it. V2X-09 must not edit convergence-owned scene/renderer paths."
+    },
+    {
+      "id": "V2X09-EXACT-BROWSER",
+      "owner": "CONVERGENCE_OWNER_PLUS_CI",
+      "kind": "DEPENDENCY_ON_LIVING_CONSUMER",
+      "description": "Exact-artifact browser evidence for visible Living consequences becomes meaningful only after the convergence-owned Living consumer composes the packet."
+    }
+  ]
+}
