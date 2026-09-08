@@ -1,0 +1,152 @@
+{
+  "schema": "ofu-v2-lane-checkpoint-1",
+  "version": "2026-09-08.1",
+  "laneId": "V2X-04",
+  "lane": "STELLAR_SYSTEMS_2_0_SYSTEM_PLANET_APPROACH",
+  "branch": "parallel/v2.0-04-system-planet-approach-2026-09-07",
+  "status": "DEPENDENCY_ELIGIBLE_WORK_EXHAUSTED_PENDING_CENTRAL_LIVING_BIND_AND_HOSTED_EXACT_HEAD_EVIDENCE",
+  "base": {
+    "status": "READY_FOR_MASSIVE_PARALLEL_EXECUTION",
+    "parallelLaunchStatus": "FULL",
+    "sha": "2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7",
+    "tree": "99e6b5ff6229d9c34d381e778c5689bf2367d256",
+    "record": "docs/parallel/V2_PARALLEL_BASE_CURRENT.json"
+  },
+  "implementationHead": {
+    "sha": "4632201ca65effbba624af9c6ce9e2a9ff1e3bc4",
+    "tree": "72f1320f367168873cde916819ae67e87ca7216d",
+    "note": "Exact production/test implementation parent. The checkpoint metadata commit necessarily follows this immutable head and therefore cannot self-reference its own SHA/tree."
+  },
+  "changedFilesFromFrozenBase": [
+    "src/rendering/orbit/orbit-3d.js",
+    "tests/v2x-04-system-planet-approach/orbit-stellar-oracle.mjs",
+    "docs/parallel/v2/lanes/V2X-04_CURRENT.json"
+  ],
+  "capabilities": [
+    "single_and_multi_star_system_presentation",
+    "deterministic_star_and_planet_ordering",
+    "bounded_true_3d_orbit_projection_from_external_camera",
+    "canonical_star_and_planet_pick_targets",
+    "multi_star_illumination_and_body_cue_composition",
+    "reversible_system_to_planet_approach_and_descent_lod",
+    "identity_reference_frame_and_scale_token_preservation",
+    "legacy_v1x_runtime_fallback_forbidden",
+    "bounded_viewport_entity_and_projected_vertex_resources"
+  ],
+  "runtimeExport": {
+    "global": "OFU.v2x04SystemProvider",
+    "providerId": "v2x04.system.presentation",
+    "authority": "PRESENTATION_ONLY",
+    "scientificEvidence": false,
+    "centralAuthoritiesOwned": [],
+    "legacyFallbackPolicy": "FORBIDDEN"
+  },
+  "reachability": {
+    "source": "src/rendering/orbit/orbit-3d.js",
+    "shippingManifestComponent": "v2x04.render.orbit-3d",
+    "shippingManifest": "config/components/v2x-04-system-planet-approach.json",
+    "oneFileArtifact": "dist/One_File_Universe.html",
+    "runtimeExport": "OFU.v2x04SystemProvider",
+    "laneConsumerOracle": "tests/v2x-04-system-planet-approach/orbit-stellar-oracle.mjs",
+    "livingConsumer": {
+      "status": "CENTRAL_HOOK_REQUIRED",
+      "ownedBy": "CONVERGENCE_OWNER",
+      "path": "src/rendering/v1/living-renderer.js",
+      "currentLegacyConsumer": "O.v1x04SystemProvider",
+      "requiredReplacement": "O.v2x04SystemProvider",
+      "requiredCallShape": "render({system,stars,planets},{camera:camera.systemFrame,viewport:{width,height}})",
+      "preserveAuthorities": ["camera", "selection", "semantic_scale", "scene_composition", "resource_admission"]
+    },
+    "completionLaw": {
+      "source": "PASS",
+      "shippingManifest": "PASS_EXISTING_CENTRAL_DESCRIPTOR",
+      "oneFileHtml": "PENDING_HOSTED_EXACT_HEAD_BUILD",
+      "runtimeExport": "PASS_SOURCE_DEFINED",
+      "actualConsumer": "CENTRAL_HOOK_REQUIRED",
+      "livingViewportUserAction": "CENTRAL_HOOK_REQUIRED",
+      "visibleConsequence": "CENTRAL_HOOK_REQUIRED",
+      "persistenceRevisit": "NOT_LANE_OWNED; identity/reference/scale tokens preserved by packets",
+      "exactArtifactBrowserEvidence": "PENDING_CENTRAL_BIND_AND_BROWSER_GATE"
+    }
+  },
+  "tests": {
+    "persisted": [
+      {
+        "command": "node tests/v2x-04-system-planet-approach/orbit-stellar-oracle.mjs",
+        "expectedSuite": "v2x04-orbit-stellar-oracle-v4",
+        "coverage": ["historical orbit/stellar assertions retained", "multi-star provider composition", "arbitrary viewpoints", "canonical picks", "deterministic ordering", "approach reverse identity", "resource bounds", "duplicate identity rejection", "legacy fallback destructive witness"],
+        "status": "HOSTED_EXACT_HEAD_QUEUED"
+      },
+      {
+        "command": "node tests/v2x-04-system-planet-approach/approach-continuity-oracle.mjs",
+        "status": "HISTORICAL_EXACT_CONTENT_PASS; CURRENT_HOSTED_EXECUTION_PENDING"
+      },
+      {
+        "command": "node tests/v2x-04-system-planet-approach/illumination-body-lod-oracle.mjs",
+        "status": "HISTORICAL_EXACT_CONTENT_PASS; CURRENT_HOSTED_EXECUTION_PENDING"
+      }
+    ],
+    "diagnosticExecution": [
+      {
+        "command": "node --check <candidate orbit-3d.js>",
+        "status": "PASS",
+        "scope": "syntax of new provider-bearing source"
+      },
+      {
+        "command": "node isolated-v2x04-provider-harness.mjs",
+        "status": "PASS",
+        "scope": "provider identity, 2 orbits, deterministic planet ordering, canonical pick, approach round-trip, destructive missing-dependency fail-closed witness",
+        "claimLimit": "Diagnostic reconstructed harness, not repository exact-head certification."
+      }
+    ],
+    "hostedWorkflowsObservedOnImplementationHead": {
+      "status": "QUEUED",
+      "workflowNames": ["Foundation Integrity", "P1 Conformance", "P2 Conformance", "P3 Conformance", "P4 Conformance", "P5 Controlled Promotion", "P5 Environment v2 Canonical Promotion", "P6 v1 Conformance", "P1-P4 Canonical Baseline", "V2X Supreme Convergence"]
+    }
+  },
+  "resourceBounds": {
+    "maxStars": 8,
+    "maxPlanets": 128,
+    "maxHitTargets": 136,
+    "maxProjectedVertices": 32896,
+    "maxViewportDimension": 16384,
+    "maxViewportPixels": 67108864,
+    "approachMaxFrames": 257,
+    "illuminationMaxOccluders": 64
+  },
+  "authorityAndProvenance": {
+    "providerAndAllNewPackets": "PRESENTATION_ONLY",
+    "scientificEvidence": false,
+    "canonicalIdentity": "UPSTREAM_PRESERVED_NOT_OWNED",
+    "camera": "EXTERNAL_CONVERGENCE_CAMERA",
+    "selection": "UPSTREAM_SELECTION_CONTRACT",
+    "semanticScale": "EXTERNAL_CONVERGENCE_SCALE",
+    "currentOrbitalPhase": "UNKNOWN_NOT_CANONICAL",
+    "stellarColor": "PRESENTATION_MAPPING_NOT_SPECTROSCOPY",
+    "multiStarWeighting": "PRESENTATION_WEIGHT_NOT_PHYSICAL_IRRADIANCE",
+    "eclipse": "PRESENTATION_CUE_NOT_CANONICAL_EVENT",
+    "ringFallback": "PRESENTATION_ONLY_NOT_MEASURED_GEOMETRY",
+    "atmosphereRim": "PRESENTATION_ONLY_NOT_OPTICAL_DEPTH",
+    "approachPosition": "PRESENTATION_CONTINUITY_NOT_BALLISTIC_OR_AERODYNAMIC_TRAJECTORY"
+  },
+  "knownGaps": [
+    {
+      "class": "CENTRAL_OWNERSHIP_DEPENDENCY",
+      "path": "src/rendering/v1/living-renderer.js",
+      "description": "The real SYSTEM viewport still consumes O.v1x04SystemProvider. Central convergence must bind O.v2x04SystemProvider; this lane is forbidden from editing the primary Living renderer."
+    },
+    {
+      "class": "EVIDENCE_PENDING",
+      "description": "Exact-head one-file build, browser invocation and visual consequence require hosted CI plus the central Living consumer bind."
+    },
+    {
+      "class": "CONFORMANCE_REGISTRATION_CENTRAL",
+      "description": "No V2X-04 config/conformance descriptor exists and conformance registration semantics are convergence-owned. The existing lane oracle is hardened in place and must be invoked by central conformance/CI."
+    }
+  ],
+  "pullRequest": {
+    "number": 247,
+    "target": "integration/v2x-supreme-total-convergence-2026-09-07",
+    "status": "OPEN"
+  }
+}
