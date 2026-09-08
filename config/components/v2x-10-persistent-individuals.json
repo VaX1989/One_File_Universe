@@ -15,7 +15,7 @@
       "provides": ["v2x10.model.persistent-individuals"]
     },
     {
-      "id": "px.providers.v2x10-persistent-individuals",
+      "id": "v2x.frontier.providers.v2x10-persistent-individuals",
       "version": "1.0.0",
       "owner": "v2x-10-persistent-individuals",
       "kind": "data",
@@ -24,7 +24,7 @@
       "source": "config/extensions/v2x-10-persistent-individuals/providers.json",
       "dependencies": ["v2x10.model.persistent-individuals"],
       "authority": "MODEL_DERIVED_SIMULATION",
-      "provenance": "Governed V2X-10 provider catalog for bounded persistent-individual refinement; it performs no canonical admission.",
+      "provenance": "Governed V2X-10 frontier provider catalog for bounded persistent-individual refinement. It remains outside the active PX shipping-provider namespace until a release consumer binding is ratified and performs no canonical admission.",
       "provides": ["v2x10.model.persistent-individuals.catalog"]
     }
   ]

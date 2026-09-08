@@ -44,9 +44,18 @@ export function validateCoverage(catalogs,tests){
  for(const t of tests)for(const id of t.providers)check(ids.has(id),'test references absent provider '+id);
  return providers;
 }
+export function providerCatalogsForConformance(plan){
+ const catalogs=[];
+ for(const component of plan){
+  if(component.kind!=='data')continue;
+  let value;try{value=JSON.parse(component.content);}catch{continue;}
+  if(value?.schema==='ofu-provider-catalog-1')catalogs.push(value);
+ }
+ return catalogs;
+}
 export function runConformance(tier,{root=process.cwd(),exact=false}={}){
- check(TIERS.includes(tier),'unknown tier');const tests=loadConformance(root),catalogs=loadComponents(root).filter(c=>c.id.startsWith('px.providers.')).map(c=>JSON.parse(c.content));
- validateCoverage(catalogs.filter(c=>c.schema==='ofu-provider-catalog-1'),tests);const source=execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),tree=execFileSync('git',['rev-parse','HEAD^{tree}'],{cwd:root,encoding:'utf8'}).trim(),dirty=execFileSync('git',['status','--porcelain'],{cwd:root,encoding:'utf8'}).trim().length>0;
+ check(TIERS.includes(tier),'unknown tier');const tests=loadConformance(root),plan=loadComponents(root),catalogs=providerCatalogsForConformance(plan);
+ validateCoverage(catalogs,tests);const source=execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),tree=execFileSync('git',['rev-parse','HEAD^{tree}'],{cwd:root,encoding:'utf8'}).trim(),dirty=execFileSync('git',['status','--porcelain'],{cwd:root,encoding:'utf8'}).trim().length>0;
  if(exact){check(!dirty,'exact evidence requires clean source');check(!process.env.OFU_SOURCE_SHA||process.env.OFU_SOURCE_SHA===source,'source SHA mismatch');}
  const results=[];
  for(const t of tests.filter(t=>TIERS.indexOf(t.tier)<=TIERS.indexOf(tier))){const start=performance.now(),command=t.command[0]==='node'?process.execPath:t.command[0],r=spawnSync(command,t.command.slice(1),{cwd:root,env:process.env,encoding:'utf8',timeout:t.timeoutMs,maxBuffer:8*1024*1024});
