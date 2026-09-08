@@ -2,10 +2,13 @@
 
 What changes, and why?
 
+> Tip: run `npm run contrib:explain -- <changed-path>` locally. CI will independently derive PR risk, areas and bootstrap owners from the exact diff.
+
 ## Contribution unit
 
 - Area(s):
 - Risk class (`R0`–`R5`):
+- Contribution Unit ID/manifest (for significant subsystems):
 - Issue/RFC/ADR:
 - Intended authority class:
 
@@ -25,6 +28,8 @@ Describe authority boundaries, determinism class, resource bounds, and cross-dom
 ## Scientific / provenance impact
 
 State model fidelity, references/data provenance, uncertainty, and forbidden claims where relevant. Write `N/A` when genuinely not applicable.
+
+For new third-party code/data/assets, identify the provenance record or explain why none is required.
 
 ## Evidence
 

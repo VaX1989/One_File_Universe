@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "community.open-source-control-plane",
+  "version": "1.0.0",
+  "area": "community",
+  "description": "Machine-readable contributor routing, ownership, risk, licensing-governance and launch-readiness control plane.",
+  "authority": ["GOVERNANCE_METADATA_ONLY"],
+  "determinismClass": "D0",
+  "scientificFidelityClass": "NOT_APPLICABLE",
+  "canonicalStateImpact": "NONE",
+  "persistenceImpact": "NONE",
+  "capabilities": ["AREA_ROUTING","RISK_CLASSIFICATION","OWNER_ROUTING","CODEOWNERS_GENERATION","PUBLIC_LAUNCH_GATING"],
+  "dependencies": [],
+  "sourcePaths": ["config/governance/**","tools/contrib/**","docs/community/**",".github/CODEOWNERS",".github/workflows/contributor-control-plane.yml"],
+  "testPaths": ["tools/contrib/validate-governance.mjs"],
+  "evidencePaths": [],
+  "resourceBudget": {"runtime":"NON_SHIPPING","ci":"LIGHTWEIGHT_PR_GATE"},
+  "artifactReachability": "NON_SHIPPING",
+  "compatibilityVersion": "ofu-governance-1"
+}

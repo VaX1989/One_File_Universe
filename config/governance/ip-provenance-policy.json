@@ -1,0 +1,15 @@
+{
+  "version": "2026-09-08.1",
+  "schema": "config/governance/ip-provenance.schema.json",
+  "historicalCorpusStatus": "AUDIT_REQUIRED_BEFORE_FULL_COMMERCIAL_RELICENSING_CLAIM",
+  "newThirdPartyMaterialRequiresProvenanceRecordBeforeMerge": true,
+  "unknownLicenseFailsClosedForShippingEmbedding": true,
+  "datasetRedistributionMustBeExplicit": true,
+  "generatedMaterialMustRecordGeneratorOrSourceWhenMaterial": true,
+  "aiAssistedMaterialRequiresHumanResponsibilityAndDisclosureWhenMaterial": true,
+  "reuse": {
+    "targetSpecification": "3.3",
+    "migrationStatus": "PLANNED_INCREMENTAL_AFTER_CORPUS_AUDIT",
+    "complianceClaim": false
+  }
+}

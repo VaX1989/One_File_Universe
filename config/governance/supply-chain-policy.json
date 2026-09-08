@@ -1,0 +1,23 @@
+{
+  "version": "2026-09-08.1",
+  "githubActions": {
+    "pinThirdPartyActionsToFullCommitSha": true,
+    "leastPrivilegePermissions": true,
+    "persistCheckoutCredentials": false,
+    "pullRequestTargetForUntrustedCodeForbidden": true
+  },
+  "build": {
+    "exactSourceIdentityRequired": true,
+    "deterministicDoubleBuildRequiredForRelease": true,
+    "networkIndependentBaseline": true,
+    "artifactHashRequired": true
+  },
+  "targets": {
+    "slsaCompatibleBuildProvenance": true,
+    "spdxSbomForPublishedReleases": true,
+    "openSSFScorecardEvaluation": true,
+    "dependencyReviewBeforePublicScale": true,
+    "secretScanningAndPushProtectionBeforePublicScale": true
+  },
+  "claimPolicy": "Targets are not claimed implemented until repository settings/workflows produce evidence."
+}

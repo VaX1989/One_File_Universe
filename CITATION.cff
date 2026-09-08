@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+message: "If you use One File Universe in research, education or a derivative scientific workflow, please cite the project and the exact release or source revision used."
+title: "One File Universe"
+type: software
+authors:
+  - name: "One File Universe contributors"
+repository-code: "https://github.com/VaX1989/One_File_Universe"
+license: "GPL-3.0-only"
+keywords:
+  - simulation
+  - procedural-generation
+  - scientific-visualization
+  - multiscale
+  - reproducibility

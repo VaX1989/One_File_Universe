@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://one-file-universe.invalid/schemas/ip-provenance.schema.json",
+  "title": "OFU IP and Data Provenance Record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion","recordId","scope","originType","licenseExpression","redistributionAllowed","commercialUseAllowed","reviewStatus"],
+  "properties": {
+    "schemaVersion": {"const":1},
+    "recordId": {"type":"string","minLength":1},
+    "scope": {"type":"array","items":{"type":"string"},"minItems":1},
+    "originType": {"type":"string","enum":["PROJECT_ORIGINAL","EXTERNAL_CONTRIBUTOR","THIRD_PARTY_CODE","THIRD_PARTY_DATA","THIRD_PARTY_ASSET","PUBLIC_DOMAIN","GENERATED","AI_ASSISTED_HUMAN_AUTHORED","UNKNOWN_PENDING_AUDIT"]},
+    "copyrightHolder": {"type":"string"},
+    "authors": {"type":"array","items":{"type":"string"}},
+    "source": {"type":"string"},
+    "sourceVersion": {"type":"string"},
+    "doi": {"type":"string"},
+    "licenseExpression": {"type":"string","minLength":1},
+    "redistributionAllowed": {"type":"boolean"},
+    "commercialUseAllowed": {"type":"boolean"},
+    "modificationAllowed": {"type":"boolean"},
+    "attribution": {"type":"string"},
+    "checksum": {"type":"string"},
+    "reviewStatus": {"type":"string","enum":["VERIFIED","REVIEW_REQUIRED","BLOCKED","UNKNOWN"]},
+    "notes": {"type":"string"}
+  }
+}
