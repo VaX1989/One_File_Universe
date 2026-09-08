@@ -24,7 +24,7 @@
       "source": "src/audio/v2x14/audio-controller.js",
       "dependencies": ["v2x14.audio.living-context", "v1x13.audio.runtime", "v1x13.audio.controls", "v1.product.living-universe"],
       "authority": "PRESENTATION_ONLY",
-      "provenance": "User-activated bounded V1X-13 orchestration with serialized/deduplicated controls, mute/zero-volume/visibility suspension, idempotent disposal and honest user-visible off/silent/unsupported/active status. Audio remains optional and never becomes navigation, accessibility or world-state authority.",
+      "provenance": "User-activated bounded V1X-13 orchestration with serialized/deduplicated controls, mute/zero-volume/visibility suspension, idempotent disposal and honest user-visible off/silent/unsupported/active status. Context polling is strictly demand-driven: no idle, muted, zero-volume, hidden or disposed interval remains active; at most one 600ms poll timer may exist while audio is actually requested. Audio remains optional and never becomes navigation, accessibility or world-state authority.",
       "provides": ["v2x14.audio.controller"]
     }
   ]

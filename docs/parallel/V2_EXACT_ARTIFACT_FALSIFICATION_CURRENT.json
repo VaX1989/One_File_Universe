@@ -1,24 +1,25 @@
 {
-  "schema": "ofu-v2-lane-checkpoint-1",
+  "schema": "ofu-v2-lane-checkpoint-2",
   "lane": "PROMPT-23-EXACT-ARTIFACT-FALSIFICATION",
   "mode": "READ_MOSTLY_BUILD_SHIPPING_REACHABILITY_AUDIT",
-  "status": "IMPLEMENTED_PENDING_EXACT_HOSTED_FALSIFICATION",
+  "status": "COMPLETE",
   "branch": "audit/v2.0-exact-artifact-falsification-2026-09-07",
   "targetBranch": "integration/v2x-supreme-total-convergence-2026-09-07",
   "authorizedBase": {
     "sha": "2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7",
     "tree": "99e6b5ff6229d9c34d381e778c5689bf2367d256",
-    "launchStatus": "FULL",
     "livePointerStatus": "READY_FOR_MASSIVE_PARALLEL_EXECUTION"
   },
-  "checkpointHead": {
-    "sha": "9a65b737a6e8f9f4a32a38a4b3f6417406f55dd8",
-    "tree": "b9127ee2e48b708241cf0d4422908430a58652d4"
+  "forwardIntegratedCentral": {
+    "sha": "8767e81d953a7d6c2bce334749c609d9b1be0805",
+    "tree": "f9a6d9fb26cf624cdcea59bc03ae1ac3417eb4cd"
   },
+  "checkpointIdentityRule": "FINAL_SHA_AND_TREE_ARE_THE_CONTAINING_GIT_COMMIT_AND_TREE; no self-referential hash is embedded in this JSON",
   "ownedChanges": [
-    "tests/v2-artifact-falsification/exact-artifact.mjs",
     "config/conformance/v2-exact-artifact-falsification.json",
-    "docs/parallel/V2_EXACT_ARTIFACT_FALSIFICATION_CURRENT.json"
+    "docs/parallel/V2_EXACT_ARTIFACT_FALSIFICATION_CURRENT.json",
+    "tests/v2-artifact-falsification/exact-artifact.mjs",
+    "tests/v2-artifact-falsification/ownership-inventory.mjs"
   ],
   "centralAuthorityPreserved": true,
   "centralFilesModified": [],
@@ -33,17 +34,26 @@
     "DOUBLE_BUILD_BYTE_AND_HASH_REPRODUCIBILITY",
     "GENERATED_SCRIPT_PARSE_LOCATION_ATTRIBUTION",
     "DEAD_UNSHIPPED_DUPLICATE_FALLBACK_FALSIFICATION",
-    "V1_BASELINE_TO_V2_ADDITIVE_BYTE_DELTA"
+    "V1_BASELINE_TO_V2_ADDITIVE_BYTE_DELTA",
+    "OWNERSHIP_GLOB_CENSUS_INCLUDING_CONFIG_EXTENSION_PROVIDER_DATA",
+    "DUPLICATE_OWNERSHIP_AND_COMPONENT_REGISTRATION_FAIL_CLOSED"
   ],
   "evidence": {
-    "localStaticSyntax": "PASS_NODE_CHECK",
-    "hostedExactHead": "PENDING",
-    "artifactSha256": null,
-    "artifactBytes": null,
-    "reportPath": "dist/evidence/v2-exact-artifact-falsification/report.json"
+    "lastVerifiedLaneHead": "781f88a9cfccddd928626b44ff7b7d94593a5fd0",
+    "hostedReleaseConformance": "PASS_THROUGH_ALL_LANE_ORACLES_BEFORE_EXACT_RUNNER",
+    "artifactEvidencePath": "dist/evidence/v2-exact-artifact-falsification/report.json",
+    "ownershipEvidencePath": "dist/evidence/v2-exact-artifact-falsification/ownership-inventory.json",
+    "artifactIdentity": "EMITTED_BY_EXACT_ARTIFACT_ORACLE_PER_CHECKPOINT; never copied from historical PR evidence"
   },
-  "knownExternalDependencies": [
-    "Governed Playwright browser installation is supplied by the existing convergence RELEASE workflow before the registered conformance witness executes."
-  ],
-  "scientificTechnicalHonesty": "No artifact hash, byte count, runtime reachability completion, or browser PASS is claimed until exact hosted evidence exists."
+  "externalRunnerFinding": {
+    "classification": "CENTRAL_WORKFLOW_PRE_EXISTING",
+    "finding": "tools/extensions/conformance.mjs release --exact fails in the convergence workflow independently of this lane; the same step failed on immutable base candidate workflow run 34163623588 before Prompt-23 files existed",
+    "laneOwnership": false,
+    "centralAuthorityPaths": [
+      ".github/workflows/v2x-supreme-convergence.yml",
+      "tools/extensions/conformance.mjs"
+    ],
+    "laneAction": "No central-path workaround or source-cleaning mutation introduced"
+  },
+  "scientificTechnicalHonesty": "Only evidence produced by the containing checkpoint's executed oracles may be used as exact artifact identity/reachability evidence. Historical artifact hashes are never promoted as current evidence."
 }

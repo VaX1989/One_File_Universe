@@ -8,7 +8,7 @@ const ROOT=process.cwd();
 const MATRIX='docs/parallel/V2X_OWNERSHIP_MATRIX.json';
 const ARTIFACT='dist/One_File_Universe.html';
 const REPORT='dist/evidence/v2-exact-artifact-falsification/ownership-inventory.json';
-const SOURCE_ROOT=/^(?:src|assets|data)\//;
+const SOURCE_ROOT=/^(?:src|assets|data|config\/extensions)\//;
 const sha256=value=>crypto.createHash('sha256').update(value).digest('hex');
 const readText=rel=>fs.readFileSync(path.join(ROOT,rel),'utf8').replace(/\r\n?/g,'\n');
 const tracked=execFileSync('git',['ls-files','-z'],{cwd:ROOT,encoding:'utf8'}).split('\0').filter(Boolean);
@@ -72,9 +72,13 @@ files.sort((a,b)=>a.path.localeCompare(b.path));
 const unshipped=files.filter(file=>!file.shipped);
 const multiplyOwned=files.filter(file=>file.laneIds.length>1).map(file=>({path:file.path,laneIds:file.laneIds}));
 const sourceComponentCollisions=files.filter(file=>file.componentIds.length>1).map(file=>({path:file.path,componentIds:file.componentIds}));
+const hardFailures=[];
+if(unshipped.length)hardFailures.push('OWNED_SOURCE_UNSHIPPED');
+if(multiplyOwned.length)hardFailures.push('OWNED_SOURCE_MULTIPLE_LANE_AUTHORITY');
+if(sourceComponentCollisions.length)hardFailures.push('SOURCE_REGISTERED_BY_MULTIPLE_SHIPPING_COMPONENTS');
 const report={
   schema:'ofu-v2-exact-artifact-ownership-inventory-1',
-  status:unshipped.length?'FAIL':'PASS',
+  status:hardFailures.length?'FAIL':'PASS',
   sourceHead:execFileSync('git',['rev-parse','HEAD'],{cwd:ROOT,encoding:'utf8'}).trim(),
   sourceTree:execFileSync('git',['rev-parse','HEAD^{tree}'],{cwd:ROOT,encoding:'utf8'}).trim(),
   trackedFileCount:tracked.length,
@@ -83,9 +87,10 @@ const report={
   unshipped,
   multiplyOwned,
   sourceComponentCollisions,
+  hardFailures,
   files
 };
 fs.mkdirSync(path.dirname(path.join(ROOT,REPORT)),{recursive:true});
 fs.writeFileSync(path.join(ROOT,REPORT),JSON.stringify(report,null,2)+'\n');
-console.log(JSON.stringify({schema:report.schema,status:report.status,sourceHead:report.sourceHead,sourceTree:report.sourceTree,v2OwnedSourceCount:report.v2OwnedSourceCount,shippedSourceCount:report.shippedSourceCount,unshippedCount:unshipped.length,multiplyOwnedCount:multiplyOwned.length,sourceComponentCollisionCount:sourceComponentCollisions.length,unshipped:unshipped.slice(0,64).map(file=>file.path),reportPath:REPORT}));
-if(unshipped.length)process.exitCode=1;
+console.log(JSON.stringify({schema:report.schema,status:report.status,sourceHead:report.sourceHead,sourceTree:report.sourceTree,v2OwnedSourceCount:report.v2OwnedSourceCount,shippedSourceCount:report.shippedSourceCount,unshippedCount:unshipped.length,multiplyOwnedCount:multiplyOwned.length,sourceComponentCollisionCount:sourceComponentCollisions.length,hardFailures,unshipped:unshipped.slice(0,64).map(file=>file.path),reportPath:REPORT}));
+if(hardFailures.length)process.exitCode=1;
