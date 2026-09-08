@@ -19,12 +19,13 @@ const required = [
   '.github/CODEOWNERS','.github/PULL_REQUEST_TEMPLATE.md','.github/SUPPORT.md','.github/workflows/contributor-control-plane.yml',
   'docs/community/START_HERE.md','docs/community/OFU_WAY.md','docs/community/CONTRIBUTOR_RIGHTS.md',
   'docs/community/RFC_PROCESS.md','docs/community/CONTRIBUTION_UNITS.md','docs/community/PUBLIC_LAUNCH_READINESS.md',
-  'docs/community/IP_PROVENANCE.md','docs/community/SUPPLY_CHAIN_SECURITY.md','data/provenance/README.md',
+  'docs/community/IP_PROVENANCE.md','docs/community/SUPPLY_CHAIN_SECURITY.md','docs/community/GOVERNANCE_MATURITY.md','data/provenance/README.md',
+  'docs/adr/ADR-027-open-source-and-dual-licensing.md','docs/adr/ADR-028-community-scale-governance-and-serial-integration-lease.md',
   'config/governance/areas.json','config/governance/ownership.json','config/governance/risk-policy.json',
   'config/governance/contribution-policy.json','config/governance/scientific-model-card.schema.json',
   'config/governance/contribution-unit.schema.json','config/governance/public-launch-gates.json',
   'config/governance/ip-provenance.schema.json','config/governance/ip-provenance-policy.json',
-  'config/governance/supply-chain-policy.json'
+  'config/governance/supply-chain-policy.json','config/governance/community-resilience.json'
 ];
 for (const p of required) check(fs.existsSync(rel(p)), `missing required governance file: ${p}`);
 
@@ -35,9 +36,7 @@ check(license.includes('END OF TERMS AND CONDITIONS'), 'LICENSE appears incomple
 
 const pkg = json('package.json');
 check(pkg.license === 'GPL-3.0-only', `package.json license must be GPL-3.0-only, got ${pkg.license ?? 'missing'}`);
-for (const script of ['contrib:doctor','contrib:classify','contrib:explain','contrib:pr-context','governance:codeowners','launch:readiness','test:open-source-governance']) {
-  check(typeof pkg.scripts?.[script] === 'string', `package.json missing script: ${script}`);
-}
+for (const script of ['contrib:doctor','contrib:classify','contrib:explain','contrib:pr-context','governance:codeowners','launch:readiness','test:open-source-governance']) check(typeof pkg.scripts?.[script] === 'string', `package.json missing script: ${script}`);
 
 const areasDoc = json('config/governance/areas.json');
 check(Array.isArray(areasDoc.areas) && areasDoc.areas.length >= 10, 'area catalog is unexpectedly small');
@@ -84,8 +83,7 @@ check(read('.github/CODEOWNERS') === codeownersText(), 'CODEOWNERS drifted from 
 
 const unitSchema = json('config/governance/contribution-unit.schema.json');
 check(unitSchema.$schema?.includes('2020-12'), 'contribution-unit schema must declare JSON Schema 2020-12');
-const unitDir = rel('config/governance/contribution-units');
-const unitFiles = fs.readdirSync(unitDir).filter((name) => name.endsWith('.json'));
+const unitFiles = fs.readdirSync(rel('config/governance/contribution-units')).filter((name) => name.endsWith('.json'));
 check(unitFiles.length > 0, 'at least one contribution unit manifest is required');
 const unitIds = new Set();
 for (const name of unitFiles) {
@@ -123,6 +121,13 @@ check(supply.githubActions?.leastPrivilegePermissions === true, 'workflow permis
 check(supply.githubActions?.pullRequestTargetForUntrustedCodeForbidden === true, 'pull_request_target with untrusted code must remain forbidden');
 check(supply.build?.exactSourceIdentityRequired === true, 'exact source identity must remain required');
 
+const resilience = json('config/governance/community-resilience.json');
+const stages = new Set((resilience.stages ?? []).map((stage) => stage.id));
+check(stages.has(resilience.currentStage), 'community resilience currentStage is unknown');
+check(resilience.currentStage === 'BOOTSTRAP', 'bootstrap personal repository must not be falsely presented as mature before evidence changes');
+check(resilience.currentEvidence?.activeIntegrationMaintainers === 1, 'bootstrap evidence must truthfully record one integration maintainer');
+check(resilience.currentEvidence?.organizationTeamsOperational === false, 'organization teams must not be claimed operational yet');
+
 const workflow = read('.github/workflows/contributor-control-plane.yml');
 check(workflow.includes('permissions:\n  contents: read'), 'contributor workflow must use read-only contents permission');
 check(workflow.includes('persist-credentials: false'), 'contributor workflow must not persist checkout credentials');
@@ -134,6 +139,10 @@ const citation = read('CITATION.cff');
 check(citation.includes('license: "GPL-3.0-only"'), 'CITATION.cff license mismatch');
 check(citation.includes('VaX1989/One_File_Universe'), 'CITATION.cff repository mismatch');
 
+const adrIndex = read('docs/adr/README.md');
+check(adrIndex.includes('[027](ADR-027-open-source-and-dual-licensing.md)'), 'ADR-027 missing from index');
+check(adrIndex.includes('[028](ADR-028-community-scale-governance-and-serial-integration-lease.md)'), 'ADR-028 missing from index');
+
 const result = {
   status: errors.length === 0 ? 'PASS' : 'FAIL',
   suite: 'ofu-open-source-governance-2',
@@ -141,6 +150,7 @@ const result = {
   areas: areaIds.size,
   contributionUnits: unitIds.size,
   launchGates: gateIds.size,
+  communityStage: resilience.currentStage,
   riskLevels: [...riskIds].sort(),
   errors
 };

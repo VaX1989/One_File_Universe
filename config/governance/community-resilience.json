@@ -1,0 +1,21 @@
+{
+  "version": "2026-09-08.1",
+  "currentStage": "BOOTSTRAP",
+  "claimPolicy": "A maturity stage may be claimed only when every required condition for that stage is evidenced; target roles do not count as staffed roles.",
+  "stages": [
+    {"id":"BOOTSTRAP","required":{"activeIntegrationMaintainers":1,"criticalAreaMinimumMaintainers":1,"independentMaintainers":0,"privateSecurityReporting":false,"reviewedContributorRights":false},"description":"Founder-led personal repository with scalable structures prepared but not yet independently staffed."},
+    {"id":"EMERGING_COMMUNITY","required":{"activeIntegrationMaintainers":2,"criticalAreaMinimumMaintainers":2,"independentMaintainers":3,"privateSecurityReporting":true,"reviewedContributorRights":true},"description":"Multiple independent reviewers/maintainers can safely absorb external contributions."},
+    {"id":"DISTRIBUTED_MAINTAINERSHIP","required":{"activeIntegrationMaintainers":5,"criticalAreaMinimumMaintainers":2,"independentMaintainers":10,"technicalSteeringCommitteeMin":5,"organizationTeamsOperational":true},"description":"Critical authority is no longer operationally dependent on one person and the serial integration lease can rotate."},
+    {"id":"COMMUNITY_RESILIENT","required":{"activeIntegrationMaintainers":5,"criticalAreaMinimumMaintainers":3,"independentMaintainers":20,"technicalSteeringCommitteeMin":5,"organizationTeamsOperational":true,"successionPlanTested":true},"description":"The project can continue normal governance and releases through founder or individual maintainer absence."}
+  ],
+  "currentEvidence": {
+    "activeIntegrationMaintainers": 1,
+    "criticalAreaMinimumMaintainers": 1,
+    "independentMaintainers": 0,
+    "technicalSteeringCommitteeMin": 0,
+    "organizationTeamsOperational": false,
+    "privateSecurityReporting": false,
+    "reviewedContributorRights": false,
+    "successionPlanTested": false
+  }
+}
