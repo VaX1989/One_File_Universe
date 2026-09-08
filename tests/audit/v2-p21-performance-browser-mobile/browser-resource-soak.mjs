@@ -20,6 +20,7 @@ const CYCLES=Number(process.env.P21_CYCLES||12);
 assert.ok(Number.isInteger(CYCLES)&&CYCLES>=8&&CYCLES<=40,'P21_CYCLES must be 8..40');
 
 function executableCandidates(name){
+ if(process.platform!=='linux')return [];
  const roots=[process.env.PLAYWRIGHT_BROWSERS_PATH,path.join(os.homedir(),'.cache','ms-playwright')].filter(Boolean);
  const prefixes=name==='chromium'?['chromium_headless_shell-','chromium-']:name==='firefox'?['firefox-']:['webkit-'];
  const tails=name==='chromium'?['chrome-linux/headless_shell','chrome-linux/chrome','chrome-linux64/chrome']:name==='firefox'?['firefox/firefox']:['pw_run.sh'];
@@ -30,15 +31,26 @@ function executableCandidates(name){
  }
  return out.filter(x=>{try{fs.accessSync(x,fs.constants.X_OK);return true}catch{return false}});
 }
+function launchOptions(name,executablePath=null){
+ const options={headless:true};
+ if(name==='chromium')options.args=['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader'];
+ if(executablePath)options.executablePath=executablePath;
+ return options;
+}
 async function launchEngine(name,engine){
- try{return {browser:await engine.launch({headless:true}),launcher:{status:'PLAYWRIGHT_EXPECTED_EXECUTABLE',executable:engine.executablePath()}}}
- catch(error){
+ try{
+  const browser=await engine.launch(launchOptions(name));
+  return {browser,launcher:{status:'PLAYWRIGHT_EXPECTED_EXECUTABLE',governedExpectedExecutable:true,executable:engine.executablePath(),version:browser.version()}};
+ }catch(error){
   const original=String(error?.message||error);
   if(!/Executable doesn't exist|executable.*not found|Failed to launch/i.test(original))throw error;
   const attempted=[];
   for(const executablePath of executableCandidates(name)){
    attempted.push(executablePath);
-   try{return {browser:await engine.launch({headless:true,executablePath}),launcher:{status:'PINNED_CACHE_EXECUTABLE_FALLBACK',expected:engine.executablePath(),executable:executablePath,originalError:original.slice(0,600)}}}catch{}
+   try{
+    const browser=await engine.launch(launchOptions(name,executablePath));
+    return {browser,launcher:{status:'PINNED_LINUX_CACHE_EXECUTABLE_FALLBACK',governedExpectedExecutable:false,infrastructureVariance:'PLAYWRIGHT_CACHE_REVISION_SKEW',expected:engine.executablePath(),executable:executablePath,version:browser.version(),originalError:original.slice(0,600)}};
+   }catch{}
   }
   throw new Error(`${name} browser runtime unavailable after bounded pinned-cache fallback; expected=${engine.executablePath()} candidates=${JSON.stringify(attempted)} original=${original.slice(0,1200)}`);
  }
@@ -51,7 +63,6 @@ async function framePacing(page){
   return {status:'MEASURED_RAF_INTERVALS',samples:samples.length,p50Ms:pick(.5),p95Ms:pick(.95),maxMs:Math.max(0,...samples),over50ms:samples.filter(x=>x>50).length};
  });
 }
-
 function slope(values){
  if(values.length<2)return null;
  const n=values.length,xb=(n-1)/2,yb=values.reduce((a,b)=>a+b,0)/n;
@@ -61,6 +72,7 @@ function slope(values){
 }
 function nondecreasing(values){return values.length>2&&values.every((v,i)=>i===0||v>=values[i-1])&&values.at(-1)>values[0]}
 function plateau(values,tolerance){if(values.length<4)return true;const warm=values.slice(Math.floor(values.length/2));return Math.max(...warm)-Math.min(...warm)<=tolerance}
+function range(values){return values.length?Math.max(...values)-Math.min(...values):0}
 
 async function instrument(context){
  await context.addInitScript(()=>{
@@ -72,11 +84,13 @@ async function instrument(context){
   proto.addEventListener=function(type,listener,opts){
    if(!listener)return add.call(this,type,listener,opts);
    let m=registry.get(this);if(!m){m=new Map();registry.set(this,m)}let a=m.get(type);if(!a){a=[];m.set(type,a)}const c=capture(opts);
-   if(a.some(x=>x.listener===listener&&x.capture===c))return add.call(this,type,listener,opts);
+   if(a.some(x=>x.listener===listener&&x.capture===c))return undefined;
+   const signal=typeof opts==='object'?opts?.signal:null;
+   if(signal?.aborted)return add.call(this,type,listener,opts);
    const once=!!(typeof opts==='object'&&opts?.once),entry={listener,capture:c,wrapped:listener};
    if(once){entry.wrapped=typeof listener==='function'?function(...args){forget(this,type,entry);return listener.apply(this,args)}:{handleEvent(event){forget(event.currentTarget,type,entry);return listener.handleEvent(event)}};}
    a.push(entry);active.listeners++;
-   const signal=typeof opts==='object'?opts?.signal:null;if(signal&&typeof signal.addEventListener==='function')add.call(signal,'abort',()=>forget(this,type,entry),{once:true});
+   if(signal&&typeof signal.addEventListener==='function')add.call(signal,'abort',()=>forget(this,type,entry),{once:true});
    return add.call(this,type,entry.wrapped,opts);
   };
   proto.removeEventListener=function(type,listener,opts){
@@ -93,10 +107,10 @@ async function instrument(context){
 }
 
 async function ready(page){
- await page.waitForFunction(()=>OFU?.v1Experience?.snapshot?.().initialized&&OFU?.v1Session&&OFU?.v1LivingProduct?.snapshot?.().initialized&&OFU?.productUI&&OFU?.waveIVScaleRuntime,{timeout:30000});
+ await page.waitForFunction(()=>globalThis.OFU?.v1Experience?.snapshot?.().initialized&&globalThis.OFU?.v1Session&&globalThis.OFU?.v1LivingProduct?.snapshot?.().initialized&&globalThis.OFU?.productUI&&globalThis.OFU?.waveIVScaleRuntime,{timeout:30000});
 }
-async function openExplore(page){await page.evaluate(()=>OFU.productUI.workspace('explore',{focus:false,announceChange:false}));await page.waitForFunction(()=>!document.querySelector('[data-workspace-panel="explore"]').hidden)}
-async function waitStage(page,stage){await page.waitForFunction(s=>OFU.v1LivingProduct.runtime.snapshot().stage===s,stage,{timeout:15000})}
+async function openExplore(page){await page.evaluate(()=>OFU.productUI.workspace('explore',{focus:false,announceChange:false}));await page.waitForFunction(()=>{const p=document.querySelector('[data-workspace-panel="explore"]');return !!p&&!p.hidden})}
+async function waitStage(page,stage){await page.waitForFunction(s=>globalThis.OFU?.v1LivingProduct?.runtime?.snapshot?.().stage===s,stage,{timeout:15000})}
 async function clickScale(page,id){await openExplore(page);const x=page.locator(`[data-living-scale="${id}"]:visible`).first();await x.waitFor({state:'visible',timeout:7000});await x.click();await waitStage(page,id)}
 async function clickFirstEntity(page){await openExplore(page);const x=page.locator('#living-panel [data-living-entity]:visible').first();await x.waitFor({state:'visible',timeout:7000});await x.click()}
 async function clickAction(page,id){await openExplore(page);const x=page.locator(`#living-panel [data-living-action="${id}"]:visible`).first();await x.waitFor({state:'visible',timeout:7000});await x.click()}
@@ -126,36 +140,62 @@ async function sample(page,cycle){
  },cycle);
 }
 
+async function contextRecovery(page){
+ await page.evaluate(()=>OFU.v1LivingProduct.runtime.scale('APPROACH'));await waitStage(page,'APPROACH');
+ const result=await page.evaluate(async()=>{
+  const product=OFU.v1LivingProduct,canvas=document.getElementById('living-gl'),gl=canvas?.getContext?.('webgl2'),ext=gl?.getExtension?.('WEBGL_lose_context');
+  if(!gl)return{status:'NOT_MEASURABLE_BACKEND_NOT_WEBGL2'};
+  if(!ext)return{status:'NOT_MEASURABLE_EXTENSION_UNAVAILABLE'};
+  const runtime=()=>{const s=product.runtime.snapshot();return{revision:s.revision,stage:s.stage,semanticScale:s.semanticScale,world:s.world?.planetIdentity||null,body:s.body?.canonicalId||s.body?.entityId||null,historyDepth:s.historyDepth}};
+  const before=runtime(),previous=product.renderer.state().gpu;
+  const waitEvent=(name,timeout)=>new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error(name+' timeout')),timeout);canvas.addEventListener(name,()=>{clearTimeout(timer);resolve(true)},{once:true})});
+  const lost=waitEvent('webglcontextlost',4000);ext.loseContext();await lost;
+  const restored=waitEvent('webglcontextrestored',5000);ext.restoreContext();await restored;
+  const deadline=performance.now()+6000;let afterGpu=null;
+  while(performance.now()<deadline){const gpu=product.renderer.state().gpu;if(gpu&&!gpu.contextLost&&gpu.frame>(previous?.frame||0)){afterGpu=gpu;break}await new Promise(resolve=>requestAnimationFrame(resolve))}
+  if(!afterGpu)throw new Error('Living WebGL2 backend did not recover within bounded deadline');
+  return{status:'MEASURED',before,after:runtime(),gpu:{frameBefore:previous?.frame||0,frameAfter:afterGpu.frame,allocatedPrograms:afterGpu.allocatedPrograms,allocatedBuffers:afterGpu.allocatedBuffers,allocatedTextures:afterGpu.allocatedTextures,restores:afterGpu.measurements?.restores??null}};
+ });
+ if(result.status==='MEASURED'){
+  assert.deepEqual(result.after,result.before,'context recovery must preserve runtime identity and history');
+  assert.ok(result.gpu.frameAfter>result.gpu.frameBefore,'context recovery must redraw');
+  assert.ok((result.gpu.allocatedPrograms??0)<=2&& (result.gpu.allocatedBuffers??0)<=1 && (result.gpu.allocatedTextures??0)<=1,'context recovery resource inventory exceeded shipping bounds');
+ }
+ await page.evaluate(()=>OFU.v1LivingProduct.runtime.scale('HUMAN'));await waitStage(page,'HUMAN');
+ return result;
+}
+
 async function desktopSoak(browserName,browser){
- const context=await browser.newContext({viewport:{width:1280,height:800}});await instrument(context);const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(String(e?.message||e).slice(0,800)));
+ const context=await browser.newContext({viewport:{width:1280,height:800},offline:true});await instrument(context);const page=await context.newPage();const errors=[],externalRequests=[];page.on('pageerror',e=>errors.push(String(e?.message||e).slice(0,800)));page.on('request',r=>{if(/^https?:/i.test(r.url()))externalRequests.push(r.url())});
  const startupStart=Date.now();await page.goto(PRODUCT,{waitUntil:'load'});await ready(page);const startupMs=Date.now()-startupStart;const material=await seedToHuman(page);const samples=[];const transitionMs=[];
  for(let cycle=0;cycle<CYCLES;cycle++){
   const t0=Date.now();
-  await page.evaluate(id=>{const L=OFU.v1LivingProduct.runtime,s=L.snapshot();if(s.selectedObjectId!==id)L.selectObject(id);L.enterMicro(id);L.deeper();L.deeper();L.deeper();L.scale('HUMAN')},material);
-  await waitStage(page,'HUMAN');
-  if(cycle%3===0){const save=await page.evaluate(()=>OFU.v1Session.hex(OFU.v1Session.exportBytes()));await page.evaluate(()=>OFU.v1LivingProduct.runtime.scale('UNIVERSE'));await waitStage(page,'UNIVERSE');await page.evaluate(h=>OFU.v1Session.importBytes(OFU.v1Session.unhex(h)),save);await waitStage(page,'HUMAN')}
+  const pre=await page.evaluate(()=>OFU.v1Session.hex(OFU.v1Session.exportBytes()));await clickScale(page,'UNIVERSE');await page.evaluate(h=>OFU.v1Session.importBytes(OFU.v1Session.unhex(h)),pre);await waitStage(page,'HUMAN');
+  await page.evaluate(id=>{const L=OFU.v1LivingProduct.runtime,s=L.snapshot();if(s.selectedObjectId!==id)L.selectObject(id);L.enterMicro(id);L.deeper();L.deeper();L.deeper();L.scale('HUMAN')},material);await waitStage(page,'HUMAN');
+  const post=await page.evaluate(()=>OFU.v1Session.hex(OFU.v1Session.exportBytes()));await clickScale(page,'UNIVERSE');await page.evaluate(h=>OFU.v1Session.importBytes(OFU.v1Session.unhex(h)),post);await waitStage(page,'HUMAN');
   transitionMs.push(Date.now()-t0);samples.push(await sample(page,cycle));
  }
  for(const s of samples){assert.equal(s.stage,'HUMAN');assert.ok(s.history<=s.historyLimit);assert.ok(s.discoveryCache<=s.discoveryCacheLimit);if(s.providerCache!=null&&s.providerCacheLimit!=null)assert.ok(s.providerCache<=s.providerCacheLimit);assert.ok(s.sessionBytes<1048576);assert.equal(s.canonicalMutation,false);assert.equal(s.canonicalP6Mutation,false);if(s.working){assert.ok((s.working.activePatches??0)<=28);assert.ok((s.working.cpuMeshes??0)<=64)}}
- const warm=samples.slice(Math.floor(samples.length/3));const fields=['domNodes','canvasCount','listeners','workers'];const plateauEvidence={};for(const f of fields){const vals=warm.map(x=>x[f]).filter(Number.isFinite);plateauEvidence[f]={values:vals,slope:slope(vals),nondecreasing:nondecreasing(vals),plateau:plateau(vals,f==='listeners'?8:f==='domNodes'?16:2)};assert.equal(plateauEvidence[f].plateau,true,`${browserName} ${f} failed bounded plateau ${JSON.stringify(vals)}`)}
+ const warm=samples.slice(Math.floor(samples.length/3));const fields=['domNodes','canvasCount','listeners','workers'];const plateauEvidence={};for(const f of fields){const vals=warm.map(x=>x[f]).filter(Number.isFinite);plateauEvidence[f]={values:vals,slope:slope(vals),nondecreasing:nondecreasing(vals),plateau:plateau(vals,f==='listeners'?8:f==='domNodes'?16:2)};assert.equal(plateauEvidence[f].plateau,true,`${browserName} ${f} failed bounded plateau ${JSON.stringify(vals)}`);assert.equal(plateauEvidence[f].nondecreasing,false,`${browserName} ${f} showed monotonic growth ${JSON.stringify(vals)}`)}
  const heap=warm.map(x=>x.heap).filter(Number.isFinite);let heapEvidence={status:'NOT_MEASURABLE'};if(heap.length){const first=heap[0],last=heap.at(-1),limit=Math.max(first*2,first+64*1024*1024);heapEvidence={status:'MEASURED_BROWSER_JS_HEAP_ONLY',first,last,max:Math.max(...heap),slope:slope(heap),nondecreasing:nondecreasing(heap),limit};assert.ok(last<=limit,`${browserName} JS heap exceeded conservative soak bound`)}
- const contextLoss=await page.evaluate(async()=>{const canvas=document.getElementById('planet-view'),gl=canvas?.getContext?.('webgl2');if(!gl)return{status:'NOT_MEASURABLE_BACKEND_NOT_WEBGL2'};const ext=gl.getExtension('WEBGL_lose_context');if(!ext)return{status:'NOT_MEASURABLE_EXTENSION_UNAVAILABLE'};const before=OFU.v1LivingProduct.runtime.snapshot().stage;ext.loseContext();await new Promise(r=>setTimeout(r,80));ext.restoreContext();await new Promise(r=>setTimeout(r,180));return{status:'MEASURED',before,after:OFU.v1LivingProduct.runtime.snapshot().stage,isLost:gl.isContextLost()}});if(contextLoss.status==='MEASURED'){assert.equal(contextLoss.after,contextLoss.before);assert.equal(contextLoss.isLost,false)}
- assert.equal(errors.length,0,`${browserName} page errors: ${errors.join('\n')}`);
+ const contextLoss=await contextRecovery(page);
+ assert.equal(errors.length,0,`${browserName} page errors: ${errors.join('\n')}`);assert.equal(externalRequests.length,0,`${browserName} unexpected external requests: ${externalRequests.join('\n')}`);
  const longTask=await page.evaluate(()=>{const a=globalThis.__OFU_P21_AUDIT__;return a.longTaskSupport?{status:'MEASURED',count:a.longTasks.length,totalMs:a.longTasks.reduce((n,x)=>n+x.duration,0),maxMs:Math.max(0,...a.longTasks.map(x=>x.duration))}:{status:'NOT_MEASURABLE_UNSUPPORTED_ENTRY_TYPE'}});
  const pacing=await framePacing(page);
  const audioBounds=warm.map(x=>x.audioRuntime).filter(Boolean);for(const a of audioBounds){if(a.limits){assert.ok((a.contextCount??0)<=a.limits.audioContexts);assert.ok((a.liveNodes??0)<=a.limits.liveNodes)}}
- const evidence={browser:browserName,cycles:CYCLES,startupMs,transitionMs,transitionP95:[...transitionMs].sort((a,b)=>a-b)[Math.min(transitionMs.length-1,Math.floor(transitionMs.length*.95))],framePacing:pacing,plateau:plateauEvidence,heap:heapEvidence,longTasks:longTask,contextLoss,audio:{status:audioBounds.length?'MEASURED_RUNTIME_SNAPSHOT':'NOT_MEASURABLE_RUNTIME_SNAPSHOT_UNAVAILABLE',samples:audioBounds},samples};await context.close();return evidence;
+ const evidence={browser:browserName,cycles:CYCLES,universeMicroUniverseRoundTrips:CYCLES,startupMs,transitionMs,transitionP95:[...transitionMs].sort((a,b)=>a-b)[Math.min(transitionMs.length-1,Math.floor(transitionMs.length*.95))],framePacing:pacing,plateau:plateauEvidence,heap:heapEvidence,longTasks:longTask,contextLoss,audio:{status:audioBounds.length?'MEASURED_RUNTIME_SNAPSHOT':'NOT_MEASURABLE_RUNTIME_SNAPSHOT_UNAVAILABLE',samples:audioBounds},offline:true,externalRequests,samples};await context.close();return evidence;
 }
 
 async function mobileAndA11y(browserName,browser){
- const context=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:2,isMobile:true,hasTouch:true});await instrument(context);const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(String(e?.message||e).slice(0,800)));await page.goto(PRODUCT,{waitUntil:'load'});await ready(page);await page.waitForFunction(()=>document.documentElement.dataset.ofuMobile==='true',{timeout:10000});
+ const context=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:2,isMobile:true,hasTouch:true,offline:true});await instrument(context);const page=await context.newPage();const errors=[],externalRequests=[];page.on('pageerror',e=>errors.push(String(e?.message||e).slice(0,800)));page.on('request',r=>{if(/^https?:/i.test(r.url()))externalRequests.push(r.url())});await page.goto(PRODUCT,{waitUntil:'load'});await ready(page);await page.waitForFunction(()=>document.documentElement.dataset.ofuMobile==='true',{timeout:10000});
  await page.click('[data-render-stage="orbit"]');await page.waitForFunction(()=>OFU.waveIVScaleRuntime.snapshot().semanticScale==='orbit');const before=await page.evaluate(()=>({stage:OFU.v1LivingProduct.runtime.snapshot().stage,pinch:OFU.waveIVInputRouter.state.pinchIntents}));
  await page.evaluate(()=>{const c=document.getElementById('planet-view'),r=c.getBoundingClientRect(),ev=(type,id,x,y)=>c.dispatchEvent(new PointerEvent(type,{pointerId:id,pointerType:'touch',clientX:x,clientY:y,bubbles:true,cancelable:true,isPrimary:id===1,buttons:type==='pointerup'?0:1})),cy=r.top+r.height*.5,cx=r.left+r.width*.5;ev('pointerdown',1,cx-30,cy);ev('pointerdown',2,cx+30,cy);ev('pointermove',1,cx-58,cy);ev('pointermove',2,cx+58,cy);ev('pointerup',2,cx+58,cy);ev('pointerup',1,cx-58,cy)});await page.waitForTimeout(80);const pinch=await page.evaluate(()=>OFU.waveIVInputRouter.state.pinchIntents);assert.ok(pinch>before.pinch,'mobile pinch must route through canonical input owner');
- const sizes=[{width:844,height:390},{width:390,height:844},{width:700,height:320},{width:320,height:700},{width:390,height:844}];const resize=[];for(const size of sizes){await page.setViewportSize(size);await page.waitForTimeout(60);resize.push(await page.evaluate(()=>({w:innerWidth,h:innerHeight,stage:OFU.v1LivingProduct.runtime.snapshot().stage,dom:document.querySelectorAll('*').length,overflow:document.documentElement.scrollWidth>document.documentElement.clientWidth+1})));assert.equal(resize.at(-1).overflow,false)}
- assert.equal(errors.length,0,`${browserName} mobile errors: ${errors.join('\n')}`);await context.close();
- const reduced=await browser.newContext({viewport:{width:1024,height:768},reducedMotion:'reduce'});const rp=await reduced.newPage();await rp.goto(PRODUCT,{waitUntil:'load'});await ready(rp);const reducedMotion=await rp.evaluate(()=>({media:matchMedia('(prefers-reduced-motion: reduce)').matches,snapshot:globalThis.__OFU_V1X10_ACCESSIBILITY__?.snapshot?.().reducedMotion??null}));assert.equal(reducedMotion.media,true);if(reducedMotion.snapshot!=null)assert.equal(reducedMotion.snapshot,true);await reduced.close();return{method:'BROWSER_POINTER_EVENT_EMULATION',physicalDeviceVerified:false,pinch:true,resizeOrientation:resize,reducedMotion};
+ const sizes=[{width:844,height:390},{width:390,height:844},{width:700,height:320},{width:320,height:700},{width:390,height:844}];const resize=[];for(const size of sizes){await page.setViewportSize(size);await page.waitForTimeout(60);resize.push(await page.evaluate(()=>({w:innerWidth,h:innerHeight,stage:OFU.v1LivingProduct.runtime.snapshot().stage,dom:document.querySelectorAll('*').length,listeners:globalThis.__OFU_P21_AUDIT__?.active.listeners??null,workers:globalThis.__OFU_P21_AUDIT__?.active.workers??null,overflow:document.documentElement.scrollWidth>document.documentElement.clientWidth+1})));const s=resize.at(-1);assert.equal(s.stage,before.stage);assert.equal(s.overflow,false)}
+ assert.ok(range(resize.map(x=>x.dom).filter(Number.isFinite))<=16,`${browserName} mobile resize DOM growth exceeded bounded range`);assert.ok(range(resize.map(x=>x.listeners).filter(Number.isFinite))<=8,`${browserName} mobile resize listener growth exceeded bounded range`);assert.ok(range(resize.map(x=>x.workers).filter(Number.isFinite))<=2,`${browserName} mobile resize worker growth exceeded bounded range`);
+ assert.equal(errors.length,0,`${browserName} mobile errors: ${errors.join('\n')}`);assert.equal(externalRequests.length,0,`${browserName} mobile unexpected external requests: ${externalRequests.join('\n')}`);await context.close();
+ const reduced=await browser.newContext({viewport:{width:1024,height:768},reducedMotion:'reduce',offline:true});const rp=await reduced.newPage(),reducedExternal=[];rp.on('request',r=>{if(/^https?:/i.test(r.url()))reducedExternal.push(r.url())});await rp.goto(PRODUCT,{waitUntil:'load'});await ready(rp);const reducedMotion=await rp.evaluate(()=>({media:matchMedia('(prefers-reduced-motion: reduce)').matches,snapshot:globalThis.__OFU_V1X10_ACCESSIBILITY__?.snapshot?.().reducedMotion??null}));assert.equal(reducedMotion.media,true);if(reducedMotion.snapshot!=null)assert.equal(reducedMotion.snapshot,true);assert.equal(reducedExternal.length,0,`${browserName} reduced-motion unexpected external requests: ${reducedExternal.join('\n')}`);await reduced.close();return{method:'BROWSER_POINTER_EVENT_EMULATION',physicalDeviceVerified:false,pinch:true,resizeOrientation:resize,reducedMotion,offline:true};
 }
 
-const results={schema:'ofu-v2-p21-performance-browser-mobile-evidence-1',status:'PASS',exactSourceSha:SOURCE,authority:'MEASURED_RUNTIME_EVIDENCE',productTransport:PRODUCT_TRANSPORT,claims:{driverVram:'NOT_MEASURABLE',physicalGpuMemory:'NOT_MEASURABLE',physicalMobileDevices:'NOT_VERIFIED',jsHeap:'ENGINE_EXPOSED_ONLY',listenerCount:'TEST_INSTRUMENTED_EVENTTARGET_REGISTRATION_BALANCE',workerCount:'TEST_INSTRUMENTED_CONSTRUCTOR_TERMINATION_BALANCE',audioNodes:'PRODUCT_RUNTIME_SNAPSHOT_ONLY',framePacing:'REQUEST_ANIMATION_FRAME_INTERVALS'},cycles:CYCLES,browsers:{}};
+const results={schema:'ofu-v2-p21-performance-browser-mobile-evidence-1',status:'PASS',exactSourceSha:SOURCE,authority:'MEASURED_RUNTIME_EVIDENCE',productTransport:PRODUCT_TRANSPORT,claims:{driverVram:'NOT_MEASURABLE',physicalGpuMemory:'NOT_MEASURABLE',physicalMobileDevices:'NOT_VERIFIED',jsHeap:'ENGINE_EXPOSED_ONLY',listenerCount:'TEST_INSTRUMENTED_EVENTTARGET_REGISTRATION_BALANCE',workerCount:'TEST_INSTRUMENTED_CONSTRUCTOR_EXPLICIT_TERMINATION_BALANCE',audioNodes:'PRODUCT_RUNTIME_SNAPSHOT_ONLY',framePacing:'REQUEST_ANIMATION_FRAME_INTERVALS',fallbackBrowserBinary:'EXPLICITLY_RECORDED_INFRASTRUCTURE_VARIANCE_NOT_GOVERNED_EXPECTED_EXECUTABLE'},cycles:CYCLES,browsers:{}};
 for(const [name,engine] of Object.entries(ENGINES)){const launched=await launchEngine(name,engine),browser=launched.browser;try{results.browsers[name]={launcher:launched.launcher,desktop:await desktopSoak(name,browser),mobile:await mobileAndA11y(name,browser)}}finally{await browser.close()}}
-fs.writeFileSync(path.join(OUT,'exact-browser-resource-soak.json'),JSON.stringify(results,null,2)+'\n');console.log(JSON.stringify({status:results.status,schema:results.schema,exactSourceSha:SOURCE,productTransport:PRODUCT_TRANSPORT,cycles:CYCLES,browsers:Object.fromEntries(Object.entries(results.browsers).map(([k,v])=>[k,{launcher:v.launcher.status,startupMs:v.desktop.startupMs,p95Ms:v.desktop.transitionP95,frameP95Ms:v.desktop.framePacing.p95Ms,heap:v.desktop.heap.status,longTasks:v.desktop.longTasks.status,contextLoss:v.desktop.contextLoss.status,audio:v.desktop.audio.status,mobile:true}]))}));
+fs.writeFileSync(path.join(OUT,'exact-browser-resource-soak.json'),JSON.stringify(results,null,2)+'\n');console.log(JSON.stringify({status:results.status,schema:results.schema,exactSourceSha:SOURCE,productTransport:PRODUCT_TRANSPORT,cycles:CYCLES,browsers:Object.fromEntries(Object.entries(results.browsers).map(([k,v])=>[k,{launcher:v.launcher.status,version:v.launcher.version,startupMs:v.desktop.startupMs,p95Ms:v.desktop.transitionP95,frameP95Ms:v.desktop.framePacing.p95Ms,heap:v.desktop.heap.status,longTasks:v.desktop.longTasks.status,contextLoss:v.desktop.contextLoss.status,audio:v.desktop.audio.status,mobile:true}]))}));

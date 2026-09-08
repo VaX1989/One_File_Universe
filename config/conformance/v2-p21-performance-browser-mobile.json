@@ -2,7 +2,7 @@
   "schema": "ofu-conformance-1",
   "tests": [
     {
-      "id": "v2.p21.performance-browser-mobile-resource-soak",
+      "id": "audit.p21.performance-browser-mobile-resource-soak",
       "owner": "v2-p21-audit",
       "tier": "LANE_TARGETED",
       "command": [
@@ -13,7 +13,7 @@
         "v1.scene.living-world"
       ],
       "oracle": "ofu-v2-p21-performance-browser-mobile-evidence-1",
-      "timeoutMs": 420000
+      "timeoutMs": 840000
     }
   ]
 }

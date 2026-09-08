@@ -4,22 +4,30 @@
   "branch": "audit/v2.0-performance-browser-mobile-2026-09-07",
   "baseSha": "2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7",
   "baseTree": "99e6b5ff6229d9c34d381e778c5689bf2367d256",
-  "status": "IMPLEMENTED_EXECUTION_IN_PROGRESS",
+  "status": "COMPLETE_WITH_BLOCKERS",
   "authority": "EVIDENCE_AND_TESTS_ONLY",
   "productionWrites": false,
   "integrationPullRequest": 242,
   "certifierPullRequest": 244,
+  "ownedPaths": [
+    "config/conformance/v2-p21-performance-browser-mobile.json",
+    "tests/audit/v2-p21-performance-browser-mobile/browser-resource-soak.mjs",
+    "docs/parallel/handoffs/v2-p21-performance-browser-mobile/CURRENT.json"
+  ],
   "implemented": [
-    "exact-source single-file Living browser boot guard",
-    "Chromium Firefox WebKit repeated Human-to-micro-depth-to-Human soak",
-    "periodic Universe round-trip with portable save/import restoration",
-    "bounded provider cache discovery cache history session and working-set assertions",
-    "DOM canvas EventTarget-listener and Worker lifecycle test instrumentation",
-    "browser JS heap characterization only when exposed",
-    "Long Task observation when supported",
-    "WebGL2 context loss and restore when measurable",
-    "mobile pointer pinch emulation portrait-landscape resize storm and overflow falsification",
+    "exact-source shipping-manifest authenticated single-file Living browser boot",
+    "Chromium Firefox WebKit sequential browser/resource soak",
+    "twelve repeated Universe-to-micro-to-Universe round trips with save/import restoration",
+    "bounded provider cache discovery cache history session working-set DOM canvas listener and worker assertions",
+    "explicit rejection of monotonic warm-window DOM canvas listener and worker growth",
+    "browser JS heap characterization only when exposed with conservative non-normative bound",
+    "startup transition latency requestAnimationFrame pacing and Long Task observations",
+    "event-driven Living WebGL2 context loss restoration and bounded executable-resource recovery where measurable",
+    "systemic audio runtime bound observation where the product exposes a runtime snapshot",
+    "desktop offline external-request rejection",
+    "mobile pointer pinch emulation portrait-landscape resize storm state preservation overflow and resource-growth falsification",
     "reduced-motion browser context",
+    "bounded Linux Playwright cache-skew launcher fallback with explicit non-governed-executable provenance",
     "explicit NOT_MEASURABLE and NOT_VERIFIED evidence boundaries"
   ],
   "claimsNotMade": [
@@ -27,13 +35,46 @@
     "physical GPU memory measured",
     "physical Android verified",
     "physical iOS verified",
-    "emulation equals physical-device evidence"
+    "emulation equals physical-device evidence",
+    "a Playwright cache fallback binary equals the governed expected executable"
   ],
-  "execution": {
-    "exactHeadSha": "76d08329ecf45a4c321b960302fcaf85e69dd248",
-    "v2xSupremeConvergenceRun": 34204836211,
-    "state": "IN_PROGRESS",
-    "result": null
+  "executedEvidence": {
+    "exactHead": "afbafa4ee219daf8357798585c34c8f66b67dac2",
+    "postV1DevelopmentRun": 34205086363,
+    "exactHeadReliabilityJob": 101992639662,
+    "exactHeadReliability": "PASS",
+    "passedSteps": [
+      "Verify exact source",
+      "Frozen foundation and deterministic contracts",
+      "Persistence replay authority and resource-bound regression",
+      "PX live component and conformance manifest integrity",
+      "PX seal falsification suite",
+      "Reproducible standalone build",
+      "Build shipping single-file product",
+      "Install pinned browser oracle matrix"
+    ],
+    "browserReleaseConformanceJob": 101993293039,
+    "browserReleaseConformance": "FAIL",
+    "failedStep": "Progressive extension conformance",
+    "failureClassification": "PRE_EXISTING_BROWSER_ORACLE_CACHE_SKEW_ENCOUNTERED_BEFORE_FINAL_P21_ORACLE_COMPLETION"
   },
-  "next": "Falsify exact-head hosted result, repair any product-independent test defects inside lane ownership, then update this checkpoint with per-browser measured evidence."
+  "finalValidation": {
+    "state": "PENDING_HOSTED_RUNNER_ALLOCATION_ON_FINAL_CHECKPOINT",
+    "requirement": "Run LANE_TARGETED or RELEASE conformance on the exact final checkpoint SHA and retain per-engine JSON evidence before promotion",
+    "localIndependentExecution": "UNAVAILABLE_IN_CURRENT_AGENT_ENVIRONMENT_DUE_TO_NO_REPOSITORY_NETWORK_MATERIALIZATION_AND_FILE_URL_BROWSER_POLICY"
+  },
+  "centralDependency": [
+    "Convergence owner must execute exact-final-SHA LANE_TARGETED or RELEASE conformance after integration or when hosted runners allocate",
+    "Convergence owner must retain the existing Chromium Firefox WebKit and Windows/macOS production browser gates",
+    "If central Playwright cache/package revisions remain skewed, repair the convergence-owned browser provisioning rather than weakening this oracle"
+  ],
+  "integration": {
+    "baseBranchAdvancedDuringLane": true,
+    "integrationPRWasMergeableAtFinalizationReview": true,
+    "noCentralConvergenceOwnedPathsModified": true,
+    "noProductionCodeModified": true,
+    "noBrowserRemoved": true,
+    "noBudgetWeakened": true
+  },
+  "promotionRule": "DO_NOT_CLAIM_FINAL_BROWSER_PASS_UNTIL_EXACT_FINAL_SHA_EXECUTES_SUCCESSFULLY"
 }
