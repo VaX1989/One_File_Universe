@@ -2,12 +2,15 @@
   "schema": "ofu-v2-lane-checkpoint-1",
   "lane": "V2X-09",
   "title": "Civilization 2.0 - economy, institutions, infrastructure, settlements and city embodiment",
-  "status": "IMPLEMENTED_TESTING_AND_CONVERGENCE_HOOK_PENDING",
+  "status": "LANE_DEPENDENCY_ELIGIBLE_WORK_EXHAUSTED_EXTERNAL_CONVERGENCE_HOOK",
   "branch": "parallel/v2.0-09-civilization-economy-city-2026-09-07",
   "base": {
     "sha": "2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7",
     "tree": "99e6b5ff6229d9c34d381e778c5689bf2367d256",
-    "authorizedLaunchStatus": "FULL"
+    "status": "READY_FOR_MASSIVE_PARALLEL_EXECUTION",
+    "parallelLaunchStatus": "FULL",
+    "pointerVersion": "2026-09-08.1",
+    "centralWriter": "integration/v2x-supreme-total-convergence-2026-09-07"
   },
   "implementationCheckpoint": {
     "sha": "1300e43f5275cb8413b16a8e126452acf90737b4",
@@ -18,16 +21,24 @@
       "behindBy": 0
     }
   },
+  "evidenceRecordParent": {
+    "sha": "761f4ccdf50796e52a3fb1eb3ffa138569562065",
+    "tree": "82227b1ca1ddb22e6f090f3da6817380b810c4aa",
+    "note": "Metadata-only checkpoint commit whose parent is the substantive implementation checkpoint. This field avoids a false self-referential claim that a commit can contain its own SHA/tree."
+  },
   "pullRequest": {
     "number": 246,
     "baseBranch": "integration/v2x-supreme-total-convergence-2026-09-07",
-    "headBranch": "parallel/v2.0-09-civilization-economy-city-2026-09-07"
+    "headBranch": "parallel/v2.0-09-civilization-economy-city-2026-09-07",
+    "mergeableAtEvidenceUpdate": true,
+    "observedMovingBaseSha": "3bb6cdcf1d0f932bea831b32fd6e5f21eb589088"
   },
   "changedFiles": [
     "config/components/v2x-09-civilization-economy-city.json",
     "src/v2x-09-civilization-economy-city/index.js",
     "src/v2x-09-civilization-economy-city/morphology.js",
-    "tests/v2x-09-civilization-economy-city/civilization-economy-city.mjs"
+    "tests/v2x-09-civilization-economy-city/civilization-economy-city.mjs",
+    "docs/parallel/v2/lanes/V2X-09_CURRENT.json"
   ],
   "capabilities": [
     "deterministic civilization embodiment packet",
@@ -84,17 +95,31 @@
         "RESOURCE_RELATIONSHIP_EMBODIMENT",
         "ROUTE_NETWORK_EMBODIMENT",
         "SETTLEMENT_EMBODIMENT"
-      ]
+      ],
+      "negativeWitness": "ADVANCED_MODEL_REQUIRED with zero commands when advanced composition is absent"
     },
-    "repositoryCommands": [
+    "registeredLaneConformance": [
       "node tests/v2x-09-civilization-economy-city/civilization-economy-city.mjs",
-      "node tests/v2x-09-civilization-economy-city/advanced-systems.mjs",
-      "node tools/build-ofu-rendering-v09.mjs"
+      "node tests/v2x-09-civilization-economy-city/advanced-systems.mjs"
     ],
+    "artifactBuildCommand": "node tools/build-ofu-rendering-v09.mjs",
     "githubActions": {
       "sourceSha": "1300e43f5275cb8413b16a8e126452acf90737b4",
-      "stateAtPublication": "QUEUED",
-      "note": "PR-triggered repository workflows were queued when this checkpoint was published; exact results must supersede this field after completion."
+      "foundationIntegrityRun": {
+        "id": 34204932489,
+        "status": "SUCCESS"
+      },
+      "v2xSupremeConvergenceRun": {
+        "id": 34204932499,
+        "status": "FAILURE_AFTER_EXACT_SOURCE_AND_NPM_STACK_PASS",
+        "exactSourceIdentity": "PASS",
+        "fullRepositoryNpmTestAndReproducibleBuildStack": "PASS",
+        "failureStep": "V2X provider activation boundary",
+        "failureClassification": "CENTRAL_POST_BASE_WORKFLOW_DEPENDENCY_MISSING_FROM_IMMUTABLE_LANE_BASE",
+        "failureDetail": "Workflow attempted node tests/v2x-convergence/provider-activation-boundary.mjs, a convergence-owned file added after the immutable lane base; the file is absent at the authorized base and therefore at this frozen-base lane head.",
+        "laneTargetedConformanceReached": false
+      },
+      "scientificHonesty": "The exact PR CI proves exact checkout plus the repository npm/reproducible-build stack. It does not prove the registered V2X-09 targeted conformance commands on this exact SHA because the convergence workflow aborts earlier on a post-base central test dependency."
     }
   },
   "reachability": {
@@ -108,25 +133,32 @@
     "oneFileArtifact": "dist/One_File_Universe.html",
     "runtimeExport": "OFU.v2x09CivilizationEconomyCity.civilizationEmbodimentPacket",
     "runtimeDependency": "OFU.v2x09CivilizationAdvanced.modelAdvancedCivilization",
-    "artifactWitness": "tests/v2x-09-civilization-economy-city/civilization-economy-city.mjs asserts advanced component ordering plus embodiment contract/export bytes in the built HTML",
-    "actualCurrentConsumer": "central V2X context Inspector consumes V2X-09 morphology/inspector but does not yet compose the new embodiment packet into the Living scene",
-    "livingViewport": "CENTRAL_HOOK_REQUIRED",
+    "artifactWitness": "tests/v2x-09-civilization-economy-city/civilization-economy-city.mjs builds the actual one-file artifact and asserts advanced component ordering plus embodiment contract/export bytes in the HTML",
+    "actualCurrentConsumer": "central V2X context Inspector consumes V2X-09 morphology/inspector; the convergence-owned Living domain compositor does not reference or generically activate V2X-09 embodiment packets",
+    "livingViewport": "EXTERNAL_CONVERGENCE_HOOK_REQUIRED",
     "centralHook": "Call OFU.v2x09CivilizationEconomyCity.civilizationEmbodimentPacket(civilizationState,economy,{settlementId}) and compose returned PRESENTATION_ONLY commands through the governed additive rendering seam; reconcile anchors through V2X-07/local placement before final scene composition.",
-    "persistenceRevisit": "NOT_LANE_AUTHORIZED; packet is deterministic projection from persisted civilization/economy state and introduces no independent mutable lane state",
-    "exactArtifactBrowserEvidence": "PENDING_CENTRAL_LIVING_CONSUMER_AND_PR_CI"
+    "persistenceRevisit": "NO_INDEPENDENT_MUTABLE_STATE; packet is a deterministic projection of persisted civilization/economy state. Persistence/replay authority remains convergence-owned.",
+    "exactArtifactBrowserEvidence": "BLOCKED_UNTIL_CONVERGENCE_OWNER_ADOPTS_PACKET_IN_LIVING_VIEWPORT"
   },
   "knownGaps": [
     {
       "id": "V2X09-LIVING-CONSUMER",
       "owner": "CONVERGENCE_OWNER",
       "kind": "EXTERNAL_AUTHORITY_BOUNDARY",
-      "description": "The new embodiment packet is manifested and artifact-reachable but central Living scene composition has not yet adopted it. V2X-09 must not edit convergence-owned scene/renderer paths."
+      "description": "The new embodiment packet is source-complete, manifested and artifact-witnessed, but the convergence-owned Living domain compositor currently has no V2X-09 consumer. Editing that compositor here would violate frozen scene-composition/renderer ownership."
     },
     {
       "id": "V2X09-EXACT-BROWSER",
-      "owner": "CONVERGENCE_OWNER_PLUS_CI",
+      "owner": "CONVERGENCE_OWNER",
       "kind": "DEPENDENCY_ON_LIVING_CONSUMER",
-      "description": "Exact-artifact browser evidence for visible Living consequences becomes meaningful only after the convergence-owned Living consumer composes the packet."
+      "description": "Exact-artifact browser evidence for visible Living settlement/infrastructure/network consequences requires the convergence-owned Living consumer first."
+    },
+    {
+      "id": "V2X09-CI-POST-BASE-ACTIVATION-TEST",
+      "owner": "CONVERGENCE_OWNER",
+      "kind": "CENTRAL_WORKFLOW_POST_BASE_DEPENDENCY",
+      "description": "The current convergence workflow invokes tests/v2x-convergence/provider-activation-boundary.mjs, which was added to convergence after the immutable authorized base. Frozen-base lane PR CI therefore aborts before progressive lane conformance. The lane must not copy or own this convergence test merely to green CI."
     }
-  ]
+  ],
+  "nextDependencyEligibleWork": "NONE_WITHIN_V2X_09_OWNERSHIP; central convergence must adopt the packet in Living, reconcile V2X-07 placement, run registered V2X-09 conformance on the integrated source, and collect exact-artifact browser evidence."
 }
