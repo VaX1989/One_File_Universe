@@ -27,6 +27,11 @@ assert.notEqual(a.orbit.presentationAnchorAnomalyRad,b.orbit.presentationAnchorA
 assert.notDeepEqual(a.anchor3d,a.orbit.vertices[0]);
 assert.equal(a.orbit.currentOrbitalPhaseAuthority,'UNKNOWN_NOT_CANONICAL');
 assert.deepEqual(orbit.resolveHierarchy([planet,moon,planetB],{segments:48}).nodes.map(n=>n.anchor3d),hierarchy.nodes.map(n=>n.anchor3d));
+const reorderedHierarchy=orbit.resolveHierarchy([planetB,moon,planet],{segments:48});
+assert.deepEqual(reorderedHierarchy.nodes.map(n=>n.id),hierarchy.nodes.map(n=>n.id),'hierarchy ordering must be independent of source query order');
+assert.deepEqual(reorderedHierarchy.nodes.map(n=>n.anchor3d),hierarchy.nodes.map(n=>n.anchor3d),'hierarchy anchors must be independent of source query order');
+const astralA=String.fromCodePoint(0x1f600),astralB=String.fromCodePoint(0x1f601);
+assert.notEqual(orbit.unitHash(astralA,0),orbit.unitHash(astralB,0),'identity hash must include both UTF-16 code units for astral identifiers');
 
 const nullOrientation=orbit.orientationFromFacts({baselineInclinationMilliDeg:12000,longitudeAscendingNodeMilliDeg:null,argumentPeriapsisMilliDeg:''},'planet-null');
 assert.equal(nullOrientation.orientationAuthority,'PARTIAL_PRESENTATION_FALLBACK');
@@ -59,10 +64,14 @@ assert(known.luminosity.cue.glowRadiusPx<=stellar.LIMITS.maxGlowRadiusPx);
 assert.equal(stellar.describeStar({id:byteId,facts:{}}).canonicalEntityId,'0001feff');
 assert.throws(()=>stellar.describeStar({id:'bad-star',facts:{effectiveTemperatureK:-1}}),/positive/);
 assert.throws(()=>stellar.describeStar({id:'bad-star',facts:{radiusMilliSolar:false}}),/positive when supplied/);
+assert.throws(()=>stellar.describeStar({id:'bad-facts',facts:'not-an-object'}),/facts must be an object/);
 assert.throws(()=>stellar.temperatureCue(-10),/positive/);
 assert.throws(()=>stellar.radiusCue(false),/positive when supplied/);
 assert.equal(stellar.luminosityCue(null).known,false);
 assert.throws(()=>stellar.describeSystem(Array.from({length:9},(_,i)=>({id:'s'+i,facts:{}}))),/budget exceeded/);
+assert.throws(()=>stellar.describeSystem([{id:'duplicate',facts:{}},{id:'duplicate',facts:{}}]),/duplicate stellar identity/);
+const unicodeIds=['z',String.fromCharCode(0x00e4),'a','A'];
+assert.deepEqual(stellar.describeSystem(unicodeIds.map(id=>({id,facts:{}}))).stars.map(x=>x.canonicalEntityId),['A','a','z',String.fromCharCode(0x00e4)],'stellar system ordering must be locale-independent');
 
 const maxBodies=Array.from({length:128},(_,i)=>({id:'max-'+i,kind:i?'MOON':'PLANET',...(i?{parentId:'max-'+(i-1)}:{}),facts:{baselineSemiMajorAxisMicroAu:1000+i*10,baselineEccentricityPpm:i%2?949999:0,baselineInclinationMilliDeg:(i*271)%180000}}));
 const maxHierarchy=orbit.resolveHierarchy(maxBodies,{segments:256});
@@ -103,11 +112,14 @@ assert(renderedA.bodyPresentations.every(x=>x.illumination.lights.length===2),'e
 const shuffled=provider.render({...systemInput,stars:[...systemInput.stars].reverse(),planets:[...systemInput.planets].reverse()},{camera:cameraA,viewport:{width:1280,height:720},orbitSegments:64});
 assert.deepEqual(shuffled.planetOrder,renderedA.planetOrder,'planet ordering must not depend on source query order');
 assert.deepEqual(shuffled.scene.stars.map(x=>x.id),renderedA.scene.stars.map(x=>x.id),'star presentation order must be deterministic');
+const unicodeSystem=provider.render({system:{id:'unicode-system'},stars:unicodeIds.map((id,i)=>({id,position3d:[[1,0,0],[-1,0,0],[0,1,0],[0,-1,0]][i],facts:{}})),planets:[]},{camera:cameraA,viewport:{width:1280,height:720},orbitSegments:64});
+assert.deepEqual(unicodeSystem.scene.stars.map(x=>x.id),['A','a','z',String.fromCharCode(0x00e4)],'provider star ordering must be locale-independent');
 const target=renderedA.hitTargets.find(x=>x.visible&&x.kind==='PLANET')||renderedA.hitTargets.find(x=>x.visible);
 const picked=provider.pick(renderedA,target.x,target.y);
 assert.equal(picked.canonicalEntityId,target.canonicalEntityId);
 assert.equal(picked.selectionIntent,'SELECT_CANONICAL_ENTITY');
 assert.equal(picked.selectionAuthority,'UPSTREAM_SELECTION_CONTRACT');
+assert.throws(()=>provider.pick({...renderedA,scientificEvidence:true},target.x,target.y),/valid V2X-04 rendered system/,'pick surface must reject forged authority metadata');
 const approach=provider.buildApproach(systemInput,{bodyId:'planet-inner',samples:65,startDistanceRatio:5000,endDistanceRatio:1.02,approachVector3d:[1,2,3],surfaceTarget:{latDeg:12,lonDeg:-30},referenceFrameId:'frame-system',scaleStateToken:'scale-system'});
 assert.equal(approach.legacyFallbackUsed,false);
 assert.equal(approach.bodyCanonicalEntityId,'planet-inner');
@@ -121,11 +133,15 @@ assert.equal(approach.cameraStateMutation,false);
 assert(renderedA.resourceUsage.projectedVertices<=provider.LIMITS.maxProjectedVertices);
 assert(renderedA.resourceUsage.hitTargets<=provider.LIMITS.maxHitTargets);
 assert.throws(()=>provider.render({...systemInput,stars:[...systemInput.stars,{id:'star-a',facts:{}}]},{camera:cameraA,viewport:{width:1280,height:720}}),/duplicate stellar identity|duplicate system entity identity/);
+assert.throws(()=>provider.render({...systemInput,stars:''},{camera:cameraA,viewport:{width:1280,height:720}}),/stars array required/);
+assert.throws(()=>provider.render({...systemInput,planets:[{id:'bad-facts',facts:'invalid'}]},{camera:cameraA,viewport:{width:1280,height:720}}),/facts must be an object/);
+assert.throws(()=>provider.render({...systemInput,planets:[{...systemInput.planets[0],presentationOccluders:{}}]},{camera:cameraA,viewport:{width:1280,height:720}}),/presentationOccluders must be an array/);
 assert.throws(()=>provider.render(systemInput,{camera:cameraA,viewport:{width:20000,height:720}}),/viewport outside bounded projection budget/);
+assert.throws(()=>provider.render({system:{id:'empty'},stars:[],planets:[]},{camera:cameraA,viewport:{width:1280,height:720},orbitSegments:12}),/orbitSegments outside bounded orbit budget/);
 const orbitSource=fs.readFileSync(path.join(root,'src/rendering/orbit/orbit-3d.js'),'utf8');
 assert(!/O\.v1x04|v1x04SystemProvider/.test(orbitSource),'V2X-04 provider implementation must contain no legacy V1X runtime fallback');
 const savedBodyCues=globalThis.OFU.v2x04BodyCues;delete globalThis.OFU.v2x04BodyCues;
 assert.throws(()=>provider.render(systemInput,{camera:cameraA,viewport:{width:1280,height:720}}),/legacy fallback forbidden/,'missing V2X dependency must fail closed rather than invoke V1X');
 globalThis.OFU.v2x04BodyCues=savedBodyCues;
 
-console.log(JSON.stringify({status:'PASS',suite:'v2x04-orbit-stellar-oracle-v4',phaseAuthority:hierarchy.currentOrbitalPhaseAuthority,nullUnknownPreserved:true,byteIdentityPreserved:true,eccentricityClampDisclosed:true,maxBodies:maxHierarchy.resourceUsage.bodies,maxVertices:maxHierarchy.resourceUsage.vertices,maxStars:maxStars.resourceUsage.stars,metamorphicOrbitCases:64,systemProvider:'v2x04.system.presentation',multiStarSystem:true,canonicalPicking:true,arbitraryViewpoints:true,planetOrderingDeterministic:true,approachReverseIdentity:true,legacyFallbackForbidden:true,scientificEvidence:false}));
+console.log(JSON.stringify({status:'PASS',suite:'v2x04-orbit-stellar-oracle-v5',phaseAuthority:hierarchy.currentOrbitalPhaseAuthority,nullUnknownPreserved:true,byteIdentityPreserved:true,astralIdentityHashDistinct:true,eccentricityClampDisclosed:true,maxBodies:maxHierarchy.resourceUsage.bodies,maxVertices:maxHierarchy.resourceUsage.vertices,maxStars:maxStars.resourceUsage.stars,metamorphicOrbitCases:64,systemProvider:'v2x04.system.presentation',multiStarSystem:true,canonicalPicking:true,pickProvenanceValidated:true,arbitraryViewpoints:true,planetOrderingDeterministic:true,localeIndependentOrdering:true,approachReverseIdentity:true,legacyFallbackForbidden:true,malformedInputsRejected:true,scientificEvidence:false}));

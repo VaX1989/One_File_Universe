@@ -43,6 +43,13 @@ assert.throws(()=>api.makePacket({systemId:'s',bodyId:'p',startDistanceRatio:10,
 assert.throws(()=>api.makePacket({systemId:'s',bodyId:'p',startDistanceRatio:10,endDistanceRatio:1.02,surfaceTarget:{latitudeDeg:1}}),/both latitude and longitude/);
 assert.throws(()=>api.makePacket({systemId:'s',bodyId:'p',startDistanceRatio:10,endDistanceRatio:1.02,surfaceTarget:{latitudeDeg:91,longitudeDeg:0}}),/latitude/);
 assert.throws(()=>api.makePacket({systemId:'s',bodyId:'p',startDistanceRatio:10,endDistanceRatio:1.02,referenceFrameId:''}),/referenceFrameId/);
+const cyclicTarget={latDeg:0,lonDeg:0};cyclicTarget.self=cyclicTarget;
+assert.throws(()=>api.makePacket({systemId:'s',bodyId:'p',startDistanceRatio:10,endDistanceRatio:1.02,surfaceTarget:cyclicTarget}),/acyclic/,'cyclic surface metadata must fail before recursive exhaustion');
+const deepTarget={latDeg:0,lonDeg:0};let deepCursor=deepTarget;for(let i=0;i<=api.LIMITS.maxSurfaceTargetDepth;i++){deepCursor.child={};deepCursor=deepCursor.child;}
+assert.throws(()=>api.makePacket({systemId:'s',bodyId:'p',startDistanceRatio:10,endDistanceRatio:1.02,surfaceTarget:deepTarget}),/nesting limit/,'surface metadata depth must be bounded');
+const wideTarget={latDeg:0,lonDeg:0,children:Array.from({length:api.LIMITS.maxSurfaceTargetNodes+1},()=>({}))};
+assert.throws(()=>api.makePacket({systemId:'s',bodyId:'p',startDistanceRatio:10,endDistanceRatio:1.02,surfaceTarget:wideTarget}),/node budget/,'surface metadata node count must be bounded');
+assert.throws(()=>api.makePacket({systemId:'s',bodyId:'p',startDistanceRatio:10,endDistanceRatio:1.02,surfaceTarget:{latDeg:0,lonDeg:0,unsafe:1n}}),/unsupported value/,'surface metadata must be JSON-safe presentation data');
 
 const bytes=Uint8Array.from([0,1,254,255]);
 const bytePacket=api.makePacket({systemId:bytes,bodyId:bytes,parentBodyId:Uint8Array.from([1,2]),startDistanceRatio:10,endDistanceRatio:1.02,samples:5});
@@ -62,4 +69,4 @@ for(let i=0;i<64;i++){
  const row=api.makePacket({systemId:`fuzz-s-${i}`,bodyId:`fuzz-b-${i}`,startDistanceRatio:start,endDistanceRatio:end,samples,approachVector3d:vector,...(target?{surfaceTarget:target}:{})});assert.equal(api.validate(row),true);const back=api.reverse(row);assert.equal(api.validate(back),true);assert.equal(api.roundTripWitness(row).reversible,true);
 }
 
-console.log(JSON.stringify({status:'PASS',suite:'v2x04-approach-continuity-oracle-v3',samples:packet.frames.length,stages:[...new Set(packet.frames.map(f=>f.stage))],identityStable:true,byteIdentityPreserved:true,reverseValidated:true,roundTripValidated:witness.reversible,renderable3dTrajectory:true,strongTamperRejection:true,maxSamples:maxPacket.frames.length,metamorphicApproachCases:64,scientificEvidence:false}));
+console.log(JSON.stringify({status:'PASS',suite:'v2x04-approach-continuity-oracle-v4',samples:packet.frames.length,stages:[...new Set(packet.frames.map(f=>f.stage))],identityStable:true,byteIdentityPreserved:true,reverseValidated:true,roundTripValidated:witness.reversible,renderable3dTrajectory:true,strongTamperRejection:true,surfaceMetadataBounded:true,maxSamples:maxPacket.frames.length,metamorphicApproachCases:64,scientificEvidence:false}));
