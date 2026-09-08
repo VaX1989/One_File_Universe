@@ -16,7 +16,7 @@
       "tier": "INTEGRATION",
       "command": ["node", "tests/v2x-02-camera-spatial-travel/registry-binding.mjs"],
       "providers": ["v2x02.interaction.continuous-travel"],
-      "oracle": "v2x02-registry-binding-oracle-3",
+      "oracle": "v2x02-registry-binding-oracle-4",
       "timeoutMs": 60000
     },
     {
