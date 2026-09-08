@@ -43,7 +43,7 @@ for(let i=0;i<64;i++){
 }
 
 const reject=(value,re)=>{assert.throws(()=>O.save.exportPortable(value),re);cases++;};
-reject({...base,events:Array.from({length:O.save.LIMITS.events+1},(_,i)=>({type:'x',data:i}))},/event count|limit/i);
+reject({...base,events:Array.from({length:O.save.LIMITS.events+1},(_,i)=>({type:'x',data:i}))},/invalid events|event count|limit/i);
 reject({...base,events:[{type:'x'.repeat(O.save.LIMITS.eventTypeBytes+1),data:0}]},/event type|bytes|limit/i);
 reject({...base,events:[{type:'x',data:'a'.repeat(O.save.LIMITS.stringBytes+1)}]},/string|bytes|limit/i);
 reject({...base,events:[{type:'x',data:Array(O.save.LIMITS.arrayItems+1).fill(0)}]},/array|items|limit/i);
