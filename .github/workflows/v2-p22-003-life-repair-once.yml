@@ -1,0 +1,71 @@
+name: V2 P22-003 Life Repair Once
+
+on:
+  push:
+    branches:
+      - integration/v2x-supreme-total-convergence-2026-09-07
+    paths:
+      - tools/closure/v2-p22-003-life-repair-once.mjs
+      - .github/workflows/v2-p22-003-life-repair-once.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: v2-p22-003-life-repair-once
+  cancel-in-progress: false
+
+jobs:
+  repair-and-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout repair checkpoint
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.20.0'
+      - name: Authenticate exact repair source
+        shell: bash
+        run: |
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          test -z "$(git status --porcelain=v1)"
+      - name: Apply semantic P22-003 repair
+        run: node tools/closure/v2-p22-003-life-repair-once.mjs
+      - name: Verify syntax and focused Life model
+        run: |
+          node --check src/v2x-08-life-ecology-evolution-embodiment/model.js
+          node tests/v2x-08/life-ecology-evolution-embodiment.mjs
+          node tests/v2x-08/life-evolution-succession.mjs
+          node tests/v2x-08/life-provider-renderer.mjs
+      - name: Verify strict science authority
+        run: |
+          node tests/audit/v2-science-authority-oracle.mjs --strict
+          node tests/audit/v2-science-authority-oracle-tests.mjs
+      - name: Verify registered V2X-08 shipping conformance
+        run: |
+          node tests/v2x-08/single-file-facade.mjs
+          node tests/v2x-08/life-viewport-bridge-unit.mjs
+          node tests/v2x-08/life-shipping-viewport.mjs
+          node tests/v2x-08/life-artifact-reachability.mjs
+      - name: Verify repository Node regressions
+        run: node tests/run-node-tests.mjs
+      - name: Verify bounded clean diff
+        shell: bash
+        run: |
+          git diff --check
+          changed="$(git diff --name-only | sort)"
+          expected="$(printf '%s\n' 'src/v2x-08-life-ecology-evolution-embodiment/model.js' 'tests/v2x-08/life-ecology-evolution-embodiment.mjs' | sort)"
+          test "$changed" = "$expected"
+      - name: Commit verified repair
+        shell: bash
+        run: |
+          git config user.name 'ofu-v2-closure-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add src/v2x-08-life-ecology-evolution-embodiment/model.js tests/v2x-08/life-ecology-evolution-embodiment.mjs
+          git commit -m 'fix(v2): govern life scenario priors and preserve unknown ecology inputs'
+          git push origin HEAD:${GITHUB_REF_NAME}
