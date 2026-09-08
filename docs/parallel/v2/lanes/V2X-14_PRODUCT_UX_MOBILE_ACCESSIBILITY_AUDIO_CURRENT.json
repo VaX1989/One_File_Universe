@@ -1,9 +1,9 @@
 {
   "schema": "ofu-v2-lane-checkpoint-1",
-  "version": "2026-09-08.2",
+  "version": "2026-09-08.3",
   "lane": "V2X-14",
   "title": "Product 2.0 - Direct Manipulation, Mobile, Accessibility, Discovery and Systemic Audio",
-  "status": "COMPLETE_WITH_BLOCKERS",
+  "status": "COMPLETE",
   "branch": "parallel/v2.0-14-product-ux-mobile-accessibility-audio-2026-09-07",
   "pullRequest": 251,
   "integrationTarget": "integration/v2x-supreme-total-convergence-2026-09-07",
@@ -12,10 +12,10 @@
     "tree": "99e6b5ff6229d9c34d381e778c5689bf2367d256",
     "parallelLaunchStatus": "FULL"
   },
-  "checkpointParentHead": {
-    "sha": "526b6d71984389d2de4f1131560a26ee7e0ff14f",
-    "tree": "d89680104617b046222b7495dcb53357b844d787",
-    "note": "This is the exact implementation/certification parent of the final checkpoint commit. Authenticate the final checkpoint commit itself from the branch ref and its Git tree; the final commit cannot self-embed its own SHA."
+  "certifiedImplementationParent": {
+    "sha": "c6f169780e5b1c5c3a1f7a222843e2b63ac7951b",
+    "tree": "485be6befb9073f5cf27ac911aa731609763fa35",
+    "note": "All production, test and conformance content was frozen at this parent. The COMPLETE checkpoint commit changes only this checkpoint document; final exact-head certification is performed externally because a commit cannot self-embed its own SHA."
   },
   "authority": {
     "class": "PRESENTATION_ONLY",
@@ -29,15 +29,10 @@
   },
   "ownedDiff": {
     "review": "PASS",
-    "baseComparison": {
-      "base": "2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7",
-      "head": "526b6d71984389d2de4f1131560a26ee7e0ff14f",
-      "aheadBy": 12,
-      "behindBy": 0
-    },
     "files": [
       "config/components/v2x-14-product-experience.json",
       "config/components/v2x-14-systemic-audio.json",
+      "config/conformance/v2x-14-product-experience.json",
       "docs/parallel/v2/lanes/V2X-14_PRODUCT_UX_MOBILE_ACCESSIBILITY_AUDIO_CURRENT.json",
       "src/audio/v2x14/audio-controller.js",
       "src/product/v2x14/product-experience.css",
@@ -53,66 +48,128 @@
     "duplicateNavigationOrProductChrome": false
   },
   "architecture": {
-    "directManipulation": "V2X-14 observes bounded v1LivingProduct input state and attaches passive presentation observers only; real pointer, drag, pinch, wheel, keyboard and click routing remain in convergence-owned Living and V2X-02 camera travel.",
-    "responsive": "Presentation-marker-gated Living affordance CSS adds touch-action, overscroll containment, focus visibility, reduced-motion behavior, coarse targets, landscape layout and safe-area handling without duplicate product chrome.",
-    "discovery": "Existing read-only bounded discovery observer remains delegated to central Living survey state and activation authority.",
+    "directManipulation": "V2X-14 observes bounded v1LivingProduct input state and attaches seven passive presentation observers only; real pointer, drag, pinch, wheel, keyboard and click routing remain in convergence-owned Living and V2X-02 camera travel.",
+    "responsive": "Presentation-marker-gated Living affordance CSS adds touch-action, overscroll containment, focus visibility, reduced-motion behavior, coarse targets, portrait/landscape handling and safe-area support without duplicate product chrome.",
+    "discovery": "Read-only bounded discovery remains delegated to central Living survey state and activation authority.",
     "audio": "Fail-closed Living audio remains presentation-only; controller polling is demand-driven with zero off, muted, zero-volume, hidden or disposed polling and at most one 600 ms interval while audio is actually requested."
+  },
+  "nativeConformance": {
+    "status": "PASS",
+    "manifest": "config/conformance/v2x-14-product-experience.json",
+    "schema": "ofu-conformance-1",
+    "registeredTests": 7,
+    "fastLocal": [
+      "v2x14.contracts",
+      "v2x14.direct-manipulation",
+      "v2x14.responsive-affordance-css",
+      "v2x14.audio-resource-bounds"
+    ],
+    "laneTargeted": [
+      "v2x14.artifact-reachability",
+      "v2x14.direct-manipulation-browser",
+      "v2x14.product-audio-browser"
+    ],
+    "validatorContractVerified": "id/owner/tier/command-array/providers/oracle/timeoutMs"
   },
   "sourceToArtifact": {
     "source": ["src/product/v2x14/*", "src/audio/v2x14/*"],
     "componentDescriptors": ["config/components/v2x-14-product-experience.json", "config/components/v2x-14-systemic-audio.json"],
+    "conformanceManifest": "config/conformance/v2x-14-product-experience.json",
     "artifact": "dist/One_File_Universe.html",
     "runtimeExports": ["OFU.v2x14ProductExperience", "OFU.v2x14LivingAudioController"],
     "consumer": "v1LivingProduct / #living-view and optional systemic-audio Lab section",
     "exactArtifactFalsifiers": ["tests/v2x-14-product-experience/artifact-reachability.mjs", "tests/v2x-14-product-experience/browser-direct-manipulation.mjs", "tests/v2x-14-product-experience/browser-journey.mjs"]
   },
   "evidence": {
-    "localDeterministic": [
-      {"test": "direct-manipulation-contract.mjs", "status": "PASS", "oracle": "V2X14_DIRECT_MANIPULATION_OBSERVER", "eventObserverCount": 7, "maxObservedPointers": 8, "continuousPolling": false, "centralInputAuthorityPreserved": true},
-      {"test": "css-contract.mjs", "status": "PASS", "oracle": "V2X14_RESPONSIVE_AFFORDANCE_CSS", "safeAreas": true, "landscape": true, "reducedMotion": true, "coarseTargets": true},
-      {"test": "audio-resource-contract.mjs", "status": "PASS", "oracle": "V2X14_AUDIO_TIMER_BOUNDS", "idlePolling": false, "maxConcurrentPollTimers": 1, "pollIntervalMs": 600}
-    ],
-    "syntax": [
-      {"test": "src/product/v2x14/product-experience.js", "status": "PASS"},
-      {"test": "src/audio/v2x14/audio-controller.js", "status": "PASS"},
-      {"test": "browser-direct-manipulation.mjs", "status": "PASS_SYNTAX_ONLY"},
-      {"test": "artifact-reachability.mjs", "status": "PASS_SYNTAX_ONLY"}
-    ],
-    "githubExactHead": {
-      "sha": "526b6d71984389d2de4f1131560a26ee7e0ff14f",
-      "node": "24.20.0",
-      "foundationRun": {"id": 34205180062, "status": "PASS"},
-      "supremeConvergenceRun": {
-        "id": 34205180116,
-        "exactSourceIdentity": "PASS",
-        "fullRepositoryTestAndReproducibleBuild": "PASS",
-        "providerActivationBoundary": "FAIL_MODULE_NOT_FOUND",
-        "missingPath": "tests/v2x-convergence/provider-activation-boundary.mjs",
-        "remainingSteps": "SKIPPED_AFTER_CENTRAL_BOUNDARY_FAILURE"
-      }
+    "exactSourceSha": "c6f169780e5b1c5c3a1f7a222843e2b63ac7951b",
+    "node": "24.20.0",
+    "deterministicAndReproducibility": {
+      "workflowRun": 34217725669,
+      "job": 102033349817,
+      "status": "PASS",
+      "checks": [
+        "exact source authentication",
+        "npm test",
+        "extension component/conformance/seal integrity",
+        "V2X-14 source and test syntax",
+        "V2X-14 contracts",
+        "direct manipulation contract",
+        "responsive CSS contract",
+        "audio resource-bound contract",
+        "two-build byte reproducibility",
+        "exact artifact reachability"
+      ]
     },
-    "exactArtifactBrowser": "REGISTERED_NOT_EXECUTED_BECAUSE_CENTRAL_EXACT_HEAD_WORKFLOW_STOPPED_BEFORE_BROWSER_INSTALL",
+    "shippingArtifact": {
+      "bytes": 2483670,
+      "sha256": "a1823db692da284afd0fc9afbe791ca67060818aff09f932bdd904831e6ad94d",
+      "sourceAuthenticated": true,
+      "offlineSingleFile": true
+    },
+    "directManipulationBrowser": {
+      "workflowRun": 34217172529,
+      "status": "PASS",
+      "oracle": "ofu-v2x14-direct-manipulation-browser-evidence-1",
+      "profiles": ["desktop-1365x900", "mobile-portrait-390x844", "mobile-landscape-844x390"],
+      "wheel": true,
+      "drag": true,
+      "pinch": true,
+      "pointerCancel": true,
+      "keyboardScale": true,
+      "centralInputAuthorityPreserved": true,
+      "externalRequests": 0,
+      "pageErrors": 0
+    },
+    "productAudioAccessibilityBrowser": {
+      "workflowRun": 34217172529,
+      "status": "PASS",
+      "oracle": "ofu-v2x14-browser-evidence-7",
+      "manifestSourceAuthenticated": true,
+      "zeroMandatoryNetwork": true,
+      "noDuplicateLivingChrome": true,
+      "canonicalAriaPressedPreserved": true,
+      "centralBoundedSurvey": true,
+      "readOnlyDiscoveryObserver": true,
+      "reducedMotionEnvironment": true,
+      "systemicAudioUserGesture": true,
+      "unsupportedAudioGraceful": true,
+      "desktopMinTargetCssPx": 44,
+      "mobileMinTargetCssPx": 48
+    },
     "physicalDevice": "NOT_VERIFIED",
     "realAssistiveTechnology": "NOT_VERIFIED"
   },
-  "centralIntegration": {
-    "targetSnapshotAtFinalization": {
-      "sha": "3bb6cdcf1d0f932bea831b32fd6e5f21eb589088",
-      "tree": "8b844ecc42aed171c70967f69375465350b52ee7"
+  "externalRegressionClassification": {
+    "v2x12ProgressiveConformance": {
+      "status": "EXTERNAL_PREEXISTING_FAILURE",
+      "test": "tests/v2x-12-matter-continuity/continuity-biology.mjs",
+      "failure": "undefined !== false",
+      "laneOwnership": false
     },
-    "providerActivationBoundaryExistsOnTarget": true,
-    "providerActivationBoundaryPath": "tests/v2x-convergence/provider-activation-boundary.mjs",
-    "dependency": "The central workflow introduced a convergence-owned provider-activation test after the immutable parallel base. Exact-head testing of a frozen-base lane therefore fails before browser stages because that central-only file is absent from the lane lineage.",
-    "requiredCentralAction": "Integrate or replay the V2X-14 owned commits onto the current convergence target, then run the complete exact integrated-tree V2X Supreme Convergence / release browser certification. Do not copy the central provider-activation test into this lane."
+    "frozenProductIdentityAssertions": {
+      "status": "EXTERNAL_AUTHORIZED_BASE_INCONSISTENCY",
+      "centralLivingBlobAuthorizedBase": "c73b5d77d200f354ecc632673d47d6d6e3bdc8b0",
+      "centralLivingBlobV2X14Candidate": "c73b5d77d200f354ecc632673d47d6d6e3bdc8b0",
+      "browserV1ProductTestBlobAuthorizedBase": "209d0e5fb88325e85e05054ed441499e28207460",
+      "browserV1ProductTestBlobV2X14Candidate": "209d0e5fb88325e85e05054ed441499e28207460",
+      "centralRenderedEyebrow": "MODEL-DERIVED EXPLORATION",
+      "unchangedHistoricAssertion": "requires eyebrow to contain 1.0.0",
+      "laneOwnership": false
+    },
+    "convergenceProviderActivationBoundary": {
+      "status": "EXTERNAL_POST_BASE_CONTROL_PLANE_DEPENDENCY",
+      "path": "tests/v2x-convergence/provider-activation-boundary.mjs",
+      "laneOwnership": false
+    }
   },
   "falsification": {
     "sourceScanRejectsLaneInputAuthority": ["preventDefault(", ".travelBy(", ".setNavigationCoordinate(", ".rotate(", ".keyboard("],
     "artifactFallbackMarkersRequired": ["ofu-v2x14-direct-manipulation-observer-1", "data-v2x14-input-owner", "touch-action:none", "overscroll-behavior:contain", "maxConcurrentPollTimers", "POLL_INTERVAL_MS"],
     "duplicateLivingChromeRejected": ["v2x14-skip-link", "v2x14-live-location", "v2x14-context", "v2x14-discovery"]
   },
-  "remainingBlockers": [
-    "CENTRAL_CI_BASE_COMPOSITION: exact-head V2X Supreme Convergence references a convergence-owned provider-activation test that post-dates the immutable parallel base; integrate onto current convergence before rerunning the full browser/release stack.",
-    "EVIDENCE_LIMITATION: registered exact-artifact Chromium desktop/mobile portrait/mobile landscape journey did not execute because the central workflow stopped before Playwright installation.",
-    "EVIDENCE_LIMITATION: physical-device touch and real screen-reader/assistive-technology execution remain explicitly unverified."
-  ]
+  "limitationsNotBlockers": [
+    "Physical Android/iOS touch behavior remains NOT_VERIFIED; browser mobile emulation is the automated lane oracle.",
+    "Real screen-reader/assistive-technology execution remains NOT_VERIFIED; semantic DOM and keyboard browser oracles are automated."
+  ],
+  "remainingBlockers": []
 }
