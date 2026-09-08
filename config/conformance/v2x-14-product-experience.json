@@ -5,63 +5,63 @@
       "id": "v2x14.contracts",
       "owner": "v2x14",
       "tier": "FAST_LOCAL",
-      "command": ["node", "tests/v2x-14-product-experience/contracts.mjs"],
+      "command": "node tests/v2x-14-product-experience/contracts.mjs",
       "providers": ["v1.scene.living-world"],
-      "oracle": "ofu-v2x14-contract-test-12",
+      "oracles": ["ofu-v2x14-contract-test-12"],
       "timeoutMs": 30000
     },
     {
       "id": "v2x14.direct-manipulation",
       "owner": "v2x14",
       "tier": "FAST_LOCAL",
-      "command": ["node", "tests/v2x-14-product-experience/direct-manipulation-contract.mjs"],
+      "command": "node tests/v2x-14-product-experience/direct-manipulation-contract.mjs",
       "providers": ["v1.scene.living-world"],
-      "oracle": "V2X14_DIRECT_MANIPULATION_OBSERVER",
+      "oracles": ["V2X14_DIRECT_MANIPULATION_OBSERVER"],
       "timeoutMs": 30000
     },
     {
       "id": "v2x14.responsive-affordance-css",
       "owner": "v2x14",
       "tier": "FAST_LOCAL",
-      "command": ["node", "tests/v2x-14-product-experience/css-contract.mjs"],
+      "command": "node tests/v2x-14-product-experience/css-contract.mjs",
       "providers": ["v1.scene.living-world"],
-      "oracle": "V2X14_RESPONSIVE_AFFORDANCE_CSS",
+      "oracles": ["V2X14_RESPONSIVE_AFFORDANCE_CSS"],
       "timeoutMs": 30000
     },
     {
       "id": "v2x14.audio-resource-bounds",
       "owner": "v2x14",
       "tier": "FAST_LOCAL",
-      "command": ["node", "tests/v2x-14-product-experience/audio-resource-contract.mjs"],
+      "command": "node tests/v2x-14-product-experience/audio-resource-contract.mjs",
       "providers": ["v1.scene.living-world"],
-      "oracle": "V2X14_AUDIO_TIMER_BOUNDS",
+      "oracles": ["V2X14_AUDIO_TIMER_BOUNDS"],
       "timeoutMs": 30000
     },
     {
       "id": "v2x14.artifact-reachability",
       "owner": "v2x14",
       "tier": "LANE_TARGETED",
-      "command": ["node", "tests/v2x-14-product-experience/artifact-reachability.mjs"],
+      "command": "node tests/v2x-14-product-experience/artifact-reachability.mjs",
       "providers": ["v1.scene.living-world"],
-      "oracle": "ofu-v2x14-artifact-reachability-1",
+      "oracles": ["ofu-v2x14-artifact-reachability-1"],
       "timeoutMs": 30000
     },
     {
       "id": "v2x14.direct-manipulation-browser",
       "owner": "v2x14",
       "tier": "LANE_TARGETED",
-      "command": ["node", "tests/v2x-14-product-experience/browser-direct-manipulation.mjs"],
+      "command": "node tests/v2x-14-product-experience/browser-direct-manipulation.mjs",
       "providers": ["v1.scene.living-world"],
-      "oracle": "ofu-v2x14-direct-manipulation-browser-evidence-1",
+      "oracles": ["ofu-v2x14-direct-manipulation-browser-evidence-1"],
       "timeoutMs": 120000
     },
     {
       "id": "v2x14.product-audio-browser",
       "owner": "v2x14",
       "tier": "LANE_TARGETED",
-      "command": ["node", "tests/v2x-14-product-experience/browser-journey.mjs"],
+      "command": "node tests/v2x-14-product-experience/browser-journey.mjs",
       "providers": ["v1.scene.living-world"],
-      "oracle": "ofu-v2x14-browser-evidence-7",
+      "oracles": ["ofu-v2x14-browser-evidence-7"],
       "timeoutMs": 180000
     }
   ]
