@@ -1,0 +1,23 @@
+{
+  "schema": "ofu-conformance-1",
+  "tests": [
+    {
+      "id": "v2.exact-artifact.ownership-inventory",
+      "owner": "v2-artifact-falsification",
+      "tier": "RELEASE",
+      "command": ["node", "tests/v2-artifact-falsification/ownership-inventory.mjs"],
+      "providers": ["v2x03.representation.macrocosm"],
+      "oracle": "all-v2-owned-source-reaches-exact-shipping-artifact",
+      "timeoutMs": 180000
+    },
+    {
+      "id": "v2.exact-artifact.falsification",
+      "owner": "v2-artifact-falsification",
+      "tier": "RELEASE",
+      "command": ["node", "tests/v2-artifact-falsification/exact-artifact.mjs"],
+      "providers": ["v2x03.representation.macrocosm"],
+      "oracle": "v2-source-shipping-runtime-consumer-visible-revisit-chain",
+      "timeoutMs": 180000
+    }
+  ]
+}
