@@ -1,0 +1,38 @@
+{
+  "schema": "ofu-v2-parallel-base-pointer-1",
+  "version": "2026-09-08.1",
+  "status": "READY_FOR_MASSIVE_PARALLEL_EXECUTION",
+  "parallelLaunchStatus": "FULL",
+  "releaseCertification": "NOT_READY",
+  "baseSha": "2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7",
+  "baseTree": "99e6b5ff6229d9c34d381e778c5689bf2367d256",
+  "ownershipMatrixVersion": "2026-09-07.6",
+  "centralWriter": "integration/v2x-supreme-total-convergence-2026-09-07",
+  "authorizedPrompts": "01-23",
+  "classABlockers": [],
+  "artifact": {
+    "bytes": null,
+    "sha256": null,
+    "status": "NOT_SAFELY_RECOVERED_FROM_EXACT_CANDIDATE_JOB_LOG"
+  },
+  "authority": {
+    "source": "PEER_PROMPT_00_HANDOFF",
+    "parallelSafetyCoreEstablished": true,
+    "persistentRecordPublishedBy": "PROMPT_01_CENTRAL_CONVERGENCE_OWNER"
+  },
+  "openClassBConvergenceDefects": [
+    "Final RELEASE --exact conformance remains red after the parallel-safety, deterministic-build, ownership, composition and Living-path stages passed.",
+    "V2X-05 Deep Planet final product exposure remains a convergence/release target where not yet independently closed.",
+    "V2X-08 Life full Living embodiment remains a convergence/release target.",
+    "V2X-09 Civilization spatial embodiment remains a convergence/release target.",
+    "V2X-10 Persistent Individuals full spatial embodiment remains a convergence/release target.",
+    "V2X-11 causal gameplay end-to-end closure remains a convergence/release target.",
+    "V2X-13 actual Living pixel-authority closure remains a convergence/release target.",
+    "V2X-14 full browser/mobile/accessibility/audio closure remains a convergence/release target.",
+    "Material v1.0-to-v2.0 visual differential remains subject to final convergence evidence.",
+    "Performance and soak certification remain final-release work.",
+    "Exact mandatory browser matrix remains final-release work.",
+    "Founder physical acceptance remains final-release work."
+  ],
+  "law": "This record authorizes massive parallel execution from the immutable base SHA/tree only. It is not v2.0 release certification. Final release remains blocked until Class B closure and Prompt 24 same-SHA certification."
+}
