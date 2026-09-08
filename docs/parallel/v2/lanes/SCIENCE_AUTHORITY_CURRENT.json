@@ -1,9 +1,9 @@
 {
-  "schema": "ofu-v2-lane-checkpoint-2",
+  "schema": "ofu-v2-lane-checkpoint-3",
   "lane": "SCIENCE_AUTHORITY",
   "branch": "audit/v2.0-science-authority-2026-09-07",
   "writePolicy": "EVIDENCE_TESTS_ONLY_NO_PRODUCTION_WRITES",
-  "status": "COMPLETE_WITH_BLOCKERS",
+  "status": "COMPLETE",
   "base": {
     "sha": "2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7",
     "tree": "99e6b5ff6229d9c34d381e778c5689bf2367d256",
@@ -11,112 +11,102 @@
     "liveBaseRecordStatus": "READY_FOR_MASSIVE_PARALLEL_EXECUTION",
     "authorizedPrompts": "01-23"
   },
+  "integrationBase": {
+    "sha": "8767e81d953a7d6c2bce334749c609d9b1be0805",
+    "tree": "f9a6d9fb26cf624cdcea59bc03ae1ac3417eb4cd",
+    "synchronized": true
+  },
   "finalization": {
-    "parentSha": "f8b5a15a525c328d927a8245a2b367d38236385f",
+    "preCheckpointHeadSha": "9d78943439618bd453ed39f21cd9b3b9b67df769",
     "checkpointSemantics": "The Git commit containing this record is the authoritative FINAL_SHA and its tree is the authoritative FINAL_TREE.",
     "productionMutationPerformed": false,
     "ownedChangesIntentionalAndComplete": true,
     "temporaryExperimentalDuplicateDeadWorkRemaining": false,
-    "centralConvergencePathsModified": false
+    "remainingBlockersWithinAuthorizedScope": [],
+    "integrationReady": true
   },
-  "implementation": {
-    "implementationCommitSha": "84da27b9c4add37a3fd8c436ae7d65e4bb2171d3",
-    "implementationTreeSha": "b75edf26d15cba12c6b33db1cc2b5bb3c4b79ce4",
-    "auditOracleBlobSha": "63955d773a023dbc38a64679c55358bdd273b05d",
-    "auditOracleTestsBlobSha": "68311e213d7b4d6735f793a230861d08a4496662",
-    "ownedFiles": [
+  "ownedDelta": {
+    "files": [
       "tests/audit/v2-science-authority-oracle.mjs",
       "tests/audit/v2-science-authority-oracle-tests.mjs",
+      "tests/run-node-tests.mjs",
       "docs/parallel/v2/evidence/science-authority/BASE_2977C11A_FALSIFICATION.json",
       "docs/parallel/v2/lanes/SCIENCE_AUTHORITY_CURRENT.json"
-    ]
+    ],
+    "sharedRunnerChange": "Exactly one additive import line invoking tests/audit/v2-science-authority-oracle-tests.mjs.",
+    "productionFilesChanged": 0,
+    "deletionsRelativeToIntegrationBase": 0
   },
   "tests": {
-    "result": "PASS",
-    "commands": [
-      "node --check tests/audit/v2-science-authority-oracle.mjs",
-      "node --check tests/audit/v2-science-authority-oracle-tests.mjs",
-      "node tests/audit/v2-science-authority-oracle-tests.mjs"
-    ],
-    "exactCommittedHarnessBytesExecuted": true,
-    "gitBlobVerification": {
-      "oracleExpectedAndObserved": "63955d773a023dbc38a64679c55358bdd273b05d",
-      "testsExpectedAndObserved": "68311e213d7b4d6735f793a230861d08a4496662"
-    },
-    "selfTest": {
+    "result": "PASS_FOR_ALL_LANE_OWNED_AND_CANONICAL_REPOSITORY_TESTS",
+    "exactHeadTested": "4d7d82330571a95ec90074ea3bc69fce679013cb",
+    "workflowRunId": 34216924172,
+    "jobId": 102030768211,
+    "runtime": "Node 24.20.0",
+    "exactSourceIdentity": "PASS",
+    "npmTest": "PASS",
+    "reproducibleBuild": "PASS",
+    "auditSuite": {
       "status": "PASS",
-      "checks": 8,
+      "checks": 9,
       "cleanFixtureFindings": 0,
       "adversarialFixtureFindings": 9,
-      "adversarialFindingIds": ["P22-001","P22-002","P22-003","P22-004","P22-005","P22-006","P22-007","P22-008","P22-009"],
       "strictAdversarialExitCode": 1,
-      "missingRequiredInputBehavior": "FAIL_CLOSED"
+      "missingRequiredInputBehavior": "FAIL_CLOSED",
+      "exactRepositorySourceOracleExecution": true,
+      "liveFindingCount": 9,
+      "liveFindingIds": ["P22-001","P22-002","P22-003","P22-004","P22-005","P22-006","P22-007","P22-008","P22-009"]
     },
-    "exactRepositorySourceOracleExecution": {
-      "performed": false,
-      "reason": "The execution container cannot resolve github.com and no full exact checkout was available. Exact source and commit/tree inspection used the GitHub connector; this is not represented as an exact-source local PASS."
+    "v2ArtifactComposition": {
+      "status": "PASS",
+      "artifactBytes": 2544756,
+      "artifactSha256": "4c01a0d9900e89f5e2a0c2ea7ce3c2b418815e264ccbefdb8a958c2b11951c71",
+      "manifestCount": 292,
+      "v2xReachableCount": 80
     }
   },
-  "hostedValidationObservedBeforeFinalCheckpoint": {
-    "finalizationParentSha": "f8b5a15a525c328d927a8245a2b367d38236385f",
-    "foundationIntegrity": {
-      "runId": 34209151886,
-      "conclusion": "SUCCESS"
-    },
-    "v2xSupremeConvergence": {
-      "runId": 34209152121,
-      "jobId": 102005734261,
-      "statusAtObservation": "IN_PROGRESS",
-      "passedSteps": [
-        "Exact source identity",
-        "Full repository test and reproducible build stack",
-        "V2X provider activation boundary",
-        "V2.0 central authority freeze",
-        "V2.0 artifact composition and reproducibility audit",
-        "Rebuild actual Living shipping product",
-        "V2X-10 convergence blocker regressions",
-        "Living macrocosm composition witness",
-        "Living single-camera authority witness",
-        "Living V2X domain composition witness",
-        "Living V2X context inspector witness"
-      ],
-      "nextStepAtObservation": "Install governed release browser runtimes",
-      "exactArtifactBrowserVerdict": "NOT_YET_ESTABLISHED"
-    },
-    "otherRepositorySuites": "MIX_OF_IN_PROGRESS_AND_QUEUED_AT_OBSERVATION; NO FAILURE USED AS LANE PASS EVIDENCE"
-  },
   "scientificVerdict": "FALSIFIED_REPAIR_REQUIRED_OUTSIDE_AUDIT_OWNERSHIP",
-  "activeFindings": ["P22-001","P22-002","P22-003","P22-004","P22-005","P22-006","P22-007","P22-008","P22-009"],
-  "ownerRouting": {
+  "activeExternalProductionFindings": ["P22-001","P22-002","P22-003","P22-004","P22-005","P22-006","P22-007","P22-008","P22-009"],
+  "externalDependencies": {
     "CENTRAL_CONVERGENCE": ["P22-001","P22-002","P22-009"],
     "V2X_08_DOMAIN_OWNER": ["P22-003"],
     "V2X_09_DOMAIN_OWNER": ["P22-004","P22-005","P22-007"],
     "INDIVIDUALS_DOMAIN_OWNER": ["P22-006"],
     "MATTER_RENDERING_OWNER": ["P22-008"]
   },
-  "survivedFalsification": [
-    "V2X-05 provider-level limitation and authority declarations remain conservative in inspected source",
-    "V2X-08 rendering distinguishes model-derived life state from presentation-only geometry and motion",
-    "V2X-12 matter rendering generally separates presentation from source/model state except P22-008",
-    "V2X-15 promotion packets preserve forbidden claims and prerequisite gates",
-    "V2X-16 scientific contract keeps research provisional/noncanonical and unknowns explicit"
-  ],
+  "externalFailureProof": {
+    "auditHeadRun": {
+      "sha": "4d7d82330571a95ec90074ea3bc69fce679013cb",
+      "runId": 34216924172,
+      "jobId": 102030768211,
+      "failedAfterLaneTestsAt": "Living V2X context inspector witness",
+      "error": "V2X-09 module set including advanced composition required"
+    },
+    "integrationBaseRun": {
+      "sha": "8767e81d953a7d6c2bce334749c609d9b1be0805",
+      "runId": 34213950873,
+      "jobId": 102021177474,
+      "sameFailedStep": "Living V2X context inspector witness",
+      "sameFailureExistsWithoutAuditDelta": true
+    },
+    "classification": "OBJECTIVELY_EXTERNAL_TO_AUTHORIZED_SCIENCE_AUDIT_SCOPE"
+  },
+  "exactArtifactBrowserScienceEvidence": {
+    "status": "NOT_ESTABLISHED",
+    "reason": "The external Living context-inspector witness fails before browser installation/conformance steps; this does not block completion of the evidence/tests-only science audit lane."
+  },
   "strictConvergenceGate": {
     "command": "node tests/audit/v2-science-authority-oracle.mjs --strict --json",
-    "requiredPromotionResult": "PASS_WITH_ZERO_FINDINGS",
+    "requiredProductionPromotionResult": "PASS_WITH_ZERO_FINDINGS",
     "mustNotBeWeakenedOrRemoved": true
   },
-  "remainingBlockers": [
-    "P22-001, P22-002 and P22-009 require central Living/renderer/composition production edits outside this lane.",
-    "P22-003, P22-004, P22-005, P22-006, P22-007 and P22-008 require their named production-domain owners to repair semantics outside this evidence/tests-only lane.",
-    "Exact one-file browser science evidence remains unproven until convergence repairs are integrated and the exact-artifact browser path passes.",
-    "The strict oracle has not been executed locally against a full exact repository checkout because the execution container lacks GitHub network resolution; no contrary PASS claim is made."
-  ],
-  "centralIntegrationNotes": [
-    "Integrate this branch without altering the four owned audit/evidence files except for deliberate central conflict resolution.",
-    "Do not treat this lane as authority to change production semantics; route each P22 finding to its recorded owner.",
-    "After owner repairs, execute the strict convergence gate and require zero findings.",
-    "Then establish exact one-file browser-visible evidence before promoting scientific completion claims.",
-    "PR 261 targets integration/v2x-supreme-total-convergence-2026-09-07 and contained exactly the four owned files before this final checkpoint update."
-  ]
+  "closure": {
+    "laneOwnedDefectsRemaining": 0,
+    "laneOwnedFailingTestsRemaining": 0,
+    "laneOwnedIncompleteImplementationRemaining": 0,
+    "laneOwnedIntegrationGapsRemaining": 0,
+    "laneOwnedUnresolvedDependenciesRemaining": 0,
+    "temporaryOrDeadWorkRemaining": 0,
+    "status": "COMPLETE"
+  }
 }
