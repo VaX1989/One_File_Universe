@@ -61,7 +61,15 @@ jobs:
         run: |
           npm install --no-save --package-lock=false playwright@1.62.1
           npx playwright install --with-deps chromium firefox webkit
+      - name: V2 cinematic real-browser journey
+        run: node tests/v2x-convergence/browser-cinematic-experience.mjs
       - name: Progressive release conformance exact source
         env:
           OFU_SOURCE_SHA: ${{ env.OFU_EXPECTED_SHA }}
         run: node tools/extensions/conformance.mjs RELEASE --exact
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v2-cinematic-${{ env.OFU_EXPECTED_SHA }}
+          path: dist/evidence/cinematic
+          if-no-files-found: warn
