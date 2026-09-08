@@ -1,50 +1,43 @@
-name: V2 Final Science Repair
+name: V2 Science Authority
 
 on:
   push:
     branches:
       - integration/v2x-supreme-total-convergence-2026-09-07
     paths:
-      - scripts/v2-final-science-repair.mjs
+      - src/**
+      - config/components/**
+      - tests/audit/**
       - .github/workflows/v2-final-science-repair.yml
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: v2-final-science-repair
   cancel-in-progress: false
 
 jobs:
-  repair:
-    if: ${{ github.actor != 'github-actions[bot]' }}
+  science-authority:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v4
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '24.20.0'
       - name: Authenticate exact source head
         run: |
           test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
           git status --porcelain=v1
-      - name: Apply systemic Prompt-22 repairs
-        run: node scripts/v2-final-science-repair.mjs
       - name: Static integrity
         run: git diff --check
       - name: Strict science authority oracle
-        run: node tests/audit/v2-science-authority-oracle.mjs
+        run: node tests/audit/v2-science-authority-oracle.mjs --strict
       - name: Repository node regression suite
         run: node tests/run-node-tests.mjs
-      - name: Commit repaired production state
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src config tests
-          git diff --cached --check
-          git diff --cached --quiet && exit 0
-          git commit -m "fix: close Prompt-22 science authority gaps"
-          git push origin HEAD:integration/v2x-supreme-total-convergence-2026-09-07
+      - name: Verify source remained unchanged
+        run: git diff --exit-code
