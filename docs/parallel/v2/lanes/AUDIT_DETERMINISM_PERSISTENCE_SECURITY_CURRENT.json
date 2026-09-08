@@ -8,14 +8,19 @@
     "sha": "2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7",
     "tree": "99e6b5ff6229d9c34d381e778c5689bf2367d256"
   },
-  "testedCandidate": {
-    "sha": "904c5645024591400411aee7656ee458052e9db8",
+  "verifiedSourceCheckpoint": {
+    "sha": "e47bea6e6fb31537b5d42206c59707b0383465a6",
+    "tree": "f7c62d2a34ed808ed256fb5dcab798fbcb3c52d6",
     "branch": "audit/v2.0-determinism-persistence-security-2026-09-07",
-    "baseAheadBy": 3,
+    "baseAheadBy": 4,
     "baseBehindBy": 0,
     "productionWrites": 0,
     "changedProductionFiles": 0,
-    "changedTestFiles": 2
+    "ownedChangedPaths": [
+      "tests/audit/v2-determinism-persistence-security.mjs",
+      "tests/run-node-tests.mjs",
+      "docs/parallel/v2/lanes/AUDIT_DETERMINISM_PERSISTENCE_SECURITY_CURRENT.json"
+    ]
   },
   "audit": {
     "suite": "tests/audit/v2-determinism-persistence-security.mjs",
@@ -23,6 +28,7 @@
     "cases": 172,
     "determinismWitnesses": 4,
     "repetitions": 2,
+    "productionWrites": 0,
     "coverage": [
       "portable-save deterministic serialization and hostile bounds",
       "session persistence and transactional rollback",
@@ -35,11 +41,24 @@
   "exactHeadEvidence": [
     {
       "workflow": "V2X Supreme Convergence",
-      "runId": 34204853768,
-      "jobId": 101991849052,
-      "sourceSha": "904c5645024591400411aee7656ee458052e9db8",
+      "runId": 34205100045,
+      "jobId": 101992638043,
+      "sourceSha": "e47bea6e6fb31537b5d42206c59707b0383465a6",
       "exactSourceIdentity": "PASS",
-      "fullRepositoryTestAndReproducibleBuild": "PASS"
+      "fullRepositoryTestAndReproducibleBuild": "PASS",
+      "auditSuite": "PASS",
+      "p2FuzzIterations": 24000,
+      "p4PropertyHistories": 2000,
+      "p4PropertyEvents": 16041,
+      "p4MetamorphicEvents": 2048,
+      "p4Compactions": 73,
+      "downstreamProviderActivationBoundary": "FAIL_MODULE_NOT_FOUND"
+    },
+    {
+      "workflow": "Foundation Integrity",
+      "runId": 34205100125,
+      "sourceSha": "e47bea6e6fb31537b5d42206c59707b0383465a6",
+      "status": "PASS"
     },
     {
       "workflow": "P1 Conformance",
@@ -47,15 +66,33 @@
       "jobId": 101991916703,
       "sourceSha": "904c5645024591400411aee7656ee458052e9db8",
       "exactSourceIdentity": "PASS",
-      "npmTest": "PASS"
+      "npmTest": "PASS",
+      "windowsChromiumDirectOpen": "PASS",
+      "firefoxDirectOpen": "PASS",
+      "macosWebKitDirectOpen": "PASS"
     }
   ],
   "inheritedIntegrationBlocker": {
     "classification": "MOVING_BASE_WORKFLOW_SOURCE_MISMATCH",
     "laneRegression": false,
-    "detail": "Current integration-branch PR workflow invokes tests/v2x-convergence/provider-activation-boundary.mjs, which is absent from the frozen authorized base. The frozen-base workflow did not contain this step. Audit-owned npm test completed successfully before this inherited step failed.",
+    "exactFailure": "Current integration-branch PR workflow invokes node tests/v2x-convergence/provider-activation-boundary.mjs against the frozen audit source where that later convergence-owned file does not exist; Node exits MODULE_NOT_FOUND after the audit-owned full test stack has passed.",
+    "centralDependency": "CONVERGENCE_OWNER must reconcile the moving integration workflow/source pair during central integration without rebasing this frozen-base audit evidence.",
     "productionRepairAttempted": false
   },
+  "cleanliness": {
+    "temporaryWork": false,
+    "experimentalWork": false,
+    "duplicateWork": false,
+    "knownDeadWork": false,
+    "ambiguousOwnedWork": false,
+    "allOwnedChangesIntentional": true,
+    "allOwnedChangesComplete": true
+  },
+  "finalRecordSemantics": {
+    "metadataOnlySuccessor": true,
+    "verifiedSourceCheckpoint": "e47bea6e6fb31537b5d42206c59707b0383465a6",
+    "note": "The final checkpoint commit only updates this evidence record. Its exact SHA/tree are authenticated externally after commit to avoid self-reference. No test or production semantics change after the verified source checkpoint."
+  },
   "pullRequest": 240,
-  "state": "LANE_COMPLETE_INTEGRATION_BLOCKED_BY_INHERITED_MOVING_BASE_GATE"
+  "state": "COMPLETE_WITH_BLOCKERS"
 }
