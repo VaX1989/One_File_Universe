@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {
   LIFE_V2_AUTHORITY,
   LIFE_V2_LIMITS,
+  LIFE_V2_SCENARIO_ASSUMPTIONS,
   createLifeState,
   advanceEcology,
   applyLineageEvent,
@@ -91,6 +92,35 @@ const event = {
     disturbanceMortalityPpm: 300_000,
   },
 };
+equal(LIFE_V2_SCENARIO_ASSUMPTIONS.assumptionClass, 'MODEL_ASSUMPTION_NOT_OBSERVATION', 'scenario priors must be explicitly classified as assumptions, not observations');
+const explicitOnly = advanceEcology(base, {
+  ...event,
+  eventKey: 'p4:explicit-only',
+  profile: { ...event.profile, juvenileMaturationPpm: 0, matureSenescencePpm: 0 },
+});
+equal(explicitOnly.scenarioAssumptions, null, 'fully explicit profile and lineage traits must not manufacture an assumption envelope');
+
+const assumptionFixture = createLifeState({
+  eventKey: 'fixture:assumption-provenance',
+  lineages: [{ id: 'lin-assumed', traits: [] }],
+  populations: [{
+    id: 'pop-assumed', lineageId: 'lin-assumed', regionId: 'r-assumed', abundance: 100,
+    energyStore: 0, nutrientStore: 0,
+    lifecycleStagePpm: { juvenile: 200_000, mature: 700_000, senescent: 100_000 },
+  }],
+  interactions: [],
+  regions: { 'r-assumed': { resourcePool: 1000, nutrientPool: 1000, disturbancePpm: 0, opportunityPpm: PPM } },
+});
+const assumedAdvance = advanceEcology(assumptionFixture, { type: 'LIFE_ADVANCE', eventKey: 'p4:assumed' });
+check(assumedAdvance.scenarioAssumptions?.assumptionClass === 'MODEL_ASSUMPTION_NOT_OBSERVATION', 'omitted ecology parameters must surface governed assumption authority');
+check(assumedAdvance.scenarioAssumptions?.provenance.includes('not measured'), 'scenario assumption provenance must deny observational authority');
+for (const field of [
+  'profile.birthPpm', 'profile.mortalityPpm', 'profile.resourcePerBirth', 'profile.nutrientPerBirth',
+  'profile.maintenancePerIndividual', 'profile.disturbanceMortalityPpm', 'profile.juvenileMaturationPpm',
+  'profile.matureSenescencePpm', 'trait.fecundity', 'trait.resilience',
+]) check(assumedAdvance.scenarioAssumptions.fields.includes(field), `missing governed assumption witness for ${field}`);
+check(assumedAdvance.diagnostics.every((entry) => entry.scenarioAssumptions === assumedAdvance.scenarioAssumptions), 'downstream demographic diagnostics must retain the exact assumption envelope');
+
 const first = advanceEcology(base, event).state;
 const second = advanceEcology(base, event).state;
 equal(first, second, 'identical state + event must replay identically');
