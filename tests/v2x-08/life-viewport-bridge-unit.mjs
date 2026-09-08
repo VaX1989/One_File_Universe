@@ -61,4 +61,13 @@ assert.throws(()=>createLifeViewportBridge({
 
 assert.equal(fingerprintLifeViewport({b:2n,a:1}),fingerprintLifeViewport({a:1,b:2n}),'fingerprint must be key-order deterministic');
 assert.equal(bridge.reachabilityWitness().exactArtifactEvidenceStatus,'LANE_BUNDLE_AND_ONE_FILE_INJECTION_PROVEN__CENTRAL_MANIFEST_AND_LIVING_WIRING_REQUIRED');
-console.log('V2X-08 viewport bridge: PASS');
+console.log(JSON.stringify({
+  status: 'PASS',
+  suite: 'v2x08-life-viewport-bridge-unit',
+  maxViewportOrganisms: packetA.maxSamples,
+  primitiveFamilies: [...new Set(packetA.renderDescriptors.map((descriptor) => descriptor.primitiveFamily))].sort(),
+  sameStateRevisit: 'REVISITED_EXACT',
+  changedStateRevisit: sameEventChanged.status,
+  absentReason: empty.absenceReason,
+  antiFallback: 'GENERIC_ELLIPSE_REJECTED'
+}));
