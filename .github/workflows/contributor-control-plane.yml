@@ -1,0 +1,40 @@
+name: Contributor Control Plane
+
+on:
+  pull_request:
+
+concurrency:
+  group: contributor-control-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+  OFU_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+
+jobs:
+  route-and-validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: refs/pull/${{ github.event.pull_request.number }}/head
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Setup Node
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '24.20.0'
+      - name: Verify exact source
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Validate governance invariants
+        run: npm run test:open-source-governance
+      - name: Verify generated CODEOWNERS has not drifted
+        run: npm run governance:codeowners -- --check
+      - name: Resolve PR risk, areas and owners
+        run: npm run contrib:pr-context -- --base "$OFU_BASE_SHA" --head "$OFU_SOURCE_SHA"
