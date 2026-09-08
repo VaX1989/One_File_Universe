@@ -4,7 +4,7 @@
     {
       "id": "v2.science-authority.strict-promotion",
       "owner": "px",
-      "tier": "RELEASE",
+      "tier": "FAST_LOCAL",
       "command": ["node", "tests/audit/v2-science-authority-oracle.mjs", "--strict", "--json"],
       "providers": ["px.test.conformance"],
       "oracle": "V2_SCIENCE_AUTHORITY_ZERO_FINDINGS_PROMOTION_GATE",
