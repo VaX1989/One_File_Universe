@@ -1,0 +1,49 @@
+{
+  "schema": "ofu-v2-lane-checkpoint-1",
+  "lane": "PROMPT-23-EXACT-ARTIFACT-FALSIFICATION",
+  "mode": "READ_MOSTLY_BUILD_SHIPPING_REACHABILITY_AUDIT",
+  "status": "IMPLEMENTED_PENDING_EXACT_HOSTED_FALSIFICATION",
+  "branch": "audit/v2.0-exact-artifact-falsification-2026-09-07",
+  "targetBranch": "integration/v2x-supreme-total-convergence-2026-09-07",
+  "authorizedBase": {
+    "sha": "2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7",
+    "tree": "99e6b5ff6229d9c34d381e778c5689bf2367d256",
+    "launchStatus": "FULL",
+    "livePointerStatus": "READY_FOR_MASSIVE_PARALLEL_EXECUTION"
+  },
+  "checkpointHead": {
+    "sha": "9a65b737a6e8f9f4a32a38a4b3f6417406f55dd8",
+    "tree": "b9127ee2e48b708241cf0d4422908430a58652d4"
+  },
+  "ownedChanges": [
+    "tests/v2-artifact-falsification/exact-artifact.mjs",
+    "config/conformance/v2-exact-artifact-falsification.json",
+    "docs/parallel/V2_EXACT_ARTIFACT_FALSIFICATION_CURRENT.json"
+  ],
+  "centralAuthorityPreserved": true,
+  "centralFilesModified": [],
+  "auditContract": [
+    "SOURCE_TO_SHIPPING_MANIFEST",
+    "SHIPPING_MANIFEST_TO_ONE_FILE_HTML",
+    "ONE_FILE_HTML_TO_RUNTIME_EXPORT",
+    "RUNTIME_EXPORT_TO_ACTUAL_CONSUMER",
+    "CONSUMER_TO_VISIBLE_OR_USER_ACTION_CONSEQUENCE",
+    "PERSISTENCE_OR_REVISIT_WHEN_OBSERVED",
+    "EXACT_ARTIFACT_BROWSER_EVIDENCE",
+    "DOUBLE_BUILD_BYTE_AND_HASH_REPRODUCIBILITY",
+    "GENERATED_SCRIPT_PARSE_LOCATION_ATTRIBUTION",
+    "DEAD_UNSHIPPED_DUPLICATE_FALLBACK_FALSIFICATION",
+    "V1_BASELINE_TO_V2_ADDITIVE_BYTE_DELTA"
+  ],
+  "evidence": {
+    "localStaticSyntax": "PASS_NODE_CHECK",
+    "hostedExactHead": "PENDING",
+    "artifactSha256": null,
+    "artifactBytes": null,
+    "reportPath": "dist/evidence/v2-exact-artifact-falsification/report.json"
+  },
+  "knownExternalDependencies": [
+    "Governed Playwright browser installation is supplied by the existing convergence RELEASE workflow before the registered conformance witness executes."
+  ],
+  "scientificTechnicalHonesty": "No artifact hash, byte count, runtime reachability completion, or browser PASS is claimed until exact hosted evidence exists."
+}
