@@ -1,0 +1,31 @@
+name: V2X09 Sync Probe Cleanup Once
+
+on:
+  push:
+    branches:
+      - integration/v2x-supreme-total-convergence-2026-09-07
+    paths:
+      - .github/workflows/v2x09-sync-probe-cleanup-once.yml
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: integration/v2x-supreme-total-convergence-2026-09-07
+          fetch-depth: 0
+      - name: Delete temporary V2X-09 sync probe ref
+        shell: bash
+        run: |
+          set -euo pipefail
+          branch='__should_not_create_v2x09_sync_probe__'
+          git ls-remote --exit-code --heads origin "$branch" >/dev/null
+          git push origin --delete "$branch"
+          if git ls-remote --exit-code --heads origin "$branch" >/dev/null 2>&1; then
+            echo 'temporary sync probe still exists' >&2
+            exit 1
+          fi
