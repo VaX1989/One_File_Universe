@@ -1,5 +1,5 @@
 {
-  "schema": "ofu-v2x15-science-source-ledger-4",
+  "schema": "ofu-v2x15-science-source-ledger-5",
   "authority": "RESEARCH_ONLY",
   "sources": [
     {
@@ -20,8 +20,8 @@
       "id": "GRONOFF_ET_AL_2020",
       "doi": "10.1029/2019JA027639",
       "supports": ["multi-regime atmospheric escape", "limitations of energy-limited approximations", "Jeans-parameter use as a regime diagnostic whose thresholds depend on thermodynamic/compositional context"],
-      "implementationGuard": "classifyEscapeRegime requires a threshold-set ID/hash; energyLimitedEscapeApplicability separately requires explicit efficiency, R_XUV and Roche correction and rejects R_XUV below the planet radius",
-      "doesNotSupport": ["single universal atmospheric escape law", "universal Jeans thresholds", "complete atmospheric-history reconstruction"]
+      "implementationGuard": "classifyEscapeRegime requires threshold-set identity and hash; non-synthetic threshold sets must also supply their actual numeric regime boundaries instead of silently inheriting anonymous defaults. The only implicit numeric thresholds are confined to the explicitly named synthetic regression fixture. energyLimitedEscapeApplicability separately requires explicit efficiency, R_XUV and Roche correction and rejects R_XUV below the planet radius",
+      "doesNotSupport": ["single universal atmospheric escape law", "universal Jeans thresholds", "complete atmospheric-history reconstruction", "treating a provenance label alone as evidence for numeric escape thresholds"]
     },
     {
       "id": "NORTH_CAHALAN_COAKLEY_1981",
