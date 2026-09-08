@@ -4,7 +4,7 @@
     {
       "id": "v2.p21.performance-browser-mobile-resource-soak",
       "owner": "v2-p21-audit",
-      "tier": "RELEASE",
+      "tier": "LANE_TARGETED",
       "command": [
         "node",
         "tests/audit/v2-p21-performance-browser-mobile/browser-resource-soak.mjs"
