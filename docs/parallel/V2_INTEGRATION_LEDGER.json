@@ -1,0 +1,31 @@
+{
+  "schema": "ofu-v2-integration-ledger-1",
+  "version": "2026-09-07.6",
+  "status": "BASE_CANDIDATE_AWAITING_EXACT_HEAD_CERTIFICATION",
+  "source": {
+    "sha": "cbbb677c8bf57801518b7663cc45a4bcc66e92f0",
+    "tree": "0139106e7b477ecc06b50829b8315a6ed91d772f"
+  },
+  "transactions": [
+    {
+      "id": "V2-BASE-00-01",
+      "kind": "BASE_CONFORMANCE_REPAIR",
+      "scope": "tests/v2x-03/continuity-identity.mjs",
+      "reason": "Normalize a vm-realm Array before strict deep equality; product ordering values were already identical."
+    },
+    {
+      "id": "V2-BASE-00-02",
+      "kind": "OWNERSHIP_FREEZE",
+      "scope": "docs/parallel/V2_CENTRAL_AUTHORITY_MAP.json",
+      "reason": "Freeze eight single-primary central authorities with fail-closed duplicate policy."
+    },
+    {
+      "id": "V2-BASE-00-03",
+      "kind": "ARTIFACT_AUDIT",
+      "scope": "tests/governance/v2-parallel-base-artifact-audit.mjs",
+      "reason": "Require two real shipping builds, byte identity, manifest/hash consistency, V2X reachability and embedded executable/resource witnesses."
+    }
+  ],
+  "certification": null,
+  "promotionLaw": "READY may be published only after the candidate SHA/tree are re-read from GitHub and all required exact-head workflows plus the Living browser journey pass."
+}

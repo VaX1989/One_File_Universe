@@ -1,0 +1,18 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v2x.convergence.macrocosm-composition",
+      "version": "1.0.0",
+      "owner": "product",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/rendering/v2x-convergence/macrocosm-composition.js",
+      "dependencies": ["v1x02.spatial-universe.runtime", "v2x03.macrocosm-provider.runtime"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Convergence-owned non-canonical adapter that routes compatible Living macrocosm representation calls through the bounded V2X-03 provider while retaining V1X-02 as a fail-safe presentation fallback. Camera, selection, scale and scientific truth remain externally owned.",
+      "provides": ["v2x.convergence.macrocosm-composition"]
+    }
+  ]
+}

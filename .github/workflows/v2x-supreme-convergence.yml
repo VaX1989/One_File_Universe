@@ -1,0 +1,62 @@
+name: V2X Supreme Convergence
+
+on:
+  pull_request:
+    branches:
+      - development/v1.1-quality-exploration
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  OFU_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+jobs:
+  exact-head-certification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ env.OFU_EXPECTED_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24.20.0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13.15'
+      - name: Exact source identity
+        shell: bash
+        run: |
+          test "$(git rev-parse HEAD)" = "$OFU_EXPECTED_SHA"
+          git diff --exit-code
+          test -z "$(git status --porcelain)"
+      - name: Full repository test and reproducible build stack
+        run: npm test
+      - name: V2.0 central authority freeze
+        run: node tests/governance/v2-central-authority-map.mjs
+      - name: V2.0 artifact composition and reproducibility audit
+        run: node tests/governance/v2-parallel-base-artifact-audit.mjs
+      - name: Rebuild actual Living shipping product
+        run: node tools/build-ofu-rendering-v09.mjs
+      - name: V2X-10 convergence blocker regressions
+        run: node tests/v2x10/convergence-blockers.mjs
+      - name: Living macrocosm composition witness
+        run: node tests/v2x-convergence/macrocosm-composition.mjs
+      - name: Living single-camera authority witness
+        run: node tests/v2x-convergence/living-camera-authority.mjs
+      - name: Living V2X domain composition witness
+        run: node tests/v2x-convergence/living-domain-composition.mjs
+      - name: Living V2X context inspector witness
+        run: node tests/v2x-convergence/living-context-inspector.mjs
+      - name: Install governed release browser runtimes
+        run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium firefox webkit
+      - name: Progressive release conformance exact source
+        env:
+          OFU_SOURCE_SHA: ${{ env.OFU_EXPECTED_SHA }}
+        run: node tools/extensions/conformance.mjs RELEASE --exact

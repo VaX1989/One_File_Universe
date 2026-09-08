@@ -1,0 +1,58 @@
+(function(root){
+'use strict';
+const O=root.OFU=root.OFU||{},Life=O.v2x08Life,Civ=O.v2x09CivilizationEconomyCity,People=O.v2x10Individuals;
+if(!Life||!Civ||!People)throw new Error('V2X Living context inspector dependencies missing');
+const VERSION='ofu-v2x-living-context-inspector-1',MAX_PEOPLE=12;
+const text=v=>String(v??'');
+const title=v=>text(v).toLowerCase().replaceAll('_',' ');
+const short=v=>text(v).slice(0,10);
+function safeInt(v,fallback=0){const n=Number(v);return Number.isSafeInteger(n)?n:fallback}
+function populationTraits(pop){
+ const out=['role:'+text(pop.role||'UNKNOWN'),'rarity:'+text(pop.rarityClass||'UNRESOLVED')];
+ for(const [k,v] of Object.entries(pop.traits||{}).sort(([a],[b])=>a.localeCompare(b))){if(Number.isSafeInteger(v))out.push(k+':'+v+'ppm');if(out.length>=Life.LIMITS.maxTraitsPerLineage)break;}
+ return out;
+}
+function lifeProjection(s){
+ const local=s?.local?.life?.local;if(!local||!Array.isArray(local.populations)||local.populations.length===0)return Object.freeze({supported:false,reason:'NO_MODELED_LOCAL_POPULATIONS'});
+ const pops=local.populations.slice(0,Life.LIMITS.maxPopulations),byLineage=new Map();
+ for(const pop of pops){const id=text(pop.lineageId);if(!id)continue;const traits=populationTraits(pop),prior=byLineage.get(id);byLineage.set(id,{id,traits:[...new Set([...(prior?.traits||[]),...traits])].slice(0,Life.LIMITS.maxTraitsPerLineage),provenance:'CURRENT_LIVING_LOCAL_MODEL'});}
+ const lineages=[...byLineage.values()].sort((a,b)=>a.id.localeCompare(b.id));
+ const allowed=new Set(lineages.map(x=>x.id));
+ const populations=pops.filter(p=>allowed.has(text(p.lineageId))).map((p,i)=>({id:text(p.populationId||p.id||('population-'+i)),lineageId:text(p.lineageId),regionId:text(local.regionIdentity||s.point?.locationIdentity||'local-region'),abundance:Math.max(0,safeInt(p.individuals,safeInt(p.representedAbundance,0))),sourceAuthority:text(p.authority||'MODEL_DERIVED_SIMULATION')}));
+ const state=Life.normalizeScenario({worldId:text(s.world?.planetIdentity||s.local.planetIdentity),lineages,populations,interactions:[]}),summary=Life.summarize(state),samples=Life.localSamples(state,{regionId:text(local.regionIdentity||''),limit:12});
+ const sourceByPopulation=new Map(pops.map(p=>[text(p.populationId||p.id),p]));
+ const rows=samples.samples.map(sample=>{const source=sourceByPopulation.get(sample.populationId)||{};return Object.freeze({populationId:sample.populationId,lineageId:sample.lineageId,representedAbundance:text(sample.representedAbundance),role:text(source.role||'UNKNOWN'),rarity:text(source.rarityClass||'UNRESOLVED'),localDensityPpm:safeInt(source.localDensityPpm,0),stressPpm:safeInt(source.stressPpm,0),authorityClass:sample.authorityClass,globalAbundanceClaim:false});});
+ const history=(s.world?.biology?.ecosystem?.history||[]).slice(-12).map(e=>Object.freeze({type:text(e.type||'EVENT'),lineageId:text(e.lineageId||''),generation:safeInt(e.generation,0)}));
+ return Object.freeze({supported:true,provider:Life.VERSION,authority:Life.AUTHORITY,lineageCount:summary.lineageCount,populationCount:summary.populationCount,interactionCount:summary.interactionCount,representedAbundance:text(summary.totalRepresentedAbundance),samples:Object.freeze(rows),evolutionGeneration:safeInt(s.world?.biology?.ecosystem?.generation,0),successionStage:text(s.world?.biology?.ecosystem?.successionStage||'UNRESOLVED'),history:Object.freeze(history),abiogenesisModeled:false,persistentPersonsCreated:false});
+}
+function selectedSettlement(s){
+ const rows=s?.local?.objects||[],selected=rows.find(x=>x.entityId===s.selectedObjectId&&['SETTLEMENT','RUIN'].includes(text(x.kind).toUpperCase()));return selected?.settlement||rows.find(x=>['SETTLEMENT','RUIN'].includes(text(x.kind).toUpperCase()))?.settlement||null;
+}
+function civilizationProjection(s){
+ const state=s?.world?.civilization;if(!state||state.state!=='MODELED_CIVILIZATION')return Object.freeze({supported:false,reason:'NO_MODELED_CIVILIZATION'});
+ const settlement=selectedSettlement(s),settlementId=settlement?.settlementId||null,morph=Civ.cityMorphology(state),plan=Civ.cityRenderPlan(state,{settlementId}),inspect=Civ.inspector(state,{settlementId}),summary=O.v1CivilizationRuntime?.explorerSummary?.(state,settlementId?{settlementId}:{})||null;
+ const row=settlementId?morph.settlements.find(x=>x.settlementId===settlementId)||null:null;
+ const routes=(state.tradeEdges||[]).filter(e=>!settlementId||e.from===settlementId||e.to===settlementId).slice(0,12).map(e=>Object.freeze({edgeId:text(e.edgeId),from:text(e.from),to:text(e.to),mode:text(e.mode||'UNSPECIFIED'),flowUnits:safeInt(e.flowUnits,0),status:text(e.status||'ACTIVE')}));
+ const history=(state.history?.proposals||[]).filter(e=>!settlementId||(e.targetIds||[]).includes(settlementId)).slice(-12).map(e=>Object.freeze({eventProposalId:text(e.eventProposalId),epoch:safeInt(e.epoch,0),type:text(e.type),canonical:false}));
+ return Object.freeze({supported:true,provider:Civ.VERSION,authority:'MODEL_DERIVED_SIMULATION',settlementId,phase:text(state.phase||'UNRESOLVED'),epoch:safeInt(state.epoch,0),population:safeInt(summary?.population,state.population?.totalPopulation||0),settlementCount:safeInt(summary?.settlementCount,(state.settlements||[]).length),tradeRouteCount:safeInt(summary?.tradeRouteCount,(state.tradeEdges||[]).length),ruinCount:safeInt(summary?.ruinCount,0),activeCapabilities:Object.freeze([...(inspect.technologyPrerequisites?.activeCapabilities||[])]),morphology:row?Object.freeze({layoutClass:row.layoutClass,populationBand:row.populationBand,roadHierarchy:row.roadHierarchy,districts:Object.freeze(row.districts.map(d=>d.kind)),historicalLayers:Object.freeze(row.historicalLayers.map(x=>Object.freeze({kind:x.kind,epoch:x.epoch,canonical:false})))}):null,renderCommandCount:plan.commandCount||0,routes:Object.freeze(routes),history:Object.freeze(history),physicalCityGeometryClaim:false,canonicalHistoryClaim:false});
+}
+function individualProjection(s){
+ const settlement=selectedSettlement(s),state=s?.world?.civilization;if(!settlement||!state||state.state!=='MODELED_CIVILIZATION'||settlement.status!=='ACTIVE'||safeInt(settlement.population,0)<=0)return Object.freeze({supported:false,reason:'NO_ACTIVE_SELECTED_SETTLEMENT'});
+ const population=Math.max(0,safeInt(settlement.population,0)),aggregate={population,nextBirthOrdinal:population,roles:['resident']},count=Math.min(MAX_PEOPLE,population),people=People.refine({worldId:text(s.world.planetIdentity),settlementId:text(settlement.settlementId),aggregate,startOrdinal:0,count,currentYear:Math.max(0,safeInt(state.epoch,0))}),check=People.reconcile({aggregate,people,startOrdinal:0});
+ return Object.freeze({supported:true,provider:People.VERSION,authority:People.AUTHORITY,settlementId:settlement.settlementId,population,materializedCount:people.length,reconciliation:check.status,people:Object.freeze(people.map(p=>Object.freeze({id:p.id,householdId:p.householdId,role:p.role,birthOrdinal:p.birthOrdinal,age:p.age,lineageStatus:p.lineage.status,memoryCount:p.memories.length,knowledgeCount:p.knowledge.length}))),identityPersistentAcrossRevisit:true,retainedMemoryPersistence:false,mortalityAwareRefinement:false,limitation:'Current Living civilization exposes a present aggregate but not the V2X-10 birth/death ledger; this view therefore materializes deterministic bounded current residents without inventing genealogy, age or memories.'});
+}
+function snapshot(s){return Object.freeze({version:VERSION,stage:s?.stage||null,shippingOwner:O.v1LivingProduct?.renderer?.state?.().domainComposition?.owner||'BASE_OR_EXISTING_COMPOSITION',life:lifeProjection(s),civilization:civilizationProjection(s),individuals:individualProjection(s),canonicalMutation:false});}
+O.v2xLivingContextInspector=Object.freeze({VERSION,lifeProjection,civilizationProjection,individualProjection,snapshot});
+if(typeof document==='undefined')return;
+function el(tag,content=null,attrs={}){const x=document.createElement(tag);if(content!==null)x.textContent=text(content);for(const [k,v] of Object.entries(attrs))x.setAttribute(k,text(v));return x}
+function detail(label,fields,open=false){const d=el('details',null,{class:'living-details'});if(open)d.open=true;d.append(el('summary',label));const dl=el('dl');for(const [k,v] of Object.entries(fields)){dl.append(el('dt',k),el('dd',typeof v==='object'?JSON.stringify(v):v));}d.append(dl);return d}
+function render(s){
+ const panel=document.getElementById('living-panel');if(!panel)return;document.getElementById('living-v2x-context')?.remove();const data=snapshot(s),box=el('section',null,{id:'living-v2x-context','aria-label':'V2X living model context'});box.append(el('div','V2X LIVING ADOPTION · '+data.shippingOwner,{class:'living-eyebrow'}));
+ if(data.life.supported){const L=data.life;box.append(detail('V2X-08 · Life, ecology & evolution',{Lineages:L.lineageCount,'Local populations':L.populationCount,'Represented abundance':L.representedAbundance,'Evolution generation':L.evolutionGeneration,Succession:title(L.successionStage),'Local lineage sample':L.samples.map(x=>({lineage:short(x.lineageId),role:title(x.role),rarity:title(x.rarity),densityPpm:x.localDensityPpm})), 'Recent modeled lineage events':L.history.map(x=>({generation:x.generation,type:x.type,lineage:short(x.lineageId)}))},true));}
+ if(data.civilization.supported){const C=data.civilization;box.append(detail('V2X-09 · Civilization, city & history',{Phase:title(C.phase),Epoch:C.epoch,Population:C.population,Settlements:C.settlementCount,'Trade routes':C.tradeRouteCount,'Active capabilities':C.activeCapabilities,'Selected morphology':C.morphology,'Network sample':C.routes,'Historical proposals':C.history,'Canonical history':'NO — proposals/model projection only'},true));}
+ if(data.individuals.supported){const P=data.individuals;box.append(detail('V2X-10 · Persistent individual identities',{'Settlement':short(P.settlementId),'Population aggregate':P.population,'Materialized residents':P.materializedCount,'Identity reconciliation':P.reconciliation,'Residents':P.people.map(x=>({id:short(x.id),household:short(x.householdId),role:x.role,genealogy:x.lineageStatus,memories:x.memoryCount})),'Retained memory persistence':P.retainedMemoryPersistence?'YES':'NOT YET','Scope limitation':P.limitation},true));}
+ panel.append(box);const eyebrow=document.querySelector('#living-titlebar .living-eyebrow');if(eyebrow)eyebrow.textContent='ONE FILE UNIVERSE / V2X LIVING CONVERGENCE';const stage=document.getElementById('living-stage');if(stage)stage.dataset.v2xShippingOwner=data.shippingOwner;
+}
+let attempts=0;function boot(){const product=O.v1LivingProduct;if(!product?.runtime){if(++attempts<160)setTimeout(boot,50);return}product.runtime.onChange(render);render(product.runtime.snapshot());}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,0),{once:true});else setTimeout(boot,0);
+})(typeof globalThis!=='undefined'?globalThis:this);

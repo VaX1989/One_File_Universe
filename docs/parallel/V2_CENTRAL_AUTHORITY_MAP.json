@@ -1,0 +1,31 @@
+{
+  "schema": "ofu-v2-central-authority-map-1",
+  "version": "2026-09-07.6",
+  "singleWriterLaw": true,
+  "duplicateAuthorityPolicy": "FAIL_CLOSED",
+  "centralOwner": "CONVERGENCE_OWNER",
+  "authorities": {
+    "selection": {"owner":"CONVERGENCE_OWNER","mode":"SINGLE_PRIMARY"},
+    "semanticScale": {"owner":"CONVERGENCE_OWNER","mode":"SINGLE_PRIMARY"},
+    "travelDistance": {"owner":"CONVERGENCE_OWNER","mode":"SINGLE_PRIMARY"},
+    "cameraSpatialFrame": {"owner":"CONVERGENCE_OWNER","mode":"SINGLE_PRIMARY"},
+    "sceneComposition": {"owner":"CONVERGENCE_OWNER","mode":"SINGLE_PRIMARY"},
+    "primaryRenderer": {"owner":"CONVERGENCE_OWNER","mode":"SINGLE_PRIMARY"},
+    "inputRouter": {"owner":"CONVERGENCE_OWNER","mode":"SINGLE_PRIMARY"},
+    "persistenceReplay": {"owner":"CONVERGENCE_OWNER","mode":"SINGLE_PRIMARY"}
+  },
+  "evidenceAuthorityClasses": [
+    "CANONICAL_PROVEN",
+    "DERIVED",
+    "MODEL_DERIVED_SIMULATION",
+    "PRESENTATION_ONLY",
+    "MEASURED_RUNTIME_EVIDENCE"
+  ],
+  "providerLaw": {
+    "lanes": ["V2X-01","V2X-02","V2X-03","V2X-04","V2X-05","V2X-06","V2X-07","V2X-08","V2X-09","V2X-10","V2X-11","V2X-12","V2X-13","V2X-14","V2X-15","V2X-16"],
+    "additiveOnly": true,
+    "centralAuthorityOverrideAllowed": false,
+    "duplicateProviderIdPolicy": "FAIL_CLOSED",
+    "duplicateCapabilityClaimPolicy": "FAIL_CLOSED"
+  }
+}
