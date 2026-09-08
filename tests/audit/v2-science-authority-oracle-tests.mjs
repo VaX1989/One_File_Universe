@@ -2,7 +2,12 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { auditRepository, strictExitCode, AUTHORITY_CLASSES } from './v2-science-authority-oracle.mjs';
+
+const EXPECTED_FINDING_IDS = Object.freeze([
+  'P22-001','P22-002','P22-003','P22-004','P22-005','P22-006','P22-007','P22-008','P22-009'
+]);
 
 const files = {
   'src/bootstrap/product/v2x-context-inspector.js': '',
@@ -48,7 +53,7 @@ const dirty = fixture({
 const dirtyReport = auditRepository(dirty);
 assert.equal(dirtyReport.status, 'FALSIFIED');
 assert.equal(dirtyReport.findingCount, 9);
-assert.deepEqual(dirtyReport.findings.map(item => item.id), ['P22-001','P22-002','P22-003','P22-004','P22-005','P22-006','P22-007','P22-008','P22-009']);
+assert.deepEqual(dirtyReport.findings.map(item => item.id), EXPECTED_FINDING_IDS);
 assert.equal(strictExitCode(dirtyReport), 1);
 
 const authorityVisible = fixture({
@@ -60,5 +65,15 @@ const missing = fixture();
 fs.unlinkSync(path.join(missing, 'src/v2x-09-civilization-economy-city/core.js'));
 assert.throws(() => auditRepository(missing), /audit input missing/, 'audit must fail closed when a required source is absent');
 
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+const liveReport = auditRepository(repoRoot);
+const liveFindingIds = liveReport.findings.map(item => item.id);
+assert.equal(liveReport.schema, 'ofu-v2-science-authority-audit-1');
+assert.deepEqual(liveReport.authorityClasses, AUTHORITY_CLASSES);
+assert.equal(liveReport.findings.length, liveReport.findingCount);
+assert.equal(new Set(liveFindingIds).size, liveFindingIds.length, 'live audit finding ids must be unique');
+assert.ok(liveFindingIds.every(id => EXPECTED_FINDING_IDS.includes(id)), 'live audit must not emit an ungoverned finding id');
+assert.equal(liveReport.productionMutationPerformed, false);
+
 for (const root of [clean, dirty, authorityVisible, missing]) fs.rmSync(root, { recursive: true, force: true });
-console.log(JSON.stringify({ status: 'PASS', suite: 'v2-science-authority-oracle', checks: 8, dirtyFindingCount: dirtyReport.findingCount, strictDirtyExit: strictExitCode(dirtyReport), productionMutationPerformed: false }));
+console.log(JSON.stringify({ status: 'PASS', suite: 'v2-science-authority-oracle', checks: 9, dirtyFindingCount: dirtyReport.findingCount, strictDirtyExit: strictExitCode(dirtyReport), liveFindingCount: liveReport.findingCount, liveFindingIds, productionMutationPerformed: false }));
