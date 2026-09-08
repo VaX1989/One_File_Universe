@@ -1,0 +1,14 @@
+{
+  "schema": "ofu-conformance-1",
+  "tests": [
+    {
+      "id": "v2.determinism-persistence-security.falsification",
+      "owner": "px",
+      "tier": "FAST_LOCAL",
+      "command": ["node", "tests/audit/v2-determinism-persistence-security.mjs"],
+      "providers": ["px.test.conformance"],
+      "oracle": "v2-determinism-persistence-replay-authority-security-falsification",
+      "timeoutMs": 180000
+    }
+  ]
+}
