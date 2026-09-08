@@ -1,5 +1,5 @@
 {
-  "version": "2026-09-08.1",
+  "version": "2026-09-08.2",
   "schema": "config/governance/ip-provenance.schema.json",
   "historicalCorpusStatus": "AUDIT_REQUIRED_BEFORE_FULL_COMMERCIAL_RELICENSING_CLAIM",
   "newThirdPartyMaterialRequiresProvenanceRecordBeforeMerge": true,
@@ -7,9 +7,15 @@
   "datasetRedistributionMustBeExplicit": true,
   "generatedMaterialMustRecordGeneratorOrSourceWhenMaterial": true,
   "aiAssistedMaterialRequiresHumanResponsibilityAndDisclosureWhenMaterial": true,
+  "firstPartyMachineReadableLicensing": {
+    "strategy": "NEW_MATERIAL_FIRST_PLUS_HISTORICAL_BACKFILL",
+    "activationTarget": "BEFORE_LARGE_SCALE_EXTERNAL_CODE_CONTRIBUTION",
+    "spdxMetadataExpectedForNewMaterialAfterActivation": true,
+    "historicalBackfillRunsInParallel": true
+  },
   "reuse": {
     "targetSpecification": "3.3",
-    "migrationStatus": "PLANNED_INCREMENTAL_AFTER_CORPUS_AUDIT",
+    "migrationStatus": "PLANNED_NEW_MATERIAL_FIRST_AND_INCREMENTAL_HISTORICAL_BACKFILL",
     "complianceClaim": false
   }
 }

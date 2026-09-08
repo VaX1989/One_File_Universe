@@ -1,5 +1,5 @@
 {
-  "version": "2026-09-08.3",
+  "version": "2026-09-08.4",
   "openSourceLicense": "GPL-3.0-only",
   "openSourceCoreGuarantee": true,
   "copyrightAssignmentRequired": false,
@@ -8,22 +8,39 @@
     "status": "BOUNDARY_RECORDED_IP_AUDIT_PENDING"
   },
   "commercialLicensing": {
-    "strategy": "OPTIONAL_DUAL_LICENSE",
+    "strategy": "GPL_OPEN_SOURCE_PLUS_OPTIONAL_COMMERCIAL_PROPRIETARY_PERMISSION",
     "openSourceCommercialUseAllowedWithoutFee": true,
     "automaticRevenueRoyaltyInOpenSourceLicense": false,
-    "commercialTermsAreSeparateAgreement": true
+    "commercialTermsAreSeparateAgreement": true,
+    "openSourceRightsCannotBeRetroactivelyRevoked": true
   },
   "externalContributionRights": {
     "status": "LEGAL_REVIEW_REQUIRED_BEFORE_RELICENSING_ACTIVATION",
     "commercialRelicensingAssumedFromPullRequest": false,
     "intendedModel": "CONTRIBUTOR_RETAINS_COPYRIGHT_WITH_EXPLICIT_RELICENSING_AND_PATENT_GRANT",
-    "mergePolicy": "DO_NOT_CREATE_COMMERCIAL_RELICENSING_AMBIGUITY"
+    "mergePolicy": "DO_NOT_CREATE_COMMERCIAL_RELICENSING_AMBIGUITY",
+    "futureLicenseMigrationAuthorityMustBeExplicit": true
   },
   "machineReadableLicensing": {
     "spdxExpression": "GPL-3.0-only",
+    "scopeManifest": "config/governance/licensing-scope.json",
+    "explicitOverrideRequired": true,
+    "silentRelicensingForbidden": true,
     "reuseTargetSpecification": "3.3",
     "reuseComplianceClaim": false,
     "historicalCorpusAuditRequired": true
+  },
+  "futureLicenseBoundaries": {
+    "interoperabilityCandidate": "Apache-2.0",
+    "documentationCandidate": "CC-BY-SA-4.0",
+    "networkServerCandidate": "AGPL-3.0-only",
+    "activationRule": "EXPLICIT_R5_PATH_SCOPE_DECISION_REQUIRED"
+  },
+  "artifactLicensing": {
+    "exactSourceIdentityRequired": true,
+    "licenseAndNoticeClosureRequired": true,
+    "thirdPartyAndDatasetProvenanceClosureRequired": true,
+    "correspondingSourceStrategyLegalReviewRequired": true
   },
   "contributionUnits": {
     "schema": "config/governance/contribution-unit.schema.json",

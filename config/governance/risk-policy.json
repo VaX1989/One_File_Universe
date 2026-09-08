@@ -1,5 +1,5 @@
 {
-  "version": "2026-09-08.4",
+  "version": "2026-09-08.5",
   "defaultRisk": "R3",
   "levels": [
     {"id":"R0","score":0,"name":"trivial","minimumReview":"lightweight","typicalGate":"docs/static","requiredChecks":["contributor-control-plane"]},
@@ -10,7 +10,7 @@
     {"id":"R5","score":5,"name":"constitutional-release-legal","minimumReview":"constitutional-governance","typicalGate":"same-sha-full-matrix","requiredChecks":["contributor-control-plane","same-sha-full-matrix","explicit-steward-review"]}
   ],
   "rules": [
-    {"risk":"R5","patterns":["LICENSE","LICENSING.md","COMMERCIAL_LICENSING.md","TRADEMARKS.md","THIRD_PARTY_POLICY.md","GOVERNANCE.md","docs/CONSTITUTION.md","docs/governance/**",".github/CODEOWNERS","docs/adr/ADR-027-*","docs/adr/ADR-028-*","docs/community/CONTRIBUTOR_RIGHTS.md","docs/community/IP_PROVENANCE.md","docs/community/FOUNDING_CORPUS.md","config/governance/areas.json","config/governance/ownership.json","config/governance/risk-policy.json","config/governance/contribution-policy.json","config/governance/community-resilience.json","config/governance/public-launch-gates.json","config/governance/ip-provenance-policy.json","config/governance/founding-corpus.json"]},
+    {"risk":"R5","patterns":["LICENSE","LICENSING.md","COMMERCIAL_LICENSING.md","TRADEMARKS.md","THIRD_PARTY_POLICY.md","GOVERNANCE.md","docs/CONSTITUTION.md","docs/governance/**",".github/CODEOWNERS","docs/adr/ADR-027-*","docs/adr/ADR-028-*","docs/community/CONTRIBUTOR_RIGHTS.md","docs/community/IP_PROVENANCE.md","docs/community/FOUNDING_CORPUS.md","config/governance/areas.json","config/governance/ownership.json","config/governance/risk-policy.json","config/governance/contribution-policy.json","config/governance/licensing-scope.json","config/governance/community-resilience.json","config/governance/public-launch-gates.json","config/governance/ip-provenance-policy.json","config/governance/founding-corpus.json"]},
     {"risk":"R4","patterns":["SECURITY.md","MAINTAINERS.md",".github/workflows/**","package.json","docs/adr/**","docs/community/SUPPLY_CHAIN_SECURITY.md","docs/community/PUBLIC_LAUNCH_READINESS.md","docs/community/GOVERNANCE_MATURITY.md","config/governance/contribution-unit.schema.json","config/governance/contribution-units/**","config/governance/scientific-model-card.schema.json","config/governance/ip-provenance.schema.json","config/governance/supply-chain-policy.json","src/temporal/**","src/canonical/**","src/kernel/**","src/**/persistence/**","src/**/replay/**","src/bootstrap/**","tools/build-**","tools/extensions/**","tools/contrib/**","data/provenance/**"]},
     {"risk":"R3","patterns":["CODE_OF_CONDUCT.md","config/components/**","config/conformance/**","config/extensions/**","src/runtime/**","src/extensions/**","src/rendering/v2x-convergence/**"]},
     {"risk":"R2","patterns":["src/**","tests/**","research/**","data/**","tools/**"]},

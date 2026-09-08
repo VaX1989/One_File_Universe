@@ -1,0 +1,95 @@
+{
+  "version": "2026-09-08.1",
+  "purpose": "Machine-readable licensing boundaries for OFU. This manifest classifies policy scope; it does not itself relicense any path that lacks an explicit applicable license notice.",
+  "defaultLicense": "GPL-3.0-only",
+  "scopeResolution": {
+    "defaultAppliesUnlessExplicitOverride": true,
+    "silentRelicensingForbidden": true,
+    "explicitOverrideRequires": [
+      "EXPLICIT_FILE_OR_DIRECTORY_LICENSE_NOTICE",
+      "R5_GOVERNANCE_REVIEW",
+      "COMPATIBILITY_AND_PROVENANCE_REVIEW"
+    ]
+  },
+  "openSourceCore": {
+    "status": "ACTIVE",
+    "license": "GPL-3.0-only",
+    "permanentOpenSourceGuarantee": true,
+    "commercialUseWithoutOFUFeeWhenCompliant": true,
+    "commercialProprietaryAlternative": "SEPARATE_PERMISSION_ONLY_WHERE_REQUIRED_RIGHTS_EXIST"
+  },
+  "classes": [
+    {
+      "id": "CORE_IMPLEMENTATION",
+      "status": "ACTIVE_DEFAULT",
+      "license": "GPL-3.0-only",
+      "description": "Canonical OFU implementation, runtime, simulation, rendering, build and product code unless a narrower explicit notice says otherwise."
+    },
+    {
+      "id": "INTEROPERABILITY_SPEC",
+      "status": "CANDIDATE_NOT_ACTIVE",
+      "candidateLicense": "Apache-2.0",
+      "description": "Public protocols, schemas and interoperability specifications may be made permissive by an explicit future R5 path-level decision."
+    },
+    {
+      "id": "PUBLIC_SDK",
+      "status": "CANDIDATE_NOT_ACTIVE",
+      "candidateLicense": "Apache-2.0",
+      "description": "SDK/client libraries intended to maximize ecosystem adoption may be made permissive only by an explicit future R5 path-level decision."
+    },
+    {
+      "id": "DOCUMENTATION",
+      "status": "CANDIDATE_NOT_ACTIVE",
+      "candidateLicense": "CC-BY-SA-4.0",
+      "description": "Community/user documentation may receive a documentation-specific license in a future explicit migration; current default licensing is not changed by this manifest."
+    },
+    {
+      "id": "NETWORK_SERVER",
+      "status": "FUTURE_SEPARATE_ADR_REQUIRED",
+      "candidateLicense": "AGPL-3.0-only",
+      "description": "A future network-centric OFU server may warrant AGPL. No present OFU path is relicensed to AGPL by this policy."
+    },
+    {
+      "id": "SCIENTIFIC_DATA",
+      "status": "PER_ASSET_LICENSE_REQUIRED",
+      "candidateLicense": null,
+      "description": "Scientific datasets retain their own provenance and licensing; public availability is never treated as redistribution permission."
+    },
+    {
+      "id": "THIRD_PARTY_MATERIAL",
+      "status": "PER_MATERIAL_LICENSE_REQUIRED",
+      "candidateLicense": null,
+      "description": "Third-party code, fonts, media, assets and models retain explicit upstream licensing and notice requirements."
+    },
+    {
+      "id": "USER_OUTPUT",
+      "status": "POLICY_BOUNDARY",
+      "candidateLicense": null,
+      "description": "OFU does not claim ownership merely because ordinary user-created output or scientific results were produced with OFU."
+    }
+  ],
+  "currentExplicitOverrides": [],
+  "pluginAndProtocolBoundary": {
+    "inProcessCoreExtensionPolicy": "DEFAULT_GPL_ANALYSIS_OR_SEPARATE_COMMERCIAL_PERMISSION",
+    "externalProtocolClientPolicy": "MAY_USE_AN_INDEPENDENT_LICENSE_WHEN_ARCHITECTURALLY_AND_LEGALLY_SEPARATE",
+    "publicProtocolCandidateLicense": "Apache-2.0",
+    "legalClassificationMustNotBeInferredFromArchitectureAlone": true
+  },
+  "gplVersionPolicy": {
+    "currentExpression": "GPL-3.0-only",
+    "automaticAdoptionOfFutureGPLVersions": false,
+    "migrationRequires": [
+      "SUPERSEDING_R5_ADR",
+      "CONTRIBUTOR_RIGHTS_VERIFICATION",
+      "LEGAL_REVIEW"
+    ]
+  },
+  "oneFileArtifact": {
+    "exactSourceIdentityRequired": true,
+    "licenseAndNoticeClosureRequired": true,
+    "thirdPartyNoticeClosureRequired": true,
+    "datasetProvenanceClosureRequired": true,
+    "correspondingSourceStrategyRequiresLegalReview": true,
+    "releaseGateStatus": "PENDING_IMPLEMENTATION_EVIDENCE"
+  }
+}

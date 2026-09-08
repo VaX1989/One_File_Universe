@@ -4,7 +4,7 @@
 
 One File Universe is Open Source under GPL-3.0-only. Commercial use under the GPL is allowed without paying the project.
 
-A separate commercial license is relevant when an organization wants permissions that the GPL does not grant for its intended distribution model, for example proprietary redistribution or embedding of OFU-derived software without the GPL obligations that would otherwise apply.
+A separate commercial agreement is relevant when an organization wants proprietary distribution, OEM embedding, enterprise integration, or other permissions beyond what the GPL grants for its intended model. This is better understood as **GPL Open Source plus optional commercial proprietary permission** than as a fee imposed on commercial use.
 
 ## Principles
 
@@ -14,6 +14,8 @@ A separate commercial license is relevant when an organization wants permissions
 - **Negotiated proprietary permission.** Pricing, scope, support, OEM rights, indemnities, warranties, and any revenue-sharing terms belong in a separate signed commercial agreement.
 - **Indie-friendly intent.** The project intends to make proprietary licensing accessible to individuals and small organizations rather than treating every commercial experiment as an enterprise negotiation.
 - **Rights must exist before they are sold.** OFU may commercially relicense only material for which the relevant copyright holders have granted the necessary rights.
+- **Commons permanence.** Commercial permissions do not convert community contributions into commercial-only code and cannot retroactively withdraw an Open Source release.
+- **No implied license boundary.** A commercial exception, Apache-licensed interoperability component, or future AGPL server must be identified explicitly; business intent alone does not change a path's license.
 
 ## Potential commercial offerings
 
@@ -23,7 +25,9 @@ These are business possibilities, not promises and not part of GPL-3.0-only.
 
 ## Contributor protection
 
-The project will not claim that a community contribution is available for commercial relicensing merely because it was submitted to GitHub. Contributor ownership and the rights required for dual licensing must be handled through the contributor-rights process.
+The project will not claim that a community contribution is available for commercial relicensing merely because it was submitted to GitHub. Contributor ownership and the rights required for commercial proprietary licensing must be handled through the contributor-rights process.
+
+The intended contributor grant should be no broader than reasonably required to operate, distribute, protect, evolve, and optionally commercially license OFU. Exact operative language requires qualified software/IP counsel.
 
 See [`docs/community/CONTRIBUTOR_RIGHTS.md`](docs/community/CONTRIBUTOR_RIGHTS.md).
 
