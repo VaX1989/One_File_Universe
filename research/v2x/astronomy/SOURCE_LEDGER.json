@@ -1,5 +1,5 @@
 {
-  "schema": "ofu-v2x15-science-source-ledger-3",
+  "schema": "ofu-v2x15-science-source-ledger-4",
   "authority": "RESEARCH_ONLY",
   "sources": [
     {
@@ -89,10 +89,11 @@
       "supports": [
         "alpha-enhanced stellar grids with alpha/Fe values -0.2 0.0 +0.2 +0.4 +0.6",
         "metallicity coverage to approximately -3 <= Fe/H <= +0.5",
-        "abundance-sensitive interpolation requirements"
+        "abundance-sensitive interpolation requirements",
+        "mass-dependent rotating-family convention: rotation is zero at or below 1.2 solar masses, ramps between 1.2 and 1.8 solar masses, and reaches Omega/Omega_crit=0.4 at or above 1.8 solar masses"
       ],
-      "implementationGuard": "mistInterpolationContract requires exact release/hash/domain metadata, grid-supported rotation values, and rejects the unpublished Fe/H=+0.5 alpha/Fe=+0.6 combination",
-      "doesNotSupport": ["silent solar-scaled chemistry assumptions", "invented grid points", "interpolation outside exact fixture bounds"]
+      "implementationGuard": "mistInterpolationContract requires exact release/hash/domain metadata and alpha-grid support, rejects the unpublished Fe/H=+0.5 alpha/Fe=+0.6 combination, and fail-closes a requested full Omega/Omega_crit=0.4 rotating-family coordinate below 1.8 solar masses instead of pretending rotation is a globally independent axis",
+      "doesNotSupport": ["silent solar-scaled chemistry assumptions", "invented grid points", "interpolation outside exact fixture bounds", "treating Omega/Omega_crit=0.4 as an independently selectable published track at every stellar mass"]
     }
   ]
 }
