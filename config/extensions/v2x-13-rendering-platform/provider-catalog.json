@@ -1,0 +1,67 @@
+{
+  "schema": "ofu-provider-catalog-1",
+  "owners": [
+    {
+      "id": "v2x-13-rendering-platform",
+      "prefixes": ["v2x13"],
+      "kinds": ["renderer"],
+      "authorities": ["PRESENTATION_ONLY"]
+    }
+  ],
+  "canonicalAdmissions": [],
+  "providers": [
+    {
+      "contract": "ofu-px-contracts-1",
+      "id": "v2x13.render.webgl2-resources",
+      "version": "1.0.0",
+      "owner": "v2x-13-rendering-platform",
+      "kind": "renderer",
+      "authority": {
+        "class": "PRESENTATION_ONLY",
+        "contract": "ofu-px-contracts-1",
+        "model": "ofu-v2x13-webgl2-resources",
+        "version": "1.0.0",
+        "sources": [
+          "src/rendering/core/platform.js",
+          "src/rendering/webgl2/resources.js"
+        ],
+        "assumptions": [
+          "WebGL2 is the strict baseline renderer and receives scientific/model state as read-only presentation input.",
+          "Optional enhanced backends may improve pixels but may not alter scientific truth, identity, persistence or causal state."
+        ],
+        "limitations": [
+          "This provider owns presentation resources and context-loss lifecycle only; it has no canonical scientific authority.",
+          "Resource counters are bounded implementation/runtime accounting and are not claims about physical GPU memory."
+        ],
+        "evidence": []
+      },
+      "fidelity": {
+        "regime": "rendering-platform-webgl2",
+        "validity": "Strict WebGL2 presentation resource ownership, rollback and context-loss lifecycle for the Living product.",
+        "resolution": "Bounded by the active render-quality and resource-budget policies.",
+        "uncertainty": "Visual fidelity varies by browser/GPU while scientific/model state and identity remain backend-invariant."
+      },
+      "lifecycle": "SHIPPING",
+      "requires": [],
+      "claims": [
+        "render.webgl2.resources",
+        "render.context-loss.lifecycle",
+        "render.bounded-resource-accounting"
+      ],
+      "operations": ["REPRESENT", "INSPECT"],
+      "budget": {
+        "entities": 4096,
+        "bytes": 268435456,
+        "operations": 65536,
+        "queue": 4096
+      },
+      "evidence": [
+        {
+          "id": "v2.central.living-v2x13-pixel-binding",
+          "tier": "RELEASE"
+        }
+      ],
+      "mandatory": false
+    }
+  ]
+}
