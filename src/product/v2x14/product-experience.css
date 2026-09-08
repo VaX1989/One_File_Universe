@@ -1,1 +1,43 @@
-[data-v2x14-audio]{max-width:36rem;margin:.55rem 0}[data-v2x14-audio] fieldset{min-width:0}[data-v2x14-audio] label{display:grid;grid-template-columns:minmax(8rem,1fr) minmax(44px,2fr);gap:.6rem;align-items:center;margin:.35rem 0}[data-v2x14-audio] input[type=checkbox]{width:44px;height:44px;justify-self:start}[data-v2x14-audio] input[type=range]{min-height:44px;width:100%}[data-v2x14-audio] input:focus-visible{outline:3px solid currentColor;outline-offset:3px}[data-v2x14-audio-status]{min-height:1.4em;overflow-wrap:anywhere}@media (max-width:700px),(max-height:520px) and (pointer:coarse){[data-v2x14-audio] label{grid-template-columns:1fr;gap:.2rem}[data-v2x14-audio] input[type=checkbox]{width:48px;height:48px}[data-v2x14-audio] input[type=range]{min-height:48px}}@media (prefers-reduced-motion:reduce){[data-v2x14-audio]{transition:none!important;scroll-behavior:auto!important}}@media (forced-colors:active){[data-v2x14-audio] fieldset{forced-color-adjust:auto}}
+/* V2X-14 is presentation-only. The Living canvas owns navigation; these rules only harden its affordance surface. */
+[data-v2x14-authority="PRESENTATION_ONLY"]{
+  touch-action:none;
+  overscroll-behavior:contain;
+  -webkit-user-select:none;
+  user-select:none;
+  -webkit-tap-highlight-color:transparent;
+}
+[data-v2x14-authority="PRESENTATION_ONLY"]:focus-visible{
+  outline:3px solid currentColor;
+  outline-offset:3px;
+}
+@media (pointer:fine){
+  [data-v2x14-authority="PRESENTATION_ONLY"]{cursor:grab}
+  [data-v2x14-authority="PRESENTATION_ONLY"][data-v2x14-gesture="drag"]{cursor:grabbing}
+}
+[data-v2x14-audio]{
+  max-width:36rem;
+  margin-block:.55rem;
+  margin-inline:max(.55rem,env(safe-area-inset-left)) max(.55rem,env(safe-area-inset-right));
+  padding-bottom:max(0px,env(safe-area-inset-bottom));
+}
+[data-v2x14-audio] fieldset{min-width:0}
+[data-v2x14-audio] label{display:grid;grid-template-columns:minmax(8rem,1fr) minmax(44px,2fr);gap:.6rem;align-items:center;margin:.35rem 0}
+[data-v2x14-audio] input[type=checkbox]{width:44px;height:44px;justify-self:start}
+[data-v2x14-audio] input[type=range]{min-height:44px;width:100%}
+[data-v2x14-audio] input:focus-visible{outline:3px solid currentColor;outline-offset:3px}
+[data-v2x14-audio-status]{min-height:1.4em;overflow-wrap:anywhere}
+@media (max-width:700px),(max-height:520px) and (pointer:coarse){
+  [data-v2x14-audio] label{grid-template-columns:1fr;gap:.2rem}
+  [data-v2x14-audio] input[type=checkbox]{width:48px;height:48px}
+  [data-v2x14-audio] input[type=range]{min-height:48px}
+}
+@media (orientation:landscape) and (pointer:coarse){
+  [data-v2x14-audio]{max-width:min(48rem,calc(100vw - max(1rem,env(safe-area-inset-left)) - max(1rem,env(safe-area-inset-right))))}
+  [data-v2x14-audio] label{grid-template-columns:minmax(7rem,1fr) minmax(48px,2fr)}
+}
+@media (prefers-reduced-motion:reduce){
+  [data-v2x14-authority="PRESENTATION_ONLY"],[data-v2x14-audio]{transition:none!important;animation:none!important;scroll-behavior:auto!important}
+}
+@media (forced-colors:active){
+  [data-v2x14-authority="PRESENTATION_ONLY"],[data-v2x14-audio] fieldset{forced-color-adjust:auto}
+}
