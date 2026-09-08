@@ -120,55 +120,17 @@
       {
         "command": "node tests/v2x-04-system-planet-approach/orbit-stellar-oracle.mjs",
         "suite": "v2x04-orbit-stellar-oracle-v4",
-        "status": "PASS",
-        "keyEvidence": {
-          "maxBodies": 128,
-          "maxVertices": 32896,
-          "maxStars": 8,
-          "metamorphicOrbitCases": 64,
-          "multiStarSystem": true,
-          "canonicalPicking": true,
-          "arbitraryViewpoints": true,
-          "planetOrderingDeterministic": true,
-          "approachReverseIdentity": true,
-          "legacyFallbackForbidden": true,
-          "scientificEvidence": false
-        }
+        "status": "PASS"
       },
       {
         "command": "node tests/v2x-04-system-planet-approach/approach-continuity-oracle.mjs",
         "suite": "v2x04-approach-continuity-oracle-v3",
-        "status": "PASS",
-        "keyEvidence": {
-          "stages": ["SYSTEM", "ORBIT", "PLANET", "APPROACH", "DESCENT"],
-          "identityStable": true,
-          "reverseValidated": true,
-          "roundTripValidated": true,
-          "renderable3dTrajectory": true,
-          "strongTamperRejection": true,
-          "maxSamples": 257,
-          "metamorphicApproachCases": 64,
-          "scientificEvidence": false
-        }
+        "status": "PASS"
       },
       {
         "command": "node tests/v2x-04-system-planet-approach/illumination-body-lod-oracle.mjs",
         "suite": "v2x04-illumination-body-lod-v3",
-        "status": "PASS",
-        "keyEvidence": {
-          "illuminationValidation": true,
-          "canonicalEnvironmentRecognized": true,
-          "nullRingParametersStayFallback": true,
-          "compositeEclipse": "PARTIAL_PRESENTATION_ECLIPSE_CUE",
-          "strongLodTamperRejection": true,
-          "reverseLodValidated": true,
-          "directionInvariantVisualState": true,
-          "metamorphicCases": 64,
-          "maxStars": 8,
-          "maxOccluders": 64,
-          "maxFrames": 257,
-          "scientificEvidence": false
-        }
+        "status": "PASS"
       }
     ]
   },
@@ -197,8 +159,7 @@
       "failureStep": "V2X provider activation boundary",
       "failure": "MODULE_NOT_FOUND tests/v2x-convergence/provider-activation-boundary.mjs",
       "classification": "CENTRAL_POST_BASE_WORKFLOW_SOURCE_MISMATCH",
-      "laneDefect": false,
-      "reason": "The central workflow advanced after the immutable V2 parallel base and now invokes a convergence-owned test file added only after the frozen base. Importing that central file into this lane would violate the frozen-base and ownership contracts."
+      "laneDefect": false
     }
   },
   "authorityAndProvenance": {
@@ -232,7 +193,7 @@
     },
     {
       "class": "CENTRAL_POST_BASE_WORKFLOW_SOURCE_MISMATCH",
-      "description": "The current V2X Supreme workflow cannot certify a frozen-base-derived lane standalone because it invokes tests/v2x-convergence/provider-activation-boundary.mjs, a convergence-owned file added after the base. Central integration must evaluate the lane in the current convergence composition or make that workflow source-aware."
+      "description": "The current V2X Supreme workflow cannot certify a frozen-base-derived lane standalone because it invokes tests/v2x-convergence/provider-activation-boundary.mjs, a convergence-owned file added after the base."
     }
   ],
   "centralIntegrationNotes": [
