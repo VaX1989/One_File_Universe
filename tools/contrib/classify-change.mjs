@@ -42,8 +42,8 @@ if (!files.length) {
 const risk = readJson('config/governance/risk-policy.json');
 const areas = readJson('config/governance/areas.json');
 const scoreByRisk = new Map(risk.levels.map((entry) => [entry.id, entry.score]));
-let selectedRisk = risk.defaultRisk;
-let selectedScore = scoreByRisk.get(selectedRisk) ?? 3;
+let selectedRisk = null;
+let selectedScore = Number.NEGATIVE_INFINITY;
 const fileResults = [];
 
 for (const file of files) {
@@ -68,6 +68,11 @@ for (const file of files) {
     selectedRisk = fileRisk;
     selectedScore = fileScore;
   }
+}
+
+if (selectedRisk === null) {
+  selectedRisk = risk.defaultRisk;
+  selectedScore = scoreByRisk.get(selectedRisk) ?? 3;
 }
 
 console.log(JSON.stringify({
