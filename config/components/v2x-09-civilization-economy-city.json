@@ -55,7 +55,7 @@
     },
     {
       "id": "v2x09.civilization.morphology",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "owner": "v2x-09-civilization-economy-city",
       "kind": "code",
       "stage": "full",
@@ -63,21 +63,8 @@
       "source": "src/v2x-09-civilization-economy-city/morphology.js",
       "dependencies": ["v2x09.civilization.core", "v2x09.civilization.institutions"],
       "authority": "MODEL_DERIVED_SIMULATION",
-      "provenance": "V2X-09 causal city morphology and bounded render-plan descriptors. Every emitted spatial/render primitive declares PRESENTATION_ONLY and no physical geometry claim; ruins require state/history support.",
-      "provides": ["v2x09.civilization.city-morphology", "v2x09.civilization.city-render-plan"]
-    },
-    {
-      "id": "v2x09.civilization.api",
-      "version": "1.0.0",
-      "owner": "v2x-09-civilization-economy-city",
-      "kind": "code",
-      "stage": "full",
-      "placement": "script",
-      "source": "src/v2x-09-civilization-economy-city/index.js",
-      "dependencies": ["v2x09.civilization.economy-step", "v2x09.civilization.institutions", "v2x09.civilization.morphology"],
-      "authority": "MODEL_DERIVED_SIMULATION",
-      "provenance": "V2X-09 public additive API plus deterministic route-failure envelopes. Failure analysis rejects duplicate input identities, excludes disabled/non-operational routes, carries input evidence-completeness explicitly, evaluates at most 16 candidate routes and 256 scenarios, and enforces one 50000-operation budget for the entire envelope. Results are topology/capacity witnesses only: no guaranteed flow substitution, physical transport geometry, canonical history or cross-domain mutation.",
-      "provides": ["v2x09.civilization.economy-city", "v2x09.civilization.network-failure-envelope"]
+      "provenance": "V2X-09 causal city morphology plus bounded civilization embodiment packet construction. Settlement, district, infrastructure, route, production-flow, resource-relationship and historical-state presentation commands are deterministic and hard-bounded. Every spatial primitive remains PRESENTATION_ONLY; deterministic anchors are not physical positions, route lines are not physical paths, resource links are not deposit geometry, and historical layers are not canonical archaeology. Active/abandoned/damaged/ruined states require modeled state or evidence. V2X-07/convergence retain placement and scene-composition authority.",
+      "provides": ["v2x09.civilization.city-morphology", "v2x09.civilization.city-render-plan", "v2x09.civilization.embodiment-packet-provider"]
     },
     {
       "id": "v2x09.civilization.production-network",
@@ -130,6 +117,19 @@
       "authority": "MODEL_DERIVED_SIMULATION",
       "provenance": "V2X-09 advanced composition with explicit evidence-completeness summary, globally bounded network resilience and infrastructure-only counterfactual recovery. Bridge detection is linear in the modeled graph; alternate bottleneck capacity uses a deterministic max-capacity heap under one 250000-operation resilience budget. Recovery requires active modeled endpoints, ROUTE_LOGISTICS, PUBLIC_WORKS and identified infrastructure assets; it holds the economy snapshot constant, is capped at 16 projected epochs and 5500000 reported submodel operations, and never claims canonical forecasting. Shared renderer composition remains convergence-owner work.",
       "provides": ["v2x09.civilization.advanced-composition", "v2x09.civilization.network-resilience", "v2x09.civilization.recovery-envelope", "v2x09.civilization.composition-evidence-summary"]
+    },
+    {
+      "id": "v2x09.civilization.api",
+      "version": "1.1.0",
+      "owner": "v2x-09-civilization-economy-city",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/v2x-09-civilization-economy-city/index.js",
+      "dependencies": ["v2x09.civilization.economy-step", "v2x09.civilization.institutions", "v2x09.civilization.morphology", "v2x09.civilization.advanced-api"],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "V2X-09 public additive API, deterministic route-failure envelopes and V2 civilization embodiment export. The embodiment export always recomposes the advanced production/society/urban/resilience model and fails closed if that model is unavailable; it never silently falls back to the v1-style city cue path. Its output is PRESENTATION_ONLY scene data for convergence-owned composition and explicitly preserves V2X-07 placement, central camera/scale/renderer, persistence and persistent-person authority boundaries.",
+      "provides": ["v2x09.civilization.economy-city", "v2x09.civilization.network-failure-envelope", "v2x09.civilization.embodiment-packet"]
     }
   ]
 }
