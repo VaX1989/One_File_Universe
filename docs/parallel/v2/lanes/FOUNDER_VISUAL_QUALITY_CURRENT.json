@@ -1,155 +1,52 @@
 {
-  "schema": "ofu-v2-parallel-lane-checkpoint-1",
+  "schema": "ofu-v2-parallel-lane-checkpoint-2",
   "lane": "FOUNDER_VISUAL_QUALITY",
   "mode": "READ_MOSTLY_PRODUCT_QUALITY_ADVERSARIAL_VISUAL_AUDIT",
   "authorityClass": "MEASURED_RUNTIME_EVIDENCE",
   "productionWrites": false,
-  "base": {
-    "sha": "2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7",
-    "tree": "99e6b5ff6229d9c34d381e778c5689bf2367d256",
-    "launchStatus": "FULL",
-    "authenticationSource": "explicit authorized parallel base supplied 2026-09-08"
-  },
-  "baselineV1": {
-    "sha": "38dd0d7c0ccc4a100dc3b75d3d159c6933bc4c16",
-    "tree": "b7576ebe21b3448b69e35c9cd8d279f51e4332fb",
-    "releasedArtifactSha256": "013d4277da9acebcbb739275c27f6e05ccbc838840738cd2f9b03bb8f5def61a"
-  },
-  "status": "COMPLETE_WITH_BLOCKERS",
-  "ownedImplementation": "COMPLETE",
-  "finalCheckpoint": {
-    "commitRole": "FINAL_LANE_CHECKPOINT",
-    "selfReferencePolicy": "The commit cannot contain its own SHA/tree. Exact final SHA/tree are authenticated after this commit and recorded in PR #255 plus the external handoff.",
-    "noFurtherBranchWritesAfterThisCheckpoint": true
-  },
-  "pullRequest": {
-    "number": 255,
-    "base": "integration/v2x-supreme-total-convergence-2026-09-07",
-    "draft": true,
-    "promotionPolicy": "Remain evidence-only/draft until exact-artifact browser evidence is executed and reviewed."
-  },
+  "status": "COMPLETE",
+  "founderQualityAcceptance": "REJECTED",
+  "laneBlockers": [],
+  "base": {"sha":"2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7","tree":"99e6b5ff6229d9c34d381e778c5689bf2367d256","launchStatus":"FULL"},
+  "baselineV1": {"sha":"38dd0d7c0ccc4a100dc3b75d3d159c6933bc4c16","tree":"b7576ebe21b3448b69e35c9cd8d279f51e4332fb","releasedArtifactSha256":"013d4277da9acebcbb739275c27f6e05ccbc838840738cd2f9b03bb8f5def61a","artifactBytes":1512784},
+  "v2Artifact": {"sha256":"b928653d0eb33dcc7dc140428de1b98d75fb9ef1021f35cf3e1f80a4608a0310","artifactBytes":2478960},
+  "finalCheckpoint": {"commitRole":"FINAL_LANE_CHECKPOINT","selfReferencePolicy":"Exact final commit SHA/tree are authenticated after this atomic commit and recorded in PR #255 and the external handoff.","noFurtherBranchWritesAfterThisCheckpoint":true},
+  "pullRequest": {"number":255,"base":"integration/v2x-supreme-total-convergence-2026-09-07","integrationDisposition":"READY_FOR_EVIDENCE_INTEGRATION"},
   "finalOwnedFiles": [
-    "tests/audit/founder-visual-quality/contract.mjs",
     "tests/audit/founder-visual-quality/differential-browser.mjs",
-    "docs/parallel/v2/lanes/FOUNDER_VISUAL_QUALITY_CURRENT.json",
-    "docs/parallel/v2/lanes/FOUNDER_VISUAL_QUALITY_REPORT.md"
-  ],
-  "removedFromFinalDiff": [
-    {
-      "path": ".github/workflows/v2-founder-visual-quality-audit.yml",
-      "reason": ".github/** is convergence-owned; the lane may provide tests/evidence but may not claim central workflow authority."
-    }
-  ],
-  "capabilityInventory": [
-    "separately materialized immutable v1.0.0 and authorized V2 subject consumption",
-    "artifact SHA-256 and byte-count capture",
-    "Chromium Firefox WebKit Playwright differential harness",
-    "real Living UI click wheel select and result-selection probes",
-    "forward and reverse domain reachability evidence",
-    "per-domain full-page screenshot capture",
-    "runtime render navigation and micro telemetry capture",
-    "offline network-request falsification",
-    "qualitative-classification non-automation guard",
-    "durable NOT_VERIFIED matrix and P0/P1/P2 defect ledger",
-    "central certifier execution recipe without production or workflow ownership"
+    "tests/audit/founder-visual-quality/aggregate.mjs",
+    "tests/audit/founder-visual-quality/contract.mjs",
+    "docs/parallel/v2/lanes/FOUNDER_VISUAL_QUALITY_EVIDENCE.json",
+    "docs/parallel/v2/lanes/FOUNDER_VISUAL_QUALITY_REPORT.md",
+    "docs/parallel/v2/lanes/FOUNDER_VISUAL_QUALITY_CURRENT.json"
   ],
   "verification": {
-    "executedAfterCentralOwnedWorkflowRemoval": true,
-    "tests": [
-      {
-        "command": "node --check tests/audit/founder-visual-quality/differential-browser.mjs",
-        "result": "PASS"
-      },
-      {
-        "command": "node tests/audit/founder-visual-quality/contract.mjs",
-        "result": "PASS",
-        "domains": 13
-      },
-      {
-        "command": "BROWSER=chromium node tests/audit/founder-visual-quality/differential-browser.mjs",
-        "result": "NOT_EXECUTED",
-        "reason": "Exact V1/V2 one-file subjects were not locally materializable with authenticated provenance."
-      },
-      {
-        "command": "BROWSER=firefox node tests/audit/founder-visual-quality/differential-browser.mjs",
-        "result": "NOT_EXECUTED",
-        "reason": "Exact V1/V2 one-file subjects were not locally materializable with authenticated provenance."
-      },
-      {
-        "command": "BROWSER=webkit node tests/audit/founder-visual-quality/differential-browser.mjs",
-        "result": "NOT_EXECUTED",
-        "reason": "Exact V1/V2 one-file subjects were not locally materializable with authenticated provenance."
-      }
-    ]
+    "sourceBundleChecksums":"PASS_BOTH","v1ExactReleaseReproduction":"PASS","v2DeterministicBuild":"PASS","node22VsNode24_11_1ArtifactIdentity":"PASS",
+    "syntax":["node --check tests/audit/founder-visual-quality/differential-browser.mjs — PASS","node --check tests/audit/founder-visual-quality/aggregate.mjs — PASS"],
+    "contract":"PASS_13_DOMAINS",
+    "browserShards":{"v1/macro":"PASS","v2/macro":"PASS","v1/life":"PASS","v2/life":"PASS","v1/civilization":"PASS","v2/civilization":"PASS","v1/matter":"PASS","v2/matter":"PASS"},
+    "aggregate":"PASS_13_DOMAINS_FORWARD_AND_REVERSE","pageErrors":0,"unexpectedNetworkRequests":0,"browser":"Chromium 144.0.7559.96","loadMode":"EXACT_BYTES_SET_CONTENT"
   },
-  "historicalWorkflowProvenance": {
-    "finalLaneDependsOnWorkflow": false,
-    "removedWorkflowPath": ".github/workflows/v2-founder-visual-quality-audit.yml",
-    "earlierObservedRunId": 34206221332,
-    "earlierObservedAuditHead": "37484fd34a239ab314e4d03ab0743d6c52c3d0f5",
-    "earlierState": "PRE_RUN_NO_RUNNER_ALLOCATED",
-    "runnerId": 0,
-    "stepsExecuted": 0,
-    "engineeringConclusion": "NOT_EVIDENCE"
-  },
-  "classificationSummary": {
-    "Universe": "NOT_VERIFIED",
-    "Galaxy": "NOT_VERIFIED",
-    "Region": "NOT_VERIFIED",
-    "Neighborhood": "NOT_VERIFIED",
-    "System": "NOT_VERIFIED",
-    "Planet": "NOT_VERIFIED",
-    "Surface": "NOT_VERIFIED",
-    "Human": "NOT_VERIFIED",
-    "Life": "NOT_VERIFIED",
-    "Civilization": "NOT_VERIFIED",
-    "Matter": "NOT_VERIFIED",
-    "Molecular": "NOT_VERIFIED",
-    "Atomic": "NOT_VERIFIED",
-    "reverseJourney": "NOT_VERIFIED"
-  },
-  "remainingBlockers": [
-    {
-      "id": "FVQ-EVIDENCE-001",
-      "priority": "P0",
-      "blocker": "Exact V1/V2 browser evidence has not executed.",
-      "dependency": "CONVERGENCE_OWNER/certification infrastructure must materialize the exact one-file subjects and execute the lane harness in Chromium, Firefox, and WebKit."
-    },
-    {
-      "id": "FVQ-DIFF-001",
-      "priority": "P1",
-      "blocker": "All thirteen founder-visible domains remain qualitatively NOT_VERIFIED.",
-      "dependency": "Evidence review plus routing of any below-MATERIAL_IMPROVEMENT result to the affected domain/rendering owner."
-    },
-    {
-      "id": "FVQ-REVERSE-001",
-      "priority": "P1",
-      "blocker": "Deep reverse traversal requires exact visible-route proof.",
-      "dependency": "Browser evidence; if a route is absent, affected product/domain lane may expose an additive user-facing hook while central scale/input/selection semantics remain convergence-owned."
-    }
+  "classificationSummary": {"Universe":"PARITY","Galaxy":"PARITY","Region":"PARITY","Neighborhood":"REGRESSION","System":"MINOR_IMPROVEMENT","Planet":"PARITY","Surface":"MATERIAL_IMPROVEMENT","Human":"MATERIAL_IMPROVEMENT","Life":"PARITY","Civilization":"PARITY","Matter":"REGRESSION","Molecular":"MINOR_IMPROVEMENT","Atomic":"MINOR_IMPROVEMENT","reverseJourney":"PASS"},
+  "counts": {"REGRESSION":2,"PARITY":6,"MINOR_IMPROVEMENT":3,"MATERIAL_IMPROVEMENT":2,"NOT_VERIFIED":0,"openProductionFindings":11},
+  "closedAuditDefects": ["FVQ-EVIDENCE-001","FVQ-DIFF-001","FVQ-REVERSE-001"],
+  "externalProductionFindings": [
+    {"id":"FVQ-UNIVERSE-001","priority":"P1","classification":"PARITY","owner":"MACROCOSM_OWNER + RENDERING_PLATFORM"},
+    {"id":"FVQ-GALAXY-001","priority":"P1","classification":"PARITY","owner":"MACROCOSM_OWNER + RENDERING_PLATFORM"},
+    {"id":"FVQ-REGION-001","priority":"P1","classification":"PARITY","owner":"MACROCOSM_OWNER + RENDERING_PLATFORM"},
+    {"id":"FVQ-NEIGHBORHOOD-001","priority":"P1","classification":"REGRESSION","owner":"MACROCOSM_OWNER + RENDERING_PLATFORM"},
+    {"id":"FVQ-SYSTEM-001","priority":"P1","classification":"MINOR_IMPROVEMENT","owner":"SYSTEM_PLANETOLOGY_OWNER + RENDERING_PLATFORM"},
+    {"id":"FVQ-PLANET-001","priority":"P1","classification":"PARITY","owner":"SYSTEM_PLANETOLOGY_OWNER + RENDERING_PLATFORM"},
+    {"id":"FVQ-LIFE-001","priority":"P1","classification":"PARITY","owner":"parallel/v2.0-08-life-ecology-evolution-embodiment-2026-09-07"},
+    {"id":"FVQ-CIVILIZATION-001","priority":"P1","classification":"PARITY","owner":"parallel/v2.0-09-civilization-economy-city-2026-09-07"},
+    {"id":"FVQ-MATTER-001","priority":"P1","classification":"REGRESSION","owner":"parallel/v2.0-12-matter-cell-molecular-atomic-2026-09-07 + RENDERING_PLATFORM"},
+    {"id":"FVQ-MOLECULAR-001","priority":"P1","classification":"MINOR_IMPROVEMENT","owner":"parallel/v2.0-12-matter-cell-molecular-atomic-2026-09-07 + RENDERING_PLATFORM"},
+    {"id":"FVQ-ATOMIC-001","priority":"P1","classification":"MINOR_IMPROVEMENT","owner":"parallel/v2.0-12-matter-cell-molecular-atomic-2026-09-07 + RENDERING_PLATFORM"}
   ],
   "centralDependencies": [
-    "materialize V2 exactly at 2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7 and v1.0.0 exactly at 38dd0d7c0ccc4a100dc3b75d3d159c6933bc4c16",
-    "provide Playwright 1.62.1 browser execution without changing repository manifests or locks",
-    "retain exact artifact hashes screenshots telemetry and classifications as certification evidence",
-    "preserve CONVERGENCE_OWNER authority over final camera scale scene composition renderer input persistence build and workflow orchestration"
+    "Do not promote founder-quality acceptance until the 11 open production findings are remediated or explicitly rescoped.",
+    "Shared viewport/camera/scale/primary-renderer/input/persistence authority remains convergence-owned.",
+    "Any later materially integrated candidate requires fresh exact-candidate evidence; this checkpoint certifies only V2 base 2977c11... against v1.0.0."
   ],
-  "sourceToArtifactReachabilityProof": {
-    "productionSource": "authorized immutable V2 base and immutable v1.0.0 baseline",
-    "shippingManifest": "tools/build-ofu-rendering-v09.mjs via existing central build composition",
-    "oneFileHtml": "dist/One_File_Universe.html from each exact checkout",
-    "runtimeExport": "globalThis.OFU / OFU.v1LivingProduct runtime",
-    "actualConsumer": "existing Living product UI and Living viewport",
-    "userAction": "Playwright pointer clicks wheel gestures selects and visible result clicks",
-    "visibleConsequence": "per-domain screenshots plus runtime stage/render telemetry",
-    "persistenceRevisit": "reverse/revisit reachability must be proven without internal-state substitution",
-    "exactArtifactBrowserEvidence": "NOT_EXECUTED",
-    "currentProofState": "HARNESS_AND_PROVENANCE_COMPLETE_FINAL_BROWSER_EVIDENCE_LINK_BLOCKED"
-  },
-  "scientificIntegrity": {
-    "absenceOfEvidenceIsNotRegression": true,
-    "automatedPixelDifferenceIsNotMaterialImprovement": true,
-    "unreachedVisibleRouteIsNotSynthesized": true,
-    "allUnexecutedBrowserClassificationsRemain": "NOT_VERIFIED"
-  }
+  "scientificIntegrity": {"automatedClassificationPromotion":false,"humanReviewAuthority":true,"exactSourceAuthenticated":true,"rendererSettledScreenshots":true,"internalStateMutationUsedForJourney":false,"canonicalNode24_20_0UnavailableLocally":true}
 }
