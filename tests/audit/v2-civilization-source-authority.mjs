@@ -1,0 +1,10 @@
+import fs from 'node:fs';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+const context=vm.createContext({});
+vm.runInContext(fs.readFileSync('src/v2x-09-civilization-economy-city/core.js','utf8'),context);
+const {sourceAuthority,AUTHORITY}=context.OFU.v2x09CivilizationCore;
+for(const input of [undefined,null,{}, {authority:''},{authority:'BOGUS'},{authority:'model_derived_simulation'},{authority:42},{authority:{class:'UNKNOWN'}}]) assert.equal(sourceAuthority(input),null);
+for(const value of Object.values(AUTHORITY)) for(const input of [{authority:value},{authority:{class:value}},{authority:{authorityClass:value}},{authority:{authority:value}},{authorityClass:value}]) assert.equal(sourceAuthority(input),value);
+assert.equal(sourceAuthority({authority:'BOGUS',authorityClass:'MODEL_DERIVED_SIMULATION'}),null,'invalid explicit authority cannot fall back to another claim');
+console.log(JSON.stringify({status:'PASS',suite:'v2-civilization-source-authority',cases:24}));

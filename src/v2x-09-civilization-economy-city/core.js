@@ -53,7 +53,7 @@ function hash32(s){let h=2166136261>>>0;for(const ch of text(s)){h^=ch.charCodeA
 function deriveId(kind,...parts){return 'v2x09:'+kind+':'+hash32(parts.map(text).join('|')).toString(16).padStart(8,'0')}
 function unit(seed,salt){return (hash32(text(seed)+'|'+text(salt))%1000001)}
 function sortId(xs,key){return xs.slice().sort((a,b)=>text(a?.[key]).localeCompare(text(b?.[key])))}
-function sourceAuthority(v){const a=v?.authority;const candidate=typeof a==='string'?a:(a?.authorityClass??a?.class??a?.authority??v?.authorityClass);return text(candidate||'MODEL_DERIVED_SIMULATION').toUpperCase()}
+function sourceAuthority(v){const a=v?.authority;const candidate=typeof a==='string'?a:(a?.authorityClass??a?.class??a?.authority??v?.authorityClass);return typeof candidate==='string'&&Object.values(AUTHORITY).includes(candidate)?candidate:null}
 function validateCivilization(state){
   if(!state||state.state!=='MODELED_CIVILIZATION')return false;
   const settlements=arr(state.settlements),resources=arr(state.resources),tradeEdges=arr(state.tradeEdges),regions=arr(state.regions),polities=arr(state.polities),infrastructure=arr(state.infrastructure),historyProposals=arr(state?.history?.proposals);
