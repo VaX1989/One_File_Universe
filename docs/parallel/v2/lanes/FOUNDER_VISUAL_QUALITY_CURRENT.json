@@ -1,0 +1,62 @@
+{
+  "schema": "ofu-v2-parallel-lane-checkpoint-1",
+  "lane": "FOUNDER_VISUAL_QUALITY",
+  "mode": "READ_MOSTLY_PRODUCT_QUALITY_ADVERSARIAL_VISUAL_AUDIT",
+  "authorityClass": "MEASURED_RUNTIME_EVIDENCE",
+  "productionWrites": false,
+  "base": {
+    "sha": "2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7",
+    "tree": "99e6b5ff6229d9c34d381e778c5689bf2367d256",
+    "launchStatus": "FULL",
+    "authenticationSource": "explicit authorized parallel base supplied 2026-09-08"
+  },
+  "baselineV1": {
+    "sha": "38dd0d7c0ccc4a100dc3b75d3d159c6933bc4c16",
+    "tree": "b7576ebe21b3448b69e35c9cd8d279f51e4332fb",
+    "releasedArtifactSha256": "013d4277da9acebcbb739275c27f6e05ccbc838840738cd2f9b03bb8f5def61a"
+  },
+  "status": "AUDIT_HARNESS_IMPLEMENTED_EXECUTION_PENDING",
+  "head": {
+    "sha": null,
+    "tree": null
+  },
+  "changedFiles": [
+    ".github/workflows/v2-founder-visual-quality-audit.yml",
+    "tests/audit/founder-visual-quality/contract.mjs",
+    "tests/audit/founder-visual-quality/differential-browser.mjs",
+    "docs/parallel/v2/lanes/FOUNDER_VISUAL_QUALITY_CURRENT.json"
+  ],
+  "capabilityInventory": [
+    "immutable v1.0.0 and authorized V2 separate builds",
+    "production-path immutability assertion against authorized V2 base",
+    "artifact SHA-256 and byte count capture",
+    "Chromium Firefox WebKit exact-artifact differential execution",
+    "real Living UI click wheel select interaction probes",
+    "forward and reverse domain reachability evidence",
+    "per-domain full-page screenshot capture",
+    "offline network-request falsification",
+    "qualitative-classification non-automation guard"
+  ],
+  "exactTests": [
+    "node tests/audit/founder-visual-quality/contract.mjs",
+    "BROWSER=chromium node tests/audit/founder-visual-quality/differential-browser.mjs",
+    "BROWSER=firefox node tests/audit/founder-visual-quality/differential-browser.mjs",
+    "BROWSER=webkit node tests/audit/founder-visual-quality/differential-browser.mjs"
+  ],
+  "knownGaps": [
+    "browser evidence has not yet been produced for this audit-head checkpoint",
+    "qualitative founder classifications require review of captured exact-artifact screenshots",
+    "domain-specific reverse controls below Human are deliberately NOT_VERIFIED unless a visible user route is proven"
+  ],
+  "sourceToArtifactReachabilityProof": {
+    "productionSource": "authorized immutable V2 base; audit branch must have zero diff under src/, tools/, config/, data/, package.json",
+    "shippingManifest": "tools/build-ofu-rendering-v09.mjs via existing extension/component manifest composition",
+    "oneFileHtml": "dist/One_File_Universe.html",
+    "runtimeExport": "globalThis.OFU / OFU.v1LivingProduct runtime",
+    "actualConsumer": "existing Living product UI and Living viewport",
+    "userAction": "Playwright pointer clicks, wheel gestures, selects and visible result clicks",
+    "visibleConsequence": "per-domain screenshots plus runtime stage/render telemetry",
+    "persistenceRevisit": "existing release journey evidence retained; audit records reverse/revisit reachability without internal-state substitution",
+    "exactArtifactBrowserEvidence": "workflow artifacts founder-visual-<browser>-<auditHead> after successful execution"
+  }
+}
