@@ -34,7 +34,7 @@
       "tier": "LANE_TARGETED",
       "command": ["node", "tests/v2x-05/metamorphic-extended.mjs"],
       "providers": ["v2x05.model.deep-planet"],
-      "oracle": "v2x05-deep-planet-gravity-composition-rotation",
+      "oracle": "v2x05-deep-planet-adversarial-integrity-replay",
       "timeoutMs": 30000
     }
   ]

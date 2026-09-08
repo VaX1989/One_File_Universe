@@ -63,8 +63,8 @@
       "source": "src/gameplay/runtime.js",
       "dependencies": ["v2x11.simulation.cross-domain", "v2x11.simulation.p4-gameplay-bridge", "v1.providers.bindings"],
       "authority": "MODEL_DERIVED_SIMULATION",
-      "provenance": "V2X-11 governed gameplay facade for surveying, evidence, deployment, resource intervention and modeled time. Scientific temporal projections delegate to existing domain-owned functions when available.",
-      "provides": ["v2x11.gameplay.runtime"]
+      "provenance": "V2X-11 governed gameplay facade and product-neutral governed-action adapter. When central product context exists, perform/propose derive the target and modeled world only from the current central selection and reject caller context overrides; all accepted actions still traverse proposal validation, causal execution and the additive P4 gameplay transition before becoming persistent consequences. Scientific temporal projections delegate to existing domain-owned functions when available.",
+      "provides": ["v2x11.gameplay.runtime", "v2x11.gameplay.governed-action-adapter"]
     }
   ]
 }
