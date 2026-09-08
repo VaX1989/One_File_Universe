@@ -41,7 +41,7 @@ test('research DAG is acyclic and authenticated to the V2 parallel base', () => 
 
 test('promotion packets are bounded, path-real, dispositioned and convergence-hooked where mature', () => {
   const p = read('v2x/reference/HARVEST_PACKETS.json');
-  assert.equal(p.version, '2026-09-08.1');
+  assert.equal(p.version, '2026-09-08.2');
   assert.equal(p.base.sha, BASE_SHA);
   assert.equal(p.base.tree, BASE_TREE);
   assert.ok(p.packets.length >= 10);
@@ -58,6 +58,8 @@ test('promotion packets are bounded, path-real, dispositioned and convergence-ho
   }
   assert.equal(p.packets.find((x) => x.id === 'BOUNDED_DEMOGRAPHY_KINSHIP_PACKET').disposition, 'CORE_ANTI_SPOOF_PRINCIPLES_ALREADY_HARVESTED_IN_BASE');
   assert.equal(p.packets.find((x) => x.id === 'EVOLUTION_WITNESS_PACKET').convergenceHook.targetBlobAtBase, '7654160594e86087358de5076a08d8aeb0852f14');
+  assert.deepEqual(p.packets.find((x) => x.id === 'MICROSTRUCTURE_REFERENCE_PACKET').convergenceHook.targetSurfaces, ['microstructureDescriptor', 'atomicStructureRecord']);
+  assert.equal(p.packets.find((x) => x.id === 'CLASSICAL_NONCLASSICAL_BOUNDARY_PACKET').convergenceHook.targetSurface, 'journey.quantumBoundary');
 });
 
 test('V2 base already contains the V2X-10 anti-spoof repair rather than the old delimiter fallback', () => {
