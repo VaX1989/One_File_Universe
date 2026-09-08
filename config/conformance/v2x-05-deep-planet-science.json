@@ -36,6 +36,34 @@
       "providers": ["v2x05.model.deep-planet"],
       "oracle": "v2x05-deep-planet-adversarial-integrity-replay",
       "timeoutMs": 30000
+    },
+    {
+      "id": "v2x05.deep-planet.vertical-contract",
+      "owner": "v2x-05-deep-planet-science",
+      "tier": "LANE_TARGETED",
+      "command": [
+        "node",
+        "--input-type=module",
+        "-e",
+        "import fs from 'node:fs';import vm from 'node:vm';import assert from 'node:assert/strict';\nconst s={console};s.globalThis=s;s.OFU={};for(const f of ['src/v2x-05-deep-planet-science/regime-core.js','src/v2x-05-deep-planet-science/interior-atmosphere.js','src/v2x-05-deep-planet-science/climate-volatile.js','src/v2x-05-deep-planet-science/deep-planet-provider.js'])vm.runInNewContext(fs.readFileSync(f,'utf8'),s,{filename:f});\nconst P=s.OFU.v2x05DeepPlanetProvider,C=s.OFU.v2x05RegimeCore;\nconst w={planetIdentity:'vertical',causal:{inputs:{planetIdentity:'vertical',bulkPriorClass:'TERRESTRIAL',massMilliEarth:1000,radiusKm:6371,ageMyr:4500,eccentricityPpm:16700,obliquityMilliDeg:23440,rotationPeriodMilliHours:23934},formation:{equilibriumTemperatureMilliK:255000,irradiationPpm:1000000},composition:{metalPpm:320000,silicatePpm:560000,icePpm:70000,lightVolatilePpm:50000,sumPpm:1000000},gravity:{surfaceGravityMilliMs2:9810,escapeVelocityMilliKms:11186,centralPressureProxyPpm:1000000,bulkDensityKgM3:5500},interior:{differentiationState:'STRONGLY_DIFFERENTIATED',differentiationPpm:780000,coreFractionPpm:300000,mantleFractionPpm:650000,crustFractionPpm:50000,heat:{radiogenicPpm:250000,primordialPpm:300000,tidalPpm:20000,heatIndexPpm:330000},convectiveVigorPpm:500000,tectonicRegime:'EPISODIC_OR_STAGNANT_LID',volcanismPpm:350000,dynamoPpm:480000},atmosphere:{initialInventoryUnits:1000000,retainedUnits:900000,escapedUnits:100000,interiorUnits:350000,surfaceCondensedUnits:150000,atmosphereUnits:400000,conserved:true,escape:{xuvMilliWm2:1000,escapePpm:200000},outgassingPpm:300000,pressureProxyPpm:500000,compositionFamily:'N2_CO2_H2O_OUTGASSED',meanMolecularMassMilliAmu:31500,collapsePotentialPpm:100000,cloudCondensatePotentialPpm:350000,greenhouseDeltaMilliK:33000}}};\nconst e=P.evaluate(w);assert.equal(e.supported,true);assert.equal(P.CAPABILITY_CONTRACT,'ofu-v2x-05-deep-planet-vertical-2');assert.equal(C.LIMITS.queryContexts,6);assert.equal(e.bulkDiagnostics.surfaceGravityMilliMs2,9810);assert.equal(e.bulkDiagnostics.escapeVelocityMilliKms,11186);assert.equal(e.causalTrace.length,7);assert.equal(e.provenance.uncertainResearchKeptResearchOnly,true);\nconst r=P.query(e,'RENDERING_CONTEXT'),i=P.query(e,'INSPECTOR_CONTEXT'),env=P.query(e,'ENVIRONMENT_ELIGIBILITY_CONTEXT');assert.equal(r.modelDigest,e.modelDigest);assert.equal(i.modelDigest,e.modelDigest);assert.equal(env.modelDigest,e.modelDigest);assert.equal(r.payload.appearance.authority,'PRESENTATION_ONLY');assert.equal(r.payload.appearance.canonicalAppearanceClaim,false);assert.equal(i.payload.measuredEvidenceClaim,false);assert.equal(env.payload.eligibilityOnly,true);assert.equal(env.payload.life.eligibilityDecided,false);assert.equal(env.payload.civilization.eligibilityDecided,false);assert.equal(env.payload.domainOutcomesModeled,false);\nconst forged=Object.freeze({...e,modelDigest:'v2x05:00000000'});assert.equal(P.query(forged,'RENDERING_CONTEXT').reason,'MALFORMED_PRECOMPUTED_EVALUATION');const bytes=Buffer.byteLength(JSON.stringify(e));assert.ok(bytes<=C.LIMITS.bytes);console.log(JSON.stringify({status:'PASS',oracle:'V2X05_VERTICAL_CONTRACT_V2',modelDigest:e.modelDigest,bytes,contexts:P.CONTEXTS.length,causalTrace:e.causalTrace.length}));"
+      ],
+      "providers": ["v2x05.model.deep-planet"],
+      "oracle": "v2x05-deep-planet-cross-consumer-digest-inspector-environment",
+      "timeoutMs": 30000
+    },
+    {
+      "id": "v2x05.deep-planet.artifact-reachability",
+      "owner": "v2x-05-deep-planet-science",
+      "tier": "LANE_TARGETED",
+      "command": [
+        "node",
+        "--input-type=module",
+        "-e",
+        "import fs from 'node:fs';import vm from 'node:vm';import assert from 'node:assert/strict';import {execFileSync} from 'node:child_process';\nexecFileSync(process.execPath,['tools/build-ofu-rendering-v09.mjs'],{stdio:['ignore','pipe','pipe']});const html=fs.readFileSync('dist/One_File_Universe.html','utf8');const ids=['v2x05.deep-planet.regime-core','v2x05.deep-planet.interior-atmosphere','v2x05.deep-planet.climate-volatile','v2x05.deep-planet.provider'];for(const id of ids)assert.ok(html.includes(`data-ofu-component=\"${id}\"`),id+' must be embedded in one-file HTML');assert.ok(html.includes('id=\"ofu-resource-px.providers.v2x05-deep-planet\"'),'catalog resource must be embedded');\nconst s={console};s.globalThis=s;s.OFU={};for(const id of ids){const re=new RegExp(`<script[^>]*data-ofu-component=\"${id}\"[^>]*>([\\\\s\\\\S]*?)<\\\\/script>`);const m=html.match(re);assert.ok(m&&m[1],id+' script body');vm.runInNewContext(m[1],s,{filename:'artifact:'+id});}const P=s.OFU.v2x05DeepPlanetProvider;assert.ok(P);assert.equal(P.CAPABILITY_CONTRACT,'ofu-v2x-05-deep-planet-vertical-2');assert.ok(P.CONTEXTS.includes('INSPECTOR_CONTEXT'));assert.ok(P.CONTEXTS.includes('ENVIRONMENT_ELIGIBILITY_CONTEXT'));console.log(JSON.stringify({status:'PASS',oracle:'V2X05_ONE_FILE_ARTIFACT_REACHABILITY_V2',artifactBytes:Buffer.byteLength(html),components:ids,runtimeExport:'OFU.v2x05DeepPlanetProvider',consumerHook:'OFU.v2x05DeepPlanetProvider.query'}));"
+      ],
+      "providers": ["v2x05.model.deep-planet"],
+      "oracle": "v2x05-one-file-html-runtime-export-hook",
+      "timeoutMs": 120000
     }
   ]
 }

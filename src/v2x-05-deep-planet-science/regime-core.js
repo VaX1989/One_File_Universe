@@ -4,7 +4,7 @@ const O=root.OFU=root.OFU||{};
 const VERSION='ofu-v2x-05-deep-planet-regime-core-2';
 const AUTHORITY='MODEL_DERIVED_SIMULATION';
 const PPM=1000000;
-const LIMITS=Object.freeze({historySamples:64,climateCells:24,constituents:6,queryContexts:4,bytes:262144,operations:20000,queue:64,exactInventoryUnits:Number.MAX_SAFE_INTEGER});
+const LIMITS=Object.freeze({historySamples:64,climateCells:24,constituents:6,queryContexts:6,bytes:262144,operations:20000,queue:64,exactInventoryUnits:Number.MAX_SAFE_INTEGER});
 const BULK=Object.freeze(['TERRESTRIAL','VOLATILE_RICH','ICE_GIANT','GAS_GIANT']);
 function freeze(v,seen){
   if(!v||typeof v!=='object'||Object.isFrozen(v))return v;
@@ -58,7 +58,6 @@ function extract(planet){
   const inputs=causal?.inputs||null,formation=causal?.formation||null,composition=causal?.composition||null,gravity=causal?.gravity||null,interior=causal?.interior||null,atmosphere=causal?.atmosphere||null;
   const identity=identityFrom(planet,inputs);if(!identity.supported)return unsupported(identity.worldIdentity,identity.reason,identity.identities?{identities:identity.identities}:{});
   if(!inputs||!formation||!composition||!gravity||!interior||!atmosphere)return unsupported(identity.worldIdentity,'NO_COMPLETE_V1_CAUSAL_PLANETOLOGY_STATE');
-  // Shallow-freeze only the lane-owned extraction wrapper. Upstream model objects remain untouched.
   return Object.freeze({version:VERSION,worldIdentity:identity.worldIdentity,supported:true,status:'PRESENT',causal,inputs,formation,composition,gravity,interior,atmosphere,sourceVolatileLedger:planet.volatileLedger||planet.planetology?.volatileLedger||null});
 }
 function validatePpmClosure(values){return values.every(v=>safe(v,0,PPM))&&values.reduce((a,b)=>a+b,0)===PPM;}
