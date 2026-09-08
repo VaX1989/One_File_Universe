@@ -9,7 +9,7 @@ for(const file of [
   'src/v2x-05-deep-planet-science/climate-volatile.js',
   'src/v2x-05-deep-planet-science/deep-planet-provider.js'
 ]) vm.runInNewContext(fs.readFileSync(file,'utf8'),sandbox,{filename:file});
-const O=sandbox.OFU,C=O.v2x05RegimeCore,IA=O.v2x05InteriorAtmosphere,CV=O.v2x05ClimateVolatile,P=O.v2x05DeepPlanetProvider;
+const O=sandbox.OFU,C=O.v2x05RegimeCore,CV=O.v2x05ClimateVolatile,P=O.v2x05DeepPlanetProvider;
 const plain=v=>JSON.parse(JSON.stringify(v));
 
 function planet(id,overrides={}){
@@ -42,14 +42,9 @@ const gasGiant=planet('gas-giant',{'causal.inputs.bulkPriorClass':'GAS_GIANT','c
 
 assert.equal(P.AUTHORITY,'MODEL_DERIVED_SIMULATION');
 assert.equal(P.CONTRACT,'ofu-v2x-05-deep-planet-consumer-1');
-
 const regimes=[
-  [terrestrial,'TERRESTRIAL_ATMOSPHERIC',true],
-  [ocean,'OCEAN_WORLD_CANDIDATE',true],
-  [airless,'AIRLESS_TERRESTRIAL',true],
-  [subNeptune,'SUB_NEPTUNE',false],
-  [iceGiant,'ICE_GIANT',false],
-  [gasGiant,'GAS_GIANT',false]
+  [terrestrial,'TERRESTRIAL_ATMOSPHERIC',true],[ocean,'OCEAN_WORLD_CANDIDATE',true],[airless,'AIRLESS_TERRESTRIAL',true],
+  [subNeptune,'SUB_NEPTUNE',false],[iceGiant,'ICE_GIANT',false],[gasGiant,'GAS_GIANT',false]
 ];
 for(const [world,expected,solid] of regimes){
   const r=C.classify(world);assert.equal(r.supported,true,expected);assert.equal(r.regime,expected);assert.equal(r.solidSurfaceModel,solid);assert.equal(r.observationalClassificationClaim,false);assert.equal(r.eosClaim,false);
@@ -62,7 +57,7 @@ const badMass=planet('bad-mass',{'causal.inputs.massMilliEarth':7000000});assert
 const incomplete={planetIdentity:'incomplete',causal:{inputs:{planetIdentity:'incomplete'}}};assert.equal(P.evaluate(incomplete).supported,false);assert.match(P.evaluate(incomplete).reason,/NO_COMPLETE/);
 const badLedger=planet('bad-ledger');badLedger.causal.atmosphere.atmosphereUnits+=1;assert.equal(P.evaluate(badLedger).supported,false);assert.equal(P.evaluate(badLedger).volatile.reason,'SOURCE_VOLATILE_LEDGER_NOT_CLOSED');
 
-const terEval=P.evaluate(terrestrial);assert.equal(terEval.atmosphere.composition.shareClosurePpm,1000000);assert.ok(terEval.atmosphere.composition.constituentCount<=6);assert.equal(terEval.radiative.irradiationEquilibriumTemperature.temperatureMilliK,255000);assert.equal(terEval.radiative.modeledSurfaceTemperature.temperatureMilliK,288000);assert.equal(terEval.radiative.effectiveEmissionTemperature.status,'UNSUPPORTED');assert.equal(terEval.radiative.gcmClaim,false);
+const terEval=P.evaluate(terrestrial);assert.equal(terEval.atmosphere.composition.shareClosurePpm,1000000);assert.ok(terEval.atmosphere.composition.constituentCount<=6);assert.equal(terEval.radiative.irradiationEquilibriumTemperature.temperatureMilliK,255000);assert.equal(terEval.radiative.modeledSurfaceTemperature.temperatureMilliK,288000);assert.equal(terEval.radiative.effectiveEmissionTemperature.status,'UNSUPPORTED');assert.equal(terEval.radiative.gcmClaim,false);assert.equal(terEval.climate.deterministicArithmetic,'INTEGER_PPM_QUARTER_SEASON_KERNEL');
 const airEval=P.evaluate(airless);assert.equal(airEval.atmosphere.composition.supported,false);assert.equal(airEval.radiative.modeledSurfaceTemperature.status,'UNSUPPORTED');assert.equal(airEval.volatile.surface.partitionTemperatureSource,'V1_IRRADIATION_EQUILIBRIUM_PROXY');
 for(const giant of [subNeptune,iceGiant,gasGiant]){const e=P.evaluate(giant);assert.equal(e.regime.solidSurfaceModel,false);assert.equal(e.radiative.modeledSurfaceTemperature.temperatureMilliK,null);assert.equal(e.volatile.surface.oceanUnits,0);assert.equal(e.volatile.surface.resolved,false);assert.equal(e.interior.geodynamics.supported,false);assert.equal(e.volatile.giantSemantics,'CONDENSED_SOURCE_RESERVOIR_RETAINED_WITHOUT_SOLID_SURFACE_OCEAN_INTERPRETATION')}
 
@@ -70,8 +65,8 @@ const lowXuv=P.evaluate(terrestrial,{xuvHistory:[{ageMyr:100,xuvMilliWm2:1000},{
 const highXuv=P.evaluate(terrestrial,{xuvHistory:[{ageMyr:100,xuvMilliWm2:6000},{ageMyr:4500,xuvMilliWm2:3000}]});
 assert.ok(highXuv.atmosphere.retentionEscape.historyAdjustedEscapeContextPpm>=lowXuv.atmosphere.retentionEscape.historyAdjustedEscapeContextPpm,'higher supplied XUV context must not reduce escape context');
 assert.equal(highXuv.atmosphere.retentionEscape.integratedMassLossClaim,false);
-const tooLong=Array.from({length:65},(_,i)=>({ageMyr:i,xuvMilliWm2:1000}));assert.equal(P.evaluate(terrestrial,{xuvHistory:tooLong}).atmosphere.retentionEscape.status,'UNSUPPORTED');
-const unordered=[{ageMyr:1000,xuvMilliWm2:1000},{ageMyr:900,xuvMilliWm2:1000}];assert.equal(P.evaluate(terrestrial,{xuvHistory:unordered}).atmosphere.retentionEscape.status,'UNSUPPORTED');
+const tooLong=Array.from({length:65},(_,i)=>({ageMyr:i,xuvMilliWm2:1000}));const tooLongEval=P.evaluate(terrestrial,{xuvHistory:tooLong});assert.equal(tooLongEval.supported,false);assert.equal(tooLongEval.atmosphere.retentionEscape.status,'UNSUPPORTED');
+const unordered=[{ageMyr:1000,xuvMilliWm2:1000},{ageMyr:900,xuvMilliWm2:1000}];const unorderedEval=P.evaluate(terrestrial,{xuvHistory:unordered});assert.equal(unorderedEval.supported,false);assert.equal(unorderedEval.atmosphere.retentionEscape.status,'UNSUPPORTED');
 
 const lowOb=P.evaluate(planet('low-ob',{'causal.inputs.obliquityMilliDeg':0}));
 const highOb=P.evaluate(planet('high-ob',{'causal.inputs.obliquityMilliDeg':80000}));
@@ -88,11 +83,12 @@ assert.ok(P.evaluate(wet).volatile.surface.oceanUnits>=P.evaluate(dry).volatile.
 
 for(const context of P.CONTEXTS){const q=P.query(terEval,context);assert.equal(q.supported,true);assert.equal(q.context,context);assert.equal(q.readOnly,true);assert.equal(q.hiddenGlobalRequired,false);assert.equal(q.canonicalPromotion,false);assert.equal(q.authority,'MODEL_DERIVED_SIMULATION');assert.ok(Object.isFrozen(q));assert.ok(Object.isFrozen(q.payload));}
 assert.equal(P.query(terEval,'UNKNOWN_CONTEXT').supported,false);
-const surfaceQ=P.query(terEval,'SURFACE_PROMPT08_CONTEXT');assert.equal(surfaceQ.payload.plateTectonicsResolved,false);assert.equal(surfaceQ.payload.surfaceGeometryClaim,false);assert.equal(surfaceQ.payload.geodynamics.supported,true);
+const surfaceQ=P.query(terEval,'SURFACE_PROMPT08_CONTEXT');assert.equal(surfaceQ.payload.plateTectonicsResolved,false);assert.equal(surfaceQ.payload.surfaceGeometryClaim,false);assert.equal(surfaceQ.payload.geodynamics.supported,true);assert.equal(surfaceQ.payload.v2x06GeographyAdapter.safeInputs.planetIdentity,'terrestrial');assert.equal(surfaceQ.payload.v2x06GeographyAdapter.safeInputs.noSolidSurface,false);assert.equal(surfaceQ.payload.v2x06GeographyAdapter.safeToDefaultWithheldToZero,false);assert.equal(surfaceQ.payload.v2x06GeographyAdapter.inventoryToAreaConversionClaim,false);assert.equal(surfaceQ.payload.v2x06GeographyAdapter.directInvocationSafe,false);assert.deepEqual(plain(surfaceQ.payload.v2x06GeographyAdapter.withheldInputs.map(v=>v.field)),['waterAreaPpm','iceAreaPpm','erosionActivityPpm','aridityPpm','impactActivityPpm']);
 const ecologyQ=P.query(gasGiant,'ECOLOGY_CONTEXT');assert.equal(ecologyQ.payload.solidSurfaceModel,false);assert.equal(ecologyQ.payload.oceanCandidate,false);assert.equal(ecologyQ.payload.canonicalHabitabilityClaim,false);
 const gameplayQ=P.query(highXuv,'GAMEPLAY_CAUSAL_CONTEXT');assert.equal(gameplayQ.payload.canonicalEventAdmission,false);assert.equal(gameplayQ.payload.driverAttribution.reduce((n,d)=>n+d.sharePpm,0),1000000);
 
 const split=CV.splitExact(7,[1,1,1]);assert.equal(split.reduce((a,b)=>a+b,0),7);assert.deepEqual([...C.normalizePpm([1,1,1])].reduce((a,b)=>a+b,0),1000000);
 assert.equal(terEval.interior.heat.normalizedDriverShares.reduce((n,d)=>n+d.sharePpm,0),1000000);assert.equal(terEval.interior.heat.conservedEnergyClaim,false);
+assert.equal(terEval.integrity.sourceInputMutation,false);assert.equal(terEval.integrity.identityConsistencyRequired,true);assert.equal(terEval.volatile.closure.arithmeticSafeInteger,true);assert.equal(terEval.volatile.closure.reservoirShareClosurePpm,1000000);assert.equal(terEval.volatile.reservoirShares.length,6);assert.equal(terEval.climate.aggregates.phaseCoverage.reduce((n,v)=>n+v.sharePpm,0),1000000);assert.equal(terEval.atmosphere.pressureProxyBand,'MODERATE_COLUMN_PROXY');
 
-console.log(JSON.stringify({status:'PASS',oracle:'V2X05_DEEP_PLANET_ORACLES',contract:P.CONTRACT,authority:P.AUTHORITY,regimes:Object.fromEntries(regimes.map(([w,r])=>[w.planetIdentity,r])),bounds:{climateCells:terEval.climate.cellCount,maxClimateCells:C.LIMITS.climateCells,constituents:terEval.atmosphere.composition.constituentCount,maxConstituents:C.LIMITS.constituents,maxXuvHistorySamples:C.LIMITS.historySamples},closures:{volatile:terEval.volatile.closure.exactInternalClosure,causalAttributionPpm:terEval.causality.shareClosurePpm,constituentPpm:terEval.atmosphere.composition.shareClosurePpm},metamorphic:{xuv:true,obliquity:true,irradiation:true,pressureTransport:true,volatileInventory:true},claims:{notGcm:terEval.climate.notGcm,eos:false,photochemistry:false,plateTectonicsResolved:false,canonicalPromotion:false}}));
+console.log(JSON.stringify({status:'PASS',oracle:'V2X05_DEEP_PLANET_ORACLES_V2',contract:P.CONTRACT,authority:P.AUTHORITY,regimes:Object.fromEntries(regimes.map(([w,r])=>[w.planetIdentity,r])),bounds:{climateCells:terEval.climate.cellCount,maxClimateCells:C.LIMITS.climateCells,constituents:terEval.atmosphere.composition.constituentCount,maxConstituents:C.LIMITS.constituents,maxXuvHistorySamples:C.LIMITS.historySamples,maxExactInventoryUnits:C.LIMITS.exactInventoryUnits},closures:{volatile:terEval.volatile.closure.exactInternalClosure,causalAttributionPpm:terEval.causality.shareClosurePpm,constituentPpm:terEval.atmosphere.composition.shareClosurePpm,reservoirSharesPpm:terEval.volatile.closure.reservoirShareClosurePpm,climatePhaseCoveragePpm:terEval.climate.aggregates.phaseCoverage.reduce((n,v)=>n+v.sharePpm,0)},metamorphic:{xuv:true,obliquity:true,irradiation:true,pressureTransport:true,volatileInventory:true},integrity:{sourceInputMutation:false,identityConsistency:true,exactIntegerVolatile:true,quarterSeasonIntegerKernel:true},claims:{notGcm:terEval.climate.notGcm,eos:false,photochemistry:false,plateTectonicsResolved:false,canonicalPromotion:false}}));
