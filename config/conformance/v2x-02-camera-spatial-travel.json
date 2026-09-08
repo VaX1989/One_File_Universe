@@ -5,7 +5,7 @@
       "id": "v2x02.travel.fast",
       "owner": "v2x-02-camera-spatial-travel",
       "tier": "FAST_LOCAL",
-      "command": ["node", "tests/v2x-02-camera-spatial-travel/real-camera-journey.mjs"],
+      "command": ["node", "tests/v2x-02-camera-spatial-travel/real-camera-journey-numeric-wrapper.mjs"],
       "providers": ["v2x02.interaction.continuous-travel"],
       "oracle": "v2x02-real-camera-journey-oracle-6",
       "timeoutMs": 30000

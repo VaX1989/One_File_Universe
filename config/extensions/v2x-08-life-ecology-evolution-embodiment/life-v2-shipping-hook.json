@@ -1,0 +1,116 @@
+{
+  "schema": "ofu-v2x-08-life-v2-shipping-hook-1",
+  "lane": "V2X-08",
+  "owner": "v2x-08-life-ecology-evolution-embodiment",
+  "status": "LANE_READY_FOR_CONVERGENCE",
+  "authority": {
+    "ecology": "MODEL_DERIVED_SIMULATION",
+    "evolution": "MODEL_DERIVED_SIMULATION",
+    "morphology": "MODEL_DERIVED_SIMULATION",
+    "behaviorOpportunity": "MODEL_DERIVED_SIMULATION",
+    "renderGeometry": "PRESENTATION_ONLY",
+    "reachabilityEvidence": "MEASURED_RUNTIME_EVIDENCE",
+    "temporalAdmission": "P4_OR_GOVERNED_GAMEPLAY_EXTERNAL"
+  },
+  "claimGuards": {
+    "abiogenesisModeled": false,
+    "canonicalAlienBiology": false,
+    "persistentIndividualIdentity": false,
+    "globalAbundanceFromLocalSamples": false,
+    "empiricalEthology": false,
+    "cognitionInference": false,
+    "universalMutationRate": false,
+    "universalSpeciesThreshold": false
+  },
+  "sourceChain": [
+    "src/v2x-08-life-ecology-evolution-embodiment/model.js",
+    "src/v2x-08-life-ecology-evolution-embodiment/evolution.js",
+    "src/v2x-08-life-ecology-evolution-embodiment/succession.js",
+    "src/v2x-08-life-ecology-evolution-embodiment/provider.js",
+    "src/v2x-08-life-ecology-evolution-embodiment/embodiment.js",
+    "src/v2x-08-life-ecology-evolution-embodiment/renderer.js",
+    "src/v2x-08-life-ecology-evolution-embodiment/viewport-bridge.js",
+    "src/v2x-08-life-ecology-evolution-embodiment/shipping-adapter.js",
+    "src/v2x-08-life-ecology-evolution-embodiment/shipping-bundle.mjs"
+  ],
+  "runtime": {
+    "classicScriptGlobal": "OFU.v2x08LifeV2",
+    "adapterExport": "OFU.v2x08LifeV2.createLifeShippingAdapter",
+    "viewportPacketSchema": "ofu-v2x-08-life-viewport-packet-1",
+    "revisitTokenSchema": "ofu-v2x-08-life-revisit-token-1",
+    "selectionKind": "MODELED_POPULATION_REPRESENTATIVE",
+    "renderPacketFamily": "LIFE_ORGANISM_DESCRIPTOR_SET",
+    "maxViewportOrganisms": 128,
+    "maxLanePacketBytes": 1048576,
+    "classicRuntimeBudgetBytes": 524288
+  },
+  "candidateComponent": {
+    "id": "v2x08.runtime.life-v2",
+    "version": "2.0.0",
+    "owner": "v2x-08-life-ecology-evolution-embodiment",
+    "kind": "code",
+    "stage": "full",
+    "placement": "script",
+    "source": "src/v2x-08-life-ecology-evolution-embodiment/shipping-runtime.js",
+    "dependencies": [],
+    "authority": "MODEL_DERIVED_SIMULATION",
+    "provenance": "Deterministic classic-script bundle of the audited V2X-08 model, ecology/evolution provider, organism embodiment, renderer descriptors and additive viewport bridge. It preserves representative-population semantics, P4 external temporal admission and presentation-only geometry; it claims no canonical alien biology or persistent individual identity.",
+    "provides": [
+      "v2x08.runtime.life-v2",
+      "v2x08.viewport.life-packets"
+    ]
+  },
+  "centralConvergenceOperations": [
+    {
+      "owner": "CONVERGENCE_OWNER",
+      "pathClass": "PRIMARY_SHIPPING_MANIFEST",
+      "operation": "GENERATE shipping-runtime.js deterministically with shipping-bundle.mjs and add candidateComponent unchanged to config/components/v2x-08-life-ecology-evolution-embodiment.json",
+      "laneSeizesAuthority": false
+    },
+    {
+      "owner": "V2X-07_OR_CONVERGENCE",
+      "pathClass": "LOCAL_SPACE",
+      "operation": "Map packet.renderDescriptors[*].position from NORMALIZED_LOCAL_CUBE into the active local-space frame without changing camera or semantic-scale authority",
+      "laneSeizesAuthority": false
+    },
+    {
+      "owner": "V2X-13_OR_CONVERGENCE",
+      "pathClass": "PRIMARY_RENDERER",
+      "operation": "Consume LIFE_ORGANISM_DESCRIPTOR_SET as an additive render packet; do not replace the primary renderer",
+      "laneSeizesAuthority": false
+    },
+    {
+      "owner": "CONVERGENCE_OWNER",
+      "pathClass": "SELECTION",
+      "operation": "Register packet.selectionTargets as additive MODELED_POPULATION_REPRESENTATIVE targets; never promote them to persistent individuals",
+      "laneSeizesAuthority": false
+    },
+    {
+      "owner": "CONVERGENCE_OWNER",
+      "pathClass": "PERSISTENCE_REPLAY",
+      "operation": "Persist revisitToken beside governed modeled state and resolve STATE_RESOLUTION_REQUIRED when event identity or packet fingerprint changes",
+      "laneSeizesAuthority": false
+    }
+  ],
+  "evidence": {
+    "unit": "node tests/v2x-08/life-viewport-bridge-unit.mjs",
+    "integration": "node tests/v2x-08/life-shipping-viewport.mjs",
+    "artifact": "node tools/build-ofu-rendering-v09.mjs && node tests/v2x-08/life-artifact-reachability.mjs",
+    "historical": [
+      "node tests/v2x-08/life-ecology-evolution-embodiment.mjs",
+      "node tests/v2x-08/life-evolution-succession.mjs",
+      "node tests/v2x-08/life-provider-renderer.mjs",
+      "node tests/v2x-08/single-file-facade.mjs"
+    ],
+    "adversarial": "life-shipping-viewport.mjs rejects GENERIC_ELLIPSE fallback and authority/identity escalation",
+    "artifactStatus": "LANE_BUNDLE_AND_ONE_FILE_INJECTION_PROVEN__CENTRAL_MANIFEST_AND_LIVING_WIRING_REQUIRED"
+  },
+  "remainingCentralHooks": [
+    "PRIMARY_SHIPPING_MANIFEST",
+    "CENTRAL_LIVING_CONSUMER",
+    "V2X07_LOCAL_SPACE_MAPPING",
+    "V2X13_PRIMARY_RENDERER_CONSUMPTION",
+    "CENTRAL_SELECTION_REGISTRATION",
+    "CENTRAL_PERSISTENCE_REPLAY_REGISTRATION"
+  ]
+}
