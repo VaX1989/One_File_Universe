@@ -32,14 +32,15 @@ function create(o={}){
   function streamIterator(value,id){const it=value?.[Symbol.asyncIterator]?.()||value?.[Symbol.iterator]?.();C.assert(it&&typeof it.next==='function','STREAM','stream handler '+id+' must return an iterable');return it}
   async function directStream(v,p,onChunk,s){
     C.assert(v.directStream,'IMPLEMENTATION','stream handler '+v.id);if(s?.aborted)throw err('CANCELLED','before stream fallback');m.streamFallbackRuns++;
-    const started=Date.now(),stream=await v.directStream(p,s),it=streamIterator(stream,v.id);let index=0;
+    const started=Date.now();let it=null,index=0;
     async function guarded(run,label){
       if(s?.aborted){m.cancelled++;throw err('CANCELLED',label)}const remaining=Math.max(0,timeout-(Date.now()-started));if(!remaining){m.timeouts++;throw err('STREAM_TIMEOUT',v.id)}
       let timer,abort;const guards=[new Promise((_,reject)=>{timer=setTimeout(()=>{m.timeouts++;reject(err('STREAM_TIMEOUT',v.id))},remaining)})];if(s?.addEventListener)guards.push(new Promise((_,reject)=>{abort=()=>{m.cancelled++;reject(err('CANCELLED',label))};s.addEventListener('abort',abort,{once:true})}));try{return await Promise.race([Promise.resolve(run),...guards])}finally{clearTimeout(timer);if(abort)s?.removeEventListener?.('abort',abort)}
     }
     try{
+      const stream=await guarded(Promise.resolve().then(()=>v.directStream(p,s)),'stream start');it=streamIterator(stream,v.id);
       for(;;){const step=await guarded(it.next(),'stream next');if(step.done){const value=C.data(step.value,{bytes:maxPayload,nodes:4096});return Object.freeze({mode:'STREAM_FALLBACK',value,chunks:index})}C.assert(index<maxChunks,'STREAM_BUDGET','stream chunks');const chunk=C.data(step.value,{bytes:maxChunk,nodes:4096});m.streamChunks++;await guarded(onChunk(chunk,index),'stream backpressure');m.streamAcks++;index++}
-    }catch(e){m.streamFailures++;try{await it.return?.()}catch{}throw e}
+    }catch(e){m.streamFailures++;try{await it?.return?.()}catch{}throw e}
   }
   function workerStream(v,p,onChunk,s){
     m.streamWorkerRuns++;
