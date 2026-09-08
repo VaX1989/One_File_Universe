@@ -1,0 +1,30 @@
+name: Feature or design proposal
+description: Product, technical, or architectural proposal
+title: "proposal: "
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What problem or opportunity should OFU address?
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Desired outcome
+      description: Describe behavior, not only an implementation.
+    validations:
+      required: true
+  - type: textarea
+    id: contracts
+    attributes:
+      label: Contract impact
+      description: Authority, determinism, compatibility, one-file/offline, resource, or API implications.
+  - type: dropdown
+    id: rfc
+    attributes:
+      label: Might this need an RFC?
+      options: [No, Unsure, Yes]
+    validations:
+      required: true

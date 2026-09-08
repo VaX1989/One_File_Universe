@@ -1,0 +1,7 @@
+# Bootstrap CODEOWNERS.
+# The repository is currently under a personal account, so organization teams
+# cannot yet be named here. config/governance/ownership.json is the intended
+# scalable source of area ownership and should generate this file once OFU is
+# transferred to an organization with real teams.
+
+* @VaX1989

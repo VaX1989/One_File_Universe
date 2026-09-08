@@ -1,0 +1,28 @@
+name: Scientific model or data proposal
+description: Model, equation, validation, dataset, provenance, or scientific-integrity issue
+title: "science: "
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Scientific question or defect
+    validations:
+      required: true
+  - type: textarea
+    id: authority
+    attributes:
+      label: Proposed authority and fidelity
+      description: State whether this is research, empirical relation, model-derived simulation, canonical fact proposal, or presentation.
+    validations:
+      required: true
+  - type: textarea
+    id: sources
+    attributes:
+      label: Sources and provenance
+      description: Primary literature, standards, dataset version/license, units, uncertainty, and known limitations.
+    validations:
+      required: true
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validation / falsification plan
