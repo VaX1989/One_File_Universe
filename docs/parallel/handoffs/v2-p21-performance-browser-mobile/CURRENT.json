@@ -1,0 +1,39 @@
+{
+  "schema": "ofu-v2-lane-checkpoint-1",
+  "lane": "PROMPT_21_PERFORMANCE_BROWSER_MOBILE",
+  "branch": "audit/v2.0-performance-browser-mobile-2026-09-07",
+  "baseSha": "2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7",
+  "baseTree": "99e6b5ff6229d9c34d381e778c5689bf2367d256",
+  "status": "IMPLEMENTED_EXECUTION_IN_PROGRESS",
+  "authority": "EVIDENCE_AND_TESTS_ONLY",
+  "productionWrites": false,
+  "integrationPullRequest": 242,
+  "certifierPullRequest": 244,
+  "implemented": [
+    "exact-source single-file Living browser boot guard",
+    "Chromium Firefox WebKit repeated Human-to-micro-depth-to-Human soak",
+    "periodic Universe round-trip with portable save/import restoration",
+    "bounded provider cache discovery cache history session and working-set assertions",
+    "DOM canvas EventTarget-listener and Worker lifecycle test instrumentation",
+    "browser JS heap characterization only when exposed",
+    "Long Task observation when supported",
+    "WebGL2 context loss and restore when measurable",
+    "mobile pointer pinch emulation portrait-landscape resize storm and overflow falsification",
+    "reduced-motion browser context",
+    "explicit NOT_MEASURABLE and NOT_VERIFIED evidence boundaries"
+  ],
+  "claimsNotMade": [
+    "driver VRAM measured",
+    "physical GPU memory measured",
+    "physical Android verified",
+    "physical iOS verified",
+    "emulation equals physical-device evidence"
+  ],
+  "execution": {
+    "exactHeadSha": "76d08329ecf45a4c321b960302fcaf85e69dd248",
+    "v2xSupremeConvergenceRun": 34204836211,
+    "state": "IN_PROGRESS",
+    "result": null
+  },
+  "next": "Falsify exact-head hosted result, repair any product-independent test defects inside lane ownership, then update this checkpoint with per-browser measured evidence."
+}
