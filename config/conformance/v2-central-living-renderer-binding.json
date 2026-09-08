@@ -3,7 +3,7 @@
   "tests": [
     {
       "id": "v2.central.living-v2x13-pixel-binding",
-      "owner": "convergence",
+      "owner": "v2x-13-rendering-platform",
       "tier": "RELEASE",
       "command": [
         "node",
