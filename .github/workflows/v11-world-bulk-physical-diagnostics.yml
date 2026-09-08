@@ -1,0 +1,95 @@
+name: V1.1 World Bulk Physical Diagnostics
+on:
+  push:
+    branches:
+      - development/v1.1-quality-exploration
+    paths:
+      - 'src/domains/v1/planetology/bulk-physical-diagnostics.js'
+      - 'tests/v1/planetology/bulk-physical-diagnostics.mjs'
+      - 'tests/v1/provider-integration.mjs'
+      - 'config/components/v11-bulk-physical-diagnostics.json'
+      - 'config/components/v1.json'
+      - '.github/workflows/v11-world-bulk-physical-diagnostics.yml'
+  pull_request:
+    paths:
+      - 'src/domains/v1/planetology/bulk-physical-diagnostics.js'
+      - 'tests/v1/planetology/bulk-physical-diagnostics.mjs'
+      - 'tests/v1/provider-integration.mjs'
+      - 'config/components/v11-bulk-physical-diagnostics.json'
+      - 'config/components/v1.json'
+      - '.github/workflows/v11-world-bulk-physical-diagnostics.yml'
+      - 'src/domains/v1/planetology/giant-family.js'
+      - 'config/components/v11-giant-family.json'
+      - 'src/domains/v1/environment/atmospheric-column.js'
+      - 'config/components/v11-atmospheric-column.json'
+      - 'src/domains/v1/planetology/causal-system.js'
+      - 'src/domains/v1/environment/world-system.js'
+      - 'tests/v2x-03/continuity-identity.mjs'
+permissions:
+  contents: read
+concurrency:
+  group: v11-world-bulk-physical-diagnostics-${{ github.event_name }}-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+env:
+  OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+jobs:
+  bulk-physical-diagnostics:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5 / Node 24 runtime
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5 / Node 24 runtime
+        with:
+          node-version: '24.20.0'
+      - name: Verify exact source
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Syntax
+        run: |
+          node --check src/domains/v1/planetology/bulk-physical-diagnostics.js
+          node --check tests/v1/planetology/bulk-physical-diagnostics.mjs
+          node --check tests/v1/provider-integration.mjs
+      - name: Causal planetology regression
+        run: node tests/v1/planetology/causal-system.mjs
+      - name: Environment and wrapper regressions
+        run: |
+          node tests/v1/environment/world-system.mjs
+          node tests/v1/planetology/giant-family.mjs
+          node tests/v1/environment/atmospheric-column.mjs
+      - name: Bulk physical diagnostics oracle
+        run: node tests/v1/planetology/bulk-physical-diagnostics.mjs
+      - name: Real modeled-world provider consumer
+        run: node tests/v1/provider-integration.mjs
+      - name: Component and modeled-world consumer integration
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {planComponents} from './tools/extensions/components.mjs';
+          const common={id:'v1.models.common',version:'1.0.0',owner:'v1',kind:'code',stage:'foundation',placement:'script',source:'src/domains/v1/common.js',dependencies:[],authority:'MODEL_DERIVED_SIMULATION',provenance:'validation dependency',provides:['v1.models.common']};
+          const causal={id:'v1.models.planetology.causal-system',version:'2.0.0',owner:'v1',kind:'code',stage:'foundation',placement:'script',source:'src/domains/v1/planetology/causal-system.js',dependencies:['v1.models.common'],authority:'MODEL_DERIVED_SIMULATION',provenance:'validation dependency',provides:['v1.models.planetology.causal-system']};
+          const environment={id:'v1.models.environment.world-system',version:'2.0.0',owner:'v1',kind:'code',stage:'foundation',placement:'script',source:'src/domains/v1/environment/world-system.js',dependencies:['v1.models.planetology.causal-system'],authority:'MODEL_DERIVED_SIMULATION',provenance:'validation dependency',provides:['v1.models.environment.world-system']};
+          const giant=JSON.parse(fs.readFileSync('config/components/v11-giant-family.json','utf8')).components[0];
+          const atmosphere=JSON.parse(fs.readFileSync('config/components/v11-atmospheric-column.json','utf8')).components[0];
+          const bulk=JSON.parse(fs.readFileSync('config/components/v11-bulk-physical-diagnostics.json','utf8')).components[0];
+          const core=JSON.parse(fs.readFileSync('config/components/v1.json','utf8')).components;
+          const world=core.find(x=>x.id==='v1.models.world');
+          if(!world)throw new Error('v1 modeled-world descriptor missing');
+          for(const id of ['v1.planetology.giant-family','v1.environment.atmospheric-column','v1.planetology.bulk-diagnostics'])if(!world.dependencies.includes(id))throw new Error('modeled-world missing dependency '+id);
+          const ids=planComponents([common,causal,environment,giant,atmosphere,bulk]).map(x=>x.id);
+          const e=ids.indexOf('v1.models.environment.world-system'),g=ids.indexOf('v1.planetology.giant-family'),a=ids.indexOf('v1.environment.atmospheric-column'),b=ids.indexOf('v1.planetology.bulk-diagnostics');
+          if(e<0||g<=e||a<=g||b<=a)throw new Error('planetology/environment wrapper ordering invalid');
+          console.log(JSON.stringify({status:'PASS',planned:ids,worldDependsOnGiant:true,worldDependsOnAtmosphere:true,worldDependsOnBulkDiagnostics:true}));
+          NODE
+      - name: Build shipping single-file fixture for browser conformance
+        run: node tools/build-ofu-rendering-v09.mjs
+      - name: Install full browser matrix required by RELEASE exact conformance
+        run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium firefox webkit
+      - name: Full component integrity
+        run: node tools/extensions/conformance.mjs RELEASE --exact
+      - name: Workflow reproducibility guard
+        run: node tests/governance/workflow-reproducibility.mjs

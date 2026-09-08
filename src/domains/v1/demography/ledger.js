@@ -1,4 +1,4 @@
-const MAX_COHORTS = 64;
+const MAX_COHORTS = 1024;
 const MAX_COMMITMENTS = 512;
 
 function assertFiniteInt(value, name, min = 0) {
@@ -6,14 +6,26 @@ function assertFiniteInt(value, name, min = 0) {
   return value;
 }
 
+function safeAdd(a, b, name) {
+  const value = a + b;
+  if (!Number.isSafeInteger(value)) throw new RangeError(`${name} exceeds safe integer range`);
+  return value;
+}
+
 function stableCompare(a, b) {
-  return String(a).localeCompare(String(b));
+  a = String(a); b = String(b);
+  return a < b ? -1 : a > b ? 1 : 0;
 }
 
 function hash32(text) {
   let value = 2166136261 >>> 0;
   for (let i = 0; i < text.length; i += 1) value = Math.imul(value ^ text.charCodeAt(i), 16777619) >>> 0;
   return value >>> 0;
+}
+
+function rotationFor(pool) {
+  if (pool.births <= 0) throw new RangeError('cannot address an empty population pool');
+  return Number(BigInt(hash32(pool.key)) % BigInt(pool.births));
 }
 
 function rotatedOrdinal(firstBirthOrdinal, births, deaths, survivorOffset, key) {
@@ -58,11 +70,11 @@ export function createDemographyLedger({ settlementId, population = 0, currentYe
 }
 
 function normalizeCohorts(map) {
-  return Object.freeze([...map.values()]
+  const live = [...map.values()]
     .filter((entry) => entry.living > 0 || entry.births > 0 || entry.deaths > 0)
-    .sort((a, b) => a.startYear - b.startYear || stableCompare(a.key, b.key))
-    .slice(-MAX_COHORTS)
-    .map((entry) => Object.freeze({ ...entry })));
+    .sort((a, b) => a.startYear - b.startYear || stableCompare(a.key, b.key));
+  if (live.length > MAX_COHORTS) throw new RangeError(`demography cohort horizon exceeds bounded limit ${MAX_COHORTS}`);
+  return Object.freeze(live.map((entry) => Object.freeze({ ...entry })));
 }
 
 function appendCommitment(commitments, commitment) {
@@ -75,7 +87,11 @@ export function applyDemographicStep(ledger, { year, births = 0, deaths = 0, dea
   assertFiniteInt(births, 'births');
   assertFiniteInt(deaths, 'deaths');
   if (year < ledger.currentYear) throw new RangeError('demographic time cannot move backwards');
-  if (deaths > ledger.population + births) throw new RangeError('deaths exceed available population');
+  const available = safeAdd(ledger.population, births, 'population plus births');
+  if (deaths > available) throw new RangeError('deaths exceed available population');
+  const nextBirthOrdinal = safeAdd(ledger.nextBirthOrdinal, births, 'nextBirthOrdinal');
+  const totalBirths = safeAdd(ledger.totalBirths, births, 'totalBirths');
+  const totalDeaths = safeAdd(ledger.totalDeaths, deaths, 'totalDeaths');
 
   const cohorts = new Map(ledger.cohorts.map((entry) => [entry.key, { ...entry }]));
   if (births > 0) {
@@ -90,8 +106,8 @@ export function applyDemographicStep(ledger, { year, births = 0, deaths = 0, dea
       deaths: 0,
       living: 0
     };
-    cohort.births += births;
-    cohort.living += births;
+    cohort.births = safeAdd(cohort.births, births, 'cohort births');
+    cohort.living = safeAdd(cohort.living, births, 'cohort living');
     cohorts.set(key, cohort);
   }
 
@@ -103,7 +119,7 @@ export function applyDemographicStep(ledger, { year, births = 0, deaths = 0, dea
     const cohort = cohorts.get(request.key);
     if (!cohort) continue;
     const requested = Math.min(assertFiniteInt(request.count, 'death cohort count'), remainingDeaths, cohort.living);
-    cohort.deaths += requested;
+    cohort.deaths = safeAdd(cohort.deaths, requested, 'cohort deaths');
     cohort.living -= requested;
     remainingDeaths -= requested;
   }
@@ -111,7 +127,7 @@ export function applyDemographicStep(ledger, { year, births = 0, deaths = 0, dea
   if (remainingDeaths > 0 && legacyLiving > 0) {
     const take = Math.min(remainingDeaths, legacyLiving);
     legacyLiving -= take;
-    legacyDeaths += take;
+    legacyDeaths = safeAdd(legacyDeaths, take, 'legacyDeaths');
     remainingDeaths -= take;
   }
 
@@ -120,7 +136,7 @@ export function applyDemographicStep(ledger, { year, births = 0, deaths = 0, dea
     for (const cohort of ordered) {
       if (remainingDeaths <= 0) break;
       const take = Math.min(remainingDeaths, cohort.living);
-      cohort.deaths += take;
+      cohort.deaths = safeAdd(cohort.deaths, take, 'cohort deaths');
       cohort.living -= take;
       remainingDeaths -= take;
     }
@@ -128,14 +144,15 @@ export function applyDemographicStep(ledger, { year, births = 0, deaths = 0, dea
 
   if (remainingDeaths !== 0) throw new Error('internal demographic death allocation mismatch');
 
-  const population = ledger.population + births - deaths;
+  const population = available - deaths;
+  if (!Number.isSafeInteger(population)) throw new RangeError('population exceeds safe integer range');
   const commitment = {
     type: 'DEMOGRAPHY_STEP', year, births, deaths, population,
     firstBirthOrdinal: ledger.nextBirthOrdinal,
-    nextBirthOrdinal: ledger.nextBirthOrdinal + births
+    nextBirthOrdinal
   };
   const normalizedCohorts = normalizeCohorts(cohorts);
-  const representedLiving = legacyLiving + normalizedCohorts.reduce((sum, cohort) => sum + cohort.living, 0);
+  const representedLiving = legacyLiving + normalizedCohorts.reduce((sum, cohort) => safeAdd(sum, cohort.living, 'represented living'), 0);
   if (representedLiving !== population) throw new Error(`demographic conservation mismatch:${representedLiving}:${population}`);
 
   return Object.freeze({
@@ -145,9 +162,9 @@ export function applyDemographicStep(ledger, { year, births = 0, deaths = 0, dea
     population,
     legacyLiving,
     legacyDeaths,
-    totalBirths: ledger.totalBirths + births,
-    totalDeaths: ledger.totalDeaths + deaths,
-    nextBirthOrdinal: ledger.nextBirthOrdinal + births,
+    totalBirths,
+    totalDeaths,
+    nextBirthOrdinal,
     cohorts: normalizedCohorts,
     commitments: appendCommitment(ledger.commitments, commitment)
   });
@@ -190,7 +207,7 @@ export function selectLivingMembers(ledger, { start = 0, count = 1 } = {}) {
   for (const pool of demographicPools(ledger)) {
     if (result.length >= wanted) break;
     const poolStart = livingCursor;
-    const poolEnd = livingCursor + pool.living;
+    const poolEnd = safeAdd(livingCursor, pool.living, 'living cursor');
     livingCursor = poolEnd;
     if (start >= poolEnd) continue;
     const localStart = Math.max(0, start - poolStart);
@@ -209,17 +226,18 @@ export function selectLivingMembers(ledger, { start = 0, count = 1 } = {}) {
 export function isLivingBirthOrdinal(ledger, birthOrdinal) {
   assertFiniteInt(birthOrdinal, 'birthOrdinal');
   for (const pool of demographicPools(ledger)) {
-    if (birthOrdinal < pool.firstBirthOrdinal || birthOrdinal >= pool.firstBirthOrdinal + pool.births) continue;
-    for (let local = 0; local < pool.living; local += 1) {
-      if (rotatedOrdinal(pool.firstBirthOrdinal, pool.births, pool.deaths, local, pool.key) === birthOrdinal) return true;
-    }
-    return false;
+    const poolEnd = safeAdd(pool.firstBirthOrdinal, pool.births, 'pool address end');
+    if (birthOrdinal < pool.firstBirthOrdinal || birthOrdinal >= poolEnd) continue;
+    if (pool.births <= 0) return false;
+    const local = birthOrdinal - pool.firstBirthOrdinal;
+    const rank = (local + rotationFor(pool)) % pool.births;
+    return rank >= pool.deaths;
   }
   return false;
 }
 
 export function demographicSummary(ledger) {
-  const cohortLiving = ledger.cohorts.reduce((sum, cohort) => sum + cohort.living, 0);
+  const cohortLiving = ledger.cohorts.reduce((sum, cohort) => safeAdd(sum, cohort.living, 'cohort living summary'), 0);
   return Object.freeze({
     settlementId: ledger.settlementId,
     currentYear: ledger.currentYear,
@@ -229,7 +247,7 @@ export function demographicSummary(ledger) {
     totalBirths: ledger.totalBirths,
     totalDeaths: ledger.totalDeaths,
     cohortLiving,
-    representedLiving: ledger.legacyLiving + cohortLiving,
+    representedLiving: safeAdd(ledger.legacyLiving, cohortLiving, 'represented living summary'),
     commitmentCount: ledger.commitments.length
   });
 }

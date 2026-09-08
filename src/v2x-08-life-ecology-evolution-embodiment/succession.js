@@ -66,6 +66,7 @@ export function applyDispersal(state, event) {
   assert(source.regionId !== targetRegionId, 'source and target regions must differ');
   const lineage = state.lineages.find((candidate) => candidate.id === source.lineageId);
   assert(lineage && lineage.extinctionEventKey == null, 'cannot disperse a formally extinct lineage');
+  assert(event.count != null, 'dispersal count required');
   const count = asInt(event.count, 'dispersal count', 1n);
   assert(count <= source.abundance, 'dispersal count exceeds represented source abundance');
 
@@ -125,6 +126,8 @@ export function applyDispersal(state, event) {
   return Object.freeze({
     state: next,
     transfer: Object.freeze({
+      eventKey: String(event.eventKey),
+      sourceStateEventKey: state.eventKey,
       sourcePopulationId: source.id,
       targetPopulationId,
       lineageId: source.lineageId,
@@ -134,6 +137,7 @@ export function applyDispersal(state, event) {
       sourceRegionId: source.regionId,
       targetRegionId,
       authorityClass: 'MODEL_DERIVED_SIMULATION',
+      causationClaimedBeyondTransfer: false,
     }),
   });
 }
@@ -162,6 +166,7 @@ export function describeSuccession(state, regionId, profile) {
 
   return Object.freeze({
     schema: 'ofu-v2x-08-succession-descriptor-1',
+    eventKey: state.eventKey,
     regionId: id,
     profileId: String(profile.profileId),
     stage,
@@ -181,6 +186,8 @@ export function compareRecovery(beforeState, afterState, regionId) {
   requireState(beforeState);
   requireState(afterState);
   const id = String(regionId);
+  assert(beforeState.regions[id], `before-state region ${id} missing`);
+  assert(afterState.regions[id], `after-state region ${id} missing`);
   const aggregate = (state) => {
     const populations = state.populations.filter((population) => population.regionId === id && population.abundance > 0n);
     return {
@@ -194,6 +201,8 @@ export function compareRecovery(beforeState, afterState, regionId) {
   const lineageDelta = after.lineages - before.lineages;
   return Object.freeze({
     regionId: id,
+    beforeEventKey: beforeState.eventKey,
+    afterEventKey: afterState.eventKey,
     abundanceDelta,
     lineageDelta,
     direction: abundanceDelta > 0n ? 'INCREASED_REPRESENTED_ABUNDANCE' : abundanceDelta < 0n ? 'DECREASED_REPRESENTED_ABUNDANCE' : 'UNCHANGED_REPRESENTED_ABUNDANCE',

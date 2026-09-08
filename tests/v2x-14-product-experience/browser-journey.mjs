@@ -1,10 +1,134 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {chromium} from 'playwright';
-const sourceSha=process.env.OFU_SOURCE_SHA;if(!sourceSha)throw new Error('OFU_SOURCE_SHA required');
-const browser=await chromium.launch({headless:true});const requests=[],errors=[];
-async function run(viewport,{mobile=false}={}){const context=await browser.newContext({viewport,isMobile:mobile,hasTouch:mobile,reducedMotion:'reduce'});const page=await context.newPage();page.on('pageerror',e=>errors.push(String(e.message||e)));page.on('request',r=>{if(!/^(file|blob|data):/.test(r.url()))requests.push(r.url())});await page.goto(pathToFileURL(path.resolve('dist/One_File_Universe.html')).href,{waitUntil:'load'});await page.waitForFunction(()=>OFU?.v1LivingProduct?.snapshot?.().initialized&&OFU?.v2x14ProductExperience?.instance?.(),null,{timeout:30000});const initial=await page.evaluate(()=>{const x=OFU.v2x14ProductExperience.instance().snapshot(),v=document.getElementById('living-view'),current=[...document.querySelectorAll('#living-rail [aria-current="step"]')].map(n=>n.dataset.livingScale),pressed=[...document.querySelectorAll('#living-rail [aria-pressed="true"]')].map(n=>n.dataset.livingScale);return{x,role:v.getAttribute('role'),describedBy:v.getAttribute('aria-describedby'),skip:!!document.getElementById('v2x14-skip-link'),current,pressed}});assert.equal(initial.x.authority,'PRESENTATION_ONLY');assert.equal(initial.x.routesNativeInput,false);assert.equal(initial.role,'region');assert(initial.describedBy.includes('v2x14-live-location'));assert.equal(initial.skip,true);assert.equal(initial.current.length,1);assert.equal(initial.pressed.length,1,'V2X14 must preserve the primary Living pressed scale state');assert.equal(initial.pressed[0],initial.current[0],'additive aria-current must agree with primary Living aria-pressed state');
-await page.locator('#living-view').focus();await page.keyboard.press('Home');await page.waitForFunction(()=>OFU.v1LivingProduct.runtime.snapshot().stage==='UNIVERSE');await page.waitForTimeout(30);const universe=await page.evaluate(()=>{const x=OFU.v2x14ProductExperience.instance().snapshot(),current=[...document.querySelectorAll('#living-rail [aria-current="step"]')].map(n=>n.dataset.livingScale),pressed=[...document.querySelectorAll('#living-rail [aria-pressed="true"]')].map(n=>n.dataset.livingScale);return{x,current,pressed}});assert.equal(universe.x.stage,'UNIVERSE');assert.equal(universe.x.breadcrumbs.filter(x=>x.current).length,1);assert.deepEqual(universe.current,['UNIVERSE']);assert.deepEqual(universe.pressed,['UNIVERSE'],'presentation-only Product Experience must not erase primary Living scale semantics after navigation');
-const geometry=await page.evaluate(()=>{const v=document.getElementById('living-view').getBoundingClientRect(),ctx=document.getElementById('v2x14-context').getBoundingClientRect();return{innerWidth,scrollWidth:document.documentElement.scrollWidth,viewport:{left:v.left,right:v.right,width:v.width,height:v.height},contextHeight:ctx.height};});assert(geometry.scrollWidth<=geometry.innerWidth+2);assert(geometry.viewport.left>=-1&&geometry.viewport.right<=geometry.innerWidth+1&&geometry.viewport.width>0&&geometry.viewport.height>0);if(mobile)assert(geometry.contextHeight>0);await context.close();return{viewport,mobile,method:mobile?'BROWSER_MOBILE_EMULATION':'DESKTOP_BROWSER',physicalDeviceVerified:false};}
-const desktop=await run({width:1365,height:900});const mobile=await run({width:390,height:844},{mobile:true});assert.equal(errors.length,0,errors.join('\n'));assert.equal(requests.length,0,requests.join('\n'));console.log(JSON.stringify({schema:'ofu-v2x14-browser-evidence-1',status:'PASS',exactSourceSha:sourceSha,authority:'PRESENTATION_ONLY',directFile:true,zeroMandatoryNetwork:true,keyboardPrimaryJourney:true,screenReaderSemantics:true,preservesPrimaryScaleSemantics:true,reducedMotion:true,desktop,mobile,physicalDeviceEvidence:'NOT_VERIFIED'}));await browser.close();
+
+const sourceSha=process.env.OFU_SOURCE_SHA;
+if(!sourceSha)throw new Error('OFU_SOURCE_SHA required');
+const manifest=JSON.parse(fs.readFileSync('dist/rendering-build-manifest.json','utf8'));
+assert.equal(manifest.sourceCommit,sourceSha,'single-file build must be composed from exact requested source SHA');
+const extensions=manifest.additiveComponents?.extensions||[];
+for(const id of ['v2x14.product.experience','v2x14.product.discovery','v2x14.product.style','v2x14.audio.living-context','v2x14.audio.controller'])assert(extensions.some(x=>x.id===id),'missing V2X-14 additive component '+id);
+
+const artifactUrl=pathToFileURL(path.resolve('dist/One_File_Universe.html')).href;
+const browser=await chromium.launch({headless:true});
+const requests=[],errors=[];
+const external=url=>!/^(file|blob|data):/.test(url);
+
+async function waitRailParity(page){
+ await page.waitForFunction(()=>{
+  const current=[...document.querySelectorAll('#living-rail [aria-current="step"]')].map(n=>n.dataset.livingScale).sort();
+  const pressed=[...document.querySelectorAll('#living-rail [aria-pressed="true"]')].map(n=>n.dataset.livingScale).sort();
+  return current.length===1&&JSON.stringify(current)===JSON.stringify(pressed);
+ });
+ const value=await page.evaluate(()=>({current:[...document.querySelectorAll('#living-rail [aria-current="step"]')].map(n=>n.dataset.livingScale).sort(),pressed:[...document.querySelectorAll('#living-rail [aria-pressed="true"]')].map(n=>n.dataset.livingScale).sort()}));
+ assert.deepEqual(value.current,value.pressed);
+ return value.current[0];
+}
+async function openArtifact(context){
+ const page=await context.newPage();
+ page.on('pageerror',e=>errors.push(String(e.message||e)));
+ page.on('request',r=>{if(external(r.url()))requests.push(r.url())});
+ await page.goto(artifactUrl,{waitUntil:'load'});
+ await page.waitForFunction(()=>OFU?.v1LivingProduct?.snapshot?.().initialized&&OFU?.v2x14ProductExperience?.instance?.()&&OFU?.v2x14LivingAudioController?.instance?.(),null,{timeout:30000});
+ await page.waitForFunction(()=>OFU?.v11LivingSkipRouting?.snapshot?.().ready&&OFU?.v11LivingFocusContinuity?.snapshot?.().ready&&OFU?.v11LivingTransitionFeedback?.snapshot?.().ready,null,{timeout:10000});
+ return page;
+}
+async function keyboardActivate(page,locator){
+ await locator.waitFor({state:'visible',timeout:5000});
+ await locator.focus();
+ await page.keyboard.press('Enter');
+}
+async function keyboardToSystem(page,{verifyParity=true}={}){
+ await keyboardActivate(page,page.locator('#living-panel [data-living-entity]:visible').first());
+ await page.waitForFunction(()=>OFU.v1LivingProduct.runtime.snapshot().stage==='GALAXY');
+ if(verifyParity)assert.equal(await waitRailParity(page),'GALAXY');
+ await keyboardActivate(page,page.locator('#living-panel [data-living-entity]:visible').first());
+ await page.waitForFunction(()=>OFU.v1LivingProduct.runtime.snapshot().stage==='REGION');
+ if(verifyParity)assert.equal(await waitRailParity(page),'REGION');
+ await keyboardActivate(page,page.locator('#living-panel [data-living-action="deeper"]:visible'));
+ await page.waitForFunction(()=>OFU.v1LivingProduct.runtime.snapshot().stage==='NEIGHBORHOOD');
+ if(verifyParity)assert.equal(await waitRailParity(page),'NEIGHBORHOOD');
+ await keyboardActivate(page,page.locator('#living-panel [data-living-entity]:visible').first());
+ await page.waitForFunction(()=>OFU.v1LivingProduct.runtime.snapshot().stage==='SYSTEM');
+ if(verifyParity)assert.equal(await waitRailParity(page),'SYSTEM');
+}
+
+async function run(viewport,{mobile=false}={}){
+ const context=await browser.newContext({viewport,isMobile:mobile,hasTouch:mobile,reducedMotion:'reduce'});
+ const page=await openArtifact(context);
+ const initial=await page.evaluate(()=>{
+  const ux=OFU.v2x14ProductExperience.instance().snapshot(),v=document.getElementById('living-view'),audio=OFU.v2x14LivingAudioController.instance().snapshot(),skip=document.querySelector('#v1x10-skip-links a[href="#living-view"]');
+  return{ux,label:v.getAttribute('aria-label'),role:v.getAttribute('role'),shortcuts:v.getAttribute('aria-keyshortcuts')||'',audio,skip:{present:!!skip,label:skip?.textContent||'',controls:skip?.getAttribute('aria-controls')||null},duplicates:{skip:!!document.getElementById('v2x14-skip-link'),live:!!document.getElementById('v2x14-live-location'),context:!!document.getElementById('v2x14-context'),discovery:!!document.getElementById('v2x14-discovery')},reduced:matchMedia('(prefers-reduced-motion: reduce)').matches};
+ });
+ assert.equal(initial.ux.authority,'PRESENTATION_ONLY');
+ assert.equal(initial.ux.routesNativeInput,false);
+ assert.equal(initial.ux.createsDuplicateProductChrome,false);
+ assert.match(initial.label,/Interactive living universe/i,'V2X-14 must preserve the canonical Living viewport label');
+ assert.equal(initial.role,'region');
+ for(const key of ['Home','Escape','Backspace','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'])assert(initial.shortcuts.split(/\s+/).includes(key),'missing unambiguous aria-keyshortcuts token '+key);
+ assert.deepEqual(initial.duplicates,{skip:false,live:false,context:false,discovery:false});
+ assert.equal(initial.skip.present,true);assert.equal(initial.skip.controls,'living-view');assert.match(initial.skip.label,/Skip to living universe viewport/i);
+ assert.equal(initial.audio.activated,false);assert.equal(initial.audio.controls.enabled,false);assert.equal(initial.audio.runtime.contextCreations,0,'AudioContext must remain uncreated before user activation');
+ assert.equal(initial.ux.discovery.ownsSearchState,false);assert.equal(initial.ux.discovery.exposesCanonicalKey,false);assert.equal(initial.ux.discovery.invokesSearchWorlds,false);assert.equal(initial.reduced,true);
+ assert.equal(await waitRailParity(page),'UNIVERSE');
+ const skip=page.locator('#v1x10-skip-links a[href="#living-view"]');await skip.focus();await page.keyboard.press('Enter');await page.waitForFunction(()=>document.activeElement?.id==='living-view');
+
+ let keyboardMacroJourney=false,transitionFeedback=false,centralSurveyEvidence={exercised:false};
+ if(!mobile){
+  await keyboardToSystem(page);keyboardMacroJourney=true;
+  await page.waitForFunction(()=>/system/i.test(document.getElementById('living-transition-status')?.textContent||''));transitionFeedback=true;
+  await page.waitForFunction(()=>OFU?.v11LivingSurveyUX?.snapshot?.().ready===true&&!!document.getElementById('living-search-authority'),null,{timeout:5000});
+  const before=await page.evaluate(()=>({central:OFU.v1LivingProduct.snapshot().search,observer:OFU.v2x14ProductExperience.instance().snapshot().discovery,survey:OFU.v11LivingSurveyUX.snapshot(),integration:OFU.v2x14ProductExperience.instance().snapshot().centralIntegration}));
+  assert.equal(before.observer.available,true);assert.equal(before.observer.ownsSearchState,false);assert.equal(before.observer.centralSurveyOwner,'v1LivingProduct');assert.equal(before.integration.boundedSurveyUx,true);assert.equal(before.integration.delegatesSurveyUi,true);assert.equal(before.survey.ready,true);
+  const goal=page.locator('#living-search-goal');await goal.selectOption('BIOSPHERE');
+  await keyboardActivate(page,page.locator('#living-panel [data-living-action="survey"]:visible'));
+  await page.waitForFunction(()=>{const s=OFU.v1LivingProduct.snapshot().search;return s.pages>=1&&s.running===false},null,{timeout:30000});
+  const after=await page.evaluate(()=>({central:OFU.v1LivingProduct.snapshot().search,observer:OFU.v2x14ProductExperience.instance().snapshot().discovery,survey:OFU.v11LivingSurveyUX.snapshot(),authority:document.getElementById('living-search-authority')?.textContent||'',duplicate:!!document.getElementById('v2x14-discovery')}));
+  assert(after.central.pages>=1&&after.central.pages<=24);assert.equal(after.central.results<=12,true);assert.equal(after.observer.pages,after.central.pages);assert.equal(after.observer.worlds,after.central.worlds);assert.equal(after.observer.resultCount,after.central.results);assert.equal(after.observer.bounds.maxPagesPerInteraction,24);assert.equal(after.observer.globalEnumeration,false);assert.equal(after.observer.networkRequired,false);assert.equal(after.observer.exposesCanonicalKey,false);assert.equal(after.duplicate,false);assert.match(after.authority,/MODEL_DERIVED_SIMULATION/);
+  let verifiedActivation=false;
+  if(after.central.results>0){
+   const verifiedBefore=after.survey.verifiedActivations;
+   await keyboardActivate(page,page.locator('#living-search-results [data-living-entity]:visible').first());
+   await page.waitForFunction(expected=>OFU.v11LivingSurveyUX.snapshot().verifiedActivations>expected,verifiedBefore,{timeout:5000});
+   const verification=await page.evaluate(()=>OFU.v11LivingSurveyUX.snapshot());assert.equal(verification.lastExpectedIdentity,verification.lastVerifiedIdentity);verifiedActivation=true;
+  }
+  centralSurveyEvidence={exercised:true,pages:after.central.pages,results:after.central.results,identityActivationVerified:verifiedActivation,authorityDecorated:true,observerReadOnly:true};
+ }
+
+ await page.evaluate(()=>OFU.productUI?.workspace?.('lab',{focus:false,announceChange:false}));
+ await page.waitForFunction(()=>!document.querySelector('[data-workspace-panel="lab"]')?.hidden);
+ const audioSection=page.locator('[data-v2x14-audio="presentation-only"]');await audioSection.waitFor({state:'visible'});
+ const audioBefore=await page.evaluate(()=>({snapshot:OFU.v2x14LivingAudioController.instance().snapshot(),status:OFU.v2x14LivingAudioController.instance().statusText()}));assert.equal(audioBefore.snapshot.runtime.contextCreations,0);assert.match(audioBefore.status,/off/i);
+ const controlGeometry=await page.evaluate(()=>[...document.querySelectorAll('[data-v2x14-audio] input')].filter(n=>n.getClientRects().length).map(n=>{const r=n.getBoundingClientRect();return{type:n.type,width:r.width,height:r.height,min:Math.min(r.width,r.height)}}));
+ assert(controlGeometry.length>=4,'visible audio controls required');for(const item of controlGeometry)assert(item.min>=(mobile?48:44),(mobile?'mobile':'desktop')+' visible '+item.type+' audio target below minimum: '+item.min);
+ const checks=audioSection.locator('input[type="checkbox"]');assert.equal(await checks.count(),3);
+ await checks.nth(0).check();await page.waitForFunction(()=>OFU.v2x14LivingAudioController.instance().snapshot().activated===true);await page.waitForFunction(()=>/active|No systemic audio cues|unavailable/i.test(OFU.v2x14LivingAudioController.instance().statusText()));
+ let audio=await page.evaluate(()=>OFU.v2x14LivingAudioController.instance().snapshot());assert.equal(audio.controls.enabled,true);assert.equal(audio.activated,true);assert(audio.runtime.contextCreations<=1);
+ await checks.nth(1).check();await page.waitForFunction(()=>OFU.v2x14LivingAudioController.instance().snapshot().controls.muted===true);audio=await page.evaluate(()=>OFU.v2x14LivingAudioController.instance().snapshot());assert.equal(audio.audibleRequested,false);assert.equal(audio.serializedControlUpdates,true);assert.equal(audio.deduplicatesControlUpdates,true);assert.match(await page.evaluate(()=>OFU.v2x14LivingAudioController.instance().statusText()),/muted/i);
+ await checks.nth(2).check();await page.waitForFunction(()=>OFU.v2x14LivingAudioController.instance().snapshot().controls.reducedSensory===true);
+ await page.evaluate(()=>OFU.productUI?.workspace?.('explore',{focus:false,announceChange:false}));
+ const geometry=await page.evaluate(()=>{const v=document.getElementById('living-view').getBoundingClientRect();return{innerWidth,scrollWidth:document.documentElement.scrollWidth,viewport:{left:v.left,right:v.right,width:v.width,height:v.height}}});assert(geometry.scrollWidth<=geometry.innerWidth+2);assert(geometry.viewport.left>=-1&&geometry.viewport.right<=geometry.innerWidth+1&&geometry.viewport.width>0&&geometry.viewport.height>0);
+ await context.close();
+ return{viewport,mobile,method:mobile?'BROWSER_MOBILE_EMULATION':'DESKTOP_BROWSER',physicalDeviceVerified:false,centralSkipRouting:true,canonicalAriaPressedPreserved:true,keyboardMacroJourney,transitionFeedback,centralSurvey:centralSurveyEvidence,audioUserActivation:true,audioMuteAfterActivation:true,minVisibleAudioTargetCssPx:Math.min(...controlGeometry.map(x=>x.min))};
+}
+
+async function unsupportedAudio(){
+ const context=await browser.newContext({viewport:{width:1024,height:768}});
+ await context.addInitScript(()=>{try{Object.defineProperty(globalThis,'AudioContext',{value:undefined,configurable:true})}catch{}try{Object.defineProperty(globalThis,'webkitAudioContext',{value:undefined,configurable:true})}catch{}});
+ const page=await openArtifact(context);
+ await keyboardToSystem(page,{verifyParity:false});
+ await page.evaluate(()=>OFU.productUI?.workspace?.('lab',{focus:false,announceChange:false}));await page.waitForFunction(()=>!document.querySelector('[data-workspace-panel="lab"]')?.hidden);
+ const section=page.locator('[data-v2x14-audio="presentation-only"]');await section.waitFor({state:'visible'});await section.locator('input[type="checkbox"]').nth(0).check();
+ await page.waitForFunction(()=>OFU.v2x14LivingAudioController.instance().snapshot().activated===true);await page.waitForFunction(()=>OFU.v2x14LivingAudioController.instance().snapshot().runtime.state==='unsupported');
+ const evidence=await page.evaluate(()=>({snapshot:OFU.v2x14LivingAudioController.instance().snapshot(),status:OFU.v2x14LivingAudioController.instance().statusText()}));assert.equal(evidence.snapshot.runtime.contextCreations,0);assert.equal(evidence.snapshot.runtime.state,'unsupported');assert.match(evidence.status,/unavailable/i);
+ await context.close();return{state:'unsupported',contextCreations:0,graceful:true};
+}
+
+const desktop=await run({width:1365,height:900});
+const mobile=await run({width:390,height:844},{mobile:true});
+const unsupported=await unsupportedAudio();
+assert.equal(desktop.keyboardMacroJourney,true);assert.equal(desktop.centralSurvey.exercised,true);assert.equal(errors.length,0,errors.join('\n'));assert.equal(requests.length,0,requests.join('\n'));
+console.log(JSON.stringify({schema:'ofu-v2x14-browser-evidence-7',status:'PASS',exactSourceSha:sourceSha,manifestSourceAuthenticated:true,authority:'PRESENTATION_ONLY',directFile:true,zeroMandatoryNetwork:true,noDuplicateLivingChrome:true,centralLivingUxDelegation:true,keyboardMacroJourney:true,assistiveSemanticDomOracle:true,canonicalAriaPressedPreserved:true,centralBoundedSurvey:true,readOnlyDiscoveryObserver:true,reducedMotionEnvironment:true,systemicAudioUserGesture:true,unsupportedAudioGraceful:true,desktop,mobile,unsupported,physicalDeviceEvidence:'NOT_VERIFIED',realAssistiveTechnologyEvidence:'NOT_VERIFIED'}));
+await browser.close();

@@ -10,6 +10,12 @@ function asPpm(value, name) {
   return out;
 }
 
+function asSignedPpm(value, name) {
+  const out = typeof value === 'bigint' ? value : BigInt(value);
+  assert(out >= -PPM && out <= PPM, `${name} out of signed ppm bounds`);
+  return out;
+}
+
 function clamp(value, min, max) {
   return value < min ? min : value > max ? max : value;
 }
@@ -37,6 +43,22 @@ function requireLineage(state, lineageId) {
   assert(lineage, `lineage ${lineageId} missing`);
   assert(lineage.extinctionEventKey == null, `lineage ${lineageId} is formally extinct`);
   return lineage;
+}
+
+function validateVariationProposalAgainstState(state, proposal) {
+  assert(proposal?.schema === 'ofu-v2x-08-trait-variation-proposal-1', 'variation proposal required');
+  assert(proposal.eventKey, 'proposal eventKey required');
+  const lineage = requireLineage(state, proposal.lineageId);
+  const trait = lineage.traits.find((candidate) => candidate.key === String(proposal.traitKey));
+  assert(trait, `proposal trait ${proposal.traitKey} missing from current lineage`);
+  const prior = asPpm(proposal.priorValuePpm, 'proposal priorValuePpm');
+  const delta = asSignedPpm(proposal.deltaPpm, 'proposal deltaPpm');
+  const resulting = asPpm(proposal.resultingValuePpm, 'proposal resultingValuePpm');
+  assert(prior === trait.valuePpm, 'proposal prior value is stale or tampered relative to current lineage state');
+  assert(resulting === clamp(prior + delta, 0n, PPM), 'proposal resulting value is inconsistent with prior value and delta');
+  assert(proposal.authorityClass === 'MODEL_DERIVED_SIMULATION', 'proposal authority class mismatch');
+  assert(proposal.status === 'PROPOSAL_ONLY', 'proposal status mismatch');
+  return Object.freeze({ lineage, trait, prior, delta, resulting });
 }
 
 export const LIFE_V2_EVOLUTION_DESCRIPTOR = Object.freeze({
@@ -94,8 +116,8 @@ export function proposeTraitVariation(state, request) {
 
 export function evaluateSelectionCriterion(state, proposal, request) {
   requireState(state);
-  assert(proposal?.schema === 'ofu-v2x-08-trait-variation-proposal-1', 'variation proposal required');
-  const lineage = requireLineage(state, proposal.lineageId);
+  const validated = validateVariationProposalAgainstState(state, proposal);
+  const lineage = validated.lineage;
   const regionId = String(request?.regionId ?? '');
   const region = state.regions[regionId];
   assert(region, `region ${regionId} missing`);
@@ -107,10 +129,8 @@ export function evaluateSelectionCriterion(state, proposal, request) {
   const targetPpm = asPpm(criterion.targetPpm, 'criterion targetPpm');
   const minimumImprovementPpm = asPpm(criterion.minimumImprovementPpm ?? 1, 'criterion minimumImprovementPpm');
   const minimumOpportunityPpm = asPpm(criterion.minimumOpportunityPpm ?? 0, 'criterion minimumOpportunityPpm');
-  const prior = asPpm(proposal.priorValuePpm, 'proposal priorValuePpm');
-  const resulting = asPpm(proposal.resultingValuePpm, 'proposal resultingValuePpm');
-  const beforeDistance = abs(prior - targetPpm);
-  const afterDistance = abs(resulting - targetPpm);
+  const beforeDistance = abs(validated.prior - targetPpm);
+  const afterDistance = abs(validated.resulting - targetPpm);
   const improvement = beforeDistance > afterDistance ? beforeDistance - afterDistance : 0n;
   const satisfied = improvement >= minimumImprovementPpm && region.opportunityPpm >= minimumOpportunityPpm;
 
@@ -119,9 +139,13 @@ export function evaluateSelectionCriterion(state, proposal, request) {
     satisfied,
     kind: 'PROFILE_BOUND_SELECTION_WITNESS',
     profileId: String(criterion.profileId),
+    proposalEventKey: String(proposal.eventKey),
     lineageId: lineage.id,
     regionId,
     traitKey: proposal.traitKey,
+    proposalPriorValuePpm: validated.prior.toString(),
+    proposalDeltaPpm: validated.delta.toString(),
+    proposalResultingValuePpm: validated.resulting.toString(),
     targetPpm: targetPpm.toString(),
     beforeDistancePpm: beforeDistance.toString(),
     afterDistancePpm: afterDistance.toString(),
@@ -141,7 +165,13 @@ export function buildSpeciationProposal(proposal, witness, request = {}) {
   assert(proposal?.schema === 'ofu-v2x-08-trait-variation-proposal-1', 'variation proposal required');
   assert(witness?.schema === 'ofu-v2x-08-selection-witness-1', 'selection witness required');
   assert(witness.satisfied === true, 'satisfied selection witness required');
+  assert(witness.authorityClass === 'MODEL_DERIVED_SIMULATION', 'witness authority class mismatch');
   assert(witness.lineageId === proposal.lineageId, 'witness/proposal lineage mismatch');
+  assert(witness.traitKey === proposal.traitKey, 'witness/proposal trait mismatch');
+  assert(witness.proposalEventKey === proposal.eventKey, 'witness/proposal event mismatch');
+  assert(String(witness.proposalPriorValuePpm) === String(proposal.priorValuePpm), 'witness/proposal prior value mismatch');
+  assert(String(witness.proposalDeltaPpm) === String(proposal.deltaPpm), 'witness/proposal delta mismatch');
+  assert(String(witness.proposalResultingValuePpm) === String(proposal.resultingValuePpm), 'witness/proposal resulting value mismatch');
   assert(request.eventKey, 'external eventKey required');
 
   return Object.freeze({
@@ -153,8 +183,12 @@ export function buildSpeciationProposal(proposal, witness, request = {}) {
       satisfied: true,
       kind: witness.kind,
       profileId: witness.profileId,
+      proposalEventKey: witness.proposalEventKey,
       regionId: witness.regionId,
       traitKey: witness.traitKey,
+      proposalPriorValuePpm: witness.proposalPriorValuePpm,
+      proposalDeltaPpm: witness.proposalDeltaPpm,
+      proposalResultingValuePpm: witness.proposalResultingValuePpm,
       targetPpm: witness.targetPpm,
       beforeDistancePpm: witness.beforeDistancePpm,
       afterDistancePpm: witness.afterDistancePpm,

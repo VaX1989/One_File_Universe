@@ -3,7 +3,7 @@
   "components": [
     {
       "id": "v2x14.audio.living-context",
-      "version": "2.0.0",
+      "version": "4.0.0",
       "owner": "v2x-14-product-experience",
       "kind": "code",
       "stage": "full",
@@ -11,12 +11,12 @@
       "source": "src/audio/v2x14/living-audio-context.js",
       "dependencies": ["v1.product.living-universe"],
       "authority": "PRESENTATION_ONLY",
-      "provenance": "Fail-closed projection from Living snapshot to optional systemic-audio context. Audible-medium support requires an explicit model pressure proxy; unsupported atmosphere, life or civilization remains absent/silent.",
+      "provenance": "Fail-closed projection from Living snapshot to optional systemic-audio context. REGION and NEIGHBORHOOD map to the V1X-13 planner's galactic_region and stellar_neighborhood regimes. Diegetic medium, weather and biophony require an actual global/regional/local/human surface stage plus explicit modeled pressure; APPROACH remains orientation-only even if stale local context is present. Unknown/thin atmospheres stay silent; micro regimes suppress unrelated life/civilization audio without erasing underlying modeled context.",
       "provides": ["v2x14.audio.living-context"]
     },
     {
       "id": "v2x14.audio.controller",
-      "version": "2.0.0",
+      "version": "6.0.0",
       "owner": "v2x-14-product-experience",
       "kind": "code",
       "stage": "full",
@@ -24,7 +24,7 @@
       "source": "src/audio/v2x14/audio-controller.js",
       "dependencies": ["v2x14.audio.living-context", "v1x13.audio.runtime", "v1x13.audio.controls", "v1.product.living-universe"],
       "authority": "PRESENTATION_ONLY",
-      "provenance": "User-activated orchestration around the bounded V1X-13 systemic-audio runtime. It mounts optional enable, volume, mute and reduced-sensory controls from the lane-owned component itself; no bootstrap mutation, navigation dependency or world-state authority.",
+      "provenance": "User-activated bounded V1X-13 orchestration with serialized/deduplicated controls, mute/zero-volume/visibility suspension, idempotent disposal and honest user-visible off/silent/unsupported/active status. Audio remains optional and never becomes navigation, accessibility or world-state authority.",
       "provides": ["v2x14.audio.controller"]
     }
   ]

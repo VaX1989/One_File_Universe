@@ -1,5 +1,7 @@
 import { LIFE_V2_LIMITS } from './model.js';
 
+const PPM = 1_000_000n;
+
 function assert(condition, message) {
   if (!condition) throw new Error(`LIFE_V2_EMBODIMENT_INVALID: ${message}`);
 }
@@ -44,10 +46,87 @@ function morphologyDescriptor(lineage) {
   });
 }
 
+function behaviorDescriptor(lineage, region) {
+  const mobilityPpm = traitValue(lineage, 'mobility');
+  const opportunityPpm = region.opportunityPpm;
+  const disturbancePenaltyPpm = PPM - region.disturbancePpm;
+  const activityOpportunityPpm = mobilityPpm * opportunityPpm / PPM * disturbancePenaltyPpm / PPM;
+  const behaviorClass = activityOpportunityPpm >= 650_000n
+    ? 'HIGH_LOCAL_ACTIVITY_OPPORTUNITY'
+    : activityOpportunityPpm >= 250_000n
+      ? 'MODERATE_LOCAL_ACTIVITY_OPPORTUNITY'
+      : 'LOW_LOCAL_ACTIVITY_OPPORTUNITY';
+  return Object.freeze({
+    behaviorClass,
+    activityOpportunityPpm,
+    mobilityTraitPpm: mobilityPpm,
+    environmentalOpportunityPpm: opportunityPpm,
+    disturbancePenaltyPpm,
+    feedingMode: lineage.morphology.feedingMode,
+    locomotionMode: lineage.morphology.locomotionMode,
+    authorityClass: 'MODEL_DERIVED_SIMULATION',
+    cognitionClaimed: false,
+    empiricalEthologyClaimed: false,
+    limitation: 'Activity opportunity is a bounded model response to explicit trait and regional context, not an empirical prediction of behavior or cognition.',
+  });
+}
+
+function representativeLifecycle(population, seed) {
+  const roll = BigInt(deterministicHash(`${seed}|lifecycle`)) % PPM;
+  const juvenileBoundary = population.lifecycleStagePpm.juvenile;
+  const matureBoundary = juvenileBoundary + population.lifecycleStagePpm.mature;
+  const stage = roll < juvenileBoundary
+    ? 'JUVENILE'
+    : roll < matureBoundary
+      ? 'MATURE'
+      : 'SENESCENT';
+  return Object.freeze({
+    stage,
+    sourcePopulationStagePpm: population.lifecycleStagePpm,
+    representativeOnly: true,
+    persistentIndividualFact: false,
+    authorityClass: 'MODEL_DERIVED_SIMULATION',
+    limitation: 'Lifecycle stage is a deterministic representative draw from aggregate stage composition, not persistent individual history.',
+  });
+}
+
+function apportionSampleQuotas(populations, cap, totalAbundance, viewportKey) {
+  const quotas = populations.map((population) => {
+    const scaled = population.abundance * BigInt(cap);
+    return {
+      population,
+      quota: Number(scaled / totalAbundance),
+      remainder: scaled % totalAbundance,
+    };
+  });
+
+  let assigned = quotas.reduce((sum, entry) => sum + entry.quota, 0);
+  const remaining = Math.max(0, cap - assigned);
+  if (remaining > 0) {
+    const ranked = [...quotas].sort((a, b) => {
+      if (a.remainder !== b.remainder) return a.remainder > b.remainder ? -1 : 1;
+      if (a.population.abundance !== b.population.abundance) return a.population.abundance > b.population.abundance ? -1 : 1;
+      const ah = deterministicHash(`${viewportKey}|apportion|${a.population.id}`);
+      const bh = deterministicHash(`${viewportKey}|apportion|${b.population.id}`);
+      if (ah !== bh) return ah - bh;
+      return a.population.id.localeCompare(b.population.id);
+    });
+    for (let index = 0; index < remaining && index < ranked.length; index += 1) {
+      ranked[index].quota += 1;
+      assigned += 1;
+    }
+  }
+
+  assert(assigned <= cap, 'sample apportionment exceeded cap');
+  return quotas;
+}
+
 export function materializeLocalOrganisms(state, request) {
   assert(state?.schema === 'ofu-v2x-08-life-state-1', 'invalid life state');
   assert(request?.regionId, 'regionId required');
-  const cap = Math.max(0, Math.min(Number(request.maxSamples ?? LIFE_V2_LIMITS.maxLocalSamples), LIFE_V2_LIMITS.maxLocalSamples));
+  const requested = Number(request.maxSamples ?? LIFE_V2_LIMITS.maxLocalSamples);
+  assert(Number.isFinite(requested) && requested >= 0, 'maxSamples must be a non-negative finite number');
+  const cap = Math.max(0, Math.min(Math.floor(requested), LIFE_V2_LIMITS.maxLocalSamples));
   if (cap === 0) return Object.freeze([]);
 
   const populations = state.populations
@@ -58,17 +137,30 @@ export function materializeLocalOrganisms(state, request) {
   const totalAbundance = populations.reduce((sum, population) => sum + population.abundance, 0n);
   if (totalAbundance === 0n) return Object.freeze([]);
 
+  const viewportKey = String(request.viewportKey ?? 'local');
+  const quotas = apportionSampleQuotas(populations, cap, totalAbundance, viewportKey);
+  const lineageById = new Map(state.lineages.map((lineage) => [lineage.id, lineage]));
+  const morphologyByLineageId = new Map();
   const samples = [];
-  for (const population of populations) {
-    const lineage = state.lineages.find((candidate) => candidate.id === population.lineageId);
+
+  for (const { population, quota } of quotas) {
+    if (quota === 0) continue;
+    const lineage = lineageById.get(population.lineageId);
     assert(lineage, `lineage ${population.lineageId} missing`);
-    let quota = Number(population.abundance * BigInt(cap) / totalAbundance);
-    if (quota === 0 && samples.length < cap) quota = 1;
-    quota = Math.min(quota, cap - samples.length);
+    const region = state.regions[population.regionId];
+    assert(region, `region ${population.regionId} missing`);
+    let morphology = morphologyByLineageId.get(lineage.id);
+    if (!morphology) {
+      morphology = morphologyDescriptor(lineage);
+      morphologyByLineageId.set(lineage.id, morphology);
+    }
+    const behavior = behaviorDescriptor(lineage, region);
+    const motionAmplitude = Number(behavior.activityOpportunityPpm) / 1_000_000;
 
     for (let index = 0; index < quota; index += 1) {
       const sampleId = `sample:${population.id}:${state.eventKey}:${index}`;
-      const seed = `${sampleId}|${request.viewportKey ?? 'local'}`;
+      const seed = `${sampleId}|${viewportKey}`;
+      const lifecycle = representativeLifecycle(population, seed);
       samples.push(Object.freeze({
         id: sampleId,
         populationId: population.id,
@@ -78,24 +170,32 @@ export function materializeLocalOrganisms(state, request) {
         individualIdentityPromoted: false,
         representativeOfAggregate: true,
         aggregateAbundance: population.abundance,
+        lifecycle,
+        behavior,
         position: Object.freeze({
           x: unitFromHash(`${seed}|x`) * 2 - 1,
           y: unitFromHash(`${seed}|y`) * 2 - 1,
           z: unitFromHash(`${seed}|z`) * 2 - 1,
         }),
         orientationTurns: unitFromHash(`${seed}|orientation`),
-        morphology: morphologyDescriptor(lineage),
+        morphology,
         presentation: Object.freeze({
           motionPhase: unitFromHash(`${seed}|motion`),
-          motionAmplitude: Number(traitValue(lineage, 'mobility')) / 1_000_000,
+          motionAmplitude,
+          activityCue: lifecycle.stage === 'JUVENILE'
+            ? 'DEVELOPMENTAL_ACTIVITY_PRESENTATION'
+            : lifecycle.stage === 'SENESCENT'
+              ? 'REDUCED_ACTIVITY_PRESENTATION'
+              : behavior.behaviorClass === 'LOW_LOCAL_ACTIVITY_OPPORTUNITY'
+                ? 'LOW_ACTIVITY_PRESENTATION'
+                : 'BASELINE_ACTIVITY_PRESENTATION',
           authorityClass: 'PRESENTATION_ONLY',
         }),
       }));
-      if (samples.length >= cap) break;
     }
-    if (samples.length >= cap) break;
   }
 
+  assert(samples.length <= cap, 'materialized sample count exceeded cap');
   return Object.freeze(samples);
 }
 
@@ -109,6 +209,8 @@ export function projectSelectionToAggregate(sample, state) {
     lineageId: population.lineageId,
     regionId: population.regionId,
     sampleId: sample.id,
+    representativeLifecycleStage: sample.lifecycle?.stage ?? null,
+    modeledBehaviorClass: sample.behavior?.behaviorClass ?? null,
     sampleIsPersistentIndividual: false,
     inferenceGuard: 'LOCAL_SAMPLE_MUST_NOT_INFER_GLOBAL_ABUNDANCE',
   });
