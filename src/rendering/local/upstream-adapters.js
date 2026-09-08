@@ -1,9 +1,9 @@
 (function(root){
 'use strict';
 const O=root.OFU=root.OFU||{};
-const VERSION='ofu-v2x-07-upstream-adapters-5';
+const VERSION='ofu-v2x-07-upstream-adapters-6';
 const AUTHORITY='PRESENTATION_ONLY';
-const TRAVERSAL_SOURCE_VERSION='ofu-v2x-07-local-traversal-adapter-5';
+const TRAVERSAL_SOURCE_VERSION='ofu-v2x-07-local-traversal-adapter-6';
 const DATA_LIMITS=Object.freeze({maxDepth:8,maxKeys:64,maxArray:128}),LOCAL_BANDS=Object.freeze(['HUMAN','LOCAL_SURFACE','REGIONAL_SURFACE']);
 function freeze(v){if(!v||typeof v!=='object'||Object.isFrozen(v))return v;for(const k of Object.keys(v))freeze(v[k]);return Object.freeze(v)}
 function finite(v,label='value'){const n=Number(v);if(!Number.isFinite(n))throw new TypeError(label+' must be finite');return n}
@@ -22,7 +22,7 @@ function integrationContractRequest(){return freeze({version:VERSION,authority:A
  {kind:'COMPONENT_DESCRIPTOR',exactFilename:'config/components/v2x-07-human-scale-local-traversal.json',state:'SATISFIED_BY_CONVERGENCE',reason:'deterministic additive script discovery is present'},
  {kind:'LIVING_RENDERER_PROVIDER_BIND',state:'REQUIRED_RUNTIME_BINDING',targetPath:'src/rendering/v1/living-renderer.js',provider:'OFU.v2x07LocalExperienceProvider',reason:'component discovery proves script loading only; explicit Living-renderer invocation is not proven at canonical convergence base'},
  {kind:'CONFORMANCE_DESCRIPTOR',state:'REQUIRED',exactFilename:'config/conformance/v2x-07-human-scale-local-traversal.json',commands:[['node','tests/v2x-07-human-scale-local-traversal/local-experience.mjs'],['node','tests/v2x-07-human-scale-local-traversal/environment-matrix.mjs'],['node','tests/v2x-07-human-scale-local-traversal/upstream-adapters.mjs']],reason:'dedicated V2X-07 progressive conformance descriptor is absent; convergence must register exact lane oracles'},
- {kind:'TRAVERSAL_REHOME_SYNC',state:'REQUIRED',sourcePath:'src/product/exploration/local/local-traversal.js',sourceVersion:TRAVERSAL_SOURCE_VERSION,targetPath:'src/rendering/local/v2x07-local-traversal-adapter.js',requiredSemanticDelta:['WALK_STEP_EXCEEDS_BOUND','CURRENT_GROUND_UNSUPPORTED','current-vs-target-ground-step-delta','EXPLICIT_LOCAL_IDENTITY_AND_POSITION_REQUIRED','NO_UPSTREAM_FREEZE_SIDE_EFFECTS','PLAIN_DATA_BOUNDARY_REQUIRED','STABLE_SURFACE_TARGET_SERIALIZATION','FLY_3D_MAGNITUDE_BOUND','LOCAL_BAND_VALIDATION','MOVEMENT_MODE_FAIL_CLOSED'],reason:'shipping descriptor points at convergence-owned rehome; sync lane-owned traversal v5 without transferring camera/input authority'}
+ {kind:'TRAVERSAL_REHOME_SYNC',state:'REQUIRED',sourcePath:'src/product/exploration/local/local-traversal.js',sourceVersion:TRAVERSAL_SOURCE_VERSION,targetPath:'src/rendering/local/v2x07-local-traversal-adapter.js',requiredSemanticDelta:['WALK_STEP_EXCEEDS_BOUND','CURRENT_GROUND_UNSUPPORTED','current-vs-target-ground-step-delta','EXPLICIT_LOCAL_IDENTITY_AND_POSITION_REQUIRED','NO_UPSTREAM_FREEZE_SIDE_EFFECTS','PLAIN_DATA_BOUNDARY_REQUIRED','STABLE_SURFACE_TARGET_SERIALIZATION','FLY_3D_MAGNITUDE_BOUND','LOCAL_BAND_VALIDATION','MOVEMENT_MODE_FAIL_CLOSED','DETERMINISTIC_LOCAL_FRAME','STABLE_FRAME_FINGERPRINT','BOUNDED_DETERMINISTIC_PLACEMENT_PACKET','PLACEMENT_IDENTITY_FAIL_CLOSED','PLACEMENT_RADIUS_FAIL_CLOSED'],reason:'shipping descriptor points at convergence-owned rehome; sync lane-owned traversal v6 without transferring camera/input authority'}
  ],laneOwnedSources:['src/rendering/local/**','src/product/exploration/local/**','tests/v2x-07-human-scale-local-traversal/**'],claims:{centralComposerMutated:false,cameraAuthorityMutated:false,inputRouterMutated:false,traversalRehomeMutationPerformed:false,upstreamStateMutated:false,runtimeProviderBindingProven:false,dedicatedConformanceRegistered:false}})}
 O.v2x07UpstreamAdapters=Object.freeze({VERSION,AUTHORITY,TRAVERSAL_SOURCE_VERSION,LOCAL_BANDS,cameraFromPlanetSurface,cameraFromV1x06Journey,groundProviderFromPlanetSurfaceTerrain,localDomainProvider,nonMetricProjection,integrationContractRequest});
 })(typeof globalThis!=='undefined'?globalThis:this);
