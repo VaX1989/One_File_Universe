@@ -1,0 +1,45 @@
+name: P21 Mobile Route Repair Once
+
+on:
+  push:
+    branches:
+      - integration/v2x-supreme-total-convergence-2026-09-07
+    paths:
+      - .github/workflows/p21-mobile-route-repair-once.yml
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: integration/v2x-supreme-total-convergence-2026-09-07
+          fetch-depth: 0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24.20.0
+      - name: Replace hidden desktop click with canonical input route
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('tests/audit/v2-p21-performance-browser-mobile/browser-resource-soak.mjs')
+          s=p.read_text()
+          old=" await page.click('[data-render-stage=\"orbit\"]');await page.waitForFunction(()=>OFU.waveIVScaleRuntime.snapshot().semanticScale==='orbit');"
+          new=" await page.evaluate(()=>{const R=globalThis.OFU?.waveIVInputRouter;if(!R||typeof R.routeStage!=='function'||R.routeStage('orbit','p21-mobile-audit')!==true)throw new Error('canonical Orbit route rejected')});await page.waitForFunction(()=>OFU.waveIVScaleRuntime.snapshot().semanticScale==='orbit');"
+          if s.count(old)!=1:
+              raise SystemExit(f'expected exactly one hidden Orbit click, found {s.count(old)}')
+          p.write_text(s.replace(old,new,1))
+          PY
+          node --check tests/audit/v2-p21-performance-browser-mobile/browser-resource-soak.mjs
+          grep -q "routeStage('orbit','p21-mobile-audit')" tests/audit/v2-p21-performance-browser-mobile/browser-resource-soak.mjs
+          ! grep -q "page.click('\[data-render-stage=\\\"orbit\\\"\]')" tests/audit/v2-p21-performance-browser-mobile/browser-resource-soak.mjs
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add tests/audit/v2-p21-performance-browser-mobile/browser-resource-soak.mjs
+          git commit -m 'P21 route mobile Orbit through canonical input authority'
+          git push origin HEAD:integration/v2x-supreme-total-convergence-2026-09-07
