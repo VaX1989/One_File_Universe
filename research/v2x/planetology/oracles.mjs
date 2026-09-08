@@ -1,6 +1,13 @@
 export const AUTHORITY = 'RESEARCH_ONLY';
 
 const SIGMA = 5.670374419e-8;
+const SYNTHETIC_ESCAPE_THRESHOLD_SET = Object.freeze({
+  thresholdSetId: 'research-jeans-threshold-test',
+  thresholdSetHash: 'sha256:research-jeans-threshold-test',
+  hydrodynamicJeansMax: 3,
+  jeansLikeMin: 30,
+  boilOffJeansMax: 20
+});
 
 function finite(name, value) {
   if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
@@ -15,14 +22,28 @@ export function greyAtmosphereSurfaceTemperature({ effectiveTemperatureK, infrar
   return Object.freeze({ status: 'PRESENT', temperatureK: teff * factor, assumptions: 'PLANE_PARALLEL_GREY_RADIATIVE_EQUILIBRIUM_REFERENCE', climateTruthClaim: false });
 }
 
-export function classifyEscapeRegime({ jeansParameter, hydrogenSupplyLimited = false, xuvInputsAvailable = false, postDiskBoilOffPossible = false, thresholdSetId, thresholdSetHash, hydrodynamicJeansMax = 3, jeansLikeMin = 30, boilOffJeansMax = 20 }) {
+export function classifyEscapeRegime({ jeansParameter, hydrogenSupplyLimited = false, xuvInputsAvailable = false, postDiskBoilOffPossible = false, thresholdSetId, thresholdSetHash, hydrodynamicJeansMax = null, jeansLikeMin = null, boilOffJeansMax = null }) {
   const lambda = finite('jeansParameter', jeansParameter);
-  const hydroMax = finite('hydrodynamicJeansMax', hydrodynamicJeansMax);
-  const jeansMin = finite('jeansLikeMin', jeansLikeMin);
-  const boilMax = finite('boilOffJeansMax', boilOffJeansMax);
   if (!thresholdSetId || !thresholdSetHash) return Object.freeze({ status: 'RESEARCH_REQUIRED', reason: 'ESCAPE_THRESHOLD_SET_ID_AND_HASH_REQUIRED', rateModelAuthorized: false });
+  const explicitThresholds = hydrodynamicJeansMax != null && jeansLikeMin != null && boilOffJeansMax != null;
+  const syntheticFallbackAuthorized = !explicitThresholds
+    && thresholdSetId === SYNTHETIC_ESCAPE_THRESHOLD_SET.thresholdSetId
+    && thresholdSetHash === SYNTHETIC_ESCAPE_THRESHOLD_SET.thresholdSetHash;
+  if (!explicitThresholds && !syntheticFallbackAuthorized) {
+    return Object.freeze({
+      status: 'RESEARCH_REQUIRED',
+      reason: 'EXPLICIT_ESCAPE_THRESHOLDS_REQUIRED_FOR_NON_SYNTHETIC_THRESHOLD_SET',
+      thresholdSetId,
+      thresholdSetHash,
+      rateModelAuthorized: false,
+      universalThresholdClaim: false
+    });
+  }
+  const hydroMax = finite('hydrodynamicJeansMax', explicitThresholds ? hydrodynamicJeansMax : SYNTHETIC_ESCAPE_THRESHOLD_SET.hydrodynamicJeansMax);
+  const jeansMin = finite('jeansLikeMin', explicitThresholds ? jeansLikeMin : SYNTHETIC_ESCAPE_THRESHOLD_SET.jeansLikeMin);
+  const boilMax = finite('boilOffJeansMax', explicitThresholds ? boilOffJeansMax : SYNTHETIC_ESCAPE_THRESHOLD_SET.boilOffJeansMax);
   if (lambda <= 0 || hydroMax <= 0 || jeansMin <= hydroMax || boilMax <= 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'INVALID_JEANS_PARAMETER_OR_THRESHOLD_SET' });
-  const thresholdSemantics = Object.freeze({ hydrodynamicJeansMax: hydroMax, jeansLikeMin: jeansMin, boilOffJeansMax: boilMax, universalThresholdClaim: false });
+  const thresholdSemantics = Object.freeze({ hydrodynamicJeansMax: hydroMax, jeansLikeMin: jeansMin, boilOffJeansMax: boilMax, universalThresholdClaim: false, syntheticFallbackUsed: syntheticFallbackAuthorized });
   if (hydrogenSupplyLimited) return Object.freeze({ status: 'PRESENT', regime: 'DIFFUSION_LIMITED_CANDIDATE', thresholdSetId, thresholdSetHash, thresholdSemantics, rateModelAuthorized: false });
   if (postDiskBoilOffPossible && lambda < boilMax) return Object.freeze({ status: 'PRESENT', regime: 'BOIL_OFF_OR_HYDRODYNAMIC_CANDIDATE', thresholdSetId, thresholdSetHash, thresholdSemantics, rateModelAuthorized: false });
   if (lambda < hydroMax) return Object.freeze({ status: 'PRESENT', regime: 'HYDRODYNAMIC_ESCAPE_CANDIDATE', thresholdSetId, thresholdSetHash, thresholdSemantics, rateModelAuthorized: false });
@@ -128,3 +149,5 @@ export function equilibriumFluxFromTemperature({ effectiveTemperatureK }) {
   if (t <= 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'NON_POSITIVE_TEMPERATURE' });
   return Object.freeze({ status: 'PRESENT', outgoingFluxWm2: SIGMA * Math.pow(t, 4), assumptions: 'BLACKBODY_REFERENCE' });
 }
+
+export const researchOracleMetadata = Object.freeze({ syntheticEscapeThresholdSet: SYNTHETIC_ESCAPE_THRESHOLD_SET });

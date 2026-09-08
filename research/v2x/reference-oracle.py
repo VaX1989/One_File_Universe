@@ -1,19 +1,24 @@
 #!/usr/bin/env python3
-"""Independent numerical witnesses for V2X-15 research kernels.
+"""Independent numerical and adversarial witnesses for V2X-15 research kernels.
 
-This file intentionally does not import or execute the JavaScript implementation.
-It is RESEARCH_ONLY and exists to provide cross-language reference values.
+Numerical values are computed independently in Python. A small Node subprocess is
+also used to falsify two contract regressions that cannot be detected by a
+cross-language scalar oracle alone: MIST-II rotating-family mass semantics and
+non-synthetic atmospheric-escape threshold provenance.
 """
 from __future__ import annotations
 
 import json
 import math
+import pathlib
+import subprocess
 
 G = 6.67430e-11
 M_EARTH = 5.9722e24
 M_SUN = 1.98847e30
 R_EARTH = 6_371_000.0
 R_GAS = 8.31446261815324
+ROOT = pathlib.Path(__file__).resolve().parents[2]
 
 
 def rocky_radius_prem(mass_earth: float, cmf: float) -> float:
@@ -101,6 +106,34 @@ def energy_limited_rate_erkaev(
     return efficiency * math.pi * rp * rxuv * rxuv * xuv_flux / (G * mass_earth * M_EARTH * roche_k)
 
 
+def adversarial_contract_witnesses() -> dict[str, str]:
+    script = r"""
+import assert from 'node:assert/strict';
+import { mistInterpolationContract } from './research/v2x/astronomy/stellar-contracts.mjs';
+import { classifyEscapeRegime } from './research/v2x/planetology/oracles.mjs';
+const domain={ageMinLog10Years:5,ageMaxLog10Years:10.3,massMinSolar:0.1,massMaxSolar:300,fehMin:-3,fehMax:0.5};
+const lowMassRotating=mistInterpolationContract({releaseId:'MIST-II-2026',gridHash:'sha256:synthetic',gridDomain:domain,ageLog10Years:9,initialMassSolar:1,feh:0,alphaFe:0.2,rotationFraction:0.4});
+assert.equal(lowMassRotating.status,'RESEARCH_REQUIRED');
+assert.equal(lowMassRotating.reason,'MIST_II_ROTATING_FAMILY_USES_MASS_DEPENDENT_OMEGA_RAMP_BELOW_1P8_MSUN');
+const fullRotation=mistInterpolationContract({releaseId:'MIST-II-2026',gridHash:'sha256:synthetic',gridDomain:domain,ageLog10Years:9,initialMassSolar:2,feh:0,alphaFe:0.2,rotationFraction:0.4});
+assert.equal(fullRotation.status,'INTERPOLATION_CONTRACT_READY');
+const anonymousThresholds=classifyEscapeRegime({jeansParameter:2,thresholdSetId:'arbitrary-set',thresholdSetHash:'sha256:arbitrary'});
+assert.equal(anonymousThresholds.status,'RESEARCH_REQUIRED');
+assert.equal(anonymousThresholds.reason,'EXPLICIT_ESCAPE_THRESHOLDS_REQUIRED_FOR_NON_SYNTHETIC_THRESHOLD_SET');
+const explicitThresholds=classifyEscapeRegime({jeansParameter:2,thresholdSetId:'versioned-set',thresholdSetHash:'sha256:versioned',hydrodynamicJeansMax:3,jeansLikeMin:30,boilOffJeansMax:20});
+assert.equal(explicitThresholds.regime,'HYDRODYNAMIC_ESCAPE_CANDIDATE');
+process.stdout.write(JSON.stringify({mistLowMassRotation:lowMassRotating.status,mistFullRotation:fullRotation.status,anonymousEscapeThresholds:anonymousThresholds.status,explicitEscapeThresholds:explicitThresholds.regime}));
+"""
+    completed = subprocess.run(
+        ["node", "--input-type=module", "-e", script],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return json.loads(completed.stdout)
+
+
 if __name__ == "__main__":
     e1c_08, e2c_08, cc_08, residual_08 = collision_critical_amd(0.8, 1.0)
     out = {
@@ -122,5 +155,6 @@ if __name__ == "__main__":
         "mean_flux_factor_e_05": orbital_mean_flux_factor(0.5),
         "energy_limited_erkaev_example_kg_s": energy_limited_rate_erkaev(1.0, 1.0, 1.1, 10.0, 0.1, 0.9),
         "hill_threshold_2sqrt3": 2.0 * math.sqrt(3.0),
+        "adversarial_contract_witnesses": adversarial_contract_witnesses(),
     }
     print(json.dumps(out, sort_keys=True, indent=2))
