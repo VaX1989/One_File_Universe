@@ -96,8 +96,8 @@ const capped = refineIndividuals({ worldId: 'w', settlementId: 's1', aggregate, 
 check(capped.length === INDIVIDUAL_LIMITS.MAX_ACTIVE, 'active individual working set bounded');
 
 // Source -> component manifest -> browser export -> actual Living consumer reachability.
-// The final two booleans intentionally describe a convergence-owned hook rather than
-// silently treating the legacy aggregate refine path as vertical completion.
+// Living continuity may be either fully legacy/unclaimed or fully integrated; any
+// partial claim is a fail-closed integration defect.
 const component = JSON.parse(readFileSync(new URL('../../config/components/v2x-10-persistent-individuals.json', import.meta.url), 'utf8'));
 const runtimeComponent = component.components.find((entry) => entry.id === 'v2x10.model.persistent-individuals');
 check(runtimeComponent?.source === 'src/domains/v1/individuals/provider.js' && runtimeComponent.authority === 'MODEL_DERIVED_SIMULATION', 'shipping component manifest reaches the V2X-10 browser provider with model-derived authority');
@@ -107,7 +107,10 @@ const livingInspectorSource = readFileSync(new URL('../../src/bootstrap/product/
 check(livingInspectorSource.includes('People=O.v2x10Individuals'), 'real Living context inspector consumes the shipped V2X-10 runtime export');
 const livingUsesLedgerAwareRefinement = /People\.refinePopulation\s*\(/.test(livingInspectorSource);
 const livingDeclaresRetainedPersistence = /retainedMemoryPersistence\s*:\s*true/.test(livingInspectorSource);
-check(!livingUsesLedgerAwareRefinement && !livingDeclaresRetainedPersistence, 'convergence hook is explicit: current Living still uses legacy refine and does not claim retained persistence');
+const livingDeclaresMortalityAwareRefinement = /mortalityAwareRefinement\s*:\s*true/.test(livingInspectorSource);
+const centralHookComplete = livingUsesLedgerAwareRefinement && livingDeclaresRetainedPersistence && livingDeclaresMortalityAwareRefinement;
+const centralHookLegacy = !livingUsesLedgerAwareRefinement && !livingDeclaresRetainedPersistence && !livingDeclaresMortalityAwareRefinement;
+check(centralHookLegacy || centralHookComplete, 'Living person continuity hook must be entirely legacy/unclaimed or entirely ledger-aware+persistent; partial claims are forbidden');
 
 for (let year = 22; year < 22 + DEMOGRAPHY_LIMITS.MAX_COMMITMENTS + 20; year += 1) ledger = applyDemographicStep(ledger, { year, births: 1, deaths: 1 });
 check(ledger.commitments.length === DEMOGRAPHY_LIMITS.MAX_COMMITMENTS, 'demography commitment history bounded');
@@ -132,4 +135,13 @@ for (let year = 1; year <= 120; year += 1) {
   check(reconcileDemography({ aggregatePopulation: expectedPopulation, ledger: fuzz }).status === 'PASS', `deterministic demographic sequence reconciles at year ${year}`);
 }
 
-console.log(`V2X-10 persistent-individuals: ${checks} checks passed`);
+console.log(JSON.stringify({
+  schema: 'ofu-v2x10-lane-final-evidence-1',
+  status: 'PASS',
+  checks,
+  persistenceWitness: 'PASS',
+  shippingReachability: 'PASS',
+  livingPersonContinuity: centralHookComplete ? 'COMPLETE' : 'CENTRAL_INTEGRATION_REQUIRED',
+  modelAuthority: 'MODEL_DERIVED_SIMULATION',
+  appearanceAuthority: 'PRESENTATION_ONLY'
+}));
