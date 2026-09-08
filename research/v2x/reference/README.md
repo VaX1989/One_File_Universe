@@ -9,7 +9,7 @@ Authority: **RESEARCH_ONLY**. This subtree is a promotion laboratory and falsifi
 - launch record: `READY_FOR_MASSIVE_PARALLEL_EXECUTION` / `FULL`
 - reconciliation: history-preserving merge only; no reset or force update.
 
-`RESEARCH_DAG.json` authenticates the base and records the exact shipping surfaces against which promotion was adjudicated. `HARVEST_PACKETS.json` is the authoritative V2X-16 promotion disposition: each mature candidate names its shipping owner, convergence hook, nonclaims, and an old-fallback sentinel. `HARVEST_LEDGER.json` distinguishes work already harvested into the V2 base from genuinely new selective candidates.
+`RESEARCH_DAG.json` authenticates the frozen research base and records the shipping surfaces against which promotion was adjudicated. `HARVEST_PACKETS.json` is the authoritative V2X-16 promotion disposition: each mature candidate names its shipping owner, convergence hook, nonclaims, and old-fallback sentinel. `HARVEST_LEDGER.json` distinguishes work already harvested from genuinely new selective candidates.
 
 ## Promotion boundary
 
@@ -29,7 +29,7 @@ Research-only source must **not** masquerade as shipping reachability. A candida
 
 `research source -> promoted shipping source -> governed component/manifest -> dist/One_File_Universe.html -> runtime export -> actual consumer -> Living viewport/user action -> visible or audible consequence -> persistence/revisit when applicable -> exact-artifact browser evidence`.
 
-Until that chain exists, the V2X-16 package exposes an immediately verifiable convergence hook rather than claiming completion on behalf of another owner.
+Until that chain exists, V2X-16 exposes immediately verifiable convergence hooks rather than claiming completion on behalf of another owner.
 
 ## Current selective promotion focus
 
@@ -40,31 +40,30 @@ Until that chain exists, the V2X-16 package exposes an immediately verifiable co
 
 See `SCIENTIFIC_CONTRACT.md` and `BOUNDS_AND_COMPLEXITY.md` for claim and resource ceilings.
 
-## Final central-integration checkpoint
+## Verified final lane checkpoint
 
-The behavioral research content is frozen at parent commit `bf0d7caaecadde5f1a3de54c53fc6da0a4109a15`. This final checkpoint changes this README only; it introduces no model, oracle, fixture, bound, authority, provenance, or promotion-semantic change.
+The research behavior, tests, fixtures, bounds, authority and promotion semantics remain unchanged from behavioral checkpoint `bf0d7caaecadde5f1a3de54c53fc6da0a4109a15`. The lane was then history-preservingly reconciled with current central convergence SHA `8767e81d953a7d6c2bce334749c609d9b1be0805` by merge checkpoint `a7ec2e6002d9e65eae718db9824e18ffcf228db2`. Central files are inherited as merge ancestry only; the net PR delta against that central SHA remains exactly the 30 authorized `research/v2x/**` files.
 
-Owned-scope closure:
-
-- frozen-base relation before this checkpoint: `26 ahead / 0 behind`, merge-base exactly `2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7`;
-- net lane delta remains exactly the 30 previously authorized `research/v2x/**` paths; no new filename is introduced;
-- no central convergence-owned source, manifest, workflow, registry, persistence, renderer, camera/scale, P4, Living, or release path is modified;
-- no temporary, generated, duplicate, dead, or experimental file is part of the lane delta.
-
-Executed evidence on the frozen behavioral content:
+Owned-scope closure on exact `a7ec2e6...` content:
 
 - committed V2X-16 tests: `47 / 47 PASS`;
 - syntax audit: `22 / 22 .mjs PASS` with `node --check`;
 - deterministic adversarial fuzz: `40,000 / 40,000 PASS` with fixed seeds `0x12345678`, `0x9e3779b9`, `0xa5a5a5a5`, `0xcafebabe`;
-- hosted Node `v24.20.0` exact checkout on `bf0d7caa...`: exact source identity PASS and the full repository `npm test` / reproducible build stack PASS;
-- hosted `Foundation Integrity` on `bf0d7caa...`: PASS.
+- full repository `npm test`: `PASS` locally on Node `v22.16.0`;
+- hosted exact-head Foundation, P1, P2, P3, P4, P5, P5 Environment, P6 and P1-P4 Baseline: `PASS`;
+- hosted V2X Supreme exact source identity, full Node `v24.20.0` repository test/reproducible-build stack, provider activation, central authority freeze, artifact reproducibility, Living rebuild, V2X-10 regressions, macrocosm composition, single-camera authority and V2X domain composition: `PASS` through the context-inspector stage.
 
-Hosted central-integration blocker observed on the same exact behavioral head:
+Repository hygiene closure:
 
-- `V2X Supreme Convergence / exact-head-certification` failed only after the full `npm test` stack passed;
-- failing command: `node tests/v2x-convergence/provider-activation-boundary.mjs`;
-- failure: `MODULE_NOT_FOUND` because that convergence-owned test is not present in the immutable frozen base inherited by this lane;
-- the central convergence branch added that test after the frozen base, so V2X-16 must not copy or mutate it to make its own CI green;
-- central integration must compose the research lane onto the current convergence branch and rerun the central exact-head certification there.
+- no `TODO`, `FIXME`, `HACK`, `XXX`, placeholder, stub or not-implemented marker was found under `research/v2x/**`;
+- no temporary, backup, reject, swap, generated duplicate or scratch filename is present in the owned 30-file delta;
+- the temporary fuzz harness used for verification was deleted after execution;
+- the first temporary fuzz fixture intentionally failed closed because uppercase species id `X` violated the identifier grammar; the valid lowercase fixture then completed all 40,000 cases. This was a harness-input rejection, not a repository defect.
 
-Final lane disposition: `RESEARCH_ONLY / OWNED_WORK_COMPLETE / READY_FOR_SELECTIVE_CONVERGENCE_INTEGRATION`. Shipping promotion, manifest registration, Living reachability, persistence/revisit evidence, browser/release certification, and any central checkpoint mirror remain explicitly owned by the relevant shipping lanes and/or central convergence owner.
+## Proven external central-baseline defect
+
+`V2X Supreme Convergence` fails at `tests/v2x-convergence/living-context-inspector.mjs` on both central SHA `8767e81...` itself and this reconciled lane. The witness loads V2X-09 `index.js` without loading its required `advanced-api.js`; `index.js` therefore correctly fails closed with `V2X-09 module set including advanced composition required`.
+
+That defect is outside the V2X-16 path grant: both the convergence witness and V2X-09 shipping implementation are owned by central/V2X-09. It has no `research/v2x/**` dependency and is independently reproduced on the central baseline, so altering V2X-16 research code cannot legitimately repair it.
+
+Final lane disposition: `RESEARCH_ONLY / COMPLETE / CURRENT_CENTRAL_RECONCILED / READY_FOR_SELECTIVE_CONVERGENCE_INTEGRATION`. There are no known V2X-16-owned blockers, failing tests, incomplete implementations, temporary artifacts or unresolved dependencies.
