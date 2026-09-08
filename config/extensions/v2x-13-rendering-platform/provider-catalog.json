@@ -51,7 +51,7 @@
       "operations": ["REPRESENT", "INSPECT"],
       "budget": {
         "entities": 4096,
-        "bytes": 268435456,
+        "bytes": 1048576,
         "operations": 65536,
         "queue": 4096
       },
