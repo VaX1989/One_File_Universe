@@ -1,37 +1,98 @@
 {
-  "schema": "ofu-v2-science-authority-evidence-1",
+  "schema": "ofu-v2-science-authority-evidence-2",
   "lane": "SCIENCE_AUTHORITY",
+  "laneStatus": "COMPLETE",
   "mode": "READ_MOSTLY_SCIENCE_AUTHORITY_AUDIT",
+  "writePolicy": "EVIDENCE_TESTS_ONLY_NO_PRODUCTION_WRITES",
   "base": {
     "sha": "2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7",
     "tree": "99e6b5ff6229d9c34d381e778c5689bf2367d256",
     "launchStatus": "FULL",
-    "authorization": "explicit user authorization plus matching persistent live V2 parallel-base record"
+    "persistentRecord": "docs/parallel/V2_PARALLEL_BASE_CURRENT.json",
+    "persistentRecordStatus": "READY_FOR_MASSIVE_PARALLEL_EXECUTION"
   },
   "authorityClasses": ["CANONICAL_PROVEN","DERIVED","MODEL_DERIVED_SIMULATION","PRESENTATION_ONLY","MEASURED_RUNTIME_EVIDENCE"],
   "productionMutationPerformed": false,
-  "status": "FALSIFIED_REPAIR_REQUIRED",
+  "remainingBlockersWithinAuthorizedScope": [],
+  "scientificVerdict": "FALSIFIED_REPAIR_REQUIRED_OUTSIDE_AUDIT_OWNERSHIP",
   "findings": [
-    {"id":"P22-001","severity":"HIGH","path":"src/bootstrap/product/v2x-context-inspector.js","claimOrField":"V2X-08/V2X-09/V2X-10 founder-facing detail fields; localDensityPpm/stressPpm zero fallbacks","authorityMismatch":"Model-derived values and model persons are displayed without adjacent authority/assumption disclosure; absent numeric context can become zero.","requiredCorrection":"Render claim-bearing authority/provenance/assumption state beside affected fields; preserve unknown numeric values; do not imply model-derived persistent individuals are canonical persons.","owner":"CENTRAL_CONVERGENCE","convergenceHook":"Consume additive science-authority assertions in the Living context inspector without transferring inspector ownership."},
-    {"id":"P22-002","severity":"HIGH","path":"src/rendering/v2x-convergence/living-domain-composition.js","claimOrField":"surfaceModelInput(): waterAreaPpm, iceAreaPpm, tectonicActivityPpm, volcanicActivityPpm, erosionActivityPpm, aridityPpm","authorityMismatch":"Missing planetary evidence is converted into exact values that drive visible terrain/hydrology.","requiredCorrection":"Carry known/unknown/assumed state through the renderer seam. Quantitative priors are legal only as explicit scenario assumptions with preserved provenance.","owner":"CENTRAL_CONVERGENCE","convergenceHook":"Renderer composition must consume explicit uncertainty/assumption state; audit lane owns only the regression oracle."},
-    {"id":"P22-003","severity":"HIGH","path":"src/v2x-08-life-ecology-evolution-embodiment/model.js","claimOrField":"profile.birthPpm, profile.mortalityPpm, profile.disturbanceMortalityPpm, fecundity trait fallback, resilience trait fallback","authorityMismatch":"Absent ecology/lifecycle parameters acquire universal-looking quantitative priors inside the simulation core.","requiredCorrection":"Require explicit profile/scenario inputs or attach explicit assumption provenance to each prior before it can support downstream claims.","owner":"V2X_08_DOMAIN_OWNER","convergenceHook":"Domain owner may repair production model; audit oracle must remain and pass after repair."},
-    {"id":"P22-004","severity":"HIGH","path":"src/v2x-09-civilization-economy-city/production-network.js","claimOrField":"modeledRouteCondition(): conditionPpm=450000, degradationPpm=550000 when no infrastructure asset matches","authorityMismatch":"Absence of infrastructure evidence becomes exact quantitative route quality and can feed capacity/resilience calculations.","requiredCorrection":"Represent missing infrastructure condition as unresolved/interval-valued, or declare an explicit scenario prior and preserve that provenance downstream.","owner":"V2X_09_DOMAIN_OWNER","convergenceHook":"Domain owner repairs semantics; audit lane supplies fail-closed regression coverage only."},
-    {"id":"P22-005","severity":"HIGH","path":"src/v2x-09-civilization-economy-city/society-dynamics.js","claimOrField":"legitimacyPpm/cohesionPpm -> LEGITIMACY_AND_COHESION_RISK / FRAGMENTATION_RISK","authorityMismatch":"Missing legitimacy/cohesion is coerced to zero and can generate risk classifications from absent evidence.","requiredCorrection":"Propagate unknown and suppress dependent risk classifications unless inputs are supplied or explicitly scenario-assumed.","owner":"V2X_09_DOMAIN_OWNER","convergenceHook":"Domain owner repairs semantics; audit lane supplies fail-closed regression coverage only."},
-    {"id":"P22-006","severity":"HIGH","path":"src/domains/v1/individuals/runtime.js","claimOrField":"materializeIndividual()/retainIndividual(): household size fallback 4; role fallback resident","authorityMismatch":"Missing household/role evidence is materialized as specific person data and may persist across revisits.","requiredCorrection":"Default to explicit unknown/null or preserve scenario-assumption provenance on materialized and retained fields and at the person envelope.","owner":"INDIVIDUALS_DOMAIN_OWNER","convergenceHook":"Domain owner repairs production semantics; persistence/revisit authority remains convergence-owned."},
-    {"id":"P22-007","severity":"MEDIUM_HIGH","path":"src/v2x-09-civilization-economy-city/core.js","claimOrField":"sourceAuthority() fallback","authorityMismatch":"Missing provenance is automatically upgraded to MODEL_DERIVED_SIMULATION.","requiredCorrection":"Fail closed as UNKNOWN/UNVERIFIED or reject missing authority. Never grant a frozen scientific authority class solely because metadata is absent.","owner":"V2X_09_DOMAIN_OWNER","convergenceHook":"Repair authority parsing in the domain owner lane; retain the regression oracle."},
-    {"id":"P22-008","severity":"MEDIUM","path":"src/rendering/microscopic/matter-continuity-provider.js","claimOrField":"positionAuthority=MODEL_DERIVED_OR_PRESENTATION_COORDINATE","authorityMismatch":"A hybrid token merges model-derived and presentation-only position authority outside the frozen authority classes.","requiredCorrection":"Split model/scientific coordinate authority from display-coordinate authority using exact authority fields/classes.","owner":"MATTER_RENDERING_OWNER","convergenceHook":"Matter owner separates authority fields; audit lane preserves frozen-class conformance coverage."},
-    {"id":"P22-009","severity":"HIGH","path":"config/components/v2x-05-deep-planet-science.json + config/components/v2x-living-product-composition.json","claimOrField":"v2x05.deep-planet.provider source-to-Living reachability","authorityMismatch":"The deep-planet provider is shipping-manifest registered but has no demonstrated dependency/consumer in central Living composition/inspector.","requiredCorrection":"Add an authorized Living consumer preserving V2X-05 provenance/uncertainty, then prove visible consequence in the exact one-file artifact/browser.","owner":"CENTRAL_CONVERGENCE","convergenceHook":"Add only the central consumer/dependency seam; provider authority remains V2X-05-owned."}
+    {"id":"P22-001","severity":"HIGH","path":"src/bootstrap/product/v2x-context-inspector.js","claimOrField":"V2X-08/V2X-09/V2X-10 founder-facing detail fields; localDensityPpm/stressPpm zero fallbacks","authorityMismatch":"Model-derived values and model persons are displayed without adjacent authority/assumption disclosure; absent numeric context can become zero.","requiredCorrection":"Render claim-bearing authority/provenance/assumption state beside affected fields; preserve unknown numeric values; do not imply model-derived persistent individuals are canonical persons.","owner":"CENTRAL_CONVERGENCE"},
+    {"id":"P22-002","severity":"HIGH","path":"src/rendering/v2x-convergence/living-domain-composition.js","claimOrField":"surfaceModelInput(): waterAreaPpm, iceAreaPpm, tectonicActivityPpm, volcanicActivityPpm, erosionActivityPpm, aridityPpm","authorityMismatch":"Missing planetary evidence is converted into exact values that drive visible terrain/hydrology.","requiredCorrection":"Carry known/unknown/assumed state through the renderer seam. Quantitative priors are legal only as explicit scenario assumptions with preserved provenance.","owner":"CENTRAL_CONVERGENCE"},
+    {"id":"P22-003","severity":"HIGH","path":"src/v2x-08-life-ecology-evolution-embodiment/model.js","claimOrField":"profile.birthPpm, profile.mortalityPpm, profile.disturbanceMortalityPpm, fecundity trait fallback, resilience trait fallback","authorityMismatch":"Absent ecology/lifecycle parameters acquire universal-looking quantitative priors inside the simulation core.","requiredCorrection":"Require explicit profile/scenario inputs or attach explicit assumption provenance to each prior before it can support downstream claims.","owner":"V2X_08_DOMAIN_OWNER"},
+    {"id":"P22-004","severity":"HIGH","path":"src/v2x-09-civilization-economy-city/production-network.js","claimOrField":"modeledRouteCondition(): conditionPpm=450000, degradationPpm=550000 when no infrastructure asset matches","authorityMismatch":"Absence of infrastructure evidence becomes exact quantitative route quality and can feed capacity/resilience calculations.","requiredCorrection":"Represent missing infrastructure condition as unresolved/interval-valued, or declare an explicit scenario prior and preserve that provenance downstream.","owner":"V2X_09_DOMAIN_OWNER"},
+    {"id":"P22-005","severity":"HIGH","path":"src/v2x-09-civilization-economy-city/society-dynamics.js","claimOrField":"legitimacyPpm/cohesionPpm -> LEGITIMACY_AND_COHESION_RISK / FRAGMENTATION_RISK","authorityMismatch":"Missing legitimacy/cohesion is coerced to zero and can generate risk classifications from absent evidence.","requiredCorrection":"Propagate unknown and suppress dependent risk classifications unless inputs are supplied or explicitly scenario-assumed.","owner":"V2X_09_DOMAIN_OWNER"},
+    {"id":"P22-006","severity":"HIGH","path":"src/domains/v1/individuals/runtime.js","claimOrField":"materializeIndividual()/retainIndividual(): household size fallback 4; role fallback resident","authorityMismatch":"Missing household/role evidence is materialized as specific person data and may persist across revisits.","requiredCorrection":"Default to explicit unknown/null or preserve scenario-assumption provenance on materialized and retained fields and at the person envelope.","owner":"INDIVIDUALS_DOMAIN_OWNER"},
+    {"id":"P22-007","severity":"MEDIUM_HIGH","path":"src/v2x-09-civilization-economy-city/core.js","claimOrField":"sourceAuthority() fallback","authorityMismatch":"Missing provenance is automatically upgraded to MODEL_DERIVED_SIMULATION.","requiredCorrection":"Fail closed as UNKNOWN/UNVERIFIED or reject missing authority. Never grant a frozen scientific authority class solely because metadata is absent.","owner":"V2X_09_DOMAIN_OWNER"},
+    {"id":"P22-008","severity":"MEDIUM","path":"src/rendering/microscopic/matter-continuity-provider.js","claimOrField":"positionAuthority=MODEL_DERIVED_OR_PRESENTATION_COORDINATE","authorityMismatch":"A hybrid token merges model-derived and presentation-only position authority outside the frozen authority classes.","requiredCorrection":"Split model/scientific coordinate authority from display-coordinate authority using exact authority fields/classes.","owner":"MATTER_RENDERING_OWNER"},
+    {"id":"P22-009","severity":"HIGH","path":"config/components/v2x-05-deep-planet-science.json + config/components/v2x-living-product-composition.json","claimOrField":"v2x05.deep-planet.provider source-to-Living reachability","authorityMismatch":"The deep-planet provider is shipping-manifest registered but has no demonstrated dependency/consumer in central Living composition/inspector.","requiredCorrection":"Add an authorized Living consumer preserving V2X-05 provenance/uncertainty, then prove visible consequence in the exact one-file artifact/browser.","owner":"CENTRAL_CONVERGENCE"}
   ],
   "promotionReview": [
-    {"lane":"V2X-15","branch":"research/v2.0-15-astronomy-planetology-frontier-2026-09-07","headSha":"1d98dfe8602278d34e27d03ede94921b5625ff73","headTree":"7b8630c4ecb49bf31d93ed5d44704947ca3ad8d4","baseRelation":"descendant_of_authorized_base","verdict":"AUTHORITY_CONSERVATIVE_NO_INFLATION_DETECTED","evidence":"research/v2x/PROMOTION_PACKETS.json preserves forbidden claims and prerequisite gates; no universal stability, GCM/weather/canonical climate, or canonical rewrite is promoted."},
-    {"lane":"V2X-16","branch":"research/v2x-16-life-civ-matter-frontier-2026-09-07","headSha":"9ba4d2ec2d727d99208d40fe782d910bbe90cbfe","headTree":"7354ce6a747e677549e954851e4e4bf6a74de213","baseRelation":"descendant_of_authorized_base","verdict":"AUTHORITY_CONSERVATIVE_NO_INFLATION_DETECTED","evidence":"research/v2x/reference/SCIENTIFIC_CONTRACT.md and HARVEST_LEDGER.json keep research provisional/noncanonical, distinguish source/derived/presentation evidence, and require unknown to remain unknown."}
+    {"lane":"V2X-15","branch":"research/v2.0-15-astronomy-planetology-frontier-2026-09-07","headSha":"1d98dfe8602278d34e27d03ede94921b5625ff73","headTree":"7b8630c4ecb49bf31d93ed5d44704947ca3ad8d4","verdict":"AUTHORITY_CONSERVATIVE_NO_INFLATION_DETECTED"},
+    {"lane":"V2X-16","branch":"research/v2x-16-life-civ-matter-frontier-2026-09-07","headSha":"9ba4d2ec2d727d99208d40fe782d910bbe90cbfe","headTree":"7354ce6a747e677549e954851e4e4bf6a74de213","verdict":"AUTHORITY_CONSERVATIVE_NO_INFLATION_DETECTED"}
   ],
-  "sourceToArtifactReachability": [
-    {"capability":"V2X Living context inspector science claims","source":"src/bootstrap/product/v2x-context-inspector.js","shippingManifest":"config/components/v2x-living-product-composition.json","oneFileBuild":"AUTHORIZED_BASE_HOSTED_BUILD_STEP_PASS","runtimeConsumer":"Living product composition/context inspector","visibleConsequence":"SOURCE_PATH_PRESENT_BUT_AUTHORITY_DISCLOSURE_FALSIFIED","persistenceRevisit":"APPLICABLE_TO_INDIVIDUALS_BUT_AUTHORITY_SEMANTICS_FALSIFIED","exactArtifactBrowserEvidence":"WITHHELD_BROWSER_STEP_FAILED"},
-    {"capability":"V2X-05 deep planet science","source":"src/v2x-05-deep-planet-science/","shippingManifest":"config/components/v2x-05-deep-planet-science.json","oneFileBuild":"AUTHORIZED_BASE_HOSTED_BUILD_STEP_PASS","runtimeConsumer":"MISSING_FROM_CENTRAL_LIVING_COMPOSITION","visibleConsequence":"NOT_PROVEN","persistenceRevisit":"NOT_PROVEN","exactArtifactBrowserEvidence":"NOT_ELIGIBLE_UNTIL_CONSUMER_EXISTS"}
-  ],
-  "authorizedBaseHostedWorkflow": {"workflowRunId":34163623588,"jobId":101870265013,"conclusion":"FAILURE","passedBeforeBrowser":["Build deterministic artifact","Verify generated artifact contract","Verify deterministic clean rebuild","Verify embedded assets","Validate runtime architecture","Enforce source/rendered budgets","Check mandatory V1 subsystem ownership","Check authoritative V1 fidelity gate","Run deterministic test suites","Check universe breadth targets"],"failedStep":"Run headless browser tests","postFailureConsequence":"Exact artifact source-of-truth/deployment packaging steps were not established; exact-artifact browser science evidence is not claimed."},
-  "auditOracle": {"files":["tests/audit/v2-science-authority-oracle.mjs","tests/audit/v2-science-authority-oracle-tests.mjs"],"commands":["node --check tests/audit/v2-science-authority-oracle.mjs","node --check tests/audit/v2-science-authority-oracle-tests.mjs","node tests/audit/v2-science-authority-oracle-tests.mjs","node tests/audit/v2-science-authority-oracle.mjs --strict --json"],"localHarnessValidation":{"status":"PASS","checks":8,"cleanFixtureFindings":0,"adversarialFixtureFindings":9,"strictAdversarialExitCode":1,"missingInputBehavior":"FAIL_CLOSED"},"exactAuthorizedSourceLocalExecution":false,"exactAuthorizedSourceLocalExecutionReason":"The execution container could not resolve github.com; exact source inspection and commit/tree authentication used the GitHub connector instead. This limitation is not represented as a source-level PASS."},
-  "knownExternalLaneBlockers": ["P22-001/P22-002/P22-009 require central Living/renderer/composition edits outside this audit lane ownership.","P22-003/P22-004/P22-005/P22-006/P22-007/P22-008 require production-domain owner corrections outside evidence/tests-only ownership.","Exact-artifact browser proof must be rerun after convergence repairs; the authorized base browser step is red."],
-  "liveBaseRecord": {"path":"docs/parallel/V2_PARALLEL_BASE_CURRENT.json","observedOnConvergenceSha":"3bb6cdcf1d0f932bea831b32fd6e5f21eb589088","status":"READY_FOR_MASSIVE_PARALLEL_EXECUTION","parallelLaunchStatus":"FULL","baseSha":"2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7","baseTree":"99e6b5ff6229d9c34d381e778c5689bf2367d256","authorizedPrompts":"01-23","matchesAuthorizedBase":true}
+  "auditOracle": {
+    "oracle": "tests/audit/v2-science-authority-oracle.mjs",
+    "tests": "tests/audit/v2-science-authority-oracle-tests.mjs",
+    "canonicalRunnerHook": "tests/run-node-tests.mjs",
+    "runnerDelta": "ONE_ADDITIVE_IMPORT_LINE",
+    "fixtureValidation": {"status":"PASS","checks":9,"cleanFixtureFindings":0,"adversarialFixtureFindings":9,"strictAdversarialExitCode":1,"missingInputBehavior":"FAIL_CLOSED"},
+    "exactRepositorySourceExecution": {
+      "performed": true,
+      "headSha": "4d7d82330571a95ec90074ea3bc69fce679013cb",
+      "workflowRunId": 34216924172,
+      "jobId": 102030768211,
+      "nodeVersion": "24.20.0",
+      "exactSourceIdentity": "PASS",
+      "npmTest": "PASS",
+      "reproducibleBuild": "PASS",
+      "oracleStatus": "PASS",
+      "checks": 9,
+      "liveFindingCount": 9,
+      "liveFindingIds": ["P22-001","P22-002","P22-003","P22-004","P22-005","P22-006","P22-007","P22-008","P22-009"],
+      "productionMutationPerformed": false
+    }
+  },
+  "exactArtifact": {
+    "v2ParallelBaseArtifactAudit": "PASS",
+    "artifactBytes": 2544756,
+    "artifactSha256": "4c01a0d9900e89f5e2a0c2ea7ce3c2b418815e264ccbefdb8a958c2b11951c71",
+    "manifestCount": 292,
+    "v2xReachableCount": 80,
+    "browserScienceEvidence": "NOT_ESTABLISHED_EXTERNAL_PRE_BROWSER_WITNESS_FAILURE"
+  },
+  "externalFailureProof": {
+    "auditHead": {
+      "sha": "4d7d82330571a95ec90074ea3bc69fce679013cb",
+      "workflowRunId": 34216924172,
+      "jobId": 102030768211,
+      "failedStep": "Living V2X context inspector witness",
+      "error": "V2X-09 module set including advanced composition required",
+      "browserSteps": "SKIPPED_AFTER_EXTERNAL_WITNESS_FAILURE"
+    },
+    "unchangedConvergenceBase": {
+      "sha": "8767e81d953a7d6c2bce334749c609d9b1be0805",
+      "tree": "f9a6d9fb26cf624cdcea59bc03ae1ac3417eb4cd",
+      "workflowRunId": 34213950873,
+      "jobId": 102021177474,
+      "failedStep": "Living V2X context inspector witness",
+      "independentSameFailure": true
+    },
+    "classification": "EXTERNAL_TO_SCIENCE_AUDIT_LANE"
+  },
+  "externalProductionDependencies": {
+    "CENTRAL_CONVERGENCE": ["P22-001","P22-002","P22-009"],
+    "V2X_08_DOMAIN_OWNER": ["P22-003"],
+    "V2X_09_DOMAIN_OWNER": ["P22-004","P22-005","P22-007"],
+    "INDIVIDUALS_DOMAIN_OWNER": ["P22-006"],
+    "MATTER_RENDERING_OWNER": ["P22-008"],
+    "exactBrowserCertification": "Requires external Living context-inspector witness repair before browser stages can execute."
+  },
+  "completionLaw": {
+    "ownedAuditImplementationComplete": true,
+    "exactSourceAuditExecuted": true,
+    "canonicalRepositoryTestPathIncludesAudit": true,
+    "temporaryOrDeadLaneWorkRemaining": false,
+    "productionPathsModified": false,
+    "integrationReady": true
+  }
 }
