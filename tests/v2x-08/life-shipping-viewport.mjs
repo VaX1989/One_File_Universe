@@ -89,7 +89,6 @@ assert.equal(changed.status, 'STATE_RESOLUTION_REQUIRED', 'revisit must not pret
 assert.equal(changed.persistenceAuthorityClaimed, false);
 
 state = createLifeState(input('p4:life-shipping:resource'));
-
 const preEvolution = adapter.buildViewportPacket({ regionId: 'r-life', viewportKey: 'local:evolution', maxSamples: 6, quality: 'HIGH' });
 state = applyLineageEvent(state, {
   type: 'SPECIATION',
@@ -154,4 +153,15 @@ assert.equal(reachability.runtimeExport, 'createLifeShippingAdapter');
 assert.equal(reachability.exactArtifactEvidenceStatus, 'LANE_BUNDLE_AND_ONE_FILE_INJECTION_PROVEN__CENTRAL_MANIFEST_AND_LIVING_WIRING_REQUIRED');
 assert.ok(reachability.sourceChain.includes('src/v2x-08-life-ecology-evolution-embodiment/shipping-adapter.js'));
 assert.ok(reachability.sourceChain.at(-1).endsWith('/shipping-bundle.mjs'));
-console.log(`V2X-08 Life 2.0 shipping viewport: PASS (maxPacketBytes=${packetBytes})`);
+console.log(JSON.stringify({
+  status: 'PASS',
+  suite: 'v2x08-life-shipping-viewport',
+  deterministicPacketFingerprint: packetA.packetFingerprint,
+  visibleDescriptorCount: packetA.renderDescriptors.length,
+  primitiveFamilies: [...new Set(packetA.renderDescriptors.map((descriptor) => descriptor.primitiveFamily))].sort(),
+  absentReason: empty.absenceReason,
+  evolutionDescendantDescriptors: derivedDescriptors.length,
+  maxPacketBytes: packetBytes,
+  antiFallback: 'GENERIC_ELLIPSE_REJECTED',
+  centralAuthorityOverrides: LIFE_V2_SHIPPING_ADAPTER_DESCRIPTOR.centralAuthorityOverrides.length
+}));
