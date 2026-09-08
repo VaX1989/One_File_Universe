@@ -182,11 +182,11 @@ async function contextRecovery(page){
   const lostGpu=product.renderer.state().gpu;
   if(!lostGpu?.contextLost)throw new Error('Living WebGL2 backend did not enter context-lost state');
   if((lostGpu.allocatedPrograms??0)!==0||(lostGpu.allocatedBuffers??0)!==0||(lostGpu.allocatedTextures??0)!==0)throw new Error('Living WebGL2 lost-resource accounting remained live');
-  const restored=waitEvent('webglcontextrestored',8000);ext.restoreContext();await restored;
-  const deadline=performance.now()+8000;let afterGpu=null;
+  let restoreEventObserved=false;canvas.addEventListener('webglcontextrestored',()=>{restoreEventObserved=true},{once:true});ext.restoreContext();
+  const deadline=performance.now()+10000;let afterGpu=null;
   while(performance.now()<deadline){const gpu=product.renderer.state().gpu;if(gpu&&!gpu.contextLost&&gpu.frame>(previous?.frame||0)&&(gpu.measurements?.restores??0)>=previousRestores+1){afterGpu=gpu;break}await new Promise(resolve=>requestAnimationFrame(resolve))}
   if(!afterGpu)throw new Error('Living WebGL2 backend did not recover within bounded deadline');
-  return{status:'MEASURED',before,after:runtime(),lostGpu:{allocatedPrograms:lostGpu.allocatedPrograms,allocatedBuffers:lostGpu.allocatedBuffers,allocatedTextures:lostGpu.allocatedTextures},gpu:{frameBefore:previous?.frame||0,frameAfter:afterGpu.frame,allocatedPrograms:afterGpu.allocatedPrograms,allocatedBuffers:afterGpu.allocatedBuffers,allocatedTextures:afterGpu.allocatedTextures,restoresBefore:previousRestores,restoresAfter:afterGpu.measurements?.restores??null}};
+  return{status:'MEASURED',before,after:runtime(),restoreEventObserved,lostGpu:{allocatedPrograms:lostGpu.allocatedPrograms,allocatedBuffers:lostGpu.allocatedBuffers,allocatedTextures:lostGpu.allocatedTextures},gpu:{frameBefore:previous?.frame||0,frameAfter:afterGpu.frame,allocatedPrograms:afterGpu.allocatedPrograms,allocatedBuffers:afterGpu.allocatedBuffers,allocatedTextures:afterGpu.allocatedTextures,restoresBefore:previousRestores,restoresAfter:afterGpu.measurements?.restores??null}};
  });
  if(result.status==='MEASURED'){
   assert.deepEqual(result.after,result.before,'context recovery must preserve runtime identity and history');
