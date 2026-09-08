@@ -32,20 +32,33 @@
           "The injected V1X camera instance remains the sole mutable camera and continuous-distance authority.",
           "Selection, parent lineage, surface target and history tokens are observed as read-only context and never admitted as world mutations.",
           "Raw wheel line/page normalization is bounded before delegation to the frozen V1X semantic-distance conversion functions.",
-          "Executable rewind is defined only for controller-observed operations whose before/after camera digests form one contiguous verified journal."
+          "Executable rewind is defined only for controller-observed operations whose before/after camera digests form one contiguous verified journal.",
+          "The convergence-owned Living adapter is the only product composition point that binds this controller into the primary viewport; this lane does not own or replace that adapter."
         ],
         "limitations": [
           "Camera paths, reference-frame transforms and cinematic interpolation are presentation-only and are not physical trajectories, orbital phases or scientific position measurements.",
           "Hierarchical local frames preserve bounded reversible presentation context; this provider does not claim one globally precise floating-point coordinate across cosmic-to-microscopic scales.",
           "External camera commands, external selection observations and spatial mutations that invalidate a reference-frame return witness fail closed by discarding stale reverse capability.",
           "Rewind rollback is compensating presentation recovery over the frozen camera API; it is not a canonical transaction and does not rewrite history.",
-          "This additive lane does not commandeer the convergence-owned Living renderer or central input router; those consumers must adopt the exposed controller/provider through their owned seam."
+          "This additive lane does not commandeer the convergence-owned Living renderer or central input router; exact-artifact browser evidence is therefore consumed from the convergence-owned Living path rather than created through a second viewport."
         ],
         "evidence": [
           {
             "id": "v2x02.travel.fast",
             "kind": "PRESENTATION_TEST",
             "digest": "946ef2859304de0c78ad5b17f73aec121d6f4766c1ffab6a3fde719970b5107e"
+          },
+          {
+            "id": "v2x02.travel.registry",
+            "kind": "INTEGRATION_TEST"
+          },
+          {
+            "id": "v2x02.travel.living-authority",
+            "kind": "LIVING_CONSUMER_WITNESS"
+          },
+          {
+            "id": "v2x02.travel.exact-artifact-browser",
+            "kind": "EXACT_ARTIFACT_BROWSER_WITNESS"
           }
         ]
       },
@@ -71,7 +84,9 @@
       },
       "evidence": [
         {"id": "v2x02.travel.fast", "tier": "FAST_LOCAL"},
-        {"id": "v2x02.travel.registry", "tier": "INTEGRATION"}
+        {"id": "v2x02.travel.registry", "tier": "INTEGRATION"},
+        {"id": "v2x02.travel.living-authority", "tier": "INTEGRATION"},
+        {"id": "v2x02.travel.exact-artifact-browser", "tier": "LANE_TARGETED"}
       ],
       "mandatory": false
     }
