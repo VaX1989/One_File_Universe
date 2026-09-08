@@ -1,9 +1,11 @@
 import fs from 'node:fs';
 import vm from 'node:vm';
 import assert from 'node:assert/strict';
+import {execFileSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
 
 const context=vm.createContext({console});
-for(const name of ['core.js','economy-init.js','economy-step.js','institutions.js','morphology.js','index.js']){
+for(const name of ['core.js','economy-init.js','economy-step.js','institutions.js','morphology.js','production-network.js','society-dynamics.js','urban-evolution.js','advanced.js','index.js']){
   const source=fs.readFileSync(new URL('../../src/v2x-09-civilization-economy-city/'+name,import.meta.url),'utf8');
   vm.runInContext(source,context,{filename:'v2x09-'+name});
 }
@@ -42,8 +44,8 @@ function fixture({abandoned=false,lowTech=false,dry=false}={}){
     factions:[{factionId:'f-1',polityId:'polity-a',status:'ACTIVE'}],
     relations:[{relationId:'rel-1',aPolityId:'polity-a',bPolityId:'polity-b',kind:'COOPERATION'}],
     infrastructure:[
-      {infrastructureId:'road-1',kind:'MAJOR_CORRIDOR',fromSettlementId:'delta-city',toSettlementId:'ridge-town',status:'ACTIVE',builtEpoch:10,lastActiveEpoch:20},
-      {infrastructureId:'road-2',kind:'ROUTE_CORRIDOR',fromSettlementId:'delta-city',toSettlementId:'harbor-village',status:'ACTIVE',builtEpoch:12,lastActiveEpoch:20}
+      {infrastructureId:'road-1',kind:'MAJOR_CORRIDOR',fromSettlementId:'delta-city',toSettlementId:'ridge-town',status:'ACTIVE',conditionPpm:900000,builtEpoch:10,lastActiveEpoch:20,authority:'MODEL_DERIVED_SIMULATION'},
+      {infrastructureId:'road-2',kind:'ROUTE_CORRIDOR',fromSettlementId:'delta-city',toSettlementId:'harbor-village',status:'ACTIVE',conditionPpm:820000,builtEpoch:12,lastActiveEpoch:20,authority:'MODEL_DERIVED_SIMULATION'}
     ],
     history:{proposals:[
       {eventProposalId:'ev-found-delta',epoch:0,type:'SETTLEMENT_FOUNDATION',targetIds:['delta-city']},
@@ -93,6 +95,32 @@ const render=API.cityRenderPlan(state,{settlementId:'delta-city'});
 check(render.status==='PROJECTED'&&render.commands.some(x=>x.kind==='DISTRICT_CUE')&&render.commands.some(x=>x.kind==='HISTORY_LAYER_CUE'),'render plan exposes bounded district/history primitives');
 check(render.commands.every(x=>x.authority==='PRESENTATION_ONLY')&&render.physicalGeometryClaim===false&&render.requiresConvergenceOwnerComposition===true,'render plan preserves presentation-only and shared-renderer ownership boundaries');
 
+const packet1=API.civilizationEmbodimentPacket(state,s1,{settlementId:'delta-city'}),packet2=API.civilizationEmbodimentPacket(state,s1,{settlementId:'delta-city'});
+eq(packet1,packet2,'civilization embodiment packet deterministic');
+check(packet1.contract===API.EMBODIMENT_CONTRACT&&packet1.status==='PROJECTED'&&packet1.noLegacyFallback===true&&packet1.legacyCityRenderPlanUsed===false,'V2 embodiment contract projects without legacy cue fallback');
+for(const kind of ['SETTLEMENT_EMBODIMENT','DISTRICT_EMBODIMENT','HISTORICAL_STATE_EMBODIMENT','RESOURCE_RELATIONSHIP_EMBODIMENT','ROUTE_NETWORK_EMBODIMENT','INFRASTRUCTURE_EMBODIMENT'])check(packet1.commandKinds.includes(kind),'embodiment includes '+kind);
+check(packet1.commands.every(x=>x.authority==='PRESENTATION_ONLY'),'all embodiment commands remain presentation-only');
+check(packet1.claims.physicalCityGeometryClaim===false&&packet1.claims.physicalTransportGeometryClaim===false&&packet1.claims.physicalResourceGeometryClaim===false&&packet1.claims.canonicalHistoryClaim===false,'embodiment refuses unsupported physical/canonical claims');
+check(packet1.requiresAdvancedComposition===true&&packet1.requiresV2x07PlacementReconciliation===true&&packet1.requiresConvergenceOwnerComposition===true,'embodiment preserves advanced-model, V2X-07 placement and convergence composition boundaries');
+check(packet1.commandCount<=packet1.limits.commands&&packet1.operations<=packet1.limits.operations,'embodiment respects hard command and operation budgets');
+const settlementBody=packet1.commands.find(x=>x.kind==='SETTLEMENT_EMBODIMENT');
+check(settlementBody.visualState==='ACTIVE'&&settlementBody.urbanFamily==='PORT_CLUSTER'&&settlementBody.isolationRiskPpm!==null,'visible settlement body is causally connected to current state, urban model and resilience');
+const routeBody=packet1.commands.find(x=>x.kind==='ROUTE_NETWORK_EMBODIMENT'&&x.sourceEdgeId==='edge-1');
+check(routeBody&&routeBody.sourceInfrastructureIds.includes('road-1')&&routeBody.physicalPathClaim===false,'route embodiment carries modeled infrastructure witness without inventing a physical path');
+const resourceBody=packet1.commands.find(x=>x.kind==='RESOURCE_RELATIONSHIP_EMBODIMENT');
+check(resourceBody&&resourceBody.relationship==='SAME_MODELED_REGION_ACCESS'&&resourceBody.physicalResourceGeometryClaim===false,'resource relationship is spatially expressible but not promoted to deposit geometry');
+const historicalBody=packet1.commands.find(x=>x.kind==='HISTORICAL_STATE_EMBODIMENT');
+check(historicalBody&&historicalBody.canonicalHistoryClaim===false&&historicalBody.physicalArchaeologyClaim===false,'visible historical state retains proposal/presentation authority');
+const noFallback=API.civilizationEmbodimentPacket(state,null,{settlementId:'delta-city'});
+check(noFallback.status==='ADVANCED_MODEL_REQUIRED'&&noFallback.commands.length===0&&noFallback.noLegacyFallback===true,'adversarial missing-advanced case fails closed instead of silently reverting to v1 schematic cues');
+
+const damagedState=fixture();damagedState.infrastructure[0]={...damagedState.infrastructure[0],status:'DAMAGED',conditionPpm:180000};
+const damagedEconomy=API.stepEconomy(damagedState,API.initializeEconomy(damagedState),{epochStep:1});
+const damagedPacket=API.civilizationEmbodimentPacket(damagedState,damagedEconomy,{settlementId:'delta-city'});
+check(damagedPacket.commands.some(x=>x.kind==='INFRASTRUCTURE_EMBODIMENT'&&x.sourceInfrastructureId==='road-1'&&x.visualState==='DAMAGED'),'modeled damaged infrastructure becomes visibly damaged state');
+const abandonedState=fixture({abandoned:true}),abandonedEconomy=API.initializeEconomy(abandonedState),abandonedPacket=API.civilizationEmbodimentPacket(abandonedState,abandonedEconomy,{settlementId:'delta-city'});
+check(abandonedPacket.commands.some(x=>x.kind==='SETTLEMENT_EMBODIMENT'&&x.sourceSettlementId==='delta-city'&&x.visualState==='ABANDONED'),'model-supported abandonment becomes visible without random ruin fabrication');
+
 const dryMorph=API.cityMorphology(fixture({dry:true}));
 check(!dryMorph.settlements.find(x=>x.settlementId==='delta-city').districts.some(x=>x.kind==='PORT_OR_WATER_TERMINAL'),'port omitted without modeled water support');
 const lowMorph=API.cityMorphology(fixture({lowTech:true}));
@@ -104,6 +132,7 @@ check(ruin.historicalLayers.some(x=>x.kind==='ABANDONMENT'),'abandonment visual 
 
 const inspect=API.inspector(state,{settlementId:'delta-city'});
 check(inspect.supported&&inspect.uncertainty.scenarioProbabilityClaim===false&&inspect.uncertainty.canonicalHistoryClaim===false,'inspector exposes authority and uncertainty limitations');
+check(inspect.embodiment.contract===API.EMBODIMENT_CONTRACT&&inspect.embodiment.noLegacyFallback===true&&inspect.embodiment.requiresConvergenceOwnerComposition===true,'inspector exposes exact V2 embodiment hook and authority boundary');
 const absent=API.initializeEconomy({state:'NO_CIVILIZATION_MODEL'});
 check(absent.status==='NO_MODELED_CIVILIZATION','no-civilization case stays honest');
 const absentMorph=API.cityMorphology({state:'NO_CIVILIZATION_MODEL'});
@@ -135,4 +164,14 @@ const over=fixture();
 over.settlements=Array.from({length:49},(_,i)=>({...over.settlements[0],settlementId:'s-'+i}));
 assert.throws(()=>API.initializeEconomy(over),/settlements bound exceeded/);cases++;
 
-console.log(JSON.stringify({status:'PASS',cases,version:API.VERSION,activeCapabilities:t.activeCapabilities.length,impactProposals:s1.impactProposals.length,deltaDistricts:delta.districts.map(x=>x.kind),failureScenarios:failure1.scenarioCount,boundFailureScenarios:boundFailure.scenarioCount,boundFailureOperations:boundFailure.operations}));
+const descriptor=JSON.parse(fs.readFileSync(new URL('../../config/components/v2x-09-civilization-economy-city.json',import.meta.url),'utf8'));
+const apiComponent=descriptor.components.find(x=>x.id==='v2x09.civilization.api');
+check(apiComponent.provides.includes('v2x09.civilization.embodiment-packet')&&apiComponent.dependencies.includes('v2x09.civilization.advanced-api'),'shipping component manifest declares V2 embodiment capability and advanced dependency');
+const repoRoot=fileURLToPath(new URL('../../',import.meta.url));
+execFileSync(process.execPath,['tools/build-ofu-rendering-v09.mjs'],{cwd:repoRoot,stdio:'pipe'});
+const html=fs.readFileSync(new URL('../../dist/One_File_Universe.html',import.meta.url),'utf8');
+const advancedMarker='<script data-ofu-component="v2x09.civilization.advanced-api">',apiMarker='<script data-ofu-component="v2x09.civilization.api">';
+check(html.includes(advancedMarker)&&html.includes(apiMarker)&&html.indexOf(advancedMarker)<html.indexOf(apiMarker),'one-file HTML embeds advanced provider before public API consumer');
+check(html.includes('ofu-v2x-09-civilization-embodiment-packet-1')&&html.includes('civilizationEmbodimentPacket'),'one-file HTML contains V2 embodiment contract and runtime export');
+
+console.log(JSON.stringify({status:'PASS',cases,version:API.VERSION,activeCapabilities:t.activeCapabilities.length,impactProposals:s1.impactProposals.length,deltaDistricts:delta.districts.map(x=>x.kind),embodimentCommands:packet1.commandCount,embodimentKinds:packet1.commandKinds,failureScenarios:failure1.scenarioCount,boundFailureScenarios:boundFailure.scenarioCount,boundFailureOperations:boundFailure.operations}));
