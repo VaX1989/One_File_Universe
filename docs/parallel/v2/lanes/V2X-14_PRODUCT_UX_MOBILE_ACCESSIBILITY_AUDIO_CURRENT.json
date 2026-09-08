@@ -1,50 +1,66 @@
 {
   "schema": "ofu-v2-lane-checkpoint-1",
-  "version": "2026-09-08.1",
+  "version": "2026-09-08.2",
   "lane": "V2X-14",
   "title": "Product 2.0 - Direct Manipulation, Mobile, Accessibility, Discovery and Systemic Audio",
-  "status": "IMPLEMENTED_LOCAL_CONTRACTS_PASS_EXACT_ARTIFACT_BROWSER_REGISTERED",
+  "status": "COMPLETE_WITH_BLOCKERS",
   "branch": "parallel/v2.0-14-product-ux-mobile-accessibility-audio-2026-09-07",
+  "pullRequest": 251,
   "integrationTarget": "integration/v2x-supreme-total-convergence-2026-09-07",
   "authorizedBase": {
     "sha": "2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7",
     "tree": "99e6b5ff6229d9c34d381e778c5689bf2367d256",
     "parallelLaunchStatus": "FULL"
   },
-  "implementationHead": {
-    "sha": "17e28749bc4e7b483f60fbdeb5770092a780b799",
-    "tree": "b2fba19898c8eae2499ea65e9ef837580daa4231"
+  "checkpointParentHead": {
+    "sha": "526b6d71984389d2de4f1131560a26ee7e0ff14f",
+    "tree": "d89680104617b046222b7495dcb53357b844d787",
+    "note": "This is the exact implementation/certification parent of the final checkpoint commit. Authenticate the final checkpoint commit itself from the branch ref and its Git tree; the final commit cannot self-embed its own SHA."
   },
   "authority": {
     "class": "PRESENTATION_ONLY",
     "centralInputRouterOwner": "CONVERGENCE_OWNER",
     "centralCameraTravelOwner": "V2X-02_CONVERGENCE_BINDING",
+    "shippingManifestOwner": "CONVERGENCE_OWNER",
+    "livingViewportOwner": "CONVERGENCE_OWNER",
     "createsSecondNavigationAuthority": false,
     "createsScientificWorldFacts": false,
     "mutatesCanonicalState": false
   },
-  "changedFiles": [
-    "config/components/v2x-14-product-experience.json",
-    "config/components/v2x-14-systemic-audio.json",
-    "src/audio/v2x14/audio-controller.js",
-    "src/product/v2x14/product-experience.css",
-    "src/product/v2x14/product-experience.js",
-    "tests/v2x-14-product-experience/artifact-reachability.mjs",
-    "tests/v2x-14-product-experience/audio-resource-contract.mjs",
-    "tests/v2x-14-product-experience/browser-direct-manipulation.mjs",
-    "tests/v2x-14-product-experience/css-contract.mjs",
-    "tests/v2x-14-product-experience/direct-manipulation-contract.mjs"
-  ],
+  "ownedDiff": {
+    "review": "PASS",
+    "baseComparison": {
+      "base": "2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7",
+      "head": "526b6d71984389d2de4f1131560a26ee7e0ff14f",
+      "aheadBy": 12,
+      "behindBy": 0
+    },
+    "files": [
+      "config/components/v2x-14-product-experience.json",
+      "config/components/v2x-14-systemic-audio.json",
+      "docs/parallel/v2/lanes/V2X-14_PRODUCT_UX_MOBILE_ACCESSIBILITY_AUDIO_CURRENT.json",
+      "src/audio/v2x14/audio-controller.js",
+      "src/product/v2x14/product-experience.css",
+      "src/product/v2x14/product-experience.js",
+      "tests/v2x-14-product-experience/artifact-reachability.mjs",
+      "tests/v2x-14-product-experience/audio-resource-contract.mjs",
+      "tests/v2x-14-product-experience/browser-direct-manipulation.mjs",
+      "tests/v2x-14-product-experience/css-contract.mjs",
+      "tests/v2x-14-product-experience/direct-manipulation-contract.mjs"
+    ],
+    "centralPathsModified": false,
+    "temporaryOrExperimentalWorkRemaining": false,
+    "duplicateNavigationOrProductChrome": false
+  },
   "architecture": {
     "directManipulation": "V2X-14 observes bounded v1LivingProduct input state and attaches passive presentation observers only; real pointer, drag, pinch, wheel, keyboard and click routing remain in convergence-owned Living and V2X-02 camera travel.",
     "responsive": "Presentation-marker-gated Living affordance CSS adds touch-action, overscroll containment, focus visibility, reduced-motion behavior, coarse targets, landscape layout and safe-area handling without duplicate product chrome.",
     "discovery": "Existing read-only bounded discovery observer remains delegated to central Living survey state and activation authority.",
-    "audio": "Existing fail-closed Living audio context remains presentation-only; controller polling is now demand-driven with zero off, muted, zero-volume, hidden or disposed polling and at most one 600ms interval while audio is actually requested."
+    "audio": "Fail-closed Living audio remains presentation-only; controller polling is demand-driven with zero off, muted, zero-volume, hidden or disposed polling and at most one 600 ms interval while audio is actually requested."
   },
   "sourceToArtifact": {
     "source": ["src/product/v2x14/*", "src/audio/v2x14/*"],
     "componentDescriptors": ["config/components/v2x-14-product-experience.json", "config/components/v2x-14-systemic-audio.json"],
-    "shippingManifestOwner": "CONVERGENCE_OWNER",
     "artifact": "dist/One_File_Universe.html",
     "runtimeExports": ["OFU.v2x14ProductExperience", "OFU.v2x14LivingAudioController"],
     "consumer": "v1LivingProduct / #living-view and optional systemic-audio Lab section",
@@ -62,17 +78,41 @@
       {"test": "browser-direct-manipulation.mjs", "status": "PASS_SYNTAX_ONLY"},
       {"test": "artifact-reachability.mjs", "status": "PASS_SYNTAX_ONLY"}
     ],
-    "exactArtifactBrowser": "REGISTERED_REQUIRES_REPOSITORY_BUILD_AND_BROWSER_EXECUTION",
+    "githubExactHead": {
+      "sha": "526b6d71984389d2de4f1131560a26ee7e0ff14f",
+      "node": "24.20.0",
+      "foundationRun": {"id": 34205180062, "status": "PASS"},
+      "supremeConvergenceRun": {
+        "id": 34205180116,
+        "exactSourceIdentity": "PASS",
+        "fullRepositoryTestAndReproducibleBuild": "PASS",
+        "providerActivationBoundary": "FAIL_MODULE_NOT_FOUND",
+        "missingPath": "tests/v2x-convergence/provider-activation-boundary.mjs",
+        "remainingSteps": "SKIPPED_AFTER_CENTRAL_BOUNDARY_FAILURE"
+      }
+    },
+    "exactArtifactBrowser": "REGISTERED_NOT_EXECUTED_BECAUSE_CENTRAL_EXACT_HEAD_WORKFLOW_STOPPED_BEFORE_BROWSER_INSTALL",
     "physicalDevice": "NOT_VERIFIED",
     "realAssistiveTechnology": "NOT_VERIFIED"
+  },
+  "centralIntegration": {
+    "targetSnapshotAtFinalization": {
+      "sha": "3bb6cdcf1d0f932bea831b32fd6e5f21eb589088",
+      "tree": "8b844ecc42aed171c70967f69375465350b52ee7"
+    },
+    "providerActivationBoundaryExistsOnTarget": true,
+    "providerActivationBoundaryPath": "tests/v2x-convergence/provider-activation-boundary.mjs",
+    "dependency": "The central workflow introduced a convergence-owned provider-activation test after the immutable parallel base. Exact-head testing of a frozen-base lane therefore fails before browser stages because that central-only file is absent from the lane lineage.",
+    "requiredCentralAction": "Integrate or replay the V2X-14 owned commits onto the current convergence target, then run the complete exact integrated-tree V2X Supreme Convergence / release browser certification. Do not copy the central provider-activation test into this lane."
   },
   "falsification": {
     "sourceScanRejectsLaneInputAuthority": ["preventDefault(", ".travelBy(", ".setNavigationCoordinate(", ".rotate(", ".keyboard("],
     "artifactFallbackMarkersRequired": ["ofu-v2x14-direct-manipulation-observer-1", "data-v2x14-input-owner", "touch-action:none", "overscroll-behavior:contain", "maxConcurrentPollTimers", "POLL_INTERVAL_MS"],
     "duplicateLivingChromeRejected": ["v2x14-skip-link", "v2x14-live-location", "v2x14-context", "v2x14-discovery"]
   },
-  "remaining": [
-    "Execute the registered exact-head one-file build and Chromium desktop/mobile portrait/mobile landscape browser journeys in repository CI or another environment with the complete repository and Playwright browser runtime.",
-    "Physical-device touch and real assistive-technology evidence remain explicitly unclaimed."
+  "remainingBlockers": [
+    "CENTRAL_CI_BASE_COMPOSITION: exact-head V2X Supreme Convergence references a convergence-owned provider-activation test that post-dates the immutable parallel base; integrate onto current convergence before rerunning the full browser/release stack.",
+    "EVIDENCE_LIMITATION: registered exact-artifact Chromium desktop/mobile portrait/mobile landscape journey did not execute because the central workflow stopped before Playwright installation.",
+    "EVIDENCE_LIMITATION: physical-device touch and real screen-reader/assistive-technology execution remain explicitly unverified."
   ]
 }
