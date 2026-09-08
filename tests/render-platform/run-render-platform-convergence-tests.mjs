@@ -90,7 +90,25 @@ const before=consumerGl._draws().total;
 const witness=C.render(packet);
 eq(witness.backend,'V2X13_WEBGL2_PIXEL_CONSUMER');eq(witness.pixelConsumer,'V2X-13');eq(witness.canvas2dFallbackUsed,false);eq(witness.primaryRendererAuthority,false);eq(witness.cameraAuthority,'EXTERNAL_READ_ONLY');eq(witness.sceneCompositionAuthority,'EXTERNAL_READ_ONLY');eq(witness.semanticScaleAuthority,'EXTERNAL_READ_ONLY');eq(witness.aaMode,'FXAA');eq(witness.depthTest,true);eq(witness.lighting,true);eq(witness.atmospherePresentation,true);eq(witness.geometryDrawCalls,9);eq(witness.drawCalls,10);ok(consumerGl._draws().total-before===10,'all geometry plus FXAA must hit WebGL draw calls');
 for(const domain of OFU.renderWebGL2Resources.DOMAINS)eq(witness.domainCounts[domain],1,'domain '+domain+' must be GPU-consumed');
-eq(C.snapshot().resourceManager.accountingExact,true);ok(C.snapshot().resourceManager.trackedBytes<=C.snapshot().resourceManager.maxTrackedBytes);eq(C.snapshot().retainedFrameBytes,witness.frameBytes);ok(witness.packetFingerprint.length===8);
+eq(C.snapshot().resourceManager.accountingExact,true);ok(C.snapshot().resourceManager.trackedBytes<=C.snapshot().resourceManager.maxTrackedBytes);eq(C.snapshot().retainedFrameBytes,witness.frameBytes);ok(/^[0-9a-f]{16}$/.test(witness.packetFingerprint),'fingerprint must be a 64-bit hexadecimal witness');
+eq(witness.packetFingerprint,'6cba86fbdc775545','exact normalized-frame fingerprint drift');
+
+// Pixel-witness integrity: every render-affecting field that was previously omitted must change the fingerprint.
+const fingerprintGl=fakeGL(),FC=OFU.renderWebGL2Resources.createFrameConsumer(fingerprintGl,{maxDraws:16,maxVertices:128,maxIndices:128,maxFrameBytes:65536,maxRetainedBytes:65536,maxTrackedBytes:4194304,maxTextureDimension:1024});
+const fingerprintBase={...packet,aaMode:'NONE'};
+const baseFingerprint=FC.render(fingerprintBase).packetFingerprint;
+const fingerprintVariants=[
+  {...fingerprintBase,viewport:{...fingerprintBase.viewport,width:639}},
+  {...fingerprintBase,clearColor:[.02,.02,.04,1]},
+  {...fingerprintBase,lighting:{...fingerprintBase.lighting,direction:[.3,-1,.4]}},
+  {...fingerprintBase,lighting:{...fingerprintBase.lighting,color:[.9,.92,.78]}},
+  {...fingerprintBase,lighting:{...fingerprintBase.lighting,intensity:1.5}},
+  {...fingerprintBase,lighting:{...fingerprintBase.lighting,ambient:.1}},
+  {...fingerprintBase,draws:fingerprintBase.draws.map((d,i)=>i===0?{...d,material:{...d.material,pointSize:5}}:d)}
+];
+for(const changed of fingerprintVariants)ok(FC.render(changed).packetFingerprint!==baseFingerprint,'render-affecting mutation must change fingerprint');
+eq(FC.render(fingerprintBase).packetFingerprint,baseFingerprint,'identical normalized packet must reproduce fingerprint');
+eq(FC.dispose().resourceManager.accountingExact,true);
 
 // Falsification: malformed or excessive frames fail before any pixel draw, never falling back to Canvas2D.
 const drawsBeforeInvalid=consumerGl._draws().total;

@@ -1,9 +1,9 @@
 (function(root){
 'use strict';
 const O=root.OFU=root.OFU||{};
-const VERSION='ofu-render-webgl2-resources-5';
+const VERSION='ofu-render-webgl2-resources-6';
 const AUTHORITY='PRESENTATION_ONLY';
-const FRAME_VERSION='ofu-render-webgl2-frame-consumer-1';
+const FRAME_VERSION='ofu-render-webgl2-frame-consumer-2';
 const FRAME_BACKEND='V2X13_WEBGL2_PIXEL_CONSUMER';
 const DOMAINS=Object.freeze(['MACRO','SYSTEM','PLANET','TERRAIN','WATER','VEGETATION','ORGANISM','STRUCTURE','MATTER']);
 const DOMAIN_SET=new Set(DOMAINS);
@@ -62,9 +62,10 @@ precision highp float;
 out vec4 outColor;uniform vec3 uColor;uniform float uOpacity;void main(){outColor=vec4(uColor,uOpacity);}`;
 const IDENTITY=Object.freeze([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]);
 function fnvStep(h,b){h^=b;return Math.imul(h,16777619)>>>0}
-function hashString(h,s){s=String(s);for(let i=0;i<s.length;i++){const c=s.charCodeAt(i);h=fnvStep(h,c&255);h=fnvStep(h,c>>>8)}return h}
-function hashTyped(h,v){const bytes=new Uint8Array(v.buffer,v.byteOffset,v.byteLength);for(let i=0;i<bytes.length;i++)h=fnvStep(h,bytes[i]);return h}
-function packetFingerprint(packet){let h=2166136261>>>0;for(const s of [packet.frameId,packet.sceneId,packet.selectionId||'',packet.semanticSignature,packet.aaMode,String(packet.fog)])h=hashString(h,s);h=hashTyped(h,packet.camera.viewProjection);h=hashTyped(h,packet.camera.position);for(const draw of packet.draws){for(const s of [draw.id,draw.domain,draw.primitive,String(draw.lit),String(draw.lod.level),String(draw.lod.transition)])h=hashString(h,s);h=hashTyped(h,draw.positions);if(draw.normals)h=hashTyped(h,draw.normals);if(draw.indices)h=hashTyped(h,draw.indices);h=hashTyped(h,draw.material.baseColor);h=hashTyped(h,draw.material.emissive);h=hashString(h,String(draw.material.roughness));h=hashString(h,String(draw.material.metallic));h=hashString(h,String(draw.material.opacity))}return (h>>>0).toString(16).padStart(8,'0')}
+function hashPairByte(h,b){h[0]=fnvStep(h[0],b);h[1]=fnvStep(h[1],b);return h}
+function hashPairString(h,s){s=String(s);for(let i=0;i<s.length;i++){const c=s.charCodeAt(i);hashPairByte(h,c&255);hashPairByte(h,c>>>8)}hashPairByte(h,255);return h}
+function hashPairTyped(h,v){const bytes=new Uint8Array(v.buffer,v.byteOffset,v.byteLength);for(let i=0;i<bytes.length;i++)hashPairByte(h,bytes[i]);hashPairByte(h,254);return h}
+function packetFingerprint(packet){const h=[2166136261>>>0,3339675911>>>0];for(const s of [packet.frameId,packet.sceneId,packet.selectionId||'',packet.semanticSignature,packet.aaMode,String(packet.fog),String(packet.viewport.width),String(packet.viewport.height)])hashPairString(h,s);hashPairTyped(h,packet.clearColor);hashPairTyped(h,packet.camera.viewProjection);hashPairTyped(h,packet.camera.position);hashPairTyped(h,packet.lighting.direction);hashPairTyped(h,packet.lighting.color);for(const s of [packet.lighting.intensity,packet.lighting.ambient])hashPairString(h,String(s));for(const draw of packet.draws){for(const s of [draw.id,draw.domain,draw.primitive,String(draw.lit),String(draw.lod.level),String(draw.lod.transition)])hashPairString(h,s);hashPairTyped(h,draw.positions);if(draw.normals)hashPairTyped(h,draw.normals);if(draw.indices)hashPairTyped(h,draw.indices);hashPairTyped(h,draw.material.baseColor);hashPairTyped(h,draw.material.emissive);for(const s of [draw.material.roughness,draw.material.metallic,draw.material.opacity,draw.material.pointSize])hashPairString(h,String(s))}return h.map(x=>(x>>>0).toString(16).padStart(8,'0')).join('')}
 function cloneNormalizedPacket(packet){return Object.freeze({...packet,camera:Object.freeze({viewProjection:new Float32Array(packet.camera.viewProjection),position:new Float32Array(packet.camera.position)}),clearColor:new Float32Array(packet.clearColor),lighting:Object.freeze({...packet.lighting,direction:new Float32Array(packet.lighting.direction),color:new Float32Array(packet.lighting.color)}),draws:Object.freeze(packet.draws.map(draw=>Object.freeze({...draw,positions:new Float32Array(draw.positions),normals:draw.normals?new Float32Array(draw.normals):null,indices:draw.indices?new Uint32Array(draw.indices):null,material:Object.freeze({...draw.material,baseColor:new Float32Array(draw.material.baseColor),emissive:new Float32Array(draw.material.emissive)}),lod:Object.freeze({...draw.lod})})))})}
 function createFrameConsumer(initialGl,{canvas=null,maxDraws=2048,maxVertices=1048576,maxIndices=3145728,maxFrameBytes=33554432,maxRetainedBytes=33554432,maxTrackedBytes=268435456,maxTextureDimension=8192}={}){
  if(!initialGl)fail('WEBGL2','context required');
@@ -96,7 +97,6 @@ function createFrameConsumer(initialGl,{canvas=null,maxDraws=2048,maxVertices=10
   return Object.freeze({version:FRAME_VERSION,authority:AUTHORITY,frameId,sceneId,selectionId,semanticSignature,viewport:Object.freeze({width,height}),camera,clearColor,aaMode,fog,lighting,draws:Object.freeze(draws),frameBytes,vertices,indices});
  }
  function essentialUniform(program,name){const loc=gl.getUniformLocation(program,name);if(loc==null)fail('SHADER_INTERFACE','missing uniform '+name);return loc}
- function optionalUniform(program,name){return gl.getUniformLocation(program,name)}
  function setMatrix(program,name,value){const loc=essentialUniform(program,name);gl.uniformMatrix4fv(loc,false,value)}
  function program(id,vertexSource,fragmentSource){let p=programs.get(id);if(p)return p;p=manager.createProgram(id,{vertexSource,fragmentSource});programs.set(id,p);return p}
  function flatProgram(){return program('v2x13.program.flat',FLAT_VERTEX,FLAT_FRAGMENT)}
