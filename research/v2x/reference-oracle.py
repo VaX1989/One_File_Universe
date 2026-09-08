@@ -2,9 +2,10 @@
 """Independent numerical and adversarial witnesses for V2X-15 research kernels.
 
 Numerical values are computed independently in Python. A small Node subprocess is
-also used to falsify two contract regressions that cannot be detected by a
-cross-language scalar oracle alone: MIST-II rotating-family mass semantics and
-non-synthetic atmospheric-escape threshold provenance.
+also used to falsify contract regressions that cannot be detected by a
+cross-language scalar oracle alone: MIST-II rotating-family mass semantics,
+non-synthetic atmospheric-escape threshold provenance, and Nu-Rayleigh onset
+provenance.
 """
 from __future__ import annotations
 
@@ -111,6 +112,7 @@ def adversarial_contract_witnesses() -> dict[str, str]:
 import assert from 'node:assert/strict';
 import { mistInterpolationContract } from './research/v2x/astronomy/stellar-contracts.mjs';
 import { classifyEscapeRegime } from './research/v2x/planetology/oracles.mjs';
+import { nusseltRayleighScenario } from './research/v2x/planetology/bulk-and-geodynamics.mjs';
 const domain={ageMinLog10Years:5,ageMaxLog10Years:10.3,massMinSolar:0.1,massMaxSolar:300,fehMin:-3,fehMax:0.5};
 const lowMassRotating=mistInterpolationContract({releaseId:'MIST-II-2026',gridHash:'sha256:synthetic',gridDomain:domain,ageLog10Years:9,initialMassSolar:1,feh:0,alphaFe:0.2,rotationFraction:0.4});
 assert.equal(lowMassRotating.status,'RESEARCH_REQUIRED');
@@ -122,7 +124,16 @@ assert.equal(anonymousThresholds.status,'RESEARCH_REQUIRED');
 assert.equal(anonymousThresholds.reason,'EXPLICIT_ESCAPE_THRESHOLDS_REQUIRED_FOR_NON_SYNTHETIC_THRESHOLD_SET');
 const explicitThresholds=classifyEscapeRegime({jeansParameter:2,thresholdSetId:'versioned-set',thresholdSetHash:'sha256:versioned',hydrodynamicJeansMax:3,jeansLikeMin:30,boilOffJeansMax:20});
 assert.equal(explicitThresholds.regime,'HYDRODYNAMIC_ESCAPE_CANDIDATE');
-process.stdout.write(JSON.stringify({mistLowMassRotation:lowMassRotating.status,mistFullRotation:fullRotation.status,anonymousEscapeThresholds:anonymousThresholds.status,explicitEscapeThresholds:explicitThresholds.regime}));
+const anonymousNuRa=nusseltRayleighScenario({rayleighNumber:1e7,regime:'MOBILE_LID_LIKE'});
+assert.equal(anonymousNuRa.status,'RESEARCH_REQUIRED');
+assert.equal(anonymousNuRa.reason,'CRITICAL_RAYLEIGH_AND_PARAMETER_PROVENANCE_REQUIRED_FOR_PHYSICAL_NU_RA_SCENARIO');
+const belowOnset=nusseltRayleighScenario({rayleighNumber:1000,regime:'MOBILE_LID_LIKE',criticalRayleighNumber:1708,parameterSetId:'synthetic-convection',parameterSetHash:'sha256:synthetic-convection'});
+assert.equal(belowOnset.status,'RESEARCH_REQUIRED');
+assert.equal(belowOnset.reason,'AT_OR_BELOW_DECLARED_CONVECTION_ONSET');
+const supercritical=nusseltRayleighScenario({rayleighNumber:1e7,regime:'MOBILE_LID_LIKE',criticalRayleighNumber:1708,parameterSetId:'synthetic-convection',parameterSetHash:'sha256:synthetic-convection'});
+assert.equal(supercritical.status,'MODEL_DERIVED_SCENARIO');
+assert.equal(supercritical.physicalNusseltAuthorized,false);
+process.stdout.write(JSON.stringify({mistLowMassRotation:lowMassRotating.status,mistFullRotation:fullRotation.status,anonymousEscapeThresholds:anonymousThresholds.status,explicitEscapeThresholds:explicitThresholds.regime,anonymousNuRa:anonymousNuRa.status,belowOnsetNuRa:belowOnset.status,supercriticalNuRa:supercritical.status}));
 """
     completed = subprocess.run(
         ["node", "--input-type=module", "-e", script],
