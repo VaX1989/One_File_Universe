@@ -1,6 +1,6 @@
 {
   "schema": "ofu-v2-integration-ledger-1",
-  "version": "2026-09-08.2",
+  "version": "2026-09-08.3",
   "status": "CENTRAL_CONVERGENCE_ACTIVE_RELEASE_NOT_READY",
   "parallelBase": {
     "sha": "2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7",
@@ -15,14 +15,27 @@
     {"id":"V2-01-01","kind":"PEER_PARALLEL_LAUNCH_AUTHENTICATION","scope":"docs/parallel/V2_PARALLEL_BASE_CURRENT.json","reason":"Persist the Prompt-00 peer handoff authorizing Prompts 01-23 from immutable base 2977c11/99e6b5 while explicitly preserving RELEASE_CERTIFICATION=NOT_READY and unknown artifact byte/hash evidence."},
     {"id":"V2-01-02","kind":"PROVIDER_ACTIVATION_RECONCILIATION","scope":"V2X provider component catalogs 02/03/05/06/08/10/12 plus PX conformance discovery","sourceCheckpoint":"PR-238@d3e43e134bc75dc45db3c6ed290b7d490ade2f26","reason":"Semantic-port the ownership-safe reconciliation onto the newer convergence tree: unbound frontier catalogs remain conformance-visible but cannot auto-register as active shipping providers or bypass the release graph seal."},
     {"id":"V2-01-03","kind":"WORKFLOW_REACHABILITY_HARDENING","scope":".github/workflows/v2x-supreme-convergence.yml","reason":"Run the provider activation boundary on exact heads and on reconciliation PRs targeting the central convergence writer while preserving central authority, artifact, Living composition and RELEASE --exact stages."},
-    {"id":"V2-01-04","kind":"NUMERIC_ORACLE_REPAIR","scope":"tests/v2x-02-camera-spatial-travel/real-camera-journey-numeric-wrapper.mjs + config/conformance/v2x-02-camera-spatial-travel.json","reason":"PR-238 exact-head evidence showed a 2.7755575615628914e-17 IEEE-754 round-trip residue in rewind position. Preserve the original journey oracle and strict nonnumeric equality while admitting only finite numeric-array differences within 8 machine epsilons scaled by magnitude; no camera runtime or semantic authority is modified."}
+    {"id":"V2-01-04","kind":"NUMERIC_ORACLE_REPAIR","scope":"tests/v2x-02-camera-spatial-travel/real-camera-journey-numeric-wrapper.mjs + config/conformance/v2x-02-camera-spatial-travel.json","reason":"PR-238 exact-head evidence showed a 2.7755575615628914e-17 IEEE-754 round-trip residue in rewind position. Preserve the original journey oracle and strict nonnumeric equality while admitting only finite numeric-array differences within 8 machine epsilons scaled by magnitude; no camera runtime or semantic authority is modified."},
+    {"id":"V2-01-05","kind":"V2X12_FINAL_CHECKPOINT_INTEGRATION","scope":"src/rendering/microscopic/matter-continuity-provider.js + tests/v2x-12-matter-continuity/run.mjs","sourceCheckpoint":"PR-250@62870a190e8ae9fc0e735c6b14c9ab53b7a2977c/tree-943b01d6e0bc77f66296d40b274a5e6bd337c5c7","reason":"Exact central RELEASE progression exposed unresolved material knownChemistryClaim as undefined while the oracle requires an explicit false claim. Authenticate the final V2X-12 lane checkpoint and semantic-port only its two owned files: explicit negative/unknown chemistry claim state in PRESENTATION_ONLY output plus deterministic two-pass lane replay. No scientific truth, central authority, provider activation, build, persistence or convergence authority is transferred."}
+  ],
+  "resolvedExactHeadDefects": [
+    {
+      "checkpoint": "PR-238@d3e43e134bc75dc45db3c6ed290b7d490ade2f26",
+      "test": "v2x02.travel.fast",
+      "classification": "NUMERIC_ROUND_TRIP_ORACLE_DEFECT",
+      "observedDelta": 2.7755575615628914e-17,
+      "semanticDriftProven": false,
+      "resolutionEvidence": "Central exact-head V2X Supreme run 34202169491 progressed beyond V2X-02 into V2X-12 progressive RELEASE conformance."
+    }
   ],
   "knownExactHeadDefect": {
-    "checkpoint": "PR-238@d3e43e134bc75dc45db3c6ed290b7d490ade2f26",
-    "test": "v2x02.travel.fast",
-    "classification": "NUMERIC_ROUND_TRIP_ORACLE_DEFECT",
-    "observedDelta": 2.7755575615628914e-17,
-    "semanticDriftProven": false,
+    "checkpoint": "central@3bb6cdcf1d0f932bea831b32fd6e5f21eb589088",
+    "test": "v2x12.matter.continuity-biology",
+    "oracle": "tests/v2x-12-matter-continuity/continuity-biology.mjs:29",
+    "classification": "EXPLICIT_NEGATIVE_CHEMISTRY_CLAIM_GAP",
+    "observed": {"field":"unknownMaterialView.nodes[0].knownChemistryClaim","actual":"undefined","expected":false},
+    "scientificOverclaimObserved": false,
+    "repairSource": "PR-250@62870a190e8ae9fc0e735c6b14c9ab53b7a2977c",
     "repair": "STAGED_ON_CENTRAL_WRITER_PENDING_EXACT_HEAD_EVIDENCE"
   },
   "certification": {
@@ -30,7 +43,8 @@
     "release": "NOT_READY",
     "exactHeadAfterThisTransaction": null,
     "pending": [
-      "Re-run exact-head RELEASE conformance after V2-01-04 and repair the next real blocker, if any.",
+      "Run exact-head RELEASE conformance after V2-01-05 and repair the next real blocker, if any.",
+      "Integrate authenticated final lane checkpoints dependency-first without violating central single-primary authority.",
       "Complete the Living browser journey and mandatory browser matrix.",
       "Continue harvesting and closing recorded Class B convergence defects.",
       "Keep PR #237 draft until Prompt 24 final same-SHA closure."
