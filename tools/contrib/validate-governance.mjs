@@ -39,6 +39,7 @@ check(pkg.license === 'GPL-3.0-only', `package.json license must be GPL-3.0-only
 for (const script of ['contrib:doctor','contrib:classify','contrib:explain','contrib:pr-context','governance:codeowners','launch:readiness','test:open-source-governance']) check(typeof pkg.scripts?.[script] === 'string', `package.json missing script: ${script}`);
 
 const areasDoc = json('config/governance/areas.json');
+check(areasDoc.routingPolicy?.unroutedChangedPath === 'FAIL', 'unrouted changed paths must fail closed');
 check(Array.isArray(areasDoc.areas) && areasDoc.areas.length >= 10, 'area catalog is unexpectedly small');
 const areaIds = new Set();
 for (const area of areasDoc.areas ?? []) {
@@ -145,12 +146,13 @@ check(adrIndex.includes('[028](ADR-028-community-scale-governance-and-serial-int
 
 const result = {
   status: errors.length === 0 ? 'PASS' : 'FAIL',
-  suite: 'ofu-open-source-governance-2',
+  suite: 'ofu-open-source-governance-3',
   checks,
   areas: areaIds.size,
   contributionUnits: unitIds.size,
   launchGates: gateIds.size,
   communityStage: resilience.currentStage,
+  unroutedChangedPathPolicy: areasDoc.routingPolicy.unroutedChangedPath,
   riskLevels: [...riskIds].sort(),
   errors
 };

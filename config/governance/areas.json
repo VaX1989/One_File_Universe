@@ -1,10 +1,14 @@
 {
-  "version": "2026-09-08.1",
-  "purpose": "Machine-readable contribution and ownership areas for scalable OFU development.",
+  "version": "2026-09-08.2",
+  "purpose": "Machine-readable contribution, authority and ownership areas for scalable OFU development.",
+  "routingPolicy": {
+    "unroutedChangedPath": "FAIL",
+    "reason": "A changed path with no declared area has no trustworthy review/ownership route and must be classified before merge."
+  },
   "areas": [
-    {"id":"core","critical":true,"description":"Universe identity, canonical addresses, deterministic kernel and foundational semantics.","paths":["src/canonical/**","src/kernel/**","src/temporal/**","docs/CONSTITUTION.md"],"authority":["CANONICAL_TRUTH","DERIVED_CANONICAL_STATE"]},
+    {"id":"core","critical":true,"description":"Universe identity, canonical addresses, deterministic kernel, foundational semantics and durable architecture decisions.","paths":["src/canonical/**","src/kernel/**","src/temporal/**","docs/CONSTITUTION.md","docs/adr/**"],"authority":["CANONICAL_TRUTH","DERIVED_CANONICAL_STATE"]},
     {"id":"runtime","critical":true,"description":"Scheduling, workers, streaming, materialization, caches and resource admission.","paths":["src/runtime/**","src/simulation/materialization/**"],"authority":["MEASURED_RUNTIME_EVIDENCE","DERIVED_CANONICAL_STATE"]},
-    {"id":"build","critical":true,"description":"Deterministic composition, manifests, one-file build and release reachability.","paths":["tools/build-**","tools/extensions/**","config/components/**","config/conformance/**"],"authority":["MEASURED_RUNTIME_EVIDENCE"]},
+    {"id":"build","critical":true,"description":"Deterministic composition, manifests, one-file build, package metadata and release reachability.","paths":["package.json","tools/build-**","tools/extensions/**","config/components/**","config/conformance/**"],"authority":["MEASURED_RUNTIME_EVIDENCE"]},
     {"id":"rendering","critical":false,"description":"WebGL2/WebGPU, shaders, presentation packets, materials and GPU resources.","paths":["src/rendering/**","tests/render-platform/**"],"authority":["PRESENTATION_ONLY","MEASURED_RUNTIME_EVIDENCE"]},
     {"id":"astronomy","critical":false,"description":"Cosmological, galactic, stellar and system astronomy models and presentation providers.","paths":["src/domains/**/astronomy/**","src/rendering/macro/**","src/rendering/galaxy/**","src/rendering/region/**","src/rendering/neighborhood/**"],"authority":["MODEL_DERIVED_SIMULATION","PRESENTATION_ONLY"]},
     {"id":"planetology","critical":false,"description":"Planet interiors, worlds, atmospheres, climate, oceans and planetary diagnostics.","paths":["src/domains/**/planetology/**","src/domains/**/environment/**"],"authority":["MODEL_DERIVED_SIMULATION","EMPIRICAL_RELATION"]},
@@ -20,6 +24,6 @@
     {"id":"audio","critical":false,"description":"Systemic audio and audio accessibility behavior.","paths":["src/audio/**"],"authority":["PRESENTATION_ONLY"]},
     {"id":"science-review","critical":true,"description":"Scientific provenance, validation, model promotion and claim-integrity review.","paths":["research/**","tests/audit/**science*","data/**"],"authority":["RESEARCH_ONLY","EMPIRICAL_RELATION","MODEL_DERIVED_SIMULATION"]},
     {"id":"security","critical":true,"description":"Security boundaries, supply chain, untrusted input and privilege-sensitive workflows.","paths":["SECURITY.md","tests/**/security*",".github/workflows/**"],"authority":["MEASURED_RUNTIME_EVIDENCE"]},
-    {"id":"community","critical":false,"description":"Open-source governance, contributor experience, documentation and community operations.","paths":["CONTRIBUTING.md","CODE_OF_CONDUCT.md","MAINTAINERS.md","GOVERNANCE.md","docs/community/**","rfcs/**",".github/ISSUE_TEMPLATE/**"],"authority":[]}
+    {"id":"community","critical":false,"description":"Open-source governance, licensing policy, contributor control plane, contributor experience, citation metadata and community operations.","paths":["README.md","CONTRIBUTING.md","CODE_OF_CONDUCT.md","MAINTAINERS.md","GOVERNANCE.md","LICENSE","LICENSING.md","COMMERCIAL_LICENSING.md","TRADEMARKS.md","THIRD_PARTY_POLICY.md","CITATION.cff","docs/community/**","rfcs/**","config/governance/**","tools/contrib/**",".github/CODEOWNERS",".github/PULL_REQUEST_TEMPLATE.md",".github/SUPPORT.md",".github/ISSUE_TEMPLATE/**"],"authority":["GOVERNANCE_METADATA_ONLY"]}
   ]
 }

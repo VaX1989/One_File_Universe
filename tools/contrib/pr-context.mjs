@@ -29,10 +29,10 @@ const areas = [...new Set(classified.files.flatMap((entry) => entry.areas))].sor
 const owners = ownersForAreas(areas, governance);
 const unroutedFiles = classified.files.filter((entry) => entry.areas.length === 0).map((entry) => entry.file);
 const risk = riskDefinition(classified.risk, governance);
-
-console.log(JSON.stringify({
-  status: 'PASS',
-  suite: 'ofu-pr-context-1',
+const routingPolicy = governance.areas.routingPolicy?.unroutedChangedPath ?? 'FAIL';
+const result = {
+  status: unroutedFiles.length && routingPolicy === 'FAIL' ? 'FAIL' : 'PASS',
+  suite: 'ofu-pr-context-2',
   base,
   head,
   changedFiles: files.length,
@@ -42,6 +42,9 @@ console.log(JSON.stringify({
   requiredChecks: risk?.requiredChecks ?? [],
   areas,
   owners,
+  routingPolicy,
   unroutedFiles,
   files: classified.files
-}, null, 2));
+};
+console.log(JSON.stringify(result, null, 2));
+if (result.status === 'FAIL') process.exit(1);
