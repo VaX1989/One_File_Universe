@@ -1,13 +1,13 @@
 (function(root){
 'use strict';
-const O=root.OFU=root.OFU||{},C=O.pxContracts,R=O.v2x01Contracts,K=O.v2x01CacheKey,S=O.v2x01AdaptiveScheduler,L=O.v2x01ResourceLedger,W=O.v2x01WorkerExecutor,V='ofu-v2x01-materialization-runtime-7';
+const O=root.OFU=root.OFU||{},C=O.pxContracts,R=O.v2x01Contracts,K=O.v2x01CacheKey,S=O.v2x01AdaptiveScheduler,L=O.v2x01ResourceLedger,W=O.v2x01WorkerExecutor,V='ofu-v2x01-materialization-runtime-8';
 if(!C||!R||!K||!S||!L)throw Error('V2X-01 materialization dependencies');
 function fail(c,m){const e=Error('OFU V2X-01 '+c+': '+m);e.code=c;return e}
 function create(o={}){
   C.keys(o,[],['budgets','scheduler','ledger','workerExecutor']);const b=R.budgets(o.budgets||{}),scheduler=o.scheduler||S.create({budgets:b}),ledger=o.ledger||L.create({budgets:b}),workers=o.workerExecutor===false?null:(o.workerExecutor||(W?W.create({maxPayloadBytes:b.taskBytes}):null)),providers=new Map(),entries=new Map(),active=new Map(),gen=new Map(),quarantine=new Map(),detached=new Map(),max=Math.min(b.cacheEntries,b.materializations);
   C.assert(scheduler&&typeof scheduler.reserveAdmission==='function'&&typeof scheduler.schedule==='function'&&typeof scheduler.cancel==='function'&&typeof scheduler.cancelWhere==='function'&&typeof scheduler.drain==='function'&&typeof scheduler.snapshot==='function','DEPENDENCY','scheduler surface');C.assert(ledger&&typeof ledger.reserve==='function'&&typeof ledger.commit==='function'&&typeof ledger.release==='function'&&typeof ledger.snapshot==='function','DEPENDENCY','resource ledger surface');if(workers)C.assert(typeof workers.register==='function'&&typeof workers.execute==='function'&&typeof workers.canRunWorker==='function'&&typeof workers.snapshot==='function','DEPENDENCY','worker executor surface');
   let seq=0,clock=0,packetSequence=0,lastAdaptiveDecision=null;
-  const m={requests:0,hits:0,misses:0,materializations:0,evictions:0,invalidations:0,cancellations:0,staleRejects:0,releaseFailures:0,quarantinedReleases:0,quarantineRecoveries:0,detachedFallbacks:0,detachedSettlements:0,fallbackAdmissionRejects:0,contextLosses:0,memoryPressureEvents:0,restorations:0,workerResults:0,fallbackResults:0,adaptiveDecisions:0,runtimePackets:0,adaptiveByState:Object.fromEntries(R.STATES.map(s=>[s,0])),adaptiveByReason:{}};
+  const m={requests:0,hits:0,misses:0,materializations:0,evictions:0,invalidations:0,cancellations:0,staleRejects:0,releaseFailures:0,quarantinedReleases:0,quarantineRecoveries:0,detachedFallbacks:0,detachedSettlements:0,fallbackAdmissionRejects:0,contextLosses:0,memoryPressureEvents:0,restorations:0,workerResults:0,fallbackResults:0,adaptiveDecisions:0,runtimePackets:0,forcedPinnedEvictions:0,adaptiveByState:Object.fromEntries(R.STATES.map(s=>[s,0])),adaptiveByReason:{}};
   function reg(x){
     C.keys(x,['providerId','domain','modelVersion','representationVersion','load'],['release','workerProgram']);
     const id=C.token(x.providerId),domain=R.workloadDomain(x.domain);C.assert(typeof x.load==='function'&&!providers.has(id),'SCHEMA','materializer');if(x.release!==undefined)C.assert(typeof x.release==='function','SCHEMA','materializer release');if(x.workerProgram!==undefined)C.assert(typeof x.workerProgram==='string'&&x.workerProgram.length<=65536,'BUDGET','worker program');
@@ -35,13 +35,13 @@ function create(o={}){
     m.detachedFallbacks++;detached.set(rid,{reason});Promise.resolve(promise).then(raw=>{try{cleanupRaw(rid,r,raw,'detached-'+reason);if(!quarantine.has(rid))C.assert(ledger.release(rid),'RESOURCE','missing detached reservation '+rid)}catch{}finally{detached.delete(rid);m.detachedSettlements++}},()=>{try{C.assert(ledger.release(rid),'RESOURCE','missing detached reservation '+rid)}finally{detached.delete(rid);m.detachedSettlements++}});
   }
   function candidates(protect,includePinned=false){return[...entries.values()].filter(e=>(includePinned||!e.pinned)&&e.logicalKey!==protect).sort((a,b)=>R.compareStates(a.state,b.state)||a.lastUse-b.lastUse||a.cacheDigest.localeCompare(b.cacheDigest))}
-  function room(protect){while(entries.size>=max){const e=candidates(protect)[0];if(!e)throw fail('CACHE_BUDGET','no evictable entry');release(e,'cache-capacity')}}
+  function room(protect){while(entries.size>=max){let e=candidates(protect)[0];if(!e){e=candidates(protect,true)[0];if(e){e.pinned=false;m.forcedPinnedEvictions++;}}if(!e)throw fail('CACHE_BUDGET','no evictable entry');release(e,'cache-capacity')}}
   function cancelPending(predicate,reason){let n=0;for(const [key,a] of [...active.entries()]){if(!predicate(a,key))continue;if(scheduler.cancel(a.jobId,reason)){gen.set(key,(gen.get(key)||0)+1);m.cancellations++;n++}}return n}
   function invalidateLogical(k,why='invalidated'){
     const a=active.get(k);if(a){if(scheduler.cancel(a.jobId,why))m.cancellations++;active.delete(k)}
     let n=0;for(const e of [...entries.values()])if(e.logicalKey===k){e.pinned=false;release(e,why);n++}m.invalidations+=n;return n;
   }
-  function reserve(id,x,k){for(;;){try{return ledger.reserve(id,x)}catch(e){if(e.code!=='RESOURCE_BUDGET')throw e;const v=candidates(k)[0];if(!v)throw e;release(v,'resource-pressure')}}}
+  function reserve(id,x,k){for(;;){try{return ledger.reserve(id,x)}catch(e){if(e.code!=='RESOURCE_BUDGET')throw e;let v=candidates(k)[0];if(!v){v=candidates(k,true)[0];if(v){v.pinned=false;m.forcedPinnedEvictions++;}}if(!v)throw e;release(v,'resource-pressure')}}}
   function witness(r,e,hit,mode=null){return C.data({version:V,identity:r.durable.identity,commitmentDigest:r.durable.commitmentDigest,historyDigest:r.durable.historyDigest,semanticDigest:r.semanticDigest,cacheDigest:r.cache.digest,targetState:r.targetState,materialized:!!e,cacheHit:hit,executionMode:mode,usage:e?e.usage:{cpuEstimateBytes:0,gpuEstimateBytes:0,entities:0,operations:0,transferBytes:0}})}
   async function request(x){
     m.requests++;const r=norm(x),k=logical(r);

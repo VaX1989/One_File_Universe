@@ -2,7 +2,7 @@
 'use strict';
 const O=root.OFU=root.OFU||{},C=O.pxContracts;
 if(!C)throw new Error('V2X-01 requires PX contracts');
-const VERSION='ofu-v2x01-runtime-contracts-3';
+const VERSION='ofu-v2x01-runtime-contracts-4';
 const ADAPTIVE_POLICY_VERSION='ofu-v2x01-adaptive-materialization-policy-1';
 const STATES=Object.freeze(['COLD','WARM','HOT','IMMEDIATE']);
 const STATE_RANK=Object.freeze({COLD:0,WARM:1,HOT:2,IMMEDIATE:3});
@@ -41,7 +41,7 @@ function integer(value,label,min,max){C.assert(Number.isSafeInteger(value)&&valu
 function ppm(value,label){return integer(value,label,0,ADAPTIVE.relevanceMaxPpm);}
 function state(value){C.assert(STATES.includes(value),'LIFECYCLE','unknown materialization state '+value);return value;}
 function taskClass(value){C.assert(TASK_CLASSES.includes(value),'SCHEDULER','unknown task class '+value);return value;}
-function workloadDomain(value='DEFAULT'){return C.token(value,'workload domain');}
+function workloadDomain(value='default'){return C.token(value,'workload domain');}
 function evidenceState(value){C.assert(EVIDENCE_STATES.includes(value),'EVIDENCE','unknown runtime evidence state '+value);return value;}
 function identity(input){const v=C.data(input,{bytes:4096,nodes:128});C.keys(v,['providerId','entityId','representationId']);C.token(v.providerId,'provider id');C.hash(v.entityId,'entity id');C.token(v.representationId,'representation id');return v;}
 function durable(input){const v=C.data(input,{bytes:16384,nodes:512});C.keys(v,['identity','commitmentDigest','historyDigest']);identity(v.identity);C.hash(v.commitmentDigest,'commitment digest');C.hash(v.historyDigest,'history digest');return v;}

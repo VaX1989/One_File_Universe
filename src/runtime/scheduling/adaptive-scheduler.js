@@ -2,7 +2,7 @@
 'use strict';
 const O=root.OFU=root.OFU||{},C=O.pxContracts,R=O.v2x01Contracts;
 if(!C||!R)throw new Error('V2X-01 scheduler requires PX and runtime contracts');
-const VERSION='ofu-v2x01-adaptive-scheduler-4';
+const VERSION='ofu-v2x01-adaptive-scheduler-5';
 function fail(code,detail){const e=new Error('OFU V2X-01 '+code+': '+detail);e.code=code;return e;}
 function create(options={}){
   C.keys(options,[],['budgets']);const budget=R.budgets(options.budgets||{}),maxActive=budget.active,maxQueue=budget.queue;
@@ -71,7 +71,7 @@ function create(options={}){
   }
   function schedule(input){
     C.assert(input&&typeof input==='object'&&!Array.isArray(input),'SCHEMA','scheduler task');C.keys(input,['id','taskClass','state','run'],['preemptible','admission','workloadDomain']);
-    const id=C.token(input.id,'task id'),taskClass=R.taskClass(input.taskClass),state=R.state(input.state),workloadDomain=R.workloadDomain(input.workloadDomain??'DEFAULT');C.assert(typeof input.run==='function','SCHEMA','task run');if(input.preemptible!==undefined)C.assert(typeof input.preemptible==='boolean','SCHEMA','preemptible');C.assert(!jobs.has(id),'DUPLICATE','task '+id);
+    const id=C.token(input.id,'task id'),taskClass=R.taskClass(input.taskClass),state=R.state(input.state),workloadDomain=R.workloadDomain(input.workloadDomain??'default');C.assert(typeof input.run==='function','SCHEMA','task run');if(input.preemptible!==undefined)C.assert(typeof input.preemptible==='boolean','SCHEMA','preemptible');C.assert(!jobs.has(id),'DUPLICATE','task '+id);
     if(input.admission!==undefined){C.assert(admissions.has(input.admission),'ADMISSION','invalid or consumed scheduler admission');admissions.delete(input.admission);metrics.admissionsConsumed++;}else if(capacityReached()){metrics.backpressure++;throw fail('BACKPRESSURE','bounded scheduler capacity reached');}
     const controller=new AbortController();let resolve,reject;const promise=new Promise((yes,no)=>{resolve=yes;reject=no;});
     const job={id,taskClass,state,workloadDomain,run:input.run,preemptible:input.preemptible!==false,controller,resolve,reject,promise,status:'QUEUED',sequence:sequence++,classDispatchAtEnqueue:classDispatches.get(taskClass)};
