@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { createDemographyLedger, applyDemographicStep, demographicSummary, DEMOGRAPHY_LIMITS } from '../../src/domains/v1/demography/ledger.js';
 import { individualId } from '../../src/domains/v1/individuals/identity.js';
 import { refineIndividuals, retainIndividual, appendHistoryRef, proposeIndividualAction, INDIVIDUAL_LIMITS } from '../../src/domains/v1/individuals/runtime.js';
@@ -47,6 +48,29 @@ const mismatchedRetained = { ...retained, id: 'person:not-this-person', role: 'f
 const mismatchRevisit = refineIndividuals({ worldId: 'w', settlementId: 's1', aggregate, startOrdinal: 4, count: 1, retainedById: new Map([[person.id, mismatchedRetained]]), currentYear: 40 })[0];
 check(mismatchRevisit.role !== 'forged-role', 'retained state with a mismatched durable identity is ignored');
 
+// Persistence/revisit witness independent of the convergence-owned replay transport.
+// This proves the retained person state is deterministic plain data that survives a
+// real serialize/parse boundary and can be rematerialized by stable identity.
+const retainedSecond = retainIndividual(first[1]);
+const persistenceEntries = [[retainedSecond.id, retainedSecond], [retained.id, retained]]
+  .sort(([a], [b]) => a.localeCompare(b));
+const serializedRetained = JSON.stringify({ schema: 'ofu-v2x10-retained-witness-1', retained: persistenceEntries });
+check(Buffer.byteLength(serializedRetained, 'utf8') <= (INDIVIDUAL_LIMITS.MAX_RETAINED_BYTES * persistenceEntries.length) + 4096, 'serialized retained witness remains bounded by per-person state budgets');
+const parsedRetained = JSON.parse(serializedRetained);
+check(parsedRetained.schema === 'ofu-v2x10-retained-witness-1', 'retained persistence witness is explicitly versioned');
+const restoredMap = new Map(parsedRetained.retained);
+const reloaded = refineIndividuals({ worldId: 'w', settlementId: 's1', aggregate, startOrdinal: 4, count: 1, retainedById: restoredMap, currentYear: 41 })[0];
+check(reloaded.id === person.id, 'save/parse/reload/revisit preserves exact stable person identity');
+check(reloaded.memories[0].eventId === 'evt-1', 'save/parse/reload/revisit preserves historical references');
+check(reloaded.culture.conventions.includes('river-festival'), 'save/parse/reload/revisit preserves structured culture state');
+const reverseSerialized = JSON.stringify({ schema: 'ofu-v2x10-retained-witness-1', retained: [...persistenceEntries].reverse().sort(([a], [b]) => a.localeCompare(b)) });
+check(reverseSerialized === serializedRetained, 'canonical retained-entry ordering is deterministic independent of insertion order');
+
+const cyclicCulture = {};
+cyclicCulture.self = cyclicCulture;
+assert.throws(() => retainIndividual({ ...revisited, culture: cyclicCulture }), /acyclic/, 'cyclic retained state is rejected instead of leaking unbounded object graphs'); checks += 1;
+assert.throws(() => retainIndividual({ ...revisited, skills: [{ topic: 'bad', level: Number.POSITIVE_INFINITY }] }), /non-finite/, 'non-finite retained numeric state is rejected'); checks += 1;
+
 const cultureFlood = Array.from({ length: CULTURE_LIMITS.MAX_CONVENTIONS + 20 }, (_, index) => `convention-${String(index).padStart(2, '0')}`);
 const saturatedCulture = transmitConventions(revisited.culture, cultureFlood);
 check(saturatedCulture.conventions.length === CULTURE_LIMITS.MAX_CONVENTIONS, 'culture transmission remains bounded');
@@ -70,6 +94,20 @@ check(outOfRangeRecon.status === 'FAIL' && outOfRangeRecon.defects.some((defect)
 
 const capped = refineIndividuals({ worldId: 'w', settlementId: 's1', aggregate, startOrdinal: 0, count: INDIVIDUAL_LIMITS.MAX_ACTIVE + 999 });
 check(capped.length === INDIVIDUAL_LIMITS.MAX_ACTIVE, 'active individual working set bounded');
+
+// Source -> component manifest -> browser export -> actual Living consumer reachability.
+// The final two booleans intentionally describe a convergence-owned hook rather than
+// silently treating the legacy aggregate refine path as vertical completion.
+const component = JSON.parse(readFileSync(new URL('../../config/components/v2x-10-persistent-individuals.json', import.meta.url), 'utf8'));
+const runtimeComponent = component.components.find((entry) => entry.id === 'v2x10.model.persistent-individuals');
+check(runtimeComponent?.source === 'src/domains/v1/individuals/provider.js' && runtimeComponent.authority === 'MODEL_DERIVED_SIMULATION', 'shipping component manifest reaches the V2X-10 browser provider with model-derived authority');
+const browserProviderSource = readFileSync(new URL('../../src/domains/v1/individuals/provider.js', import.meta.url), 'utf8');
+check(browserProviderSource.includes('O.v2x10Individuals=Object.freeze') && browserProviderSource.includes('refinePopulation') && browserProviderSource.includes('mortalityAwareRefinement:true'), 'browser provider exports ledger-aware mortality-safe refinement into the one-file runtime');
+const livingInspectorSource = readFileSync(new URL('../../src/bootstrap/product/v2x-context-inspector.js', import.meta.url), 'utf8');
+check(livingInspectorSource.includes('root.OFU?.v2x10Individuals'), 'real Living context inspector consumes the shipped V2X-10 runtime export');
+const livingUsesLedgerAwareRefinement = livingInspectorSource.includes('individuals.refinePopulation(');
+const livingDeclaresRetainedPersistence = /retainedMemoryPersistence\s*:\s*true/.test(livingInspectorSource);
+check(!livingUsesLedgerAwareRefinement && !livingDeclaresRetainedPersistence, 'convergence hook is explicit: current Living still uses legacy refine and does not claim retained persistence');
 
 for (let year = 22; year < 22 + DEMOGRAPHY_LIMITS.MAX_COMMITMENTS + 20; year += 1) ledger = applyDemographicStep(ledger, { year, births: 1, deaths: 1 });
 check(ledger.commitments.length === DEMOGRAPHY_LIMITS.MAX_COMMITMENTS, 'demography commitment history bounded');
