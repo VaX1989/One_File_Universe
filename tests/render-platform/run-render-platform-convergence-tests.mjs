@@ -18,7 +18,8 @@ const eq=(a,b,message)=>{assert.equal(a,b,message);assertions++};
 const throws=(fn,predicate,message)=>{assert.throws(fn,predicate,message);assertions++};
 
 function fakeGL(){
-  let sequence=0,drawArrays=0,drawElements=0,failCompile=false,failLink=false,disjoint=false,queryReady=true;
+  let sequence=0,drawArrays=0,drawElements=0,failCompile=false,failLink=false,disjoint=false,queryReady=true,blendEnabled=false;
+  const drawStates=[];
   const deleted=[];
   const gl={
     ARRAY_BUFFER:1,ELEMENT_ARRAY_BUFFER:2,STATIC_DRAW:3,STREAM_DRAW:4,
@@ -37,11 +38,11 @@ function fakeGL(){
     createFramebuffer:()=>({kind:'framebuffer',id:++sequence}),bindFramebuffer(){},framebufferTexture2D(){},deleteFramebuffer:x=>deleted.push(x),
     createRenderbuffer:()=>({kind:'renderbuffer',id:++sequence}),bindRenderbuffer(){},renderbufferStorage(){},framebufferRenderbuffer(){},deleteRenderbuffer:x=>deleted.push(x),checkFramebufferStatus:()=>27,
     useProgram(){},getUniformLocation:(p,name)=>({p,name}),uniformMatrix4fv(){},uniform3fv(){},uniform1f(){},uniform1i(){},uniform2f(){},
-    viewport(){},enable(){},disable(){},depthFunc(){},clearDepth(){},clearColor(){},clear(){},blendFunc(){},
-    drawArrays(){drawArrays++},drawElements(){drawElements++},
+    viewport(){},enable(cap){if(cap===35)blendEnabled=true},disable(cap){if(cap===35)blendEnabled=false},depthFunc(){},clearDepth(){},clearColor(){},clear(){},blendFunc(){},
+    drawArrays(){drawArrays++;drawStates.push({kind:'arrays',blend:blendEnabled})},drawElements(){drawElements++;drawStates.push({kind:'elements',blend:blendEnabled})},
     getExtension:name=>name==='EXT_disjoint_timer_query_webgl2'?{TIME_ELAPSED_EXT:40,GPU_DISJOINT_EXT:41}:null,
     createQuery:()=>({kind:'query',id:++sequence}),beginQuery(){},endQuery(){},deleteQuery:x=>deleted.push(x),getParameter:()=>disjoint,getQueryParameter:(q,p)=>p===28?queryReady:2_500_000,
-    _draws:()=>({arrays:drawArrays,elements:drawElements,total:drawArrays+drawElements}),_deleted:deleted,
+    _draws:()=>({arrays:drawArrays,elements:drawElements,total:drawArrays+drawElements}),_drawStates:()=>drawStates.slice(),_deleted:deleted,
     _setCompile:v=>{failCompile=v},_setLink:v=>{failLink=v},_setDisjoint:v=>{disjoint=v},_setQueryReady:v=>{queryReady=v}
   };
   return gl;
@@ -92,6 +93,10 @@ eq(witness.backend,'V2X13_WEBGL2_PIXEL_CONSUMER');eq(witness.pixelConsumer,'V2X-
 for(const domain of OFU.renderWebGL2Resources.DOMAINS)eq(witness.domainCounts[domain],1,'domain '+domain+' must be GPU-consumed');
 eq(C.snapshot().resourceManager.accountingExact,true);ok(C.snapshot().resourceManager.trackedBytes<=C.snapshot().resourceManager.maxTrackedBytes);eq(C.snapshot().retainedFrameBytes,witness.frameBytes);ok(/^[0-9a-f]{16}$/.test(witness.packetFingerprint),'fingerprint must be a 64-bit hexadecimal witness');
 eq(witness.packetFingerprint,'6cba86fbdc775545','exact normalized-frame fingerprint drift');
+eq(witness.packetFingerprintAlgorithm,'FNV1A32X2_CANONICAL_LE_V1');
+const fingerprintSource=fs.readFileSync('src/rendering/webgl2/resources.js','utf8');
+ok(fingerprintSource.includes('setFloat32(0,v[i],true)'),'float fingerprint encoding must be explicit little-endian');
+ok(fingerprintSource.includes('setUint32(0,v[i],true)'),'index fingerprint encoding must be explicit little-endian');
 
 // Pixel-witness integrity: every render-affecting field that was previously omitted must change the fingerprint.
 const fingerprintGl=fakeGL(),FC=OFU.renderWebGL2Resources.createFrameConsumer(fingerprintGl,{maxDraws:16,maxVertices:128,maxIndices:128,maxFrameBytes:65536,maxRetainedBytes:65536,maxTrackedBytes:4194304,maxTextureDimension:1024});
@@ -109,6 +114,15 @@ const fingerprintVariants=[
 for(const changed of fingerprintVariants)ok(FC.render(changed).packetFingerprint!==baseFingerprint,'render-affecting mutation must change fingerprint');
 eq(FC.render(fingerprintBase).packetFingerprint,baseFingerprint,'identical normalized packet must reproduce fingerprint');
 eq(FC.dispose().resourceManager.accountingExact,true);
+
+// FXAA resolve must be state-isolated from a trailing translucent geometry draw.
+const blendGl=fakeGL(),BC=OFU.renderWebGL2Resources.createFrameConsumer(blendGl,{maxDraws:16,maxVertices:128,maxIndices:128,maxFrameBytes:65536,maxRetainedBytes:65536,maxTrackedBytes:4194304,maxTextureDimension:1024});
+const blendPacket={...packet,frameId:'living:frame:blend',draws:packet.draws.map((d,i)=>i===packet.draws.length-1?{...d,material:{...d.material,opacity:.4}}:d)};
+const blendWitness=BC.render(blendPacket),blendStates=blendGl._drawStates();
+eq(blendWitness.drawCalls,10);
+eq(blendStates.at(-2).blend,true,'trailing translucent geometry must exercise blending');
+eq(blendStates.at(-1).blend,false,'FXAA fullscreen resolve must disable blending');
+eq(BC.dispose().resourceManager.accountingExact,true);
 
 // Falsification: malformed or excessive frames fail before any pixel draw, never falling back to Canvas2D.
 const drawsBeforeInvalid=consumerGl._draws().total;
