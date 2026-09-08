@@ -1,0 +1,163 @@
+{
+  "schemaVersion": "v2.0",
+  "lane": "V2X-02",
+  "title": "Continuous Travel 2.0 - Camera, Spatial Frames, Semantic Zoom and Reversible Navigation",
+  "status": "COMPLETE_WITH_BLOCKERS",
+  "authority": "PRESENTATION_ONLY",
+  "provenance": "REPOSITORY_DERIVED_ENGINEERING_EVIDENCE",
+  "authorizedBase": {
+    "sha": "2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7",
+    "tree": "99e6b5ff6229d9c34d381e778c5689bf2367d256",
+    "launchStatus": "FULL"
+  },
+  "branch": "parallel/v2.0-02-camera-spatial-travel-2026-09-07",
+  "pullRequest": 239,
+  "centralTarget": "integration/v2x-supreme-total-convergence-2026-09-07",
+  "forwardComposedConvergenceSha": "3bb6cdcf1d0f932bea831b32fd6e5f21eb589088",
+  "preCheckpointTestedHead": {
+    "sha": "574dd1e16c36ca1ec7939a1d31e1f72e83be0da7",
+    "tree": "6bbbf9d84ce25bed745bc9f2e75a8f14dc66c125"
+  },
+  "ownedDiff": {
+    "intentional": true,
+    "complete": true,
+    "centralOwnedPathsModified": false,
+    "runtimeAndEvidenceFilesBeforeCheckpoint": [
+      "config/conformance/v2x-02-camera-spatial-travel.json",
+      "src/v2x-02-camera-spatial-travel/provider-catalog.json",
+      "tests/v2x-02-camera-spatial-travel/registry-binding.mjs"
+    ],
+    "finalCheckpointFile": "docs/parallel/v2/lanes/V2X-02_CURRENT.json"
+  },
+  "capabilityInventory": [
+    "one authoritative continuous-travel controller for camera focus, orientation, scale and semantic band",
+    "wheel, pinch, drag, touch and keyboard inputs routed through the same controller",
+    "deterministic semantic-band hysteresis across canonical scale boundaries",
+    "finite/clamped extreme input handling",
+    "bounded reversible-navigation journal and bounded reverse anchors",
+    "fail-closed invalidation after journal eviction or external authority changes",
+    "bounded context serialization with transactional rollback",
+    "selection, target context, focus and orientation preservation across reversible scale travel",
+    "reduced-motion smoothing alternative without changing canonical target state",
+    "provider firewall rejecting alternate primary camera ownership",
+    "old/shadow navigation killer witness in the actual Living consumer path"
+  ],
+  "resourceBounds": {
+    "reverseJournalMaxOps": 1024,
+    "reverseJournalMaxBytes": 2097152,
+    "reverseAnchorsMaxCount": 48,
+    "reverseAnchorMaxBytes": 65536,
+    "serializedTargetMaxBytes": 16384,
+    "contextMaxDepth": 8,
+    "contextMaxNodes": 2048,
+    "contextMaxStringBytes": 4096,
+    "contextMaxArrayLength": 2048,
+    "contextMaxObjectKeys": 2048,
+    "maxAbsoluteInputDelta": 1000000
+  },
+  "reachability": {
+    "chain": [
+      "src/v2x-02-camera-spatial-travel/continuous-travel.js",
+      "config/conformance/v2x-02-camera-spatial-travel.json and src/v2x-02-camera-spatial-travel/provider-catalog.json",
+      "convergence-owned shipping/build composition",
+      "runtime export OFU.v2x02ContinuousTravel",
+      "convergence-owned src/living-ui.js consumer",
+      "controller snapshot/semanticBand/distance/queueLook/orientation consumption",
+      "rebuilt one-file product artifact",
+      "tests/living/playwright-living-scale-journey.mjs browser journey"
+    ],
+    "centralHooks": [
+      "primary shipping manifest/build composition",
+      "Living viewport and final camera/scale composition",
+      "rebuilt one-file artifact",
+      "exact-artifact browser release gate"
+    ],
+    "centralHooksModifiedByLane": false
+  },
+  "falsification": {
+    "shadowNavigationRejected": true,
+    "oldImplementationKiller": "tests/v2x-02-camera-spatial-travel/registry-binding.mjs requires Living to install and consume OFU.v2x02ContinuousTravel, rejects shadow travel/camera state declarations, and requires distance/queueLook actions through the canonical controller.",
+    "adversarialCoverage": [
+      "non-finite input rejection",
+      "Number.MAX_VALUE finite/clamped travel",
+      "semantic threshold reversal and hysteresis",
+      "full scale ladder forward and verified rewind",
+      "bounded reverse history and byte budgets",
+      "journal invalidation after eviction",
+      "external-authority invalidation",
+      "oversized/cyclic context rejection without partial mutation",
+      "transactional rollback of nonce, revision and journal state",
+      "reduced-motion canonical-target equivalence"
+    ]
+  },
+  "executedEvidence": {
+    "laneExactHeadWorkflow": {
+      "workflow": "V2X Supreme Convergence",
+      "runId": 34204936678,
+      "jobId": 101992112699,
+      "testedSha": "574dd1e16c36ca1ec7939a1d31e1f72e83be0da7",
+      "testedTree": "6bbbf9d84ce25bed745bc9f2e75a8f14dc66c125",
+      "passed": [
+        "npm test && npm run -s test:python && npm run -s test:browser",
+        "node tests/v2x-convergence/provider-activation-boundary.mjs",
+        "node tests/v2x-convergence/authority-freeze.mjs",
+        "node tests/v2x-convergence/artifact-composition.mjs",
+        "node tests/living/macrocosm-physics.mjs",
+        "node tests/living/single-camera-authority.mjs",
+        "node tests/v2x-domain-composition-contract.mjs",
+        "node tests/living/inspector-layer.mjs",
+        "node tests/living/session-mode-adapter.mjs",
+        "node tests/v2x-convergence/canonical-living-pointers.mjs",
+        "rebuilt artifact surface marker contract",
+        "node tests/living/camera-product-path.mjs",
+        "node tests/living/reopen-journey.mjs",
+        "node tests/living/playwright-living-scale-journey.mjs"
+      ],
+      "failed": [
+        {
+          "step": "Progressive release conformance exact source",
+          "command": "node tools/extensions/conformance.mjs RELEASE --exact",
+          "classification": "CENTRAL_CONVERGENCE_BLOCKER"
+        }
+      ]
+    },
+    "upstreamReproduction": {
+      "convergenceSha": "3bb6cdcf1d0f932bea831b32fd6e5f21eb589088",
+      "workflowRunId": 34202169491,
+      "sameFailure": "node tools/extensions/conformance.mjs RELEASE --exact",
+      "meaning": "The final exact-source release-conformance failure reproduces on convergence without the lane diff. It is not introduced by V2X-02."
+    },
+    "directLaneOracles": [
+      {
+        "path": "tests/v2x-02-camera-spatial-travel/real-camera-journey.mjs",
+        "status": "AUDITED_REQUIRED_ORACLE_NOT_SEPARATELY_REEXECUTED_IN_CURRENT_FINALIZATION",
+        "reason": "The available exact-head convergence workflow does not invoke this standalone script directly. Its source and adversarial coverage were audited at the tested head; no central workflow was modified merely to manufacture a standalone badge."
+      },
+      {
+        "path": "tests/v2x-02-camera-spatial-travel/registry-binding.mjs",
+        "status": "AUDITED_REQUIRED_ORACLE_NOT_SEPARATELY_REEXECUTED_IN_CURRENT_FINALIZATION",
+        "reason": "The available exact-head convergence workflow does not invoke this standalone script directly. Its consumer and old-implementation-killer assertions were audited at the tested head; no central workflow was modified merely to manufacture a standalone badge."
+      }
+    ]
+  },
+  "remainingBlockers": [
+    {
+      "owner": "CENTRAL_CONVERGENCE",
+      "blocker": "Progressive release conformance exact source remains red at node tools/extensions/conformance.mjs RELEASE --exact.",
+      "evidence": "Identical failure on lane run 34204936678 and upstream convergence run 34202169491.",
+      "laneLocalRepairAvailableWithoutAuthorityViolation": false
+    }
+  ],
+  "centralDependencies": [
+    "Convergence owner must resolve the exact-source progressive release-conformance failure.",
+    "Convergence owner owns the primary shipping manifest, final Living viewport/camera composition and final one-file artifact promotion.",
+    "After integrating PR #239, convergence should rerun the exact-source release gate on the integrated SHA."
+  ],
+  "integrationNotes": [
+    "Integrate through PR #239; do not cherry-pick around the preserved merge ancestry unless the convergence owner has an explicit reason.",
+    "The checkpoint commit is evidence-only; runtime evidence applies to its immediate tested runtime parent 574dd1e16c36ca1ec7939a1d31e1f72e83be0da7.",
+    "No convergence-owned source path was modified by this lane.",
+    "No canonical physical, scientific or simulation authority is claimed by V2X-02."
+  ],
+  "finalCommitAuthentication": "Resolve the branch head after publishing this evidence-only checkpoint; exact FINAL_SHA and FINAL_TREE are reported in the final handoff and PR."
+}
