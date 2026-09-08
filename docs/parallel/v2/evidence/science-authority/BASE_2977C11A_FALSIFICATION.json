@@ -6,15 +6,9 @@
     "sha": "2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7",
     "tree": "99e6b5ff6229d9c34d381e778c5689bf2367d256",
     "launchStatus": "FULL",
-    "authorization": "explicit parallel-base authorization in Prompt 22 continuation"
+    "authorization": "explicit user authorization plus matching persistent live V2 parallel-base record"
   },
-  "authorityClasses": [
-    "CANONICAL_PROVEN",
-    "DERIVED",
-    "MODEL_DERIVED_SIMULATION",
-    "PRESENTATION_ONLY",
-    "MEASURED_RUNTIME_EVIDENCE"
-  ],
+  "authorityClasses": ["CANONICAL_PROVEN","DERIVED","MODEL_DERIVED_SIMULATION","PRESENTATION_ONLY","MEASURED_RUNTIME_EVIDENCE"],
   "productionMutationPerformed": false,
   "status": "FALSIFIED_REPAIR_REQUIRED",
   "findings": [
@@ -36,24 +30,8 @@
     {"capability":"V2X Living context inspector science claims","source":"src/bootstrap/product/v2x-context-inspector.js","shippingManifest":"config/components/v2x-living-product-composition.json","oneFileBuild":"AUTHORIZED_BASE_HOSTED_BUILD_STEP_PASS","runtimeConsumer":"Living product composition/context inspector","visibleConsequence":"SOURCE_PATH_PRESENT_BUT_AUTHORITY_DISCLOSURE_FALSIFIED","persistenceRevisit":"APPLICABLE_TO_INDIVIDUALS_BUT_AUTHORITY_SEMANTICS_FALSIFIED","exactArtifactBrowserEvidence":"WITHHELD_BROWSER_STEP_FAILED"},
     {"capability":"V2X-05 deep planet science","source":"src/v2x-05-deep-planet-science/","shippingManifest":"config/components/v2x-05-deep-planet-science.json","oneFileBuild":"AUTHORIZED_BASE_HOSTED_BUILD_STEP_PASS","runtimeConsumer":"MISSING_FROM_CENTRAL_LIVING_COMPOSITION","visibleConsequence":"NOT_PROVEN","persistenceRevisit":"NOT_PROVEN","exactArtifactBrowserEvidence":"NOT_ELIGIBLE_UNTIL_CONSUMER_EXISTS"}
   ],
-  "authorizedBaseHostedWorkflow": {
-    "workflowRunId": 34163623588,
-    "jobId": 101870265013,
-    "conclusion": "FAILURE",
-    "passedBeforeBrowser": ["Build deterministic artifact","Verify generated artifact contract","Verify deterministic clean rebuild","Verify embedded assets","Validate runtime architecture","Enforce source/rendered budgets","Check mandatory V1 subsystem ownership","Check authoritative V1 fidelity gate","Run deterministic test suites","Check universe breadth targets"],
-    "failedStep": "Run headless browser tests",
-    "postFailureConsequence": "Exact artifact source-of-truth/deployment packaging steps were not established; exact-artifact browser science evidence is not claimed."
-  },
-  "auditOracle": {
-    "files": ["tests/audit/v2-science-authority-oracle.mjs","tests/audit/v2-science-authority-oracle-tests.mjs"],
-    "commands": ["node --check tests/audit/v2-science-authority-oracle.mjs","node --check tests/audit/v2-science-authority-oracle-tests.mjs","node tests/audit/v2-science-authority-oracle-tests.mjs","node tests/audit/v2-science-authority-oracle.mjs --strict --json"],
-    "localHarnessValidation": {"status":"PASS","checks":8,"cleanFixtureFindings":0,"adversarialFixtureFindings":9,"strictAdversarialExitCode":1,"missingInputBehavior":"FAIL_CLOSED"},
-    "exactAuthorizedSourceLocalExecution": false,
-    "exactAuthorizedSourceLocalExecutionReason": "The execution container could not resolve github.com; exact source inspection and commit/tree authentication used the GitHub connector instead. This limitation is not represented as a source-level PASS."
-  },
-  "knownExternalLaneBlockers": [
-    "P22-001/P22-002/P22-009 require central Living/renderer/composition edits outside this audit lane ownership.",
-    "P22-003/P22-004/P22-005/P22-006/P22-007/P22-008 require production-domain owner corrections outside evidence/tests-only ownership.",
-    "Exact-artifact browser proof must be rerun after convergence repairs; the authorized base browser step is red."
-  ]
+  "authorizedBaseHostedWorkflow": {"workflowRunId":34163623588,"jobId":101870265013,"conclusion":"FAILURE","passedBeforeBrowser":["Build deterministic artifact","Verify generated artifact contract","Verify deterministic clean rebuild","Verify embedded assets","Validate runtime architecture","Enforce source/rendered budgets","Check mandatory V1 subsystem ownership","Check authoritative V1 fidelity gate","Run deterministic test suites","Check universe breadth targets"],"failedStep":"Run headless browser tests","postFailureConsequence":"Exact artifact source-of-truth/deployment packaging steps were not established; exact-artifact browser science evidence is not claimed."},
+  "auditOracle": {"files":["tests/audit/v2-science-authority-oracle.mjs","tests/audit/v2-science-authority-oracle-tests.mjs"],"commands":["node --check tests/audit/v2-science-authority-oracle.mjs","node --check tests/audit/v2-science-authority-oracle-tests.mjs","node tests/audit/v2-science-authority-oracle-tests.mjs","node tests/audit/v2-science-authority-oracle.mjs --strict --json"],"localHarnessValidation":{"status":"PASS","checks":8,"cleanFixtureFindings":0,"adversarialFixtureFindings":9,"strictAdversarialExitCode":1,"missingInputBehavior":"FAIL_CLOSED"},"exactAuthorizedSourceLocalExecution":false,"exactAuthorizedSourceLocalExecutionReason":"The execution container could not resolve github.com; exact source inspection and commit/tree authentication used the GitHub connector instead. This limitation is not represented as a source-level PASS."},
+  "knownExternalLaneBlockers": ["P22-001/P22-002/P22-009 require central Living/renderer/composition edits outside this audit lane ownership.","P22-003/P22-004/P22-005/P22-006/P22-007/P22-008 require production-domain owner corrections outside evidence/tests-only ownership.","Exact-artifact browser proof must be rerun after convergence repairs; the authorized base browser step is red."],
+  "liveBaseRecord": {"path":"docs/parallel/V2_PARALLEL_BASE_CURRENT.json","observedOnConvergenceSha":"3bb6cdcf1d0f932bea831b32fd6e5f21eb589088","status":"READY_FOR_MASSIVE_PARALLEL_EXECUTION","parallelLaunchStatus":"FULL","baseSha":"2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7","baseTree":"99e6b5ff6229d9c34d381e778c5689bf2367d256","authorizedPrompts":"01-23","matchesAuthorizedBase":true}
 }
