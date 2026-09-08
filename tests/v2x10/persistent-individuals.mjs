@@ -104,8 +104,8 @@ check(runtimeComponent?.source === 'src/domains/v1/individuals/provider.js' && r
 const browserProviderSource = readFileSync(new URL('../../src/domains/v1/individuals/provider.js', import.meta.url), 'utf8');
 check(browserProviderSource.includes('O.v2x10Individuals=Object.freeze') && browserProviderSource.includes('refinePopulation') && browserProviderSource.includes('mortalityAwareRefinement:true'), 'browser provider exports ledger-aware mortality-safe refinement into the one-file runtime');
 const livingInspectorSource = readFileSync(new URL('../../src/bootstrap/product/v2x-context-inspector.js', import.meta.url), 'utf8');
-check(livingInspectorSource.includes('root.OFU?.v2x10Individuals'), 'real Living context inspector consumes the shipped V2X-10 runtime export');
-const livingUsesLedgerAwareRefinement = livingInspectorSource.includes('individuals.refinePopulation(');
+check(livingInspectorSource.includes('People=O.v2x10Individuals'), 'real Living context inspector consumes the shipped V2X-10 runtime export');
+const livingUsesLedgerAwareRefinement = /People\.refinePopulation\s*\(/.test(livingInspectorSource);
 const livingDeclaresRetainedPersistence = /retainedMemoryPersistence\s*:\s*true/.test(livingInspectorSource);
 check(!livingUsesLedgerAwareRefinement && !livingDeclaresRetainedPersistence, 'convergence hook is explicit: current Living still uses legacy refine and does not claim retained persistence');
 
