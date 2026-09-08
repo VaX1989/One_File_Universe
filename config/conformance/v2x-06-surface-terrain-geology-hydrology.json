@@ -15,9 +15,18 @@
       "owner": "v2x-06-surface-terrain-geology-hydrology",
       "tier": "LANE_TARGETED",
       "command": ["node", "tests/v2x-06-surface/world-space-query.mjs"],
-      "providers": ["v2x-06.surface.world-space-query"],
+      "providers": ["v2x-06.query.world-space-surface"],
       "oracle": "ofu-v2x-06-world-space-query-oracle-1",
       "timeoutMs": 30000
+    },
+    {
+      "id": "v2x-06.surface-artifact-reachability",
+      "owner": "v2x-06-surface-terrain-geology-hydrology",
+      "tier": "LANE_TARGETED",
+      "command": ["node", "tests/v2x-06-surface/artifact-reachability.mjs"],
+      "providers": ["v2x-06.query.world-space-surface", "v2x-06.renderer.living-surface"],
+      "oracle": "ofu-v2x-06-artifact-reachability-oracle-1",
+      "timeoutMs": 60000
     },
     {
       "id": "v2x-06.surface-cross-scale",

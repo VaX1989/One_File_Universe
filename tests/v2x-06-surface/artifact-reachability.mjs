@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import crypto from 'node:crypto';
+import {execFileSync} from 'node:child_process';
+import {loadComponents} from '../../tools/extensions/components.mjs';
+const COMPONENT='v2x-06.surface.world-space-query',SOURCE='src/domains/v1/surface/world-space-query.js',PROVIDER='v2x-06.query.world-space-surface';
+const plan=loadComponents(),component=plan.find(c=>c.id===COMPONENT);assert.ok(component,'world-space component discovered');assert.equal(component.source,SOURCE);assert.equal(component.stage,'foundation');assert.equal(component.authority,'DERIVED');assert.deepEqual(component.dependencies,['v2x-06.surface.hydrology']);
+const source=fs.readFileSync(SOURCE,'utf8'),sourceSha=crypto.createHash('sha256').update(Buffer.from(source.replace(/\r\n?/g,'\n'))).digest('hex');assert.equal(component.sourceSha256,sourceSha);
+execFileSync(process.execPath,['tools/build-ofu-rendering-v09.mjs'],{stdio:'pipe',env:{...process.env}});
+const artifact=fs.readFileSync('dist/One_File_Universe.html','utf8'),manifest=JSON.parse(fs.readFileSync('dist/rendering-build-manifest.json','utf8')),entry=manifest.additiveComponents?.extensions?.find(c=>c.id===COMPONENT);
+assert.ok(entry,'world-space component in shipping manifest');assert.equal(entry.source,SOURCE);assert.equal(entry.sourceSha256,sourceSha);assert.ok(artifact.includes(`data-ofu-component="${COMPONENT}"`),'component script embedded in one-file HTML');assert.ok(artifact.includes('ofu-v2x-06-world-space-query-1'),'runtime export implementation embedded');assert.ok(artifact.includes('O.v2x06WorldSpaceQuery=Object.freeze'),'runtime export assignment embedded');assert.ok(JSON.stringify(manifest.px?.registryManifest||{}).includes(PROVIDER),'world-space provider discoverable in built registry manifest');
+const legacy='surfaceWindow';const scriptStart=artifact.indexOf(`data-ofu-component="${COMPONENT}"`),scriptEnd=artifact.indexOf('</script>',scriptStart);assert.ok(scriptStart>=0&&scriptEnd>scriptStart);const embedded=artifact.slice(scriptStart,scriptEnd);assert.equal(embedded.includes(legacy),false,'shipping query implementation must not reference legacy surfaceWindow');
+console.log(JSON.stringify({schema:'ofu-v2x-06-artifact-reachability-oracle-1',status:'PASS',component:COMPONENT,provider:PROVIDER,sourceSha256:sourceSha,artifactBytes:Buffer.byteLength(artifact),manifestReachable:true,htmlReachable:true,runtimeExportEmbedded:true,legacyFallbackReference:false,centralLivingHook:'CONVERGENCE_OWNED'},null,2));
