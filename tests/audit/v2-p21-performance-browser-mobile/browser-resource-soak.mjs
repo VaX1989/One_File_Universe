@@ -81,7 +81,8 @@ async function instrument(context){
   const registry=new WeakMap(),records=new Set(),hasWeakRef=typeof WeakRef==='function';
   const capture=o=>typeof o==='boolean'?o:!!o?.capture;
   const retire=record=>{if(record?.live){record.live=false;records.delete(record);stats.listenerRemovals++}};
-  const forget=(target,type,entry)=>{const m=registry.get(target),a=m?.get(type),i=a?.indexOf(entry)??-1;if(i>=0){a.splice(i,1);retire(entry.record)}};
+  const forgetRecord=(target,type,record)=>{const m=registry.get(target),a=m?.get(type),i=a?.findIndex(x=>x.record===record)??-1;if(i>=0){a.splice(i,1);retire(record)}};
+  const forget=(target,type,entry)=>forgetRecord(target,type,entry.record);
   proto.addEventListener=function(type,listener,opts){
    if(!listener)return add.call(this,type,listener,opts);
    let m=registry.get(this);if(!m){m=new Map();registry.set(this,m)}let a=m.get(type);if(!a){a=[];m.set(type,a)}const c=capture(opts);
@@ -91,6 +92,7 @@ async function instrument(context){
    const record={live:true,targetRef:hasWeakRef?new WeakRef(this):null,signalRef:signal&&hasWeakRef?new WeakRef(signal):null},once=!!(typeof opts==='object'&&opts?.once),entry={listener,capture:c,wrapped:listener,record};
    if(once){entry.wrapped=typeof listener==='function'?function(...args){forget(this,type,entry);return listener.apply(this,args)}:{handleEvent(event){forget(event.currentTarget,type,entry);return listener.handleEvent(event)}};}
    a.push(entry);records.add(record);stats.listenerRegistrations++;
+   if(signal&&typeof signal.addEventListener==='function'){const targetRef=record.targetRef;add.call(signal,'abort',()=>{const target=targetRef?.deref?.();if(target)forgetRecord(target,type,record);else retire(record)},{once:true})}
    return add.call(this,type,entry.wrapped,opts);
   };
   proto.removeEventListener=function(type,listener,opts){
