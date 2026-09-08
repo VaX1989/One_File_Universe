@@ -27,16 +27,21 @@ for(const name of names){
       for(let i=0;i<160;i++){const settled=await rt.reconcileWorkingSet([req('journey:'+i,{taskClass:i%7?'REFINE':'INTERACTION'})]);if(settled[0].status!=='fulfilled')throw settled[0].reason}
       const scaleLadder=['universe','galaxy','region','stellar-neighborhood','system','orbit','planet','global','regional','local','human','microscopic'],path=[...scaleLadder,...scaleLadder.slice(0,-1).reverse()];let adaptiveRuns=0;
       for(let cycle=0;cycle<12;cycle++)for(let step=0;step<path.length;step++){const scale=path[step],selected=scale==='human'&&cycle%4===0,scaleRelevancePpm=(step+cycle)%5===0?100000:650000,causalRelevancePpm=scale==='human'?800000:50000;const out=await rt.requestAdaptive(adaptiveReq(cycle+':'+step+':'+scale,{selected,scaleRelevancePpm,causalRelevancePpm}));if(!['WARM','HOT','IMMEDIATE'].includes(out.targetState))throw new Error('unexpected adaptive state '+out.targetState);adaptiveRuns++}
+      const streamExecutor=OFU.v2x01WorkerExecutor.create({maxStreamChunks:8,maxChunkBytes:1024,timeoutMs:5000});
+      const streamProgram=`async function*(q){for(let i=0;i<3;i++)yield{index:i,id:q.id};return{done:true,id:q.id}}`;
+      streamExecutor.register({id:'worker.browser-stream',version:'1.0.0',direct:async()=>({ok:true}),workerStreamProgram:streamProgram,directStream:async function*(q){for(let i=0;i<3;i++)yield{index:i,id:q.id};return{done:true,id:q.id}}});
+      const streamed=[];const streamResult=await streamExecutor.executeStream({handlerId:'worker.browser-stream',payload:{id:'browser-stream'},preferWorker:true,onChunk:async(chunk,index)=>{streamed.push({index,value:chunk.index});await sleep(1)}});const streamSnapshot=streamExecutor.snapshot();
       const productPacket=rt.runtimePacket();
       const slow=rt.request(req('context-loss',{state:'HOT',taskClass:'REFINE',delay:200}));await sleep(20);const loss=rt.handleContextLoss();let slowRejected=false;try{await slow}catch{slowRejected=true}const afterLoss=await rt.drain();
       const warm=await rt.request(req('warm',{state:'WARM',taskClass:'PREFETCH'}));const beforePressure=rt.snapshot();const pressure=rt.handleMemoryPressure('CRITICAL');const final=await rt.drain(),finalPacket=rt.runtimePacket();
-      return{loss,slowRejected,afterLoss,warm,beforePressure,pressure,final,productPacket,finalPacket,adaptiveRuns,scaleLadder};
+      return{loss,slowRejected,afterLoss,warm,beforePressure,pressure,final,productPacket,finalPacket,adaptiveRuns,scaleLadder,streamResult,streamed,streamSnapshot};
     });
     assert.equal(ev.final.workers.available.blobWorker,true);
     assert(ev.final.workers.metrics.workerRuns>0);
     assert(ev.final.workers.metrics.cancelled>0);
     assert.equal(ev.final.metrics.fallbackResults,0);
     assert.equal(ev.final.metrics.fallbackAdmissionRejects,0);
+    assert.equal(ev.streamResult.mode,'WORKER_STREAM');assert.equal(ev.streamResult.chunks,3);assert.deepEqual(ev.streamResult.value,{done:true,id:'browser-stream'});assert.deepEqual(ev.streamed,[{index:0,value:0},{index:1,value:1},{index:2,value:2}]);assert.equal(ev.streamSnapshot.metrics.streamWorkerRuns,1);assert.equal(ev.streamSnapshot.metrics.streamChunks,3);assert.equal(ev.streamSnapshot.metrics.streamAcks,3);assert.equal(ev.streamSnapshot.metrics.streamFailures,0);
     assert.equal(ev.slowRejected,true);
     assert(ev.loss.cancelled>=1);
     assert.equal(ev.afterLoss.resources.used.gpuEstimateBytes,0);
@@ -61,7 +66,7 @@ for(const name of names){
     assert.deepEqual(ev.scaleLadder,['universe','galaxy','region','stellar-neighborhood','system','orbit','planet','global','regional','local','human','microscopic']);
     const unexpected=requests.filter(x=>x!==url&&!x.startsWith('blob:')&&!x.startsWith('data:')&&!x.startsWith('about:'));
     assert.equal(unexpected.length,0);
-    evidence.push({browser:name,directFile:true,offline:true,exactArtifactAdaptiveRuntime:true,adaptiveRuns:ev.adaptiveRuns,scaleLadder:ev.scaleLadder,runtimePacketContract:ev.productPacket.contract,workerRuns:ev.final.workers.metrics.workerRuns,workerCancellations:ev.final.workers.metrics.cancelled,contextLossWorkerCancellation:true,warmGpuFree:true,peakAdmissions:ev.final.scheduler.metrics.peakAdmissions,peak:ev.final.resources.peak});
+    evidence.push({browser:name,directFile:true,offline:true,exactArtifactAdaptiveRuntime:true,adaptiveRuns:ev.adaptiveRuns,scaleLadder:ev.scaleLadder,runtimePacketContract:ev.productPacket.contract,workerRuns:ev.final.workers.metrics.workerRuns,streamWorkerRuns:ev.streamSnapshot.metrics.streamWorkerRuns,streamChunks:ev.streamSnapshot.metrics.streamChunks,workerCancellations:ev.final.workers.metrics.cancelled,contextLossWorkerCancellation:true,warmGpuFree:true,peakAdmissions:ev.final.scheduler.metrics.peakAdmissions,peak:ev.final.resources.peak});
   }finally{await browser.close()}
 }
 
