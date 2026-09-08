@@ -7,34 +7,93 @@ import { fileURLToPath } from 'node:url';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '../..');
 const failures = [];
-const notes = [];
+const warnings = [];
+const checks = [];
+const jsonMode = process.argv.includes('--json');
 
-if (!/^24\.20\./.test(process.versions.node)) failures.push(`Node 24.20.x required; running ${process.versions.node}`);
-else notes.push(`Node ${process.versions.node}: OK`);
+function exec(command, args = []) {
+  return execFileSync(command, args, { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+}
 
-for (const file of ['LICENSE','CONTRIBUTING.md','docs/CONSTITUTION.md','config/governance/areas.json','config/governance/risk-policy.json']) {
-  if (!fs.existsSync(path.join(ROOT, file))) failures.push(`missing ${file}`);
+function pass(id, detail) {
+  checks.push({ id, status: 'PASS', detail });
+}
+function warn(id, detail) {
+  warnings.push({ id, detail });
+  checks.push({ id, status: 'WARN', detail });
+}
+function fail(id, detail) {
+  failures.push({ id, detail });
+  checks.push({ id, status: 'FAIL', detail });
+}
+
+if (!/^24\.20\./.test(process.versions.node)) fail('node', `Node 24.20.x required; running ${process.versions.node}`);
+else pass('node', `Node ${process.versions.node}`);
+
+for (const file of ['LICENSE','CONTRIBUTING.md','docs/CONSTITUTION.md','config/governance/areas.json','config/governance/risk-policy.json','config/governance/contribution-policy.json']) {
+  if (!fs.existsSync(path.join(ROOT, file))) fail(`file:${file}`, `Missing required file ${file}`);
 }
 
 try {
-  const gitRoot = execFileSync('git', ['rev-parse', '--show-toplevel'], { cwd: ROOT, encoding: 'utf8' }).trim();
-  if (path.resolve(gitRoot) !== ROOT) failures.push(`git root mismatch: ${gitRoot}`);
-  else notes.push('Git repository root: OK');
-} catch {
-  failures.push('git repository could not be inspected');
-}
-
-try {
-  const validation = execFileSync(process.execPath, [path.join(ROOT, 'tools/contrib/validate-governance.mjs')], { cwd: ROOT, encoding: 'utf8' }).trim();
-  notes.push(`Governance validation: ${validation}`);
+  const gitRoot = exec('git', ['rev-parse', '--show-toplevel']);
+  if (path.resolve(gitRoot) !== ROOT) fail('git-root', `Git root mismatch: ${gitRoot}`);
+  else pass('git-root', gitRoot);
+  const gitVersion = exec('git', ['--version']);
+  pass('git-version', gitVersion);
+  const branch = exec('git', ['branch', '--show-current']);
+  if (branch) pass('git-branch', branch);
+  else warn('git-branch', 'Detached HEAD; valid for exact-SHA certification, unusual for normal contribution work');
+  const changes = exec('git', ['status', '--porcelain']).split(/\r?\n/).filter(Boolean);
+  if (changes.length) warn('working-tree', `${changes.length} uncommitted path(s); doctor does not require a clean tree`);
+  else pass('working-tree', 'Clean');
 } catch (error) {
-  failures.push(`governance validation failed: ${String(error.stdout || error.message).trim()}`);
+  fail('git', `Git repository could not be inspected: ${String(error.stderr || error.message).trim()}`);
 }
 
-console.log('One File Universe contributor doctor');
-for (const note of notes) console.log(`  ${note}`);
-if (failures.length) {
-  for (const failure of failures) console.error(`  ERROR: ${failure}`);
-  process.exit(1);
+try {
+  const py = exec('python3', ['-c', 'import sys; print(".".join(map(str, sys.version_info[:3])))']);
+  if (/^3\.13\./.test(py)) pass('python', `Python ${py}`);
+  else warn('python', `Python ${py}; canonical hosted oracle evidence currently uses Python 3.13.x`);
+} catch {
+  warn('python', 'python3 not found; some cross-runtime/oracle evidence cannot be reproduced locally');
 }
-console.log('  Ready for contribution work.');
+
+for (const [id, script] of [
+  ['governance', 'tools/contrib/validate-governance.mjs'],
+  ['control-plane-selftest', 'tools/contrib/control-plane-selftest.mjs']
+]) {
+  try {
+    const output = exec(process.execPath, [path.join(ROOT, script)]);
+    pass(id, output);
+  } catch (error) {
+    fail(id, String(error.stdout || error.stderr || error.message).trim());
+  }
+}
+
+try {
+  const output = exec(process.execPath, [path.join(ROOT, 'tools/contrib/generate-codeowners.mjs'), '--check']);
+  pass('codeowners', output);
+} catch (error) {
+  fail('codeowners', String(error.stdout || error.stderr || error.message).trim());
+}
+
+const result = {
+  status: failures.length ? 'FAIL' : 'PASS',
+  suite: 'ofu-contributor-doctor-2',
+  root: ROOT,
+  checks,
+  warnings,
+  failures,
+  next: failures.length
+    ? 'Resolve FAIL checks before treating the environment as contribution-ready.'
+    : 'Use `npm run contrib:explain -- <path>` before editing an unfamiliar subsystem.'
+};
+
+if (jsonMode) console.log(JSON.stringify(result, null, 2));
+else {
+  console.log('One File Universe contributor doctor');
+  for (const check of checks) console.log(`  ${check.status.padEnd(4)} ${check.id}: ${check.detail}`);
+  console.log(`  RESULT: ${result.status}${warnings.length ? ` (${warnings.length} warning(s))` : ''}`);
+  console.log(`  NEXT: ${result.next}`);
+}
+if (failures.length) process.exit(1);

@@ -16,14 +16,14 @@ Until the final contributor agreement and durable acceptance mechanism are legal
 
 1. Start from the branch/base identified by the current development or issue instructions; do not assume historical `main` is always the active development base.
 2. Run `npm run contrib:doctor`.
-3. Choose a focused branch (`feature/`, `fix/`, `research/`, `docs/`, `governance/`, or another project-established lane prefix).
-4. Identify the smallest affected contribution area and risk class.
-5. Identify affected constitutional contracts/ADRs/RFCs.
+3. Use `npm run contrib:explain -- <path>` for unfamiliar paths before editing them.
+4. Choose a focused branch (`feature/`, `fix/`, `research/`, `docs/`, `governance/`, or another project-established lane prefix).
+5. Identify affected constitutional contracts/ADRs/RFCs and whether a Contribution Unit is required.
 6. Add or update tests before claiming verification.
 7. Run the narrow relevant tests, then the required gate for the risk class.
 8. Open a pull request using the repository template and report executed and unexecuted evidence separately.
 
-## Contribution areas and risk
+## Contribution areas, ownership and risk
 
 Machine-readable area ownership and change risk live in:
 
@@ -31,13 +31,29 @@ Machine-readable area ownership and change risk live in:
 - `config/governance/ownership.json`
 - `config/governance/risk-policy.json`
 
-You can classify paths with:
+Inspect one or more paths with:
+
+```bash
+npm run contrib:explain -- src/path/file.js tests/path/test.mjs
+```
+
+For a compact risk-only view:
 
 ```bash
 npm run contrib:classify -- src/path/file.js tests/path/test.mjs
 ```
 
-The classifier is a routing aid, not authority to downgrade a change whose semantics are more dangerous than its path suggests. When uncertain, choose the higher risk and ask a maintainer.
+The exact PR control plane computes the aggregate risk and areas from the complete base...head diff. A changed path with no declared area fails closed instead of receiving accidental ownership.
+
+Path classification is a lower bound, not authority to downgrade a semantically more dangerous change. If a leaf-looking file changes canonical meaning, persistence compatibility, scientific authority, security boundaries or constitutional policy, declare and review the higher semantic risk.
+
+## Contribution Units
+
+Significant new providers, canonical authorities, persistence codecs, render backends, cross-domain subsystems and durable control-plane surfaces should have a machine-readable Contribution Unit. See [`docs/community/CONTRIBUTION_UNITS.md`](docs/community/CONTRIBUTION_UNITS.md) and `config/governance/contribution-unit.schema.json`.
+
+A Contribution Unit records what a subsystem owns, its authority and determinism class, canonical/persistence impact, dependencies/capabilities, tests/evidence, resource budget and whether it is required in the shipping one-file artifact.
+
+Legacy systems are migrated incrementally; do not pretend historical coverage is complete.
 
 ## Required PR questions
 
@@ -56,10 +72,11 @@ A substantive PR should make it possible to answer:
 - What relevant evidence was **not** executed?
 - Is an RFC or new/superseding ADR required?
 - Are all third-party code/data/assets and licenses identified?
+- Does a significant new subsystem need a Contribution Unit or model card?
 
 ## Evidence discipline
 
-Code existence is not verification. A test that has not run is not a PASS. A browser, operating system, physical device, screen reader, GPU, dataset, or scientific oracle that was not tested is unverified.
+Code existence is not verification. A test that has not run is not a PASS. A browser, operating system, physical device, screen reader, GPU, dataset, scientific oracle, security setting or repository-admin feature that was not tested/observed is unverified.
 
 Use explicit states such as `NOT_RUN`, `NOT_VERIFIED`, `NOT_MEASURABLE`, `UNSUPPORTED`, or `UNKNOWN` rather than silently upgrading missing evidence.
 
@@ -69,6 +86,12 @@ Scientific/model contributions must preserve authority, model fidelity, uncertai
 
 Research is welcome even when it is not ready for product promotion. Research-only code must not silently become canonical truth.
 
+## Third-party and data provenance
+
+Unknown licensing status is not permission. New third-party code, data or assets should have the provenance required by `config/governance/ip-provenance-policy.json`; shipping-embedded data must have explicit redistribution rights. See [`THIRD_PARTY_POLICY.md`](THIRD_PARTY_POLICY.md) and [`docs/community/IP_PROVENANCE.md`](docs/community/IP_PROVENANCE.md).
+
+OFU targets REUSE/SPDX-style machine-readable licensing, but it does not claim complete REUSE compliance until the historical corpus is actually audited and migrated.
+
 ## AI-assisted contributions
 
 AI assistance is allowed. The submitter remains responsible for correctness, licensing, provenance, security, and evidence. Material AI assistance should be disclosed when it changes reviewer risk. See [`docs/community/AI_ASSISTED_CONTRIBUTIONS.md`](docs/community/AI_ASSISTED_CONTRIBUTIONS.md).
@@ -76,6 +99,8 @@ AI assistance is allowed. The submitter remains responsible for correctness, lic
 ## Architecture and RFCs
 
 Local changes generally do not need RFCs. Durable public interfaces, authority transfers, compatibility changes, cross-domain contracts, or constitutional proposals normally do. See [`docs/community/RFC_PROCESS.md`](docs/community/RFC_PROCESS.md).
+
+Accepted durable decisions are recorded in ADRs. An ADR does not become low-risk merely because it is Markdown.
 
 ## Experiments
 
@@ -85,13 +110,11 @@ OFU encourages competing prototypes for numeric representations, WASM strategy, 
 
 Large generated HTML artifacts should not be committed as ordinary source unless a phase-specific policy explicitly requires it. The repository is the source of truth; release artifacts are reproducibly generated products.
 
-## Third-party material
-
-Unknown licensing status is not permission. Embedded material must satisfy [`THIRD_PARTY_POLICY.md`](THIRD_PARTY_POLICY.md), especially because OFU's strict product redistributes its dependencies and data inside one file.
-
-## Community behavior
+## Community behavior and security
 
 Participation is governed by [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md). Rigorous criticism is welcome; personal attacks, harassment, and attempts to purchase or pressure technical/scientific authority are not.
+
+Potential vulnerabilities follow [`SECURITY.md`](SECURITY.md). Never post exploitable or sensitive security details in a normal public issue.
 
 ## Normative language
 
