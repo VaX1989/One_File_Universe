@@ -19,6 +19,17 @@ assert.notEqual(O.v2x01CacheKey.create(base).digest,O.v2x01CacheKey.create({...b
 assert.throws(()=>O.v2x01Contracts.budgets({gpuEstimateBytez:1}),/unknown field/);
 assert.throws(()=>O.v2x01AdaptiveScheduler.create({budgets:{active:1,queue:2}}).schedule({id:'bad-preemptible',taskClass:'REFINE',state:'WARM',run:async()=>1,preemptible:'yes'}),/preemptible/);
 
+// Adaptive state is runtime policy over normalized central signals; it does not infer camera or scale semantics.
+const adaptive=O.v2x01Contracts.adaptiveState;
+assert.equal(adaptive({visible:false,selected:true,scaleRelevancePpm:0,causalRelevancePpm:0}).state,'IMMEDIATE');
+assert.equal(adaptive({visible:true,selected:false,scaleRelevancePpm:0,causalRelevancePpm:0}).state,'WARM');
+assert.equal(adaptive({visible:false,selected:false,scaleRelevancePpm:600000,causalRelevancePpm:0}).state,'HOT');
+assert.equal(adaptive({visible:false,selected:false,scaleRelevancePpm:0,causalRelevancePpm:600000}).state,'HOT');
+assert.equal(adaptive({visible:false,selected:false,scaleRelevancePpm:400000,causalRelevancePpm:0,previousState:'HOT'}).reason,'HOT_HYSTERESIS');
+assert.equal(adaptive({visible:false,selected:false,scaleRelevancePpm:100000,causalRelevancePpm:0,previousState:'WARM'}).reason,'WARM_HYSTERESIS');
+assert.equal(adaptive({visible:false,selected:false,scaleRelevancePpm:0,causalRelevancePpm:0}).state,'COLD');
+assert.throws(()=>adaptive({visible:true,selected:false,scaleRelevancePpm:1000001,causalRelevancePpm:0}),/scale relevance ppm/);
+
 // State priority must remain responsive without starving lower lifecycle states.
 const prio=O.v2x01AdaptiveScheduler.create({budgets:{active:1,queue:4}});
 let unblock;
@@ -49,6 +60,15 @@ let interactionsStarted=0,prefetchObservedAt=-1;const interactionPromises=[];
 const waitingPrefetch=classFair.schedule({id:'task.waiting-prefetch',taskClass:'PREFETCH',state:'WARM',run:async()=>{prefetchObservedAt=interactionsStarted;return'prefetch'}});
 function enqueueInteraction(n){const handle=classFair.schedule({id:'task.interaction-chain-'+n,taskClass:'INTERACTION',state:'IMMEDIATE',preemptible:false,run:async()=>{interactionsStarted++;if(n<40)enqueueInteraction(n+1);return n}});interactionPromises.push(handle.promise.catch(()=>{}))}
 enqueueInteraction(1);assert.equal(await waitingPrefetch.promise,'prefetch');assert(prefetchObservedAt>=1&&prefetchObservedAt<=8,'PREFETCH exceeded deterministic cross-class starvation bound');await classFair.drain();await Promise.all(interactionPromises);assert.equal(interactionsStarted,40);
+
+// Same-class terrain flood must not starve life/civilization/matter workloads.
+const domainFair=O.v2x01AdaptiveScheduler.create({budgets:{active:1,queue:32}});let releaseDomainGate;const domainGate=domainFair.schedule({id:'domain.gate',taskClass:'REFINE',state:'HOT',workloadDomain:'terrain',run:()=>new Promise(r=>{releaseDomainGate=r})});await sleep(0);const domainOrder=[],domainPromises=[];
+for(let i=0;i<12;i++){const hnd=domainFair.schedule({id:'domain.terrain.'+i,taskClass:'REFINE',state:'HOT',workloadDomain:'terrain',run:async()=>{domainOrder.push('terrain');return i}});domainPromises.push(hnd.promise)}
+for(const domain of ['life','civilization','matter']){const hnd=domainFair.schedule({id:'domain.'+domain,taskClass:'REFINE',state:'WARM',workloadDomain:domain,run:async()=>{domainOrder.push(domain);return domain}});domainPromises.push(hnd.promise)}
+releaseDomainGate();await domainGate.promise;await Promise.all(domainPromises);for(const domain of ['life','civilization','matter'])assert(domainOrder.indexOf(domain)>=0&&domainOrder.indexOf(domain)<=3,domain+' workload starved behind terrain flood');const domainSnap=domainFair.snapshot();assert.equal(domainSnap.metrics.startedByWorkload.terrain,13);assert.equal(domainSnap.metrics.startedByWorkload.life,1);assert.equal(domainSnap.metrics.startedByWorkload.civilization,1);assert.equal(domainSnap.metrics.startedByWorkload.matter,1);assert.equal(domainSnap.fairness.workloadPolicy,'OLDEST_LAST_SERVED_THEN_FIFO');
+
+// Returning workloads must not be penalized by their historical dispatch count.
+const returningFair=O.v2x01AdaptiveScheduler.create({budgets:{active:1,queue:32}});for(let i=0;i<16;i++)await returningFair.schedule({id:'returning.prime.'+i,taskClass:'REFINE',state:'HOT',workloadDomain:'terrain',run:async()=>i}).promise;let returningRelease;const returningGate=returningFair.schedule({id:'returning.gate',taskClass:'REFINE',state:'HOT',workloadDomain:'gate',run:()=>new Promise(r=>{returningRelease=r})});await sleep(0);const returningOrder=[],returningPromises=[];for(let i=0;i<16;i++)returningPromises.push(returningFair.schedule({id:'returning.life.'+i,taskClass:'REFINE',state:'HOT',workloadDomain:'life',run:async()=>{returningOrder.push('life')}}).promise);returningPromises.push(returningFair.schedule({id:'returning.terrain',taskClass:'REFINE',state:'HOT',workloadDomain:'terrain',run:async()=>{returningOrder.push('terrain')}}).promise);returningRelease();await returningGate.promise;await Promise.all(returningPromises);assert(returningOrder.indexOf('terrain')>=0&&returningOrder.indexOf('terrain')<=1,'historically busy terrain workload was starved after returning');
 
 // Direct interaction still preempts lower-priority cooperative work.
 const sch=O.v2x01AdaptiveScheduler.create({budgets:{active:1,queue:4}});
@@ -82,6 +102,11 @@ rt.registerMaterializer({providerId:'provider.test',domain:'test',modelVersion:'
   return{identity:q.durable.identity,semanticDigest:q.semanticDigest,state:q.semantic.returnState||q.targetState,cpuEstimateBytes:20,gpuEstimateBytes:q.targetState==='WARM'?0:20,entities:1,operations:5,transferBytes:1,value:{v:q.semantic.v}};
 }});
 const req=(c,d=0,state='HOT',taskClass='REFINE',gpu=30,semanticExtra={})=>({durable:{identity:{providerId:'provider.test',entityId:h('same'),representationId:'primary'},commitmentDigest:h(c),historyDigest:h('history')},targetState:state,taskClass,semantic:{v:c,delay:d,...semanticExtra},presentation:{},estimate:{cpuEstimateBytes:30,gpuEstimateBytes:gpu,entities:1,operations:10,transferBytes:2}});
+const adaptiveReq=(id,signals,taskClass='REFINE',gpu=30)=>({durable:{identity:{providerId:'provider.test',entityId:h('adaptive:'+id),representationId:'primary'},commitmentDigest:h('adaptive-c:'+id),historyDigest:h('history')},taskClass,signals,semantic:{v:'adaptive:'+id},presentation:{},estimate:{cpuEstimateBytes:30,gpuEstimateBytes:gpu,entities:1,operations:10,transferBytes:2}});
+assert.equal(typeof rt.requestAdaptive,'function');assert.equal(typeof rt.runtimePacket,'function');
+const adaptiveWarm=await rt.requestAdaptive(adaptiveReq('visible',{visible:true,selected:false,scaleRelevancePpm:0,causalRelevancePpm:0},'REFINE',0));assert.equal(adaptiveWarm.targetState,'WARM');assert.equal(adaptiveWarm.adaptiveDecision.reason,'VISIBLE');
+const adaptiveSelected=await rt.requestAdaptive(adaptiveReq('selected',{visible:true,selected:true,scaleRelevancePpm:900000,causalRelevancePpm:900000},'INTERACTION',30));assert.equal(adaptiveSelected.targetState,'IMMEDIATE');assert.equal(adaptiveSelected.adaptiveDecision.reason,'SELECTED');
+const runtimePacket=rt.runtimePacket();assert.equal(runtimePacket.contract,'ofu-v2x01-runtime-packet-1');assert.equal(runtimePacket.authority,'MEASURED_RUNTIME_EVIDENCE');assert.equal(runtimePacket.adaptivePolicyVersion,O.v2x01Contracts.ADAPTIVE_POLICY_VERSION);assert(runtimePacket.metrics.adaptiveDecisions>=2);assert(runtimePacket.scheduler.metrics.startedByWorkload.test>=2);assert(Object.values(runtimePacket.centralAuthorityClaims).every(x=>x===false));
 
 const old=rt.request(req('old',30));await sleep(5);const fresh=rt.request(req('new'));await old.catch(()=>{});assert.equal((await fresh).commitmentDigest,h('new'));
 await assert.rejects(rt.request(req('wrong-state',0,'HOT','REFINE',30,{returnState:'WARM'})),/state mismatch/);
@@ -123,4 +148,4 @@ const p1=req('prefetch-low',0,'WARM','PREFETCH',0),p2=req('prefetch-high',0,'WAR
 const selected=pf.plan({intentSnapshot:{direction:'forward'},candidates:[{request:p1,priority:1,distanceHint:1},{request:p2,priority:2,distanceHint:2}]});
 assert.equal(selected.length,1);assert.equal(selected[0].durable.commitmentDigest,h('prefetch-high'));assert.equal(pf.snapshot().metrics.duplicatesDropped,1);
 
-console.log(JSON.stringify({status:'PASS',oracle:'V2X01_RUNTIME_TARGETED_INVARIANTS',starvationBound:{sameClassImmediateStartsBeforeWarm:lowObservedAt,crossClassInteractionsBeforePrefetch:prefetchObservedAt},snapshot:snap,detachedSnapshot:detachedSnap,fallbackSnapshot:fallbackSnap,releaseSnapshot:releaseSnap,quarantineSnapshot:quarantineSnap,prefetch:pf.snapshot()}));
+console.log(JSON.stringify({status:'PASS',oracle:'V2X01_RUNTIME_TARGETED_INVARIANTS',generation:'V2_RUNTIME_2',starvationBound:{sameClassImmediateStartsBeforeWarm:lowObservedAt,crossClassInteractionsBeforePrefetch:prefetchObservedAt,workloadOrder:domainOrder.slice(0,8)},adaptivePolicy:{version:O.v2x01Contracts.ADAPTIVE_POLICY_VERSION,packet:runtimePacket},snapshot:snap,detachedSnapshot:detachedSnap,fallbackSnapshot:fallbackSnap,releaseSnapshot:releaseSnap,quarantineSnapshot:quarantineSnap,prefetch:pf.snapshot()}));
