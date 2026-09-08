@@ -103,6 +103,7 @@ check(packet1.commands.every(x=>x.authority==='PRESENTATION_ONLY'),'all embodime
 check(packet1.claims.physicalCityGeometryClaim===false&&packet1.claims.physicalTransportGeometryClaim===false&&packet1.claims.physicalResourceGeometryClaim===false&&packet1.claims.canonicalHistoryClaim===false,'embodiment refuses unsupported physical/canonical claims');
 check(packet1.requiresAdvancedComposition===true&&packet1.requiresV2x07PlacementReconciliation===true&&packet1.requiresConvergenceOwnerComposition===true,'embodiment preserves advanced-model, V2X-07 placement and convergence composition boundaries');
 check(packet1.commandCount<=packet1.limits.commands&&packet1.operations<=packet1.limits.operations,'embodiment respects hard command and operation budgets');
+check(packet1.operations===packet1.commandCount&&packet1.operationAccountingScope==='EMITTED_PRESENTATION_COMMANDS_ONLY','embodiment operation accounting is explicit and limited to emitted presentation commands');
 const settlementBody=packet1.commands.find(x=>x.kind==='SETTLEMENT_EMBODIMENT');
 check(settlementBody.visualState==='ACTIVE'&&settlementBody.urbanFamily==='PORT_CLUSTER'&&settlementBody.isolationRiskPpm!==null,'visible settlement body is causally connected to current state, urban model and resilience');
 const routeBody=packet1.commands.find(x=>x.kind==='ROUTE_NETWORK_EMBODIMENT'&&x.sourceEdgeId==='edge-1');
