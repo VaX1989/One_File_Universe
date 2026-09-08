@@ -1,6 +1,6 @@
 (function(root){
 'use strict';
-const O=root.OFU=root.OFU||{},C=O.pxContracts,R=O.v2x01Contracts,K=O.v2x01CacheKey,S=O.v2x01AdaptiveScheduler,L=O.v2x01ResourceLedger,W=O.v2x01WorkerExecutor,V='ofu-v2x01-materialization-runtime-6';
+const O=root.OFU=root.OFU||{},C=O.pxContracts,R=O.v2x01Contracts,K=O.v2x01CacheKey,S=O.v2x01AdaptiveScheduler,L=O.v2x01ResourceLedger,W=O.v2x01WorkerExecutor,V='ofu-v2x01-materialization-runtime-7';
 if(!C||!R||!K||!S||!L)throw Error('V2X-01 materialization dependencies');
 function fail(c,m){const e=Error('OFU V2X-01 '+c+': '+m);e.code=c;return e}
 function create(o={}){
@@ -71,8 +71,9 @@ function create(o={}){
   async function requestAdaptive(x){
     C.assert(x&&typeof x==='object'&&!Array.isArray(x),'SCHEMA','adaptive materialization request');C.keys(x,['durable','taskClass','semantic','presentation','estimate','signals'],['preferWorker']);if(x.preferWorker!==undefined)C.assert(typeof x.preferWorker==='boolean','SCHEMA','preferWorker');
     const durable=R.durable(x.durable),signalsInput=C.data(x.signals,{bytes:4096,nodes:64});C.keys(signalsInput,['visible','selected','scaleRelevancePpm','causalRelevancePpm']);const previousState=existingStateForDurable(durable),decision=R.adaptiveState({...signalsInput,previousState});
+    const ceiling=R.estimate(x.estimate),estimate=decision.state==='COLD'?{cpuEstimateBytes:0,gpuEstimateBytes:0,entities:0,operations:0,transferBytes:0}:decision.state==='WARM'?{...ceiling,gpuEstimateBytes:0}:ceiling;
     m.adaptiveDecisions++;m.adaptiveByState[decision.state]++;m.adaptiveByReason[decision.reason]=(m.adaptiveByReason[decision.reason]||0)+1;lastAdaptiveDecision=C.data({providerId:durable.identity.providerId,entityId:durable.identity.entityId,representationId:durable.identity.representationId,previousState,state:decision.state,reason:decision.reason,scorePpm:decision.scorePpm,signals:decision.signals});
-    const out=await request({durable:x.durable,targetState:decision.state,taskClass:x.taskClass,semantic:x.semantic,presentation:x.presentation,estimate:x.estimate,preferWorker:x.preferWorker});
+    const out=await request({durable:x.durable,targetState:decision.state,taskClass:x.taskClass,semantic:x.semantic,presentation:x.presentation,estimate,preferWorker:x.preferWorker});
     return C.data({...out,adaptiveDecision:{policyVersion:decision.policyVersion,previousState,state:decision.state,reason:decision.reason,scorePpm:decision.scorePpm,signals:decision.signals}},{bytes:65536,nodes:1024});
   }
   async function reconcileWorkingSet(xs){C.assert(Array.isArray(xs)&&xs.length<=max,'BUDGET','working set');const want=new Set();for(const x of xs){const key=logical(norm(x));C.assert(!want.has(key),'DUPLICATE','working set logical identity '+key);want.add(key)}for(const e of [...entries.values()])if(!want.has(e.logicalKey)){e.pinned=false;release(e,'working-set')}return Promise.allSettled(xs.map(request))}
