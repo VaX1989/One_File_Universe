@@ -2,6 +2,7 @@
 'use strict';
 const O=root.OFU=root.OFU||{};
 const VERSION='ofu-v2x14-living-audio-controller-6',AUTHORITY='PRESENTATION_ONLY';
+const POLL_INTERVAL_MS=600;
 const clamp=v=>Math.max(0,Math.min(1,Number.isFinite(Number(v))?Number(v):0));
 function normalized(base,next={}){return Object.freeze({enabled:next.enabled===undefined?base.enabled:next.enabled===true,muted:next.muted===undefined?base.muted:next.muted===true,volume:next.volume===undefined?base.volume:clamp(next.volume),reducedSensory:next.reducedSensory===undefined?base.reducedSensory:next.reducedSensory===true});}
 const same=(a,b)=>a.enabled===b.enabled&&a.muted===b.muted&&a.volume===b.volume&&a.reducedSensory===b.reducedSensory;
@@ -32,15 +33,19 @@ let mounted=null,attempts=0;
 async function autoMount(){
  if(mounted||typeof root.document==='undefined')return mounted;const product=O.v1LivingProduct,controlsApi=O.systemicAudioControlsV1;if(!product||!O.v2x14LivingAudioContext||!O.systemicAudioV1||!controlsApi){if(++attempts<120&&root.setTimeout)root.setTimeout(autoMount,50);return null;}const host=root.document.querySelector('[data-workspace-panel="lab"]')||root.document.getElementById('living-panel');if(!host){if(++attempts<120&&root.setTimeout)root.setTimeout(autoMount,50);return null;}
  const controller=create({product}),section=root.document.createElement('section');section.setAttribute('data-v2x14-audio','presentation-only');section.setAttribute('aria-label','Optional systemic audio');const h=root.document.createElement('h3');h.textContent='Systemic audio';const note=root.document.createElement('p');note.textContent='Optional presentation-only audio. It never indicates facts that are absent from the current modeled context.';const status=root.document.createElement('p');status.setAttribute('data-v2x14-audio-status','true');status.setAttribute('role','status');status.setAttribute('aria-live','polite');status.setAttribute('aria-atomic','true');section.append(h,note,status);host.appendChild(section);
- let activationRequested=false,lastError=null,disposedMount=false,self=null;
+ let activationRequested=false,lastError=null,disposedMount=false,self=null,timer=null,timerStarts=0,timerStops=0,maxConcurrentTimers=0;
  const renderStatus=()=>{const text=lastError?'Systemic audio error. Exploration remains fully usable without audio.':statusMessage(controller.snapshot());if(status.textContent!==text)status.textContent=text;return text;};
  const settle=promise=>Promise.resolve(promise).then(value=>{lastError=null;renderStatus();return value;},error=>{lastError=String(error?.message||error);renderStatus();throw error;});
- const bridge={setControls(value){const state=controller.snapshot();let promise;if(value?.enabled&&state.activated!==true&&!activationRequested){activationRequested=true;promise=controller.activate(value).finally(()=>{activationRequested=false;});}else promise=controller.setControls(value);return settle(promise);}};
+ const shouldPoll=()=>{const s=controller.snapshot();return !disposedMount&&s.audibleRequested===true&&s.disposed!==true;};
+ function stopTimer(){if(timer===null)return;if(root.clearInterval)root.clearInterval(timer);timer=null;timerStops++;}
+ const tick=()=>{if(!shouldPoll()){stopTimer();return;}settle(controller.sync()).catch(()=>{});};
+ function updateTimer(){if(shouldPoll()){if(timer===null&&root.setInterval){timer=root.setInterval(tick,POLL_INTERVAL_MS);timerStarts++;maxConcurrentTimers=Math.max(maxConcurrentTimers,1);}}else stopTimer();}
+ const bridge={setControls(value){const state=controller.snapshot();let promise;if(value?.enabled&&state.activated!==true&&!activationRequested){activationRequested=true;promise=controller.activate(value).finally(()=>{activationRequested=false;});}else promise=controller.setControls(value);return settle(promise).finally(updateTimer);}};
  const controls=controlsApi.mount(section,bridge,{document:root.document,initial:{enabled:false,volume:0.5,muted:false,reducedSensory:false}});renderStatus();
- const tick=()=>{const s=controller.snapshot();if(s.activated&&s.controls.enabled&&!s.visibilitySuspended&&!s.disposed)settle(controller.sync()).catch(()=>{});};let timer=root.setInterval?root.setInterval(tick,600):null;
- const visibility=()=>settle(controller.setVisibility(root.document.visibilityState!=='hidden')).catch(()=>{});root.document.addEventListener('visibilitychange',visibility);visibility();
- async function disposeMount(){if(disposedMount)return controller.dispose();disposedMount=true;if(timer!==null&&root.clearInterval)root.clearInterval(timer);timer=null;root.document.removeEventListener('visibilitychange',visibility);controls.dispose();if(section.parentNode)section.parentNode.removeChild(section);const result=await controller.dispose();if(mounted===self)mounted=null;if(root.__OFU_V2X14_AUDIO__===self)delete root.__OFU_V2X14_AUDIO__;return result;}
- self=Object.freeze({controller,controls,section,status,snapshot:()=>controller.snapshot(),statusText:()=>status.textContent,activationPending:()=>activationRequested,dispose:disposeMount});mounted=self;root.__OFU_V2X14_AUDIO__=mounted;return mounted;
+ const visibility=()=>settle(controller.setVisibility(root.document.visibilityState!=='hidden')).then(updateTimer,()=>updateTimer());root.document.addEventListener('visibilitychange',visibility);visibility();
+ async function disposeMount(){if(disposedMount)return controller.dispose();disposedMount=true;stopTimer();root.document.removeEventListener('visibilitychange',visibility);controls.dispose();if(section.parentNode)section.parentNode.removeChild(section);const result=await controller.dispose();if(mounted===self)mounted=null;if(root.__OFU_V2X14_AUDIO__===self)delete root.__OFU_V2X14_AUDIO__;return result;}
+ const resourceUsage=()=>Object.freeze({pollTimerActive:timer!==null,pollIntervalMs:POLL_INTERVAL_MS,timerStarts,timerStops,maxConcurrentPollTimers:maxConcurrentTimers,idlePolling:timer!==null&&!shouldPoll(),bounded:true});
+ self=Object.freeze({controller,controls,section,status,snapshot:()=>controller.snapshot(),statusText:()=>status.textContent,activationPending:()=>activationRequested,resourceUsage,dispose:disposeMount});mounted=self;root.__OFU_V2X14_AUDIO__=mounted;return mounted;
 }
-O.v2x14LivingAudioController=Object.freeze({VERSION,AUTHORITY,statusMessage,create,autoMount,instance:()=>mounted});if(typeof root.document!=='undefined'){if(root.document.readyState==='loading')root.document.addEventListener('DOMContentLoaded',autoMount,{once:true});else if(root.setTimeout)root.setTimeout(autoMount,0);}
+O.v2x14LivingAudioController=Object.freeze({VERSION,AUTHORITY,POLL_INTERVAL_MS,statusMessage,create,autoMount,instance:()=>mounted});if(typeof root.document!=='undefined'){if(root.document.readyState==='loading')root.document.addEventListener('DOMContentLoaded',autoMount,{once:true});else if(root.setTimeout)root.setTimeout(autoMount,0);}
 })(globalThis);
