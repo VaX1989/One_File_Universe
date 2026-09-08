@@ -1,10 +1,10 @@
 {
   "schema": "ofu-v2-lane-checkpoint-1",
-  "version": "2026-09-08.2",
+  "version": "2026-09-08.3",
   "laneId": "V2X-04",
   "lane": "STELLAR_SYSTEMS_2_0_SYSTEM_PLANET_APPROACH",
   "branch": "parallel/v2.0-04-system-planet-approach-2026-09-07",
-  "status": "COMPLETE_WITH_BLOCKERS",
+  "status": "COMPLETE",
   "base": {
     "status": "READY_FOR_MASSIVE_PARALLEL_EXECUTION",
     "parallelLaunchStatus": "FULL",
@@ -13,41 +13,48 @@
     "record": "docs/parallel/V2_PARALLEL_BASE_CURRENT.json"
   },
   "productionAndTestHead": {
-    "sha": "4632201ca65effbba624af9c6ce9e2a9ff1e3bc4",
-    "tree": "72f1320f367168873cde916819ae67e87ca7216d",
-    "note": "Immutable production/test head. Later commits on this lane are checkpoint metadata only."
+    "sha": "5419d2b8042c9ca6c2ee8561dafee4cd664bde20",
+    "tree": "6c4a3a03dd52edd9f34f91de53259bb6e3e4420b",
+    "note": "Immutable final production/test head. This checkpoint commit follows it and changes metadata only."
   },
-  "evidenceCheckpointParent": {
-    "sha": "3e2bc80aec5b9349aa1f5bba264109a2c9aea90b",
-    "tree": "189526959e3a3556252df607278ab45df34c55fd",
-    "note": "This final metadata file cannot contain the SHA/tree of the commit that contains itself without recursive self-reference. Authenticate the final branch head after this commit."
-  },
-  "changedFilesFromFrozenBase": [
+  "changedPathsFromFrozenBase": [
     "src/rendering/orbit/orbit-3d.js",
+    "src/rendering/stellar/stellar-appearance.js",
+    "src/rendering/stellar/multi-star-illumination.js",
+    "src/rendering/planet/approach/body-cues.js",
+    "src/rendering/planet/approach/approach-continuity.js",
+    "src/rendering/planet/approach/approach-lod.js",
     "tests/v2x-04-system-planet-approach/orbit-stellar-oracle.mjs",
+    "tests/v2x-04-system-planet-approach/approach-continuity-oracle.mjs",
+    "tests/v2x-04-system-planet-approach/illumination-body-lod-oracle.mjs",
     "docs/parallel/v2/lanes/V2X-04_CURRENT.json"
   ],
-  "ownedDeltaDisposition": {
-    "intentional": true,
-    "completeWithinOwnership": true,
+  "closureAudit": {
+    "remainingLaneOwnedBlockers": [],
+    "remainingLaneOwnedDefects": [],
     "temporaryFilesInRepository": false,
     "experimentalFilesInRepository": false,
     "duplicateImplementationsAdded": false,
     "deadOrAmbiguousLaneWorkKnown": false,
+    "todoFixmeHackMarkers": false,
     "centralPathsModified": false,
     "forcePushUsed": false,
-    "centralMergePerformed": false
+    "centralMergePerformed": false,
+    "productionLegacyProviderDependency": false,
+    "localeDependentCanonicalOrdering": false,
+    "failOpenValidatorPattern": false
   },
-  "capabilities": [
-    "single_and_multi_star_system_presentation",
-    "deterministic_star_and_planet_ordering",
-    "bounded_true_3d_orbit_projection_from_external_camera",
-    "canonical_star_and_planet_pick_targets",
-    "multi_star_illumination_and_body_cue_composition",
-    "reversible_system_to_planet_approach_and_descent_lod",
-    "identity_reference_frame_and_scale_token_preservation",
-    "legacy_v1x_runtime_fallback_forbidden",
-    "bounded_viewport_entity_and_projected_vertex_resources"
+  "defectsClosedInFinalAudit": [
+    "LOD decoration/validation now fails closed when the approach-continuity validator is unavailable.",
+    "Body cues now fail closed when illumination is supplied but the multi-star illumination validator is unavailable.",
+    "Canonical presentation ordering no longer uses localeCompare or ICU/locale-sensitive comparison.",
+    "Identity-derived fallback hashing consumes every UTF-16 code unit, preventing astral-identifier low-surrogate collisions.",
+    "Malformed stellar/body/planet facts are rejected instead of silently degrading to unknown presentation facts.",
+    "Malformed non-array presentation occluders are rejected instead of being silently ignored.",
+    "Stellar system descriptors reject duplicate canonical stellar identities and use deterministic source-order-independent ordering.",
+    "Orbital hierarchy output is deterministic under source query permutation.",
+    "Canonical pick surfaces validate provider authority, scientific-evidence status, resource accounting, unique identity and target shape before selection intent is emitted.",
+    "Approach surface-target metadata is bounded by depth and node count and rejects cycles, non-plain objects and unsupported/non-finite values."
   ],
   "runtimeExport": {
     "global": "OFU.v2x04SystemProvider",
@@ -65,102 +72,71 @@
     "maxViewportDimension": 16384,
     "maxViewportPixels": 67108864,
     "approachMaxFrames": 257,
-    "illuminationMaxOccluders": 64
-  },
-  "reachability": {
-    "source": "src/rendering/orbit/orbit-3d.js",
-    "shippingManifestComponent": "v2x04.render.orbit-3d",
-    "shippingManifest": "config/components/v2x-04-system-planet-approach.json",
-    "oneFileArtifact": "dist/One_File_Universe.html",
-    "runtimeExport": "OFU.v2x04SystemProvider",
-    "laneConsumerOracle": "tests/v2x-04-system-planet-approach/orbit-stellar-oracle.mjs",
-    "livingConsumer": {
-      "status": "CENTRAL_HOOK_REQUIRED",
-      "ownedBy": "CONVERGENCE_OWNER",
-      "path": "src/rendering/v1/living-renderer.js",
-      "currentLegacyConsumer": "O.v1x04SystemProvider",
-      "requiredReplacement": "O.v2x04SystemProvider",
-      "requiredCallShape": "render({system,stars,planets},{camera:camera.systemFrame,viewport:{width,height}})",
-      "preserveAuthorities": [
-        "camera",
-        "selection",
-        "semantic_scale",
-        "scene_composition",
-        "resource_admission"
-      ]
-    },
-    "completionLaw": {
-      "source": "PASS",
-      "shippingManifest": "PASS_EXISTING_CENTRAL_DESCRIPTOR",
-      "oneFileHtml": "NOT_REASSERTED_ON_LANE_FINAL_HEAD; CENTRAL V2 ARTIFACT AUDIT WAS SKIPPED AFTER POST_BASE_WORKFLOW_MISMATCH",
-      "runtimeExport": "PASS_EXACT_SOURCE_DEFINED_AND_LANE_CONSUMED",
-      "actualConsumer": "CENTRAL_HOOK_REQUIRED",
-      "livingViewportUserAction": "CENTRAL_HOOK_REQUIRED",
-      "visibleConsequence": "CENTRAL_HOOK_REQUIRED",
-      "persistenceRevisit": "NOT_LANE_OWNED; identity/reference-frame/scale tokens preserved by reversible packets",
-      "exactArtifactBrowserEvidence": "CENTRAL_BIND_AND_BROWSER_GATE_REQUIRED"
-    }
+    "illuminationMaxOccluders": 64,
+    "surfaceTargetMaxDepth": 8,
+    "surfaceTargetMaxNodes": 64
   },
   "exactContentEvidence": {
-    "executionRuntime": "Node v22.16.0",
-    "materializationMethod": "GitHub exact-head file content materialized locally, then every executed source/test authenticated with git hash-object against its GitHub blob SHA before execution.",
-    "authenticatedHead": "3e2bc80aec5b9349aa1f5bba264109a2c9aea90b",
+    "runtime": "Node v22.16.0",
+    "authenticatedHead": "5419d2b8042c9ca6c2ee8561dafee4cd664bde20",
+    "authenticatedTree": "6c4a3a03dd52edd9f34f91de53259bb6e3e4420b",
+    "blobAuthentication": "9/9 executed V2X-04 source/test blobs matched GitHub blob SHA exactly",
     "authenticatedBlobs": {
-      "src/rendering/orbit/orbit-3d.js": "fbb6d8bde0004f533f5a673a35210fa1d7a67361",
-      "src/rendering/stellar/stellar-appearance.js": "1a890475eeae5c09dfca9977e5d94917181e272b",
-      "src/rendering/stellar/multi-star-illumination.js": "df6c9b7ac99a6f44f9f98075c7cc7078a4ea6966",
-      "src/rendering/planet/approach/approach-continuity.js": "3656bcce12d324473132fa5685902b3e5378ba93",
-      "src/rendering/planet/approach/approach-lod.js": "97165dd267063534ee4463937e5608f4da446e40",
-      "src/rendering/planet/approach/body-cues.js": "772038040e72cec8857aceb472e8024e1ee93c00",
-      "tests/v2x-04-system-planet-approach/orbit-stellar-oracle.mjs": "2a76512986efd8c0dea3588cde5d9aa01b8d1ff6",
-      "tests/v2x-04-system-planet-approach/approach-continuity-oracle.mjs": "ab53f02bb0c154160b5b16470825a322ba226b40",
-      "tests/v2x-04-system-planet-approach/illumination-body-lod-oracle.mjs": "a18b56805564eca0a22837bf8a954313b63dd923"
+      "src/rendering/orbit/orbit-3d.js": "1a22619db0940e2be43441fb24ba39626597b22f",
+      "src/rendering/stellar/stellar-appearance.js": "0940758b4570c13c9d0b3ef4221fabda9c00a37e",
+      "src/rendering/stellar/multi-star-illumination.js": "a37bec354b1c1b3d4e04611c0356e87f7315ed09",
+      "src/rendering/planet/approach/body-cues.js": "f5478d05cabe03ab6ea82953e63a1f2aa4f4096f",
+      "src/rendering/planet/approach/approach-continuity.js": "13eb0a401d38401431b3c85035c106b8b2fc27e9",
+      "src/rendering/planet/approach/approach-lod.js": "e3b985111e67eaf3cc4ca4094c32cd18d4531649",
+      "tests/v2x-04-system-planet-approach/orbit-stellar-oracle.mjs": "ca5f616ef5fd4cb0feea2510c88bb9d774fdc5a4",
+      "tests/v2x-04-system-planet-approach/approach-continuity-oracle.mjs": "cf45fa70ba637028d5d1af837e68a668fb672836",
+      "tests/v2x-04-system-planet-approach/illumination-body-lod-oracle.mjs": "853e37272fe0b9f83385690767b75e01430fa00c"
     },
+    "syntax": "PASS_9_OF_9",
     "oracles": [
       {
         "command": "node tests/v2x-04-system-planet-approach/orbit-stellar-oracle.mjs",
-        "suite": "v2x04-orbit-stellar-oracle-v4",
+        "suite": "v2x04-orbit-stellar-oracle-v5",
         "status": "PASS"
       },
       {
         "command": "node tests/v2x-04-system-planet-approach/approach-continuity-oracle.mjs",
-        "suite": "v2x04-approach-continuity-oracle-v3",
+        "suite": "v2x04-approach-continuity-oracle-v4",
         "status": "PASS"
       },
       {
         "command": "node tests/v2x-04-system-planet-approach/illumination-body-lod-oracle.mjs",
-        "suite": "v2x04-illumination-body-lod-v3",
+        "suite": "v2x04-illumination-body-lod-v4",
         "status": "PASS"
       }
-    ]
-  },
-  "hostedEvidenceOnEvidenceCheckpointParent": {
-    "sha": "3e2bc80aec5b9349aa1f5bba264109a2c9aea90b",
-    "runtimeObservedInV2Supreme": "Node v24.20.0 / Python 3.13.15 / Ubuntu 24.04",
-    "successfulWorkflowsObserved": [
-      "Foundation Integrity",
-      "P2 Conformance",
-      "P3 Conformance",
-      "P5 Controlled Promotion",
-      "P5 Environment v2 Canonical Promotion",
-      "P6 v1 Conformance",
-      "P1-P4 Canonical Baseline"
     ],
-    "queuedAtFinalSnapshot": [
-      "P1 Conformance",
-      "P4 Conformance"
-    ],
-    "v2xSupremeConvergence": {
-      "status": "FAIL",
-      "runId": 34205041986,
-      "jobId": 101992451270,
-      "exactSourceIdentity": "PASS",
-      "fullRepositoryNpmTestAndReproducibleBuildStack": "PASS",
-      "failureStep": "V2X provider activation boundary",
-      "failure": "MODULE_NOT_FOUND tests/v2x-convergence/provider-activation-boundary.mjs",
-      "classification": "CENTRAL_POST_BASE_WORKFLOW_SOURCE_MISMATCH",
-      "laneDefect": false
+    "repeatRunsPerOracle": 3,
+    "repeatOutputIdentity": "BYTE_IDENTICAL",
+    "staticAudit": {
+      "productionLegacyOrLocalePatterns": "NONE",
+      "incompleteMarkers": "NONE",
+      "failOpenValidatorPatterns": "NONE",
+      "status": "PASS"
     }
+  },
+  "hostedExactCodeHeadEvidence": {
+    "sha": "5419d2b8042c9ca6c2ee8561dafee4cd664bde20",
+    "snapshot": "2026-09-08T10:31Z",
+    "workflowCount": 10,
+    "status": "ALL_QUEUED_AT_FINAL_LANE_SNAPSHOT",
+    "completedFailuresObserved": []
+  },
+  "reachability": {
+    "source": "src/rendering/orbit/orbit-3d.js",
+    "shippingManifest": "config/components/v2x-04-system-planet-approach.json",
+    "shippingManifestComponent": "v2x04.render.orbit-3d",
+    "runtimeExport": "OFU.v2x04SystemProvider",
+    "laneConsumerOracles": [
+      "tests/v2x-04-system-planet-approach/orbit-stellar-oracle.mjs",
+      "tests/v2x-04-system-planet-approach/approach-continuity-oracle.mjs",
+      "tests/v2x-04-system-planet-approach/illumination-body-lod-oracle.mjs"
+    ],
+    "laneOwnedLinksComplete": true
   },
   "authorityAndProvenance": {
     "providerAndAllNewPackets": "PRESENTATION_ONLY",
@@ -177,36 +153,25 @@
     "atmosphereRim": "PRESENTATION_ONLY_NOT_OPTICAL_DEPTH",
     "approachPosition": "PRESENTATION_CONTINUITY_NOT_BALLISTIC_OR_AERODYNAMIC_TRAJECTORY"
   },
-  "remainingBlockers": [
+  "externalCentralIntegrationDependencies": [
     {
-      "class": "CENTRAL_OWNERSHIP_DEPENDENCY",
+      "owner": "CONVERGENCE_OWNER",
       "path": "src/rendering/v1/living-renderer.js",
-      "description": "The real SYSTEM viewport still consumes O.v1x04SystemProvider. Central convergence must bind O.v2x04SystemProvider while preserving central camera, selection, semantic-scale, scene-composition and resource authority."
+      "provenFact": "Current central SYSTEM path still consumes O.v1x04SystemProvider.",
+      "requiredCentralAction": "Bind O.v2x04SystemProvider while preserving central camera, selection, semantic-scale, scene-composition and resource authority, then execute integrated one-file/browser evidence.",
+      "laneCanModify": false
     },
     {
-      "class": "CENTRAL_EXACT_ARTIFACT_EVIDENCE",
-      "description": "One-file Living/browser invocation and visible-consequence evidence can only become valid after the convergence-owned Living bind."
-    },
-    {
-      "class": "CENTRAL_CONFORMANCE_REGISTRATION",
-      "description": "V2X-04 conformance registration is convergence-owned. The three lane oracles are complete and executable but central registration must invoke them in integrated exact-source certification."
-    },
-    {
-      "class": "CENTRAL_POST_BASE_WORKFLOW_SOURCE_MISMATCH",
-      "description": "The current V2X Supreme workflow cannot certify a frozen-base-derived lane standalone because it invokes tests/v2x-convergence/provider-activation-boundary.mjs, a convergence-owned file added after the base."
+      "owner": "CONVERGENCE_OWNER",
+      "path": "tests/v2x-convergence/provider-activation-boundary.mjs and shared conformance/build paths",
+      "provenFact": "Provider activation, shared conformance registration and exact integrated artifact/browser certification are convergence-owned.",
+      "laneCanModify": false
     }
   ],
-  "centralIntegrationNotes": [
-    "Consume the lane by immutable PR/head identity; do not reconstruct the provider from prose.",
-    "Replace only the Living SYSTEM provider consumer O.v1x04SystemProvider with O.v2x04SystemProvider through the central renderer transaction; do not transfer camera, selection, scale or scene authority to V2X-04.",
-    "Preserve the existing call shape render({system,stars,planets},{camera:camera.systemFrame,viewport:{width,height}}).",
-    "Register and execute the three V2X-04 oracles in central conformance, then run the exact one-file artifact/browser journey SYSTEM -> planet approach/descent -> reverse and require unchanged canonical identity.",
-    "Any missing V2X-04 dependency must remain fail-closed; do not introduce a V1X runtime fallback."
-  ],
+  "remainingBlockersWithinLane": [],
   "pullRequest": {
     "number": 247,
     "target": "integration/v2x-supreme-total-convergence-2026-09-07",
-    "status": "OPEN",
     "mergePerformedByLane": false
   }
 }
