@@ -1,8 +1,12 @@
 {
-  "version": "2026-09-08.2",
+  "version": "2026-09-08.3",
   "openSourceLicense": "GPL-3.0-only",
   "openSourceCoreGuarantee": true,
   "copyrightAssignmentRequired": false,
+  "foundingCorpus": {
+    "record": "config/governance/founding-corpus.json",
+    "status": "BOUNDARY_RECORDED_IP_AUDIT_PENDING"
+  },
   "commercialLicensing": {
     "strategy": "OPTIONAL_DUAL_LICENSE",
     "openSourceCommercialUseAllowedWithoutFee": true,

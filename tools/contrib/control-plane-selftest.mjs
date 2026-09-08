@@ -11,7 +11,13 @@ const cases = [
   { path: 'docs/adr/ADR-027-open-source-and-dual-licensing.md', risk: 'R5', areas: ['core'] },
   { path: 'docs/adr/ADR-999-example-architecture.md', risk: 'R4', areas: ['core'] },
   { path: 'docs/community/CONTRIBUTOR_RIGHTS.md', risk: 'R5', areas: ['community'] },
+  { path: 'docs/community/FOUNDING_CORPUS.md', risk: 'R5', areas: ['community'] },
+  { path: 'config/governance/founding-corpus.json', risk: 'R5', areas: ['community'] },
+  { path: 'config/governance/contribution-units/example-domain.json', risk: 'R4', areas: ['community'] },
+  { path: 'config/governance/scientific-model-card.schema.json', risk: 'R4', areas: ['community'] },
   { path: 'docs/community/SUPPLY_CHAIN_SECURITY.md', risk: 'R4', areas: ['community'] },
+  { path: 'MAINTAINERS.md', risk: 'R4', areas: ['community'] },
+  { path: 'CODE_OF_CONDUCT.md', risk: 'R3', areas: ['community'] },
   { path: 'src/kernel/canonical.js', risk: 'R4', areas: ['core'] },
   { path: 'src/runtime/scheduler.js', risk: 'R3', areas: ['runtime'] },
   { path: 'src/rendering/renderer.js', risk: 'R2', areas: ['rendering'] },
@@ -35,7 +41,7 @@ check(governance.areas.routingPolicy?.unroutedChangedPath === 'FAIL', 'unrouted 
 
 const result = {
   status: failures.length ? 'FAIL' : 'PASS',
-  suite: 'ofu-contributor-control-plane-selftest-1',
+  suite: 'ofu-contributor-control-plane-selftest-2',
   checks,
   syntheticCases: cases.length + 1,
   failures
