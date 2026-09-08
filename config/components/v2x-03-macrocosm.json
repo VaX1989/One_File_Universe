@@ -61,9 +61,9 @@
       "stage": "foundation",
       "placement": "script",
       "source": "src/rendering/macro/macrocosm-provider.js",
-      "dependencies": ["v1x02.spatial-universe.runtime","v2x03.galaxy-field.runtime","v2x03.region-refinement.runtime","v2x03.neighborhood-depth.runtime"],
+      "dependencies": ["v1x02.spatial-universe.runtime","v2x03.galaxy-field.runtime","v2x03.macrocosm-batches.runtime","v2x03.region-refinement.runtime","v2x03.neighborhood-depth.runtime"],
       "authority": "PRESENTATION_ONLY",
-      "provenance": "V2X-03 additive macrocosm representation provider; camera, scale, selection and canonical astronomy remain externally governed.",
+      "provenance": "V2X-03 additive macrocosm representation provider and bounded render-packet adapter; camera, scale, selection, central resource admission and canonical astronomy remain externally governed.",
       "provides": ["v2x03.macrocosm-provider","ofu-v2x-03-macrocosm-consumer-1"]
     },
     {

@@ -1,0 +1,54 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v2x.living.domain-composition",
+      "version": "2.0.0",
+      "owner": "product",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/rendering/v2x-convergence/living-domain-composition.js",
+      "dependencies": [
+        "v2x02.camera.living-binding",
+        "v2x04.render.orbit-3d",
+        "v2x04.render.stellar-appearance",
+        "v2x04.render.multi-star-illumination",
+        "v2x-06.surface.address",
+        "v2x-06.surface.geography",
+        "v2x-06.surface.hydrology",
+        "v2x-06.terrain.hierarchical",
+        "v2x-06.renderer.living-surface",
+        "v2x07.render.local-experience-provider",
+        "v2x12.matter.continuity",
+        "v2x12.matter.presentation"
+      ],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Convergence-owned Living product compositor. SYSTEM consumes V2X-04; GLOBAL/REGIONAL/LOCAL surface consume V2X-06 adaptive terrain/geology/hydrology; HUMAN consumes V2X-07 local depth/ground/embodiment while aggregate organisms remain non-persistent presentation; MATERIAL through ATOMIC consume V2X-12 from the exact selected Living material source. Camera, selection, scale, canonical geodesy and scientific authority remain external.",
+      "provides": [
+        "v2x.living.domain-composition"
+      ]
+    },
+    {
+      "id": "v2x.living.context-inspector",
+      "version": "1.0.0",
+      "owner": "product",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/bootstrap/product/v2x-context-inspector.js",
+      "dependencies": [
+        "v1.product.living-universe",
+        "v2x.living.domain-composition",
+        "v2x08.model.life-single-file-facade",
+        "v2x09.civilization.api",
+        "v2x10.model.persistent-individuals"
+      ],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Convergence-owned Living inspector composition. It exposes V2X-08 bounded lineage/ecology/evolution context, V2X-09 city/network/history projection and V2X-10 deterministic bounded resident identities inside the actual founder-facing Living product. Aggregate organisms are never promoted to persons, history proposals remain noncanonical, and current aggregate-only person refinement explicitly disclaims unavailable mortality ledgers, genealogy, private mental state and retained-memory persistence.",
+      "provides": [
+        "v2x.living.context-inspector"
+      ]
+    }
+  ]
+}

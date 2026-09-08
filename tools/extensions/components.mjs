@@ -66,10 +66,14 @@ export function addComponents(html,plan,stage){
  const components=plan.filter(c=>c.stage===stage&&!c.placement.startsWith('fragment:'));
  check(html.split('</body>').length===2&&html.split('</style>').length>=2,'output slots');
  const css=components.filter(c=>c.placement==='style').map(emittedComponent).join('\n');
- if(css)html=html.replace('</style>',css+'\n</style>');
- const resources=components.filter(c=>c.placement==='resource').map(emittedComponent).join('');if(resources){check(html.split('</head>').length===2,'resource head slot');html=html.replace('</head>',resources+'</head>');}
+ // Never pass component bytes as a String.replace replacement string. JavaScript
+ // replacement strings interpret $&, $`, $' and $n specially; source code may
+ // legitimately contain those byte sequences (for example the JSON root path '$').
+ // A replacer callback preserves the component stream byte-for-byte.
+ if(css)html=html.replace('</style>',()=>css+'\n</style>');
+ const resources=components.filter(c=>c.placement==='resource').map(emittedComponent).join('');if(resources){check(html.split('</head>').length===2,'resource head slot');html=html.replace('</head>',()=>resources+'</head>');}
  const body=components.filter(c=>c.placement!=='style'&&c.placement!=='resource').map(emittedComponent).join('');
- return html.replace('</body>',body+'</body>');
+ return html.replace('</body>',()=>body+'</body>');
 }
 export function attachManifest(manifest,plan){
  for(const c of plan)check(!manifest.components.some(b=>b.componentId===c.source),'frozen baseline component cannot be re-embedded');
