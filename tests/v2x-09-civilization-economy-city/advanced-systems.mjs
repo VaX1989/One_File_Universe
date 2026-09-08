@@ -261,6 +261,8 @@ const widestState={
   technology:{production:1,transport:1,materials:0,energy:0,communication:0,medicine:0,construction:1,conflict:0,knowledgeContinuityPpm:500000},
   polities:[],infrastructure:[],history:{proposals:[]}
 };
+// Routing requires explicit modeled capacity evidence; an absent asset is unknown.
+widestState.infrastructure=widestState.tradeEdges.map(e=>({infrastructureId:'fixture-'+e.edgeId,fromSettlementId:e.from,toSettlementId:e.to,status:'ACTIVE',conditionPpm:450000,authority:'MODEL_DERIVED_SIMULATION'}));
 const widestEconomy={status:'STEPPED',epoch:1,settlements:[
   {settlementId:'a',regionId:'r',status:'ACTIVE',population:1000,stocks:{SUBSISTENCE_GOODS:1000,MATERIAL_GOODS:0,ENERGY_SERVICE:1000}},
   {settlementId:'b',regionId:'r',status:'ACTIVE',population:1,stocks:{SUBSISTENCE_GOODS:0,MATERIAL_GOODS:0,ENERGY_SERVICE:0}},
@@ -286,7 +288,10 @@ check(resilienceStress.operations<=ADV.RESILIENCE_LIMITS.operations&&resilienceS
 const ghost=fixture({energyStarvedRidge:true});
 ghost.state.infrastructure=[];
 const ghostNet=PROD.productionNetwork(ghost.state,ghost.economy),ghostDyn=SOC.societyDynamics(ghost.state,ghostNet),ghostUrban=URB.urbanEvolution(ghost.state,ghostNet,ghostDyn),ghostDelta=ghostUrban.settlements.find(x=>x.settlementId==='delta-city');
-check(ghostNet.routes.some(r=>r.evidenceClass==='TRADE_EDGE_WITHOUT_MODELED_INFRASTRUCTURE_ASSET'&&r.degradationPpm>=450000),'trade-only fallback route remains an explicit degraded network witness');
+check(ghostNet.routes.every(r=>r.evidenceClass==='TRADE_EDGE_WITHOUT_MODELED_INFRASTRUCTURE_ASSET'&&r.degradationPpm===null&&r.conditionPpm===null&&r.capacityUnits===null&&r.utilizationPpm===null&&!r.routingEligible),'absent infrastructure stays unknown and cannot route goods');
+check(!ghostNet.bottlenecks.some(b=>b.edgeId),'unknown infrastructure cannot invent route severity');
+check(ADV.networkResilience(ghostNet).settlements.every(s=>s.isolationRiskPpm===null&&!s.evidenceComplete),'unknown routes cannot prove isolation risk');
+for(const absent of [undefined,null,'',false,NaN,Infinity]){const unknown=fixture();unknown.state.infrastructure[0].conditionPpm=absent;const route=PROD.modeledRouteCondition(unknown.state,unknown.state.tradeEdges[0]);check(route.conditionPpm===null&&route.degradationPpm===null,'invalid condition stays unknown');check(ADV.projectRecoveryEnvelope(unknown.state,unknown.economy,{edgeId:'edge-1'}).status==='INFRASTRUCTURE_CONDITION_UNKNOWN','no recovery forecast from unknown condition');}
 check(!ghostDelta.evidenceLayers.some(x=>x.kind==='CORRIDOR_DEGRADATION'),'trade-only fallback cannot masquerade as modeled infrastructure/archaeological corridor evidence');
 
 console.log(JSON.stringify({status:'PASS',cases,contracts:[PROD.CONTRACT,SOC.CONTRACT,URB.CONTRACT,ADV.RESILIENCE_CONTRACT,ADV.RECOVERY_CONTRACT],healthyRouteCapacity:routeHealthy.capacityUnits,damagedRouteCapacity:routeDamaged.capacityUnits,starvedFlows:starvedNet.flows.length,stressedMigrationProposals:stressedDyn.migrationProposals.length,deltaFamily:deltaUrban.family,dryDeltaFamily:dryDelta.family,abandonedFamily:abandonedDelta.family,criticalRoutes:baseResilience.criticalRouteIds.length,redundantCriticalRoutes:redundantComposed.resilience.criticalRouteIds.length,recoveryEpochs:recovery.trajectory.length-1,recoveryCapacityDelta:recovery.summary.capacityDeltaUnits,recoveryConditionDeltaPpm:recovery.summary.conditionDeltaPpm,widestPath:widestFlow?.pathEdgeIds||[],evidenceGaps:missingComposed.evidence.societyGaps.length,resilienceStressOperations:resilienceStress.operations}));

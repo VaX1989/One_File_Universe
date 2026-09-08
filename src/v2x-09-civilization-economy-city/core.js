@@ -46,6 +46,7 @@ function freeze(v){if(!v||typeof v!=='object'||Object.isFrozen(v))return v;for(c
 function text(v){return typeof v==='string'?v:String(v??'')}
 function int(v,f=0){const n=Number(v);return Number.isSafeInteger(n)?n:Math.trunc(Number.isFinite(n)?n:f)}
 function clamp(v,lo=0,hi=1000000){return Math.max(lo,Math.min(hi,int(v)))}
+function knownPpm(v){return typeof v==='number'&&Number.isFinite(v)&&v>=0&&v<=1000000?Math.round(v):null}
 function arr(v){return Array.isArray(v)?v:[]}
 function assertBound(name,n,max){if(n>max)throw new RangeError('V2X-09 '+name+' bound exceeded: '+n+' > '+max)}
 function assertUniqueIds(name,rows,key){const seen=new Set();for(const row of arr(rows)){const id=text(row?.[key]);if(!id)throw new TypeError('V2X-09 '+name+' missing '+key);if(seen.has(id))throw new RangeError('V2X-09 duplicate '+name+' id: '+id);seen.add(id)}return seen}
@@ -92,5 +93,5 @@ function tradeDegree(state,settlementId){
   return arr(state?.tradeEdges).filter(e=>text(e?.status||'UNKNOWN').toUpperCase()==='ACTIVE'&&activeSettlements.has(text(e.from))&&activeSettlements.has(text(e.to))&&(e.from===settlementId||e.to===settlementId)).length;
 }
 
-O.v2x09CivilizationCore=Object.freeze({VERSION,ECONOMY_CONTRACT,MORPHOLOGY_CONTRACT,IMPACT_CONTRACT,AUTHORITY,LIMITS,GOODS,TECH_KEYS,CAPABILITY_GRAPH,LIMITATIONS,freeze,text,int,clamp,arr,assertBound,assertUniqueIds,hash32,deriveId,unit,sortId,sourceAuthority,validateCivilization,techLevel,technologyProfile,goodForResource,tradeDegree});
+O.v2x09CivilizationCore=Object.freeze({VERSION,ECONOMY_CONTRACT,MORPHOLOGY_CONTRACT,IMPACT_CONTRACT,AUTHORITY,LIMITS,GOODS,TECH_KEYS,CAPABILITY_GRAPH,LIMITATIONS,freeze,text,int,clamp,knownPpm,arr,assertBound,assertUniqueIds,hash32,deriveId,unit,sortId,sourceAuthority,validateCivilization,techLevel,technologyProfile,goodForResource,tradeDegree});
 })(typeof globalThis!=='undefined'?globalThis:this);
