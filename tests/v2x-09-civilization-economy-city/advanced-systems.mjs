@@ -294,4 +294,15 @@ check(ADV.networkResilience(ghostNet).settlements.every(s=>s.isolationRiskPpm===
 for(const absent of [undefined,null,'',false,NaN,Infinity]){const unknown=fixture();unknown.state.infrastructure[0].conditionPpm=absent;const route=PROD.modeledRouteCondition(unknown.state,unknown.state.tradeEdges[0]);check(route.conditionPpm===null&&route.degradationPpm===null,'invalid condition stays unknown');check(ADV.projectRecoveryEnvelope(unknown.state,unknown.economy,{edgeId:'edge-1'}).status==='INFRASTRUCTURE_CONDITION_UNKNOWN','no recovery forecast from unknown condition');}
 check(!ghostDelta.evidenceLayers.some(x=>x.kind==='CORRIDOR_DEGRADATION'),'trade-only fallback cannot masquerade as modeled infrastructure/archaeological corridor evidence');
 
+for(const missing of [undefined,null,'',false,NaN,Infinity]) for(const field of ['legitimacyPpm','cohesionPpm']) {
+ const unknown=fixture();unknown.state.polities[0][field]=missing;
+ const network=PROD.productionNetwork(unknown.state,unknown.economy),society=SOC.societyDynamics(unknown.state,network),proposal=society.institutionProposals.find(p=>p.polityId===unknown.state.polities[0].polityId);
+ check(proposal.transitionRisk==='UNKNOWN_INCOMPLETE_EVIDENCE'&&!proposal.evidenceComplete,'absent social input cannot generate transition risk');
+ check(!proposal.mechanisms.includes('LEGITIMACY_AND_COHESION_RISK'),'missing social value is not zero');
+ check(proposal[field==='legitimacyPpm'?'sourceLegitimacyPpm':'sourceCohesionPpm']===null,'source value remains explicitly unknown');
+ check(!society.evidenceComplete,'institution evidence gap reaches composed society');
+}
+const lowLegitimacy=fixture();lowLegitimacy.state.polities[0].legitimacyPpm=0;
+const lowSociety=SOC.societyDynamics(lowLegitimacy.state,PROD.productionNetwork(lowLegitimacy.state,lowLegitimacy.economy));
+check(lowSociety.institutionProposals[0].transitionRisk==='FRAGMENTATION_RISK','explicit zero remains modeled evidence');
 console.log(JSON.stringify({status:'PASS',cases,contracts:[PROD.CONTRACT,SOC.CONTRACT,URB.CONTRACT,ADV.RESILIENCE_CONTRACT,ADV.RECOVERY_CONTRACT],healthyRouteCapacity:routeHealthy.capacityUnits,damagedRouteCapacity:routeDamaged.capacityUnits,starvedFlows:starvedNet.flows.length,stressedMigrationProposals:stressedDyn.migrationProposals.length,deltaFamily:deltaUrban.family,dryDeltaFamily:dryDelta.family,abandonedFamily:abandonedDelta.family,criticalRoutes:baseResilience.criticalRouteIds.length,redundantCriticalRoutes:redundantComposed.resilience.criticalRouteIds.length,recoveryEpochs:recovery.trajectory.length-1,recoveryCapacityDelta:recovery.summary.capacityDeltaUnits,recoveryConditionDeltaPpm:recovery.summary.conditionDeltaPpm,widestPath:widestFlow?.pathEdgeIds||[],evidenceGaps:missingComposed.evidence.societyGaps.length,resilienceStressOperations:resilienceStress.operations}));
