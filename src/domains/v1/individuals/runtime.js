@@ -95,12 +95,10 @@ function sanitizeRetained(retained, expectedId) {
 export function materializeIndividual({ worldId, settlementId, birthOrdinal, birthYear = null, cohortKey = null, currentYear = 0, aggregate = {}, retained = null } = {}) {
   const identity = identityCommitment({ worldId, settlementId, birthOrdinal, birthYear, cohortKey });
   const durable = sanitizeRetained(retained, identity.id);
-  const householdSize = Number.isSafeInteger(aggregate.householdSizeEstimate) && aggregate.householdSizeEstimate > 0
-    ? Math.min(32, aggregate.householdSizeEstimate)
-    : 4;
-  const householdOrdinal = durable?.householdOrdinal ?? Math.floor(birthOrdinal / householdSize);
-  const rolePool = Array.isArray(aggregate.roles) && aggregate.roles.length ? aggregate.roles.slice(0, 128).map((role) => text(role, 'aggregate role', 256)) : ['resident'];
-  const role = durable?.role || rolePool[deterministicInt(identity.id, rolePool.length)];
+  const householdSize = Number.isSafeInteger(aggregate.householdSizeEstimate) && aggregate.householdSizeEstimate > 0 ? Math.min(32, aggregate.householdSizeEstimate) : null;
+  const householdOrdinal = durable?.householdOrdinal ?? (householdSize===null?null:Math.floor(birthOrdinal / householdSize));
+  const rolePool = Array.isArray(aggregate.roles) && aggregate.roles.length ? aggregate.roles.slice(0, 128).map((role) => text(role, 'aggregate role', 256)) : Object.freeze([]);
+  const role = durable?.role ?? (rolePool.length?rolePool[deterministicInt(identity.id, rolePool.length)]:null);
   const culture = durable?.culture || deriveCulturalProfile({
     settlementConventions: aggregate.cultureConventions || [],
     educationTopics: aggregate.educationTopics || [],
@@ -114,8 +112,9 @@ export function materializeIndividual({ worldId, settlementId, birthOrdinal, bir
     ...identity,
     age,
     householdOrdinal,
-    householdId: householdId({ worldId, settlementId, householdOrdinal }),
-    householdAuthority: 'MODEL_DERIVED_GROUPING_NOT_KINSHIP',
+    householdId: householdOrdinal===null?null:householdId({ worldId, settlementId, householdOrdinal }),
+    householdAuthority: householdOrdinal===null?'UNKNOWN_WITHHELD_NO_GROUPING_EVIDENCE':'MODEL_DERIVED_GROUPING_NOT_KINSHIP',
+    roleAuthority: role===null?'UNKNOWN_WITHHELD_NO_ROLE_EVIDENCE':'MODEL_DERIVED_FROM_AGGREGATE_OR_RETAINED',
     role,
     skills: durable?.skills || Object.freeze([]),
     education: durable?.education || Object.freeze([]),
@@ -179,7 +178,7 @@ export function retainIndividual(person) {
   const retained = Object.freeze({
     id: text(person.id, 'person.id', 256),
     householdOrdinal: Number.isSafeInteger(person.householdOrdinal) && person.householdOrdinal >= 0 ? person.householdOrdinal : null,
-    role: text(person.role ?? 'resident', 'person.role', 256),
+    role: person.role == null ? null : text(person.role, 'person.role', 256),
     skills: bounded(person.skills, MAX_SKILLS, 'skills'),
     education: bounded(person.education, MAX_SKILLS, 'education'),
     knowledge: bounded(person.knowledge, MAX_SKILLS, 'knowledge'),
