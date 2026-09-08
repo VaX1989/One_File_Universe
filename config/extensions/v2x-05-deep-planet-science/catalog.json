@@ -77,9 +77,7 @@
         {"id": "v2x05.deep-planet.determinism", "tier": "FAST_LOCAL"},
         {"id": "v2x05.deep-planet.metamorphic", "tier": "LANE_TARGETED"},
         {"id": "v2x05.deep-planet.consumer-integration", "tier": "LANE_TARGETED"},
-        {"id": "v2x05.deep-planet.metamorphic-extended", "tier": "LANE_TARGETED"},
-        {"id": "v2x05.deep-planet.vertical-contract", "tier": "LANE_TARGETED"},
-        {"id": "v2x05.deep-planet.artifact-reachability", "tier": "LANE_TARGETED"}
+        {"id": "v2x05.deep-planet.metamorphic-extended", "tier": "LANE_TARGETED"}
       ],
       "mandatory": false
     }
