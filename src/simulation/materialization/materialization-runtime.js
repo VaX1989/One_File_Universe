@@ -1,16 +1,16 @@
 (function(root){
 'use strict';
-const O=root.OFU=root.OFU||{},C=O.pxContracts,R=O.v2x01Contracts,K=O.v2x01CacheKey,S=O.v2x01AdaptiveScheduler,L=O.v2x01ResourceLedger,W=O.v2x01WorkerExecutor,V='ofu-v2x01-materialization-runtime-5';
+const O=root.OFU=root.OFU||{},C=O.pxContracts,R=O.v2x01Contracts,K=O.v2x01CacheKey,S=O.v2x01AdaptiveScheduler,L=O.v2x01ResourceLedger,W=O.v2x01WorkerExecutor,V='ofu-v2x01-materialization-runtime-6';
 if(!C||!R||!K||!S||!L)throw Error('V2X-01 materialization dependencies');
 function fail(c,m){const e=Error('OFU V2X-01 '+c+': '+m);e.code=c;return e}
 function create(o={}){
   C.keys(o,[],['budgets','scheduler','ledger','workerExecutor']);const b=R.budgets(o.budgets||{}),scheduler=o.scheduler||S.create({budgets:b}),ledger=o.ledger||L.create({budgets:b}),workers=o.workerExecutor===false?null:(o.workerExecutor||(W?W.create({maxPayloadBytes:b.taskBytes}):null)),providers=new Map(),entries=new Map(),active=new Map(),gen=new Map(),quarantine=new Map(),detached=new Map(),max=Math.min(b.cacheEntries,b.materializations);
   C.assert(scheduler&&typeof scheduler.reserveAdmission==='function'&&typeof scheduler.schedule==='function'&&typeof scheduler.cancel==='function'&&typeof scheduler.cancelWhere==='function'&&typeof scheduler.drain==='function'&&typeof scheduler.snapshot==='function','DEPENDENCY','scheduler surface');C.assert(ledger&&typeof ledger.reserve==='function'&&typeof ledger.commit==='function'&&typeof ledger.release==='function'&&typeof ledger.snapshot==='function','DEPENDENCY','resource ledger surface');if(workers)C.assert(typeof workers.register==='function'&&typeof workers.execute==='function'&&typeof workers.canRunWorker==='function'&&typeof workers.snapshot==='function','DEPENDENCY','worker executor surface');
-  let seq=0,clock=0;
-  const m={requests:0,hits:0,misses:0,materializations:0,evictions:0,invalidations:0,cancellations:0,staleRejects:0,releaseFailures:0,quarantinedReleases:0,quarantineRecoveries:0,detachedFallbacks:0,detachedSettlements:0,fallbackAdmissionRejects:0,contextLosses:0,memoryPressureEvents:0,restorations:0,workerResults:0,fallbackResults:0};
+  let seq=0,clock=0,packetSequence=0,lastAdaptiveDecision=null;
+  const m={requests:0,hits:0,misses:0,materializations:0,evictions:0,invalidations:0,cancellations:0,staleRejects:0,releaseFailures:0,quarantinedReleases:0,quarantineRecoveries:0,detachedFallbacks:0,detachedSettlements:0,fallbackAdmissionRejects:0,contextLosses:0,memoryPressureEvents:0,restorations:0,workerResults:0,fallbackResults:0,adaptiveDecisions:0,runtimePackets:0,adaptiveByState:Object.fromEntries(R.STATES.map(s=>[s,0])),adaptiveByReason:{}};
   function reg(x){
     C.keys(x,['providerId','domain','modelVersion','representationVersion','load'],['release','workerProgram']);
-    const id=C.token(x.providerId),domain=C.token(x.domain,'domain');C.assert(typeof x.load==='function'&&!providers.has(id),'SCHEMA','materializer');if(x.release!==undefined)C.assert(typeof x.release==='function','SCHEMA','materializer release');if(x.workerProgram!==undefined)C.assert(typeof x.workerProgram==='string'&&x.workerProgram.length<=65536,'BUDGET','worker program');
+    const id=C.token(x.providerId),domain=R.workloadDomain(x.domain);C.assert(typeof x.load==='function'&&!providers.has(id),'SCHEMA','materializer');if(x.release!==undefined)C.assert(typeof x.release==='function','SCHEMA','materializer release');if(x.workerProgram!==undefined)C.assert(typeof x.workerProgram==='string'&&x.workerProgram.length<=65536,'BUDGET','worker program');
     const v=Object.freeze({...x,providerId:id,domain,modelVersion:C.version(x.modelVersion),representationVersion:C.version(x.representationVersion),handlerId:'v2x01.materializer.'+id});providers.set(id,v);workers?.register({id:v.handlerId,version:v.modelVersion,direct:(p,s)=>v.load(p,s),workerProgram:x.workerProgram||null});return v;
   }
   function norm(x){
@@ -52,7 +52,7 @@ function create(o={}){
     try{
       invalidateLogical(k,'superseded');
       g=(gen.get(k)||0)+1;gen.set(k,g);rid='v2x01.resource.'+(++seq);jid='v2x01.task.'+seq;reserve(rid,r.estimate,k);
-      h=scheduler.schedule({id:jid,taskClass:r.taskClass,state:r.targetState,preemptible:r.taskClass!=='INTERACTION',admission,run:async signal=>{
+      h=scheduler.schedule({id:jid,taskClass:r.taskClass,state:r.targetState,workloadDomain:r.provider.domain,preemptible:r.taskClass!=='INTERACTION',admission,run:async signal=>{
         const payload={durable:r.durable,targetState:r.targetState,taskClass:r.taskClass,semantic:r.semantic,semanticDigest:r.semanticDigest,presentation:r.presentation,modelVersion:r.provider.modelVersion,representationVersion:r.provider.representationVersion};
         let mode='DIRECT',raw,committed=false;
         try{
@@ -64,8 +64,16 @@ function create(o={}){
         }catch(error){if(raw!==undefined&&!committed&&!quarantine.has(rid))cleanupRaw(rid,r,raw,signal.aborted||gen.get(k)!==g?'stale-work':'rejected-materialization',error);throw error}
       }});admitted=true;
     }catch(e){if(!admitted)admission.release();if(rid)ledger.release(rid);throw e}
-    active.set(k,{jobId:jid,g,taskClass:r.taskClass,state:r.targetState,gpuEstimateBytes:r.estimate.gpuEstimateBytes});
+    active.set(k,{jobId:jid,g,taskClass:r.taskClass,state:r.targetState,workloadDomain:r.provider.domain,gpuEstimateBytes:r.estimate.gpuEstimateBytes});
     try{return await h.promise}finally{if(active.get(k)?.jobId===jid)active.delete(k);if(!entries.has(r.cache.digest)&&!quarantine.has(rid)&&!detached.has(rid))ledger.release(rid)}
+  }
+  function existingStateForDurable(d){const k=R.logicalIdentityKey(d.identity),cached=[...entries.values()].find(e=>e.logicalKey===k);return active.get(k)?.state||cached?.state||'COLD';}
+  async function requestAdaptive(x){
+    C.assert(x&&typeof x==='object'&&!Array.isArray(x),'SCHEMA','adaptive materialization request');C.keys(x,['durable','taskClass','semantic','presentation','estimate','signals'],['preferWorker']);if(x.preferWorker!==undefined)C.assert(typeof x.preferWorker==='boolean','SCHEMA','preferWorker');
+    const durable=R.durable(x.durable),signalsInput=C.data(x.signals,{bytes:4096,nodes:64});C.keys(signalsInput,['visible','selected','scaleRelevancePpm','causalRelevancePpm']);const previousState=existingStateForDurable(durable),decision=R.adaptiveState({...signalsInput,previousState});
+    m.adaptiveDecisions++;m.adaptiveByState[decision.state]++;m.adaptiveByReason[decision.reason]=(m.adaptiveByReason[decision.reason]||0)+1;lastAdaptiveDecision=C.data({providerId:durable.identity.providerId,entityId:durable.identity.entityId,representationId:durable.identity.representationId,previousState,state:decision.state,reason:decision.reason,scorePpm:decision.scorePpm,signals:decision.signals});
+    const out=await request({durable:x.durable,targetState:decision.state,taskClass:x.taskClass,semantic:x.semantic,presentation:x.presentation,estimate:x.estimate,preferWorker:x.preferWorker});
+    return C.data({...out,adaptiveDecision:{policyVersion:decision.policyVersion,previousState,state:decision.state,reason:decision.reason,scorePpm:decision.scorePpm,signals:decision.signals}},{bytes:65536,nodes:1024});
   }
   async function reconcileWorkingSet(xs){C.assert(Array.isArray(xs)&&xs.length<=max,'BUDGET','working set');const want=new Set();for(const x of xs){const key=logical(norm(x));C.assert(!want.has(key),'DUPLICATE','working set logical identity '+key);want.add(key)}for(const e of [...entries.values()])if(!want.has(e.logicalKey)){e.pinned=false;release(e,'working-set')}return Promise.allSettled(xs.map(request))}
   function handleMemoryPressure(level){
@@ -84,9 +92,10 @@ function create(o={}){
     m.restorations++;cancelPending(()=>true,'restore');active.clear();for(const e of [...entries.values()]){e.pinned=false;release(e,'restore')}return reconcileWorkingSet(xs);
   }
   function pauseBackground(reason='lifecycle'){return cancelPending(a=>a.taskClass==='PREFETCH'||a.taskClass==='HISTORY_RECONCILE',reason)}
-  function snapshot(){const states=Object.fromEntries(R.STATES.map(s=>[s,0]));for(const e of entries.values())states[e.state]++;return C.data({version:V,workingSet:{entries:entries.size,active:active.size,quarantined:quarantine.size,detached:detached.size,states},metrics:m,scheduler:scheduler.snapshot(),resources:ledger.snapshot(),workers:workers?workers.snapshot():null},{bytes:262144,nodes:8192})}
+  function snapshot(){const states=Object.fromEntries(R.STATES.map(s=>[s,0]));for(const e of entries.values())states[e.state]++;return C.data({version:V,adaptivePolicy:{version:R.ADAPTIVE_POLICY_VERSION,thresholds:R.ADAPTIVE,lastDecision:lastAdaptiveDecision},workingSet:{entries:entries.size,active:active.size,quarantined:quarantine.size,detached:detached.size,states},metrics:m,scheduler:scheduler.snapshot(),resources:ledger.snapshot(),workers:workers?workers.snapshot():null},{bytes:262144,nodes:8192})}
+  function runtimePacket(){m.runtimePackets++;packetSequence++;const snap=snapshot();return C.data({contract:'ofu-v2x01-runtime-packet-1',authority:'MEASURED_RUNTIME_EVIDENCE',sequence:packetSequence,runtimeVersion:V,contractsVersion:R.VERSION,adaptivePolicyVersion:R.ADAPTIVE_POLICY_VERSION,consumerHook:'OFU.v2x01MaterializationRuntime.create(...).runtimePacket()',centralAuthorityClaims:{selection:false,semanticScale:false,travelDistance:false,cameraSpatialFrame:false,sceneComposition:false,primaryRenderer:false,inputRouter:false,persistenceReplay:false},lastAdaptiveDecision,workingSet:snap.workingSet,scheduler:snap.scheduler,resources:snap.resources,workers:snap.workers,metrics:snap.metrics},{bytes:262144,nodes:8192});}
   async function drain(){await scheduler.drain();return snapshot()}
-  return Object.freeze({VERSION:V,registerMaterializer:reg,request,reconcileWorkingSet,restoreWorkingSet,handleMemoryPressure,handleContextLoss,pauseBackground,retryQuarantinedReleases,invalidate:x=>invalidateLogical(R.logicalIdentityKey(x),'explicit'),snapshot,drain});
+  return Object.freeze({VERSION:V,registerMaterializer:reg,request,requestAdaptive,reconcileWorkingSet,restoreWorkingSet,handleMemoryPressure,handleContextLoss,pauseBackground,retryQuarantinedReleases,invalidate:x=>invalidateLogical(R.logicalIdentityKey(x),'explicit'),snapshot,runtimePacket,drain});
 }
 O.v2x01MaterializationRuntime=Object.freeze({VERSION:V,create})
 })(globalThis);
