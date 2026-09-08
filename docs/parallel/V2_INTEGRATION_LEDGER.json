@@ -1,10 +1,12 @@
 {
   "schema": "ofu-v2-integration-ledger-1",
-  "version": "2026-09-07.6",
-  "status": "BASE_CANDIDATE_AWAITING_EXACT_HEAD_CERTIFICATION",
-  "source": {
-    "sha": "cbbb677c8bf57801518b7663cc45a4bcc66e92f0",
-    "tree": "0139106e7b477ecc06b50829b8315a6ed91d772f"
+  "version": "2026-09-08.1",
+  "status": "CENTRAL_CONVERGENCE_ACTIVE_RELEASE_NOT_READY",
+  "parallelBase": {
+    "sha": "2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7",
+    "tree": "99e6b5ff6229d9c34d381e778c5689bf2367d256",
+    "launchStatus": "FULL",
+    "releaseCertification": "NOT_READY"
   },
   "transactions": [
     {
@@ -24,8 +26,47 @@
       "kind": "ARTIFACT_AUDIT",
       "scope": "tests/governance/v2-parallel-base-artifact-audit.mjs",
       "reason": "Require two real shipping builds, byte identity, manifest/hash consistency, V2X reachability and embedded executable/resource witnesses."
+    },
+    {
+      "id": "V2-01-01",
+      "kind": "PEER_PARALLEL_LAUNCH_AUTHENTICATION",
+      "scope": "docs/parallel/V2_PARALLEL_BASE_CURRENT.json",
+      "reason": "Persist the Prompt-00 peer handoff authorizing Prompts 01-23 from immutable base 2977c11/99e6b5 while explicitly preserving RELEASE_CERTIFICATION=NOT_READY and unknown artifact byte/hash evidence."
+    },
+    {
+      "id": "V2-01-02",
+      "kind": "PROVIDER_ACTIVATION_RECONCILIATION",
+      "scope": "V2X provider component catalogs 02/03/05/06/08/10/12 plus PX conformance discovery",
+      "sourceCheckpoint": "PR-238@d3e43e134bc75dc45db3c6ed290b7d490ade2f26",
+      "reason": "Semantic-port the ownership-safe reconciliation onto the newer convergence tree: unbound frontier catalogs remain conformance-visible but cannot auto-register as active shipping providers or bypass the release graph seal."
+    },
+    {
+      "id": "V2-01-03",
+      "kind": "WORKFLOW_REACHABILITY_HARDENING",
+      "scope": ".github/workflows/v2x-supreme-convergence.yml",
+      "reason": "Run the provider activation boundary on exact heads and on reconciliation PRs targeting the central convergence writer while preserving central authority, artifact, Living composition and RELEASE --exact stages."
     }
   ],
-  "certification": null,
-  "promotionLaw": "READY may be published only after the candidate SHA/tree are re-read from GitHub and all required exact-head workflows plus the Living browser journey pass."
+  "knownExactHeadDefect": {
+    "checkpoint": "PR-238@d3e43e134bc75dc45db3c6ed290b7d490ade2f26",
+    "test": "v2x02.travel.fast",
+    "oracle": "v2x02-real-camera-journey-oracle-6",
+    "classification": "NUMERIC_ROUND_TRIP_ORACLE_DEFECT",
+    "actual": 0.12499999999999997,
+    "expected": 0.125,
+    "semanticDriftProven": false,
+    "status": "OPEN_FOR_CENTRAL_REPAIR"
+  },
+  "certification": {
+    "parallelLaunch": "FULL",
+    "release": "NOT_READY",
+    "exactHeadAfterThisTransaction": null,
+    "pending": [
+      "Repair the V2X-02 numeric round-trip oracle without weakening camera authority or semantic invariants.",
+      "Re-run exact-head RELEASE conformance and the complete Living browser journey.",
+      "Continue harvesting and closing the recorded Class B convergence defects.",
+      "Keep PR #237 draft until Prompt 24 final same-SHA closure."
+    ]
+  },
+  "promotionLaw": "Parallel launch readiness and release certification are separate. No central integration transaction may convert FULL parallel launch into v2.0 release readiness without exact-head browser, determinism, performance, science-authority and Prompt 24 same-SHA closure."
 }
