@@ -1,5 +1,5 @@
 {
-  "version": "2026-09-08.2",
+  "version": "2026-09-08.3",
   "defaultRisk": "R3",
   "levels": [
     {"id":"R0","score":0,"name":"trivial","minimumReview":"lightweight","typicalGate":"docs/static","requiredChecks":["contributor-control-plane"]},
@@ -10,11 +10,11 @@
     {"id":"R5","score":5,"name":"constitutional-release-legal","minimumReview":"constitutional-governance","typicalGate":"same-sha-full-matrix","requiredChecks":["contributor-control-plane","same-sha-full-matrix","explicit-steward-review"]}
   ],
   "rules": [
-    {"risk":"R5","patterns":["LICENSE","LICENSING.md","COMMERCIAL_LICENSING.md","TRADEMARKS.md","GOVERNANCE.md","docs/CONSTITUTION.md","docs/governance/**","config/governance/**",".github/CODEOWNERS"]},
-    {"risk":"R4","patterns":["SECURITY.md",".github/workflows/**","package.json","src/temporal/**","src/canonical/**","src/kernel/**","src/**/persistence/**","src/**/replay/**","src/bootstrap/**","tools/build-**","tools/extensions/**","tools/contrib/**","data/provenance/**"]},
+    {"risk":"R5","patterns":["LICENSE","LICENSING.md","COMMERCIAL_LICENSING.md","TRADEMARKS.md","THIRD_PARTY_POLICY.md","GOVERNANCE.md","docs/CONSTITUTION.md","docs/governance/**","config/governance/**",".github/CODEOWNERS","docs/adr/ADR-027-*","docs/adr/ADR-028-*","docs/community/CONTRIBUTOR_RIGHTS.md","docs/community/IP_PROVENANCE.md"]},
+    {"risk":"R4","patterns":["SECURITY.md",".github/workflows/**","package.json","docs/adr/**","docs/community/SUPPLY_CHAIN_SECURITY.md","docs/community/PUBLIC_LAUNCH_READINESS.md","docs/community/GOVERNANCE_MATURITY.md","src/temporal/**","src/canonical/**","src/kernel/**","src/**/persistence/**","src/**/replay/**","src/bootstrap/**","tools/build-**","tools/extensions/**","tools/contrib/**","data/provenance/**"]},
     {"risk":"R3","patterns":["config/components/**","config/conformance/**","config/extensions/**","src/runtime/**","src/extensions/**","src/rendering/v2x-convergence/**"]},
     {"risk":"R2","patterns":["src/**","tests/**","research/**","data/**","tools/**"]},
-    {"risk":"R1","patterns":["README.md","CITATION.cff","docs/**","reports/**","rfcs/**","CONTRIBUTING.md","CODE_OF_CONDUCT.md","MAINTAINERS.md","THIRD_PARTY_POLICY.md",".github/PULL_REQUEST_TEMPLATE.md"]},
+    {"risk":"R1","patterns":["README.md","CITATION.cff","docs/**","reports/**","rfcs/**","CONTRIBUTING.md","CODE_OF_CONDUCT.md","MAINTAINERS.md",".github/PULL_REQUEST_TEMPLATE.md",".github/SUPPORT.md"]},
     {"risk":"R0","patterns":[".editorconfig",".github/ISSUE_TEMPLATE/**"]}
   ]
 }
