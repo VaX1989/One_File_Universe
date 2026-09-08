@@ -37,7 +37,7 @@ function fakeGL(){
     createVertexArray:()=>({kind:'vao',id:++sequence}),bindVertexArray(){},deleteVertexArray:x=>deleted.push(x),enableVertexAttribArray(){},vertexAttribPointer(){},
     createFramebuffer:()=>({kind:'framebuffer',id:++sequence}),bindFramebuffer(){},framebufferTexture2D(){},deleteFramebuffer:x=>deleted.push(x),
     createRenderbuffer:()=>({kind:'renderbuffer',id:++sequence}),bindRenderbuffer(){},renderbufferStorage(){},framebufferRenderbuffer(){},deleteRenderbuffer:x=>deleted.push(x),checkFramebufferStatus:()=>27,
-    useProgram(){},getUniformLocation:(p,name)=>({p,name}),uniformMatrix4fv(){},uniform3fv(){},uniform1f(){},uniform1i(){},uniform2f(){},
+    useProgram(){},getUniformLocation:(p,name)=>({p,name}),uniformMatrix4fv(){},uniform4fv(){},uniform3fv(){},uniform1f(){},uniform1i(){},uniform2f(){},
     viewport(){},enable(cap){if(cap===35)blendEnabled=true},disable(cap){if(cap===35)blendEnabled=false},depthFunc(){},clearDepth(){},clearColor(){},clear(){},blendFunc(){},
     drawArrays(){drawArrays++;drawStates.push({kind:'arrays',blend:blendEnabled})},drawElements(){drawElements++;drawStates.push({kind:'elements',blend:blendEnabled})},
     getExtension:name=>name==='EXT_disjoint_timer_query_webgl2'?{TIME_ELAPSED_EXT:40,GPU_DISJOINT_EXT:41}:null,
@@ -94,6 +94,12 @@ for(const domain of OFU.renderWebGL2Resources.DOMAINS)eq(witness.domainCounts[do
 eq(C.snapshot().resourceManager.accountingExact,true);ok(C.snapshot().resourceManager.trackedBytes<=C.snapshot().resourceManager.maxTrackedBytes);eq(C.snapshot().retainedFrameBytes,witness.frameBytes);ok(/^[0-9a-f]{16}$/.test(witness.packetFingerprint),'fingerprint must be a 64-bit hexadecimal witness');
 eq(witness.packetFingerprint,'6cba86fbdc775545','exact normalized-frame fingerprint drift');
 eq(witness.packetFingerprintAlgorithm,'FNV1A32X2_CANONICAL_LE_V1');
+
+// V2X-13 shadow + volumetric closure: bounded real WebGL2 passes consumed by the frame consumer.
+const effectsGl=fakeGL(),EC=OFU.renderWebGL2Resources.createFrameConsumer(effectsGl,{maxDraws:16,maxVertices:128,maxIndices:128,maxFrameBytes:65536,maxRetainedBytes:65536,maxTrackedBytes:4194304,maxTextureDimension:1024});
+const effectsPacket={...packet,frameId:'living:frame:effects',shadow:{enabled:true,id:'sun:primary',viewProjection:I,atlasSize:512,bias:{constant:.001}},volumetric:{enabled:true,profile:{density:.05,extinction:1.1,anisotropy:.15,steps:8,maxDistance:1200},color:[.18,.24,.3]}};
+const effectsBefore=effectsGl._draws().total,effectsWitness=EC.render(effectsPacket);
+eq(effectsWitness.shadowPresentation,true);eq(effectsWitness.shadowSampledByLitMaterials,true);eq(effectsWitness.shadowDrawCalls,7);eq(effectsWitness.volumetricPresentation,true);eq(effectsWitness.volumetricDrawCalls,1);eq(effectsWitness.volumetricScientificAtmosphereClaim,false);eq(effectsWitness.drawCalls,18);eq(effectsGl._draws().total-effectsBefore,18,'7 shadow + 9 geometry + FXAA + volumetric must execute as WebGL draw calls');eq(EC.snapshot().canvas2dFallbackUsed,false);eq(EC.snapshot().resourceManager.accountingExact,true);ok(EC.render({...effectsPacket,frameId:'living:frame:effects:2',shadow:{...effectsPacket.shadow,bias:{constant:.002}}}).packetFingerprint!==effectsWitness.packetFingerprint,'shadow-affecting mutation must change fingerprint');ok(EC.render({...effectsPacket,frameId:'living:frame:effects:3',volumetric:{...effectsPacket.volumetric,profile:{...effectsPacket.volumetric.profile,density:.08}}}).packetFingerprint!==effectsWitness.packetFingerprint,'volumetric-affecting mutation must change fingerprint');eq(EC.dispose().resourceManager.accountingExact,true);
 const fingerprintSource=fs.readFileSync('src/rendering/webgl2/resources.js','utf8');
 ok(fingerprintSource.includes('setFloat32(0,v[i],true)'),'float fingerprint encoding must be explicit little-endian');
 ok(fingerprintSource.includes('setUint32(0,v[i],true)'),'index fingerprint encoding must be explicit little-endian');
