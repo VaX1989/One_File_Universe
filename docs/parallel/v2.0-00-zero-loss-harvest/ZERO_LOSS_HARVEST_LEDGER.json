@@ -1,0 +1,152 @@
+{
+  "schema": "ofu-v2-zero-loss-harvest-ledger-2",
+  "version": "2026-09-08.2",
+  "lane": {
+    "id": "V2.0-00-ZERO-LOSS-HARVEST",
+    "branch": "parallel/v2.0-00-zero-loss-harvest-2026-09-07",
+    "status": "COMPLETE",
+    "mode": "ADDITIVE_PROVENANCE_AND_FALSIFICATION",
+    "remainingOwnedBlockers": []
+  },
+  "authorizedBase": {
+    "sha": "2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7",
+    "tree": "99e6b5ff6229d9c34d381e778c5689bf2367d256",
+    "parallelLaunchStatus": "FULL"
+  },
+  "centralSyncBase": {
+    "branch": "integration/v2x-supreme-total-convergence-2026-09-07",
+    "sha": "8767e81d953a7d6c2bce334749c609d9b1be0805",
+    "tree": "f9a6d9fb26cf624cdcea59bc03ae1ac3417eb4cd",
+    "policy": "CENTRAL_BYTES_IMPORTED_UNCHANGED_AS_MERGE_PARENT_NO_DIRECT_CENTRAL_WRITES"
+  },
+  "authorityBoundary": {
+    "precedence": "DENY_BEFORE_ALLOW",
+    "runtimeCompositionDecision": "NO_NEW_RUNTIME_COMPONENT",
+    "runtimeCompositionReason": "No exact component-descriptor grant exists for this lane and central composition is convergence-owned; uncomposed runtime source would be dead work.",
+    "centralOwnerOnlyPatterns": [
+      ".github/**",
+      "docs/parallel/V2X_OWNERSHIP_MATRIX.json",
+      "src/extensions/**",
+      "src/bootstrap/**",
+      "src/rendering/v1/**",
+      "src/rendering/planet-framing.js",
+      "src/scenes/v1/**",
+      "src/ui/app/v1/**",
+      "src/app/input-intent.js",
+      "src/engine/session/**",
+      "src/persistence/**",
+      "src/domains/v1/**",
+      "tools/build*.mjs",
+      "tools/product-template-compose.mjs",
+      "tools/extensions/components.mjs",
+      "tools/extensions/conformance.mjs",
+      "config/components/product.json",
+      "config/components/exploration-v1.json",
+      "config/components/planetology-environment-v1.json",
+      "config/components/v1-micro.json",
+      "config/components/v1.json"
+    ],
+    "ownedPaths": [
+      "docs/parallel/v2.0-00-zero-loss-harvest/ZERO_LOSS_HARVEST_LEDGER.json",
+      "docs/parallel/v2.0-00-zero-loss-harvest/CHECKPOINT.json",
+      "tools/v2-zero-loss-harvest-validate.mjs",
+      "tests/v2-zero-loss-harvest/adversarial.mjs"
+    ]
+  },
+  "completionLaw": [
+    "SOURCE",
+    "SHIPPING_MANIFEST",
+    "ONE_FILE_HTML",
+    "RUNTIME_EXPORT",
+    "ACTUAL_CONSUMER",
+    "LIVING_VIEWPORT_OR_USER_ACTION",
+    "VISIBLE_OR_AUDIBLE_CONSEQUENCE",
+    "PERSISTENCE_OR_REVISIT_WHEN_APPLICABLE",
+    "EXACT_ARTIFACT_BROWSER_EVIDENCE"
+  ],
+  "historicalBaseHarvest": [
+    {"lane":"V2X-01","branch":"parallel/v2x-01-runtime-adaptive-materialization-2026-09-07","headSha":"ea0eea592b7bfe955490943a6da87774023acb56","relationToAuthorizedBase":"BEHIND","aheadBy":0,"behindBy":364,"disposition":"ALREADY_HARVESTED_IN_AUTHORIZED_BASE"},
+    {"lane":"V2X-02","branch":"parallel/v2x-02-camera-spatial-travel-2026-09-07","headSha":"90f246a418c89ec7966d0ad68f6bab312af7c38e","relationToAuthorizedBase":"BEHIND","aheadBy":0,"behindBy":336,"disposition":"ALREADY_HARVESTED_IN_AUTHORIZED_BASE"},
+    {"lane":"V2X-03","branch":"parallel/v2x-03-macrocosm-galaxy-rendering-2026-09-07","headSha":"d2f43eec8f2365d2939ea8f0f484fdaa8054b2a9","relationToAuthorizedBase":"BEHIND","aheadBy":0,"behindBy":331,"disposition":"ALREADY_HARVESTED_IN_AUTHORIZED_BASE"},
+    {"lane":"V2X-04","branch":"parallel/v2x-04-system-planet-approach-2026-09-07","headSha":"9a45f3653c4ffd9d08a9d873eb72529f4eec1ee3","relationToAuthorizedBase":"BEHIND","aheadBy":0,"behindBy":346,"disposition":"ALREADY_HARVESTED_IN_AUTHORIZED_BASE"},
+    {"lane":"V2X-05","branch":"parallel/v2x-05-deep-planet-science-2026-09-07","headSha":"faf8b56ec0ccf8486ac19620ea6056110f57f044","relationToAuthorizedBase":"AHEAD","aheadBy":9,"behindBy":0,"disposition":"SEMANTIC_REVIEW_NO_BLIND_CHERRYPICK"},
+    {"lane":"V2X-06","branch":"parallel/v2x-06-surface-terrain-geology-hydrology-2026-09-07","headSha":"ab3caeac5eec60af2632a5a570ccc84908f67b73","relationToAuthorizedBase":"DIVERGED","aheadBy":9,"behindBy":367,"disposition":"SEMANTIC_REVIEW_NO_BLIND_CHERRYPICK"},
+    {"lane":"V2X-07","branch":"parallel/v2x-07-human-scale-local-traversal-2026-09-07","headSha":"ebf759108090020471e2e2fb67ea9fd907386566","relationToAuthorizedBase":"BEHIND","aheadBy":0,"behindBy":317,"disposition":"ALREADY_HARVESTED_IN_AUTHORIZED_BASE"},
+    {"lane":"V2X-08","branch":"parallel/v2x-08-life-ecology-evolution-embodiment-2026-09-07","headSha":"cec6b632f373b6757630a2f68dd999ba610e1313","relationToAuthorizedBase":"BEHIND","aheadBy":0,"behindBy":335,"disposition":"ALREADY_HARVESTED_IN_AUTHORIZED_BASE"},
+    {"lane":"V2X-09","branch":"parallel/v2x-09-civilization-economy-city-2026-09-07","headSha":"6139b522e9928c9208c9ce7f233ab4f9e6cbec4c","relationToAuthorizedBase":"BEHIND","aheadBy":0,"behindBy":336,"disposition":"ALREADY_HARVESTED_IN_AUTHORIZED_BASE"},
+    {"lane":"V2X-10","branch":"parallel/v2x-10-persistent-individuals-history-2026-09-07","headSha":"906ae61bb080f94ae6dba1b33e8d3b543018769f","relationToAuthorizedBase":"BEHIND","aheadBy":0,"behindBy":345,"disposition":"ALREADY_HARVESTED_IN_AUTHORIZED_BASE"},
+    {"lane":"V2X-11","branch":"parallel/v2x-11-gameplay-causal-engine-2026-09-07","headSha":"6b106eb7d012c977a7ebec5d23b46aa06cfd23a2","relationToAuthorizedBase":"DIVERGED","aheadBy":23,"behindBy":367,"disposition":"SEMANTIC_REVIEW_NO_BLIND_CHERRYPICK"},
+    {"lane":"V2X-12","branch":"parallel/v2x-12-matter-cell-molecular-atomic-2026-09-07","headSha":"671daaec0dfe1323fc10721f32f0f0f338392f2f","relationToAuthorizedBase":"BEHIND","aheadBy":0,"behindBy":313,"disposition":"ALREADY_HARVESTED_IN_AUTHORIZED_BASE"},
+    {"lane":"V2X-13","branch":"parallel/v2x-13-rendering-platform-webgpu-2026-09-07","headSha":"e27b14fcf0f9eeae3f0369627d9fecfc4b903982","relationToAuthorizedBase":"BEHIND","aheadBy":0,"behindBy":336,"disposition":"ALREADY_HARVESTED_IN_AUTHORIZED_BASE"},
+    {"lane":"V2X-14","branch":"parallel/v2x-14-product-ux-mobile-accessibility-audio-2026-09-07","headSha":"7cdfe091a5fa22b4b9876c5adee0b32668805797","relationToAuthorizedBase":"DIVERGED","aheadBy":54,"behindBy":367,"disposition":"SEMANTIC_REVIEW_NO_BLIND_CHERRYPICK"},
+    {"lane":"V2X-15","branch":"research/v2x-15-astronomy-planetology-frontier-2026-09-07","headSha":"6768689d85a5e3e094429eea0b73aaaa4497bcaf","relationToAuthorizedBase":"DIVERGED","aheadBy":62,"behindBy":367,"disposition":"RESEARCH_ONLY_PRESERVE","authority":"RESEARCH_ONLY","shippingPromotionPerformed":false},
+    {"lane":"V2X-16","branch":"research/v2x-16-life-civ-matter-frontier-2026-09-07","headSha":"bf0d7caaecadde5f1a3de54c53fc6da0a4109a15","relationToAuthorizedBase":"AHEAD","aheadBy":26,"behindBy":0,"disposition":"RESEARCH_ONLY_PRESERVE","authority":"RESEARCH_ONLY","shippingPromotionPerformed":false}
+  ],
+  "currentCheckpointHarvest": [
+    {"lane":"V2X-01","branch":"parallel/v2.0-01-runtime-adaptive-materialization-2026-09-07","headSha":"82d4a72da3a4248ada7d2937e3a424b0df619a17","namespace":"V2_0","relationToCentralSyncBase":"DIVERGED","aheadBy":16,"behindBy":7,"disposition":"CENTRAL_INTEGRATION_REQUIRED"},
+    {"lane":"V2X-02","branch":"parallel/v2.0-02-camera-spatial-travel-2026-09-07","headSha":"53c155ad80613a98e0b92cc83c2fc0e8c8794555","namespace":"V2_0","relationToCentralSyncBase":"DIVERGED","aheadBy":6,"behindBy":5,"disposition":"CENTRAL_INTEGRATION_REQUIRED"},
+    {"lane":"V2X-03","branch":"parallel/v2.0-03-macrocosm-embodiment-2026-09-07","headSha":"7f1e687c5a034d5633075c1133893e04dd7a6a95","namespace":"V2_0","relationToCentralSyncBase":"DIVERGED","aheadBy":4,"behindBy":5,"disposition":"CENTRAL_INTEGRATION_REQUIRED"},
+    {"lane":"V2X-04","branch":"parallel/v2.0-04-system-planet-approach-2026-09-07","headSha":"270f564826d1223537af56a40140ee628993742c","namespace":"V2_0","relationToCentralSyncBase":"DIVERGED","aheadBy":6,"behindBy":7,"disposition":"CENTRAL_INTEGRATION_REQUIRED"},
+    {"lane":"V2X-05","branch":"parallel/v2x-05-deep-planet-science-2026-09-07","headSha":"faf8b56ec0ccf8486ac19620ea6056110f57f044","namespace":"LEGACY_FALLBACK_NO_V2_0_REF","relationToCentralSyncBase":"DIVERGED","aheadBy":7,"behindBy":5,"disposition":"CENTRAL_INTEGRATION_REQUIRED"},
+    {"lane":"V2X-06","branch":"parallel/v2.0-06-surface-terrain-geology-hydrology-2026-09-07","headSha":"2410ac9927476365341a2dfc943f9dd6a7503e5a","namespace":"V2_0","relationToCentralSyncBase":"DIVERGED","aheadBy":5,"behindBy":7,"disposition":"CENTRAL_INTEGRATION_REQUIRED"},
+    {"lane":"V2X-07","branch":"parallel/v2.0-07-human-scale-local-traversal-2026-09-07","headSha":"3e38ceb335e297230fdad8bb3b9081a50e766127","namespace":"V2_0","relationToCentralSyncBase":"DIVERGED","aheadBy":17,"behindBy":7,"disposition":"CENTRAL_INTEGRATION_REQUIRED"},
+    {"lane":"V2X-08","branch":"parallel/v2.0-08-life-ecology-evolution-embodiment-2026-09-07","headSha":"08340ef972e9de8ea0ed7a6eea64df361ac19a35","namespace":"V2_0","relationToCentralSyncBase":"DIVERGED","aheadBy":12,"behindBy":5,"disposition":"CENTRAL_INTEGRATION_REQUIRED"},
+    {"lane":"V2X-09","branch":"parallel/v2.0-09-civilization-economy-city-2026-09-07","headSha":"8dbdb80a53356d72448ae39537cdeb2154e4a516","namespace":"V2_0","relationToCentralSyncBase":"DIVERGED","aheadBy":9,"behindBy":7,"disposition":"CENTRAL_INTEGRATION_REQUIRED"},
+    {"lane":"V2X-10","branch":"parallel/v2.0-10-persistent-individuals-history-2026-09-07","headSha":"01906772cf70cc704a7d9d66750e777aeffd69e2","namespace":"V2_0","relationToCentralSyncBase":"DIVERGED","aheadBy":3,"behindBy":7,"disposition":"CENTRAL_INTEGRATION_REQUIRED"},
+    {"lane":"V2X-11","branch":"parallel/v2.0-11-gameplay-causal-engine-2026-09-07","headSha":"a55713580c2ccf21b840235e09700aacbf030c2f","namespace":"V2_0","relationToCentralSyncBase":"DIVERGED","aheadBy":4,"behindBy":5,"disposition":"CENTRAL_INTEGRATION_REQUIRED"},
+    {"lane":"V2X-12","branch":"parallel/v2.0-12-matter-cell-molecular-atomic-2026-09-07","headSha":"62870a190e8ae9fc0e735c6b14c9ab53b7a2977c","namespace":"V2_0","relationToCentralSyncBase":"DIVERGED","aheadBy":2,"behindBy":7,"disposition":"CENTRAL_INTEGRATION_REQUIRED"},
+    {"lane":"V2X-13","branch":"parallel/v2.0-13-rendering-platform-embodiment-2026-09-07","headSha":"f7beb5f80656ba80015dfa2658b09d66ca17179d","namespace":"V2_0","relationToCentralSyncBase":"DIVERGED","aheadBy":2,"behindBy":7,"disposition":"CENTRAL_INTEGRATION_REQUIRED"},
+    {"lane":"V2X-14","branch":"parallel/v2.0-14-product-ux-mobile-accessibility-audio-2026-09-07","headSha":"36c768d37466d77ee00565138928470ad98549d5","namespace":"V2_0","relationToCentralSyncBase":"DIVERGED","aheadBy":13,"behindBy":7,"disposition":"CENTRAL_INTEGRATION_REQUIRED"},
+    {"lane":"V2X-15","branch":"research/v2.0-15-astronomy-planetology-frontier-2026-09-07","headSha":"8c0b9b0634d3e693282f468fbb64b3e1757490a4","namespace":"V2_0_RESEARCH","relationToCentralSyncBase":"DIVERGED","aheadBy":71,"behindBy":7,"disposition":"RESEARCH_ONLY_PRESERVE","authority":"RESEARCH_ONLY","shippingPromotionPerformed":false},
+    {"lane":"V2X-16","branch":"research/v2x-16-life-civ-matter-frontier-2026-09-07","headSha":"bf0d7caaecadde5f1a3de54c53fc6da0a4109a15","namespace":"LEGACY_FALLBACK_NO_V2_0_REF","relationToCentralSyncBase":"DIVERGED","aheadBy":26,"behindBy":7,"disposition":"RESEARCH_ONLY_PRESERVE","authority":"RESEARCH_ONLY","shippingPromotionPerformed":false}
+  ],
+  "forensicSignals": {
+    "V2X-08": {
+      "richHistoricalModuleBytes": 71209,
+      "authorizedBaseFacadeBytes": 6397,
+      "interpretation": "Representation signal only; byte delta does not prove behavioral absence. Current V2.0-08 adds explicit shipping adapter, viewport bridge and reachability tests and therefore requires semantic central integration rather than byte-count inference."
+    },
+    "V2X-10": {
+      "historicalRelevantSourceBytes": 49953,
+      "authorizedBaseDirectProviderBytes": 14243,
+      "authorizedBaseIdentityPersistentAcrossRevisit": true,
+      "authorizedBaseRetainedMemoryPersistence": false,
+      "authorizedBaseMortalityAwareRefinement": false,
+      "interpretation": "Historical signal retained for provenance; current V2.0-10 has additional test history not yet contained in the central sync base."
+    }
+  },
+  "researchAuthority": {
+    "policy": "Research branches are provenance and falsification evidence, never shipping or CANONICAL_PROVEN authority by presence alone.",
+    "V2X-15": {"authority":"RESEARCH_ONLY","shippingPromotionPerformed":false,"canonicalPromotionPerformed":false},
+    "V2X-16": {"authority":"RESEARCH_ONLY","shippingPromotionPerformed":false,"canonicalPromotionPerformed":false}
+  },
+  "externalDependencies": [
+    {
+      "id": "CENTRAL-INTEGRATE-CURRENT-V2-SHIPPING-LANES",
+      "owner": "CONVERGENCE_OWNER",
+      "outsideLaneAuthority": true,
+      "scope": ["V2X-01","V2X-02","V2X-03","V2X-04","V2X-05","V2X-06","V2X-07","V2X-08","V2X-09","V2X-10","V2X-11","V2X-12","V2X-13","V2X-14"],
+      "reason": "Each listed current checkpoint has commits not contained in the authenticated central sync base; central composition and semantic conflict adjudication are single-writer convergence authority."
+    },
+    {
+      "id": "SCIENTIFIC-PROMOTION-REVIEW-V2X-15-16",
+      "owner": "SCIENTIFIC_CONVERGENCE_REVIEW",
+      "outsideLaneAuthority": true,
+      "scope": ["V2X-15","V2X-16"],
+      "reason": "Research-only evidence may be integrated as provenance but cannot be promoted to shipping/canonical scientific authority without governed scientific review."
+    }
+  ],
+  "evidence": {
+    "branchComparisonMethod": "GitHub compare API against authenticated central sync base and authorized base",
+    "previousHostedExactHead": {
+      "sha": "32b179c22ab1b2cfba13065488a7181e02ca2d6d",
+      "repositorySuitesPassed": 9,
+      "repositorySuitesFailed": 1,
+      "failureClassification": "STALE_CENTRAL_SYNC_PATH_MISMATCH",
+      "failure": "V2X Supreme Convergence expected tests/v2x-convergence/provider-activation-boundary.mjs from newer central workflow while the lane head still used the older authorized-base tree; npm test itself passed."
+    },
+    "validatorCommand": "node tools/v2-zero-loss-harvest-validate.mjs",
+    "adversarialCommand": "node tests/v2-zero-loss-harvest/adversarial.mjs",
+    "repositoryRegressionCommand": "npm test"
+  }
+}
