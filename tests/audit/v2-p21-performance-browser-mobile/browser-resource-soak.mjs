@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
+import os from 'node:os';
 import assert from 'node:assert/strict';
 import {pathToFileURL} from 'node:url';
 import {chromium,firefox,webkit} from 'playwright';
@@ -9,12 +10,47 @@ const SOURCE=process.env.OFU_SOURCE_SHA;
 if(!SOURCE)throw new Error('OFU_SOURCE_SHA required');
 const manifest=JSON.parse(fs.readFileSync('dist/rendering-build-manifest.json','utf8'));
 assert.equal(manifest.sourceCommit,SOURCE,'shipping manifest must identify the exact audit SHA');
-const PRODUCT=pathToFileURL(path.resolve('dist/One_File_Universe.html')).href;
+const DEFAULT_PRODUCT=pathToFileURL(path.resolve('dist/One_File_Universe.html')).href;
+const PRODUCT=process.env.P21_PRODUCT_URL||DEFAULT_PRODUCT;
+const PRODUCT_TRANSPORT=process.env.P21_PRODUCT_URL?'DIAGNOSTIC_HTTP_OVERRIDE':'EXACT_SHIPPING_FILE_URL';
 const OUT=path.resolve('dist/evidence/v2-p21-performance-browser-mobile');
 fs.mkdirSync(OUT,{recursive:true});
 const ENGINES={chromium,firefox,webkit};
 const CYCLES=Number(process.env.P21_CYCLES||12);
 assert.ok(Number.isInteger(CYCLES)&&CYCLES>=8&&CYCLES<=40,'P21_CYCLES must be 8..40');
+
+function executableCandidates(name){
+ const roots=[process.env.PLAYWRIGHT_BROWSERS_PATH,path.join(os.homedir(),'.cache','ms-playwright')].filter(Boolean);
+ const prefixes=name==='chromium'?['chromium_headless_shell-','chromium-']:name==='firefox'?['firefox-']:['webkit-'];
+ const tails=name==='chromium'?['chrome-linux/headless_shell','chrome-linux/chrome','chrome-linux64/chrome']:name==='firefox'?['firefox/firefox']:['pw_run.sh'];
+ const out=[];
+ for(const root of new Set(roots)){
+  if(!fs.existsSync(root))continue;
+  for(const dir of fs.readdirSync(root).filter(x=>prefixes.some(p=>x.startsWith(p))).sort().reverse())for(const tail of tails)out.push(path.join(root,dir,tail));
+ }
+ return out.filter(x=>{try{fs.accessSync(x,fs.constants.X_OK);return true}catch{return false}});
+}
+async function launchEngine(name,engine){
+ try{return {browser:await engine.launch({headless:true}),launcher:{status:'PLAYWRIGHT_EXPECTED_EXECUTABLE',executable:engine.executablePath()}}}
+ catch(error){
+  const original=String(error?.message||error);
+  if(!/Executable doesn't exist|executable.*not found|Failed to launch/i.test(original))throw error;
+  const attempted=[];
+  for(const executablePath of executableCandidates(name)){
+   attempted.push(executablePath);
+   try{return {browser:await engine.launch({headless:true,executablePath}),launcher:{status:'PINNED_CACHE_EXECUTABLE_FALLBACK',expected:engine.executablePath(),executable:executablePath,originalError:original.slice(0,600)}}}catch{}
+  }
+  throw new Error(`${name} browser runtime unavailable after bounded pinned-cache fallback; expected=${engine.executablePath()} candidates=${JSON.stringify(attempted)} original=${original.slice(0,1200)}`);
+ }
+}
+async function framePacing(page){
+ return page.evaluate(async()=>{
+  const samples=[];let last=performance.now();
+  await new Promise(resolve=>{let left=90;const tick=now=>{samples.push(now-last);last=now;if(--left<=0)resolve();else requestAnimationFrame(tick)};requestAnimationFrame(tick)});
+  const sorted=[...samples].sort((a,b)=>a-b),pick=q=>sorted[Math.min(sorted.length-1,Math.floor(sorted.length*q))]||0;
+  return {status:'MEASURED_RAF_INTERVALS',samples:samples.length,p50Ms:pick(.5),p95Ms:pick(.95),maxMs:Math.max(0,...samples),over50ms:samples.filter(x=>x>50).length};
+ });
+}
 
 function slope(values){
  if(values.length<2)return null;
@@ -32,12 +68,19 @@ async function instrument(context){
   const proto=EventTarget.prototype,add=proto.addEventListener,remove=proto.removeEventListener;
   const registry=new WeakMap();
   const capture=o=>typeof o==='boolean'?o:!!o?.capture;
+  const forget=(target,type,entry)=>{const m=registry.get(target),a=m?.get(type),i=a?.indexOf(entry)??-1;if(i>=0){a.splice(i,1);active.listeners=Math.max(0,active.listeners-1)}};
   proto.addEventListener=function(type,listener,opts){
-   if(listener){let m=registry.get(this);if(!m){m=new Map();registry.set(this,m)}let a=m.get(type);if(!a){a=[];m.set(type,a)}const c=capture(opts);if(!a.some(x=>x.listener===listener&&x.capture===c)){a.push({listener,capture:c});active.listeners++}}
-   return add.call(this,type,listener,opts);
+   if(!listener)return add.call(this,type,listener,opts);
+   let m=registry.get(this);if(!m){m=new Map();registry.set(this,m)}let a=m.get(type);if(!a){a=[];m.set(type,a)}const c=capture(opts);
+   if(a.some(x=>x.listener===listener&&x.capture===c))return add.call(this,type,listener,opts);
+   const once=!!(typeof opts==='object'&&opts?.once),entry={listener,capture:c,wrapped:listener};
+   if(once){entry.wrapped=typeof listener==='function'?function(...args){forget(this,type,entry);return listener.apply(this,args)}:{handleEvent(event){forget(event.currentTarget,type,entry);return listener.handleEvent(event)}};}
+   a.push(entry);active.listeners++;
+   const signal=typeof opts==='object'?opts?.signal:null;if(signal&&typeof signal.addEventListener==='function')add.call(signal,'abort',()=>forget(this,type,entry),{once:true});
+   return add.call(this,type,entry.wrapped,opts);
   };
   proto.removeEventListener=function(type,listener,opts){
-   const m=registry.get(this),a=m?.get(type),c=capture(opts),i=a?.findIndex(x=>x.listener===listener&&x.capture===c)??-1;if(i>=0){a.splice(i,1);active.listeners--}
+   const m=registry.get(this),a=m?.get(type),c=capture(opts),entry=a?.find(x=>x.listener===listener&&x.capture===c);if(entry){forget(this,type,entry);return remove.call(this,type,entry.wrapped,opts)}
    return remove.call(this,type,listener,opts);
   };
   const NativeWorker=globalThis.Worker;
@@ -78,13 +121,14 @@ async function seedToHuman(page){
 async function sample(page,cycle){
  return page.evaluate(cycle=>{
   const p=globalThis.__OFU_PLANET_PREVIEW__?.snapshot?.()||null,v=OFU.v1Providers?.snapshot?.()||{},s=OFU.v1Session.snapshot(),l=OFU.v1LivingProduct.runtime.snapshot(),r=OFU.v1LivingProduct.renderer.state(),a=globalThis.__OFU_P21_AUDIT__;
-  return {cycle,stage:l.stage,history:l.historyDepth,historyLimit:l.maxHistory,discoveryCache:l.discoveryCacheEntries,discoveryCacheLimit:l.discoveryCacheLimit,providerCache:v.cacheEntries??null,providerCacheLimit:v.cacheLimit??null,domNodes:document.querySelectorAll('*').length,canvasCount:document.querySelectorAll('canvas').length,audioElements:document.querySelectorAll('audio').length,listeners:a?.active.listeners??null,workers:a?.active.workers??null,createdWorkers:a?.active.createdWorkers??null,longTasks:a?.longTasks.length??null,longTaskSupport:a?.longTaskSupport??false,heap:performance.memory?.usedJSHeapSize??null,sessionBytes:OFU.v1Session.exportBytes().length,canonicalMutation:s.canonicalMutation,canonicalP6Mutation:s.canonicalP6Mutation,working:p?.workingSet||null,gpu:p?.gpu||null,renderer:r};
+  const audio=globalThis.__OFU_V2X14_AUDIO__?.snapshot?.()||OFU.v2x14LivingAudioController?.instance?.()?.snapshot?.()||null;
+  return {cycle,stage:l.stage,history:l.historyDepth,historyLimit:l.maxHistory,discoveryCache:l.discoveryCacheEntries,discoveryCacheLimit:l.discoveryCacheLimit,providerCache:v.cacheEntries??null,providerCacheLimit:v.cacheLimit??null,domNodes:document.querySelectorAll('*').length,canvasCount:document.querySelectorAll('canvas').length,audioElements:document.querySelectorAll('audio').length,audioRuntime:audio?.runtime?{state:audio.runtime.state,contextCount:audio.runtime.contextCount,contextCreations:audio.runtime.contextCreations,liveNodes:audio.runtime.liveNodes,peakLiveNodes:audio.runtime.peakLiveNodes,limits:audio.runtime.limits}:null,listeners:a?.active.listeners??null,workers:a?.active.workers??null,createdWorkers:a?.active.createdWorkers??null,longTasks:a?.longTasks.length??null,longTaskSupport:a?.longTaskSupport??false,heap:performance.memory?.usedJSHeapSize??null,sessionBytes:OFU.v1Session.exportBytes().length,canonicalMutation:s.canonicalMutation,canonicalP6Mutation:s.canonicalP6Mutation,working:p?.workingSet||null,gpu:p?.gpu||null,renderer:r};
  },cycle);
 }
 
 async function desktopSoak(browserName,browser){
  const context=await browser.newContext({viewport:{width:1280,height:800}});await instrument(context);const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(String(e?.message||e).slice(0,800)));
- await page.goto(PRODUCT,{waitUntil:'load'});await ready(page);const material=await seedToHuman(page);const samples=[];const transitionMs=[];
+ const startupStart=Date.now();await page.goto(PRODUCT,{waitUntil:'load'});await ready(page);const startupMs=Date.now()-startupStart;const material=await seedToHuman(page);const samples=[];const transitionMs=[];
  for(let cycle=0;cycle<CYCLES;cycle++){
   const t0=Date.now();
   await page.evaluate(id=>{const L=OFU.v1LivingProduct.runtime,s=L.snapshot();if(s.selectedObjectId!==id)L.selectObject(id);L.enterMicro(id);L.deeper();L.deeper();L.deeper();L.scale('HUMAN')},material);
@@ -98,7 +142,9 @@ async function desktopSoak(browserName,browser){
  const contextLoss=await page.evaluate(async()=>{const canvas=document.getElementById('planet-view'),gl=canvas?.getContext?.('webgl2');if(!gl)return{status:'NOT_MEASURABLE_BACKEND_NOT_WEBGL2'};const ext=gl.getExtension('WEBGL_lose_context');if(!ext)return{status:'NOT_MEASURABLE_EXTENSION_UNAVAILABLE'};const before=OFU.v1LivingProduct.runtime.snapshot().stage;ext.loseContext();await new Promise(r=>setTimeout(r,80));ext.restoreContext();await new Promise(r=>setTimeout(r,180));return{status:'MEASURED',before,after:OFU.v1LivingProduct.runtime.snapshot().stage,isLost:gl.isContextLost()}});if(contextLoss.status==='MEASURED'){assert.equal(contextLoss.after,contextLoss.before);assert.equal(contextLoss.isLost,false)}
  assert.equal(errors.length,0,`${browserName} page errors: ${errors.join('\n')}`);
  const longTask=await page.evaluate(()=>{const a=globalThis.__OFU_P21_AUDIT__;return a.longTaskSupport?{status:'MEASURED',count:a.longTasks.length,totalMs:a.longTasks.reduce((n,x)=>n+x.duration,0),maxMs:Math.max(0,...a.longTasks.map(x=>x.duration))}:{status:'NOT_MEASURABLE_UNSUPPORTED_ENTRY_TYPE'}});
- const evidence={browser:browserName,cycles:CYCLES,transitionMs,transitionP95:[...transitionMs].sort((a,b)=>a-b)[Math.min(transitionMs.length-1,Math.floor(transitionMs.length*.95))],plateau:plateauEvidence,heap:heapEvidence,longTasks:longTask,contextLoss,samples};await context.close();return evidence;
+ const pacing=await framePacing(page);
+ const audioBounds=warm.map(x=>x.audioRuntime).filter(Boolean);for(const a of audioBounds){if(a.limits){assert.ok((a.contextCount??0)<=a.limits.audioContexts);assert.ok((a.liveNodes??0)<=a.limits.liveNodes)}}
+ const evidence={browser:browserName,cycles:CYCLES,startupMs,transitionMs,transitionP95:[...transitionMs].sort((a,b)=>a-b)[Math.min(transitionMs.length-1,Math.floor(transitionMs.length*.95))],framePacing:pacing,plateau:plateauEvidence,heap:heapEvidence,longTasks:longTask,contextLoss,audio:{status:audioBounds.length?'MEASURED_RUNTIME_SNAPSHOT':'NOT_MEASURABLE_RUNTIME_SNAPSHOT_UNAVAILABLE',samples:audioBounds},samples};await context.close();return evidence;
 }
 
 async function mobileAndA11y(browserName,browser){
@@ -110,6 +156,6 @@ async function mobileAndA11y(browserName,browser){
  const reduced=await browser.newContext({viewport:{width:1024,height:768},reducedMotion:'reduce'});const rp=await reduced.newPage();await rp.goto(PRODUCT,{waitUntil:'load'});await ready(rp);const reducedMotion=await rp.evaluate(()=>({media:matchMedia('(prefers-reduced-motion: reduce)').matches,snapshot:globalThis.__OFU_V1X10_ACCESSIBILITY__?.snapshot?.().reducedMotion??null}));assert.equal(reducedMotion.media,true);if(reducedMotion.snapshot!=null)assert.equal(reducedMotion.snapshot,true);await reduced.close();return{method:'BROWSER_POINTER_EVENT_EMULATION',physicalDeviceVerified:false,pinch:true,resizeOrientation:resize,reducedMotion};
 }
 
-const results={schema:'ofu-v2-p21-performance-browser-mobile-evidence-1',status:'PASS',exactSourceSha:SOURCE,authority:'MEASURED_RUNTIME_EVIDENCE',claims:{driverVram:'NOT_MEASURABLE',physicalGpuMemory:'NOT_MEASURABLE',physicalMobileDevices:'NOT_VERIFIED',jsHeap:'CHROMIUM_ONLY_WHEN_EXPOSED',listenerCount:'TEST_INSTRUMENTED_EVENTTARGET_REGISTRATION_BALANCE',workerCount:'TEST_INSTRUMENTED_CONSTRUCTOR_TERMINATION_BALANCE'},cycles:CYCLES,browsers:{}};
-for(const [name,engine] of Object.entries(ENGINES)){const browser=await engine.launch({headless:true});try{results.browsers[name]={desktop:await desktopSoak(name,browser),mobile:await mobileAndA11y(name,browser)}}finally{await browser.close()}}
-fs.writeFileSync(path.join(OUT,'exact-browser-resource-soak.json'),JSON.stringify(results,null,2)+'\n');console.log(JSON.stringify({status:results.status,schema:results.schema,exactSourceSha:SOURCE,cycles:CYCLES,browsers:Object.fromEntries(Object.entries(results.browsers).map(([k,v])=>[k,{p95Ms:v.desktop.transitionP95,heap:v.desktop.heap.status,longTasks:v.desktop.longTasks.status,contextLoss:v.desktop.contextLoss.status,mobile:true}]))}));
+const results={schema:'ofu-v2-p21-performance-browser-mobile-evidence-1',status:'PASS',exactSourceSha:SOURCE,authority:'MEASURED_RUNTIME_EVIDENCE',productTransport:PRODUCT_TRANSPORT,claims:{driverVram:'NOT_MEASURABLE',physicalGpuMemory:'NOT_MEASURABLE',physicalMobileDevices:'NOT_VERIFIED',jsHeap:'ENGINE_EXPOSED_ONLY',listenerCount:'TEST_INSTRUMENTED_EVENTTARGET_REGISTRATION_BALANCE',workerCount:'TEST_INSTRUMENTED_CONSTRUCTOR_TERMINATION_BALANCE',audioNodes:'PRODUCT_RUNTIME_SNAPSHOT_ONLY',framePacing:'REQUEST_ANIMATION_FRAME_INTERVALS'},cycles:CYCLES,browsers:{}};
+for(const [name,engine] of Object.entries(ENGINES)){const launched=await launchEngine(name,engine),browser=launched.browser;try{results.browsers[name]={launcher:launched.launcher,desktop:await desktopSoak(name,browser),mobile:await mobileAndA11y(name,browser)}}finally{await browser.close()}}
+fs.writeFileSync(path.join(OUT,'exact-browser-resource-soak.json'),JSON.stringify(results,null,2)+'\n');console.log(JSON.stringify({status:results.status,schema:results.schema,exactSourceSha:SOURCE,productTransport:PRODUCT_TRANSPORT,cycles:CYCLES,browsers:Object.fromEntries(Object.entries(results.browsers).map(([k,v])=>[k,{launcher:v.launcher.status,startupMs:v.desktop.startupMs,p95Ms:v.desktop.transitionP95,frameP95Ms:v.desktop.framePacing.p95Ms,heap:v.desktop.heap.status,longTasks:v.desktop.longTasks.status,contextLoss:v.desktop.contextLoss.status,audio:v.desktop.audio.status,mobile:true}]))}));
