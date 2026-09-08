@@ -36,9 +36,14 @@ jobs:
           test -z "$(git status --porcelain=v1)"
       - name: Apply semantic P22-003 repair
         run: node tools/closure/v2-p22-003-life-repair-once.mjs
+      - name: Repair staged regression fixture syntax
+        shell: bash
+        run: |
+          sed -i "s/regions: { r-assumed:/regions: { 'r-assumed':/" tests/v2x-08/life-ecology-evolution-embodiment.mjs
       - name: Verify syntax and focused Life model
         run: |
           node --check src/v2x-08-life-ecology-evolution-embodiment/model.js
+          node --check tests/v2x-08/life-ecology-evolution-embodiment.mjs
           node tests/v2x-08/life-ecology-evolution-embodiment.mjs
           node tests/v2x-08/life-evolution-succession.mjs
           node tests/v2x-08/life-provider-renderer.mjs
@@ -46,6 +51,8 @@ jobs:
         run: |
           node tests/audit/v2-science-authority-oracle.mjs --strict
           node tests/audit/v2-science-authority-oracle-tests.mjs
+      - name: Build shipping prerequisite for reachability
+        run: node tools/build-ofu-rendering-v09.mjs
       - name: Verify registered V2X-08 shipping conformance
         run: |
           node tests/v2x-08/single-file-facade.mjs
