@@ -80,6 +80,29 @@ test('V2X-08 promotion sentinel proves the research fingerprint is not a no-op d
   assert.match(packet.convergenceHook.oldFallbackSentinel, /Delimiter-concatenated/);
 });
 
+test('V2X-09 same-route contention oracle is complementary to, not a disguised replacement of, the multi-hop shipping router', () => {
+  const shipping = readRepo('src/v2x-09-civilization-economy-city/production-network.js');
+  const research = readRepo('research/v2x/civilization/production.mjs');
+  assert.match(shipping, /routingPhase:'DIRECT'/);
+  assert.match(shipping, /findResidualPath/);
+  assert.match(research, /SIMULTANEOUS_PROPORTIONAL_PER_ROUTE_WITH_ASCII_ID_RESIDUAL/);
+  assert.match(research, /permutationInvariantGivenUniqueIds:true/);
+  const packet = read('v2x/reference/HARVEST_PACKETS.json').packets.find((x) => x.id === 'CIV_PRODUCTION_LOGISTICS_PACKET');
+  assert.equal(packet.convergenceHook.adoptionShape.includes('do not wholesale replace'), true);
+});
+
+test('V2X-12 execution candidate remains a real delta over the frozen topology-only shipping surface', () => {
+  const shipping = readRepo('src/domains/v1/micro/matter-continuity-v2.js');
+  const research = readRepo('research/v2x/matter/reaction-network.mjs');
+  assert.match(shipping, /kinetics:'NOT_SIMULATED'/);
+  assert.match(shipping, /thermodynamics:'NOT_SOLVED'/);
+  assert.match(research, /export function stepReactionNetwork/);
+  assert.match(research, /export function stepTransport/);
+  assert.match(research, /SIMULTANEOUS_OPENING_STATE_ALLOCATION_PER_SOURCE_AND_SPECIES/);
+  const packet = read('v2x/reference/HARVEST_PACKETS.json').packets.find((x) => x.id === 'MATERIAL_REACTION_TRANSPORT_PACKET');
+  assert.match(packet.convergenceHook.oldFallbackSentinel, /topology-only/);
+});
+
 test('source ledger preserves provenance and non-support boundaries', () => {
   const l = read('v2x/reference/SOURCE_LEDGER.json');
   const ids = new Set();
