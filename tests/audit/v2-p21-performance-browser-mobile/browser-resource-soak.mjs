@@ -76,34 +76,59 @@ function range(values){return values.length?Math.max(...values)-Math.min(...valu
 
 async function instrument(context){
  await context.addInitScript(()=>{
-  const active={listeners:0,workers:0,createdWorkers:0};
+  const stats={listenerRegistrations:0,listenerRemovals:0,deadTargetObservations:0};
   const proto=EventTarget.prototype,add=proto.addEventListener,remove=proto.removeEventListener;
-  const registry=new WeakMap();
+  const registry=new WeakMap(),records=new Set(),hasWeakRef=typeof WeakRef==='function';
   const capture=o=>typeof o==='boolean'?o:!!o?.capture;
-  const forget=(target,type,entry)=>{const m=registry.get(target),a=m?.get(type),i=a?.indexOf(entry)??-1;if(i>=0){a.splice(i,1);active.listeners=Math.max(0,active.listeners-1)}};
+  const retire=record=>{if(record?.live){record.live=false;records.delete(record);stats.listenerRemovals++}};
+  const forget=(target,type,entry)=>{const m=registry.get(target),a=m?.get(type),i=a?.indexOf(entry)??-1;if(i>=0){a.splice(i,1);retire(entry.record)}};
   proto.addEventListener=function(type,listener,opts){
    if(!listener)return add.call(this,type,listener,opts);
    let m=registry.get(this);if(!m){m=new Map();registry.set(this,m)}let a=m.get(type);if(!a){a=[];m.set(type,a)}const c=capture(opts);
    if(a.some(x=>x.listener===listener&&x.capture===c))return undefined;
    const signal=typeof opts==='object'?opts?.signal:null;
    if(signal?.aborted)return add.call(this,type,listener,opts);
-   const once=!!(typeof opts==='object'&&opts?.once),entry={listener,capture:c,wrapped:listener};
+   const record={live:true,targetRef:hasWeakRef?new WeakRef(this):null,signalRef:signal&&hasWeakRef?new WeakRef(signal):null},once=!!(typeof opts==='object'&&opts?.once),entry={listener,capture:c,wrapped:listener,record};
    if(once){entry.wrapped=typeof listener==='function'?function(...args){forget(this,type,entry);return listener.apply(this,args)}:{handleEvent(event){forget(event.currentTarget,type,entry);return listener.handleEvent(event)}};}
-   a.push(entry);active.listeners++;
-   if(signal&&typeof signal.addEventListener==='function')add.call(signal,'abort',()=>forget(this,type,entry),{once:true});
+   a.push(entry);records.add(record);stats.listenerRegistrations++;
    return add.call(this,type,entry.wrapped,opts);
   };
   proto.removeEventListener=function(type,listener,opts){
    const m=registry.get(this),a=m?.get(type),c=capture(opts),entry=a?.find(x=>x.listener===listener&&x.capture===c);if(entry){forget(this,type,entry);return remove.call(this,type,entry.wrapped,opts)}
    return remove.call(this,type,listener,opts);
   };
-  const NativeWorker=globalThis.Worker;
-  if(NativeWorker){globalThis.Worker=class extends NativeWorker{constructor(...args){super(...args);active.workers++;active.createdWorkers++;const terminate=this.terminate.bind(this);let live=true;this.terminate=(...xs)=>{if(live){live=false;active.workers--}return terminate(...xs)}}};}
+  const listenerSnapshot=()=>{
+   if(!hasWeakRef)return{status:'NOT_MEASURABLE_WEAKREF_UNAVAILABLE',connectedOrGlobal:null,tracked:null,globalTargets:null,connectedDom:null,detachedDom:null,nonDom:null};
+   let connectedOrGlobal=0,tracked=0,globalTargets=0,connectedDom=0,detachedDom=0,nonDom=0,dead=0;
+   for(const record of [...records]){
+    if(!record.live){records.delete(record);continue}
+    if(record.signalRef?.deref?.()?.aborted){retire(record);continue}
+    const target=record.targetRef.deref();
+    if(!target){records.delete(record);record.live=false;dead++;continue}
+    tracked++;
+    const isGlobal=target===globalThis||target===document;
+    const isDom=typeof Node==='function'&&target instanceof Node;
+    const isConnectedDom=isDom&&target.isConnected;
+    if(isGlobal)globalTargets++;
+    else if(isConnectedDom)connectedDom++;
+    else if(isDom)detachedDom++;
+    else nonDom++;
+    if(isGlobal||isConnectedDom)connectedOrGlobal++;
+   }
+   stats.deadTargetObservations+=dead;
+   return{status:'MEASURED_TEST_INSTRUMENTED_CONNECTED_OR_GLOBAL',connectedOrGlobal,tracked,globalTargets,connectedDom,detachedDom,nonDom,deadTargetObservations:stats.deadTargetObservations};
+  };
   const longTasks=[];
   let longTaskSupport=false;
   try{if(globalThis.PerformanceObserver?.supportedEntryTypes?.includes('longtask')){longTaskSupport=true;new PerformanceObserver(list=>{for(const e of list.getEntries())longTasks.push({startTime:e.startTime,duration:e.duration})}).observe({type:'longtask',buffered:true})}}catch{}
-  globalThis.__OFU_P21_AUDIT__={active,longTasks,longTaskSupport};
+  globalThis.__OFU_P21_AUDIT__={stats,listenerSnapshot,longTasks,longTaskSupport};
  });
+}
+
+function trackWorkers(page){
+ const state={live:0,created:0,closed:0};
+ page.on('worker',worker=>{state.live++;state.created++;let open=true;worker.on('close',()=>{if(open){open=false;state.live=Math.max(0,state.live-1);state.closed++}})});
+ return state;
 }
 
 async function ready(page){
@@ -132,12 +157,13 @@ async function seedToHuman(page){
  return material;
 }
 
-async function sample(page,cycle){
- return page.evaluate(cycle=>{
-  const p=globalThis.__OFU_PLANET_PREVIEW__?.snapshot?.()||null,v=OFU.v1Providers?.snapshot?.()||{},s=OFU.v1Session.snapshot(),l=OFU.v1LivingProduct.runtime.snapshot(),r=OFU.v1LivingProduct.renderer.state(),a=globalThis.__OFU_P21_AUDIT__;
+async function sample(page,cycle,workerAudit){
+ const snapshot=await page.evaluate(cycle=>{
+  const p=globalThis.__OFU_PLANET_PREVIEW__?.snapshot?.()||null,v=OFU.v1Providers?.snapshot?.()||{},s=OFU.v1Session.snapshot(),l=OFU.v1LivingProduct.runtime.snapshot(),r=OFU.v1LivingProduct.renderer.state(),a=globalThis.__OFU_P21_AUDIT__,listenerState=a?.listenerSnapshot?.()||null;
   const audio=globalThis.__OFU_V2X14_AUDIO__?.snapshot?.()||OFU.v2x14LivingAudioController?.instance?.()?.snapshot?.()||null;
-  return {cycle,stage:l.stage,history:l.historyDepth,historyLimit:l.maxHistory,discoveryCache:l.discoveryCacheEntries,discoveryCacheLimit:l.discoveryCacheLimit,providerCache:v.cacheEntries??null,providerCacheLimit:v.cacheLimit??null,domNodes:document.querySelectorAll('*').length,canvasCount:document.querySelectorAll('canvas').length,audioElements:document.querySelectorAll('audio').length,audioRuntime:audio?.runtime?{state:audio.runtime.state,contextCount:audio.runtime.contextCount,contextCreations:audio.runtime.contextCreations,liveNodes:audio.runtime.liveNodes,peakLiveNodes:audio.runtime.peakLiveNodes,limits:audio.runtime.limits}:null,listeners:a?.active.listeners??null,workers:a?.active.workers??null,createdWorkers:a?.active.createdWorkers??null,longTasks:a?.longTasks.length??null,longTaskSupport:a?.longTaskSupport??false,heap:performance.memory?.usedJSHeapSize??null,sessionBytes:OFU.v1Session.exportBytes().length,canonicalMutation:s.canonicalMutation,canonicalP6Mutation:s.canonicalP6Mutation,working:p?.workingSet||null,gpu:p?.gpu||null,renderer:r};
+  return {cycle,stage:l.stage,history:l.historyDepth,historyLimit:l.maxHistory,discoveryCache:l.discoveryCacheEntries,discoveryCacheLimit:l.discoveryCacheLimit,providerCache:v.cacheEntries??null,providerCacheLimit:v.cacheLimit??null,domNodes:document.querySelectorAll('*').length,canvasCount:document.querySelectorAll('canvas').length,audioElements:document.querySelectorAll('audio').length,audioRuntime:audio?.runtime?{state:audio.runtime.state,contextCount:audio.runtime.contextCount,contextCreations:audio.runtime.contextCreations,liveNodes:audio.runtime.liveNodes,peakLiveNodes:audio.runtime.peakLiveNodes,limits:audio.runtime.limits}:null,listeners:listenerState?.connectedOrGlobal??null,listenerState,longTasks:a?.longTasks.length??null,longTaskSupport:a?.longTaskSupport??false,heap:performance.memory?.usedJSHeapSize??null,sessionBytes:OFU.v1Session.exportBytes().length,canonicalMutation:s.canonicalMutation,canonicalP6Mutation:s.canonicalP6Mutation,working:p?.workingSet||null,gpu:p?.gpu||null,renderer:r};
  },cycle);
+ return {...snapshot,workers:workerAudit.live,createdWorkers:workerAudit.created,closedWorkers:workerAudit.closed};
 }
 
 async function contextRecovery(page){
@@ -166,14 +192,14 @@ async function contextRecovery(page){
 }
 
 async function desktopSoak(browserName,browser){
- const context=await browser.newContext({viewport:{width:1280,height:800},offline:true});await instrument(context);const page=await context.newPage();const errors=[],externalRequests=[];page.on('pageerror',e=>errors.push(String(e?.message||e).slice(0,800)));page.on('request',r=>{if(/^https?:/i.test(r.url()))externalRequests.push(r.url())});
+ const context=await browser.newContext({viewport:{width:1280,height:800},offline:true});await instrument(context);const page=await context.newPage(),workerAudit=trackWorkers(page);const errors=[],externalRequests=[];page.on('pageerror',e=>errors.push(String(e?.message||e).slice(0,800)));page.on('request',r=>{if(/^https?:/i.test(r.url()))externalRequests.push(r.url())});
  const startupStart=Date.now();await page.goto(PRODUCT,{waitUntil:'load'});await ready(page);const startupMs=Date.now()-startupStart;const material=await seedToHuman(page);const samples=[];const transitionMs=[];
  for(let cycle=0;cycle<CYCLES;cycle++){
   const t0=Date.now();
   const pre=await page.evaluate(()=>OFU.v1Session.hex(OFU.v1Session.exportBytes()));await clickScale(page,'UNIVERSE');await page.evaluate(h=>OFU.v1Session.importBytes(OFU.v1Session.unhex(h)),pre);await waitStage(page,'HUMAN');
   await page.evaluate(id=>{const L=OFU.v1LivingProduct.runtime,s=L.snapshot();if(s.selectedObjectId!==id)L.selectObject(id);L.enterMicro(id);L.deeper();L.deeper();L.deeper();L.scale('HUMAN')},material);await waitStage(page,'HUMAN');
   const post=await page.evaluate(()=>OFU.v1Session.hex(OFU.v1Session.exportBytes()));await clickScale(page,'UNIVERSE');await page.evaluate(h=>OFU.v1Session.importBytes(OFU.v1Session.unhex(h)),post);await waitStage(page,'HUMAN');
-  transitionMs.push(Date.now()-t0);samples.push(await sample(page,cycle));
+  transitionMs.push(Date.now()-t0);samples.push(await sample(page,cycle,workerAudit));
  }
  for(const s of samples){assert.equal(s.stage,'HUMAN');assert.ok(s.history<=s.historyLimit);assert.ok(s.discoveryCache<=s.discoveryCacheLimit);if(s.providerCache!=null&&s.providerCacheLimit!=null)assert.ok(s.providerCache<=s.providerCacheLimit);assert.ok(s.sessionBytes<1048576);assert.equal(s.canonicalMutation,false);assert.equal(s.canonicalP6Mutation,false);if(s.working){assert.ok((s.working.activePatches??0)<=28);assert.ok((s.working.cpuMeshes??0)<=64)}}
  const warm=samples.slice(Math.floor(samples.length/3));const fields=['domNodes','canvasCount','listeners','workers'];const plateauEvidence={};for(const f of fields){const vals=warm.map(x=>x[f]).filter(Number.isFinite);plateauEvidence[f]={values:vals,slope:slope(vals),nondecreasing:nondecreasing(vals),plateau:plateau(vals,f==='listeners'?8:f==='domNodes'?16:2)};assert.equal(plateauEvidence[f].plateau,true,`${browserName} ${f} failed bounded plateau ${JSON.stringify(vals)}`);assert.equal(plateauEvidence[f].nondecreasing,false,`${browserName} ${f} showed monotonic growth ${JSON.stringify(vals)}`)}
@@ -187,15 +213,15 @@ async function desktopSoak(browserName,browser){
 }
 
 async function mobileAndA11y(browserName,browser){
- const context=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:2,isMobile:true,hasTouch:true,offline:true});await instrument(context);const page=await context.newPage();const errors=[],externalRequests=[];page.on('pageerror',e=>errors.push(String(e?.message||e).slice(0,800)));page.on('request',r=>{if(/^https?:/i.test(r.url()))externalRequests.push(r.url())});await page.goto(PRODUCT,{waitUntil:'load'});await ready(page);await page.waitForFunction(()=>document.documentElement.dataset.ofuMobile==='true',{timeout:10000});
+ const context=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:2,isMobile:true,hasTouch:true,offline:true});await instrument(context);const page=await context.newPage(),workerAudit=trackWorkers(page);const errors=[],externalRequests=[];page.on('pageerror',e=>errors.push(String(e?.message||e).slice(0,800)));page.on('request',r=>{if(/^https?:/i.test(r.url()))externalRequests.push(r.url())});await page.goto(PRODUCT,{waitUntil:'load'});await ready(page);await page.waitForFunction(()=>document.documentElement.dataset.ofuMobile==='true',{timeout:10000});
  await page.click('[data-render-stage="orbit"]');await page.waitForFunction(()=>OFU.waveIVScaleRuntime.snapshot().semanticScale==='orbit');const before=await page.evaluate(()=>({stage:OFU.v1LivingProduct.runtime.snapshot().stage,pinch:OFU.waveIVInputRouter.state.pinchIntents}));
  await page.evaluate(()=>{const c=document.getElementById('planet-view'),r=c.getBoundingClientRect(),ev=(type,id,x,y)=>c.dispatchEvent(new PointerEvent(type,{pointerId:id,pointerType:'touch',clientX:x,clientY:y,bubbles:true,cancelable:true,isPrimary:id===1,buttons:type==='pointerup'?0:1})),cy=r.top+r.height*.5,cx=r.left+r.width*.5;ev('pointerdown',1,cx-30,cy);ev('pointerdown',2,cx+30,cy);ev('pointermove',1,cx-58,cy);ev('pointermove',2,cx+58,cy);ev('pointerup',2,cx+58,cy);ev('pointerup',1,cx-58,cy)});await page.waitForTimeout(80);const pinch=await page.evaluate(()=>OFU.waveIVInputRouter.state.pinchIntents);assert.ok(pinch>before.pinch,'mobile pinch must route through canonical input owner');
- const sizes=[{width:844,height:390},{width:390,height:844},{width:700,height:320},{width:320,height:700},{width:390,height:844}];const resize=[];for(const size of sizes){await page.setViewportSize(size);await page.waitForTimeout(60);resize.push(await page.evaluate(()=>({w:innerWidth,h:innerHeight,stage:OFU.v1LivingProduct.runtime.snapshot().stage,dom:document.querySelectorAll('*').length,listeners:globalThis.__OFU_P21_AUDIT__?.active.listeners??null,workers:globalThis.__OFU_P21_AUDIT__?.active.workers??null,overflow:document.documentElement.scrollWidth>document.documentElement.clientWidth+1})));const s=resize.at(-1);assert.equal(s.stage,before.stage);assert.equal(s.overflow,false)}
+ const sizes=[{width:844,height:390},{width:390,height:844},{width:700,height:320},{width:320,height:700},{width:390,height:844}];const resize=[];for(const size of sizes){await page.setViewportSize(size);await page.waitForTimeout(60);const browserState=await page.evaluate(()=>{const listenerState=globalThis.__OFU_P21_AUDIT__?.listenerSnapshot?.()||null;return{w:innerWidth,h:innerHeight,stage:OFU.v1LivingProduct.runtime.snapshot().stage,dom:document.querySelectorAll('*').length,listeners:listenerState?.connectedOrGlobal??null,listenerState,overflow:document.documentElement.scrollWidth>document.documentElement.clientWidth+1}});resize.push({...browserState,workers:workerAudit.live,createdWorkers:workerAudit.created,closedWorkers:workerAudit.closed});const s=resize.at(-1);assert.equal(s.stage,before.stage);assert.equal(s.overflow,false)}
  assert.ok(range(resize.map(x=>x.dom).filter(Number.isFinite))<=16,`${browserName} mobile resize DOM growth exceeded bounded range`);assert.ok(range(resize.map(x=>x.listeners).filter(Number.isFinite))<=8,`${browserName} mobile resize listener growth exceeded bounded range`);assert.ok(range(resize.map(x=>x.workers).filter(Number.isFinite))<=2,`${browserName} mobile resize worker growth exceeded bounded range`);
  assert.equal(errors.length,0,`${browserName} mobile errors: ${errors.join('\n')}`);assert.equal(externalRequests.length,0,`${browserName} mobile unexpected external requests: ${externalRequests.join('\n')}`);await context.close();
  const reduced=await browser.newContext({viewport:{width:1024,height:768},reducedMotion:'reduce',offline:true});const rp=await reduced.newPage(),reducedExternal=[];rp.on('request',r=>{if(/^https?:/i.test(r.url()))reducedExternal.push(r.url())});await rp.goto(PRODUCT,{waitUntil:'load'});await ready(rp);const reducedMotion=await rp.evaluate(()=>({media:matchMedia('(prefers-reduced-motion: reduce)').matches,snapshot:globalThis.__OFU_V1X10_ACCESSIBILITY__?.snapshot?.().reducedMotion??null}));assert.equal(reducedMotion.media,true);if(reducedMotion.snapshot!=null)assert.equal(reducedMotion.snapshot,true);assert.equal(reducedExternal.length,0,`${browserName} reduced-motion unexpected external requests: ${reducedExternal.join('\n')}`);await reduced.close();return{method:'BROWSER_POINTER_EVENT_EMULATION',physicalDeviceVerified:false,pinch:true,resizeOrientation:resize,reducedMotion,offline:true};
 }
 
-const results={schema:'ofu-v2-p21-performance-browser-mobile-evidence-1',status:'PASS',exactSourceSha:SOURCE,authority:'MEASURED_RUNTIME_EVIDENCE',productTransport:PRODUCT_TRANSPORT,claims:{driverVram:'NOT_MEASURABLE',physicalGpuMemory:'NOT_MEASURABLE',physicalMobileDevices:'NOT_VERIFIED',jsHeap:'ENGINE_EXPOSED_ONLY',listenerCount:'TEST_INSTRUMENTED_EVENTTARGET_REGISTRATION_BALANCE',workerCount:'TEST_INSTRUMENTED_CONSTRUCTOR_EXPLICIT_TERMINATION_BALANCE',audioNodes:'PRODUCT_RUNTIME_SNAPSHOT_ONLY',framePacing:'REQUEST_ANIMATION_FRAME_INTERVALS',fallbackBrowserBinary:'EXPLICITLY_RECORDED_INFRASTRUCTURE_VARIANCE_NOT_GOVERNED_EXPECTED_EXECUTABLE'},cycles:CYCLES,browsers:{}};
+const results={schema:'ofu-v2-p21-performance-browser-mobile-evidence-1',status:'PASS',exactSourceSha:SOURCE,authority:'MEASURED_RUNTIME_EVIDENCE',productTransport:PRODUCT_TRANSPORT,claims:{driverVram:'NOT_MEASURABLE',physicalGpuMemory:'NOT_MEASURABLE',physicalMobileDevices:'NOT_VERIFIED',jsHeap:'ENGINE_EXPOSED_ONLY',listenerCount:'TEST_INSTRUMENTED_CONNECTED_OR_GLOBAL_EVENTTARGET_REGISTRATIONS',detachedTargetListeners:'DIAGNOSTIC_ONLY_GC_NONDETERMINISTIC',workerCount:'PLAYWRIGHT_PAGE_WORKER_LIFECYCLE',audioNodes:'PRODUCT_RUNTIME_SNAPSHOT_ONLY',framePacing:'REQUEST_ANIMATION_FRAME_INTERVALS',fallbackBrowserBinary:'EXPLICITLY_RECORDED_INFRASTRUCTURE_VARIANCE_NOT_GOVERNED_EXPECTED_EXECUTABLE'},cycles:CYCLES,browsers:{}};
 for(const [name,engine] of Object.entries(ENGINES)){const launched=await launchEngine(name,engine),browser=launched.browser;try{results.browsers[name]={launcher:launched.launcher,desktop:await desktopSoak(name,browser),mobile:await mobileAndA11y(name,browser)}}finally{await browser.close()}}
 fs.writeFileSync(path.join(OUT,'exact-browser-resource-soak.json'),JSON.stringify(results,null,2)+'\n');console.log(JSON.stringify({status:results.status,schema:results.schema,exactSourceSha:SOURCE,productTransport:PRODUCT_TRANSPORT,cycles:CYCLES,browsers:Object.fromEntries(Object.entries(results.browsers).map(([k,v])=>[k,{launcher:v.launcher.status,version:v.launcher.version,startupMs:v.desktop.startupMs,p95Ms:v.desktop.transitionP95,frameP95Ms:v.desktop.framePacing.p95Ms,heap:v.desktop.heap.status,longTasks:v.desktop.longTasks.status,contextLoss:v.desktop.contextLoss.status,audio:v.desktop.audio.status,mobile:true}]))}));

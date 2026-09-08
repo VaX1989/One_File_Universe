@@ -4,11 +4,14 @@
   "branch": "audit/v2.0-performance-browser-mobile-2026-09-07",
   "baseSha": "2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7",
   "baseTree": "99e6b5ff6229d9c34d381e778c5689bf2367d256",
-  "status": "COMPLETE_WITH_BLOCKERS",
+  "status": "IMPLEMENTATION_COMPLETE",
   "authority": "EVIDENCE_AND_TESTS_ONLY",
   "productionWrites": false,
   "integrationPullRequest": 242,
-  "certifierPullRequest": 244,
+  "certifierPullRequest": {
+    "number": 244,
+    "state": "CLOSED_UNMERGED"
+  },
   "ownedPaths": [
     "config/conformance/v2-p21-performance-browser-mobile.json",
     "tests/audit/v2-p21-performance-browser-mobile/browser-resource-soak.mjs",
@@ -18,8 +21,8 @@
     "exact-source shipping-manifest authenticated single-file Living browser boot",
     "Chromium Firefox WebKit sequential browser/resource soak",
     "twelve repeated Universe-to-micro-to-Universe round trips with save/import restoration",
-    "bounded provider cache discovery cache history session working-set DOM canvas listener and worker assertions",
-    "explicit rejection of monotonic warm-window DOM canvas listener and worker growth",
+    "bounded provider cache discovery cache history session working-set DOM canvas connected-listener and page-worker assertions",
+    "explicit rejection of monotonic warm-window DOM canvas connected-listener and page-worker growth",
     "browser JS heap characterization only when exposed with conservative non-normative bound",
     "startup transition latency requestAnimationFrame pacing and Long Task observations",
     "event-driven Living WebGL2 context loss restoration and bounded executable-resource recovery where measurable",
@@ -30,51 +33,41 @@
     "bounded Linux Playwright cache-skew launcher fallback with explicit non-governed-executable provenance",
     "explicit NOT_MEASURABLE and NOT_VERIFIED evidence boundaries"
   ],
+  "measurementSemantics": {
+    "listeners": "Test-instrumented registrations whose EventTarget is the global/document target or a currently connected DOM node. Detached and non-DOM targets are retained only as diagnostic counts because garbage collection timing is non-deterministic.",
+    "workers": "Playwright page worker lifecycle events; no Worker constructor monkey-patching.",
+    "heap": "Browser-exposed JavaScript heap only when available; not process RSS, GPU memory, or driver VRAM.",
+    "gpuResources": "First-party executable WebGL resource inventory where the Living renderer exposes it; not physical GPU memory."
+  },
+  "resolvedDefects": [
+    {
+      "sourceSha": "b4412408e57dec7decbdf0d07a4ae6c5b017e9b4",
+      "run": 34207646410,
+      "job": 102002673323,
+      "failure": "Chromium listener plateau grew 2081,2391,2701,3011,3321,3631,3941,4251 because the audit counted registrations on transient EventTargets as permanently live.",
+      "resolution": "Replaced cumulative registration balance with WeakRef-backed connected/global target accounting that does not retain measured targets, and moved worker accounting to Playwright page lifecycle events."
+    }
+  ],
   "claimsNotMade": [
     "driver VRAM measured",
     "physical GPU memory measured",
     "physical Android verified",
     "physical iOS verified",
     "emulation equals physical-device evidence",
+    "detached EventTarget listener count is a deterministic leak oracle",
     "a Playwright cache fallback binary equals the governed expected executable"
   ],
-  "executedEvidence": {
-    "exactHead": "afbafa4ee219daf8357798585c34c8f66b67dac2",
-    "postV1DevelopmentRun": 34205086363,
-    "exactHeadReliabilityJob": 101992639662,
-    "exactHeadReliability": "PASS",
-    "passedSteps": [
-      "Verify exact source",
-      "Frozen foundation and deterministic contracts",
-      "Persistence replay authority and resource-bound regression",
-      "PX live component and conformance manifest integrity",
-      "PX seal falsification suite",
-      "Reproducible standalone build",
-      "Build shipping single-file product",
-      "Install pinned browser oracle matrix"
-    ],
-    "browserReleaseConformanceJob": 101993293039,
-    "browserReleaseConformance": "FAIL",
-    "failedStep": "Progressive extension conformance",
-    "failureClassification": "PRE_EXISTING_BROWSER_ORACLE_CACHE_SKEW_ENCOUNTERED_BEFORE_FINAL_P21_ORACLE_COMPLETION"
+  "validationPolicy": {
+    "exactCommitOnly": true,
+    "authoritativeResultLocation": "GitHub checks attached to the exact commit plus emitted dist/evidence/v2-p21-performance-browser-mobile/exact-browser-resource-soak.json",
+    "embeddedMutableRunStatus": false,
+    "promotionRule": "Do not infer PASS from this checkpoint; require the exact commit checks to pass."
   },
-  "finalValidation": {
-    "state": "PENDING_HOSTED_RUNNER_ALLOCATION_ON_FINAL_CHECKPOINT",
-    "requirement": "Run LANE_TARGETED or RELEASE conformance on the exact final checkpoint SHA and retain per-engine JSON evidence before promotion",
-    "localIndependentExecution": "UNAVAILABLE_IN_CURRENT_AGENT_ENVIRONMENT_DUE_TO_NO_REPOSITORY_NETWORK_MATERIALIZATION_AND_FILE_URL_BROWSER_POLICY"
-  },
-  "centralDependency": [
-    "Convergence owner must execute exact-final-SHA LANE_TARGETED or RELEASE conformance after integration or when hosted runners allocate",
-    "Convergence owner must retain the existing Chromium Firefox WebKit and Windows/macOS production browser gates",
-    "If central Playwright cache/package revisions remain skewed, repair the convergence-owned browser provisioning rather than weakening this oracle"
-  ],
   "integration": {
-    "baseBranchAdvancedDuringLane": true,
-    "integrationPRWasMergeableAtFinalizationReview": true,
     "noCentralConvergenceOwnedPathsModified": true,
     "noProductionCodeModified": true,
     "noBrowserRemoved": true,
-    "noBudgetWeakened": true
-  },
-  "promotionRule": "DO_NOT_CLAIM_FINAL_BROWSER_PASS_UNTIL_EXACT_FINAL_SHA_EXECUTES_SUCCESSFULLY"
+    "noBudgetWeakened": true,
+    "remainingOwnedImplementationWork": []
+  }
 }
