@@ -15,6 +15,19 @@
       "provides": ["v2.cinematic.style"]
     },
     {
+      "id": "v2.cinematic.macro-director",
+      "version": "1.0.0",
+      "owner": "cinematic",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/cinematic/v2/macro-director.js",
+      "dependencies": ["v2x02.camera.living-binding", "v1x02.spatial-universe.runtime", "v1x04.system.provider"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "V2 cinematic lane. Wraps the convergence-owned Living renderer before DOM boot, reusing the exact authoritative camera orientation, Living semantic distance, spatial/system providers and existing semantic activation callback. It changes macro pixel composition and presentation hit geometry only; it owns no scale, camera, selection, history or scientific state.",
+      "provides": ["v2.cinematic.macro-director"]
+    },
+    {
       "id": "v2.cinematic.experience",
       "version": "1.0.0",
       "owner": "cinematic",
@@ -22,7 +35,7 @@
       "stage": "full",
       "placement": "script",
       "source": "src/cinematic/v2/experience.js",
-      "dependencies": ["v1.product.living-universe", "v2.cinematic.style"],
+      "dependencies": ["v1.product.living-universe", "v2.cinematic.style", "v2.cinematic.macro-director"],
       "authority": "PRESENTATION_ONLY",
       "provenance": "V2 cinematic lane. Non-owning observer of Living stage metadata that classifies presentation regime, transient arrival phase and first-run visual guidance. User input immediately dismisses transient presentation; no semantic API is invoked.",
       "provides": ["v2.cinematic.experience"]
