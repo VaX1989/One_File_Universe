@@ -26,6 +26,16 @@ jobs:
         run: |
           set -euo pipefail
           python tools/v2x13-effects-close-once.py
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('src/rendering/webgl2/resources.js')
+          s=p.read_text()
+          old="String(packet.viewport.width),String(packet.viewport.height),String(Boolean(packet.shadow)),String(Boolean(packet.volumetric))])hashPairString(h,s);"
+          new="String(packet.viewport.width),String(packet.viewport.height)])hashPairString(h,s);"
+          if s.count(old)!=1:
+              raise SystemExit('legacy fingerprint preservation patch did not match exactly once')
+          p.write_text(s.replace(old,new,1))
+          PY
           node --check src/rendering/webgl2/resources.js
           node tests/render-platform/run-render-platform-convergence-tests.mjs
           node tests/render-platform/run-render-platform-tests.mjs
