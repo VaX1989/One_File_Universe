@@ -1,0 +1,61 @@
+{
+  "schema": "ofu-v2-parallel-lane-checkpoint-1",
+  "lane": "AUDIT_DETERMINISM_PERSISTENCE_SECURITY",
+  "mode": "READ_MOSTLY_RELIABILITY_ADVERSARIAL_STATE_AUDIT",
+  "authority": "EVIDENCE_INPUT_ONLY",
+  "promotionAuthority": false,
+  "authorizedBase": {
+    "sha": "2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7",
+    "tree": "99e6b5ff6229d9c34d381e778c5689bf2367d256"
+  },
+  "testedCandidate": {
+    "sha": "904c5645024591400411aee7656ee458052e9db8",
+    "branch": "audit/v2.0-determinism-persistence-security-2026-09-07",
+    "baseAheadBy": 3,
+    "baseBehindBy": 0,
+    "productionWrites": 0,
+    "changedProductionFiles": 0,
+    "changedTestFiles": 2
+  },
+  "audit": {
+    "suite": "tests/audit/v2-determinism-persistence-security.mjs",
+    "status": "PASS",
+    "cases": 172,
+    "determinismWitnesses": 4,
+    "repetitions": 2,
+    "coverage": [
+      "portable-save deterministic serialization and hostile bounds",
+      "session persistence and transactional rollback",
+      "P4 replay ordering, compaction and semantic closure",
+      "extension registry collision and authority rejection",
+      "cross-scale identity stability and duplicate rejection",
+      "central single-writer and fail-closed authority freeze"
+    ]
+  },
+  "exactHeadEvidence": [
+    {
+      "workflow": "V2X Supreme Convergence",
+      "runId": 34204853768,
+      "jobId": 101991849052,
+      "sourceSha": "904c5645024591400411aee7656ee458052e9db8",
+      "exactSourceIdentity": "PASS",
+      "fullRepositoryTestAndReproducibleBuild": "PASS"
+    },
+    {
+      "workflow": "P1 Conformance",
+      "runId": 34204853622,
+      "jobId": 101991916703,
+      "sourceSha": "904c5645024591400411aee7656ee458052e9db8",
+      "exactSourceIdentity": "PASS",
+      "npmTest": "PASS"
+    }
+  ],
+  "inheritedIntegrationBlocker": {
+    "classification": "MOVING_BASE_WORKFLOW_SOURCE_MISMATCH",
+    "laneRegression": false,
+    "detail": "Current integration-branch PR workflow invokes tests/v2x-convergence/provider-activation-boundary.mjs, which is absent from the frozen authorized base. The frozen-base workflow did not contain this step. Audit-owned npm test completed successfully before this inherited step failed.",
+    "productionRepairAttempted": false
+  },
+  "pullRequest": 240,
+  "state": "LANE_COMPLETE_INTEGRATION_BLOCKED_BY_INHERITED_MOVING_BASE_GATE"
+}
