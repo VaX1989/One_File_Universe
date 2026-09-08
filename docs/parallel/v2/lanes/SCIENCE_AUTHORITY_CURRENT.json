@@ -1,0 +1,78 @@
+{
+  "schema": "ofu-v2-lane-checkpoint-1",
+  "lane": "SCIENCE_AUTHORITY",
+  "branch": "audit/v2.0-science-authority-2026-09-07",
+  "writePolicy": "EVIDENCE_TESTS_ONLY_NO_PRODUCTION_WRITES",
+  "base": {
+    "sha": "2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7",
+    "tree": "99e6b5ff6229d9c34d381e778c5689bf2367d256",
+    "launchStatus": "FULL"
+  },
+  "implementation": {
+    "commitSha": "84da27b9c4add37a3fd8c436ae7d65e4bb2171d3",
+    "treeSha": "b75edf26d15cba12c6b33db1cc2b5bb3c4b79ce4",
+    "files": [
+      "tests/audit/v2-science-authority-oracle.mjs",
+      "tests/audit/v2-science-authority-oracle-tests.mjs",
+      "docs/parallel/v2/evidence/science-authority/BASE_2977C11A_FALSIFICATION.json"
+    ]
+  },
+  "status": "VERTICAL_COMPLETE_REPAIR_REQUIRED_OUTSIDE_LANE",
+  "scientificVerdict": "FALSIFIED_REPAIR_REQUIRED",
+  "activeFindings": ["P22-001","P22-002","P22-003","P22-004","P22-005","P22-006","P22-007","P22-008","P22-009"],
+  "ownerRouting": {
+    "CENTRAL_CONVERGENCE": ["P22-001", "P22-002", "P22-009"],
+    "V2X_08_DOMAIN_OWNER": ["P22-003"],
+    "V2X_09_DOMAIN_OWNER": ["P22-004", "P22-005", "P22-007"],
+    "INDIVIDUALS_DOMAIN_OWNER": ["P22-006"],
+    "MATTER_RENDERING_OWNER": ["P22-008"]
+  },
+  "survivedFalsification": [
+    "V2X-05 provider-level limitation/authority declarations remain conservative in inspected source",
+    "V2X-08 rendering distinguishes model-derived life state from presentation-only geometry/motion",
+    "V2X-12 matter rendering generally separates presentation from source/model state except P22-008 hybrid coordinate token",
+    "V2X-15 promotion packets preserve forbidden claims and prerequisite gates",
+    "V2X-16 scientific contract keeps research provisional/noncanonical and unknowns explicit"
+  ],
+  "tests": {
+    "commands": [
+      "node --check tests/audit/v2-science-authority-oracle.mjs",
+      "node --check tests/audit/v2-science-authority-oracle-tests.mjs",
+      "node tests/audit/v2-science-authority-oracle-tests.mjs"
+    ],
+    "result": "PASS",
+    "checks": 8,
+    "cleanFixtureFindings": 0,
+    "adversarialFixtureFindings": 9,
+    "strictAdversarialExitCode": 1,
+    "missingInputBehavior": "FAIL_CLOSED"
+  },
+  "strictConvergenceGate": {
+    "command": "node tests/audit/v2-science-authority-oracle.mjs --strict --json",
+    "expectedAuthorizedBaseResult": "FAIL_WITH_P22_001_THROUGH_P22_009",
+    "requiredPromotionResult": "PASS_WITH_ZERO_FINDINGS"
+  },
+  "exactArtifactEvidence": {
+    "hostedWorkflowRunId": 34163623588,
+    "hostedJobId": 101870265013,
+    "buildAndDeterminismSteps": "PASS_BEFORE_BROWSER",
+    "browserStep": "FAIL",
+    "browserScienceEvidence": "WITHHELD",
+    "reason": "The authorized-base headless browser step failed; build success is not treated as browser-visible claim proof."
+  },
+  "localExactSourceExecution": {
+    "performed": false,
+    "reason": "Execution container DNS could not resolve github.com. Exact base/tree and exact source inspection used the GitHub connector; local execution validated the audit engine with deterministic fixtures only."
+  },
+  "productionMutationPerformed": false,
+  "completionLaw": {
+    "auditOracle": "COMPLETE",
+    "deterministicSelfTest": "COMPLETE",
+    "baseEvidence": "COMPLETE",
+    "promotionCandidateReview": "COMPLETE",
+    "ownerRouting": "COMPLETE",
+    "exactArtifactBrowserProof": "WITHHELD_UNTIL_CONVERGENCE_REPAIR_AND_BROWSER_PASS"
+  },
+  "nextConvergenceAction": "Apply owner-routed production repairs without weakening this oracle, then execute the strict convergence gate and exact one-file browser evidence.",
+  "stopReason": "The audit/evidence vertical is complete within its ownership. Remaining work requires production edits explicitly owned by central/domain lanes and exact-artifact browser rerun after those repairs."
+}
