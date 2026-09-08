@@ -1,0 +1,14 @@
+{
+  "schema": "ofu-conformance-1",
+  "tests": [
+    {
+      "id": "v2.science-authority.strict-promotion",
+      "owner": "px",
+      "tier": "RELEASE",
+      "command": ["node", "tests/audit/v2-science-authority-oracle.mjs", "--strict", "--json"],
+      "providers": ["px.test.conformance"],
+      "oracle": "V2_SCIENCE_AUTHORITY_ZERO_FINDINGS_PROMOTION_GATE",
+      "timeoutMs": 60000
+    }
+  ]
+}
