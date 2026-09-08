@@ -170,24 +170,31 @@ async function sample(page,cycle,workerAudit){
 
 async function contextRecovery(page){
  await page.evaluate(()=>OFU.v1LivingProduct.runtime.scale('APPROACH'));await waitStage(page,'APPROACH');
+ await page.waitForFunction(()=>{const p=OFU.v1LivingProduct,s=p.runtime.snapshot(),r=p.snapshot();return s.stage==='APPROACH'&&r.uiError===null&&r.render.readyRevision===s.revision},undefined,{timeout:30000});
  const result=await page.evaluate(async()=>{
   const product=OFU.v1LivingProduct,canvas=document.getElementById('living-gl'),gl=canvas?.getContext?.('webgl2'),ext=gl?.getExtension?.('WEBGL_lose_context');
   if(!gl)return{status:'NOT_MEASURABLE_BACKEND_NOT_WEBGL2'};
   if(!ext)return{status:'NOT_MEASURABLE_EXTENSION_UNAVAILABLE'};
   const runtime=()=>{const s=product.runtime.snapshot();return{revision:s.revision,stage:s.stage,semanticScale:s.semanticScale,world:s.world?.planetIdentity||null,body:s.body?.canonicalId||s.body?.entityId||null,historyDepth:s.historyDepth}};
-  const before=runtime(),previous=product.renderer.state().gpu;
+  const before=runtime(),previous=product.renderer.state().gpu,previousRestores=previous?.measurements?.restores??0;
   const waitEvent=(name,timeout)=>new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error(name+' timeout')),timeout);canvas.addEventListener(name,()=>{clearTimeout(timer);resolve(true)},{once:true})});
-  const lost=waitEvent('webglcontextlost',4000);ext.loseContext();await lost;
-  const restored=waitEvent('webglcontextrestored',5000);ext.restoreContext();await restored;
-  const deadline=performance.now()+6000;let afterGpu=null;
-  while(performance.now()<deadline){const gpu=product.renderer.state().gpu;if(gpu&&!gpu.contextLost&&gpu.frame>(previous?.frame||0)){afterGpu=gpu;break}await new Promise(resolve=>requestAnimationFrame(resolve))}
+  const lost=waitEvent('webglcontextlost',4000);ext.loseContext();await lost;await new Promise(resolve=>setTimeout(resolve,0));
+  const lostGpu=product.renderer.state().gpu;
+  if(!lostGpu?.contextLost)throw new Error('Living WebGL2 backend did not enter context-lost state');
+  if((lostGpu.allocatedPrograms??0)!==0||(lostGpu.allocatedBuffers??0)!==0||(lostGpu.allocatedTextures??0)!==0)throw new Error('Living WebGL2 lost-resource accounting remained live');
+  const restored=waitEvent('webglcontextrestored',8000);ext.restoreContext();await restored;
+  const deadline=performance.now()+8000;let afterGpu=null;
+  while(performance.now()<deadline){const gpu=product.renderer.state().gpu;if(gpu&&!gpu.contextLost&&gpu.frame>(previous?.frame||0)&&(gpu.measurements?.restores??0)>=previousRestores+1){afterGpu=gpu;break}await new Promise(resolve=>requestAnimationFrame(resolve))}
   if(!afterGpu)throw new Error('Living WebGL2 backend did not recover within bounded deadline');
-  return{status:'MEASURED',before,after:runtime(),gpu:{frameBefore:previous?.frame||0,frameAfter:afterGpu.frame,allocatedPrograms:afterGpu.allocatedPrograms,allocatedBuffers:afterGpu.allocatedBuffers,allocatedTextures:afterGpu.allocatedTextures,restores:afterGpu.measurements?.restores??null}};
+  return{status:'MEASURED',before,after:runtime(),lostGpu:{allocatedPrograms:lostGpu.allocatedPrograms,allocatedBuffers:lostGpu.allocatedBuffers,allocatedTextures:lostGpu.allocatedTextures},gpu:{frameBefore:previous?.frame||0,frameAfter:afterGpu.frame,allocatedPrograms:afterGpu.allocatedPrograms,allocatedBuffers:afterGpu.allocatedBuffers,allocatedTextures:afterGpu.allocatedTextures,restoresBefore:previousRestores,restoresAfter:afterGpu.measurements?.restores??null}};
  });
  if(result.status==='MEASURED'){
   assert.deepEqual(result.after,result.before,'context recovery must preserve runtime identity and history');
+  assert.deepEqual(result.lostGpu,{allocatedPrograms:0,allocatedBuffers:0,allocatedTextures:0},'context loss must zero live GPU-resource accounting');
   assert.ok(result.gpu.frameAfter>result.gpu.frameBefore,'context recovery must redraw');
-  assert.ok((result.gpu.allocatedPrograms??0)<=2&& (result.gpu.allocatedBuffers??0)<=1 && (result.gpu.allocatedTextures??0)<=1,'context recovery resource inventory exceeded shipping bounds');
+  assert.ok(result.gpu.restoresAfter>=result.gpu.restoresBefore+1,'context recovery restore accounting must advance');
+  assert.ok((result.gpu.allocatedPrograms??0)>0&&(result.gpu.allocatedBuffers??0)>0&&(result.gpu.allocatedTextures??0)>0,'context recovery must recreate executable GPU resources');
+  assert.ok((result.gpu.allocatedPrograms??0)<=2&&(result.gpu.allocatedBuffers??0)<=1&&(result.gpu.allocatedTextures??0)<=1,'context recovery resource inventory exceeded shipping bounds');
  }
  await page.evaluate(()=>OFU.v1LivingProduct.runtime.scale('HUMAN'));await waitStage(page,'HUMAN');
  return result;
