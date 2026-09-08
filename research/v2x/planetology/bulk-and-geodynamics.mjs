@@ -202,12 +202,64 @@ export function thermalLedgerStep({ mantleEnergyJ, radiogenicPowerW, corePowerW,
   return Object.freeze({ status: 'CONSERVED', beforeJ: e0, afterJ: e1, sourceJ, sinkJ, residualJ });
 }
 
-export function nusseltRayleighScenario({ rayleighNumber, regime }) {
+function nusseltScalingShape(rayleighNumber, regime) {
+  const beta = regime === 'MOBILE_LID_LIKE' ? 0.26 : regime === 'STAGNANT_LID_LIKE' ? 0.12 : null;
+  if (beta == null) return null;
+  return Object.freeze({ exponentBeta: beta, nusseltProportionalTo: Math.pow(rayleighNumber, beta) });
+}
+
+export function nusseltRayleighScenario({ rayleighNumber, regime, criticalRayleighNumber = null, parameterSetId = null, parameterSetHash = null }) {
   const ra = finite('rayleighNumber', rayleighNumber);
   if (ra <= 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'NON_POSITIVE_RAYLEIGH_NUMBER' });
-  const beta = regime === 'MOBILE_LID_LIKE' ? 0.26 : regime === 'STAGNANT_LID_LIKE' ? 0.12 : null;
-  if (beta == null) return Object.freeze({ status: 'RESEARCH_REQUIRED', reason: 'REGIME_SPECIFIC_SCALING_REQUIRED' });
-  return Object.freeze({ status: 'MODEL_DERIVED_SCENARIO', nusseltProportionalTo: Math.pow(ra, beta), exponentBeta: beta, normalizationSpecified: false, plateTectonicsTruthClaim: false, interpretation: 'SCALING_SHAPE_ONLY_UNTIL_NORMALIZATION_AND_RHEOLOGY_ARE_BOUND' });
+  const shape = nusseltScalingShape(ra, regime);
+  if (!shape) return Object.freeze({ status: 'RESEARCH_REQUIRED', reason: 'REGIME_SPECIFIC_SCALING_REQUIRED' });
+  const provenanceComplete = criticalRayleighNumber != null && parameterSetId && parameterSetHash;
+  if (!provenanceComplete) {
+    return Object.freeze({
+      status: 'RESEARCH_REQUIRED',
+      reason: 'CRITICAL_RAYLEIGH_AND_PARAMETER_PROVENANCE_REQUIRED_FOR_PHYSICAL_NU_RA_SCENARIO',
+      ...shape,
+      normalizationSpecified: false,
+      scalingShapeAvailable: true,
+      convectionOnsetApplied: false,
+      physicalNusseltAuthorized: false,
+      plateTectonicsTruthClaim: false,
+      interpretation: 'SCALING_SHAPE_ONLY_UNTIL_CONVECTION_ONSET_NORMALIZATION_RHEOLOGY_AND_PROVENANCE_ARE_BOUND'
+    });
+  }
+  const critical = finite('criticalRayleighNumber', criticalRayleighNumber);
+  if (critical <= 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'NON_POSITIVE_CRITICAL_RAYLEIGH_NUMBER' });
+  if (ra <= critical) {
+    return Object.freeze({
+      status: 'RESEARCH_REQUIRED',
+      reason: 'AT_OR_BELOW_DECLARED_CONVECTION_ONSET',
+      rayleighNumber: ra,
+      criticalRayleighNumber: critical,
+      parameterSetId,
+      parameterSetHash,
+      ...shape,
+      normalizationSpecified: false,
+      scalingShapeAvailable: true,
+      convectionOnsetApplied: true,
+      physicalNusseltAuthorized: false,
+      plateTectonicsTruthClaim: false
+    });
+  }
+  return Object.freeze({
+    status: 'MODEL_DERIVED_SCENARIO',
+    rayleighNumber: ra,
+    criticalRayleighNumber: critical,
+    supercriticality: ra / critical,
+    parameterSetId,
+    parameterSetHash,
+    ...shape,
+    normalizationSpecified: false,
+    scalingShapeAvailable: true,
+    convectionOnsetApplied: true,
+    physicalNusseltAuthorized: false,
+    plateTectonicsTruthClaim: false,
+    interpretation: 'SUPERCRITICAL_SCALING_SHAPE_ONLY_UNTIL_NORMALIZATION_AND_RHEOLOGY_ARE_BOUND'
+  });
 }
 
 export function laggedNusseltRayleighScenario({ rayleighNumberNow, rayleighNumberPast, lagMyr, regime, contextId, contextHash }) {
@@ -217,8 +269,21 @@ export function laggedNusseltRayleighScenario({ rayleighNumberNow, rayleighNumbe
   if (!contextId || !contextHash) return Object.freeze({ status: 'UNSUPPORTED', reason: 'LAG_CONTEXT_ID_AND_HASH_REQUIRED' });
   if (raNow <= 0 || raPast <= 0 || lag < 0) return Object.freeze({ status: 'UNSUPPORTED', reason: 'INVALID_LAGGED_RA_INPUT' });
   if (lag < 200 || lag > 300) return Object.freeze({ status: 'RESEARCH_REQUIRED', reason: 'OUTSIDE_ONEILL_REPORTED_LAG_CONTEXT' });
-  const now = nusseltRayleighScenario({ rayleighNumber: raNow, regime });
-  const past = nusseltRayleighScenario({ rayleighNumber: raPast, regime });
-  if (now.status !== 'MODEL_DERIVED_SCENARIO' || past.status !== 'MODEL_DERIVED_SCENARIO') return Object.freeze({ status: 'RESEARCH_REQUIRED', reason: 'REGIME_SCALING_UNAVAILABLE' });
-  return Object.freeze({ status: 'MODEL_DERIVED_SCENARIO', instantaneousProxy: now.nusseltProportionalTo, laggedSurfaceProxy: past.nusseltProportionalTo, lagMyr: lag, exponentBeta: now.exponentBeta, contextId, contextHash, interpretation: 'RESEARCH_LAG_SENSITIVITY_BRACKET_NOT_HISTORY_RECONSTRUCTION_OR_UNIVERSAL_PLANETARY_LAG', tectonicHistoryTruthClaim: false });
+  const now = nusseltScalingShape(raNow, regime);
+  const past = nusseltScalingShape(raPast, regime);
+  if (!now || !past) return Object.freeze({ status: 'RESEARCH_REQUIRED', reason: 'REGIME_SCALING_UNAVAILABLE' });
+  return Object.freeze({
+    status: 'MODEL_DERIVED_SCENARIO',
+    instantaneousProxy: now.nusseltProportionalTo,
+    laggedSurfaceProxy: past.nusseltProportionalTo,
+    lagMyr: lag,
+    exponentBeta: now.exponentBeta,
+    contextId,
+    contextHash,
+    normalizationSpecified: false,
+    convectionOnsetApplied: false,
+    physicalNusseltAuthorized: false,
+    interpretation: 'RESEARCH_LAG_SENSITIVITY_OF_UNNORMALIZED_SCALING_SHAPE_NOT_HISTORY_RECONSTRUCTION_OR_UNIVERSAL_PLANETARY_LAG',
+    tectonicHistoryTruthClaim: false
+  });
 }
