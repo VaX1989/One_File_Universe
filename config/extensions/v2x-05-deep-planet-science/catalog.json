@@ -13,14 +13,14 @@
     {
       "contract": "ofu-px-contracts-1",
       "id": "v2x05.model.deep-planet",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "owner": "v2x-05-deep-planet-science",
       "kind": "model",
       "authority": {
         "class": "MODEL_DERIVED_SIMULATION",
         "contract": "ofu-px-contracts-1",
         "model": "v2x05.deep-planet",
-        "version": "1.0.0",
+        "version": "2.0.0",
         "sources": [
           "src/domains/v1/planetology/causal-system.js",
           "src/domains/v1/environment/atmospheric-column.js",
@@ -29,22 +29,28 @@
           "research/v2x-15-astronomy-planetology-frontier-2026-09-07@f659463f5f5287ef23ee4ef66062a3f14bd60b95"
         ],
         "assumptions": [
-          "Consumes existing V1 MODEL_DERIVED_SIMULATION planetology state read-only inside explicit finite mass, radius, climate-cell, constituent and history bounds.",
+          "Consumes existing V1 MODEL_DERIVED_SIMULATION planetology state read-only inside explicit finite mass, radius, age, climate-cell, constituent, exact-ledger, query-context and history bounds.",
+          "Input world identity and exact modeled composition/interior closures are validated fail-closed before downstream context is emitted.",
+          "The same deterministic non-cryptographic model digest is emitted by rendering, inspection, environment, ecology, gameplay and surface packets so consumers can prove state coherence without confusing the digest with scientific authentication.",
           "V2X-15 research is limitation and falsification lineage only; its RESEARCH_ONLY kernels are not silently promoted into this shipping provider."
         ],
         "limitations": [
           "No calibrated equation of state, mass-radius retrieval, atmospheric abundance retrieval, photochemistry, general circulation model or weather forecast is claimed.",
           "Geodynamic and volcanic outputs are reduced potentials only; resolved plate tectonics and tectonic history remain unsupported.",
           "Optional XUV history changes contextual escape weighting only; no escape rate or integrated physical mass loss is inferred.",
-          "Volatile reservoir units preserve exact internal model accounting but are not kilograms, moles, ocean depth or observed inventory.",
-          "Normalized planetary causal attribution is explanatory weighting and must not be interpreted as conserved energy, conserved mass or causal identification."
+          "Gravity and escape diagnostics preserve V1 modeled quantities and explicitly report when escape velocity is absent; they are not measurements.",
+          "Volatile reservoir units preserve exact bounded internal model accounting but are not kilograms, moles, ocean depth or observed inventory.",
+          "Normalized planetary causal attribution is explanatory weighting and must not be interpreted as conserved energy, conserved mass or causal identification.",
+          "V2X-06 surface integration withholds water/ice area and surface-owned erosion/aridity/impact inputs; volatile inventory is never converted into area.",
+          "Life and Civilization packets expose bounded eligibility constraints only and never decide biological habitability or civilization viability.",
+          "Rendering appearance cues are PRESENTATION_ONLY values derived from MODEL_DERIVED_SIMULATION state and do not become canonical planetary truth."
         ],
         "evidence": []
       },
       "fidelity": {
         "regime": "deep-planet-reduced-order",
-        "validity": "Known V1 terrestrial, volatile-rich, sub-Neptune, ice-giant and gas-giant modeled states inside the explicit V2X-05 applicability envelope.",
-        "resolution": "One modeled world; at most 24 climate cells, 6 constituent families, 64 optional XUV-history samples and 4 downstream consumer contexts per evaluation surface.",
+        "validity": "Known V1 terrestrial, volatile-rich, sub-Neptune, ice-giant and gas-giant modeled states inside the explicit V2X-05 applicability and integrity envelope.",
+        "resolution": "One modeled world; at most 24 climate cells, 6 constituent families, 64 optional XUV-history samples and 6 bounded consumer contexts per evaluation surface.",
         "uncertainty": "Deterministic scenario depth only; unsupported physics remains explicitly UNSUPPORTED or RESEARCH_REQUIRED rather than being filled with calibrated-looking precision."
       },
       "lifecycle": "SHIPPING",
@@ -53,18 +59,25 @@
       ],
       "claims": [
         "model.deep-planet-regimes",
+        "model.bulk-gravity-escape-diagnostics",
         "model.atmosphere-constituent-families",
         "model.climate-envelope-not-gcm",
         "model.volatile-partition-exact-ledger",
         "model.geodynamic-potentials",
-        "model.giant-first-class"
+        "model.giant-first-class",
+        "model.planet-inspection-packet",
+        "model.environment-eligibility-bounds",
+        "model.render-inspector-digest-coherence",
+        "model.presentation-only-appearance-cues",
+        "model.surface-integration-honest-withholding"
       ],
       "operations": ["INSPECT"],
       "budget": {"entities": 64, "bytes": 262144, "operations": 20000, "queue": 64},
       "evidence": [
         {"id": "v2x05.deep-planet.determinism", "tier": "FAST_LOCAL"},
         {"id": "v2x05.deep-planet.metamorphic", "tier": "LANE_TARGETED"},
-        {"id": "v2x05.deep-planet.consumer-integration", "tier": "LANE_TARGETED"}
+        {"id": "v2x05.deep-planet.consumer-integration", "tier": "LANE_TARGETED"},
+        {"id": "v2x05.deep-planet.metamorphic-extended", "tier": "LANE_TARGETED"}
       ],
       "mandatory": false
     }
