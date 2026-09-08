@@ -1,0 +1,103 @@
+name: V2 Founder Visual Quality Audit
+
+on:
+  push:
+    branches:
+      - audit/v2.0-founder-visual-quality-2026-09-07
+  pull_request:
+    branches:
+      - integration/v2x-supreme-total-convergence-2026-09-07
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v2-founder-visual-quality-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: true
+
+env:
+  V2_BASE_SHA: 2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7
+  V1_SHA: 38dd0d7c0ccc4a100dc3b75d3d159c6933bc4c16
+
+jobs:
+  build-subjects:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: '24.20.0'
+      - name: Authenticate audit ancestry and production immutability
+        shell: bash
+        run: |
+          test "$(git rev-parse $V2_BASE_SHA^{tree})" = "99e6b5ff6229d9c34d381e778c5689bf2367d256"
+          git merge-base --is-ancestor "$V2_BASE_SHA" HEAD
+          test -z "$(git diff --name-only "$V2_BASE_SHA" HEAD -- src tools config data package.json | sed '/^tests\/audit\//d')"
+      - name: Build exact V2 production subject
+        shell: bash
+        run: |
+          OFU_SOURCE_SHA="$V2_BASE_SHA" node tools/build-ofu-rendering-v09.mjs
+          mkdir -p audit-input
+          cp dist/One_File_Universe.html audit-input/v2.html
+          cp dist/rendering-build-manifest.json audit-input/v2-manifest.json
+          sha256sum audit-input/v2.html | tee audit-input/v2.sha256
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          ref: 38dd0d7c0ccc4a100dc3b75d3d159c6933bc4c16
+          path: baseline-v1
+      - name: Build immutable v1.0.0 subject
+        shell: bash
+        run: |
+          cd baseline-v1
+          OFU_SOURCE_SHA="$V1_SHA" node tools/build-ofu-rendering-v09.mjs
+          cd ..
+          cp baseline-v1/dist/One_File_Universe.html audit-input/v1.html
+          cp baseline-v1/dist/rendering-build-manifest.json audit-input/v1-manifest.json
+          sha256sum audit-input/v1.html | tee audit-input/v1.sha256
+      - name: Record exact subject tuple
+        shell: bash
+        run: |
+          node -e "const fs=require('fs'),c=require('crypto');const h=p=>c.createHash('sha256').update(fs.readFileSync(p)).digest('hex');fs.writeFileSync('audit-input/subjects.json',JSON.stringify({schema:'ofu-founder-visual-subjects-1',auditHead:process.env.GITHUB_SHA,v2Base:process.env.V2_BASE_SHA,v2Tree:'99e6b5ff6229d9c34d381e778c5689bf2367d256',v1:process.env.V1_SHA,v2ArtifactSha256:h('audit-input/v2.html'),v1ArtifactSha256:h('audit-input/v1.html')},null,2)+'\n')"
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: founder-visual-subjects-${{ github.sha }}
+          path: audit-input/
+
+  browser-differential:
+    needs: build-subjects
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: '24.20.0'
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+        with:
+          name: founder-visual-subjects-${{ github.sha }}
+          path: audit-input
+      - name: Install exact browser harness
+        run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps ${{ matrix.browser }}
+      - name: Validate audit contract
+        run: node tests/audit/founder-visual-quality/contract.mjs
+      - name: Capture forward/reverse differential evidence
+        run: node tests/audit/founder-visual-quality/differential-browser.mjs
+        env:
+          BROWSER: ${{ matrix.browser }}
+          V1_SHA: 38dd0d7c0ccc4a100dc3b75d3d159c6933bc4c16
+          V2_SHA: 2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7
+          V1_ARTIFACT: audit-input/v1.html
+          V2_ARTIFACT: audit-input/v2.html
+          EVIDENCE_DIR: dist/evidence/founder-visual-quality
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        if: always()
+        with:
+          name: founder-visual-${{ matrix.browser }}-${{ github.sha }}
+          path: dist/evidence/founder-visual-quality/
