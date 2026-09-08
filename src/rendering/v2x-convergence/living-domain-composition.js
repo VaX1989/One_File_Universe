@@ -4,9 +4,9 @@ const O=root.OFU=root.OFU||{};
 const baseFactory=O.v1LivingRenderer,
  Orbit=O.v2x04Orbit3D,Stellar=O.v2x04StellarAppearance,Illumination=O.v2x04MultiStarIllumination,
  Address=O.v2x06SurfaceAddress,Geography=O.v2x06Geography,Hydrology=O.v2x06Hydrology,Terrain=O.v2x06HierarchicalTerrain,Surface=O.v2x06LivingSurfaceRenderer,
- LocalExperience=O.v2x07LocalExperienceProvider,
+ LocalExperience=O.v2x07LocalExperienceProvider,DeepPlanet=O.v2x05DeepPlanetProvider,
  Matter=O.v2x12MatterContinuity,Micro=O.v2x12MicroscopicPresentation,Camera=O.v2x02LivingCameraComposition;
-if(!baseFactory||!Orbit||!Stellar||!Illumination||!Address||!Geography||!Hydrology||!Terrain||!Surface||!LocalExperience||!Matter||!Micro||!Camera)throw new Error('Living domain convergence dependencies missing');
+if(!baseFactory||!Orbit||!Stellar||!Illumination||!Address||!Geography||!Hydrology||!Terrain||!Surface||!LocalExperience||!DeepPlanet||!Matter||!Micro||!Camera)throw new Error('Living domain convergence dependencies missing');
 if(baseFactory.__v2xDomainComposed)return;
 const VERSION='ofu-v2x-living-domain-composition-2',MICRO_STAGES=new Set(['MATERIAL','MICROSTRUCTURE','MOLECULAR','ATOMIC']),SURFACE_STAGES=new Set(['GLOBAL_SURFACE','REGIONAL_SURFACE','LOCAL_SURFACE']);
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -14,7 +14,9 @@ const title=v=>String(v||'').toLowerCase().replaceAll('_',' ');
 const short=v=>String(v||'').slice(0,8);
 function idOf(node){return String(node?.canonicalId||node?.entityId||node?.id||'')}
 function factsOf(node){return node?.metadata?.facts||node?.facts||{}}
-function authorityName(v){return String(v?.class||v?.authorityClass||v||'MODEL_DERIVED_SIMULATION')}
+function authorityName(v){const a=v?.class||v?.authorityClass||v;return a?String(a):'UNKNOWN_UNVERIFIED'}
+function finiteOrNull(v){return typeof v==='number'&&Number.isFinite(v)?v:null}
+function firstFinite(...values){for(const v of values){const n=finiteOrNull(v);if(n!==null)return n}return null}
 function hash32(text){let h=2166136261>>>0;for(const ch of String(text)){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}h^=h>>>16;return h>>>0}
 function starEnvelope(node,index,total){
  const f=factsOf(node),a=total<=1?Math.PI*.35:Math.PI*2*index/total+.3,r=total<=1?14:10+4*index;
@@ -33,9 +35,10 @@ function add3(a,b,c=[0,0,0]){return[a[0]+b[0]+c[0],a[1]+b[1]+c[1],a[2]+b[2]+c[2]
 function surfaceBasis(anchor){const up=unit(anchor),axis=Math.abs(up[1])>.95?[1,0,0]:[0,1,0],east=unit(cross(axis,up)),north=unit(cross(up,east));return {up,east,north}}
 function surfaceModelInput(s){
  const p=s.world?.planetology;if(!p)throw new Error('Living V2X-06 composition requires current planetology');
- const geological=p.geology||{},interior=p.interior||{},surface=p.surfaceProcesses||{},hydro=p.hydrosphere||{},climate=p.climate||{};
- const out={planetIdentity:String(p.planetIdentity||s.world?.planetIdentity||''),planetClass:String(p.bulkPriorClass||'TERRESTRIAL'),waterAreaPpm:Number(hydro.waterAreaPpm||0),iceAreaPpm:Number(hydro.iceFractionPpm??p.cryosphere?.iceCoverPpm??0),tectonicActivityPpm:Number(surface.tectonicActivityPpm??geological.upliftPpm??350000),volcanicActivityPpm:Number(geological.volcanicActivityPpm??interior.volcanismPpm??250000),erosionActivityPpm:Number(surface.erosionPotentialPpm??geological.weatheringPotentialPpm??300000),aridityPpm:Number(climate.aridityPpm??300000),sourceAuthority:authorityName(p.authority),sourceProvenance:[]};
- const impact=surface.impactActivityPpm??geological.impactProductionPpm;if(Number.isFinite(Number(impact)))out.impactActivityPpm=Number(impact);
+ const geological=p.geology||{},surface=p.surfaceProcesses||{},hydro=p.hydrosphere||{},climate=p.climate||{};
+ const deep=DeepPlanet.query(p,'SURFACE_PROMPT08_CONTEXT'),adapter=deep?.supported?deep.payload?.v2x06GeographyAdapter:null,safe=adapter?.safeInputs||{};
+ const out={planetIdentity:String(p.planetIdentity||s.world?.planetIdentity||''),planetClass:String(safe.planetClass||p.bulkPriorClass||'UNKNOWN'),noSolidSurface:safe.noSolidSurface===true,waterAreaPpm:finiteOrNull(hydro.waterAreaPpm),iceAreaPpm:firstFinite(hydro.iceFractionPpm,p.cryosphere?.iceCoverPpm),tectonicActivityPpm:firstFinite(surface.tectonicActivityPpm,safe.tectonicActivityPpm),volcanicActivityPpm:firstFinite(geological.volcanicActivityPpm,safe.volcanicActivityPpm),erosionActivityPpm:finiteOrNull(surface.erosionPotentialPpm),aridityPpm:finiteOrNull(climate.aridityPpm),sourceAuthority:authorityName(p.authority),sourceProvenance:Array.isArray(p.provenance)?p.provenance.slice(0,16):[],deepPlanetContext:Object.freeze({supported:Boolean(deep?.supported),status:String(deep?.status||'UNSUPPORTED'),modelDigest:deep?.modelDigest||null,authority:deep?.authority||null,provenance:deep?.provenance||null,uncertainty:deep?.fidelity?.uncertainty||null,withheld:Array.isArray(adapter?.withheldInputs)?adapter.withheldInputs:[]})};
+ const impact=surface.impactActivityPpm??geological.impactProductionPpm;out.impactActivityPpm=finiteOrNull(impact);
  return out;
 }
 function create(canvas,glCanvas,options={}){
@@ -46,7 +49,7 @@ function create(canvas,glCanvas,options={}){
  function orientation(){const snap=renderer.cameraAuthority?.snapshot?.();return snap?Camera.orientationAngles(snap):{yaw:0,pitch:0}}
  function zoomFor(s){const d=Number(s.continuousDistanceRadii),anchor=Number(O.waveIVScaleRuntime?.snapshot?.().anchors?.[s.semanticScale]);if(!(d>0&&anchor>0))return 1;return clamp(Math.pow(d/anchor,-.38),.62,1.72)}
  function surfaceRecord(s){
-  const input=surfaceModelInput(s),key=input.planetIdentity;let r=surfaceCache.get(key);if(r)return r;
+  const input=surfaceModelInput(s),key=JSON.stringify(input);let r=surfaceCache.get(key);if(r)return r;
   const model=Geography.createModel(input),hydrology=Hydrology.createHydrology(model),provider=Terrain.createProvider({model,hydrology});r=Object.freeze({model,hydrology,provider,input});surfaceCache.set(key,r);if(surfaceCache.size>2)surfaceCache.delete(surfaceCache.keys().next().value);return r;
  }
  function systemDraw(s){
@@ -64,8 +67,9 @@ function create(canvas,glCanvas,options={}){
   if(!s.point)throw new Error('Living V2X-06 surface composition requires selected surface point');const record=surfaceRecord(s),cfg=s.stage==='GLOBAL_SURFACE'?{level:2,radius:2,maxPatches:16,detail:460000}:s.stage==='REGIONAL_SURFACE'?{level:5,radius:2,maxPatches:16,detail:760000}:{level:7,radius:1,maxPatches:9,detail:920000},anchor=Address.locate(record.model.planetIdentity,s.point.latMicroDeg,s.point.lonMicroDeg,cfg.level),materialization=record.provider.materializeAdaptive({anchorAddress:anchor,level:cfg.level,radius:cfg.radius,maxPatches:cfg.maxPatches,detailDemandPpm:cfg.detail,resourcePressurePpm:0}),frame=Surface.buildFrame(materialization,{patchLimit:cfg.maxPatches}),{w,h}=dimensions(),witness=Surface.renderCanvas2D(g,frame,w,h);picks=[];humanExperience=null;
   surfaceInteraction=frame.status==='READY'?{frame,anchor,provider:record.provider,level:cfg.level,basis:surfaceBasis(anchor.unit)}:null;
   label(g,'V2X-06 · '+title(s.stage).toUpperCase(),22,31,{size:12,color:'#e6f1f5',bold:true});
-  if(frame.status==='READY'){label(g,frame.summary.patches+' adaptive patches · '+frame.summary.polygons+' terrain cells · '+frame.summary.coastlines+' coasts · '+frame.summary.rivers+' rivers',22,51,{size:10});label(g,'Model-derived relief/geology/hydrology · local tangent projection · no measured elevation claim',22,h-22,{size:10,color:'#a9bdc5'});}else label(g,'No solid surface is modeled for this world; no terrain was fabricated',22,52,{size:11,color:'#c6b9aa'});
-  const cache=record.provider.snapshotCache();last=Object.freeze({stage:s.stage,owner:'V2X-06',provider:Surface.VERSION,objects:frame.summary?.patches||0,relations:(frame.summary?.coastlines||0)+(frame.summary?.rivers||0),authority:frame.authority||'PRESENTATION_ONLY',status:frame.status,patches:frame.summary?.patches||0,polygons:frame.summary?.polygons||0,coastlines:frame.summary?.coastlines||0,rivers:frame.summary?.rivers||0,drawCalls:witness.drawCalls,terrainCacheEntries:cache.entries,terrainCacheBytes:cache.estimatedBytes,canonicalElevationClaim:false});
+  const deep=record.input.deepPlanetContext;if(deep?.supported)label(g,'V2X-05 deep-planet '+short(deep.modelDigest)+' · '+authorityName(deep.authority)+' · reduced-order uncertainty disclosed',22,69,{size:9,color:'#b9ccd4'});else label(g,'Deep-planet context unavailable · surface science remains explicitly incomplete',22,69,{size:9,color:'#c6b9aa'});
+  if(frame.status==='READY'){label(g,frame.summary.patches+' adaptive patches · '+frame.summary.polygons+' terrain cells · '+frame.summary.coastlines+' coasts · '+frame.summary.rivers+' rivers',22,51,{size:10});label(g,'Procedural relief/geology/hydrology · missing inputs use disclosed display assumptions · no measured elevation claim',22,h-22,{size:10,color:'#a9bdc5'});}else label(g,'No solid surface is modeled for this world; no terrain was fabricated',22,52,{size:11,color:'#c6b9aa'});
+  const cache=record.provider.snapshotCache();last=Object.freeze({stage:s.stage,owner:'V2X-06',provider:Surface.VERSION,objects:frame.summary?.patches||0,relations:(frame.summary?.coastlines||0)+(frame.summary?.rivers||0),authority:frame.authority||'PRESENTATION_ONLY',status:frame.status,patches:frame.summary?.patches||0,polygons:frame.summary?.polygons||0,coastlines:frame.summary?.coastlines||0,rivers:frame.summary?.rivers||0,drawCalls:witness.drawCalls,terrainCacheEntries:cache.entries,terrainCacheBytes:cache.estimatedBytes,canonicalElevationClaim:false,deepPlanetModelDigest:record.input.deepPlanetContext?.modelDigest||null,deepPlanetAuthority:record.input.deepPlanetContext?.authority||null,deepPlanetProvenance:record.input.deepPlanetContext?.provenance||null,deepPlanetUncertainty:record.input.deepPlanetContext?.uncertainty||null});
  }
  function presentationPlacement(item,index,heading){const seed=hash32(idOf(item)||String(index)),distance=8+(seed%5200)/100,offset=((seed>>>8)%1200/1200-.5)*1.55,bearing=heading+offset,x=Math.sin(bearing)*distance,y=Math.cos(bearing)*distance;return [x,y]}
  function localGround(record,point){return Object.freeze({id:'v2x.living.v2x06-ground',authority:'MODEL_DERIVED_SIMULATION',mutatesBaseTerrain:false,sampleGround({xM,yM}){if(record.model.noSolidSurface)return Object.freeze({supported:false,reason:'NO_SOLID_SURFACE'});const lat=Math.round(point.latMicroDeg+Number(yM)*850),lon=Math.round(point.lonMicroDeg+Number(xM)*850),address=Address.locate(record.model.planetIdentity,lat,lon,9),sample=record.model.sample(address);return Object.freeze({supported:true,heightM:sample.reliefCuePpm/1000000*18,surfaceClass:sample.surfaceClass,materialFamily:sample.materialFamily,sourceAuthority:sample.authority||'MODEL_DERIVED_SIMULATION',physicalElevationCanonical:false,waterEdgeCanonical:false});}})}
