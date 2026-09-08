@@ -172,7 +172,7 @@ function init(){
  initialized=true;document.body.classList.add('wave-a-active');
  panel=el('section',null,{id:'living-panel','aria-label':'Living universe exploration'});explore.prepend(panel);
  stage=el('section',null,{id:'living-stage','aria-label':'Living universe viewport'});frame.append(stage);
- const top=el('header',null,{id:'living-titlebar'}),info=el('div');info.append(el('div','ONE FILE UNIVERSE 1.0.0 / LIVE EXPLORATION',{class:'living-eyebrow'}));heading=el('h2','One living universe',{id:'living-heading'});location=el('div','',{id:'living-location'});info.append(heading,location);top.append(info);stage.append(top);
+ const top=el('header',null,{id:'living-titlebar'}),info=el('div');info.append(el('div','ONE FILE UNIVERSE 2.0.0 / LIVE EXPLORATION',{class:'living-eyebrow'}));heading=el('h2','One living universe',{id:'living-heading'});location=el('div','',{id:'living-location'});info.append(heading,location);top.append(info);stage.append(top);
  breadcrumbs=el('nav',null,{id:'living-breadcrumbs','aria-label':'Current universe context'});stage.append(breadcrumbs);
  const wrap=el('div',null,{id:'living-canvas-wrap'}),gl=el('canvas',null,{id:'living-gl','aria-hidden':'true'});gl.hidden=true;canvas=el('canvas','Use the adjacent controls to explore without canvas.',{id:'living-view',tabindex:0,'aria-label':'Interactive living universe. Select objects, drag worlds, or use adjacent controls.'});wrap.append(gl,canvas);stage.append(wrap);
  rail=el('nav',null,{id:'living-rail','aria-label':'Cross-scale exploration'});stage.append(rail);frame.closest('.viewport-shell').setAttribute('aria-labelledby','living-heading');

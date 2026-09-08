@@ -123,7 +123,7 @@ jobs:
           cmp /tmp/full-manifest-first.json dist/rendering-build-manifest.json
           grep -q 'FRUSTUM_GROUND_FOOTPRINT_BOUNDED' dist/rendering-build-manifest.json
           grep -q 'v1.scene.living-world' dist/rendering-build-manifest.json
-          grep -q '"releaseLine": "v1.0.0"' dist/rendering-build-manifest.json
+          grep -q '"releaseLine": "v2.0.0"' dist/rendering-build-manifest.json
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # Node 24 runtime
         with:
           name: rendering-production-build-${{ env.OFU_SOURCE_SHA }}

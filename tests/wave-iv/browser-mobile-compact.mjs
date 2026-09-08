@@ -147,7 +147,7 @@ for (const viewport of [{ width: 390, height: 844 }, { width: 360, height: 800 }
 
   const portrait = await layoutMetrics();
   assertLayout(portrait, `${viewport.width}x${viewport.height}`);
-  assert.ok(portrait.eyebrow.includes('1.0.0'), `frozen v1.0.0 identity missing at ${viewport.width}`);
+  assert.ok(portrait.eyebrow.includes('2.0.0'), `v2.0.0 identity missing at ${viewport.width}`);
 
   const landscape = { width: viewport.height, height: viewport.width };
   await page.setViewportSize(landscape);

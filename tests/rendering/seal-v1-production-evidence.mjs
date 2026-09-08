@@ -38,16 +38,16 @@ for(const [manifest,html] of [[fullManifest,path.join(path.dirname(fullManifestP
  if(manifest.sourceCommit!==expectedSource||manifest.artifactBytes!==bytes.length||manifest.artifactSha256!==hash||manifest.componentManifestHash!==[...manifests][0])throw new Error('artifact bytes/source/component pin mismatch');
 }
 if(foundationManifest.artifactSha256!==[...artifacts][0])throw new Error('foundation browser/artifact hash mismatch');
-if(fullManifest.productVersion!=='1.0.0'||fullManifest.releaseLine!=='v1.0.0'||fullManifest.releaseStatus!=='HISTORICAL_BASELINE'||fullManifest.candidateOnly!==false)throw new Error('v1.0.0 release identity missing');
+if(fullManifest.productVersion!=='2.0.0'||fullManifest.releaseLine!=='v2.0.0'||fullManifest.releaseStatus!=='STABLE_RELEASE'||fullManifest.candidateOnly!==false)throw new Error('v2.0.0 release identity missing');
 if(fullManifest.worldConvergence?.developmentCandidate!==false||fullManifest.worldConvergence?.releaseVersionDeclared!==true)throw new Error('world convergence release identity drift');
 if(fullManifest.visualUniverse?.primarySceneProvider!=='v1.scene.living-world')throw new Error('shipping Living foreground provider missing');
 if(fullManifest.runtime?.strictSingleFile!==true||fullManifest.runtime?.directFile!==true||fullManifest.runtime?.offline!==true||fullManifest.runtime?.networkRequired!==false)throw new Error('single-file/offline runtime contract drift');
 
-const living=docs.filter(v=>v.schema==='ofu-v1-living-browser-evidence-1');
+const living=docs.filter(v=>v.schema==='ofu-v2-living-browser-evidence-1');
 assertExactRenderingBrowserMatrix(living,'v1 Living product browser evidence');
 for(const row of living){
  if(row.status!=='PASS'||row.suite!=='v1-browser-product'||row.sourceCommit!==expectedSource||row.artifactSha256!==fullManifest.artifactSha256||row.componentManifestHash!==fullManifest.componentManifestHash)throw new Error('Living exact-source/artifact evidence mismatch '+tuple(row));
- if(row.productVersion!=='1.0.0'||row.releaseLine!=='v1.0.0'||row.releaseStatus!=='HISTORICAL_BASELINE'||row.historicalBaseline!==true||row.foregroundProvider!=='v1.scene.living-world')throw new Error('Living release identity/foreground drift '+tuple(row));
+ if(row.productVersion!=='2.0.0'||row.releaseLine!=='v2.0.0'||row.releaseStatus!=='STABLE_RELEASE'||row.historicalBaseline!==false||row.stableRelease!==true||row.foregroundProvider!=='v1.scene.living-world')throw new Error('Living release identity/foreground drift '+tuple(row));
  if(row.cases<84||row.directFile!==true||row.offline!==true||row.unexpectedNetworkRequests!==0||row.pageErrors!==0||row.physicalDevices!=='NOT_VERIFIED')throw new Error('Living product release journey incomplete '+tuple(row));
  if(!row.selected||row.discovery?.canonicalId!==row.selected||row.discovery?.navigationId===row.discovery?.canonicalId)throw new Error('Living canonical identity handoff invalid '+tuple(row));
  if(row.gestures?.wheel?.from!=='REGION'||row.gestures?.wheel?.in!=='NEIGHBORHOOD'||row.gestures?.wheel?.out!=='REGION'||row.gestures?.input?.activePointers!==0||row.gestures?.input?.pinchActive!==false||!(row.gestures?.input?.cancellations>0))throw new Error('Living wheel/pinch evidence incomplete '+tuple(row));
@@ -59,4 +59,4 @@ if(new Set(living.map(r=>r.sourceCommit)).size!==1||new Set(living.map(r=>r.arti
 
 const pxEvidence=docs.filter(r=>r.schema==='ofu-px-browser-evidence-2');
 const pxSeal=fullManifest.px?validatePXV1Evidence(pxEvidence,fullManifest,expectedSource):null;
-console.log(JSON.stringify({status:'PASS',sourceCommit:expectedSource,artifactSha256:fullManifest.artifactSha256,foundationArtifactSha256:[...artifacts][0],artifactScope:'V1_LIVING_PRODUCT_WITH_SEPARATE_FOUNDATION_RENDERING_REGRESSION',foregroundProvider:fullManifest.visualUniverse.primarySceneProvider,releaseLine:fullManifest.releaseLine,pxSeal,foundationBrowsers:rows.map(r=>({browser:r.browser,platform:r.platform,arch:r.arch,backend:r.backend})),livingBrowsers:living.map(r=>({browser:r.browser,platform:r.platform,arch:r.arch,cases:r.cases,selected:r.selected})),componentManifestHash:[...manifests][0],canonicalWitness:rows[0].canonicalWitness,timingPolicy:'MEASURED_EVIDENCE_NOT_CROSS_MACHINE_DETERMINISTIC_GATE'},null,2));
+console.log(JSON.stringify({status:'PASS',sourceCommit:expectedSource,artifactSha256:fullManifest.artifactSha256,foundationArtifactSha256:[...artifacts][0],artifactScope:'V2_LIVING_PRODUCT_WITH_SEPARATE_FOUNDATION_RENDERING_REGRESSION',foregroundProvider:fullManifest.visualUniverse.primarySceneProvider,releaseLine:fullManifest.releaseLine,pxSeal,foundationBrowsers:rows.map(r=>({browser:r.browser,platform:r.platform,arch:r.arch,backend:r.backend})),livingBrowsers:living.map(r=>({browser:r.browser,platform:r.platform,arch:r.arch,cases:r.cases,selected:r.selected})),componentManifestHash:[...manifests][0],canonicalWitness:rows[0].canonicalWitness,timingPolicy:'MEASURED_EVIDENCE_NOT_CROSS_MACHINE_DETERMINISTIC_GATE'},null,2));

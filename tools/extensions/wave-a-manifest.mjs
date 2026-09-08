@@ -61,7 +61,7 @@ export function attachWaveAProduct(manifest, plan) {
     historyFrames: 64, cacheBounds: {discovery: 12, worlds: 16, bodies: 8, candidates: 32},
     releaseVersionDeclared: true
   };
-  manifest.px.scope = 'FULL_V1_WAVE_A_PRODUCT';
+  manifest.px.scope = 'FULL_V2_LIVING_PRODUCT_OVER_V1_COMPATIBILITY_RUNTIME';
   manifest.productSourceComposition += '+v1-wave-a-world-convergence-1';
   return manifest;
 }
