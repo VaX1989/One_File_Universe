@@ -1,0 +1,196 @@
+{
+  "schema": "ofu-v2-lane-checkpoint-1",
+  "lane": "V2X-09",
+  "title": "Civilization 2.0 - economy, institutions, infrastructure, settlements and city embodiment",
+  "status": "COMPLETE_WITH_BLOCKERS",
+  "branch": "parallel/v2.0-09-civilization-economy-city-2026-09-07",
+  "base": {
+    "sha": "2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7",
+    "tree": "99e6b5ff6229d9c34d381e778c5689bf2367d256",
+    "status": "READY_FOR_MASSIVE_PARALLEL_EXECUTION",
+    "parallelLaunchStatus": "FULL",
+    "pointerVersion": "2026-09-08.1",
+    "centralWriter": "integration/v2x-supreme-total-convergence-2026-09-07"
+  },
+  "finalCodeCheckpoint": {
+    "sha": "76a82228f86e7d289009a075e5d6b969bab8bc8b",
+    "tree": "fe109ef2ff2c1be3490e30f76a93a7c61d085667",
+    "note": "Final owned source/test bytes. The final checkpoint commit that contains this metadata is recorded externally in PR #246 and the lane handoff because a commit cannot contain its own SHA/tree without self-reference."
+  },
+  "exactVerifiedProductionCodeCheckpoint": {
+    "sha": "cc0b1429b8b85d473cc820cf62e849ee98cf4704",
+    "tree": "951030dffb830ff9240962d14636edf4b3af2896",
+    "relationToFinalCode": "Final code checkpoint differs only by one additional test assertion pinning operations === commandCount and operationAccountingScope === EMITTED_PRESENTATION_COMMANDS_ONLY.",
+    "v2xSupremeConvergenceRun": 34206009075,
+    "exactSourceIdentity": "PASS",
+    "fullRepositoryTestAndReproducibleBuildStack": "PASS",
+    "subsequentFailureStep": "V2X provider activation boundary",
+    "subsequentFailureClassification": "CENTRAL_POST_BASE_WORKFLOW_DEPENDENCY_MISSING_FROM_IMMUTABLE_LANE_BASE"
+  },
+  "finalCodeCi": {
+    "sha": "76a82228f86e7d289009a075e5d6b969bab8bc8b",
+    "run": 34206227880,
+    "stateAtSeal": "QUEUED_NOT_EXECUTED",
+    "classification": "RUNNER_ALLOCATION_PENDING_AT_METADATA_SEAL",
+    "claim": "No PASS or failure is claimed for this queued run. Exact production-code verification is supplied by the immediate parent code checkpoint above; the only final-code delta is a test assertion."
+  },
+  "pullRequest": {
+    "number": 246,
+    "baseBranch": "integration/v2x-supreme-total-convergence-2026-09-07",
+    "headBranch": "parallel/v2.0-09-civilization-economy-city-2026-09-07",
+    "mergeableBeforeFinalMetadataSeal": true,
+    "observedMovingBaseSha": "3bb6cdcf1d0f932bea831b32fd6e5f21eb589088"
+  },
+  "ownedDiffAudit": {
+    "status": "PASS",
+    "changedFiles": [
+      "config/components/v2x-09-civilization-economy-city.json",
+      "src/v2x-09-civilization-economy-city/index.js",
+      "src/v2x-09-civilization-economy-city/morphology.js",
+      "tests/v2x-09-civilization-economy-city/civilization-economy-city.mjs",
+      "docs/parallel/v2/lanes/V2X-09_CURRENT.json"
+    ],
+    "centralConvergenceOwnedPathsModified": false,
+    "crossLanePathsModified": false,
+    "temporaryFiles": false,
+    "experimentalFiles": false,
+    "duplicateImplementation": false,
+    "knownDeadState": false,
+    "cleanupPerformed": [
+      "removed unused selectedRouteIds accumulator",
+      "removed redundant resource/infrastructure deduplication sets already guaranteed by validated unique identities",
+      "replaced repeated resilience route scan with deterministic route-id map",
+      "made packet operation accounting explicitly emitted-command-only",
+      "pinned operation-accounting semantics in targeted test"
+    ]
+  },
+  "capabilities": [
+    "deterministic civilization embodiment packet",
+    "settlement embodiment with active/abandoned/damaged/ruined model-supported visual state",
+    "bounded district hierarchy presentation",
+    "history-backed visible state without canonical-history or archaeology promotion",
+    "infrastructure condition embodiment",
+    "route/network capacity, resilience and criticality embodiment",
+    "production flow embodiment",
+    "resource relationship embodiment using current modeled economy snapshot",
+    "public runtime export backed by advanced production/society/urban/resilience composition",
+    "fail-closed no-legacy-fallback behavior",
+    "one-file HTML artifact reachability witness"
+  ],
+  "limits": {
+    "settlements": 48,
+    "routes": 96,
+    "infrastructureAssets": 256,
+    "districtsPerSettlement": 12,
+    "resourceLinksPerSettlement": 8,
+    "historyLayersPerSettlement": 24,
+    "commands": 4096,
+    "operations": 4096,
+    "operationAccountingScope": "EMITTED_PRESENTATION_COMMANDS_ONLY"
+  },
+  "authority": {
+    "modelState": "MODEL_DERIVED_SIMULATION",
+    "productionSocietyUrbanResilience": "MODEL_DERIVED_SIMULATION_OR_DERIVED_AS_DECLARED_BY_SOURCE_MODEL",
+    "renderPacketCommands": "PRESENTATION_ONLY",
+    "deterministicAnchors": "PRESENTATION_ONLY",
+    "claimsExplicitlyRejected": [
+      "physical city geometry",
+      "physical transport path geometry",
+      "physical resource/deposit geometry",
+      "canonical history",
+      "empirical forecast",
+      "persistent person identity"
+    ],
+    "ownershipPreserved": {
+      "persistentPersonIdentity": "V2X-10",
+      "localPlacement": "V2X-07_OR_CONVERGENCE",
+      "selectionScaleCameraSceneRendererInputPersistence": "CONVERGENCE_OWNER"
+    }
+  },
+  "tests": {
+    "localScratchSyntax": "PASS",
+    "localAdversarialEmbodimentHarness": {
+      "status": "PASS",
+      "commands": 16,
+      "operations": 16,
+      "negativeWitness": "ADVANCED_MODEL_REQUIRED with zero commands when advanced composition is absent"
+    },
+    "registeredLaneConformance": [
+      "node tests/v2x-09-civilization-economy-city/civilization-economy-city.mjs",
+      "node tests/v2x-09-civilization-economy-city/advanced-systems.mjs"
+    ],
+    "artifactBuildCommand": "node tools/build-ofu-rendering-v09.mjs",
+    "exactCiEvidence": {
+      "productionCodeSha": "cc0b1429b8b85d473cc820cf62e849ee98cf4704",
+      "run": 34206009075,
+      "exactSourceIdentity": "PASS",
+      "fullRepositoryTestAndReproducibleBuildStack": "PASS",
+      "failureAfterThosePasses": {
+        "step": "V2X provider activation boundary",
+        "result": "FAIL",
+        "reason": "Current convergence workflow invokes tests/v2x-convergence/provider-activation-boundary.mjs, a convergence-owned file added after the immutable authorized base and therefore absent from this frozen-base lane.",
+        "laneRegression": false
+      },
+      "progressiveLaneConformanceReached": false
+    },
+    "finalCodeExactCi": {
+      "sha": "76a82228f86e7d289009a075e5d6b969bab8bc8b",
+      "run": 34206227880,
+      "resultAtSeal": "QUEUED_NOT_EXECUTED"
+    },
+    "scientificHonesty": "The exact CI proves clean checkout plus repository test/reproducible-build PASS on the final production-code checkpoint. The registered V2X-09 targeted commands are not claimed as exact final-SHA PASS because the PR convergence workflow aborts earlier on a post-base central dependency. The local adversarial harness is recorded separately and is not promoted to hosted exact-SHA evidence."
+  },
+  "reachability": {
+    "source": [
+      "src/v2x-09-civilization-economy-city/morphology.js",
+      "src/v2x-09-civilization-economy-city/index.js"
+    ],
+    "shippingManifest": "config/components/v2x-09-civilization-economy-city.json",
+    "manifestCapability": "v2x09.civilization.embodiment-packet",
+    "oneFileBuildCommand": "node tools/build-ofu-rendering-v09.mjs",
+    "oneFileArtifact": "dist/One_File_Universe.html",
+    "runtimeExport": "OFU.v2x09CivilizationEconomyCity.civilizationEmbodimentPacket",
+    "runtimeDependency": "OFU.v2x09CivilizationAdvanced.modelAdvancedCivilization",
+    "artifactWitness": "Targeted lane test builds the actual one-file artifact and asserts advanced component ordering plus embodiment contract/export bytes in the HTML.",
+    "actualCurrentConsumer": "Central V2X context Inspector consumes V2X-09 morphology/inspector; convergence-owned Living domain composition does not currently consume or generically activate the new embodiment packet.",
+    "livingViewport": "EXTERNAL_CONVERGENCE_HOOK_REQUIRED",
+    "centralHook": "Call OFU.v2x09CivilizationEconomyCity.civilizationEmbodimentPacket(civilizationState,economy,{settlementId}), reconcile PRESENTATION_ONLY anchors through V2X-07/local placement, then compose commands through the convergence-owned Living rendering seam.",
+    "persistenceRevisit": "NO_INDEPENDENT_MUTABLE_STATE; packet is a deterministic projection of persisted civilization/economy state. Persistence/replay authority remains convergence-owned.",
+    "exactArtifactBrowserEvidence": "BLOCKED_UNTIL_CONVERGENCE_OWNER_ADOPTS_PACKET_IN_LIVING_VIEWPORT"
+  },
+  "remainingBlockers": [
+    {
+      "id": "V2X09-LIVING-CONSUMER",
+      "owner": "CONVERGENCE_OWNER",
+      "kind": "EXTERNAL_AUTHORITY_BOUNDARY",
+      "description": "Living scene composition has no V2X-09 embodiment packet consumer. V2X-09 cannot edit the frozen convergence compositor/renderer authority."
+    },
+    {
+      "id": "V2X09-EXACT-BROWSER",
+      "owner": "CONVERGENCE_OWNER",
+      "kind": "DEPENDENCY_ON_LIVING_CONSUMER",
+      "description": "Exact-artifact browser evidence for visible settlement/infrastructure/network consequences requires the convergence-owned Living consumer first."
+    },
+    {
+      "id": "V2X09-CI-POST-BASE-ACTIVATION-TEST",
+      "owner": "CONVERGENCE_OWNER",
+      "kind": "CENTRAL_WORKFLOW_POST_BASE_DEPENDENCY",
+      "description": "The current convergence workflow invokes a convergence-owned provider-activation test added after the immutable lane base, so frozen-base PR CI aborts before progressive lane conformance."
+    },
+    {
+      "id": "V2X09-FINAL-SHA-HOSTED-RUNNER",
+      "owner": "CI_ENVIRONMENT",
+      "kind": "EVIDENCE_LIMITATION",
+      "description": "The exact hosted run for final code/test SHA 76a82228f86e7d289009a075e5d6b969bab8bc8b remained queued at metadata seal; no result is fabricated."
+    }
+  ],
+  "centralIntegrationNotes": [
+    "Authenticate the final branch SHA/tree recorded in PR #246 after this metadata commit.",
+    "Merge/rebase only through the central convergence owner; this lane does not merge itself.",
+    "Adopt OFU.v2x09CivilizationEconomyCity.civilizationEmbodimentPacket as additive PRESENTATION_ONLY scene data.",
+    "Use V2X-07/local placement reconciliation for anchors; do not treat deterministic packet anchors as physical positions.",
+    "Run both registered V2X-09 targeted conformance commands on the integrated source.",
+    "After Living adoption, run exact one-file browser evidence for visible settlement, infrastructure, route/resource and historical consequences."
+  ],
+  "nextDependencyEligibleWork": "NONE_WITHIN_V2X_09_OWNERSHIP"
+}
