@@ -1,9 +1,9 @@
 {
-  "schema": "ofu-v2x15-v2-promotion-handoff-1",
+  "schema": "ofu-v2x15-final-integration-handoff-1",
   "lane": "V2X-15_ASTRONOMY_PLANETOLOGY_FRONTIER",
-  "laneStatus": "DEPENDENCY_ELIGIBLE_REPOSITORY_WORK_EXHAUSTED_RESEARCH_ONLY",
   "branch": "research/v2.0-15-astronomy-planetology-frontier-2026-09-07",
   "pullRequest": 249,
+  "status": "COMPLETE_WITH_EXTERNAL_VALIDATION_BLOCKER",
   "authority": "RESEARCH_ONLY",
   "canonicalPromotionPerformed": false,
   "authorizedParallelBase": {
@@ -14,9 +14,8 @@
     "parallelLaunchStatus": "FULL"
   },
   "lineage": {
-    "priorBranch": "research/v2x-15-astronomy-planetology-frontier-2026-09-07",
-    "priorHead": "6768689d85a5e3e094429eea0b73aaaa4497bcaf",
-    "priorTree": "db9676b62da9410ab3dc5e0de5eb9a05b6e0e319",
+    "priorV2x15Head": "6768689d85a5e3e094429eea0b73aaaa4497bcaf",
+    "priorV2x15Tree": "db9676b62da9410ab3dc5e0de5eb9a05b6e0e319",
     "v2ForwardReconciliationCommit": "1d98dfe8602278d34e27d03ede94921b5625ff73",
     "reconciliationParents": [
       "2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7",
@@ -28,7 +27,12 @@
   "implementationCheckpoint": {
     "sha": "fbea8bb1e7619227a4ae16bcc33b6a82da0b5977",
     "tree": "8378ca1908d9309b09d2d313898630f9626da185",
-    "note": "This is the exact implementation/promotion-packet checkpoint immediately before this handoff-only metadata commit."
+    "promotionPacketSchema": "ofu-v2x15-promotion-packets-7"
+  },
+  "preFinalVerifiedHead": {
+    "sha": "0e758baa2c1588f8ce7b6ec0c25dd3febcd3a398",
+    "tree": "04ca60e377b822f024b0bdf115997416455f7ba2",
+    "semantics": "Implementation plus promotion packets were unchanged from the implementation checkpoint; only the prior handoff metadata differed. Foundation Integrity executed successfully on this exact source before this final handoff-only commit."
   },
   "ownedChangedPaths": [
     "research/v2x/PROMOTION_PACKETS.json",
@@ -46,38 +50,19 @@
     "research/v2x/reference-oracle.py",
     "research/v2x/run-tests.mjs"
   ],
-  "v2HardeningRepairs": [
-    {
-      "id": "MIST_II_ROTATION_MASS_SEMANTICS",
-      "status": "REPAIRED",
-      "behavior": "A requested full Omega/Omega_crit=0.4 rotating-family coordinate below 1.8 solar masses now returns RESEARCH_REQUIRED instead of being treated as a globally independent rotation grid axis. The published zero/ramp/full mass convention is recorded explicitly and exact downloaded-track metadata remains required."
-    },
-    {
-      "id": "ESCAPE_THRESHOLD_PROVENANCE_BINDING",
-      "status": "REPAIRED",
-      "behavior": "Arbitrary threshold-set IDs/hashes can no longer silently inherit numeric Jeans-regime thresholds. Every non-synthetic set must provide explicit numeric boundaries; only the explicitly named synthetic regression fixture may use test defaults."
-    },
-    {
-      "id": "NU_RA_ONSET_AUTHORITY",
-      "status": "REPAIRED",
-      "behavior": "nusseltRayleighScenario now fails closed without critical-Rayleigh parameter-set provenance and at/below declared onset. Unnormalized scaling shape may still be inspected diagnostically but physicalNusseltAuthorized remains false. The 200-300 Myr lag relation is explicitly only a context-bound unnormalized sensitivity shape."
-    }
-  ],
-  "capabilityInventory": [
-    "source-domain-gated pairwise circular/coplanar low-mass Hill screening and algebraic threshold inversion",
-    "AMD definition, collision-critical AMD root and pairwise collision-AMD screening",
-    "bounded barycentric 2D Newtonian KDK short-horizon N-body diagnostics with energy/angular/linear momentum and step-convergence evidence",
-    "version/hash/exact-domain-gated stellar interpolation with alpha, chemistry-hole and MIST-II mass-dependent rotation-family guards",
-    "bounded coupled multiplicity conditional-cell evaluation with explicit weight semantics",
-    "bandpass/magnitude-system distance modulus and exact atan2 angular geometry",
-    "source-bounded rocky radius relation and composition-degeneracy contract",
-    "versioned P-T/phase-provenance water EOS interpolation separated from radius authority",
-    "bounded source-family-specific 4-D sub-Neptune interpolation",
-    "0-D, transient and 2-256-zone reduced EBM with provenance, conservation residuals, bounded substeps and no silent insolation renormalization",
-    "provenance-gated atmospheric escape classification, explicit energy-limited radius convention and depletion-capped mass ledger",
-    "critical-Rayleigh-aware convection and fail-closed Nu-Ra scaling semantics",
-    "finite thermal and volatile conservation ledgers",
-    "bounded impact-loss and provenance/time-unit-gated stream-power erosion scenarios"
+  "ownershipAssertions": {
+    "allOwnedChangesIntentional": true,
+    "uncommittedWorkPossibleOnRemoteBranch": false,
+    "temporaryOrDuplicateFilesKnown": false,
+    "centralConvergenceOwnedPathsModified": false,
+    "livingOrPrimaryRendererAuthorityClaimed": false,
+    "cameraScalePersistenceOrBuildAuthorityClaimed": false
+  },
+  "scientificHardeningCompleted": [
+    "MIST-II full Omega/Omega_crit=0.4 rotating-family requests below 1.8 solar masses fail closed; exact track-family provenance remains required.",
+    "Atmospheric escape threshold identities cannot inherit anonymous numeric Jeans thresholds; non-synthetic sets require explicit numeric boundaries.",
+    "Nu-Ra physical scenario authority requires critical-Rayleigh ID/hash provenance and fails closed at/below onset; unnormalized scaling remains diagnostic only.",
+    "Existing Hill/AMD/N-body/observability/stellar/multiplicity/EOS/sub-Neptune/climate/escape/geodynamics/volatile/impact/erosion kernels retain explicit source domains, provenance, limitations and fail-closed behavior."
   ],
   "resourceBounds": {
     "nBodyPlanetsMax": 16,
@@ -89,72 +74,94 @@
     "subNeptune4dCellsMax": 262144,
     "zonalClimateZonesMax": 256,
     "climateSubstepsMax": 10000,
-    "boundedGrowthClaim": "All implemented loops/tables expose hard cardinality or step bounds; no unbounded retained runtime state is introduced by this research lane."
+    "unboundedRetainedRuntimeStateAdded": false
   },
-  "testsAndFalsification": {
-    "commands": [
+  "testsAndEvidence": {
+    "laneCommands": [
       "node research/v2x/run-tests.mjs",
       "python3 research/v2x/reference-oracle.py"
     ],
-    "priorExactResearchEvidence": {
-      "nodeRunner": "PASS on prior exact V2X-15 implementation lineage",
+    "priorExactLaneEvidence": {
+      "nodeRunner": "PASS",
       "additionalDeterministicAdversarialCases": 6788,
-      "coverage": ["Hill monotonicity/bounds", "critical AMD alpha/gamma grid", "stellar affine interpolation", "water EOS affine interpolation", "sub-Neptune 4-D affine interpolation", "volatile conservation/non-negativity", "zonal EBM conservation", "N-body refinement", "convection onset", "exact-vs-small-angle geometry"]
+      "coverage": [
+        "Hill monotonicity and bounds",
+        "critical AMD alpha/gamma grid",
+        "stellar affine interpolation",
+        "water EOS affine interpolation",
+        "sub-Neptune 4-D affine interpolation",
+        "volatile conservation and non-negativity",
+        "zonal EBM conservation",
+        "N-body refinement",
+        "convection onset",
+        "exact versus small-angle observability geometry"
+      ]
     },
-    "v2AdversarialWitness": {
+    "v2AdversarialOracle": {
       "path": "research/v2x/reference-oracle.py",
-      "newAssertions": [
-        "1 Msun full MIST-II Omega/Omega_crit=0.4 request must fail closed",
-        "2 Msun full MIST-II Omega/Omega_crit=0.4 request may reach interpolation contract readiness subject to exact fixture metadata",
-        "arbitrary escape threshold provenance without numeric thresholds must fail closed",
+      "assertionsAdded": [
+        "low-mass full MIST-II rotation fails closed",
+        "full rotation at 2 solar masses can reach contract readiness subject to exact fixture evidence",
+        "arbitrary escape threshold IDs without numeric thresholds fail closed",
         "explicit versioned escape thresholds remain evaluable",
-        "Nu-Ra request without critical-Rayleigh provenance must fail closed",
-        "Nu-Ra at/below declared onset must fail closed",
-        "supercritical Nu-Ra remains model-derived scaling only and physicalNusseltAuthorized=false"
-      ],
-      "oldImplementationWouldFailWitness": true
+        "Nu-Ra without critical-Rayleigh provenance fails closed",
+        "Nu-Ra at or below declared onset fails closed",
+        "supercritical Nu-Ra remains non-authoritative physical Nusselt evidence"
+      ]
     },
-    "freshLocalExecution": "UNAVAILABLE_IN_CURRENT_EXECUTION_CONTAINER_DUE_TO_GITHUB_DNS_NETWORK_RESTRICTION; no local PASS fabricated",
-    "hostedExactHead": "TRIGGERED_BY_PR_249; final conclusions must be read from the exact handoff head before promotion"
+    "freshHostedExactHeadEvidenceOnPreFinalVerifiedHead": {
+      "workflow": "Foundation Integrity",
+      "runId": 34205519558,
+      "jobId": 101993969717,
+      "conclusion": "SUCCESS",
+      "exactSourceCheckout": "SUCCESS",
+      "pythonRuntimeSetup": "SUCCESS",
+      "nodeRuntimeSetup": "SUCCESS",
+      "foundationValidation": "SUCCESS"
+    },
+    "freshExactHeadConvergenceCertificationOnPreFinalVerifiedHead": {
+      "workflow": "V2X Supreme Convergence",
+      "runId": 34205519526,
+      "jobId": 101993966892,
+      "status": "QUEUED_NO_RUNNER_ALLOCATION",
+      "runnerId": 0,
+      "steps": [],
+      "repositoryTestFailureObserved": false
+    },
+    "freshLocalExecution": "NOT_CLAIMED: current container cannot resolve github.com, so no fabricated local PASS is recorded."
   },
-  "sourceToArtifactReachability": {
-    "source": "PRESENT_AND_TESTABLE",
-    "promotionPacket": "PRESENT_SCHEMA_OFU_V2X15_PROMOTION_PACKETS_7",
-    "shippingManifest": "NOT_CLAIMED_RESEARCH_ONLY",
-    "oneFileHtml": "NOT_CLAIMED_RESEARCH_ONLY",
-    "runtimeExport": "NOT_CLAIMED_RESEARCH_ONLY",
-    "actualConsumer": "TARGET_CONTRACTS_IDENTIFIED_IN_PROMOTION_PACKETS_NOT_BOUND_BY_LANE",
-    "livingConsequence": "CONVERGENCE_OWNED",
-    "persistenceRevisit": "CONVERGENCE_OWNED_WHEN_APPLICABLE",
-    "exactArtifactBrowserEvidence": "CONVERGENCE_OWNED_AFTER_SELECTIVE_PROMOTION",
-    "why": "The V2 artifact contract explicitly forbids representing intentionally research-only source as artifact-reachable shipping capability."
+  "promotionAndArtifactLaw": {
+    "researchSourceArtifactReachabilityClaimed": false,
+    "reason": "V2_ARTIFACT_CONTRACT forbids presenting intentionally research-only source as shipping-artifact reachable.",
+    "currentChain": "research source -> deterministic oracles -> promotion packet -> CENTRAL ADDITIVE ADAPTER REQUIRED",
+    "centralIntegrationMustProve": [
+      "authority-mapped shipping component/provider",
+      "exact dataset ID/version/digest/units/domain/uncertainty",
+      "one-file HTML inclusion where promoted",
+      "runtime export and actual consumer",
+      "Living/user consequence",
+      "persistence/revisit semantics where applicable",
+      "exact-artifact browser witness"
+    ]
   },
-  "convergenceHook": {
-    "packetPath": "research/v2x/PROMOTION_PACKETS.json",
-    "adapterRule": "Promote only via an additive authority-mapped provider/inspector/conformance adapter; never copy research output into canonical truth without explicit source and authority binding.",
-    "centralOwnerMustBind": ["exact source dataset ID/version/digest", "units and applicability domain", "uncertainty/error model", "resource budget", "shipping component/provider", "runtime consumer", "Living consequence", "persistence/replay semantics where applicable", "exact-artifact browser witness"],
-    "laneCentralPathWritesPerformed": false
-  },
-  "authorityClassification": {
-    "researchKernels": "RESEARCH_ONLY",
-    "interpolatedScientificOutputs": "MODEL_DERIVED_SIMULATION_CANDIDATE_WITH_RESEARCH_ONLY_PROVENANCE",
-    "numericalDiagnostics": "RESEARCH_ONLY_ALGORITHMIC_DIAGNOSTIC",
-    "presentationClaims": "NONE_ADDED",
-    "measuredRuntimeEvidence": "NONE_CLAIMED",
-    "canonicalTruth": "NONE_PROMOTED"
-  },
-  "externalScientificDependencies": [
-    "exact licensed/redistributable MIST fixture with release digest, exact track-family metadata, exact bounds, quantity units and interpolation-error witnesses",
-    "population-conditioned multiplicity tables with selection-function provenance, normalization and uncertainty",
-    "exact high-pressure water EOS and P-T phase-map data",
-    "exact Lopez-Fortney-compatible sub-Neptune evolution grid",
-    "validated stellar XUV histories, numeric escape-threshold families, efficiencies, absorption radii, Roche corrections, species cooling and diffusion data",
-    "validated OLR/albedo/heat-capacity/transport/seasonal reduced-climate parameter families",
-    "rheology/geometry/boundary-condition-specific critical Rayleigh and Nu-Ra normalization calibration",
-    "planet-specific erosion calibration and process policy",
-    "trusted long-horizon dynamics references including resonances, secular chaos, collisions, tides and relativity where applicable"
+  "remainingBlockers": [
+    {
+      "class": "EXTERNAL_HOSTED_RUNNER_ALLOCATION",
+      "owner": "GitHub Actions / central validation environment",
+      "detail": "V2X Supreme exact-head certification on the pre-final verified source remained queued with runner_id=0 and steps=[]; this is not a repository test failure."
+    },
+    {
+      "class": "CENTRAL_AUTHORITY_DEPENDENCY",
+      "owner": "CONVERGENCE_OWNER",
+      "detail": "Selective promotion into shipping providers, Living consumers, persistence/replay and exact one-file artifact/browser witnesses is centrally owned and was intentionally not implemented in this research lane."
+    },
+    {
+      "class": "EXTERNAL_SCIENTIFIC_DATA_CALIBRATION",
+      "owner": "future scientific data/provenance work",
+      "detail": "Higher-fidelity promotion requires exact versioned MIST fixtures, multiplicity/selection tables, water EOS/phase maps, sub-Neptune grids, XUV/escape calibration, reduced-climate parameter families, rheology/Nu-Ra calibration, erosion calibration and trusted long-horizon dynamics references."
+    }
   ],
   "knownInternallySolvableCodeDefects": [],
   "dependencyEligibleWorkRemaining": [],
-  "stopRationale": "All repository-code work currently eligible inside V2X-15 ownership has been implemented, hardened, pushed and exposed through promotion packets. Remaining scientific fidelity requires external versioned datasets/calibration or convergence-owned shipping integration; inventing those inputs or seizing central paths would violate scientific honesty and ownership."
+  "finalizationLaw": "This file is the sole final handoff-only change after the pre-final verified source. The final commit SHA/tree must be authenticated from GitHub after this commit because a commit cannot self-contain its own content-addressed SHA. No further lane writes are intended."
 }
