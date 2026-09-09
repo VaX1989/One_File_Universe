@@ -16,15 +16,15 @@
     },
     {
       "id": "v2.cinematic.macro-director",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "owner": "cinematic",
       "kind": "code",
       "stage": "full",
       "placement": "script",
       "source": "src/cinematic/v2/macro-director.js",
-      "dependencies": ["v2x02.camera.living-binding", "v1x02.spatial-universe.runtime", "v1x04.system.provider"],
+      "dependencies": ["v2x02.camera.living-binding", "v1.product.living-universe", "v1x02.spatial-universe.runtime", "v1x04.system.provider"],
       "authority": "PRESENTATION_ONLY",
-      "provenance": "V2 cinematic lane. Wraps the convergence-owned Living renderer before DOM boot, reusing the exact authoritative camera orientation, Living semantic distance, spatial/system providers and existing semantic activation callback. It changes macro pixel composition and presentation hit geometry only; it owns no scale, camera, selection, history or scientific state.",
+      "provenance": "V2 cinematic lane. Post-boot presentation layer over the convergence-owned Living product. It reads the live Living snapshot plus renderer.cameraAuthority.snapshot(), transforms that authoritative camera through OFU.v2x02LivingCameraComposition.orientationAngles(), and reuses the existing spatial/system presentation providers. Its aria-hidden, pointer-transparent macro canvas replaces macro pixels only while macro stages are active; it owns no scale, camera, selection, navigation, history, scene-model or scientific state.",
       "provides": ["v2.cinematic.macro-director"]
     },
     {
