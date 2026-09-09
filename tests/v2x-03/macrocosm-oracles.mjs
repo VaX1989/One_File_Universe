@@ -8,9 +8,12 @@ for(const file of [
  'src/rendering/galaxy/galaxy-field.js',
  'src/rendering/macro/macrocosm-batches.js',
  'src/rendering/region/region-refinement.js',
- 'src/rendering/neighborhood/neighborhood-depth.js',
- 'src/rendering/macro/macrocosm-provider.js'
+ 'src/rendering/neighborhood/neighborhood-depth.js'
 ])vm.runInNewContext(fs.readFileSync(file,'utf8'),sandbox,{filename:file});
+const upstreamSpatial=sandbox.OFU.v1x02SpatialUniverse;
+let legacyRepresentationCalls=0;
+sandbox.OFU.v1x02SpatialUniverse=Object.freeze({...upstreamSpatial,representation(){legacyRepresentationCalls++;throw new Error('V2X03_LEGACY_LAYOUT_FORBIDDEN')}});
+vm.runInNewContext(fs.readFileSync('src/rendering/macro/macrocosm-provider.js','utf8'),sandbox,{filename:'src/rendering/macro/macrocosm-provider.js'});
 const O=sandbox.OFU,F=O.v2x03GalaxyField,B=O.v2x03MacrocosmBatches,R=O.v2x03RegionRefinement,N=O.v2x03NeighborhoodDepth,P=O.v2x03MacrocosmProvider,S=O.v1x02SpatialUniverse;
 const galaxy={canonicalId:'galaxy-alpha',sourceAuthority:'CANONICAL_PROVEN',metadata:{modelProfile:{morphology:'SPIRAL'}}};
 const entities=Array.from({length:80},(_,i)=>({canonicalId:'entity-'+String(i).padStart(3,'0'),sourceAuthority:'CANONICAL_PROVEN'}));
@@ -38,17 +41,30 @@ for(const morphology of ['SPIRAL','ELLIPTICAL','IRREGULAR','UNKNOWN']){const f=F
 
 const universe=P.buildUniverse({scopeId:'universe-root',entities,cameraFrame:frame,quality:'STANDARD'});
 assert.equal(universe.claims.gridPrimary,false);
+assert.equal(universe.claims.legacyLayoutDependency,false);
+assert.equal(universe.claims.structuralDensityVariation,true);
+assert.equal(universe.layout.generator,'V2X03_IDENTITY_HASHED_COSMIC_VOLUME');
+assert.equal(universe.layout.legacyRepresentationCalls,0);
+assert.ok(universe.layout.depthSpan>0,'Universe must have real depth spread');
+assert.ok(universe.layout.radialSpan>0,'Universe must have non-grid radial variation');
+assert.ok(universe.layout.densityBands.filter(Boolean).length>=2,'Universe must expose density variation');
 assert.equal(universe.camera.ownsFrame,false);
 assert.equal(universe.claims.stableIdentityRequired,true);
 assert.ok(universe.objects.length<=48);
 const reversed=P.buildUniverse({scopeId:'universe-root',entities:[...entities].reverse(),cameraFrame:frame,quality:'STANDARD'});
 assert.deepEqual(universe.objects,reversed.objects,'query order must not alter spatial identity placement');
+assert.equal(legacyRepresentationCalls,0,'V2X-03 Universe must not invoke the legacy representation path');
 
 const galaxyScene=P.buildGalaxy({galaxy,entities,cameraFrame:frame,quality:'HIGH',presentationSeed:'galaxy-seed'});
 assert.equal(galaxyScene.galaxyId,'galaxy-alpha');
 assert.equal(galaxyScene.claims.decorativeSelectable,false);
+assert.equal(galaxyScene.claims.legacyLayoutDependency,false);
+assert.equal(galaxyScene.layout.family,'DISK');
+assert.ok(galaxyScene.layout.depthSpan>0,'Galaxy canonical objects must occupy a 3D volume');
+assert.ok(galaxyScene.layout.densityBands.filter(Boolean).length>=2,'Galaxy canonical objects must expose density variation');
 assert.ok(galaxyScene.bounds.entities<=64);
 assert.ok(galaxyScene.field.bounds.particles<=F.PROFILES.HIGH.particles);
+assert.equal(legacyRepresentationCalls,0,'V2X-03 Galaxy must not invoke the legacy representation path');
 for(const args of [
  {width:320,height:700,dpr:3,memoryClass:'NORMAL',coarse:true,expected:'LOW'},
  {width:390,height:844,dpr:2,memoryClass:'NORMAL',coarse:true,expected:'MOBILE'},
@@ -71,6 +87,9 @@ assert.equal(packet.kind,'V2X03_GALAXY_RENDER_PACKET');
 assert.equal(packet.authority,'PRESENTATION_ONLY');
 assert.equal(packet.scene.galaxyId,'galaxy-alpha');
 assert.ok(packet.batchPlan.usage.draws<=3);
+assert.ok(packet.canonicalPlan.usage.draws<=1);
+assert.ok(packet.canonicalPlan.usage.bytes<=packet.canonicalPlan.bounds.maxBytes);
+assert.equal(packet.canonicalPlan.claims.gpuMemoryMeasured,false);
 assert.equal(packet.batchPlan.claims.gpuMemoryMeasured,false);
 assert.equal(packet.interaction.decorativeSelectable,false);
 assert.equal(packet.interaction.decorativeNavigable,false);
@@ -80,6 +99,8 @@ assert.equal(packet.externalAuthorities.scale,true);
 assert.equal(packet.externalAuthorities.resourceAdmission,true);
 assert.equal(packet.claims.rendererBackendOwnedHere,false);
 assert.equal(packet.claims.centralBudgetAdmissionOwnedHere,false);
+assert.equal(packet.claims.legacyLayoutDependency,false);
+assert.equal(packet.claims.boundedGpuPackets,true);
 
 const children=entities.slice(0,70).map((e,i)=>({...e,entityId:'region-child-'+i}));
 const region=P.buildRegion({parentId:'galaxy-alpha',children,quality:'STANDARD'}),regionAgain=P.buildRegion({parentId:'galaxy-alpha',children:[...children].reverse(),quality:'STANDARD'});
@@ -88,6 +109,7 @@ assert.ok(region.objects.length<=R.MAX_CHILDREN);
 assert.equal(region.continuity.queryOrderIndependent,true);
 assert.equal(region.continuity.hardReplacementRequired,false);
 assert.equal(region.claims.regionBoundaryCanonical,false);
+assert.equal(region.claims.legacyLayoutDependency,false);
 const reduced=R.blend(region,regionAgain,.5,{reducedMotion:true}),animated=R.blend(region,regionAgain,.5);
 assert.equal(reduced.mix,0);assert.equal(reduced.depthBias,0);assert.equal(reduced.claims.reducedMotionAvoidsContinuousBlend,true);assert.equal(animated.mix,.5);
 
@@ -98,6 +120,7 @@ assert.equal(neighborhood.camera.ownsFrame,false);
 assert.equal(neighborhood.stability.queryOrderIndependent,true);
 assert.equal(neighborhood.stability.drawOrderStable,true);
 assert.equal(neighborhood.claims.physicalOcclusionClaim,false);
+assert.equal(neighborhood.claims.legacyLayoutDependency,false);
 for(const object of neighborhood.objects){assert.equal(object.authority,'PRESENTATION_ONLY');assert.equal(object.claims.positionPhysical,false)}
 const visible=neighborhood.objects.find(o=>o.view.visible);if(visible){const hit=P.pick(neighborhood,visible.view.x,visible.view.y);assert.equal(hit.handled,true);assert.equal(hit.decorative,false);assert.equal(hit.sourceId,visible.sourceId)}
 
@@ -107,5 +130,21 @@ assert.throws(()=>P.buildUniverse({scopeId:'identityless',entities:[{}],cameraFr
 assert.throws(()=>R.refine({parentId:'x',children:[{}]}),/stable child identity/);
 assert.throws(()=>R.refine({parentId:'x',children:[entities[0]],parentExtent:Infinity}),/finite/);
 const witness=P.continuityWitness({galaxy:galaxyScene,region,neighborhood});
-assert.equal(witness.cameraOwnedHere,false);assert.equal(witness.selectionOwnedHere,false);assert.equal(witness.scaleOwnedHere,false);
-console.log(JSON.stringify({status:'PASS',oracle:'V2X03_MACROCOSM_ORACLES',contract:P.CONTRACT,bounds:{galaxyParticles:galaxyScene.field.bounds.particles,galaxyDecorative:galaxyScene.field.bounds.total,regionObjects:region.objects.length,neighborhoodObjects:neighborhood.objects.length,maxGalaxyDraws:3},noGrid:true,deterministicRevisit:true,particleLimitFailClosed:true,explicitMorphologyLayers:true,integrationRenderPacket:true,decorativeNonSelectable:true,externalCamera:true,qualityProfiles:true,reducedMotion:true,stableIdentityFailClosed:true,stableOcclusionDrawOrder:true,immutablePackedData:true}));
+assert.equal(witness.cameraOwnedHere,false);assert.equal(witness.selectionOwnedHere,false);assert.equal(witness.scaleOwnedHere,false);assert.equal(witness.legacyLayoutDependency,false);
+
+const universePacket=P.buildRenderPacket({context:'UNIVERSE',scopeId:'universe-root',entities,cameraFrame:frame,quality:'STANDARD',viewport:{width:1440,height:900,dpr:2}});
+const regionPacket=P.buildRenderPacket({context:'REGION',scopeId:'galaxy-alpha',entities:children,quality:'STANDARD',parentExtent:1,viewport:{width:1440,height:900,dpr:2}});
+const neighborhoodPacket=P.buildRenderPacket({context:'NEIGHBORHOOD',objects:spatial.objects,cameraFrame:frame,quality:'STANDARD',viewport:{width:1440,height:900,dpr:2}});
+for(const p of [universePacket,regionPacket,neighborhoodPacket]){assert.equal(p.kind,'V2X03_MACROCOSM_RENDER_PACKET');assert.ok(p.canonicalPlan.usage.draws<=1);assert.ok(p.canonicalPlan.usage.bytes<=p.canonicalPlan.bounds.maxBytes);assert.equal(p.claims.boundedGpuPackets,true);assert.equal(p.claims.legacyLayoutDependency,false)}
+assert.equal(legacyRepresentationCalls,0,'no V2X-03 scale may silently invoke legacy representation()');
+
+const laneManifest=JSON.parse(fs.readFileSync('config/components/v2x-03-macrocosm.json','utf8'));
+const convergenceManifest=JSON.parse(fs.readFileSync('config/components/v2x-supreme-convergence.json','utf8'));
+const providerComponent=laneManifest.components.find(c=>c.id==='v2x03.macrocosm-provider.runtime');
+const convergenceComponent=convergenceManifest.components.find(c=>c.id==='v2x.convergence.macrocosm-composition');
+assert.ok(providerComponent,'shipping component descriptor must contain the V2X-03 provider runtime');
+assert.ok(convergenceComponent?.dependencies?.includes('v2x03.macrocosm-provider.runtime'),'central convergence descriptor must consume the V2X-03 runtime');
+const convergenceSource=fs.readFileSync('src/rendering/v2x-convergence/macrocosm-composition.js','utf8');
+for(const method of ['buildUniverse','buildGalaxy','buildRegion','buildNeighborhood'])assert.match(convergenceSource,new RegExp('provider\\.'+method+'\\('),'central convergence hook must invoke '+method);
+
+console.log(JSON.stringify({status:'PASS',oracle:'V2X03_MACROCOSM_ORACLES',contract:P.CONTRACT,bounds:{galaxyParticles:galaxyScene.field.bounds.particles,galaxyDecorative:galaxyScene.field.bounds.total,regionObjects:region.objects.length,neighborhoodObjects:neighborhood.objects.length,maxGalaxyDraws:3,maxCanonicalDraws:1},noGrid:true,legacyRepresentationCalls,deterministicRevisit:true,particleLimitFailClosed:true,explicitMorphologyLayers:true,structuralDensityVariation:true,integrationRenderPacket:true,allScaleRenderPackets:true,artifactReachabilityHook:true,decorativeNonSelectable:true,externalCamera:true,qualityProfiles:true,reducedMotion:true,stableIdentityFailClosed:true,stableOcclusionDrawOrder:true,immutablePackedData:true}));
