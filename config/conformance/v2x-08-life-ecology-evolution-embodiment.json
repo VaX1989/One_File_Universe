@@ -29,6 +29,15 @@
       "timeoutMs": 30000
     },
     {
+      "id": "v2x08.life.living-consumer",
+      "owner": "product",
+      "tier": "LANE_TARGETED",
+      "command": ["node", "tests/v2x-convergence/living-life-v2-consumer.mjs"],
+      "providers": ["v2x08.model.life-single-file"],
+      "oracle": "ofu-v2x-living-life-v2-consumer-witness-1",
+      "timeoutMs": 30000
+    },
+    {
       "id": "v2x08.life.artifact-reachability",
       "owner": "v2x-08-life-ecology-evolution-embodiment",
       "tier": "INTEGRATION",
