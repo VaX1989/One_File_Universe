@@ -129,6 +129,8 @@ def attach(page) -> None:
     else:
         page.goto(HTML.as_uri(), wait_until='load')
     ready(page, 'UNIVERSE')
+    page.context.set_offline(True)
+    check(page.evaluate('navigator.onLine') is False, 'Product journey runs offline after direct-file boot')
 
 
 start = time.monotonic()
@@ -139,7 +141,7 @@ try:
         if EXE:
             launch['executable_path'] = EXE
         browser = pw.chromium.launch(**launch)
-        context = browser.new_context(viewport={'width': 1440, 'height': 960}, offline=True)
+        context = browser.new_context(viewport={'width': 1440, 'height': 960})
         page = context.new_page()
         attach(page)
         roots = js(page, 's.rows.map(n=>({id:n.canonicalId,kind:n.kind}))')
@@ -260,7 +262,7 @@ try:
         result['worldClassesObserved'] = sorted(observed_classes)
         picture(page, '09-final-desktop')
         # Touch-sized product, actual viewport pick and keyboard path, not an API navigation fixture.
-        mobile_context = browser.new_context(viewport={'width': 390, 'height': 844}, device_scale_factor=1, is_mobile=True, has_touch=True, offline=True)
+        mobile_context = browser.new_context(viewport={'width': 390, 'height': 844}, device_scale_factor=1, is_mobile=True, has_touch=True)
         mobile = mobile_context.new_page()
         attach(mobile)
         mobile_roots = js(mobile, 's.rows.map(x=>x.canonicalId)')

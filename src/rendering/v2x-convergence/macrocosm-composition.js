@@ -21,7 +21,10 @@ function representation(args={}){
   if(context==='UNIVERSE')scene=provider.buildUniverse(args);
   else if(context==='GALAXY')scene=provider.buildGalaxy({galaxy:{canonicalId:args.scopeId,metadata:{modelProfile:{morphology:args.morphology||'UNKNOWN'}}},entities:args.entities||[],cameraFrame:args.cameraFrame,quality:'STANDARD',presentationSeed:args.presentationSeed,densityHint:args.densityHint});
   else if(context==='REGION')scene=regionScene(args);
-  else if(context==='NEIGHBORHOOD')scene=provider.buildNeighborhood({objects:args.entities||[],cameraFrame:args.cameraFrame,quality:'STANDARD',scaleUnits:original.profile({context:'NEIGHBORHOOD'}).scaleUnits});
+  else if(context==='NEIGHBORHOOD'){
+   const positioned=original.projectEntities({...args,context});
+   scene=provider.buildNeighborhood({objects:positioned.objects,cameraFrame:args.cameraFrame,quality:'STANDARD',scaleUnits:original.profile({context}).scaleUnits});
+  }
   if(scene&&Array.isArray(scene.objects)){
    providerCalls++;
    last=Object.freeze({context,status:'PROVIDER',objects:scene.objects.length,authority:provider.AUTHORITY,contract:provider.CONTRACT,cameraConsumed:Boolean(scene.camera?.consumedExternalFrame)});
