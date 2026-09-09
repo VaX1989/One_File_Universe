@@ -16,8 +16,26 @@
       "tier": "INTEGRATION",
       "command": ["node", "tests/v2x-02-camera-spatial-travel/registry-binding.mjs"],
       "providers": ["v2x02.interaction.continuous-travel"],
-      "oracle": "v2x02-registry-binding-oracle-3",
+      "oracle": "v2x02-registry-binding-oracle-4",
       "timeoutMs": 60000
+    },
+    {
+      "id": "v2x02.travel.living-authority",
+      "owner": "v2x-02-camera-spatial-travel",
+      "tier": "INTEGRATION",
+      "command": ["node", "tests/v2x-convergence/living-camera-authority.mjs"],
+      "providers": ["v2x02.interaction.continuous-travel"],
+      "oracle": "ofu-v2x02-living-camera-authority-witness-1",
+      "timeoutMs": 60000
+    },
+    {
+      "id": "v2x02.travel.exact-artifact-browser",
+      "owner": "v2x-02-camera-spatial-travel",
+      "tier": "LANE_TARGETED",
+      "command": ["node", "tests/v1/browser-v1-product.mjs"],
+      "providers": ["v2x02.interaction.continuous-travel"],
+      "oracle": "V1_EXACT_ARTIFACT_LIVING_PRODUCT_BROWSER",
+      "timeoutMs": 180000
     }
   ]
 }
