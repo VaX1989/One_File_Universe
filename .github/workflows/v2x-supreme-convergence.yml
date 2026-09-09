@@ -47,6 +47,8 @@ jobs:
         run: node tools/build-ofu-rendering-v09.mjs
       - name: V2X-10 convergence blocker regressions
         run: node tests/v2x10/convergence-blockers.mjs
+      - name: V2X-11 governed causal save-reload-revisit witness
+        run: node tests/v2x-convergence/living-governed-causal-journey.mjs
       - name: Living macrocosm composition witness
         run: node tests/v2x-convergence/macrocosm-composition.mjs
       - name: Living single-camera authority witness
