@@ -5,7 +5,7 @@ const id='v2x02.interaction.continuous-travel',registry=O.pxProduct.registry,sna
 assert(snapshot.order.includes(id),'provider descriptor must be admitted into the sealed graph');
 assert(snapshot.bound.includes(id),'shipping continuous-travel provider must bind before registry seal');
 assert(plan.some(c=>c.id==='v2x02.camera.continuous-travel'));
-assert(plan.some(c=>c.id==='px.providers.v2x02-camera-spatial-travel'));
+assert(plan.some(c=>c.id==='v2x.frontier.providers.v2x02-camera-spatial-travel'));
 const d=registry.descriptor(id),captured=O.pxProduct.captured();
 assert.equal(d.version,'2.1.0');assert.equal(V.VERSION,'ofu-v2x02-continuous-travel-2.1');assert.equal(V.PROVIDER_ID,id);assert.equal(V.AUTHORITY,'PRESENTATION_ONLY');
 function invoke(intent,extra={}){
