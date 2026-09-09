@@ -5,14 +5,16 @@ import os from 'node:os';
 import assert from 'node:assert/strict';
 import {pathToFileURL} from 'node:url';
 import {chromium,firefox,webkit} from 'playwright';
+import {immutableBrowserArtifact} from '../../helpers/immutable-browser-artifact.mjs';
 
 const SOURCE=process.env.OFU_SOURCE_SHA;
 if(!SOURCE)throw new Error('OFU_SOURCE_SHA required');
-const manifest=JSON.parse(fs.readFileSync('dist/rendering-build-manifest.json','utf8'));
+const immutableInput=immutableBrowserArtifact({consumer:'p21-resource-soak'});
+const manifest=immutableInput.manifest;
 assert.equal(manifest.sourceCommit,SOURCE,'shipping manifest must identify the exact audit SHA');
-const DEFAULT_PRODUCT=pathToFileURL(path.resolve('dist/One_File_Universe.html')).href;
+const DEFAULT_PRODUCT=pathToFileURL(immutableInput.artifactPath).href;
 const PRODUCT=process.env.P21_PRODUCT_URL||DEFAULT_PRODUCT;
-const PRODUCT_TRANSPORT=process.env.P21_PRODUCT_URL?'DIAGNOSTIC_HTTP_OVERRIDE':'EXACT_SHIPPING_FILE_URL';
+const PRODUCT_TRANSPORT=process.env.P21_PRODUCT_URL?'DIAGNOSTIC_HTTP_OVERRIDE':'IMMUTABLE_EXACT_SHIPPING_FILE_URL';
 const OUT=path.resolve('dist/evidence/v2-p21-performance-browser-mobile');
 fs.mkdirSync(OUT,{recursive:true});
 const ENGINES={chromium,firefox,webkit};
@@ -243,4 +245,5 @@ async function mobileAndA11y(browserName,browser){
 
 const results={schema:'ofu-v2-p21-performance-browser-mobile-evidence-1',status:'PASS',exactSourceSha:SOURCE,authority:'MEASURED_RUNTIME_EVIDENCE',productTransport:PRODUCT_TRANSPORT,claims:{driverVram:'NOT_MEASURABLE',physicalGpuMemory:'NOT_MEASURABLE',physicalMobileDevices:'NOT_VERIFIED',jsHeap:'ENGINE_EXPOSED_ONLY',listenerCount:'TEST_INSTRUMENTED_CONNECTED_OR_GLOBAL_EVENTTARGET_REGISTRATIONS',detachedTargetListeners:'DIAGNOSTIC_ONLY_GC_NONDETERMINISTIC',workerCount:'PLAYWRIGHT_PAGE_WORKER_LIFECYCLE',audioNodes:'PRODUCT_RUNTIME_SNAPSHOT_ONLY',framePacing:'REQUEST_ANIMATION_FRAME_INTERVALS',fallbackBrowserBinary:'EXPLICITLY_RECORDED_INFRASTRUCTURE_VARIANCE_NOT_GOVERNED_EXPECTED_EXECUTABLE'},cycles:CYCLES,browsers:{}};
 for(const [name,engine] of Object.entries(ENGINES)){const launched=await launchEngine(name,engine),browser=launched.browser;try{results.browsers[name]={launcher:launched.launcher,desktop:await desktopSoak(name,browser),mobile:await mobileAndA11y(name,browser)}}finally{await browser.close()}}
+results.artifactInput=immutableInput.verify();
 fs.writeFileSync(path.join(OUT,'exact-browser-resource-soak.json'),JSON.stringify(results,null,2)+'\n');console.log(JSON.stringify({status:results.status,schema:results.schema,exactSourceSha:SOURCE,productTransport:PRODUCT_TRANSPORT,cycles:CYCLES,browsers:Object.fromEntries(Object.entries(results.browsers).map(([k,v])=>[k,{launcher:v.launcher.status,version:v.launcher.version,startupMs:v.desktop.startupMs,p95Ms:v.desktop.transitionP95,frameP95Ms:v.desktop.framePacing.p95Ms,heap:v.desktop.heap.status,longTasks:v.desktop.longTasks.status,contextLoss:v.desktop.contextLoss.status,audio:v.desktop.audio.status,mobile:true}]))}));

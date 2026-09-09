@@ -9,12 +9,14 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import shutil
 import time
 from typing import Any
 from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[3]
-HTML = ROOT / 'dist' / 'One_File_Universe.html'
+SOURCE_HTML = Path(os.environ.get('OFU_BROWSER_PRODUCT_PATH', ROOT / 'dist' / 'One_File_Universe.html')).resolve()
+MANIFEST = Path(os.environ.get('OFU_BROWSER_MANIFEST_PATH', ROOT / 'dist' / 'rendering-build-manifest.json')).resolve()
 OUT = ROOT / 'reports' / 'wave-a' / 'browser'
 OUT.mkdir(parents=True, exist_ok=True)
 MODE = os.environ.get('OFU_BROWSER_MODE', 'FILE_DIRECT')
@@ -25,6 +27,15 @@ console_errors: list[str] = []
 requests: list[str] = []
 checks: list[dict[str, Any]] = []
 journeys: list[dict[str, Any]] = []
+manifest = json.loads(MANIFEST.read_text(encoding='utf-8'))
+source_bytes = SOURCE_HTML.read_bytes()
+source_hash = hashlib.sha256(source_bytes).hexdigest()
+assert manifest.get('productVersion') == '2.0.0' and manifest.get('releaseLine') == 'v2.0.0' and manifest.get('releaseStatus') == 'STABLE_RELEASE' and manifest.get('candidateOnly') is False, 'founder journey requires the full stable V2 artifact'
+assert manifest.get('artifactSha256') == source_hash and manifest.get('artifactBytes') == len(source_bytes), 'founder journey artifact must match its full-build manifest'
+input_dir = ROOT / 'dist' / 'evidence' / 'browser-input' / str(manifest.get('sourceCommit')) / ('founder-python-' + str(os.getpid()) + '-' + source_hash[:12])
+input_dir.mkdir(parents=True, exist_ok=False)
+HTML = input_dir / 'One_File_Universe.html'
+shutil.copyfile(SOURCE_HTML, HTML)
 
 
 def check(value: Any, message: str) -> None:
@@ -282,6 +293,8 @@ try:
         check(not errors, 'No uncaught browser script errors')
         check(not console_errors, 'No browser console errors')
         check(not requests, 'Single-file execution makes no HTTP or HTTPS requests')
+        check(hashlib.sha256(HTML.read_bytes()).hexdigest() == source_hash and HTML.stat().st_size == len(source_bytes), 'Founder browser input hash remains immutable')
+        result['artifactInput'] = {'path': str(HTML), 'bytes': len(source_bytes), 'sha256': source_hash, 'hashBeforeEqualsAfter': True}
         result['status'] = 'PASS'
         browser.close()
 except Exception as exc:
