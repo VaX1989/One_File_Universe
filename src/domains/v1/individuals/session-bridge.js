@@ -1,0 +1,53 @@
+(function(root){
+'use strict';
+const O=root.OFU=root.OFU||{},Base=O.v1Session,P=O.p2,H=O.sha256,People=O.v2x10Individuals;
+if(!Base||!P||!H||!People)throw new Error('V2X-10 session bridge dependencies missing');
+const VERSION='ofu-v2x10-session-retained-1',FORMAT='OFU-V2X10-SESSION-EXTENSION',SCHEMA=1n,BROWSER_KEY='ofu.v1.session',MAX_RETAINED=64,MAX_RETAINED_BYTES=384*1024;
+const retained=new Map(),ledgers=new Map();
+function fail(message){throw new Error('OFU V2X-10 session bridge: '+message)}
+function bytesEqual(a,b){return a instanceof Uint8Array&&b instanceof Uint8Array&&a.length===b.length&&a.every((v,i)=>v===b[i])}
+function exact(value,keys,label){if(!value||typeof value!=='object'||Array.isArray(value))fail(label+' record');const actual=Object.keys(value).sort(),wanted=[...keys].sort();if(actual.length!==wanted.length||actual.some((k,i)=>k!==wanted[i]))fail(label+' schema')}
+function safeInt(value,name,min=0){if(!Number.isSafeInteger(value)||value<min)fail(name+' must be a safe integer >= '+min);return value}
+function clone(value){return P.decode(P.encode(value))}
+function retainedEntries(){return [...retained.entries()].sort(([a],[b])=>a.localeCompare(b)).map(([id,value])=>Object.freeze({id,value:clone(value)}))}
+function ledgerEntries(){return [...ledgers.entries()].sort(([a],[b])=>a.localeCompare(b)).map(([key,value])=>Object.freeze({key,value:clone(value)}))}
+function retainedBytes(entries=retainedEntries()){return P.encode(entries).length}
+function validateLedger(raw){
+ exact(raw,['worldId','settlementId','initialPopulation','currentYear','population','nextBirthOrdinal','legacyDeaths','legacyLiving','cohorts','semantics'],'demography ledger');
+ const worldId=String(raw.worldId||''),settlementId=String(raw.settlementId||'');if(!worldId||!settlementId)fail('demography ledger identity');
+ const initialPopulation=safeInt(raw.initialPopulation,'initialPopulation'),currentYear=safeInt(raw.currentYear,'currentYear'),population=safeInt(raw.population,'population'),nextBirthOrdinal=safeInt(raw.nextBirthOrdinal,'nextBirthOrdinal'),legacyDeaths=safeInt(raw.legacyDeaths,'legacyDeaths'),legacyLiving=safeInt(raw.legacyLiving,'legacyLiving');
+ if(legacyDeaths+legacyLiving!==initialPopulation)fail('legacy demographic conservation');if(nextBirthOrdinal<initialPopulation)fail('birth address regression');if(raw.semantics!=='NET_CHANGE_MINIMUM_FLOW_NO_FABRICATED_CHURN')fail('demography semantics');if(!Array.isArray(raw.cohorts)||raw.cohorts.length>256)fail('demography cohorts');
+ let living=legacyLiving,births=initialPopulation;const cohorts=raw.cohorts.map((c,index)=>{exact(c,['key','firstBirthOrdinal','births','deaths','living','birthYear','cohortKey'],'demography cohort '+index);const firstBirthOrdinal=safeInt(c.firstBirthOrdinal,'cohort firstBirthOrdinal'),cb=safeInt(c.births,'cohort births'),deaths=safeInt(c.deaths,'cohort deaths'),cl=safeInt(c.living,'cohort living'),birthYear=safeInt(c.birthYear,'cohort birthYear');if(deaths+cl!==cb)fail('cohort demographic conservation');if(firstBirthOrdinal!==births)fail('cohort birth address discontinuity');births+=cb;living+=cl;return Object.freeze({key:String(c.key),firstBirthOrdinal,births:cb,deaths,living:cl,birthYear,cohortKey:String(c.cohortKey)});});
+ if(births!==nextBirthOrdinal||living!==population)fail('demography ledger conservation');return Object.freeze({worldId,settlementId,initialPopulation,currentYear,population,nextBirthOrdinal,legacyDeaths,legacyLiving,cohorts:Object.freeze(cohorts),semantics:raw.semantics});
+}
+function ledgerKey(worldId,settlementId){return String(worldId)+'|'+String(settlementId)}
+function observeV2X10Population({worldId,settlementId,population,currentYear}={}){
+ worldId=String(worldId||'');settlementId=String(settlementId||'');if(!worldId||!settlementId)fail('population observation identity');population=safeInt(population,'population');currentYear=safeInt(currentYear,'currentYear');const key=ledgerKey(worldId,settlementId),prior=ledgers.get(key);
+ if(!prior){const first=validateLedger({worldId,settlementId,initialPopulation:population,currentYear,population,nextBirthOrdinal:population,legacyDeaths:0,legacyLiving:population,cohorts:[],semantics:'NET_CHANGE_MINIMUM_FLOW_NO_FABRICATED_CHURN'});ledgers.set(key,first);return clone(first)}
+ if(currentYear<prior.currentYear)return clone(prior);if(currentYear===prior.currentYear&&population===prior.population)return clone(prior);
+ let next={...clone(prior),currentYear},delta=population-prior.population,cohorts=next.cohorts.map(c=>({...c}));
+ if(delta>0){cohorts.push({key:settlementId+':births:'+currentYear+':'+next.nextBirthOrdinal,firstBirthOrdinal:next.nextBirthOrdinal,births:delta,deaths:0,living:delta,birthYear:currentYear,cohortKey:settlementId+':'+currentYear});next.nextBirthOrdinal+=delta;}
+ else if(delta<0){let deaths=-delta,legacyTake=Math.min(next.legacyLiving,deaths);next.legacyLiving-=legacyTake;next.legacyDeaths+=legacyTake;deaths-=legacyTake;for(let i=0;i<cohorts.length&&deaths>0;i++){const take=Math.min(cohorts[i].living,deaths);cohorts[i].living-=take;cohorts[i].deaths+=take;deaths-=take}if(deaths!==0)fail('observed deaths exceed represented living population');}
+ next={...next,population,cohorts};const validated=validateLedger(next);ledgers.set(key,validated);return clone(validated);
+}
+function retainV2X10Individual(person){const value=People.retain(person),id=String(value.id);if(!retained.has(id)&&retained.size>=MAX_RETAINED)fail('retained individual count exceeds bound');const prior=retained.get(id);retained.set(id,value);if(retainedBytes()>MAX_RETAINED_BYTES){if(prior)retained.set(id,prior);else retained.delete(id);fail('retained individual archive exceeds byte bound')}return clone(value)}
+function getV2X10Retained(id){const value=retained.get(String(id));return value?clone(value):null}
+function v2x10RetainedMap(){return new Map([...retained.entries()].map(([id,value])=>[id,clone(value)]))}
+function archive(){return Object.freeze({retained:Object.freeze(retainedEntries()),ledgers:Object.freeze(ledgerEntries())})}
+function validateArchive(raw){exact(raw,['retained','ledgers'],'V2X-10 archive');if(!Array.isArray(raw.retained)||raw.retained.length>MAX_RETAINED||!Array.isArray(raw.ledgers)||raw.ledgers.length>256)fail('V2X-10 archive bounds');const nextRetained=new Map(),nextLedgers=new Map();for(const row of raw.retained){exact(row,['id','value'],'retained row');const value=People.retain(row.value);if(String(row.id)!==value.id||nextRetained.has(value.id))fail('retained identity mismatch/duplicate');nextRetained.set(value.id,value)}if(P.encode(raw.retained).length>MAX_RETAINED_BYTES)fail('retained archive byte bound');for(const row of raw.ledgers){exact(row,['key','value'],'ledger row');const value=validateLedger(row.value),key=ledgerKey(value.worldId,value.settlementId);if(String(row.key)!==key||nextLedgers.has(key))fail('ledger identity mismatch/duplicate');nextLedgers.set(key,value)}return{retained:nextRetained,ledgers:nextLedgers}}
+function extensionBody(){return Object.freeze({format:FORMAT,schemaVersion:SCHEMA,base:Base.exportBytes(),archive:archive(),authority:'MODEL_DERIVED_SIMULATION',canonicalMutation:false})}
+function digest(body){return H.digest(P.encode(body))}
+function exportBytes(){const body=extensionBody(),bytes=P.encode({body,integrity:digest(body)});if(bytes.length>Base.MAX_BYTES)fail('extended session exceeds central session byte limit');return bytes}
+function decode(bytes){
+ let container;try{container=P.decode(bytes)}catch{return{legacy:true,base:bytes,archive:{retained:new Map(),ledgers:new Map()}}}
+ if(container?.body?.format!==FORMAT)return{legacy:true,base:bytes,archive:{retained:new Map(),ledgers:new Map()}};exact(container,['body','integrity'],'extension container');const body=container.body;exact(body,['format','schemaVersion','base','archive','authority','canonicalMutation'],'extension body');if(body.schemaVersion!==SCHEMA||body.authority!=='MODEL_DERIVED_SIMULATION'||body.canonicalMutation!==false)fail('extension metadata');if(!(container.integrity instanceof Uint8Array)||!bytesEqual(container.integrity,digest(body)))fail('extension integrity mismatch');Base.validateBytes(body.base);return{legacy:false,base:body.base,archive:validateArchive(body.archive)};
+}
+function validateBytes(bytes){return decode(bytes)}
+function importBytes(bytes){const value=decode(bytes),priorRetained=new Map(retained),priorLedgers=new Map(ledgers);try{const result=Base.importBytes(value.base);retained.clear();ledgers.clear();for(const [k,v] of value.archive.retained)retained.set(k,v);for(const [k,v] of value.archive.ledgers)ledgers.set(k,v);return Object.freeze({...result,v2x10RetainedIndividuals:retained.size,v2x10DemographyLedgers:ledgers.size,v2x10LegacyArchive:value.legacy})}catch(error){retained.clear();ledgers.clear();for(const [k,v] of priorRetained)retained.set(k,v);for(const [k,v] of priorLedgers)ledgers.set(k,v);throw error}}
+function browserStorage(){let storage;try{storage=root.localStorage}catch(error){fail('browser storage unavailable: '+String(error?.message||error))}if(!storage||typeof storage.getItem!=='function'||typeof storage.setItem!=='function'||typeof storage.removeItem!=='function')fail('browser storage unavailable');return storage}
+function storeBrowser(){const storage=browserStorage(),previous=storage.getItem(BROWSER_KEY),text=Base.hex(exportBytes());try{storage.setItem(BROWSER_KEY,text);if(storage.getItem(BROWSER_KEY)!==text)throw new Error('write verification failed')}catch(error){try{if(previous===null)storage.removeItem(BROWSER_KEY);else storage.setItem(BROWSER_KEY,previous)}catch{}fail('browser save failed: '+String(error?.message||error))}return Object.freeze({textBytes:text.length,portableAuthoritative:true,verified:true,v2x10RetainedIndividuals:retained.size})}
+function loadBrowser(){const storage=browserStorage(),text=storage.getItem(BROWSER_KEY);if(!text)fail('no browser convenience save');return importBytes(Base.unhex(text))}
+function snapshot(){return Object.freeze({...Base.snapshot(),v2x10SessionBridge:VERSION,v2x10RetainedIndividuals:retained.size,v2x10DemographyLedgers:ledgers.size,v2x10RetainedBytes:retainedBytes(),v2x10DemographySemantics:'NET_CHANGE_MINIMUM_FLOW_NO_FABRICATED_CHURN'})}
+O.v1Session=Object.freeze({...Base,VERSION:Base.VERSION+'+'+VERSION,exportBytes,validateBytes,importBytes,storeBrowser,loadBrowser,retainV2X10Individual,getV2X10Retained,v2x10RetainedMap,observeV2X10Population,snapshot});
+O.v2x10SessionBridge=Object.freeze({VERSION,FORMAT,SCHEMA,MAX_RETAINED,MAX_RETAINED_BYTES,archive,validateArchive,observeV2X10Population});
+})(typeof globalThis!=='undefined'?globalThis:this);
