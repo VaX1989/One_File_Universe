@@ -1,163 +1,172 @@
 # Forward Frontier Workstreams
 
-**Status:** PLANNING / orchestration metadata for the authorized v1.0 program. Not canonical universe state and not an independently activated parallel writer wave.
+**Status:** CURRENT FORWARD-PLANNING VIEW / non-canonical universe state.
 
-The authoritative machine-readable companion is `docs/frontier/WORKSTREAM_DAG.json`. Every workstream there includes ID, mission, user-visible outcome, maturity, authority, inputs/outputs, dependencies, consumers, parallel-safe sublanes, shared-file risks, cross-scale invariants, scientific status, performance envelope, evidence requirements, promotion gate and known unsupported areas.
+This document is the human-readable frontier companion to [`docs/ROADMAP.md`](ROADMAP.md) and [`docs/frontier/WORKSTREAM_DAG.json`](frontier/WORKSTREAM_DAG.json).
 
-## 1. Workstream model
+The document system has distinct responsibilities:
 
-| ID | Workstream | Current maturity | Dependencies | Can start now? | Safe group | Primary write ownership | Shared contract | Integration order | Certification gate |
-|---|---|---|---|---|---|---|---|---|---|
-| F-GOV | Canonical contracts & governance | DONE_WITHIN_DECLARED_SCOPE + new seams PLANNED | — | YES, prerequisite | G0 | `docs/contracts`, canonical schemas, ADRs | authority/provider/query/event contracts | 1 | foundation + ADR + compatibility |
-| F-EXP | Universal exploration & spatial query | PROTOTYPED | F-GOV | YES after seam freeze | G1 | exploration/query modules | selection/query/scale-regime API | 2 | sparse query + identity + journey |
-| F-ASTRO | Astronomy & cosmic structure depth | PARTIAL | F-GOV,F-EXP | YES | G1 | astronomy providers/research | P2/P3-compatible provider boundary | 3 | scientific + distribution + sparse cost |
-| F-PLANET | Planetary reality | PARTIAL / RESEARCH ACTIVE | F-GOV,F-ASTRO,F-STATE | YES after seams; canonical promotion separate | G1 | planetology providers/research | environment/planet authority boundary | 3 | scientific oracle + conservation + cross-scale |
-| F-LIFE | Life, ecology & evolution | RESEARCH_ONLY beyond frozen P6 v1 | F-PLANET,F-STATE | YES as model-derived work after upstream contracts | G1 | biology providers/research | P5→P6 successor/readiness boundary | 4 | positive env authority + lifecycle/replay |
-| F-CIV | Civilization, culture & economy | NOT_IMPLEMENTED | F-LIFE,F-PLANET,F-STATE,F-HISTORY | YES as model-derived work after upstream contracts | G1 | civilization providers/research | population/resource/history APIs | 5 | causal + replay + late-materialization |
-| F-HISTORY | Deep history & late materialization | PARTIAL foundation | F-STATE,F-GOV | YES architecture/research | G1 | history/simulation modules | REFINE/PROJECT temporal contracts | 4 | replay/compaction + refinement invariants |
-| F-PLAY | Gameplay & governed intervention | NOT_IMPLEMENTED beyond navigation | F-EXP,F-STATE | YES architecture; domain actions gated | G2 | gameplay intent/adapters | canonical action→event boundary | 6 | persistence + consequence journey |
-| F-VIS | Rendering & visual quality | PROTOTYPED / ACTIVE | F-EXP,F-ENGINE | YES | G1 | renderer providers/backends | presentation state + scene provider | 6 | visual/resource/device + non-interference |
-| F-UX | Product experience & accessibility | PROTOTYPED / ACTIVE | F-EXP | YES | G1 | product/input/accessibility modules | semantic intent + inspection projections | 7 | journey + WCAG-oriented + device evidence |
-| F-ENGINE | Runtime, scheduling & portability | PARTIAL | F-GOV | YES, prerequisite | G0/G1 | runtime/resource/build seams | capability/budget/provider registries | 2 | bounded resources + Strict/Enhanced |
-| F-STATE | Persistence, lineage & migrations | DONE_WITHIN_P4_SCOPE / EXTENSIONS_PLANNED | F-GOV | YES extension architecture | G1 | temporal/persistence adapters | P4 transition/archive contract | 2 | replay/checkpoint/migration equivalence |
-| F-MICRO | Microscopic biology | ARCHITECTURALLY_RESERVED | F-LIFE,F-EXP | YES bounded models after contracts | G1 | microscopic research/providers | organism↔cell regime bridge | 6+ | multiscale reconciliation + bounded materialization |
-| F-MATTER | Molecular & atomic representations | ARCHITECTURALLY_RESERVED | F-GOV,F-MICRO | YES bounded models after contracts | G1 | matter research/providers | cell↔molecular/atomic regime bridge | 7+ | model validity + bounded local materialization |
-| F-NONCLASS | Non-classical / quantum-compatible research | ARCHITECTURALLY_RESERVED / SPECULATIVE | F-MATTER,F-GOV | YES pure research only | G-R | research docs/prototypes only | explicit regime/observable compatibility | research | no canonical gate defined |
-| F-SOUND | Systemic audio | NOT_IMPLEMENTED | F-EXP,F-ENGINE | YES research/presentation | G1 | audio modules | context/audio provider API | 8 | accessibility/resource/non-interference |
-| F-CERT | Conformance & release certification | MATURE PER-PHASE / CONTINUOUS | all selected release workstreams | YES framework maintenance | G-C | tests/evidence/governance | evidence manifest + exact-head policy | final | exact candidate + claim mapping |
+- `docs/ROADMAP.md` preserves certified development history and owns the cross-cutting product-strategy sequence;
+- `docs/frontier/WORKSTREAM_DAG.json` remains authoritative for exact scientific/frontier workstream dependency semantics, ownership boundaries and promotion prerequisites;
+- this file explains how those workstreams relate to the current product/release state without silently changing their scientific maturity;
+- `docs/parallel/**` records V2 integration/execution evidence and is not a competing roadmap.
 
-`Can start now` distinguishes authorized model-derived implementation from canonical scientific promotion. The active program supplies implementation authority in its explicit branch order; a table entry does not authorize an extra writer branch.
+No table entry here promotes scientific truth. Exact live repository state, accepted ADRs, the Constitution, the V2 integration ledger and executed certification evidence outrank descriptive planning language.
 
-## 2. Current-state gap map
+## 1. Authenticated current boundary
 
-| Capability | Evidence-grounded state | Long-range gap |
-|---|---|---|
-| Deterministic foundation | DONE_WITHIN_DECLARED_SCOPE | extend only through versioned successor contracts |
-| Sparse universe/addressing | DONE_WITHIN_DECLARED_SCOPE | generalized exploration queries and richer domains |
-| Astronomy | DONE_WITHIN_P3_SCOPE | richer galaxy/stellar physics/distributions and arbitrary product traversal |
-| Time/history infrastructure | DONE_WITHIN_P4_SCOPE | domain reducers, branching/revision policy if ever required, richer history models |
-| Planetary physics | PARTIAL | interiors, volatile genesis, giant families, mutable evolution and richer physics |
-| Terrain | PARTIAL | physical elevation/hypsometry, geology, erosion, hydrology; current canonical signal is stylized |
-| Climate/environment | PARTIAL + RESEARCH | canonical surface temperature, greenhouse, transport, clouds/weather, oceans/ice where justified |
-| Biology | P6 v1 DONE_WITHIN_FAIL_CLOSED_SCOPE; positive biology RESEARCH_ONLY | authoritative environment, energy/nutrients, genesis policy, persistent lifecycle/evolution |
-| Universal target selection | PROTOTYPED | arbitrary supported address/query discovery, not fixed destinations |
-| Galaxy traversal | TECHNICALLY_CERTIFIED Wave IV slice | product-grade arbitrary traversal, scale continuity, certification |
-| Planet/orbit/approach | PROTOTYPED | generalized targets, final navigation/visual quality |
-| Arbitrary surface exploration | PROTOTYPED/PARTIAL presentation only | canonical/geographically constrained global→local spatial freedom |
-| Cross-scale continuity | PARTIAL | authoritative planet→region→local and bio/civ/micro reconciliation |
-| Graphics | PROTOTYPED/ACTIVE | state-of-the-art honest astronomy/planet/surface/life/city quality; WebGPU Enhanced path |
-| UI/UX | PROTOTYPED/ACTIVE | viewport-first direct manipulation, contextual Inspect, expert Lab, journey polish |
-| Mobile/accessibility | PARTIAL | broad physical-device/AT verification and mature touch-first product |
-| Persistence | DONE_WITHIN_P4_SCOPE | future domain lineage/migration and very long history growth policies |
-| Civilization | NOT_IMPLEMENTED | entire causal society/culture/economy stack |
-| Gameplay/intervention | NOT_IMPLEMENTED beyond navigation/product controls | governed canonical action loops and consequences |
-| Microscopic reality | ARCHITECTURALLY_RESERVED | organism/tissue/cell models and bridges |
-| Molecular/atomic | ARCHITECTURALLY_RESERVED | bounded scientific models/visualization and regime transitions |
-| Non-classical/quantum | ARCHITECTURALLY_RESERVED / SPECULATIVE | research only; no brute-force promise |
-| Audio | NOT_IMPLEMENTED as mature systemic pillar | procedural/systemic accessible audio architecture |
-| WebGPU | ARCHITECTURALLY_RESERVED / capability-probe level | optional Enhanced backend with parity/non-interference evidence |
-| Performance/resources | PARTIAL, explicit bounded policies exist | broader streaming/scheduling/large-artifact startup and long-soak evidence |
-| Certification | STRONG phase evidence; Wave IV technically promoted | product-quality/device gates must remain equal to semantic gates |
+The strategic reconciliation was performed against the V2 convergence candidate represented by draft PR #237, branch `integration/v2x-supreme-total-convergence-2026-09-07`, head `9ea22af90b4f1fdd38046ca23501f81ed0b2a839`, tree `cd7b48574ddb7f2c568947d9477d3e8ff819f5a0`.
 
-## 3. Reconciled Wave IV evidence boundary
+That head is **not canonical release closure**. `docs/parallel/V2_INTEGRATION_LEDGER.json` describes it as `PROVISIONAL_V2_0_RELEASE_CANDIDATE_PENDING_EXACT_SHA_CERTIFICATION`, and the exact-head convergence workflow still has a red progressive release-conformance stage. `main` and immutable tag `v1.0.0` remain historical release authority until a governed promotion completes.
 
-This planning revision is based on the Wave-IV-containing main
-`e33156ee8ed9c6e906d0d4e0b8142fa235a833c7`, tree
-`5d46fd5e346fd6440cc1efd8cbc67fa13a9390c4`. PR #48's exact candidate
-`f4df1452529cb5f121e4065f567b4a3da52d2b75` passed Rendering Production
-`33959845666`, Wave IV convergence `33959845605`, Foundation and P1-P6/cumulative
-gates before normal protected merge. The previous failing heads are retained
-as defect evidence. Physical Android/iOS remain `NOT_VERIFIED`.
+Therefore:
 
-Wave IV supplies the preserved technical baseline, not all v1.0 capabilities.
-The [active program contract](governance/V1_IMPLEMENTATION_CONTRACT.md) requires
-actual PX implementation followed immediately by shipping research conversion.
-Maturity entries above are not upgraded merely because that work is authorized.
+- V2.0 receives certification/repair work only;
+- post-V2 strategy must not mutate the frozen V2 feature definition;
+- physical mobile and physical assistive-technology claims remain unverified until executed evidence exists;
+- research-only V2X-15/V2X-16 material stays research-only.
 
-## 4. Canonical science and model-derived product paths
+## 2. Workstream family map after V2 convergence
 
-The current research evidence makes the positive-life dependency explicit:
+This table is a **product-facing reconciliation**, not a replacement for the machine DAG. It reports what the V2 candidate demonstrates and what the next product sequence still needs.
 
-`P3/P5 physical baseline → governed volatile/environment state → authoritative surface-temperature/medium/energy/nutrient state → fail-closed biology readiness → positive Biology successor (if justified) → ecology/evolution → civilization/history`.
+| Workstream family | V2 candidate evidence | Strategic role after V2 | Important remaining gap |
+|---|---|---|---|
+| F-GOV — contracts/governance | central authority map, additive provider law, fail-closed duplicate ownership | preserve invariants; admit only connected initiatives | keep roadmap/release/research authority separate |
+| F-ENGINE — runtime/resources/portability | bounded runtime/resource work, reproducible one-file composition | keep the connected product viable on real hardware | physical-device evidence, longer soak, graceful optional enhancement |
+| F-STATE — persistence/replay | portable saves, P4 replay lineage, governed causal transition bridges | turn replay into visible revisit/history value | end-to-end user-visible causal memory across more domains |
+| F-EXP — exploration/navigation | central Living navigation, bounded continuous semantic travel, reverse context | **identity-defining critical path** | one visible Identity Thread across all supported regimes |
+| F-ASTRO — astronomy/cosmic structure | macrocosm/system/planet approach composition | support wonder and contextual continuity | richer embodiment without converting model/presentation into truth |
+| F-PLANET — planetary reality | deep-planet/surface model contexts integrated as bounded model/presentation output | feed causal cross-scale journeys | stronger validated physical/environment chains |
+| F-LIFE — life/ecology/evolution | bounded model-derived Living context | future connected life consequences | positive science where justified; persistent lifecycle/history where bounded |
+| F-HISTORY — history/late materialization | P4 foundation + modeled historical projections | core revisit/explanation dependency | visible causal trace, significance projection, richer bounded history |
+| F-CIV — civilization/culture/economy | model-derived civilization/economy/city context | longer-term cross-domain consequence | deeper environment/material feedback and bounded persistence |
+| F-PLAY — governed intervention | V2 causal engine, governed action bridge, cross-domain test journey | category-leadership exemplar | one gold founder-visible persistent multi-domain intervention |
+| F-VIS — rendering/visual quality | central Living renderer, WebGL2 V2X-13 pixel consumer, bounded presentation effects | cinematic embodiment of the Identity Thread | premium cosmic/planet/local/micro quality without semantic drift |
+| F-UX — product/accessibility | responsive UX/accessibility observers, Living inspector, central input ownership | Explore / Inspect / Lab and scale legibility | physical AT/mobile validation; simpler progressive disclosure |
+| F-MICRO/F-MATTER — microscopic/material | V2 matter continuity preserves selected source into bounded regimes | deepen the same selected reality | scientifically justified property bridges; unknown chemistry remains unknown |
+| F-SOUND — systemic audio | bounded V2 systemic-audio capability | reinforce context/scale without becoming truth authority | journey-level audio coherence and accessibility evidence |
+| F-CERT — certification | artifact, authority, determinism, browser/resource audits largely composed | **current release blocker owner** | exact-SHA progressive release conformance and governed promotion |
+| F-NONCLASS / speculative | research only | research frontier | no canonical/product promise until evidence and explicit admission |
 
-The `research/p5-environment-next-science` branch has useful non-canonical volatile-transfer/readiness work. `research/p6-biology-v2-on-p5next` has useful bounded lifecycle/identity/replay research. Neither is canonical promotion evidence, and both are based on older/diverged ancestry relative to the current product. The v1.0 owner must extract and reimplement eligible work against the new contracts rather than merge blind ancestry. Explicit `MODEL_DERIVED_SIMULATION` is an authorized shipping path, not an excuse for an empty product or a claim of canonical scientific promotion.
+The machine DAG retains the exact dependency semantics for these families. This current-state reconciliation does **not** silently upgrade its maturity values; future maturity changes require the normal evidence/promotion transaction.
 
-## 5. Product critical path
+## 3. Product-critical dependency order
 
-`shared provider/query seams → universal exploration query/selection → continuous reversible scale/regime travel → canonical/geographically constrained surface targeting → product journey/accessibility → high-quality rendering/resource evidence → device/release certification`.
+The canonical product sequence is maintained in `docs/ROADMAP.md`. Its interaction with frontier owners is:
 
-Science and product paths interact but do not need to serialize all work. Rendering/UX can improve using existing authority as long as they remain presentation-honest.
+1. **V2.0 exact release closure** — F-CERT + F-GOV; no feature expansion.
+2. **Cross-scale Identity Thread** — F-EXP + F-GOV + relevant domain providers + F-STATE.
+3. **Revisit / persistent causal history** — F-STATE + F-HISTORY + F-PLAY.
+4. **Explain This / provenance and uncertainty** — F-GOV + domain providers + F-UX + diagnostics.
+5. **Semantic scale legibility** — F-EXP + F-UX + F-VIS.
+6. **Gold cross-domain causal journey** — F-PLAY + F-STATE + selected physical/life/civilization domains.
+7. **Explore / Inspect / Lab** — F-UX + F-EXP + F-HISTORY/diagnostics.
+8. **Cinematic embodiment** — F-VIS + F-SOUND after the identity/history journey is coherent.
+9. **Causal discovery** — F-EXP + F-HISTORY + selected domains.
+10. **Deeper people/civilization/matter continuity** — F-LIFE/F-CIV/F-HISTORY/F-MICRO/F-MATTER under bounded contracts.
+11. **Counterfactual and research frontiers** — research/lab state until explicitly governed otherwise.
 
-## 6. Maximum safe initial parallelism
+This order is a dependency order, not a calendar schedule. Parallel research is allowed where isolated ownership and authority permit it; later work cannot be used as compensation for an unresolved upstream identity/revisit/explanation defect.
 
-After the parallelization-enabling seam transaction lands, the recommended first high-throughput wave supports about **10 independent writer/research lanes**, plus read-only adversarial review. Before that seam freeze, pushing beyond roughly **4 shared-surface writers** is counterproductive because bootstrap/build/selection/scene/test ownership still collides.
+## 4. Cross-scale integration law
 
-The ten-lane proposal is documented in `PARALLEL_DEVELOPMENT_ARCHITECTURE.md`. It is a topology proposal only, not an activated wave.
+The principal product risk is **semantic discontinuity hidden by visual continuity**.
 
-## 7. Promotion discipline
+Every cross-scale workstream must therefore preserve or explicitly report:
 
-Every future workstream must pass its own domain gate plus cross-domain integration. Scientific work needs provenance, evidence/fidelity, independent falsification/oracle where appropriate and explicit unknown/unsupported states. Rendering needs visual correctness, resource/lifecycle and canonical non-interference. UX needs journey, input, accessibility and device evidence. Runtime needs bounded resource and Strict/Enhanced behavior. Persistence needs replay/lineage/migration equivalence.
+- selected EntityId / source identity;
+- parent/child lineage where refinement exists;
+- authoritative versus derived/model/presentation state;
+- current history/revision/revisit context where relevant;
+- explicit `UNSUPPORTED` or `UNKNOWN` instead of invented bridges;
+- reversible `PROJECT`/return behavior where advertised;
+- `RECONCILE` behavior when a cached or late-materialized representation meets changed authoritative state.
 
-No green CI aggregate may override a material founder-visible visual defect, scientific overclaim or broken primary journey.
+A camera transition by itself is not proof of world continuity.
 
-## 8. Reserved successor overlay — Local AI and Ultimate Complexity
+## 5. Strategy admission filter
 
-The reviewed `OFU-AI-ULTIMATE-SPEC` proposal is accepted as long-range direction, but **not inserted into the active v1 `WORKSTREAM_DAG.json` as if it were already an authorized/shipping workstream**. This avoids distorting current v1 priorities and preserves ADR-024's distinction between certified history, active frontier planning and future successor programs.
+For product-critical admission, a major initiative should improve at least two of:
 
-The reconciled plan lives in:
+- identity continuity;
+- causal consequence;
+- persistent memory/replay;
+- explainability/scientific integrity;
+- scale legibility/wonder;
+- local-first ownership/reproducibility;
 
-- `docs/frontier/AI_AND_ULTIMATE_COMPLEXITY.md`;
-- `docs/frontier/AI_ULTIMATE_SUCCESSOR_PROGRAM.json`.
+without unacceptable regression to the others, bounded resources, accessibility or central authority.
 
-### 8.1 Why it is reserved rather than active
+This filter does not replace domain-specific scientific promotion gates. It prevents broad feature accumulation from becoming a second roadmap.
 
-The founder-visible v1 gaps remain upstream of AI value. Local cognition must not become a sophisticated interface over an exploration experience that still feels grid/panel driven or a surface renderer that still lacks sufficient visual embodiment.
+## 6. Category-leadership focus
 
-Therefore the immediate critical path remains:
+OFU should not attempt to dominate every specialist benchmark separately. The competitive frontier is integration:
 
-`F-EXP + F-VIS + F-UX + F-ENGINE + F-CERT → founder-visible Continuous Reality closure → exact-head v1 certification`.
+- match enough cosmic/planetary spectacle to make scale travel desirable;
+- make identity and context stronger than products organized around independent scenes;
+- make intervention meaningful through persistent, inspectable consequences rather than maximal raw physics depth;
+- make scientific/model authority more legible than entertainment sandboxes;
+- make local one-file ownership and reproducibility a product advantage, not merely a build constraint.
 
-No AI milestone may be counted as compensation for an unresolved rendering/navigation defect.
+The strongest target experience is:
 
-### 8.2 Successor AI sequence
+`select → follow across scales → inspect → intervene → leave → reload/revisit → verify same identity/history → explain what changed and why`.
 
-The reserved sequence is:
+## 7. Explicit scope defense
 
-`AI-F0 feasibility → AI-F1 context/gateway → AI-F2 Local Scientist → AI-F3 NL control → AI-F4 NPC dialogue → AI-F5 structured memory → AI-F6 bounded agent proposals → AI-F7 cultural/historical narration`.
+The forward frontier must not silently turn OFU into:
 
-`AI-F0` may be authorized later as an isolated read-only feasibility/research lane once it no longer competes with v1 experience convergence. `AI-F1+` require explicit activation and the applicable v1 gates.
+- an AAA asset/content race;
+- an MMO or server-required baseline;
+- a generic metaverse/social network;
+- a generic game engine;
+- a full specialist astrophysics solver;
+- a full molecular-dynamics platform;
+- a full civilization grand-strategy game;
+- disconnected scale-specific mini-apps;
+- a cinematic demo whose spectacle is detached from persistent explorable state.
 
-### 8.3 Durable AI boundaries already accepted for planning
+These exclusions are scope defense, not hostility to research. Specialist systems remain references and optional future interfaces where they strengthen the connected universe.
 
-- generated tokens never directly author `CANONICAL_PROVEN` state;
-- unknown/unsupported states remain unknown/unsupported;
-- free-form text is never executable;
-- all AI tool requests pass typed schema/capability/authority/budget validation;
-- deterministic OFU tools and reducers own execution and consequences;
-- authority classes are categories, not confidence rankings;
-- AI text is not required to be cross-GPU/browser byte deterministic;
-- state replay must never require raw generated prose;
-- OFU_STANDARD remains fully functional without AI;
-- in-universe text is untrusted data, not system policy.
+## 8. Research frontier
 
-### 8.4 Backend/model decisions remain experiments
+Research remains non-canonical until its normal promotion gates are satisfied. Highest-leverage research directions are:
 
-The source proposal's 100M-400M model range, quantization, embedded-weight packaging and artifact-size classes are useful feasibility hypotheses, not frozen architecture. AI-F0 must measure direct-file/offline startup, peak memory, first-token latency, throughput, artifact size and device coverage before a model/backend is promoted.
+- stellar-history → atmospheric/climate → biosphere chains;
+- civilization ↔ planetary-environment long-horizon feedback;
+- material-property bridges that connect macro/micro regimes without fabricated precision;
+- uncertainty-aware rendering and explanation;
+- additional bounded cross-domain science suitable for deterministic providers;
+- optional grounded local inference after the non-AI product is coherent.
 
-WebGPU is optional acceleration only. The eventual AI capability profile must fail gracefully where local inference is unavailable and must not weaken deterministic OFU operation.
+Existing issues #29, #30 and #31 remain examples of research-only scientific scope that must not be described as shipping capability.
 
-### 8.5 Ultimate-complexity mapping
+## 9. Reserved Local AI / Ultimate Complexity successor
 
-The proposal's U1-U9 ladder does not create duplicate owners:
+`docs/frontier/AI_AND_ULTIMATE_COMPLEXITY.md` and `docs/frontier/AI_ULTIMATE_SUCCESSOR_PROGRAM.json` remain reserved successor material. They do not outrank the product-critical sequence above.
 
-- U1 → current `F-EXP/F-VIS/F-UX/F-ENGINE/F-CERT` v1 closure;
-- U2 → `F-PLANET/F-STATE/F-ASTRO`;
-- U3 → `F-LIFE/F-PLANET/F-HISTORY`;
-- U4 → `F-CIV/F-HISTORY/F-STATE`;
-- U5 → future individual-refinement subprogram under `F-CIV/F-HISTORY/F-STATE`;
-- U6 → `F-MICRO/F-MATTER/F-EXP`;
-- U7 → future cross-domain causal contract layer under `F-GOV/F-STATE` after domain seams stabilize;
-- U8 → `F-HISTORY/F-ENGINE/F-STATE` plus mature domains;
-- U9 → long-range convergence across selected frontier workstreams plus future local cognition.
+Any future local-inference activation must preserve:
 
-The organizing principle remains: **infinite semantic universe, finite active working set, stable identity/history across refinement and eviction**.
+- a fully useful non-AI OFU baseline;
+- no generated-token path to canonical state authority;
+- typed governed tool/action boundaries;
+- unknown/unsupported honesty;
+- bounded offline feasibility;
+- optional acceleration only.
+
+## 10. Promotion discipline
+
+A workstream is not done because code/files exist. Completion requires the relevant combination of:
+
+- user-visible acceptance outcome;
+- exact identity/replay/authority invariants;
+- domain scientific evidence where applicable;
+- deterministic/conformance evidence;
+- resource/performance evidence;
+- accessibility/device evidence where claimed;
+- source→artifact→runtime reachability;
+- exact candidate and governed promotion evidence.
+
+For release truth, use the current integration ledger and exact GitHub workflow/PR state. For long-range scientific dependency truth, use the machine frontier DAG. For cross-cutting product priority and sequence, use the canonical roadmap.
