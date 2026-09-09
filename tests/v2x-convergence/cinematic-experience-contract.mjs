@@ -77,7 +77,7 @@ async function proveMacroCameraAuthority(){
   waveIVScaleRuntime:{snapshot(){return {anchors:{galaxy:1}};}},
   v1LivingRenderer:{adaptPresentationCamera(camera){adaptedCamera=camera;return {spatialFrame:{id:'spatial-frame'},systemFrame:{id:'system-frame'}};}}
  };
- const sandbox={OFU,document,devicePixelRatio:3,Promise,setTimeout,clearTimeout,console,addEventListener(type,callback){if(type==='resize')resizeListener=callback;},requestAnimationFrame(callback){rafCalls++;callback();return rafCalls;}};
+ const sandbox={OFU,document,devicePixelRatio:3,Promise,setTimeout,clearTimeout,console,addEventListener(type,callback){if(type==='resize')resizeListener=callback;},requestAnimationFrame(callback){rafCalls++;setImmediate(callback);return rafCalls;}};
  sandbox.globalThis=sandbox;
  vm.createContext(sandbox);
  vm.runInContext(macro,sandbox,{filename:'macro-director.js'});
