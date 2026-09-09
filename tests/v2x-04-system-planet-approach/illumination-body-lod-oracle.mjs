@@ -30,7 +30,16 @@ const forgedIllumination={...illumination,lights:illumination.lights.map((x,i)=>
 assert.equal(I.validateIllumination(forgedIllumination),false);
 assert.throws(()=>I.dominantDirection(forgedIllumination),/valid illumination packet/);
 assert.throws(()=>I.buildIllumination([{id:'bad',position3d:[1,0,0],facts:{luminosityMilliSolar:0}}]),/positive/);
+assert.throws(()=>I.buildIllumination([{id:'bad-facts',position3d:[1,0,0],facts:'bad'}]),/facts must be an object/);
 assert.throws(()=>I.buildIllumination([{id:'dup',position3d:[1,0,0]},{id:'dup',position3d:[2,0,0]}]),/duplicate stellar identity/);
+const unicodeIds=['z',String.fromCharCode(0x00e4),'a','A'];
+const equalWeightLights=I.buildIllumination([
+ {id:unicodeIds[0],position3d:[1,0,0]},
+ {id:unicodeIds[1],position3d:[-1,0,0]},
+ {id:unicodeIds[2],position3d:[0,1,0]},
+ {id:unicodeIds[3],position3d:[0,-1,0]}
+]);
+assert.deepEqual(equalWeightLights.lights.map(x=>x.starCanonicalEntityId),['A','a','z',String.fromCharCode(0x00e4)],'equal-weight stellar illumination ordering must be locale-independent');
 
 const byteId=Uint8Array.from([0,1,254,255]);
 const byteLight=I.buildIllumination([{id:byteId,position3d:[1,1,1]}]);
@@ -45,6 +54,10 @@ assert.equal(unsupported.atmosphere.enabled,false);
 assert.equal(unsupported.rings.enabled,false);
 assert.equal(unsupported.silhouette.radiusKnown,false);
 assert.throws(()=>B.bodyCues({id:'forged-light',facts:{}},{illumination:forgedIllumination}),/valid illumination packet/);
+assert.throws(()=>B.bodyCues({id:'bad-facts',facts:'bad'},{}),/facts must be an object/);
+const savedIlluminationApi=globalThis.OFU.v2x04MultiStarIllumination;delete globalThis.OFU.v2x04MultiStarIllumination;
+assert.throws(()=>B.bodyCues({id:'validator-missing',facts:{}},{illumination}),/illumination validator required/,'body cues must fail closed when illumination validator is unavailable');
+globalThis.OFU.v2x04MultiStarIllumination=savedIlluminationApi;
 const canonicalEnvironment={atmosphere:{epistemicStatus:'KNOWN',atmosphericRetainedMassTg:5100}};
 const supported=B.bodyCues({id:'planet-x',facts:{meanRadiusM:6371000}},{environment:canonicalEnvironment,visual:{rings:{status:'KNOWN',present:true}},illumination});
 assert.equal(supported.atmosphere.enabled,true);
@@ -62,6 +75,9 @@ assert(Math.abs(explicitRings.rings.tiltRad-17*Math.PI/180)<1e-12);
 const nullRings=B.ringsPresentation({id:'null-rings'},{status:'KNOWN',present:true,innerRadiusRatio:null,outerRadiusRatio:'',tiltDeg:null});
 assert.equal(nullRings.fallbackDeterministic,true);
 assert.equal(nullRings.parameterAuthority,'PARTIAL_PRESENTATION_FALLBACK');
+const astralRingA=B.ringsPresentation({id:String.fromCodePoint(0x1f600)},{status:'KNOWN',present:true});
+const astralRingB=B.ringsPresentation({id:String.fromCodePoint(0x1f601)},{status:'KNOWN',present:true});
+assert.notEqual(astralRingA.tiltRad,astralRingB.tiltRad,'ring fallback hash must distinguish astral identifiers');
 assert.throws(()=>B.ringsPresentation({id:'bad-ring'},{status:'KNOWN',present:true,innerRadiusRatio:.5,outerRadiusRatio:2}),/innerRadiusRatio/);
 assert.throws(()=>B.bodyCues({id:'bad-atm',facts:{}},{environment:{atmosphere:{epistemicStatus:'KNOWN',atmosphericRetainedMassTg:-1}}}),/non-negative/);
 assert.equal(B.bodyCues({id:byteId,facts:{}},{}).canonicalEntityId,'0001feff');
@@ -95,9 +111,16 @@ const tamperedLod={...lod,frames:lod.frames.map((f,i)=>i===20?{...f,lod:{...f.lo
 assert.equal(L.validate(tamperedLod),false);
 assert.equal(L.validate({...lod,lod:{...lod.lod,levels:['BOGUS',...lod.lod.levels.slice(1)]}}),false);
 assert.equal(L.validate({...lod,lod:{...lod.lod,cueSupport:{...lod.lod.cueSupport,rings:'yes'}}}),false);
+assert.equal(L.validate({...lod,lod:{...lod.lod,bodyCueScientificEvidence:true}}),false,'LOD validation must reject scientific-evidence provenance escalation');
+assert.throws(()=>L.decorate(approach,{bodyCues:{authority:'PRESENTATION_ONLY',scientificEvidence:true}}),/non-scientific body cues/);
 assert.throws(()=>L.decorate(approach,{eclipseCue:{authority:'PRESENTATION_ONLY',scientificEvidence:false,classification:'NO_PRESENTATION_ECLIPSE',weightedOcclusion:.5}}),/requires zero occlusion/);
 const tamperedBase={...approach,frames:approach.frames.map((f,i)=>i===80?{...f,stage:'BOGUS'}:f)};
 assert.throws(()=>L.decorate(tamperedBase,{}),/valid approach continuity packet/);
+const savedApproachApi=globalThis.OFU.v2x04ApproachContinuity;delete globalThis.OFU.v2x04ApproachContinuity;
+assert.throws(()=>L.decorate(approach,{}),/approach continuity validator required/,'LOD decorate must fail closed without continuity validator');
+assert.equal(L.validate(lod),false,'LOD validation must fail closed without continuity validator');
+globalThis.OFU.v2x04ApproachContinuity=savedApproachApi;
+assert.equal(L.validate(lod),true);
 assert.throws(()=>L.transitionBlend(10,2,'UNKNOWN'),/valid approach direction/);
 assert.throws(()=>L.geometryBudgetBetween(0,1,1.2),/blend/);
 const reverseLod=L.decorate(A.reverse(approach),{bodyCues:supported,referenceRadiusPx:220,eclipseCue:composite});
@@ -137,4 +160,4 @@ for(let c=0;c<64;c++){
  const reverseFrames=back.frames.slice().reverse();for(let i=0;i<forward.frames.length;i++){assert.equal(forward.frames[i].lod.levelIndex,reverseFrames[i].lod.levelIndex);assert(Math.abs(forward.frames[i].lod.blendToAdjacent-reverseFrames[i].lod.blendToAdjacent)<1e-12);assert.deepEqual(forward.frames[i].lod.geometryBudget,reverseFrames[i].lod.geometryBudget);}
 }
 
-console.log(JSON.stringify({status:'PASS',suite:'v2x04-illumination-body-lod-v3',illuminationValidation:true,canonicalEnvironmentRecognized:true,nullRingParametersStayFallback:true,byteIdentityPreserved:true,compositeEclipse:composite.classification,weightedOcclusion:composite.weightedOcclusion,strongLodTamperRejection:true,reverseLodValidated:true,directionInvariantVisualState:true,metamorphicCases:64,maxStars:maxStars.lights.length,maxOccluders:maxOccluders.resourceUsage.occluders,maxFrames:maxLod.frames.length,scientificEvidence:false}));
+console.log(JSON.stringify({status:'PASS',suite:'v2x04-illumination-body-lod-v4',illuminationValidation:true,validatorFailClosed:true,localeIndependentOrdering:true,astralIdentityHashDistinct:true,canonicalEnvironmentRecognized:true,nullRingParametersStayFallback:true,byteIdentityPreserved:true,compositeEclipse:composite.classification,weightedOcclusion:composite.weightedOcclusion,strongLodTamperRejection:true,provenanceEscalationRejected:true,reverseLodValidated:true,directionInvariantVisualState:true,metamorphicCases:64,maxStars:maxStars.lights.length,maxOccluders:maxOccluders.resourceUsage.occluders,maxFrames:maxLod.frames.length,scientificEvidence:false}));

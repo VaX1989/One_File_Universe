@@ -3,7 +3,7 @@
   "components": [
     {
       "id": "v2x.living.domain-composition",
-      "version": "2.1.0",
+      "version": "3.0.0",
       "owner": "product",
       "kind": "code",
       "stage": "full",
@@ -14,6 +14,9 @@
         "v2x04.render.orbit-3d",
         "v2x04.render.stellar-appearance",
         "v2x04.render.multi-star-illumination",
+        "v2x04.render.body-cues",
+        "v2x04.render.approach-continuity",
+        "v2x04.render.approach-lod",
         "v2x-06.surface.address",
         "v2x-06.surface.geography",
         "v2x-06.surface.hydrology",
@@ -25,7 +28,7 @@
         "v2x05.deep-planet.provider"
       ],
       "authority": "PRESENTATION_ONLY",
-      "provenance": "Convergence-owned Living product compositor. It consumes the strict final V2X-13 pixel path over the sole V2X-02 camera; SYSTEM consumes V2X-04; GLOBAL/REGIONAL/LOCAL surface consume V2X-06; HUMAN consumes V2X-07; MATERIAL through ATOMIC consume V2X-12. Camera, selection, scale, canonical geodesy and scientific authority remain external.",
+      "provenance": "Convergence-owned Living product compositor. It consumes the strict final V2X-13 pixel path over the sole V2X-02 camera; SYSTEM, ORBIT and APPROACH consume the fail-closed V2X-04 SystemProvider2 and reversible approach stack; GLOBAL/REGIONAL/LOCAL surface consume V2X-06; HUMAN consumes V2X-07; MATERIAL through ATOMIC consume V2X-12. Camera, selection, scale, canonical geodesy and scientific authority remain external; legacy system fallback is forbidden.",
       "provides": [
         "v2x.living.domain-composition"
       ]
