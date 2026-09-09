@@ -5,19 +5,31 @@ import os from 'node:os';
 import assert from 'node:assert/strict';
 import {pathToFileURL} from 'node:url';
 import {chromium,firefox,webkit} from 'playwright';
+import {immutableBrowserArtifact} from '../../helpers/immutable-browser-artifact.mjs';
 
 const SOURCE=process.env.OFU_SOURCE_SHA;
 if(!SOURCE)throw new Error('OFU_SOURCE_SHA required');
-const manifest=JSON.parse(fs.readFileSync('dist/rendering-build-manifest.json','utf8'));
+const immutableInput=immutableBrowserArtifact({consumer:'p21-resource-soak'});
+const manifest=immutableInput.manifest;
 assert.equal(manifest.sourceCommit,SOURCE,'shipping manifest must identify the exact audit SHA');
-const DEFAULT_PRODUCT=pathToFileURL(path.resolve('dist/One_File_Universe.html')).href;
+const DEFAULT_PRODUCT=pathToFileURL(immutableInput.artifactPath).href;
 const PRODUCT=process.env.P21_PRODUCT_URL||DEFAULT_PRODUCT;
-const PRODUCT_TRANSPORT=process.env.P21_PRODUCT_URL?'DIAGNOSTIC_HTTP_OVERRIDE':'EXACT_SHIPPING_FILE_URL';
+const PRODUCT_TRANSPORT=process.env.P21_PRODUCT_URL?'DIAGNOSTIC_HTTP_OVERRIDE':'IMMUTABLE_EXACT_SHIPPING_FILE_URL';
 const OUT=path.resolve('dist/evidence/v2-p21-performance-browser-mobile');
 fs.mkdirSync(OUT,{recursive:true});
 const ENGINES={chromium,firefox,webkit};
 const CYCLES=Number(process.env.P21_CYCLES||12);
 assert.ok(Number.isInteger(CYCLES)&&CYCLES>=8&&CYCLES<=40,'P21_CYCLES must be 8..40');
+
+async function openOfflineProduct(page){
+ // WebKit's offline transport rejects file: navigation itself. Block external
+ // traffic before opening the file, then exercise the loaded product offline.
+ await page.context().route(/^https?:\/\//,route=>route.abort('internetdisconnected'));
+ await page.goto(PRODUCT,{waitUntil:'load'});
+ await page.waitForFunction(()=>globalThis.OFU?.v1LivingProduct?.snapshot?.().initialized,undefined,{timeout:60000});
+ await page.context().setOffline(true);
+ assert.equal(await page.evaluate(()=>navigator.onLine),false,'product journey must run offline');
+}
 
 function executableCandidates(name){
  if(process.platform!=='linux')return [];
@@ -201,8 +213,8 @@ async function contextRecovery(page){
 }
 
 async function desktopSoak(browserName,browser){
- const context=await browser.newContext({viewport:{width:1280,height:800},offline:true});await instrument(context);const page=await context.newPage(),workerAudit=trackWorkers(page);const errors=[],externalRequests=[];page.on('pageerror',e=>errors.push(String(e?.message||e).slice(0,800)));page.on('request',r=>{if(/^https?:/i.test(r.url()))externalRequests.push(r.url())});
- const startupStart=Date.now();await page.goto(PRODUCT,{waitUntil:'load'});await ready(page);const startupMs=Date.now()-startupStart;const material=await seedToHuman(page);const samples=[];const transitionMs=[];
+ const context=await browser.newContext({viewport:{width:1280,height:800}});await instrument(context);const page=await context.newPage(),workerAudit=trackWorkers(page);const errors=[],externalRequests=[];page.on('pageerror',e=>errors.push(String(e?.message||e).slice(0,800)));page.on('request',r=>{if(/^https?:/i.test(r.url()))externalRequests.push(r.url())});
+ const startupStart=Date.now();await openOfflineProduct(page);await ready(page);const startupMs=Date.now()-startupStart;const material=await seedToHuman(page);const samples=[];const transitionMs=[];
  for(let cycle=0;cycle<CYCLES;cycle++){
   const t0=Date.now();
   const pre=await page.evaluate(()=>OFU.v1Session.hex(OFU.v1Session.exportBytes()));await clickScale(page,'UNIVERSE');await page.evaluate(h=>OFU.v1Session.importBytes(OFU.v1Session.unhex(h)),pre);await waitStage(page,'HUMAN');
@@ -222,15 +234,16 @@ async function desktopSoak(browserName,browser){
 }
 
 async function mobileAndA11y(browserName,browser){
- const context=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:2,isMobile:true,hasTouch:true,offline:true});await instrument(context);const page=await context.newPage(),workerAudit=trackWorkers(page);const errors=[],externalRequests=[];page.on('pageerror',e=>errors.push(String(e?.message||e).slice(0,800)));page.on('request',r=>{if(/^https?:/i.test(r.url()))externalRequests.push(r.url())});await page.goto(PRODUCT,{waitUntil:'load'});await ready(page);await page.waitForFunction(()=>document.documentElement.dataset.ofuMobile==='true',{timeout:10000});
+ const context=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:2,isMobile:true,hasTouch:true});await instrument(context);const page=await context.newPage(),workerAudit=trackWorkers(page);const errors=[],externalRequests=[];page.on('pageerror',e=>errors.push(String(e?.message||e).slice(0,800)));page.on('request',r=>{if(/^https?:/i.test(r.url()))externalRequests.push(r.url())});await openOfflineProduct(page);await ready(page);await page.waitForFunction(()=>document.documentElement.dataset.ofuMobile==='true',{timeout:10000});
  await clickScale(page,'ORBIT');const before=await page.evaluate(()=>{const product=OFU.v1LivingProduct,runtime=product.runtime.snapshot(),pacing=product.runtime.navigationPacingSnapshot(),renderer=product.renderer.state(),canvas=document.getElementById('living-view'),rect=canvas?.getBoundingClientRect(),style=canvas&&getComputedStyle(canvas);if(!canvas||!rect||rect.width<=0||rect.height<=0||style.display==='none'||style.visibility==='hidden')throw new Error('active Living viewport is not visible');return{stage:runtime.stage,semanticScale:runtime.semanticScale,coordinate:runtime.navigationCoordinate,inputEvents:pacing.inputEvents,renderFrames:renderer.metrics.frames}});
  await page.evaluate(()=>{const c=document.getElementById('living-view'),r=c.getBoundingClientRect(),ev=(type,id,x,y)=>c.dispatchEvent(new PointerEvent(type,{pointerId:id,pointerType:'touch',clientX:x,clientY:y,bubbles:true,cancelable:true,isPrimary:id===2101,buttons:type==='pointerup'?0:1})),cy=r.top+r.height*.5,cx=r.left+r.width*.5;ev('pointerdown',2101,cx-30,cy);ev('pointerdown',2102,cx+30,cy);ev('pointermove',2101,cx-68,cy);ev('pointermove',2102,cx+68,cy);ev('pointerup',2102,cx+68,cy);ev('pointerup',2101,cx-68,cy)});await page.waitForFunction(before=>{const product=OFU.v1LivingProduct,runtime=product.runtime.snapshot(),pacing=product.runtime.navigationPacingSnapshot(),input=product.snapshot().input,renderer=product.renderer.state();return pacing.inputEvents>before.inputEvents&&input.activePointers===0&&runtime.navigationCoordinate>before.coordinate&&runtime.stage!==before.stage&&runtime.semanticScale===OFU.v1LivingRuntime.SCALE_FOR_STAGE[runtime.stage]&&renderer.readyRevision===runtime.revision},before,{timeout:10000});const pinch=await page.evaluate(()=>{const product=OFU.v1LivingProduct,runtime=product.runtime.snapshot(),pacing=product.runtime.navigationPacingSnapshot(),renderer=product.renderer.state();return{stage:runtime.stage,semanticScale:runtime.semanticScale,expectedSemanticScale:OFU.v1LivingRuntime.SCALE_FOR_STAGE[runtime.stage],coordinate:runtime.navigationCoordinate,inputEvents:pacing.inputEvents,renderFrames:renderer.metrics.frames,uiError:product.snapshot().uiError}});assert.ok(pinch.inputEvents>before.inputEvents,'mobile pinch must route through the canonical Living input owner');assert.ok(pinch.coordinate>before.coordinate&&pinch.stage!==before.stage,'mobile pinch must cross a visible Living scale boundary');assert.equal(pinch.semanticScale,pinch.expectedSemanticScale);assert.ok(pinch.renderFrames>before.renderFrames,'mobile pinch must advance the active renderer');assert.equal(pinch.uiError,null,'mobile pinch must not leave a hidden rendering failure');
  const sizes=[{width:844,height:390},{width:390,height:844},{width:700,height:320},{width:320,height:700},{width:390,height:844}];const resize=[];for(const size of sizes){await page.setViewportSize(size);await page.waitForTimeout(60);const browserState=await page.evaluate(()=>{const listenerState=globalThis.__OFU_P21_AUDIT__?.listenerSnapshot?.()||null;return{w:innerWidth,h:innerHeight,stage:OFU.v1LivingProduct.runtime.snapshot().stage,dom:document.querySelectorAll('*').length,listeners:listenerState?.connectedOrGlobal??null,listenerState,overflow:document.documentElement.scrollWidth>document.documentElement.clientWidth+1}});resize.push({...browserState,workers:workerAudit.live,createdWorkers:workerAudit.created,closedWorkers:workerAudit.closed});const s=resize.at(-1);assert.equal(s.stage,pinch.stage);assert.equal(s.overflow,false)}
  assert.ok(range(resize.map(x=>x.dom).filter(Number.isFinite))<=16,`${browserName} mobile resize DOM growth exceeded bounded range`);assert.ok(range(resize.map(x=>x.listeners).filter(Number.isFinite))<=8,`${browserName} mobile resize listener growth exceeded bounded range`);assert.ok(range(resize.map(x=>x.workers).filter(Number.isFinite))<=2,`${browserName} mobile resize worker growth exceeded bounded range`);
  assert.equal(errors.length,0,`${browserName} mobile errors: ${errors.join('\n')}`);assert.equal(externalRequests.length,0,`${browserName} mobile unexpected external requests: ${externalRequests.join('\n')}`);await context.close();
- const reduced=await browser.newContext({viewport:{width:1024,height:768},reducedMotion:'reduce',offline:true});const rp=await reduced.newPage(),reducedExternal=[];rp.on('request',r=>{if(/^https?:/i.test(r.url()))reducedExternal.push(r.url())});await rp.goto(PRODUCT,{waitUntil:'load'});await ready(rp);const reducedMotion=await rp.evaluate(()=>({media:matchMedia('(prefers-reduced-motion: reduce)').matches,snapshot:globalThis.__OFU_V1X10_ACCESSIBILITY__?.snapshot?.().reducedMotion??null}));assert.equal(reducedMotion.media,true);if(reducedMotion.snapshot!=null)assert.equal(reducedMotion.snapshot,true);assert.equal(reducedExternal.length,0,`${browserName} reduced-motion unexpected external requests: ${reducedExternal.join('\n')}`);await reduced.close();return{method:'BROWSER_POINTER_EVENT_EMULATION',physicalDeviceVerified:false,pinch:true,resizeOrientation:resize,reducedMotion,offline:true};
+ const reduced=await browser.newContext({viewport:{width:1024,height:768},reducedMotion:'reduce'});const rp=await reduced.newPage(),reducedExternal=[];rp.on('request',r=>{if(/^https?:/i.test(r.url()))reducedExternal.push(r.url())});await openOfflineProduct(rp);await ready(rp);const reducedMotion=await rp.evaluate(()=>({media:matchMedia('(prefers-reduced-motion: reduce)').matches,snapshot:globalThis.__OFU_V1X10_ACCESSIBILITY__?.snapshot?.().reducedMotion??null}));assert.equal(reducedMotion.media,true);if(reducedMotion.snapshot!=null)assert.equal(reducedMotion.snapshot,true);assert.equal(reducedExternal.length,0,`${browserName} reduced-motion unexpected external requests: ${reducedExternal.join('\n')}`);await reduced.close();return{method:'BROWSER_POINTER_EVENT_EMULATION',physicalDeviceVerified:false,pinch:true,resizeOrientation:resize,reducedMotion,offline:true};
 }
 
 const results={schema:'ofu-v2-p21-performance-browser-mobile-evidence-1',status:'PASS',exactSourceSha:SOURCE,authority:'MEASURED_RUNTIME_EVIDENCE',productTransport:PRODUCT_TRANSPORT,claims:{driverVram:'NOT_MEASURABLE',physicalGpuMemory:'NOT_MEASURABLE',physicalMobileDevices:'NOT_VERIFIED',jsHeap:'ENGINE_EXPOSED_ONLY',listenerCount:'TEST_INSTRUMENTED_CONNECTED_OR_GLOBAL_EVENTTARGET_REGISTRATIONS',detachedTargetListeners:'DIAGNOSTIC_ONLY_GC_NONDETERMINISTIC',workerCount:'PLAYWRIGHT_PAGE_WORKER_LIFECYCLE',audioNodes:'PRODUCT_RUNTIME_SNAPSHOT_ONLY',framePacing:'REQUEST_ANIMATION_FRAME_INTERVALS',fallbackBrowserBinary:'EXPLICITLY_RECORDED_INFRASTRUCTURE_VARIANCE_NOT_GOVERNED_EXPECTED_EXECUTABLE'},cycles:CYCLES,browsers:{}};
 for(const [name,engine] of Object.entries(ENGINES)){const launched=await launchEngine(name,engine),browser=launched.browser;try{results.browsers[name]={launcher:launched.launcher,desktop:await desktopSoak(name,browser),mobile:await mobileAndA11y(name,browser)}}finally{await browser.close()}}
+results.artifactInput=immutableInput.verify();
 fs.writeFileSync(path.join(OUT,'exact-browser-resource-soak.json'),JSON.stringify(results,null,2)+'\n');console.log(JSON.stringify({status:results.status,schema:results.schema,exactSourceSha:SOURCE,productTransport:PRODUCT_TRANSPORT,cycles:CYCLES,browsers:Object.fromEntries(Object.entries(results.browsers).map(([k,v])=>[k,{launcher:v.launcher.status,version:v.launcher.version,startupMs:v.desktop.startupMs,p95Ms:v.desktop.transitionP95,frameP95Ms:v.desktop.framePacing.p95Ms,heap:v.desktop.heap.status,longTasks:v.desktop.longTasks.status,contextLoss:v.desktop.contextLoss.status,audio:v.desktop.audio.status,mobile:true}]))}));
