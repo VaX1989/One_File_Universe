@@ -13,18 +13,17 @@ The document system has distinct responsibilities:
 
 No table entry here promotes scientific truth. Exact live repository state, accepted ADRs, the Constitution, the V2 integration ledger and executed certification evidence outrank descriptive planning language.
 
-## 1. Authenticated current boundary
+## 1. Current release boundary
 
-The strategic reconciliation was performed against the V2 convergence candidate represented by draft PR #237, branch `integration/v2x-supreme-total-convergence-2026-09-07`, head `9ea22af90b4f1fdd38046ca23501f81ed0b2a839`, tree `cd7b48574ddb7f2c568947d9477d3e8ff819f5a0`.
+V2.0 is represented by draft PR #237 on `integration/v2x-supreme-total-convergence-2026-09-07`. Because that branch is an active convergence line, this current-pointer document intentionally does not freeze its head SHA/tree. Use PR #237, [`docs/parallel/V2_INTEGRATION_LEDGER.json`](parallel/V2_INTEGRATION_LEDGER.json), and exact workflow evidence to authenticate the current candidate.
 
-That head is **not canonical release closure**. `docs/parallel/V2_INTEGRATION_LEDGER.json` describes it as `PROVISIONAL_V2_0_RELEASE_CANDIDATE_PENDING_EXACT_SHA_CERTIFICATION`, and the exact-head convergence workflow still has a red progressive release-conformance stage. `main` and immutable tag `v1.0.0` remain historical release authority until a governed promotion completes.
-
-Therefore:
+The integration ledger classifies the convergence line as a provisional V2.0 release candidate pending exact-SHA certification. Therefore:
 
 - V2.0 receives certification/repair work only;
 - post-V2 strategy must not mutate the frozen V2 feature definition;
 - physical mobile and physical assistive-technology claims remain unverified until executed evidence exists;
-- research-only V2X-15/V2X-16 material stays research-only.
+- research-only V2X-15/V2X-16 material stays research-only;
+- `main` and immutable released v1.0.0 history remain untouched until the governed V2 promotion transaction completes.
 
 ## 2. Workstream family map after V2 convergence
 
@@ -46,7 +45,7 @@ This table is a **product-facing reconciliation**, not a replacement for the mac
 | F-UX — product/accessibility | responsive UX/accessibility observers, Living inspector, central input ownership | Explore / Inspect / Lab and scale legibility | physical AT/mobile validation; simpler progressive disclosure |
 | F-MICRO/F-MATTER — microscopic/material | V2 matter continuity preserves selected source into bounded regimes | deepen the same selected reality | scientifically justified property bridges; unknown chemistry remains unknown |
 | F-SOUND — systemic audio | bounded V2 systemic-audio capability | reinforce context/scale without becoming truth authority | journey-level audio coherence and accessibility evidence |
-| F-CERT — certification | artifact, authority, determinism, browser/resource audits largely composed | **current release blocker owner** | exact-SHA progressive release conformance and governed promotion |
+| F-CERT — certification | artifact, authority, determinism, browser/resource audits substantially composed | **current release blocker owner** | exact-SHA release conformance and governed promotion |
 | F-NONCLASS / speculative | research only | research frontier | no canonical/product promise until evidence and explicit admission |
 
 The machine DAG retains the exact dependency semantics for these families. This current-state reconciliation does **not** silently upgrade its maturity values; future maturity changes require the normal evidence/promotion transaction.
