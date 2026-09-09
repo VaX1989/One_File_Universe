@@ -137,7 +137,7 @@ const v1Build = {
   visualUniverse: {primarySceneProvider: 'v1.scene.living-world'},
   px: {
     ...build.px,
-    scope: 'FULL_V1_WAVE_A_PRODUCT',
+    scope: 'FULL_V2_LIVING_PRODUCT_OVER_V1_COMPATIBILITY_RUNTIME',
     registryManifest: {providers: v1Providers},
   },
 };
