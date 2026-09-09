@@ -18,6 +18,15 @@
       "providers": ["v1.model.civilization"],
       "oracle": "ofu-v2x-09-civilization-advanced-oracle-1",
       "timeoutMs": 30000
+    },
+    {
+      "id": "v2x09.civilization-living-consumer",
+      "owner": "product",
+      "tier": "LANE_TARGETED",
+      "command": ["node", "tests/v2x-convergence/living-context-inspector.mjs"],
+      "providers": ["v1.model.civilization"],
+      "oracle": "ofu-v2x-living-context-inspector-witness-4",
+      "timeoutMs": 30000
     }
   ]
 }
