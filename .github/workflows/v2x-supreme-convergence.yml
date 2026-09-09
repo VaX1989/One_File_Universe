@@ -51,6 +51,8 @@ jobs:
         run: node tests/v2x-convergence/living-governed-causal-journey.mjs
       - name: V2X-12 matter authority and deterministic continuity
         run: node tests/v2x-12-matter-continuity/run.mjs
+      - name: P22 strict science authority oracle
+        run: node tests/audit/v2-science-authority-oracle.mjs --strict --json
       - name: Living macrocosm composition witness
         run: node tests/v2x-convergence/macrocosm-composition.mjs
       - name: Living single-camera authority witness
