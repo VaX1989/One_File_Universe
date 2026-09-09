@@ -12,6 +12,7 @@ permissions:
 
 env:
   OFU_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 
 jobs:
   exact-head-certification:
@@ -86,6 +87,4 @@ jobs:
       - name: V2X-14 product/audio/accessibility real-browser journey
         run: node tests/v2x-14-product-experience/browser-journey.mjs
       - name: Progressive release conformance exact source
-        env:
-          OFU_SOURCE_SHA: ${{ env.OFU_EXPECTED_SHA }}
         run: node tools/extensions/conformance.mjs RELEASE --exact
