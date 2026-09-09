@@ -1,7 +1,11 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
-const sandbox={console,TextEncoder,Object,Array,Map,Set,WeakMap,WeakSet,BigInt,Number,String,Math,JSON};sandbox.globalThis=sandbox;vm.createContext(sandbox);
+// Keep realm-sensitive JavaScript intrinsics owned by the VM. Injecting host Object/
+// Array/Map into this context makes the provider's plain-record guard compare a VM
+// object-literal prototype with the host Object.prototype, which is a harness artifact
+// and not representative of the single-file browser runtime.
+const sandbox={console,TextEncoder};vm.createContext(sandbox);
 for(const file of [
  'src/domains/v1/life/v2x08-life-facade.js',
  'src/v2x-09-civilization-economy-city/core.js','src/v2x-09-civilization-economy-city/economy-init.js','src/v2x-09-civilization-economy-city/economy-step.js','src/v2x-09-civilization-economy-city/institutions.js','src/v2x-09-civilization-economy-city/morphology.js','src/v2x-09-civilization-economy-city/production-network.js','src/v2x-09-civilization-economy-city/society-dynamics.js','src/v2x-09-civilization-economy-city/urban-evolution.js','src/v2x-09-civilization-economy-city/advanced.js','src/v2x-09-civilization-economy-city/index.js',
@@ -12,9 +16,8 @@ sandbox.OFU.v2x05DeepPlanetProvider=Object.freeze({VERSION:'ofu-v2x-05-deep-plan
 const retainedById=new Map();let demographyCalls=0,retainCalls=0;
 sandbox.OFU.v1Session=Object.freeze({
  observeV2X10Population({worldId,settlementId,population,currentYear}){demographyCalls++;assert.equal(worldId,'world-a');assert.equal(settlementId,'settlement-a');assert.equal(population,4200);assert.equal(currentYear,20);return Object.freeze({settlementId,population,nextBirthOrdinal:population,currentYear,initialPopulation:population,legacyDeaths:0,legacyLiving:population,cohorts:Object.freeze([]),semantics:'OBSERVED_AGGREGATE_NET_CHANGE_MINIMUM_FLOW'});},
- // Keep the VM-created person in its originating realm. The real session bridge's
- // bounded retained serialization is independently exercised by the V2X-10
- // convergence-blocker suite; this witness is strictly the Living consumer seam.
+ // The real session bridge's bounded retained serialization is independently exercised
+ // by the V2X-10 convergence-blocker suite; this witness proves the Living consumer seam.
  retainV2X10Individual(person){retainCalls++;retainedById.set(person.id,person);return true;},
  v2x10RetainedMap(){return new Map(retainedById);}
 });
