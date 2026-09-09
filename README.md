@@ -126,25 +126,15 @@ That release is history. Post-v1/V2 development does not rewrite its scope or ev
 
 ### Canonical post-v1 development line
 
-The established development base for the current V2 convergence is:
-
-- branch: `development/v1.1-quality-exploration`;
-- authenticated strategy-integration base SHA: `ae406dbc8ac64fbd9161566ac1367bfacf2496f9`;
-- tree: `e62971a10f3f54912197bc3904ac2f64e6c525cc`.
+The established development base for the current V2 convergence is `development/v1.1-quality-exploration`. Exact branch SHA/tree are operational state and must be read live rather than copied forward indefinitely in this README.
 
 ### V2.0 convergence candidate
 
-Draft PR #237 composes the V2X development program on:
+Draft PR #237 composes the V2X development program on `integration/v2x-supreme-total-convergence-2026-09-07`.
 
-- branch: `integration/v2x-supreme-total-convergence-2026-09-07`;
-- strategy-integration audited head: `9ea22af90b4f1fdd38046ca23501f81ed0b2a839`;
-- tree: `cd7b48574ddb7f2c568947d9477d3e8ff819f5a0`.
+The current V2 integration ledger classifies the convergence line as a provisional V2.0 release candidate pending exact-SHA certification. The exact head is deliberately **not** frozen into this current-pointer document: use PR #237, [`docs/parallel/V2_INTEGRATION_LEDGER.json`](docs/parallel/V2_INTEGRATION_LEDGER.json), and live workflow evidence for the authoritative candidate SHA/tree and certification state.
 
-The V2 integration ledger classifies that state as:
-
-`PROVISIONAL_V2_0_RELEASE_CANDIDATE_PENDING_EXACT_SHA_CERTIFICATION`.
-
-Many V2 exact-head, artifact, authority, browser/runtime and domain-convergence checks are present and substantially green, but the candidate is **not release-closed** while the progressive exact release-conformance gate remains red and PR #237 is unmerged. No roadmap item is allowed to reopen V2.0 merely because it is strategically important.
+V2.0 is not release-closed until the governed exact-candidate certification and promotion transaction completes. No roadmap item is allowed to reopen V2.0 merely because it is strategically important.
 
 The current release task is certification/root-cause repair, not new feature expansion.
 
@@ -157,7 +147,7 @@ The V2 candidate contains or centrally reimplements, under explicit authority bo
 - macrocosm/system/planet/surface/local composition;
 - model-derived life/ecology context;
 - model-derived civilization/economy/history context;
-- bounded persistent-individual identity/refinement infrastructure with known convergence defects still tracked;
+- bounded persistent-individual identity/refinement infrastructure with known convergence defects tracked by the release transaction;
 - governed causal-action infrastructure;
 - selected-source matter continuity into bounded micro/molecular/atomic representations;
 - a central Living renderer with a WebGL2 V2X pixel consumer;
@@ -165,7 +155,7 @@ The V2 candidate contains or centrally reimplements, under explicit authority bo
 
 It does **not** justify claims of canonical people/memories/genealogy, seamless single-physics simulation from galaxies to atoms, certified physical mobile/assistive-tech operation, mandatory WebGPU, or promotion of research-only V2X science.
 
-The authoritative current integration record is [`docs/parallel/V2_INTEGRATION_LEDGER.json`](docs/parallel/V2_INTEGRATION_LEDGER.json). Exact live GitHub PR/workflow state outranks static documentation when development has advanced.
+Exact live GitHub PR/workflow state outranks static documentation when development has advanced.
 
 ---
 
