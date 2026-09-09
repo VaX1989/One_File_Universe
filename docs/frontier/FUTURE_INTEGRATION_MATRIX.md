@@ -1,5 +1,7 @@
 # Integration Matrix
 
+> **Current-status boundary (2026-09-09):** this matrix preserves the pre-V2 / Wave-IV integration baseline and planned interfaces that led into the V2X program. It is not the live status ledger for the V2 convergence candidate. For current V2 shipping/reimplementation/research dispositions use [`../parallel/V2_INTEGRATION_LEDGER.json`](../parallel/V2_INTEGRATION_LEDGER.json); for cross-cutting future priority/sequence use [`../ROADMAP.md`](../ROADMAP.md); for frontier dependencies use [`WORKSTREAM_DAG.json`](WORKSTREAM_DAG.json). The rows below remain historical/planning provenance and are not rewritten to make later V2 work appear earlier.
+
 This document records integration status and authority boundaries. It preserves frozen historical contracts and makes future interfaces explicit without marking them canonical prematurely.
 
 ## Status vocabulary
