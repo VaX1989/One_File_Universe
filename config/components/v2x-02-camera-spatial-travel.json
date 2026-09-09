@@ -41,7 +41,7 @@
     },
     {
       "id": "v2x02.camera.living-binding",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "owner": "product",
       "kind": "code",
       "stage": "full",
@@ -49,10 +49,10 @@
       "source": "src/rendering/v2x-convergence/living-camera-authority.js",
       "dependencies": [
         "v2x02.camera.continuous-travel",
-        "v1.rendering.living-renderer"
+        "v2.central.living-v2x01-runtime-binding"
       ],
       "authority": "PRESENTATION_ONLY",
-      "provenance": "Convergence-owned Living binding. Pointer look is admitted by the V2X-02 controller and frozen V1X camera authority; Living distance is consumed only as a derived runtime snapshot. The wrapped renderer retains projection cache state but owns no independent input or travel authority.",
+      "provenance": "Convergence-owned Living binding. Pointer look and reversible same-selection history travel are admitted by the final V2X-02 controller over the frozen V1X camera authority; reduced-motion preference is observed through that controller. Living distance remains a derived runtime snapshot and no independent input, selection, history or travel authority is created.",
       "provides": [
         "v2x02.camera.living-binding",
         "v2x02.camera.single-living-authority"

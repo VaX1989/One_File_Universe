@@ -3,53 +3,28 @@
 const O=root.OFU=root.OFU||{},base=O.v1LivingRenderer,F=O.v1xReferenceFrames,S=O.v1xSemanticDistance,A=O.v1xCameraAuthority,V=O.v2x02ContinuousTravel;
 if(!base||!F||!S||!A||!V)throw new Error('Living camera convergence dependencies missing');
 if(base.__v2x02CameraComposed)return;
-const VERSION='ofu-v2x02-living-camera-composition-1',REFERENCE_RADIUS_M=6371000;
+const VERSION='ofu-v2x02-living-camera-composition-2',REFERENCE_RADIUS_M=6371000;
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-function frameForBand(band){
- if(['galaxy','galactic_region','stellar_neighborhood'].includes(band))return 'galaxy';
- if(band==='system')return 'system';
- if(['orbit','approach'].includes(band))return 'planet';
- if(['global_surface','regional_surface','local_surface'].includes(band))return 'surface';
- return 'human';
-}
-function graph(){return F.createReferenceFrameGraph([
- {id:'galaxy',parentId:null,metersPerUnit:1e20},
- {id:'system',parentId:'galaxy',metersPerUnit:1e9,originInParent:[0,0,0]},
- {id:'planet',parentId:'system',metersPerUnit:1e6,originInParent:[0,0,0]},
- {id:'surface',parentId:'planet',metersPerUnit:1,originInParent:[0,0,0]},
- {id:'human',parentId:'surface',metersPerUnit:.01,originInParent:[0,0,0]}
- ]);}
-function rotateVector(q,v){
- const [x,y,z,w]=q,[vx,vy,vz]=v,ix=w*vx+y*vz-z*vy,iy=w*vy+z*vx-x*vz,iz=w*vz+x*vy-y*vx,iw=-x*vx-y*vy-z*vz;
- return [ix*w+iw*-x+iy*-z-iz*-y,iy*w+iw*-y+iz*-x-ix*-z,iz*w+iw*-z+ix*-y-iy*-x];
-}
-function orientationAngles(camera){
- const forward=rotateVector(camera.pose.orientation,[0,0,-1]),yaw=Math.atan2(-forward[0],-forward[2]),pitch=Math.asin(clamp(forward[1],-1,1));
- return Object.freeze({yaw,pitch});
-}
-function selectionToken(s){return String(s?.body?.canonicalId||s?.body?.entityId||s?.system?.canonicalId||s?.system?.entityId||s?.node?.canonicalId||s?.node?.entityId||'living-universe').slice(0,512);}
+function frameForBand(band){if(['galaxy','galactic_region','stellar_neighborhood'].includes(band))return 'galaxy';if(band==='system')return 'system';if(['orbit','approach'].includes(band))return 'planet';if(['global_surface','regional_surface','local_surface'].includes(band))return 'surface';return 'human'}
+function graph(){return F.createReferenceFrameGraph([{id:'galaxy',parentId:null,metersPerUnit:1e20},{id:'system',parentId:'galaxy',metersPerUnit:1e9,originInParent:[0,0,0]},{id:'planet',parentId:'system',metersPerUnit:1e6,originInParent:[0,0,0]},{id:'surface',parentId:'planet',metersPerUnit:1,originInParent:[0,0,0]},{id:'human',parentId:'surface',metersPerUnit:.01,originInParent:[0,0,0]}])}
+function rotateVector(q,v){const [x,y,z,w]=q,[vx,vy,vz]=v,ix=w*vx+y*vz-z*vy,iy=w*vy+z*vx-x*vz,iz=w*vz+x*vy-y*vx,iw=-x*vx-y*vy-z*vz;return [ix*w+iw*-x+iy*-z-iz*-y,iy*w+iw*-y+iz*-x-ix*-z,iz*w+iw*-z+ix*-y-iy*-x]}
+function orientationAngles(camera){const forward=rotateVector(camera.pose.orientation,[0,0,-1]),yaw=Math.atan2(-forward[0],-forward[2]),pitch=Math.asin(clamp(forward[1],-1,1));return Object.freeze({yaw,pitch})}
+function selectionToken(s){return String(s?.body?.canonicalId||s?.body?.entityId||s?.system?.canonicalId||s?.system?.entityId||s?.node?.canonicalId||s?.node?.entityId||'living-universe').slice(0,512)}
 function create(canvas,glCanvas,options={}){
  const renderer=base.create(canvas,glCanvas,options),model=S.createScaleModel({referenceRadiusM:REFERENCE_RADIUS_M}),frameGraph=graph(),camera=A.createCameraAuthority({frameGraph,scaleModel:model,initialPose:{frameId:'galaxy',position:[0,0,1],orientation:[0,0,0,1]},initialLogDistanceM:model.anchorLogM.galaxy,selectionToken:'living-universe',frameResolver:frameForBand}),controller=V.createController({camera,maxPendingLogDelta:.9,maxLookRadians:.35});
- let latest=null,lastBodyToken=null,appliedYaw=0,appliedPitch=0,disposed=false,distanceSyncSteps=0,lookCommands=0;
- function syncSelection(s){const wanted=selectionToken(s),current=camera.snapshot().selectionToken;if(wanted!==current)camera.observeSelection(wanted,{sourceContract:'ofu-wave-a-living-runtime-1'});}
- function syncDistance(s){
-  const d=Number(s?.continuousDistanceRadii);if(!(Number.isFinite(d)&&d>0))throw new TypeError('Living camera requires positive continuousDistanceRadii');
-  const target=model.clampLog(Math.log10(d*REFERENCE_RADIUS_M));let guard=0;
-  while(Math.abs(target-camera.snapshot().logDistanceM)>1e-12){const delta=clamp(target-camera.snapshot().logDistanceM,-.9,.9);controller.distance(delta,{source:'living-runtime-derived-distance'});controller.flush({source:'living-runtime-derived-distance-frame'});distanceSyncSteps++;if(++guard>64)throw new Error('Living camera distance synchronization did not converge');}
- }
- function resetForBody(s){const next=s?.body?(s.body.canonicalId||s.body.entityId||null):null;if(next&&next!==lastBodyToken){controller.interrupt('living-body-change');camera.resetOrientation({source:'living-body-change'});controller.resume('living-body-change');appliedYaw=0;appliedPitch=0;}lastBodyToken=next;}
- function syncBaseOrientation(){
-  const next=orientationAngles(camera.snapshot()),dyaw=Math.atan2(Math.sin(next.yaw-appliedYaw),Math.cos(next.yaw-appliedYaw)),dpitch=next.pitch-appliedPitch;appliedYaw=next.yaw;appliedPitch=next.pitch;
-  if(Math.abs(dyaw)>1e-12||Math.abs(dpitch)>1e-12)renderer.rotate(dyaw/.006,dpitch/.004);
- }
- async function render(s){if(disposed)throw new Error('Living camera renderer disposed');latest=s;resetForBody(s);syncSelection(s);syncDistance(s);renderer.setTravelDistance(s.continuousDistanceRadii,s.semanticScale);return renderer.render(s);}
- function rotate(dx,dy){
-  if(disposed)throw new Error('Living camera renderer disposed');const current=orientationAngles(camera.snapshot()),yaw=Number(dx)*.006,pitch=clamp(Number(dy)*.004,-1.35-current.pitch,1.35-current.pitch);if(!Number.isFinite(yaw)||!Number.isFinite(pitch))throw new TypeError('Living camera look delta must be finite');
-  controller.queueLook({yawRadians:yaw,pitchRadians:pitch,source:'living-pointer-look'});controller.flush({source:'living-pointer-frame'});lookCommands++;syncBaseOrientation();return state();
- }
- function setTravelDistance(){return state();}
- function state(){const value=renderer.state(),c=camera.snapshot(),ctl=controller.snapshot();return {...value,cameraAuthority:A.VERSION,travelController:V.VERSION,cameraAuthorityState:{semanticScale:c.semanticScale,frameId:c.pose.frameId,commandCount:c.commandCount,selectionToken:c.selectionToken,referenceReturnDepth:c.referenceReturnDepth},cameraControllerState:{pending:ctl.pending,reducedMotion:ctl.reducedMotion,interrupted:ctl.interrupted},shadowNavigationState:false,distanceDerivedFromLivingRuntime:true,distanceSyncSteps,lookCommands};}
- function dispose(){disposed=true;controller.interrupt('living-renderer-dispose');renderer.dispose();}
+ let lastBodyToken=null,appliedYaw=0,appliedPitch=0,disposed=false,distanceSyncSteps=0,lookCommands=0,lastHistoryDepth=null,reverseCaptures=0,reverseRewinds=0,reverseFallbacks=0;
+ const reducedQuery=typeof root.matchMedia==='function'?root.matchMedia('(prefers-reduced-motion: reduce)'):null;
+ const applyReduced=()=>controller.setReducedMotion(Boolean(reducedQuery?.matches));applyReduced();reducedQuery?.addEventListener?.('change',applyReduced);
+ function syncSelection(s){const wanted=selectionToken(s),current=camera.snapshot().selectionToken;if(wanted!==current)camera.observeSelection(wanted,{sourceContract:'ofu-wave-a-living-runtime-1'})}
+ function syncDistance(s){const d=Number(s?.continuousDistanceRadii);if(!(Number.isFinite(d)&&d>0))throw new TypeError('Living camera requires positive continuousDistanceRadii');const target=model.clampLog(Math.log10(d*REFERENCE_RADIUS_M));let guard=0;while(Math.abs(target-camera.snapshot().logDistanceM)>1e-12){const delta=clamp(target-camera.snapshot().logDistanceM,-.9,.9);controller.distance(delta,{source:'living-runtime-derived-distance'});controller.flush({source:'living-runtime-derived-distance-frame'});distanceSyncSteps++;if(++guard>64)throw new Error('Living camera distance synchronization did not converge')}}
+ function resetForBody(s){const next=s?.body?(s.body.canonicalId||s.body.entityId||null):null;if(next&&next!==lastBodyToken){controller.interrupt('living-body-change');camera.resetOrientation({source:'living-body-change'});controller.resume('living-body-change');appliedYaw=0;appliedPitch=0}lastBodyToken=next}
+ function syncBaseOrientation(){const next=orientationAngles(camera.snapshot()),dyaw=Math.atan2(Math.sin(next.yaw-appliedYaw),Math.cos(next.yaw-appliedYaw)),dpitch=next.pitch-appliedPitch;appliedYaw=next.yaw;appliedPitch=next.pitch;if(Math.abs(dyaw)>1e-12||Math.abs(dpitch)>1e-12)renderer.rotate(dyaw/.006,dpitch/.004)}
+ function historyTransition(s){const depth=Math.max(0,Number(s?.historyDepth)||0),wanted=selectionToken(s),current=camera.snapshot().selectionToken;if(lastHistoryDepth!==null&&wanted===current){if(depth>lastHistoryDepth){controller.observeContext({historyToken:String(lastHistoryDepth)});controller.captureReverseAnchor('living-history:'+String(lastHistoryDepth));reverseCaptures++}else if(depth<lastHistoryDepth){const result=controller.rewindToAnchor(null,{source:'living-history-back'});if(result.restored){reverseRewinds++;syncBaseOrientation()}else reverseFallbacks++}}lastHistoryDepth=depth}
+ async function render(s){if(disposed)throw new Error('Living camera renderer disposed');resetForBody(s);historyTransition(s);syncSelection(s);syncDistance(s);renderer.setTravelDistance(s.continuousDistanceRadii,s.semanticScale);return renderer.render(s)}
+ function rotate(dx,dy){if(disposed)throw new Error('Living camera renderer disposed');const current=orientationAngles(camera.snapshot()),yaw=Number(dx)*.006,pitch=clamp(Number(dy)*.004,-1.35-current.pitch,1.35-current.pitch);if(!Number.isFinite(yaw)||!Number.isFinite(pitch))throw new TypeError('Living camera look delta must be finite');controller.queueLook({yawRadians:yaw,pitchRadians:pitch,source:'living-pointer-look'});controller.flush({source:'living-pointer-frame'});lookCommands++;syncBaseOrientation();return state()}
+ function setTravelDistance(){return state()}
+ function state(){const value=renderer.state(),c=camera.snapshot(),ctl=controller.snapshot();return {...value,cameraAuthority:A.VERSION,travelController:V.VERSION,cameraAuthorityState:{semanticScale:c.semanticScale,frameId:c.pose.frameId,commandCount:c.commandCount,selectionToken:c.selectionToken,referenceReturnDepth:c.referenceReturnDepth},cameraControllerState:{pending:ctl.pending,reducedMotion:ctl.reducedMotion,interrupted:ctl.interrupted,reverseAnchors:ctl.reverseAnchors||null,reverseJournal:ctl.reverseJournal||null},cameraReadOnly:{frameId:c.pose.frameId,position:c.pose.position.slice(),orientation:c.pose.orientation.slice(),logDistanceM:c.logDistanceM,semanticScale:c.semanticScale,selectionToken:c.selectionToken,commandCount:c.commandCount},shadowNavigationState:false,distanceDerivedFromLivingRuntime:true,reducedMotionPreferenceBound:true,reverseHistoryBound:true,distanceSyncSteps,lookCommands,reverseCaptures,reverseRewinds,reverseFallbacks}}
+ function dispose(){if(disposed)return;disposed=true;reducedQuery?.removeEventListener?.('change',applyReduced);controller.interrupt('living-renderer-dispose');renderer.dispose()}
  return Object.freeze({...renderer,render,rotate,setTravelDistance,state,dispose,cameraAuthority:camera,travelController:controller});
 }
 O.v1LivingRenderer=Object.freeze({...base,create,__v2x02CameraComposed:true,COMPOSITION_VERSION:VERSION});

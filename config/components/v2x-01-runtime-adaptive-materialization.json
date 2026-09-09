@@ -3,7 +3,7 @@
   "components": [
     {
       "id": "ofu.v2x01.runtime.contracts",
-      "version": "1.2.0",
+      "version": "1.3.1",
       "owner": "runtime",
       "kind": "code",
       "stage": "foundation",
@@ -13,14 +13,14 @@
         "ofu.extensions.contracts"
       ],
       "authority": "MEASURED_RUNTIME_EVIDENCE",
-      "provenance": "Bounded runtime-only contracts with strict option/budget schemas and explicit synchronous-fallback operation ceilings; scheduling and materialization never acquire canonical world authority.",
+      "provenance": "Bounded runtime-only contracts with strict option/budget schemas, normalized visibility/selection/scale-relevance/causal-relevance inputs, deterministic adaptive materialization thresholds with hysteresis, a valid lowercase default workload-domain token, and explicit synchronous-fallback operation ceilings. Scale/camera semantics remain central inputs; this policy never acquires canonical world authority.",
       "provides": [
         "ofu.v2x01.runtime.contracts"
       ]
     },
     {
       "id": "ofu.v2x01.runtime.scheduler",
-      "version": "1.3.0",
+      "version": "1.4.1",
       "owner": "runtime",
       "kind": "code",
       "stage": "foundation",
@@ -30,7 +30,7 @@
         "ofu.v2x01.runtime.contracts"
       ],
       "authority": "MEASURED_RUNTIME_EVIDENCE",
-      "provenance": "Deterministic weighted bounded scheduler with bounded same-class lifecycle starvation, distinct cooperative interaction preemption, idempotent cancellation, and opaque transactional admission tokens that reserve bounded capacity before destructive runtime preparation.",
+      "provenance": "Deterministic weighted bounded scheduler with a lowercase default workload domain, bounded same-class lifecycle starvation, oldest-last-served-per-class workload fairness so terrain/life/civilization/matter-style domains cannot be buried by a dominant workload, distinct cooperative interaction preemption, idempotent cancellation, and opaque transactional admission tokens that reserve bounded capacity before destructive runtime preparation.",
       "provides": [
         "ofu.v2x01.runtime.scheduler"
       ]
@@ -54,7 +54,7 @@
     },
     {
       "id": "ofu.v2x01.runtime.workers",
-      "version": "1.2.0",
+      "version": "1.4.0",
       "owner": "runtime",
       "kind": "code",
       "stage": "foundation",
@@ -64,7 +64,7 @@
         "ofu.v2x01.runtime.contracts"
       ],
       "authority": "MEASURED_RUNTIME_EVIDENCE",
-      "provenance": "Package-controlled Blob Worker execution with bounded payloads, capability introspection, cancellation/timeouts, and direct-fallback races that expose detached late work for conservative resource cleanup.",
+      "provenance": "Package-controlled Blob Worker execution with bounded payloads, capability introspection, cancellation/timeouts, direct-fallback races that expose detached late work for conservative resource cleanup, and deterministic streaming with per-chunk, cumulative transfer-byte and chunk-count ceilings. Worker mode enforces pre-postMessage stream bounds plus ACK-gated consumer backpressure; direct fallback applies the same cumulative bounds and awaited callback backpressure.",
       "provides": [
         "ofu.v2x01.runtime.workers"
       ]
@@ -122,7 +122,7 @@
     },
     {
       "id": "ofu.v2x01.materialization.runtime",
-      "version": "1.3.0",
+      "version": "1.5.1",
       "owner": "simulation",
       "kind": "code",
       "stage": "foundation",
@@ -135,7 +135,7 @@
         "ofu.v2x01.runtime.workers"
       ],
       "authority": "MEASURED_RUNTIME_EVIDENCE",
-      "provenance": "Durable identity/commitment/history are immutable inputs; lifecycle state and request schemas are verified, WARM GPU reservation is forbidden, heavy sync fallback and scheduler capacity are admission-bounded before destructive invalidation or resource-pressure eviction, late direct fallbacks retain reservations until cleanup, failed releases quarantine conservative accounting, and eviction/cancellation/worker completion/context loss cannot rewrite durable truth or commit stale lineage.",
+      "provenance": "Durable identity/commitment/history are immutable inputs; requestAdaptive derives COLD/WARM/HOT/IMMEDIATE only from normalized central relevance signals plus internal lifecycle hysteresis and derives state-compatible reservations from caller ceilings (COLD zeroes all reservation; WARM zeroes GPU), provider domains feed workload-fair scheduling, IMMEDIATE pinning is a retention preference that cannot deadlock hard cache or resource bounds and forced pinned eviction is explicitly measured, runtimePacket exposes bounded read-only MEASURED_RUNTIME_EVIDENCE for the central Living consumer, and existing admission, cache eviction, stale-result rejection, worker cancellation, quarantine, context-loss and resource-accounting invariants remain enforced without claiming selection/scale/camera/renderer/persistence authority.",
       "provides": [
         "ofu.v2x01.materialization.runtime"
       ]
