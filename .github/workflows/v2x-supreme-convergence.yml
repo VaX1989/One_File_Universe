@@ -49,6 +49,8 @@ jobs:
         run: node tests/v2x10/convergence-blockers.mjs
       - name: V2X-11 governed causal save-reload-revisit witness
         run: node tests/v2x-convergence/living-governed-causal-journey.mjs
+      - name: V2X-12 matter authority and deterministic continuity
+        run: node tests/v2x-12-matter-continuity/run.mjs
       - name: Living macrocosm composition witness
         run: node tests/v2x-convergence/macrocosm-composition.mjs
       - name: Living single-camera authority witness
