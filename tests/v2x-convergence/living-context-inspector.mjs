@@ -12,7 +12,10 @@ sandbox.OFU.v2x05DeepPlanetProvider=Object.freeze({VERSION:'ofu-v2x-05-deep-plan
 const retainedById=new Map();let demographyCalls=0,retainCalls=0;
 sandbox.OFU.v1Session=Object.freeze({
  observeV2X10Population({worldId,settlementId,population,currentYear}){demographyCalls++;assert.equal(worldId,'world-a');assert.equal(settlementId,'settlement-a');assert.equal(population,4200);assert.equal(currentYear,20);return Object.freeze({settlementId,population,nextBirthOrdinal:population,currentYear,initialPopulation:population,legacyDeaths:0,legacyLiving:population,cohorts:Object.freeze([]),semantics:'OBSERVED_AGGREGATE_NET_CHANGE_MINIMUM_FLOW'});},
- retainV2X10Individual(person){retainCalls++;retainedById.set(person.id,sandbox.OFU.v2x10Individuals.retain(person));return true;},
+ // Keep the VM-created person in its originating realm. The real session bridge's
+ // bounded retained serialization is independently exercised by the V2X-10
+ // convergence-blocker suite; this witness is strictly the Living consumer seam.
+ retainV2X10Individual(person){retainCalls++;retainedById.set(person.id,person);return true;},
  v2x10RetainedMap(){return new Map(retainedById);}
 });
 vm.runInContext(fs.readFileSync(new URL('../../src/bootstrap/product/v2x-context-inspector.js',import.meta.url),'utf8'),sandbox,{filename:'src/bootstrap/product/v2x-context-inspector.js'});
