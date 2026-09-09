@@ -65,6 +65,19 @@
       "authority": "MODEL_DERIVED_SIMULATION",
       "provenance": "V2X-11 governed gameplay facade and product-neutral governed-action adapter. When central product context exists, perform/propose derive the target and modeled world only from the current central selection and reject caller context overrides; all accepted actions still traverse proposal validation, causal execution and the additive P4 gameplay transition before becoming persistent consequences. Scientific temporal projections delegate to existing domain-owned functions when available.",
       "provides": ["v2x11.gameplay.runtime", "v2x11.gameplay.governed-action-adapter"]
+    },
+    {
+      "id": "v2x11.session.governed-gameplay",
+      "version": "1.0.0",
+      "owner": "gameplay",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/gameplay/session-bridge.js",
+      "dependencies": ["v2x11.gameplay.runtime", "v2x10.session.retained-individuals"],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Convergence-owned V2X-11 extension of the existing central portable session. It persists bounded gameplay P4 archives per canonical target inside the same ofu.v1.session envelope used by V2X-10; no second browser persistence authority, camera, selection, history or scientific authority is introduced.",
+      "provides": ["v2x11.session.governed-gameplay"]
     }
   ]
 }
