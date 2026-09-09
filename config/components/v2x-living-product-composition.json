@@ -32,6 +32,22 @@
       "provides": ["v2x.living.domain-composition"]
     },
     {
+      "id": "v2x.living.life-v2-consumer",
+      "version": "1.0.0",
+      "owner": "product",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/rendering/v2x-convergence/living-life-v2-consumer.js",
+      "dependencies": [
+        "v2x.living.domain-composition",
+        "v2x08.runtime.life-v2"
+      ],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Convergence-owned additive V2X-08 shipping consumer. On the Human stage it fail-closes the old generic ORGANISM cue, materializes the audited V2X-08 viewport packet from current modeled aggregate life state, maps normalized local descriptors into the existing local presentation frame, exposes aggregate-population selection targets, and verifies revisit tokens without acquiring camera, semantic-scale, selection, persistence, temporal-admission, canonical-biology or persistent-person authority.",
+      "provides": ["v2x.living.life-v2-consumer"]
+    },
+    {
       "id": "v2x.living.context-inspector",
       "version": "2.0.0",
       "owner": "product",
@@ -41,7 +57,7 @@
       "source": "src/bootstrap/product/v2x-context-inspector.js",
       "dependencies": [
         "v1.product.living-universe",
-        "v2x.living.domain-composition",
+        "v2x.living.life-v2-consumer",
         "v2x05.deep-planet.provider",
         "v2x08.model.life-single-file-facade",
         "v2x09.civilization.api",
