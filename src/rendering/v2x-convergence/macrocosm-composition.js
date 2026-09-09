@@ -3,7 +3,6 @@
 const O=root.OFU=root.OFU||{},original=O.v1x02SpatialUniverse,provider=O.v2x03MacrocosmProvider;
 if(!original||!provider)throw new Error('V2X convergence macrocosm composition dependencies missing');
 if(original.__v2x03Composed)return;
-const originalRepresentation=original.representation.bind(original);
 let calls=0,providerCalls=0,fallbacks=0,last=null;
 function regionScene(args){
  const profile=original.profile({context:'REGION'}),extent=Number(args.parentExtent??profile.scaleUnits);
@@ -24,21 +23,17 @@ function representation(args={}){
   else if(context==='NEIGHBORHOOD'){
    const positioned=original.projectEntities({...args,context});
    scene=provider.buildNeighborhood({objects:positioned.objects,cameraFrame:args.cameraFrame,quality:'STANDARD',scaleUnits:original.profile({context}).scaleUnits});
-  }
-  if(scene&&Array.isArray(scene.objects)){
-   providerCalls++;
-   last=Object.freeze({context,status:'PROVIDER',objects:scene.objects.length,authority:provider.AUTHORITY,contract:provider.CONTRACT,cameraConsumed:Boolean(scene.camera?.consumedExternalFrame)});
-   return Object.freeze({...scene,objects:scene.objects,composition:Object.freeze({...scene.composition,provider:'v2x03.macrocosm-provider',fallback:false})});
-  }
+  } else throw new RangeError('Unsupported V2X-03 macrocosm context: '+context);
+  if(!(scene&&Array.isArray(scene.objects)))throw new Error('V2X-03 macrocosm provider returned no renderable objects array');
+  providerCalls++;
+  last=Object.freeze({context,status:'PROVIDER',objects:scene.objects.length,authority:provider.AUTHORITY,contract:provider.CONTRACT,cameraConsumed:Boolean(scene.camera?.consumedExternalFrame)});
+  return Object.freeze({...scene,objects:scene.objects,composition:Object.freeze({...scene.composition,provider:'v2x03.macrocosm-provider',fallback:false})});
  }catch(error){
-  // The original bounded representation remains the fail-safe presentation path.
-  last=Object.freeze({context,status:'FALLBACK',reason:String(error?.message||error).slice(0,256),authority:'PRESENTATION_ONLY'});
+  last=Object.freeze({context,status:'FAIL_CLOSED',reason:String(error?.message||error).slice(0,256),authority:'PRESENTATION_ONLY'});
+  throw error;
  }
- fallbacks++;
- const value=originalRepresentation(args);
- return Object.freeze({...value,composition:Object.freeze({provider:'v1x02.spatial-universe',fallback:true})});
 }
-const composed=Object.freeze({...original,representation,__v2x03Composed:true,compositionSnapshot:()=>Object.freeze({schema:'ofu-v2x03-living-composition-1',status:'ACTIVE',calls,providerCalls,fallbacks,last,authority:'PRESENTATION_ONLY',canonicalTruthChanged:false,cameraAuthorityChanged:false,selectionAuthorityChanged:false,scaleAuthorityChanged:false})});
+const composed=Object.freeze({...original,representation,__v2x03Composed:true,compositionSnapshot:()=>Object.freeze({schema:'ofu-v2x03-living-composition-2',status:'ACTIVE',calls,providerCalls,fallbacks,last,authority:'PRESENTATION_ONLY',canonicalTruthChanged:false,cameraAuthorityChanged:false,selectionAuthorityChanged:false,scaleAuthorityChanged:false,legacyRepresentationFallback:false})});
 O.v1x02SpatialUniverse=composed;
-O.v2xLivingMacrocosmComposition=Object.freeze({VERSION:'ofu-v2x03-living-composition-1',AUTHORITY:'PRESENTATION_ONLY',original,composed,snapshot:composed.compositionSnapshot});
+O.v2xLivingMacrocosmComposition=Object.freeze({VERSION:'ofu-v2x03-living-composition-2',AUTHORITY:'PRESENTATION_ONLY',original,composed,snapshot:composed.compositionSnapshot});
 })(typeof globalThis!=='undefined'?globalThis:this);
