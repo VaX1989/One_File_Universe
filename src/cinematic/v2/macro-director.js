@@ -1,26 +1,28 @@
 (function(root){
 'use strict';
 if(typeof document==='undefined')return;
-const O=root.OFU=root.OFU||{},VERSION='ofu-v2-cinematic-macro-director-3',AUTHORITY='PRESENTATION_ONLY';
+const O=root.OFU=root.OFU||{},VERSION='ofu-v2-cinematic-macro-director-4',AUTHORITY='PRESENTATION_ONLY';
 const macroStages=new Set(['UNIVERSE','GALAXY','REGION','NEIGHBORHOOD','SYSTEM']);
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const short=x=>String(x||'').slice(0,8);
-let stage=null,canvas=null,g=null,width=1,height=1,dpr=1,frames=0,lastStage=null,lastHero=null,active=false,scheduled=false,unsubscribe=null;
+let stage=null,canvas=null,g=null,width=1,height=1,dpr=1,frames=0,lastStage=null,lastHero=null,active=false,scheduled=false,unsubscribe=null,lastPresentationKey=null,invalidations=0,coalescedInvalidations=0,redrawSkips=0;
 
 function hash(text){let h=2166136261;for(const ch of String(text||'')){h^=ch.charCodeAt(0);h=Math.imul(h,16777619);}return h>>>0;}
 function dependencies(){return O.v1LivingProduct&&O.v1x02SpatialUniverse&&O.v1x04SystemProvider&&O.v2x02LivingCameraComposition&&O.v1LivingRenderer;}
 function identityOf(entity,fallback=null){
  for(const key of ['canonicalId','entityId','id'])if(typeof entity?.[key]==='string'&&entity[key])return entity[key];
  if(typeof fallback==='string'&&fallback)return fallback;
- if(entity?.canonicalKey&&typeof entity.canonicalKey==='object')return 'canonicalKey:'+JSON.stringify(entity.canonicalKey,Object.keys(entity.canonicalKey).sort());
+ if(entity?.canonicalKey&&typeof entity.canonicalKey==='object')return 'canonicalKey:'+JSON.stringify(entity.canonicalKey,Object.keys(entity.canonicalKey).sort(),0);
  return null;
 }
-function fit(){
- if(!canvas)return;
- const box=stage.getBoundingClientRect();width=Math.max(1,box.width);height=Math.max(1,box.height);
- const cap=Math.sqrt(1800000/(width*height));dpr=Math.max(.5,Math.min(1.5,root.devicePixelRatio||1,cap));
- const w=Math.max(1,Math.floor(width*dpr)),h=Math.max(1,Math.floor(height*dpr));
- if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}
+function jsonToken(value){try{return JSON.stringify(value,(_,v)=>typeof v==='bigint'?String(v):v)||'';}catch{return '';}}
+function surfacePlan(){
+ const box=stage.getBoundingClientRect(),cssWidth=Math.max(1,box.width),cssHeight=Math.max(1,box.height),cap=Math.sqrt(1800000/(cssWidth*cssHeight)),ratio=Math.max(.5,Math.min(1.5,root.devicePixelRatio||1,cap));
+ return Object.freeze({cssWidth,cssHeight,dpr:ratio,pixelWidth:Math.max(1,Math.floor(cssWidth*ratio)),pixelHeight:Math.max(1,Math.floor(cssHeight*ratio))});
+}
+function fit(plan){
+ width=plan.cssWidth;height=plan.cssHeight;dpr=plan.dpr;
+ if(canvas.width!==plan.pixelWidth||canvas.height!==plan.pixelHeight){canvas.width=plan.pixelWidth;canvas.height=plan.pixelHeight;}
  g.setTransform(dpr,0,0,dpr,0,0);
 }
 function radial(x,y,r,inner,outer='rgba(0,0,0,0)'){
@@ -68,17 +70,26 @@ function labelSlots(items,max){
  }
  return accepted;
 }
-function cameraFor(s,scale,{system=false}={}){
- const product=O.v1LivingProduct,authority=product.renderer.cameraAuthority?.snapshot?.(),angles=authority?O.v2x02LivingCameraComposition.orientationAngles(authority):{yaw:0,pitch:0};
+function cameraAngles(){
+ const authority=O.v1LivingProduct.renderer.cameraAuthority?.snapshot?.();
+ return authority?O.v2x02LivingCameraComposition.orientationAngles(authority):{yaw:0,pitch:0};
+}
+function presentationKey(s,plan,angles){
+ const scope=[identityOf(s.node),identityOf(s.galaxy),identityOf(s.region),identityOf(s.neighborhood),identityOf(s.system),identityOf(s.body)].join('>');
+ const rows=hash((s.rows||[]).map(row=>[row.kind,identityOf(row),row.metadata?.modelProfile?.morphology||'',jsonToken(row.metadata?.facts||null)].join(':')).join('|'));
+ return [s.stage,s.semanticScale,Number(s.continuousDistanceRadii).toPrecision(12),angles.yaw.toFixed(9),angles.pitch.toFixed(9),plan.cssWidth.toFixed(2),plan.cssHeight.toFixed(2),plan.pixelWidth,plan.pixelHeight,scope,rows].join('|');
+}
+function cameraFor(s,scale,{system=false,angles=null}={}){
+ angles=angles||cameraAngles();
  const anchors=O.waveIVScaleRuntime?.snapshot?.().anchors||{},anchor=anchors[s.semanticScale]||null,distance=Number(s.continuousDistanceRadii),ratio=anchor&&Number.isFinite(distance)&&distance>0?clamp(distance/anchor,.45,2.4):1,d=scale*(system?2.8:2.05)*ratio,cp=Math.cos(angles.pitch),position=[Math.sin(angles.yaw)*cp*d,Math.sin(angles.pitch)*d,Math.cos(angles.yaw)*cp*d];
  const norm=v=>{const n=Math.hypot(...v)||1;return v.map(x=>x/n)},cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]],forward=norm(position.map(x=>-x)),right=norm(cross(forward,[0,1,0])),up=norm(cross(right,forward));
  return O.v1LivingRenderer.adaptPresentationCamera({position,origin:position,target:[0,0,0],right,up,forward,focalLength:1.18,near:scale*.01,fovYRadians:Math.PI/3,aspect:width/height,far:scale*20});
 }
-function spatial(s){
+function spatial(s,angles){
  const context=s.stage==='UNIVERSE'?'UNIVERSE':s.stage==='GALAXY'?'GALAXY':s.stage==='REGION'?'REGION':'NEIGHBORHOOD';
  const scopeEntity=s.stage==='UNIVERSE'?s.node:s.stage==='GALAXY'?s.galaxy:s.stage==='REGION'?s.region:s.neighborhood;
  const scopeId=identityOf(scopeEntity,scopeEntity?.entityId);
- const sp=O.v1x02SpatialUniverse,profile=sp.profile({context}),rep=sp.representation({context,scopeId,entities:s.rows,cameraFrame:cameraFor(s,profile.scaleUnits).spatialFrame,limit:64}),visible=[];
+ const sp=O.v1x02SpatialUniverse,profile=sp.profile({context}),rep=sp.representation({context,scopeId,entities:s.rows,cameraFrame:cameraFor(s,profile.scaleUnits,{angles}).spatialFrame,limit:64}),visible=[];
  for(const o of rep.objects){
   if(!o.view?.visible)continue;
   const objectIdentity=o.canonicalId||o.entityId||o.identity;
@@ -103,7 +114,6 @@ function spatial(s){
   }
   return;
  }
-
  lastHero=identityOf(scopeEntity,scopeId)||projectedHero?.identity||null;
  if(s.stage==='GALAXY')galaxy(width*.70,height*.50,Math.min(width,height)*.42,s.galaxy,{hero:true,ghost:true});
  const labels=[];
@@ -116,8 +126,8 @@ function spatial(s){
  }
  for(const item of labelSlots(labels.sort((a,b)=>a.depth-b.depth),s.stage==='GALAXY'?2:3))text(item.label,item.x,item.rect.t+10,{size:10,alpha:.58});
 }
-function system(s){
- const provider=O.v1x04SystemProvider,sys={id:s.system.canonicalId,facts:s.system.metadata?.facts||{}},stars=s.rows.filter(n=>n.kind==='star').map(n=>({id:n.canonicalId||n.entityId,facts:n.metadata?.facts||{}})),planets=s.rows.filter(n=>n.kind==='planet').map(n=>({id:n.canonicalId||n.entityId,facts:n.metadata?.facts||{}})),rendered=provider.render({system:sys,stars,planets},{camera:cameraFor(s,28,{system:true}).systemFrame,viewport:{width,height}}),labels=[];
+function system(s,angles){
+ const provider=O.v1x04SystemProvider,sys={id:s.system.canonicalId,facts:s.system.metadata?.facts||{}},stars=s.rows.filter(n=>n.kind==='star').map(n=>({id:n.canonicalId||n.entityId,facts:n.metadata?.facts||{}})),planets=s.rows.filter(n=>n.kind==='planet').map(n=>({id:n.canonicalId||n.entityId,facts:n.metadata?.facts||{}})),rendered=provider.render({system:sys,stars,planets},{camera:cameraFor(s,28,{system:true,angles}).systemFrame,viewport:{width,height}}),labels=[];
  lastHero=identityOf(s.system,s.system?.canonicalId||s.system?.entityId);
  for(const orbit of rendered.projectedOrbits){if(orbit.points.length<2)continue;g.beginPath();orbit.points.forEach((p,i)=>i?g.lineTo(p.x,p.y):g.moveTo(p.x,p.y));g.strokeStyle='rgba(151,177,188,.12)';g.lineWidth=1;g.stroke();}
  for(const h of rendered.hitTargets){
@@ -130,17 +140,24 @@ function system(s){
 }
 function draw(){
  if(!g||!dependencies())return;
- const s=O.v1LivingProduct.runtime.snapshot();active=macroStages.has(s.stage);canvas.hidden=!active;
+ const s=O.v1LivingProduct.runtime.snapshot(),nextActive=macroStages.has(s.stage),plan=surfacePlan(),angles=nextActive?cameraAngles():{yaw:0,pitch:0},key=presentationKey(s,plan,angles);
+ active=nextActive;canvas.hidden=!active;
+ if(key===lastPresentationKey){redrawSkips++;lastStage=s.stage;return;}
+ lastPresentationKey=key;
  if(!active){g.clearRect(0,0,width,height);lastStage=s.stage;lastHero=null;return;}
- fit();backdrop(s);if(s.stage==='SYSTEM')system(s);else spatial(s);lastStage=s.stage;frames++;
+ fit(plan);backdrop(s);if(s.stage==='SYSTEM')system(s,angles);else spatial(s,angles);lastStage=s.stage;frames++;
 }
-function schedule(){if(scheduled)return;scheduled=true;const ready=O.v1LivingProduct?.ready?.();Promise.resolve(ready).catch(()=>{}).then(()=>root.requestAnimationFrame(()=>{scheduled=false;draw();}));}
+function schedule(){
+ invalidations++;
+ if(scheduled){coalescedInvalidations++;return;}
+ scheduled=true;const ready=O.v1LivingProduct?.ready?.();Promise.resolve(ready).catch(()=>{}).then(()=>root.requestAnimationFrame(()=>{scheduled=false;draw();}));
+}
 function boot(){
  if(!dependencies()||!document.getElementById('living-stage')){root.setTimeout(boot,25);return;}
  stage=document.getElementById('living-stage');canvas=document.createElement('canvas');canvas.id='v2-cinematic-macro';canvas.hidden=true;canvas.setAttribute('aria-hidden','true');canvas.dataset.authority=AUTHORITY;stage.append(canvas);g=canvas.getContext('2d',{alpha:false});if(!g){canvas.remove();canvas=null;return;}
  unsubscribe=O.v1LivingProduct.runtime.onChange(schedule);stage.addEventListener('pointermove',event=>{if(event.buttons)schedule();},{passive:true});stage.addEventListener('wheel',schedule,{passive:true});root.addEventListener('resize',schedule,{passive:true});schedule();
 }
-function snapshot(){return Object.freeze({version:VERSION,authority:AUTHORITY,active,stage:lastStage,frames,heroIdentity:lastHero,maxSurfacePixels:1800000,semanticMutation:false,cameraAuthority:false,navigationAuthority:false,networkResources:0});}
+function snapshot(){return Object.freeze({version:VERSION,authority:AUTHORITY,active,stage:lastStage,frames,heroIdentity:lastHero,maxSurfacePixels:1800000,invalidations,coalescedInvalidations,redrawSkips,continuousAnimation:false,semanticMutation:false,cameraAuthority:false,navigationAuthority:false,networkResources:0});}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 O.v2CinematicMacroDirector=Object.freeze({VERSION,AUTHORITY,macroStages:Object.freeze([...macroStages]),snapshot});
 })(globalThis);
