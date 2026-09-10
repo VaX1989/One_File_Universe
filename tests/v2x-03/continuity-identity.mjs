@@ -85,3 +85,22 @@ assert.equal(w.galaxyId,g1.galaxyId);assert.equal(w.regionParent,g1.galaxyId);
 assert.ok(w.neighborhoodObjectIds.every(id=>ids.has(id)));
 assert.equal(w.cameraOwnedHere,false);assert.equal(w.selectionOwnedHere,false);assert.equal(w.scaleOwnedHere,false);
 console.log(JSON.stringify({status:'PASS',oracle:'V2X03_CONTINUITY_IDENTITY',galaxyId:w.galaxyId,regionParent:w.regionParent,neighborhoodObjects:w.neighborhoodObjectIds.length,queryOrderStable:true,nonVacuousNeighborhood:true,inputScanBounded:true,normalizedDensityFailClosed:true,strictQualityProfiles:true,capStarvationClosed:true,nestedCanonicalKeyStable:true,canonicalKeyInputIsolation:true,cyclicCanonicalKeyFailClosed:true,sourceInteractionConstraintsPreserved:true,stableFarToNearDrawOrder:true,deterministicPickTieBreak:true,decorativeNonSelectable:true,externalAuthoritiesPreserved:true}));
+
+// Canonical navigation coordinates are BigInt; presentation copies must retain them exactly.
+const exact=900719925474099312345n;
+const bigKey={galaxyX:exact,galaxyY:-exact,nested:{slot:2n}};
+for(const render of [
+ entities=>P.buildUniverse({scopeId:'bigint',entities,cameraFrame:frame}),
+ entities=>P.buildGalaxy({galaxy,entities,cameraFrame:frame}),
+ children=>P.buildRegion({parentId:'bigint',children}),
+ objects=>P.buildNeighborhood({objects,cameraFrame:frame})
+]){
+ const e={canonicalId:'bigint-entity',canonicalKey:bigKey,presentationPosition:{x:0,y:0,z:0}};
+ const out=render([e]);assert.equal(out.objects[0].canonicalKey.galaxyX,exact);
+ assert.equal(Object.isFrozen(bigKey),false);assert.equal(Object.isFrozen(bigKey.nested),false);
+ assert.notEqual(out.objects[0].canonicalKey,bigKey);
+ const keyOnly=v=>({canonicalKey:{x:v},presentationPosition:{x:0,y:0,z:0}});
+ assert.equal(render([keyOnly(2n),keyOnly('2'),keyOnly(2)]).objects.length,3);
+ assert.throws(()=>render([keyOnly(2n),keyOnly(2n)]),/duplicate upstream identity/);
+}
+console.log(JSON.stringify({status:'PASS',oracle:'V2X03_CANONICAL_BIGINT_IDENTITY'}));
