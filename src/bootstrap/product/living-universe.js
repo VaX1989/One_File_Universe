@@ -9,7 +9,7 @@ const $=id=>document.getElementById(id);
 function el(tag,text=null,attrs={}){const x=document.createElement(tag);if(text!==null)x.textContent=text;for(const [k,v] of Object.entries(attrs)){if(k==='class')x.className=v;else x.setAttribute(k,String(v));}return x;}
 function button(text,action,{primary=false,disabled=false,id=null}={}){const b=el('button',text,{type:'button',class:'living-button'+(primary?' primary':''),'data-living-action':id||text});b.disabled=disabled;b.addEventListener('click',()=>act(action));return b;}
 function act(fn){try{uiError=null;const result=fn();if(result?.then)result.catch(fail);return result;}catch(error){fail(error);return null;}}
-function fail(error){uiError=String(error?.message||error);renderError=uiError;renderPanel(runtime?.snapshot());console.error('Wave A product:',error);}
+function fail(error){const message=String(error?.message||error);if(message==='OFU V2X-01 CANCELLED: superseded')return;uiError=message;renderError=uiError;renderPanel(runtime?.snapshot());console.error('Wave A product:',error);}
 function stopLegacy(){for(const id of ['wave-iv-macro','planet-webgl','surface-webgl']){try{O.pxProduct.sceneImplementation(id).setActive(false);}catch(error){/* A legacy scene may be unavailable in a restricted graphics backend. */}}}
 function pointAction(point,{settlement=null}={}){
  const s=runtime.snapshot();
