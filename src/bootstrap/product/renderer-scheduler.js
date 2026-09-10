@@ -10,15 +10,13 @@ function installLivingPacer(){
  if(living.FRAME_PACING_VERSION){state.livingPacerInstalled=true;return true;}
  const originalCreate=living.create.bind(living),version='ofu-living-frame-pacer-1';
  function create(...args){
-  const renderer=originalCreate(...args);let frame=0,dx=0,dy=0,events=0,disposed=false,renderGeneration=0,lastReadyRevision=-1;
+  const renderer=originalCreate(...args);let frame=0,dx=0,dy=0,events=0,disposed=false;
   const pacing={version,strategy:'RAF_COALESCED_ROTATION',inputEvents:0,frames:0,coalescedEvents:0,pendingEvents:0};
   const flush=()=>{frame=0;const x=dx,y=dy,count=events;dx=0;dy=0;events=0;pacing.pendingEvents=0;if(disposed||!count)return;pacing.frames++;pacing.coalescedEvents+=Math.max(0,count-1);state.livingRotationFrames++;state.livingRotationCoalesced+=Math.max(0,count-1);renderer.rotate(x,y);};
   const rotate=(x,y)=>{const rx=Number(x),ry=Number(y);if(!Number.isFinite(rx)||!Number.isFinite(ry))throw new TypeError('Living rotation delta must be finite');if(rx===0&&ry===0)return;dx+=rx;dy+=ry;events++;pacing.inputEvents++;pacing.pendingEvents=events;state.livingRotationInputs++;if(!frame)frame=native(flush);};
-  const rememberReady=revision=>{const ready=renderer.state().readyRevision;if(Number.isInteger(ready)&&ready>=0)lastReadyRevision=ready;if(ready!==revision)return false;root.OFU?.v1LivingProduct?.clearError?.();return true;};
-  const render=async snapshot=>{const generation=++renderGeneration,revision=snapshot?.revision;try{await renderer.render(snapshot);if(disposed||generation!==renderGeneration)return;if(rememberReady(revision))return;await new Promise(resolve=>native(()=>resolve()));if(disposed||generation!==renderGeneration)return;await renderer.render(snapshot);if(disposed||generation!==renderGeneration)return;rememberReady(revision);}catch(error){if(disposed||generation!==renderGeneration)return;throw error;}};
-  const rendererState=()=>{const current=renderer.state();if(Number.isInteger(current.readyRevision)&&current.readyRevision>=0)lastReadyRevision=current.readyRevision;return Object.freeze({...current,readyRevision:current.readyRevision<0?lastReadyRevision:current.readyRevision,framePacing:Object.freeze({...pacing})});};
-  const dispose=()=>{disposed=true;renderGeneration++;if(frame){nativeCancel(frame);frame=0;}dx=0;dy=0;events=0;pacing.pendingEvents=0;return renderer.dispose();};
-  return Object.freeze({...renderer,render,rotate,state:rendererState,dispose});
+  const rendererState=()=>Object.freeze({...renderer.state(),framePacing:Object.freeze({...pacing})});
+  const dispose=()=>{disposed=true;if(frame){nativeCancel(frame);frame=0;}dx=0;dy=0;events=0;pacing.pendingEvents=0;return renderer.dispose();};
+  return Object.freeze({...renderer,rotate,state:rendererState,dispose});
  }
  O.v1LivingRenderer=Object.freeze({...living,FRAME_PACING_VERSION:version,create});state.livingPacerInstalled=true;return true;
 }

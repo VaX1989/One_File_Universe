@@ -3,13 +3,15 @@
 const O=root.OFU;if(typeof document==='undefined')return;
 const VERSION='ofu-wave-a-living-product-1',title=s=>String(s||'').toLowerCase().replaceAll('_',' '),short=s=>String(s||'').slice(0,8);
 let runtime=null,renderer=null,stage=null,panel=null,canvas=null,rail=null,heading=null,location=null,breadcrumbs=null,uiError=null,pending=null,initialized=false;
-let search={goal:'CIVILIZATION',cursor:null,rows:[],worlds:0,pages:0,running:false,generation:0,context:null},renderError=null;
+let search={goal:'CIVILIZATION',cursor:null,rows:[],worlds:0,pages:0,running:false,generation:0,context:null},renderError=null,renderGeneration=0;
 const inputState={activePointers:0,pinchActive:false,lastGesture:null,cancellations:0};
 const $=id=>document.getElementById(id);
 function el(tag,text=null,attrs={}){const x=document.createElement(tag);if(text!==null)x.textContent=text;for(const [k,v] of Object.entries(attrs)){if(k==='class')x.className=v;else x.setAttribute(k,String(v));}return x;}
 function button(text,action,{primary=false,disabled=false,id=null}={}){const b=el('button',text,{type:'button',class:'living-button'+(primary?' primary':''),'data-living-action':id||text});b.disabled=disabled;b.addEventListener('click',()=>act(action));return b;}
-function act(fn){try{uiError=null;const result=fn();if(result?.then)result.catch(fail);return result;}catch(error){fail(error);return null;}}
-function fail(error){uiError=String(error?.message||error);renderError=uiError;renderPanel(runtime?.snapshot());console.error('Wave A product:',error);}
+function act(fn){try{uiError=null;renderError=null;const result=fn();if(result?.then)result.catch(fail);return result;}catch(error){fail(error);return null;}}
+function fail(error){renderError=null;uiError=String(error?.message||error);renderPanel(runtime?.snapshot());console.error('Wave A product:',error);}
+function failRender(error,generation){if(generation!==renderGeneration)return;uiError=String(error?.message||error);renderError=uiError;renderPanel(runtime?.snapshot());console.error('Wave A product render:',error);}
+function renderCurrent(s){const generation=++renderGeneration;const request=renderer.render(s).then(()=>{if(generation!==renderGeneration)return;const readyRevision=renderer.state().readyRevision;if(readyRevision===s.revision&&renderError!==null&&uiError===renderError){uiError=null;renderError=null;renderPanel(runtime?.snapshot());}}).catch(error=>failRender(error,generation));pending=request;return request;}
 function stopLegacy(){for(const id of ['wave-iv-macro','planet-webgl','surface-webgl']){try{O.pxProduct.sceneImplementation(id).setActive(false);}catch(error){/* A legacy scene may be unavailable in a restricted graphics backend. */}}}
 function pointAction(point,{settlement=null}={}){
  const s=runtime.snapshot();
@@ -127,7 +129,7 @@ function drawChrome(s){
 function change(s){
  const context=s.system?.canonicalId||null;if(search.running&&search.context!==context){search.generation++;search.running=false;}
  if(search.context!==context){search={...search,cursor:null,rows:[],worlds:0,pages:0,context};}
- drawChrome(s);renderPanel(s);stopLegacy();renderer.setTravelDistance?.(s.continuousDistanceRadii,s.semanticScale);pending=renderer.render(s).catch(fail);
+ drawChrome(s);renderPanel(s);stopLegacy();renderer.setTravelDistance?.(s.continuousDistanceRadii,s.semanticScale);renderCurrent(s);
 }
 async function survey(){
  if(search.running)return;const generation=++search.generation,context=runtime.snapshot().system?.canonicalId;search.running=true;search.context=context;renderPanel(runtime.snapshot());
@@ -146,7 +148,7 @@ async function survey(){
 }
 function bindInputs(){
  const R=O.waveIVScaleRuntime,pointers=new Map();let drag=null,pinch=null;
- const visibleScale=source=>{renderer.setTravelDistance?.(runtime.snapshot().continuousDistanceRadii,runtime.snapshot().semanticScale);pending=renderer.render(runtime.snapshot()).catch(fail);R.viewportChanged({width:canvas.clientWidth,height:canvas.clientHeight,inputSurface:'living-view'},{source});};
+ const visibleScale=source=>{const s=runtime.snapshot();renderer.setTravelDistance?.(s.continuousDistanceRadii,s.semanticScale);renderCurrent(s);R.viewportChanged({width:canvas.clientWidth,height:canvas.clientHeight,inputSurface:'living-view'},{source});};
  const pointerPosition=e=>{const r=canvas.getBoundingClientRect();return{x:Number.isFinite(e.clientX)?e.clientX-r.left:e.offsetX,y:Number.isFinite(e.clientY)?e.clientY-r.top:e.offsetY};};
  const updateInput=(gesture=null)=>{inputState.activePointers=pointers.size;inputState.pinchActive=!!pinch;if(gesture)inputState.lastGesture=gesture;};
  canvas.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();canvas.focus({preventScroll:true});const p=pointerPosition(e);pointers.set(e.pointerId,p);try{canvas.setPointerCapture(e.pointerId)}catch{/* Pointer may already have been cancelled by the host. */}if(pointers.size===1)drag={x:p.x,y:p.y,lastX:p.x,lastY:p.y,moved:false,pointer:e.pointerId};if(pointers.size===2){const pts=[...pointers.values()],span=Math.max(1,Math.hypot(pts[0].x-pts[1].x,pts[0].y-pts[1].y));pinch={span,coordinate:runtime.snapshot().navigationCoordinate};drag=null;updateInput('pinch-start');}else updateInput('pointer-down');});
