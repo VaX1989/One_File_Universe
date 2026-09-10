@@ -50,7 +50,7 @@ function sampleColor(s,world){
  return mix(c,[184,183,169],clamp((s.topography.elevationMeters-1000)/12000,0,.6));
 }
 function create(canvas,glCanvas,{onActivate=null,onPoint=null,onObject=null}={}){
- const g=canvas.getContext('2d',{alpha:true}),maps=new Map(),pendingMaps=new Map();
+ const g=canvas.getContext('2d',{alpha:true}),maps=new Map();
  if(!g)throw new Error('Canvas2D unavailable');
  let budgetProfile=resourceProfile(),budget=O.v1RenderBudget.create(budgetProfile);
  let gpu=null,gpuError=null,snapshot=null,scene=null,token=0,readyRevision=-1,width=1,height=1,dpr=1,disposed=false,picks=[],surface=null,lastSurfaceKey=null,fallbackScratch=null;
@@ -101,27 +101,21 @@ function create(canvas,glCanvas,{onActivate=null,onPoint=null,onObject=null}={})
   if(!s.rows.length)label('No entities in this bounded page. Continue the survey.',width/2,height/2,{align:'center',size:16});
  }
 
- async function mapFor(world){
+ async function mapFor(world,myToken){
   const id=world.planetIdentity,cacheKey=id+':'+world.canonicalInputDigest;
   if(maps.has(cacheKey)){const value=maps.get(cacheKey);maps.delete(cacheKey);maps.set(cacheKey,value);return value;}
-  if(pendingMaps.has(cacheKey))return pendingMaps.get(cacheKey);
-  const build=(async()=>{
-   const data=new Uint8Array(MAP_W*MAP_H*4),cloud=['GAS_GIANT','ICE_GIANT'].includes(world.planetology.bulkPriorClass);
-   for(let y=0;y<MAP_H;y++){
-    for(let x=0;x<MAP_W;x++){
-     let color;
-     if(cloud){const p=world.planetology,t=.5+.5*Math.sin(y*.92+Math.sin(x*.11)*.42);color=mix(p.bulkPriorClass==='ICE_GIANT'?[70,133,153]:[174,141,102],p.bulkPriorClass==='ICE_GIANT'?[151,197,205]:[91,80,69],t);}
-     else{const point=W.location(id,Math.round(90000000-(y+.5)*180000000/MAP_H),Math.round(-180000000+(x+.5)*360000000/MAP_W));const sample=W.sample(world.planetology,point);color=sampleColor(sample,world);metrics.modelSamples++;}
-     const offset=(y*MAP_W+x)*4;data[offset]=color[0];data[offset+1]=color[1];data[offset+2]=color[2];data[offset+3]=255;
-    }
-    if(y%4===3){await pause();if(disposed){metrics.cancellations++;return null;}}
+  const data=new Uint8Array(MAP_W*MAP_H*4),cloud=['GAS_GIANT','ICE_GIANT'].includes(world.planetology.bulkPriorClass);
+  for(let y=0;y<MAP_H;y++){
+   for(let x=0;x<MAP_W;x++){
+    let color;
+    if(cloud){const p=world.planetology,t=.5+.5*Math.sin(y*.92+Math.sin(x*.11)*.42);color=mix(p.bulkPriorClass==='ICE_GIANT'?[70,133,153]:[174,141,102],p.bulkPriorClass==='ICE_GIANT'?[151,197,205]:[91,80,69],t);}
+    else{const point=W.location(id,Math.round(90000000-(y+.5)*180000000/MAP_H),Math.round(-180000000+(x+.5)*360000000/MAP_W));const sample=W.sample(world.planetology,point);color=sampleColor(sample,world);metrics.modelSamples++;}
+    const offset=(y*MAP_W+x)*4;data[offset]=color[0];data[offset+1]=color[1];data[offset+2]=color[2];data[offset+3]=255;
    }
-   if(disposed)return null;
-   const map={key:cacheKey,width:MAP_W,height:MAP_H,data,worldIdentity:id,geometryAuthority:'MODEL_DERIVED_SIMULATION',colorAuthority:'PRESENTATION_ONLY',cloudPatternOnly:cloud};
-   if(maps.size>=MAX_MAPS){maps.delete(maps.keys().next().value);metrics.mapEvictions++;}maps.set(cacheKey,map);metrics.mapBuilds++;metrics.maxMapCells=Math.max(metrics.maxMapCells,MAP_W*MAP_H);return map;
-  })();
-  pendingMaps.set(cacheKey,build);
-  try{return await build;}finally{if(pendingMaps.get(cacheKey)===build)pendingMaps.delete(cacheKey);}
+   if(y%4===3){await pause();if(myToken!==token||disposed){metrics.cancellations++;return null;}}
+  }
+  const map={key:cacheKey,width:MAP_W,height:MAP_H,data,worldIdentity:id,geometryAuthority:'MODEL_DERIVED_SIMULATION',colorAuthority:'PRESENTATION_ONLY',cloudPatternOnly:cloud};
+  if(maps.size>=MAX_MAPS){maps.delete(maps.keys().next().value);metrics.mapEvictions++;}maps.set(cacheKey,map);metrics.mapBuilds++;metrics.maxMapCells=Math.max(metrics.maxMapCells,MAP_W*MAP_H);return map;
  }
  function screenForPoint(point,scale=.76){
   const lat=point.latMicroDeg/1e6*Math.PI/180,lon=point.lonMicroDeg/1e6*Math.PI/180-yaw,yy=Math.sin(lat),z=Math.cos(lat)*Math.cos(lon),x=Math.cos(lat)*Math.sin(lon),y=yy*Math.cos(pitch)-z*Math.sin(pitch),front=yy*Math.sin(pitch)+z*Math.cos(pitch),r=Math.min(width,height)*scale/2;
@@ -148,7 +142,7 @@ function create(canvas,glCanvas,{onActivate=null,onPoint=null,onObject=null}={})
  async function globe(s,myToken){
   if(bodyId!==s.world.planetIdentity){bodyId=s.world.planetIdentity;yaw=0;pitch=0;}
   background();label('Resolving model surface...',width/2,height/2,{align:'center',size:14});
-  const map=await mapFor(s.world);if(!map||myToken!==token)return;
+  const map=await mapFor(s.world,myToken);if(!map||myToken!==token)return;
   scene=registeredScene(s,'PLANET');const scale=s.stage==='APPROACH'?.88:.76;
   scene={...scene,scale:s.stage==='APPROACH'?'APPROACH':'PLANET',surfaceTexture:map,camera:{yaw,pitch},globeScale:scale};
   try{if(gpuError&&!gpu)throw new Error(gpuError);if(!gpu)gpu=O.v1WorldWebGL2.create(glCanvas,{maxDpr:2});glCanvas.hidden=false;gpu.render(scene);background(false);}
@@ -235,7 +229,7 @@ function create(canvas,glCanvas,{onActivate=null,onPoint=null,onObject=null}={})
   label('Semantic regime change, not literal infinite geometric zoom',22,height-23,{size:10});
  }
  async function render(s){
-  if(disposed)return;const myToken=++token;snapshot=s;readyRevision=-1;picks=[];selectedPick=-1;resize();glCanvas.hidden=true;
+  if(disposed)return;const myToken=++token;snapshot=s;if(readyRevision!==s.revision)readyRevision=-1;picks=[];selectedPick=-1;resize();glCanvas.hidden=true;
   if(s.world&&['ORBIT','APPROACH'].includes(s.stage))await globe(s,myToken);
   else if(s.stage==='ORBIT'&&s.body?.kind==='star')star(s);
   else if(O.v1LivingRuntime.SURFACE.includes(s.stage)){
@@ -255,7 +249,7 @@ function create(canvas,glCanvas,{onActivate=null,onPoint=null,onObject=null}={})
  function activateAt(x,y){for(let i=picks.length-1;i>=0;i--){const p=picks[i];if(Math.hypot(x-p.x,y-p.y)>p.r)continue;const d=p.data;if(snapshot?.stage==='GLOBAL_SURFACE'&&d.point&&!d.settlement)continue;if(d.node)onActivate?.(d.node);else if(d.objectId)onObject?.(d.objectId);else if(d.point)onPoint?.(d.point,{settlement:d.settlement||null});return true;}if(snapshot?.world&&['ORBIT','APPROACH'].includes(snapshot.stage)){const p=pointFromScreen(x,y,snapshot.stage==='APPROACH'?.88:.76);if(p){onPoint?.(p,{});return true;}}if(snapshot?.stage==='GLOBAL_SURFACE'&&x>=32&&x<=width-32&&y>=72&&y<=height-73){const p=W.location(snapshot.world.planetIdentity,Math.round(90000000-(y-72)/(height-145)*180000000),Math.round(-180000000+(x-32)/(width-64)*360000000));onPoint?.(p,{});return true;}return false;}
  function keyboard(key){if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(key)&&picks.length){selectedPick=(selectedPick+(key==='ArrowLeft'||key==='ArrowUp'?-1:1)+picks.length)%picks.length;canvas.setAttribute('aria-label','Universe viewport. Focused '+picks[selectedPick].label);const p=picks[selectedPick];g.strokeStyle='#eac680';g.lineWidth=2;g.beginPath();g.arc(p.x,p.y,p.r+3,0,Math.PI*2);g.stroke();return true;}if(key==='Enter'&&selectedPick>=0){const p=picks[selectedPick];return activateAt(p.x,p.y);}return false;}
  function state(){return {version:VERSION,readyRevision,worldIdentity:snapshot?.world?.planetIdentity||null,stage:snapshot?.stage,sceneScale:scene?.scale,sceneSourceId:scene?.sourceId,sourceIds:scene?.objects.map(o=>o.sourceId)||[],pickCount:picks.length,metrics:{...metrics},mapCacheEntries:maps.size,mapCacheLimit:MAX_MAPS,mapResolution:[MAP_W,MAP_H],gpu:gpu?.snapshot()||null,gpuError,resourceProfile:budgetProfile,surface,fallbackScratch:fallbackScratch?{allocated:true,size:fallbackScratch.size,pixels:fallbackScratch.size*fallbackScratch.size,accounting:'MODELED_SCRATCH_SURFACE_LIFECYCLE',heapMemoryMeasured:false,gpuMemoryMeasured:false}:null,budget:budget.snapshot(),authority:'PRESENTATION_ONLY',networkResources:0};}
- function dispose(){disposed=true;token++;maps.clear();pendingMaps.clear();picks=[];terrain=[];gpu?.dispose();gpu=null;fallbackScratch=null;budget.clear('dispose');}
+ function dispose(){disposed=true;token++;maps.clear();picks=[];terrain=[];gpu?.dispose();gpu=null;fallbackScratch=null;budget.clear('dispose');}
  return Object.freeze({VERSION,render,rotate,setTravelDistance,activateAt,keyboard,state,dispose,resize,sampleColor});
 }
 O.v1LivingRenderer=Object.freeze({VERSION,MAP_W,MAP_H,MAX_MAPS,MAX_TERRAIN,sampleColor,adaptPresentationCamera,resourceProfile,terrainGridShape,create});

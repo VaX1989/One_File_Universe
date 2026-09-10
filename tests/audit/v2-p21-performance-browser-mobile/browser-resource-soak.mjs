@@ -182,12 +182,7 @@ async function sample(page,cycle,workerAudit){
 
 async function contextRecovery(page){
  await page.evaluate(()=>OFU.v1LivingProduct.runtime.scale('APPROACH'));await waitStage(page,'APPROACH');
- try{
-  await page.waitForFunction(()=>{const p=OFU.v1LivingProduct,s=p.runtime.snapshot(),r=p.snapshot();return s.stage==='APPROACH'&&r.uiError===null&&r.render.readyRevision===s.revision},undefined,{timeout:30000});
- }catch(error){
-  const diagnostic=await page.evaluate(()=>{const p=OFU.v1LivingProduct,s=p?.runtime?.snapshot?.(),ps=p?.snapshot?.();return{stage:s?.stage??null,runtimeRevision:s?.revision??null,uiError:ps?.uiError??null,readyRevision:ps?.render?.readyRevision??null,render:ps?.render??null,scheduler:globalThis.__OFU_WAVE_IV_RAF_GATE__?.snapshot?.()??null}});
-  throw new Error(`P21_CONTEXT_READINESS_DIAGNOSTIC ${JSON.stringify(diagnostic)}`,{cause:error});
- }
+ await page.waitForFunction(()=>{const p=OFU.v1LivingProduct,s=p.runtime.snapshot(),r=p.snapshot();return s.stage==='APPROACH'&&r.uiError===null&&r.render.readyRevision===s.revision},undefined,{timeout:30000});
  const result=await page.evaluate(async()=>{
   const product=OFU.v1LivingProduct,canvas=document.getElementById('living-gl'),gl=canvas?.getContext?.('webgl2'),ext=gl?.getExtension?.('WEBGL_lose_context');
   if(!gl)return{status:'NOT_MEASURABLE_BACKEND_NOT_WEBGL2'};
