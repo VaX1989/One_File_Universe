@@ -89,19 +89,7 @@ jobs:
         run: |
           npm install --no-save --package-lock=false playwright@1.62.1
           npx playwright install --with-deps chromium firefox webkit
-      - name: P21 direct diagnostic
-        shell: bash
-        run: |
-          mkdir -p dist/evidence/v2-p21-performance-browser-mobile
-          set -o pipefail
-          node tests/audit/v2-p21-performance-browser-mobile/browser-resource-soak.mjs 2>&1 | tee dist/evidence/v2-p21-performance-browser-mobile/p21-direct-diagnostic.log
-      - name: Upload P21 failure diagnostic
-        if: failure()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4 pinned
-        with:
-          name: p21-context-diagnostic-${{ env.OFU_SOURCE_SHA }}
-          path: dist/evidence/v2-p21-performance-browser-mobile/
-          if-no-files-found: ignore
-          retention-days: 3
+      - name: Full component integrity
+        run: node tools/extensions/conformance.mjs RELEASE --exact
       - name: Workflow reproducibility guard
         run: node tests/governance/workflow-reproducibility.mjs
