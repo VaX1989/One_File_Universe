@@ -49,7 +49,9 @@ async function openOfflineProduct(page){
      livingError:document.querySelector('.living-error')?.textContent||null
     }));
    }catch(snapshotError){startupState={diagnosticError:String(snapshotError?.message||snapshotError)}}
-   error.message=`${error.message} | startupConsole=${JSON.stringify(startupConsole)} startupState=${JSON.stringify(startupState)}`;
+   const diagnostic=`startupConsole=${JSON.stringify(startupConsole)} startupState=${JSON.stringify(startupState)}`;
+   console.error('P21_BOOT_DIAGNOSTICS',diagnostic);
+   error.message=`${error.message} | ${diagnostic}`;
    throw error;
   }
   await page.context().setOffline(true);
