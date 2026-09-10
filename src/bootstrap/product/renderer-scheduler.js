@@ -10,13 +10,15 @@ function installLivingPacer(){
  if(living.FRAME_PACING_VERSION){state.livingPacerInstalled=true;return true;}
  const originalCreate=living.create.bind(living),version='ofu-living-frame-pacer-1';
  function create(...args){
-  const renderer=originalCreate(...args);let frame=0,dx=0,dy=0,events=0,disposed=false;
+  const renderer=originalCreate(...args),canvas=args[0];let frame=0,dx=0,dy=0,events=0,disposed=false,renderPending=null,renderPendingKey=null;
   const pacing={version,strategy:'RAF_COALESCED_ROTATION',inputEvents:0,frames:0,coalescedEvents:0,pendingEvents:0};
   const flush=()=>{frame=0;const x=dx,y=dy,count=events;dx=0;dy=0;events=0;pacing.pendingEvents=0;if(disposed||!count)return;pacing.frames++;pacing.coalescedEvents+=Math.max(0,count-1);state.livingRotationFrames++;state.livingRotationCoalesced+=Math.max(0,count-1);renderer.rotate(x,y);};
   const rotate=(x,y)=>{const rx=Number(x),ry=Number(y);if(!Number.isFinite(rx)||!Number.isFinite(ry))throw new TypeError('Living rotation delta must be finite');if(rx===0&&ry===0)return;dx+=rx;dy+=ry;events++;pacing.inputEvents++;pacing.pendingEvents=events;state.livingRotationInputs++;if(!frame)frame=native(flush);};
+  const renderKey=s=>[s?.revision,canvas?.clientWidth||0,canvas?.clientHeight||0,root.devicePixelRatio||1].join(':');
+  const render=s=>{const key=renderKey(s);if(renderPending&&renderPendingKey===key)return renderPending;const work=Promise.resolve(renderer.render(s));const tracked=work.finally(()=>{if(renderPending===tracked){renderPending=null;renderPendingKey=null;}});renderPending=tracked;renderPendingKey=key;return tracked;};
   const rendererState=()=>Object.freeze({...renderer.state(),framePacing:Object.freeze({...pacing})});
-  const dispose=()=>{disposed=true;if(frame){nativeCancel(frame);frame=0;}dx=0;dy=0;events=0;pacing.pendingEvents=0;return renderer.dispose();};
-  return Object.freeze({...renderer,rotate,state:rendererState,dispose});
+  const dispose=()=>{disposed=true;if(frame){nativeCancel(frame);frame=0;}dx=0;dy=0;events=0;renderPending=null;renderPendingKey=null;pacing.pendingEvents=0;return renderer.dispose();};
+  return Object.freeze({...renderer,render,rotate,state:rendererState,dispose});
  }
  O.v1LivingRenderer=Object.freeze({...living,FRAME_PACING_VERSION:version,create});state.livingPacerInstalled=true;return true;
 }
