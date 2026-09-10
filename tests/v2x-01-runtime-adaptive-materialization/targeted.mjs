@@ -134,3 +134,16 @@ let quarantineReleaseAttempts=0;const quarantineRt=O.v2x01MaterializationRuntime
 const pf=O.v2x01BoundedPrefetch.create({maxCandidates:3,maxRequests:2});assert.throws(()=>pf.plan({intentSnapshot:{},candidates:[{request:{durable:req('x').durable,targetState:'IMMEDIATE',taskClass:'PREFETCH',semantic:{},presentation:{},estimate:{cpuEstimateBytes:0,gpuEstimateBytes:0,entities:0,operations:0,transferBytes:0}},priority:1,distanceHint:1}]}),/AUTHORITY/);assert.throws(()=>pf.plan({intentSnapshot:{},candidates:[{request:{...req('elevated',0,'WARM','REFINE',0)},priority:1,distanceHint:1}]}),/AUTHORITY/);const p1=req('prefetch-low',0,'WARM','PREFETCH',0),p2=req('prefetch-high',0,'WARM','PREFETCH',0);const selected=pf.plan({intentSnapshot:{direction:'forward'},candidates:[{request:p1,priority:1,distanceHint:1},{request:p2,priority:2,distanceHint:2}]});assert.equal(selected.length,1);assert.equal(selected[0].durable.commitmentDigest,h('prefetch-high'));assert.equal(pf.snapshot().metrics.duplicatesDropped,1);
 
 console.log(JSON.stringify({status:'PASS',oracle:'V2X01_RUNTIME_TARGETED_INVARIANTS',generation:'V2_RUNTIME_2',starvationBound:{sameClassImmediateStartsBeforeWarm:lowObservedAt,crossClassInteractionsBeforePrefetch:prefetchObservedAt,workloadOrder:domainOrder.slice(0,8)},adaptivePolicy:{version:O.v2x01Contracts.ADAPTIVE_POLICY_VERSION,packet:runtimePacket},streaming:{success:streamSnap,budget:streamBudgetSnap,startTimeout:streamStartTimeoutSnap},snapshot:snap,detachedSnapshot:detachedSnap,fallbackSnapshot:fallbackSnap,releaseSnapshot:releaseSnap,quarantineSnapshot:quarantineSnap,prefetch:pf.snapshot()}));
+
+// Exercise the shipping Living binding against the real registration and request contracts.
+let livingDraws=0;
+O.v1LivingRenderer={create:()=>({render:async()=>{livingDraws++},state:()=>({}),dispose(){}})};
+vm.runInThisContext(fs.readFileSync('src/runtime/living-materialization-binding.js','utf8'),{filename:'src/runtime/living-materialization-binding.js'});
+const livingBound=O.v1LivingRenderer.create({width:390,height:844},null);
+await livingBound.render({stage:'UNIVERSE',semanticScale:'galaxy',revision:0,historyDepth:0});
+assert.equal(livingDraws,1);
+assert.equal(livingBound.state().v2x01.failures,0);
+assert.equal(livingBound.state().v2x01.requests,1);
+assert(livingBound.state().v2x01.runtimePacket);
+livingBound.dispose();
+console.log(JSON.stringify({status:'PASS',oracle:'V2X01_REAL_LIVING_MATERIALIZER_CONTRACT'}));
