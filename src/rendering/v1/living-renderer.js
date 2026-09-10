@@ -229,7 +229,7 @@ function create(canvas,glCanvas,{onActivate=null,onPoint=null,onObject=null}={})
   label('Semantic regime change, not literal infinite geometric zoom',22,height-23,{size:10});
  }
  async function render(s){
-  if(disposed)return;const myToken=++token;snapshot=s;readyRevision=-1;picks=[];selectedPick=-1;resize();glCanvas.hidden=true;
+  if(disposed)return;const myToken=++token;snapshot=s;if(readyRevision!==s.revision)readyRevision=-1;picks=[];selectedPick=-1;resize();glCanvas.hidden=true;
   if(s.world&&['ORBIT','APPROACH'].includes(s.stage))await globe(s,myToken);
   else if(s.stage==='ORBIT'&&s.body?.kind==='star')star(s);
   else if(O.v1LivingRuntime.SURFACE.includes(s.stage)){
