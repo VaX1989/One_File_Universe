@@ -14,6 +14,20 @@
       ],
       "oracle": "ofu-v2-p21-performance-browser-mobile-evidence-1",
       "timeoutMs": 840000
+    },
+    {
+      "id": "audit.p21.transactional-living-bootstrap",
+      "owner": "v2-p21-audit",
+      "tier": "FAST_LOCAL",
+      "command": [
+        "node",
+        "tests/audit/v2-p21-performance-browser-mobile/transactional-bootstrap-contract.mjs"
+      ],
+      "providers": [
+        "v1.scene.living-world"
+      ],
+      "oracle": "ofu-v2-p21-transactional-living-bootstrap-1",
+      "timeoutMs": 10000
     }
   ]
 }

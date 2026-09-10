@@ -1,8 +1,10 @@
 (function(root){
 'use strict';
 const O=root.OFU;if(typeof document==='undefined')return;
-const VERSION='ofu-wave-a-living-product-1',title=s=>String(s||'').toLowerCase().replaceAll('_',' '),short=s=>String(s||'').slice(0,8);
+const VERSION='ofu-wave-a-living-product-1',MAX_BOOT_ATTEMPTS=8,MAX_PREFLIGHT_POLLS=120,title=s=>String(s||'').toLowerCase().replaceAll('_',' '),short=s=>String(s||'').slice(0,8);
 let runtime=null,renderer=null,stage=null,panel=null,canvas=null,rail=null,heading=null,location=null,breadcrumbs=null,uiError=null,pending=null,initialized=false,initializing=false;
+let runtimeUnsubscribe=null,inputCleanup=null,bootTimer=null,bootDelay=50,bootAttempts=0,preflightPolls=0,bootErrorNode=null,lastBootstrapError=null;
+const bootstrapFailures=[];
 let search={goal:'CIVILIZATION',cursor:null,rows:[],worlds:0,pages:0,running:false,generation:0,context:null},renderError=null;
 const inputState={activePointers:0,pinchActive:false,lastGesture:null,cancellations:0};
 const $=id=>document.getElementById(id);
@@ -149,20 +151,23 @@ function bindInputs(){
  const visibleScale=source=>{renderer.setTravelDistance?.(runtime.snapshot().continuousDistanceRadii,runtime.snapshot().semanticScale);pending=renderer.render(runtime.snapshot()).catch(fail);R.viewportChanged({width:canvas.clientWidth,height:canvas.clientHeight,inputSurface:'living-view'},{source});};
  const pointerPosition=e=>{const r=canvas.getBoundingClientRect();return{x:Number.isFinite(e.clientX)?e.clientX-r.left:e.offsetX,y:Number.isFinite(e.clientY)?e.clientY-r.top:e.offsetY};};
  const updateInput=(gesture=null)=>{inputState.activePointers=pointers.size;inputState.pinchActive=!!pinch;if(gesture)inputState.lastGesture=gesture;};
- canvas.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();canvas.focus({preventScroll:true});const p=pointerPosition(e);pointers.set(e.pointerId,p);try{canvas.setPointerCapture(e.pointerId)}catch{/* Pointer may already have been cancelled by the host. */}if(pointers.size===1)drag={x:p.x,y:p.y,lastX:p.x,lastY:p.y,moved:false,pointer:e.pointerId};if(pointers.size===2){const pts=[...pointers.values()],span=Math.max(1,Math.hypot(pts[0].x-pts[1].x,pts[0].y-pts[1].y));pinch={span,coordinate:runtime.snapshot().navigationCoordinate};drag=null;updateInput('pinch-start');}else updateInput('pointer-down');});
- canvas.addEventListener('pointermove',e=>{if(!pointers.has(e.pointerId))return;e.preventDefault();e.stopPropagation();const p=pointerPosition(e);pointers.set(e.pointerId,p);if(pointers.size>=2&&pinch){const pts=[...pointers.values()].slice(0,2),span=Math.max(1,Math.hypot(pts[0].x-pts[1].x,pts[0].y-pts[1].y)),delta=Math.log2(span/pinch.span)*1.5;runtime.setNavigationCoordinate(pinch.coordinate+delta,{source:'living-active-pinch'});updateInput('pinch');return;}if(!drag||drag.pointer!==e.pointerId)return;const dx=p.x-drag.lastX,dy=p.y-drag.lastY;if(Math.hypot(p.x-drag.x,p.y-drag.y)>5)drag.moved=true;if(drag.moved)renderer.rotate(dx,dy);drag.lastX=p.x;drag.lastY=p.y;updateInput('drag');});
+ const onPointerDown=e=>{e.preventDefault();e.stopPropagation();canvas.focus({preventScroll:true});const p=pointerPosition(e);pointers.set(e.pointerId,p);try{canvas.setPointerCapture(e.pointerId)}catch{/* Pointer may already have been cancelled by the host. */}if(pointers.size===1)drag={x:p.x,y:p.y,lastX:p.x,lastY:p.y,moved:false,pointer:e.pointerId};if(pointers.size===2){const pts=[...pointers.values()],span=Math.max(1,Math.hypot(pts[0].x-pts[1].x,pts[0].y-pts[1].y));pinch={span,coordinate:runtime.snapshot().navigationCoordinate};drag=null;updateInput('pinch-start');}else updateInput('pointer-down');};
+ const onPointerMove=e=>{if(!pointers.has(e.pointerId))return;e.preventDefault();e.stopPropagation();const p=pointerPosition(e);pointers.set(e.pointerId,p);if(pointers.size>=2&&pinch){const pts=[...pointers.values()].slice(0,2),span=Math.max(1,Math.hypot(pts[0].x-pts[1].x,pts[0].y-pts[1].y)),delta=Math.log2(span/pinch.span)*1.5;runtime.setNavigationCoordinate(pinch.coordinate+delta,{source:'living-active-pinch'});updateInput('pinch');return;}if(!drag||drag.pointer!==e.pointerId)return;const dx=p.x-drag.lastX,dy=p.y-drag.lastY;if(Math.hypot(p.x-drag.x,p.y-drag.y)>5)drag.moved=true;if(drag.moved)renderer.rotate(dx,dy);drag.lastX=p.x;drag.lastY=p.y;updateInput('drag');};
  const finish=(e,cancelled=false)=>{const wasDrag=drag&&drag.pointer===e.pointerId,moved=wasDrag&&drag.moved,p=pointerPosition(e),known=pointers.delete(e.pointerId);if(canvas.hasPointerCapture(e.pointerId))try{canvas.releasePointerCapture(e.pointerId)}catch{/* Capture may already have been released by the host. */}if(pointers.size<2)pinch=null;if(wasDrag){drag=null;if(!moved&&!cancelled&&known)act(()=>renderer.activateAt(p.x,p.y));}if(cancelled&&known)inputState.cancellations++;updateInput(cancelled?'pointer-cancel':'pointer-up');};
- canvas.addEventListener('pointerup',e=>{e.preventDefault();e.stopPropagation();finish(e)});canvas.addEventListener('pointercancel',e=>finish(e,true));canvas.addEventListener('lostpointercapture',e=>{if(pointers.has(e.pointerId))finish(e,true)});
- canvas.addEventListener('wheel',e=>{e.preventDefault();e.stopPropagation();const delta=Math.max(-2.5,Math.min(2.5,-Number(e.deltaY)/120));if(delta){runtime.travelBy(delta,{source:'living-active-wheel'});inputState.lastGesture='wheel';}},{passive:false});
- root.addEventListener('keydown',e=>{
-  if(document.activeElement!==canvas)return;
-  if(e.key==='Escape'||e.key==='Backspace'){e.preventDefault();e.stopImmediatePropagation();act(()=>runtime.back());}
-  else if(e.key==='+'||e.key==='='||e.key==='-'){e.preventDefault();e.stopImmediatePropagation();runtime.travelBy(e.key==='-'?-1:1,{source:'living-keyboard-continuous'});inputState.lastGesture='keyboard-scale';}
-  else if(e.key==='Home'){e.preventDefault();e.stopImmediatePropagation();act(()=>runtime.scale('UNIVERSE'));}
-  else if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Enter'].includes(e.key)){e.preventDefault();e.stopImmediatePropagation();act(()=>renderer.keyboard(e.key));}
- },true);
+ const onPointerUp=e=>{e.preventDefault();e.stopPropagation();finish(e)},onPointerCancel=e=>finish(e,true),onLostPointerCapture=e=>{if(pointers.has(e.pointerId))finish(e,true)};
+ const onWheel=e=>{e.preventDefault();e.stopPropagation();const delta=Math.max(-2.5,Math.min(2.5,-Number(e.deltaY)/120));if(delta){runtime.travelBy(delta,{source:'living-active-wheel'});inputState.lastGesture='wheel';}};
+ const onKeyDown=e=>{
+   if(document.activeElement!==canvas)return;
+   if(e.key==='Escape'||e.key==='Backspace'){e.preventDefault();e.stopImmediatePropagation();act(()=>runtime.back());}
+   else if(e.key==='+'||e.key==='='||e.key==='-'){e.preventDefault();e.stopImmediatePropagation();runtime.travelBy(e.key==='-'?-1:1,{source:'living-keyboard-continuous'});inputState.lastGesture='keyboard-scale';}
+   else if(e.key==='Home'){e.preventDefault();e.stopImmediatePropagation();act(()=>runtime.scale('UNIVERSE'));}
+   else if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Enter'].includes(e.key)){e.preventDefault();e.stopImmediatePropagation();act(()=>renderer.keyboard(e.key));}
+ };
+ canvas.addEventListener('pointerdown',onPointerDown);canvas.addEventListener('pointermove',onPointerMove);canvas.addEventListener('pointerup',onPointerUp);canvas.addEventListener('pointercancel',onPointerCancel);canvas.addEventListener('lostpointercapture',onLostPointerCapture);canvas.addEventListener('wheel',onWheel,{passive:false});root.addEventListener('keydown',onKeyDown,true);
  const resize=()=>{stopLegacy();visibleScale('living-resize');};
- if(typeof ResizeObserver!=='undefined'){const ro=new ResizeObserver(()=>requestAnimationFrame(resize));ro.observe(canvas.parentElement);}else root.addEventListener('resize',resize);
+ let resizeFrame=0,ro=null;const scheduleResize=()=>{if(!resizeFrame)resizeFrame=requestAnimationFrame(()=>{resizeFrame=0;resize();})};
+ if(typeof ResizeObserver!=='undefined'){ro=new ResizeObserver(scheduleResize);ro.observe(canvas.parentElement);}else root.addEventListener('resize',scheduleResize);
+ return()=>{ro?.disconnect();if(!ro)root.removeEventListener('resize',scheduleResize);if(resizeFrame)cancelAnimationFrame(resizeFrame);canvas.removeEventListener('pointerdown',onPointerDown);canvas.removeEventListener('pointermove',onPointerMove);canvas.removeEventListener('pointerup',onPointerUp);canvas.removeEventListener('pointercancel',onPointerCancel);canvas.removeEventListener('lostpointercapture',onLostPointerCapture);canvas.removeEventListener('wheel',onWheel);root.removeEventListener('keydown',onKeyDown,true);pointers.clear();drag=null;pinch=null;inputState.activePointers=0;inputState.pinchActive=false;};
 }
 
 function init(){
@@ -170,29 +175,36 @@ function init(){
  if(initializing)return false;
  const P=root.__OFU_PLANET_PREVIEW__,frame=document.querySelector('.viewport-frame'),explore=document.querySelector('[data-workspace-panel="explore"]');
  if(!P?.ctx||!P?.chosen?.key||!O.v1LivingRuntime||!O.v1LivingRenderer||!frame||!explore)return false;
- initializing=true;
+ const shell=frame.closest('.viewport-shell'),tx={bodyClassPreexisting:document.body.classList.contains('wave-a-active'),shell,shellLabelledBy:shell?.getAttribute('aria-labelledby'),shellHadLabel:shell?.hasAttribute('aria-labelledby')||false,panel:null,stage:null,runtime:null,renderer:null,runtimeUnsubscribe:null,inputCleanup:null};
+ initializing=true;bootAttempts++;
  try{
   document.body.classList.add('wave-a-active');
-  panel=el('section',null,{id:'living-panel','aria-label':'Living universe exploration'});explore.prepend(panel);
-  stage=el('section',null,{id:'living-stage','aria-label':'Living universe viewport'});frame.append(stage);
+  panel=tx.panel=el('section',null,{id:'living-panel','aria-label':'Living universe exploration'});explore.prepend(panel);
+  stage=tx.stage=el('section',null,{id:'living-stage','aria-label':'Living universe viewport'});frame.append(stage);
   const top=el('header',null,{id:'living-titlebar'}),info=el('div');info.append(el('div','ONE FILE UNIVERSE 2.0.0 / LIVE EXPLORATION',{class:'living-eyebrow'}));heading=el('h2','One living universe',{id:'living-heading'});location=el('div','',{id:'living-location'});info.append(heading,location);top.append(info);stage.append(top);
   breadcrumbs=el('nav',null,{id:'living-breadcrumbs','aria-label':'Current universe context'});stage.append(breadcrumbs);
   const wrap=el('div',null,{id:'living-canvas-wrap'}),gl=el('canvas',null,{id:'living-gl','aria-hidden':'true'});gl.hidden=true;canvas=el('canvas','Use the adjacent controls to explore without canvas.',{id:'living-view',tabindex:0,'aria-label':'Interactive living universe. Select objects, drag worlds, or use adjacent controls.'});wrap.append(gl,canvas);stage.append(wrap);
-  rail=el('nav',null,{id:'living-rail','aria-label':'Cross-scale exploration'});stage.append(rail);frame.closest('.viewport-shell').setAttribute('aria-labelledby','living-heading');
-  runtime=O.v1LivingRuntime.create({ctx:P.ctx,key:P.chosen.key,onCanonicalSelection:key=>O.v08SelectionBridge.selectPlanet(key,{announce:false}),galaxySource:()=>{const s=O.waveIVMacroProvider.getScene({scale:'GALAXY',ctx:P.ctx,canonicalKey:P.chosen.key,selectedOrbitSlot:P.chosen.key.orbitSlot});return s.objects.filter(o=>o.kind==='GALAXY'&&o.canonicalKey).map(o=>o.canonicalKey);}});
-  renderer=O.v1LivingRenderer.create(canvas,gl,{onActivate:n=>act(()=>runtime.activate(n)),onPoint:(p,extra)=>act(()=>pointAction(p,extra)),onObject:id=>act(()=>runtime.selectObject(id))});
-  runtime.onChange(change);bindInputs();change(runtime.snapshot());
+  rail=el('nav',null,{id:'living-rail','aria-label':'Cross-scale exploration'});stage.append(rail);shell?.setAttribute('aria-labelledby','living-heading');
+  runtime=tx.runtime=O.v1LivingRuntime.create({ctx:P.ctx,key:P.chosen.key,bindNavigation:false,onCanonicalSelection:key=>O.v08SelectionBridge.selectPlanet(key,{announce:false}),galaxySource:()=>{const s=O.waveIVMacroProvider.getScene({scale:'GALAXY',ctx:P.ctx,canonicalKey:P.chosen.key,selectedOrbitSlot:P.chosen.key.orbitSlot});return s.objects.filter(o=>o.kind==='GALAXY'&&o.canonicalKey).map(o=>o.canonicalKey);}});
+  renderer=tx.renderer=O.v1LivingRenderer.create(canvas,gl,{onActivate:n=>act(()=>runtime.activate(n)),onPoint:(p,extra)=>act(()=>pointAction(p,extra)),onObject:id=>act(()=>runtime.selectObject(id))});
+  runtimeUnsubscribe=tx.runtimeUnsubscribe=runtime.onChange(change);inputCleanup=tx.inputCleanup=bindInputs();runtime.bindNavigationAuthority();
   const bootState=runtime.snapshot();if(bootState.stage!=='UNIVERSE'||bootState.semanticScale!=='galaxy'||!bootState.navigationCoherent)throw new Error('Living navigation boot state is incoherent');
+  change(bootState);
   O.v1LivingProduct=Object.freeze({VERSION,runtime,renderer,survey,snapshot(){const navigation=runtime.snapshot();return {version:VERSION,initialized,stage:navigation.stage,semanticScale:navigation.semanticScale,activeSceneProvider:navigation.activeSceneProvider,navigationCoherent:navigation.navigationCoherent,render:renderer.state(),uiError,input:{...inputState},search:{goal:search.goal,cursor:search.cursor,pages:search.pages,worlds:search.worlds,running:search.running,results:search.rows.length},foregroundOwner:'WAVE_A_LIVING_VIEWPORT',canonicalMutation:false};},ready:()=>pending,clearError(){uiError=null;renderError=null;renderPanel(runtime.snapshot());}});
   initialized=true;
+  lastBootstrapError=null;bootErrorNode?.remove();bootErrorNode=null;
   initializing=false;
   return true;
  }catch(error){
+  try{tx.renderer?.dispose()}catch{}try{tx.runtimeUnsubscribe?.()}catch{}try{tx.inputCleanup?.()}catch{}try{tx.runtime?.dispose?.()}catch{}tx.stage?.remove();tx.panel?.remove();if(tx.shell){if(tx.shellHadLabel)tx.shell.setAttribute('aria-labelledby',tx.shellLabelledBy);else tx.shell.removeAttribute('aria-labelledby');}if(!tx.bodyClassPreexisting)document.body.classList.remove('wave-a-active');
+  runtime=null;renderer=null;stage=null;panel=null;canvas=null;rail=null;heading=null;location=null;breadcrumbs=null;runtimeUnsubscribe=null;inputCleanup=null;pending=null;search={goal:'CIVILIZATION',cursor:null,rows:[],worlds:0,pages:0,running:false,generation:0,context:null};inputState.activePointers=0;inputState.pinchActive=false;
   initializing=false;
   throw error;
  }
 }
-let bootTimer=null,bootDelay=50;
-function boot(){try{if(init())return;if(bootTimer===null){const delay=bootDelay;bootDelay=Math.min(1000,bootDelay*2);bootTimer=setTimeout(()=>{bootTimer=null;boot();},delay);}}catch(e){console.error('Wave A startup failed',e);const target=document.querySelector('[data-workspace-panel="explore"]');if(target)target.prepend(el('p','Living-universe startup failed: '+String(e.message),{class:'living-error',role:'alert'}));}}
+function scheduleBoot(){if(bootTimer!==null)return;const delay=bootDelay;bootDelay=Math.min(1000,bootDelay*2);bootTimer=setTimeout(()=>{bootTimer=null;boot();},delay)}
+function terminalBootstrap(error){lastBootstrapError=String(error?.message||error);console.error('Wave A startup failed',error);const target=document.querySelector('[data-workspace-panel="explore"]');if(target&&!bootErrorNode){bootErrorNode=el('p','Living-universe startup failed after bounded retries: '+lastBootstrapError,{class:'living-error',role:'alert'});target.prepend(bootErrorNode)}}
+function boot(){try{if(init())return;if(++preflightPolls<MAX_PREFLIGHT_POLLS)scheduleBoot();else terminalBootstrap(new Error('Living-universe dependencies did not become ready within bounded preflight'))}catch(error){lastBootstrapError=String(error?.message||error);bootstrapFailures.push(Object.freeze({attempt:bootAttempts,error:lastBootstrapError}));while(bootstrapFailures.length>MAX_BOOT_ATTEMPTS)bootstrapFailures.shift();if(bootAttempts<MAX_BOOT_ATTEMPTS){console.warn('Wave A startup retry',bootAttempts,lastBootstrapError);scheduleBoot();}else terminalBootstrap(error)}}
+O.v1LivingBootstrapDiagnostics=Object.freeze({VERSION,MAX_BOOT_ATTEMPTS,MAX_PREFLIGHT_POLLS,snapshot:()=>Object.freeze({initialized,initializing,attempts:bootAttempts,preflightPolls,status:initialized?'READY':lastBootstrapError?'RETRYING_OR_FAILED':'PREFLIGHT',lastError:lastBootstrapError,failures:Object.freeze([...bootstrapFailures])})});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else setTimeout(boot,0);
 })(globalThis);

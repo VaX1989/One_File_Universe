@@ -76,7 +76,8 @@ function installLivingNavigationPacer(){
   const finishPinchNavigation=({cancelled=false}={})=>{if(cancelled){cancelPendingAsInterrupted();return runtime.snapshot();}return events?commitPending(true):runtime.snapshot();};
   const navigationPacingSnapshot=()=>Object.freeze({...pacing});
   const wheelPacingSnapshot=()=>Object.freeze({...wheelPacing});
-  const wrapped=Object.freeze({...runtime,setNavigationCoordinate,travelBy,finishPinchNavigation,navigationPacingSnapshot,wheelPacingSnapshot});runtimes.add(wrapped);return wrapped;
+  let wrapped=null;const dispose=()=>{cancelPendingAsInterrupted();dropPendingWheel();if(wrapped)runtimes.delete(wrapped);return runtime.dispose?.()??true};
+  wrapped=Object.freeze({...runtime,setNavigationCoordinate,travelBy,finishPinchNavigation,navigationPacingSnapshot,wheelPacingSnapshot,dispose});runtimes.add(wrapped);return wrapped;
  }
  const doc=root.document,isLivingPointer=e=>e?.pointerType==='touch'&&(e.target?.id==='living-view'||e.composedPath?.().some?.(node=>node?.id==='living-view'));
  if(doc?.addEventListener){
