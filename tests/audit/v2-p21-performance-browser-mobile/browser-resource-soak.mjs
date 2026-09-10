@@ -22,13 +22,39 @@ const CYCLES=Number(process.env.P21_CYCLES||12);
 assert.ok(Number.isInteger(CYCLES)&&CYCLES>=8&&CYCLES<=40,'P21_CYCLES must be 8..40');
 
 async function openOfflineProduct(page){
- // WebKit's offline transport rejects file: navigation itself. Block external
- // traffic before opening the file, then exercise the loaded product offline.
- await page.context().route(/^https?:\/\//,route=>route.abort('internetdisconnected'));
- await page.goto(PRODUCT,{waitUntil:'load'});
- await page.waitForFunction(()=>globalThis.OFU?.v1LivingProduct?.snapshot?.().initialized,undefined,{timeout:60000});
- await page.context().setOffline(true);
- assert.equal(await page.evaluate(()=>navigator.onLine),false,'product journey must run offline');
+ const startupConsole=[];
+ const onConsole=message=>{if(message.type()==='error')startupConsole.push(message.text().slice(0,1600))};
+ page.on('console',onConsole);
+ try{
+  // WebKit's offline transport rejects file: navigation itself. Block external
+  // traffic before opening the file, then exercise the loaded product offline.
+  await page.context().route(/^https?:\/\//,route=>route.abort('internetdisconnected'));
+  await page.goto(PRODUCT,{waitUntil:'load'});
+  try{
+   await page.waitForFunction(()=>globalThis.OFU?.v1LivingProduct?.snapshot?.().initialized,undefined,{timeout:60000});
+  }catch(error){
+   let startupState=null;
+   try{
+    startupState=await page.evaluate(()=>({
+     readyState:document.readyState,
+     livingProduct:!!globalThis.OFU?.v1LivingProduct,
+     livingRuntime:!!globalThis.OFU?.v1LivingRuntime,
+     livingRenderer:!!globalThis.OFU?.v1LivingRenderer,
+     planetPreview:!!globalThis.__OFU_PLANET_PREVIEW__,
+     planetContext:!!globalThis.__OFU_PLANET_PREVIEW__?.ctx,
+     chosenKey:!!globalThis.__OFU_PLANET_PREVIEW__?.chosen?.key,
+     explorePanel:!!document.querySelector('[data-workspace-panel="explore"]'),
+     livingPanel:!!document.getElementById('living-panel'),
+     livingStage:!!document.getElementById('living-stage'),
+     livingError:document.querySelector('.living-error')?.textContent||null
+    }));
+   }catch(snapshotError){startupState={diagnosticError:String(snapshotError?.message||snapshotError)}}
+   error.message=`${error.message} | startupConsole=${JSON.stringify(startupConsole)} startupState=${JSON.stringify(startupState)}`;
+   throw error;
+  }
+  await page.context().setOffline(true);
+  assert.equal(await page.evaluate(()=>navigator.onLine),false,'product journey must run offline');
+ }finally{page.off('console',onConsole)}
 }
 
 function executableCandidates(name){
