@@ -2,7 +2,7 @@
 'use strict';
 const O=root.OFU;if(typeof document==='undefined')return;
 const VERSION='ofu-wave-a-living-product-1',title=s=>String(s||'').toLowerCase().replaceAll('_',' '),short=s=>String(s||'').slice(0,8);
-let runtime=null,renderer=null,stage=null,panel=null,canvas=null,rail=null,heading=null,location=null,breadcrumbs=null,uiError=null,pending=null,initialized=false;
+let runtime=null,renderer=null,stage=null,panel=null,canvas=null,rail=null,heading=null,location=null,breadcrumbs=null,uiError=null,pending=null,initialized=false,initializing=false;
 let search={goal:'CIVILIZATION',cursor:null,rows:[],worlds:0,pages:0,running:false,generation:0,context:null},renderError=null;
 const inputState={activePointers:0,pinchActive:false,lastGesture:null,cancellations:0};
 const $=id=>document.getElementById(id);
@@ -166,22 +166,31 @@ function bindInputs(){
 }
 
 function init(){
- if(initialized)return;
+ if(initialized)return true;
+ if(initializing)return false;
  const P=root.__OFU_PLANET_PREVIEW__,frame=document.querySelector('.viewport-frame'),explore=document.querySelector('[data-workspace-panel="explore"]');
  if(!P?.ctx||!P?.chosen?.key||!O.v1LivingRuntime||!O.v1LivingRenderer||!frame||!explore)return false;
- initialized=true;document.body.classList.add('wave-a-active');
- panel=el('section',null,{id:'living-panel','aria-label':'Living universe exploration'});explore.prepend(panel);
- stage=el('section',null,{id:'living-stage','aria-label':'Living universe viewport'});frame.append(stage);
- const top=el('header',null,{id:'living-titlebar'}),info=el('div');info.append(el('div','ONE FILE UNIVERSE 2.0.0 / LIVE EXPLORATION',{class:'living-eyebrow'}));heading=el('h2','One living universe',{id:'living-heading'});location=el('div','',{id:'living-location'});info.append(heading,location);top.append(info);stage.append(top);
- breadcrumbs=el('nav',null,{id:'living-breadcrumbs','aria-label':'Current universe context'});stage.append(breadcrumbs);
- const wrap=el('div',null,{id:'living-canvas-wrap'}),gl=el('canvas',null,{id:'living-gl','aria-hidden':'true'});gl.hidden=true;canvas=el('canvas','Use the adjacent controls to explore without canvas.',{id:'living-view',tabindex:0,'aria-label':'Interactive living universe. Select objects, drag worlds, or use adjacent controls.'});wrap.append(gl,canvas);stage.append(wrap);
- rail=el('nav',null,{id:'living-rail','aria-label':'Cross-scale exploration'});stage.append(rail);frame.closest('.viewport-shell').setAttribute('aria-labelledby','living-heading');
- runtime=O.v1LivingRuntime.create({ctx:P.ctx,key:P.chosen.key,onCanonicalSelection:key=>O.v08SelectionBridge.selectPlanet(key,{announce:false}),galaxySource:()=>{const s=O.waveIVMacroProvider.getScene({scale:'GALAXY',ctx:P.ctx,canonicalKey:P.chosen.key,selectedOrbitSlot:P.chosen.key.orbitSlot});return s.objects.filter(o=>o.kind==='GALAXY'&&o.canonicalKey).map(o=>o.canonicalKey);}});
- renderer=O.v1LivingRenderer.create(canvas,gl,{onActivate:n=>act(()=>runtime.activate(n)),onPoint:(p,extra)=>act(()=>pointAction(p,extra)),onObject:id=>act(()=>runtime.selectObject(id))});
- runtime.onChange(change);bindInputs();change(runtime.snapshot());
- const bootState=runtime.snapshot();if(bootState.stage!=='UNIVERSE'||bootState.semanticScale!=='galaxy'||!bootState.navigationCoherent)throw new Error('Living navigation boot state is incoherent');
- O.v1LivingProduct=Object.freeze({VERSION,runtime,renderer,survey,snapshot(){const navigation=runtime.snapshot();return {version:VERSION,initialized,stage:navigation.stage,semanticScale:navigation.semanticScale,activeSceneProvider:navigation.activeSceneProvider,navigationCoherent:navigation.navigationCoherent,render:renderer.state(),uiError,input:{...inputState},search:{goal:search.goal,cursor:search.cursor,pages:search.pages,worlds:search.worlds,running:search.running,results:search.rows.length},foregroundOwner:'WAVE_A_LIVING_VIEWPORT',canonicalMutation:false};},ready:()=>pending,clearError(){uiError=null;renderError=null;renderPanel(runtime.snapshot());}});
- return true;
+ initializing=true;
+ try{
+  document.body.classList.add('wave-a-active');
+  panel=el('section',null,{id:'living-panel','aria-label':'Living universe exploration'});explore.prepend(panel);
+  stage=el('section',null,{id:'living-stage','aria-label':'Living universe viewport'});frame.append(stage);
+  const top=el('header',null,{id:'living-titlebar'}),info=el('div');info.append(el('div','ONE FILE UNIVERSE 2.0.0 / LIVE EXPLORATION',{class:'living-eyebrow'}));heading=el('h2','One living universe',{id:'living-heading'});location=el('div','',{id:'living-location'});info.append(heading,location);top.append(info);stage.append(top);
+  breadcrumbs=el('nav',null,{id:'living-breadcrumbs','aria-label':'Current universe context'});stage.append(breadcrumbs);
+  const wrap=el('div',null,{id:'living-canvas-wrap'}),gl=el('canvas',null,{id:'living-gl','aria-hidden':'true'});gl.hidden=true;canvas=el('canvas','Use the adjacent controls to explore without canvas.',{id:'living-view',tabindex:0,'aria-label':'Interactive living universe. Select objects, drag worlds, or use adjacent controls.'});wrap.append(gl,canvas);stage.append(wrap);
+  rail=el('nav',null,{id:'living-rail','aria-label':'Cross-scale exploration'});stage.append(rail);frame.closest('.viewport-shell').setAttribute('aria-labelledby','living-heading');
+  runtime=O.v1LivingRuntime.create({ctx:P.ctx,key:P.chosen.key,onCanonicalSelection:key=>O.v08SelectionBridge.selectPlanet(key,{announce:false}),galaxySource:()=>{const s=O.waveIVMacroProvider.getScene({scale:'GALAXY',ctx:P.ctx,canonicalKey:P.chosen.key,selectedOrbitSlot:P.chosen.key.orbitSlot});return s.objects.filter(o=>o.kind==='GALAXY'&&o.canonicalKey).map(o=>o.canonicalKey);}});
+  renderer=O.v1LivingRenderer.create(canvas,gl,{onActivate:n=>act(()=>runtime.activate(n)),onPoint:(p,extra)=>act(()=>pointAction(p,extra)),onObject:id=>act(()=>runtime.selectObject(id))});
+  runtime.onChange(change);bindInputs();change(runtime.snapshot());
+  const bootState=runtime.snapshot();if(bootState.stage!=='UNIVERSE'||bootState.semanticScale!=='galaxy'||!bootState.navigationCoherent)throw new Error('Living navigation boot state is incoherent');
+  O.v1LivingProduct=Object.freeze({VERSION,runtime,renderer,survey,snapshot(){const navigation=runtime.snapshot();return {version:VERSION,initialized,stage:navigation.stage,semanticScale:navigation.semanticScale,activeSceneProvider:navigation.activeSceneProvider,navigationCoherent:navigation.navigationCoherent,render:renderer.state(),uiError,input:{...inputState},search:{goal:search.goal,cursor:search.cursor,pages:search.pages,worlds:search.worlds,running:search.running,results:search.rows.length},foregroundOwner:'WAVE_A_LIVING_VIEWPORT',canonicalMutation:false};},ready:()=>pending,clearError(){uiError=null;renderError=null;renderPanel(runtime.snapshot());}});
+  initialized=true;
+  initializing=false;
+  return true;
+ }catch(error){
+  initializing=false;
+  throw error;
+ }
 }
 let bootTimer=null,bootDelay=50;
 function boot(){try{if(init())return;if(bootTimer===null){const delay=bootDelay;bootDelay=Math.min(1000,bootDelay*2);bootTimer=setTimeout(()=>{bootTimer=null;boot();},delay);}}catch(e){console.error('Wave A startup failed',e);const target=document.querySelector('[data-workspace-panel="explore"]');if(target)target.prepend(el('p','Living-universe startup failed: '+String(e.message),{class:'living-error',role:'alert'}));}}
