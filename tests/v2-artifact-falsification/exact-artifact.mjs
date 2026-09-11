@@ -17,6 +17,7 @@ const BASE_POINTER='docs/parallel/V2_PARALLEL_BASE_CURRENT.json';
 const AUTHORIZED_BASE_SHA='2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7';
 const AUTHORIZED_BASE_TREE='99e6b5ff6229d9c34d381e778c5689bf2367d256';
 const OWNERSHIP='docs/parallel/V2X_OWNERSHIP_MATRIX.json';
+const LEDGER='docs/parallel/V2_INTEGRATION_LEDGER.json';
 const MAX_LIST=32;
 const sha256=value=>crypto.createHash('sha256').update(value).digest('hex');
 const normalized=text=>String(text).replace(/\r\n?/g,'\n');
@@ -64,9 +65,23 @@ function parseScripts(html){
 
 function exportNames(source){
   const names=new Set();
-  const patterns=[/(?:\bO|\bOFU|root\.OFU|globalThis\.OFU)\.([A-Za-z_$][\w$]*)\s*=/g,/(?:\bO|\bOFU|root\.OFU|globalThis\.OFU)\[['"]([^'"]+)['"]\]\s*=/g];
+  const patterns=[/(?:\bO|\bOFU|root\.OFU|globalThis\.OFU)\.([A-Za-z_$][\w$]*)\s*=/g,/(?:\bO|\bOFU|root\.OFU|globalThis\.OFU)\[['"]([^'"]+)['"]\]\s*=/g,/Object\.defineProperty\((?:\bO|\bOFU|root\.OFU|globalThis\.OFU)\s*,\s*['"]([^'"]+)['"]/g];
   for(const re of patterns){let m;while((m=re.exec(source)))names.add(m[1]);}
   return [...names].sort();
+}
+
+function nonShippingDispositions(){
+  if(!exists(LEDGER))return new Map();
+  const ledger=JSON.parse(readText(LEDGER)),out=new Map();
+  for(const row of ledger.nonShippingSourceDispositions||[]){
+    assert.equal(typeof row?.source,'string','non-shipping disposition source required');
+    assert.ok(['EVIDENCE_ONLY','DEFERRED_POST_V2_0','NOT_APPLICABLE_TO_RELEASE'].includes(row.disposition),'invalid non-shipping source disposition');
+    assert.equal(typeof row.reason,'string','non-shipping disposition reason required');
+    assert.ok(row.reason.length>0,'non-shipping disposition reason must be nonempty');
+    assert.ok(!out.has(row.source),'duplicate non-shipping source disposition '+row.source);
+    out.set(row.source,row);
+  }
+  return out;
 }
 
 function externalTokenUse(html,component,token){
@@ -75,7 +90,7 @@ function externalTokenUse(html,component,token){
   return withoutOwn.includes(token);
 }
 
-function developedInventory(plan,html){
+function developedInventory(plan,html,dispositions){
   const matrix=JSON.parse(readText(OWNERSHIP));
   const bySource=new Map();
   for(const c of plan){const list=bySource.get(c.source)||[];list.push(c.id);bySource.set(c.source,list);}
@@ -89,7 +104,7 @@ function developedInventory(plan,html){
       const componentIds=bySource.get(rel)||[];
       const exactArtifactInclusion=text?html.includes(text)||html.includes(text.replace(/<\/script/gi,'<\\/script')):false;
       const deterministicBundleInput=laneId==='V2X-08'&&lifeBundleInputs.has(rel)&&lifeBundleValid&&lifeBundleEmitted;
-      items.push({laneId,path:rel,bytes:bytes.length,sha256:sha256(bytes),componentIds,manifested:componentIds.length>0,exactArtifactInclusion,deterministicBundleInput,bundledBy:deterministicBundleInput?lifeBundleComponent.id:null});
+      items.push({laneId,path:rel,bytes:bytes.length,sha256:sha256(bytes),componentIds,manifested:componentIds.length>0,exactArtifactInclusion,deterministicBundleInput,bundledBy:deterministicBundleInput?lifeBundleComponent.id:null,nonShippingDisposition:dispositions.get(rel)||null});
     }
   }
   items.sort((a,b)=>a.laneId.localeCompare(b.laneId)||a.path.localeCompare(b.path));
@@ -132,26 +147,42 @@ async function browserAudit(){
   page.on('request',request=>{const url=request.url();if(/^https?:/i.test(url))externalRequests.push({method:request.method(),url});});
   const url=pathToFileURL(path.resolve(ROOT,ARTIFACT)).href;
   await page.goto(url,{waitUntil:'domcontentloaded',timeout:30000});
-  await page.waitForTimeout(300);
+  await page.waitForFunction(()=>OFU?.v1LivingProduct?.snapshot?.().initialized&&OFU?.v1LivingProduct?.runtime?.snapshot?.().stage==='UNIVERSE',null,{timeout:30000});
+  await page.waitForFunction(()=>{const p=OFU.v1LivingProduct.snapshot(),s=OFU.v1LivingProduct.runtime.snapshot();return p.uiError===null&&p.render.readyRevision===s.revision&&p.render.metrics.frames>0},null,{timeout:30000});
   const before=await page.evaluate(() => {
     const storage=which=>{try{const s=globalThis[which];return Object.fromEntries(Object.keys(s).sort().map(k=>[k,s.getItem(k)]));}catch{return{}}};
     const canvases=[...document.querySelectorAll('canvas')].map(c=>{const r=c.getBoundingClientRect();return{width:r.width,height:r.height,left:r.left,top:r.top,visible:r.width>1&&r.height>1};});
     const controls=[...document.querySelectorAll('button,[role="button"],a[href],input,select,textarea')].filter(e=>{const r=e.getBoundingClientRect(),s=getComputedStyle(e);return r.width>1&&r.height>1&&s.visibility!=='hidden'&&s.display!=='none';}).length;
     return {title:document.title,bodyTextBytes:new TextEncoder().encode(document.body?.innerText||'').length,canvases,visibleControls:controls,componentScripts:[...document.querySelectorAll('script[data-ofu-component]')].map(s=>s.dataset.ofuComponent),resources:[...document.querySelectorAll('script[id^="ofu-resource-"]')].map(s=>s.id.slice('ofu-resource-'.length)),ofuKeys:Object.keys(globalThis.OFU||{}).sort(),localStorage:storage('localStorage'),sessionStorage:storage('sessionStorage'),audit:globalThis.__OFU_EXACT_AUDIT};
   });
-  const beforeShot=await page.screenshot({type:'png'}),actionStart=before.audit.eventExecutions.length,drawStart=before.audit.draws.length,mutationStart=before.audit.mutations.length;
+  const beforeShot=await page.screenshot({type:'png'}),actionStart=before.audit.eventExecutions.length,drawStart=before.audit.draws.length,mutationStart=before.audit.mutations.length,journey=[];
+  for(const targetStage of ['GALAXY','REGION','NEIGHBORHOOD','SYSTEM','ORBIT','APPROACH']){
+    const button=page.locator(`[data-living-scale="${targetStage}"]:visible`).first();
+    await button.waitFor({state:'visible',timeout:10000});
+    if(await button.isDisabled())throw new Error('exact artifact Living scale control is disabled: '+targetStage);
+    await button.click();
+    await page.waitForFunction(stage=>{const p=OFU.v1LivingProduct.snapshot(),s=OFU.v1LivingProduct.runtime.snapshot();return s.stage===stage&&p.uiError===null&&p.render.readyRevision===s.revision},targetStage,{timeout:30000});
+    journey.push(await page.evaluate(()=>{const p=OFU.v1LivingProduct.snapshot(),s=OFU.v1LivingProduct.runtime.snapshot();return{stage:s.stage,semanticScale:s.semanticScale,revision:s.revision,sceneScale:p.render.sceneScale,frameCount:p.render.metrics.frames,drawnObjects:p.render.metrics.drawnObjects,pickCount:p.render.pickCount,uiError:p.uiError,composition:p.render.v2xComposition||null,pixel:p.render.v2x13||null}}));
+  }
   const target=before.canvases.filter(c=>c.visible).sort((a,b)=>b.width*b.height-a.width*a.height)[0];
   if(target){await page.mouse.move(Math.max(1,target.left+target.width/2),Math.max(1,target.top+target.height/2));await page.mouse.wheel(0,72);await page.waitForTimeout(200);}
   const afterShot=await page.screenshot({type:'png'});
-  const afterAction=await page.evaluate(()=>{const storage=which=>{try{const s=globalThis[which];return Object.fromEntries(Object.keys(s).sort().map(k=>[k,s.getItem(k)]));}catch{return{}}};return{audit:globalThis.__OFU_EXACT_AUDIT,ofuKeys:Object.keys(globalThis.OFU||{}).sort(),localStorage:storage('localStorage'),sessionStorage:storage('sessionStorage')}});
-  const action={performed:!!target,target:target||null,eventExecutions:afterAction.audit.eventExecutions.slice(actionStart),draws:afterAction.audit.draws.slice(drawStart),mutations:afterAction.audit.mutations.slice(mutationStart),beforeScreenshotSha256:sha256(beforeShot),afterScreenshotSha256:sha256(afterShot),pixelDeltaObserved:Buffer.compare(beforeShot,afterShot)!==0};
+  const afterAction=await page.evaluate(()=>{const storage=which=>{try{const s=globalThis[which];return Object.fromEntries(Object.keys(s).sort().map(k=>[k,s.getItem(k)]));}catch{return{}}},visible=id=>{const e=document.getElementById(id);if(!e)return false;const r=e.getBoundingClientRect(),s=getComputedStyle(e);return r.width>1&&r.height>1&&s.display!=='none'&&s.visibility!=='hidden'};return{audit:globalThis.__OFU_EXACT_AUDIT,ofuKeys:Object.keys(globalThis.OFU||{}).sort(),localStorage:storage('localStorage'),sessionStorage:storage('sessionStorage'),macro:OFU.v2xLivingMacrocosmComposition?.snapshot?.()||null,product:OFU.v1LivingProduct?.snapshot?.()||null,visibleModelContext:visible('living-v2x-context'),visibleGovernedActions:visible('living-v2x11-actions')}});
+  const action={performed:journey.length>0||!!target,target:target||null,journey,eventExecutions:afterAction.audit.eventExecutions.slice(actionStart),draws:afterAction.audit.draws.slice(drawStart),mutations:afterAction.audit.mutations.slice(mutationStart),beforeScreenshotSha256:sha256(beforeShot),afterScreenshotSha256:sha256(afterShot),pixelDeltaObserved:Buffer.compare(beforeShot,afterShot)!==0,localStorage:afterAction.localStorage,sessionStorage:afterAction.sessionStorage};
   await page.reload({waitUntil:'domcontentloaded',timeout:30000});await page.waitForTimeout(300);
   const revisit=await page.evaluate(()=>{const storage=which=>{try{const s=globalThis[which];return Object.fromEntries(Object.keys(s).sort().map(k=>[k,s.getItem(k)]));}catch{return{}}};return{ofuKeys:Object.keys(globalThis.OFU||{}).sort(),localStorage:storage('localStorage'),sessionStorage:storage('sessionStorage'),componentScripts:[...document.querySelectorAll('script[data-ofu-component]')].map(s=>s.dataset.ofuComponent)}});
   await browser.close();
   const runtimeExports=new Set(afterAction.ofuKeys);
   const readsByProperty=new Map();for(const r of afterAction.audit.ofuReads){if(!readsByProperty.has(r.property))readsByProperty.set(r.property,new Set());readsByProperty.get(r.property).add(r.consumer);}
   const activeComponents=new Set([...afterAction.audit.eventRegistrations,...afterAction.audit.rafRegistrations,...afterAction.audit.draws,...afterAction.audit.mutations].map(x=>x.component).filter(Boolean));
-  return {pageErrors,externalRequests,before:{...before,audit:undefined},action,revisit,runtimeExports,readsByProperty,activeComponents,audit:afterAction.audit};
+  const witnessedComponents=new Set();
+  if(afterAction.macro?.providerCalls>0){witnessedComponents.add('v2x.convergence.macrocosm-composition');witnessedComponents.add('v2x03.macrocosm-provider.runtime');}
+  if(journey.some(x=>x.composition?.owner==='V2X-04')){witnessedComponents.add('v2x.living.domain-composition');witnessedComponents.add('v2x04.render.orbit-3d');}
+  if(journey.some(x=>x.pixel?.frameCount>0)){witnessedComponents.add('v2.central.living-v2x13-bridge');witnessedComponents.add('v2x13.render.webgl2-resources');}
+  const life=afterAction.product?.render?.lifeV2Consumption;if(life?.provider){witnessedComponents.add('v2x.living.life-v2-consumer');witnessedComponents.add('v2x08.runtime.life-v2');}
+  if(afterAction.visibleModelContext)witnessedComponents.add('v2x.living.context-inspector');
+  if(afterAction.visibleGovernedActions)witnessedComponents.add('v2x.living.governed-actions');
+  return {pageErrors,externalRequests,before:{...before,audit:undefined},action,revisit,runtimeExports,readsByProperty,activeComponents,witnessedComponents,audit:afterAction.audit};
 }
 
 const pointer=exists(BASE_POINTER)?JSON.parse(readText(BASE_POINTER)):null;
@@ -171,7 +202,7 @@ for(const c of plan){
   if(!html.includes(emittedComponent(c)))artifactMissing.push({id:c.id,source:c.source,placement:c.placement});
 }
 const parseFailures=parseScripts(html);
-const developed=developedInventory(plan,html),unshippedDeveloped=developed.filter(x=>!x.manifested&&!x.exactArtifactInclusion&&!x.deterministicBundleInput);
+const dispositions=nonShippingDispositions(),developed=developedInventory(plan,html,dispositions),unshippedDeveloped=developed.filter(x=>!x.manifested&&!x.exactArtifactInclusion&&!x.deterministicBundleInput&&!x.nonShippingDisposition);
 const sourceToComponents=new Map();for(const c of plan){const list=sourceToComponents.get(c.source)||[];list.push(c);sourceToComponents.set(c.source,list);}
 const duplicateSources=[...sourceToComponents.entries()].filter(([,cs])=>cs.length>1).map(([source,cs])=>({source,componentIds:cs.map(c=>c.id)}));
 const hashGroups=new Map();for(const c of plan){const list=hashGroups.get(c.sourceSha256)||[];list.push(c);hashGroups.set(c.sourceSha256,list);}
@@ -180,21 +211,21 @@ const browser=await browserAudit();
 const inbound=new Map(plan.map(c=>[c.id,[]]));for(const c of plan)for(const dep of c.dependencies||[])if(inbound.has(dep))inbound.get(dep).push(c.id);
 const visibleEffectOwners=new Set([...browser.audit.draws,...browser.audit.mutations].map(x=>x.component).filter(Boolean));
 const actionOwners=new Set([...browser.action.eventExecutions,...browser.action.draws,...browser.action.mutations].map(x=>x.component).filter(Boolean));
-const components=plan.map(c=>{
-  const source=c.content??readText(c.source),exports=exportNames(source),presentExports=exports.filter(name=>browser.runtimeExports.has(name)),runtimeReads=presentExports.flatMap(name=>[...(browser.readsByProperty.get(name)||[])].filter(consumer=>consumer!==c.id).map(consumer=>({export:name,consumer}))),staticTokenConsumers=exports.filter(name=>externalTokenUse(html,c,name)),active=browser.activeComponents.has(c.id),v2x=isV2x(c),actualConsumer=runtimeReads.length>0||active,consumerIds=new Set(runtimeReads.map(r=>r.consumer)),visibleOrActionEvidence=visibleEffectOwners.has(c.id)||actionOwners.has(c.id)||[...consumerIds].some(id=>visibleEffectOwners.has(id)||actionOwners.has(id));
-  return {id:c.id,owner:c.owner,source:c.source,authority:c.authority,placement:c.placement,provides:c.provides,emittedBytes:descriptorById.get(c.id)?.emittedBytes||Buffer.byteLength(emittedComponent(c)),v2x,exports,runtimeExports:presentExports,runtimeReads,staticTokenConsumers,inboundDependencies:inbound.get(c.id)||[],runtimeActiveSideEffect:active,actualConsumer,visibleOrActionEvidence,artifactIncluded:!artifactMissing.some(x=>x.id===c.id)};
-});
-const deadShipping=components.filter(c=>c.v2x&&c.placement==='script'&&c.artifactIncluded&&c.exports.length>0&&c.runtimeExports.length>0&&!c.actualConsumer&&c.staticTokenConsumers.length===0).map(c=>({id:c.id,source:c.source,exports:c.runtimeExports}));
-const linkedButUnexecuted=components.filter(c=>c.v2x&&c.placement==='script'&&c.artifactIncluded&&!c.actualConsumer&&(c.staticTokenConsumers.length>0||c.inboundDependencies.length>0)).map(c=>({id:c.id,source:c.source,staticTokenConsumers:c.staticTokenConsumers,inboundDependencies:c.inboundDependencies}));
-const verticalIncomplete=components.filter(c=>c.v2x&&c.placement==='script'&&c.artifactIncluded&&(!c.actualConsumer||!c.visibleOrActionEvidence)).map(c=>({id:c.id,source:c.source,reason:!c.actualConsumer?(c.staticTokenConsumers.length||c.inboundDependencies.length?'LINKED_NOT_EXECUTED_IN_EXACT_ARTIFACT_BROWSER':'NO_ACTUAL_CONSUMER_OBSERVED'):'CONSUMER_OBSERVED_BUT_NO_VISIBLE_OR_ACTION_CONSEQUENCE_CHAIN'}));
+const rawComponents=plan.map(c=>{const source=c.content??readText(c.source),exports=exportNames(source),presentExports=exports.filter(name=>browser.runtimeExports.has(name)),runtimeReads=presentExports.flatMap(name=>[...(browser.readsByProperty.get(name)||[])].filter(consumer=>consumer!==c.id).map(consumer=>({export:name,consumer}))),staticTokenConsumers=exports.filter(name=>externalTokenUse(html,c,name)),active=browser.activeComponents.has(c.id),witnessed=browser.witnessedComponents.has(c.id);return{id:c.id,owner:c.owner,source:c.source,authority:c.authority,placement:c.placement,provides:c.provides,emittedBytes:descriptorById.get(c.id)?.emittedBytes||Buffer.byteLength(emittedComponent(c)),v2x:isV2x(c),exports,runtimeExports:presentExports,runtimeReads,staticTokenConsumers,inboundDependencies:inbound.get(c.id)||[],runtimeActiveSideEffect:active,runtimeWitnessObserved:witnessed,actualConsumer:runtimeReads.length>0||active||witnessed,artifactIncluded:!artifactMissing.some(x=>x.id===c.id)}});
+const componentById=new Map(rawComponents.map(c=>[c.id,c])),effectSinks=new Set([...visibleEffectOwners,...actionOwners,...browser.witnessedComponents].filter(id=>componentById.has(id)));
+function consequencePath(start){const queue=[[start]],seen=new Set([start]);while(queue.length){const path=queue.shift(),id=path[path.length-1];if(effectSinks.has(id))return path;const c=componentById.get(id);if(!c)continue;const next=[...c.runtimeReads.map(x=>x.consumer),...c.inboundDependencies];for(const target of next)if(componentById.has(target)&&!seen.has(target)){seen.add(target);queue.push([...path,target]);}}return null;}
+const components=rawComponents.map(c=>{const path=consequencePath(c.id);return{...c,visibleOrActionEvidence:Boolean(path),consequencePath:path}});
+const deadShipping=components.filter(c=>c.v2x&&c.placement==='script'&&c.artifactIncluded&&c.exports.length>0&&c.runtimeExports.length>0&&!c.actualConsumer&&c.staticTokenConsumers.length===0&&!c.consequencePath).map(c=>({id:c.id,source:c.source,exports:c.runtimeExports}));
+const linkedButUnexecuted=components.filter(c=>c.v2x&&c.placement==='script'&&c.artifactIncluded&&!c.actualConsumer&&!c.consequencePath&&(c.staticTokenConsumers.length>0||c.inboundDependencies.length>0)).map(c=>({id:c.id,source:c.source,staticTokenConsumers:c.staticTokenConsumers,inboundDependencies:c.inboundDependencies}));
+const verticalIncomplete=components.filter(c=>c.v2x&&c.placement==='script'&&c.artifactIncluded&&!c.consequencePath).map(c=>({id:c.id,source:c.source,reason:c.actualConsumer?'OBSERVED_CONSUMER_WITHOUT_VISIBLE_OR_ACTION_CONSEQUENCE_PATH':c.staticTokenConsumers.length||c.inboundDependencies.length?'LINKED_WITHOUT_EXACT_ARTIFACT_CONSEQUENCE_PATH':'NO_ACTUAL_CONSUMER_OR_CONSEQUENCE_PATH'}));
 const legacyFallbacks=components.filter(c=>/legacy/i.test(`${c.id} ${c.source} ${(c.provides||[]).join(' ')}`)).map(c=>({id:c.id,source:c.source,provides:c.provides}));
 const baseline=second.manifest.components||[],baselineBytes=baseline.reduce((n,d)=>n+descriptorBytes(d),0),additiveBytes=extensions.reduce((n,d)=>n+descriptorBytes(d),0);
 const bytesByOwner={},bytesBySubsystem={};for(const c of components){bytesByOwner[c.owner]=(bytesByOwner[c.owner]||0)+c.emittedBytes;const parts=c.source.split('/'),subsystem=parts.slice(0,Math.min(parts.length,3)).join('/');bytesBySubsystem[subsystem]=(bytesBySubsystem[subsystem]||0)+c.emittedBytes;}
 const componentScriptIds=new Set(browser.before.componentScripts),resourceIds=new Set(browser.before.resources);
 const runtimeMarkerMissing=plan.filter(c=>(c.placement==='script'&&!componentScriptIds.has(c.id))||(c.placement==='resource'&&!resourceIds.has(c.id))).map(c=>c.id);
 const revisitStable=JSON.stringify(browser.before.ofuKeys)===JSON.stringify(browser.revisit.ofuKeys)&&JSON.stringify([...componentScriptIds].sort())===JSON.stringify(browser.revisit.componentScripts.sort());
-const storageObserved=Object.keys(browser.before.localStorage).length+Object.keys(browser.before.sessionStorage).length>0;
-const storageKeysStable=JSON.stringify(Object.keys(browser.before.localStorage).sort())===JSON.stringify(Object.keys(browser.revisit.localStorage).sort())&&JSON.stringify(Object.keys(browser.before.sessionStorage).sort())===JSON.stringify(Object.keys(browser.revisit.sessionStorage).sort());
+const storageObserved=Object.keys(browser.action.localStorage||{}).length+Object.keys(browser.action.sessionStorage||{}).length>0;
+const storageKeysStable=JSON.stringify(Object.keys(browser.action.localStorage||{}).sort())===JSON.stringify(Object.keys(browser.revisit.localStorage).sort())&&JSON.stringify(Object.keys(browser.action.sessionStorage||{}).sort())===JSON.stringify(Object.keys(browser.revisit.sessionStorage).sort());
 const hardFailures=[];
 if(!reproducible)hardFailures.push('NON_REPRODUCIBLE_EXACT_ARTIFACT');
 if(second.manifest.artifactBytes!==second.bytes.length||second.manifest.artifactSha256!==second.hash)hardFailures.push('MANIFEST_ARTIFACT_IDENTITY_MISMATCH');

@@ -7,6 +7,7 @@ import {bundleLifeShippingRuntime} from '../../src/v2x-08-life-ecology-evolution
 
 const ROOT=process.cwd();
 const MATRIX='docs/parallel/V2X_OWNERSHIP_MATRIX.json';
+const LEDGER='docs/parallel/V2_INTEGRATION_LEDGER.json';
 const ARTIFACT='dist/One_File_Universe.html';
 const REPORT='dist/evidence/v2-exact-artifact-falsification/ownership-inventory.json';
 const SOURCE_ROOT=/^(?:src|assets|data|config\/extensions)\//;
@@ -27,6 +28,12 @@ const globRegex=pattern=>{
 execFileSync(process.execPath,['tools/build-ofu-rendering-v09.mjs'],{cwd:ROOT,stdio:['ignore','pipe','inherit']});
 const html=readText(ARTIFACT);
 const matrix=JSON.parse(readText(MATRIX));
+const ledger=JSON.parse(readText(LEDGER)),dispositions=new Map();
+for(const row of ledger.nonShippingSourceDispositions||[]){
+  if(typeof row?.source!=='string'||!['EVIDENCE_ONLY','DEFERRED_POST_V2_0','NOT_APPLICABLE_TO_RELEASE'].includes(row.disposition)||typeof row.reason!=='string'||!row.reason)throw new Error('invalid non-shipping source disposition');
+  if(dispositions.has(row.source))throw new Error('duplicate non-shipping source disposition '+row.source);
+  dispositions.set(row.source,row);
+}
 const plan=loadComponents(ROOT);
 const bySource=new Map();
 for(const component of plan){
@@ -73,12 +80,13 @@ for(const [rel,laneIds] of ownersByPath){
     directlyEmbedded,
     deterministicBundleInput,
     bundledBy:deterministicBundleInput?lifeBundleComponent.id:null,
+    nonShippingDisposition:dispositions.get(rel)||null,
     shipped:emitted||directlyEmbedded||deterministicBundleInput
   });
 }
 files.sort((a,b)=>a.path.localeCompare(b.path));
 
-const unshipped=files.filter(file=>!file.shipped);
+const unshipped=files.filter(file=>!file.shipped&&!file.nonShippingDisposition);
 const multiplyOwned=files.filter(file=>file.laneIds.length>1).map(file=>({path:file.path,laneIds:file.laneIds}));
 const sourceComponentCollisions=files.filter(file=>file.componentIds.length>1).map(file=>({path:file.path,componentIds:file.componentIds}));
 const hardFailures=[];
