@@ -3,9 +3,16 @@ import path from 'node:path';
 import process from 'node:process';
 import os from 'node:os';
 import assert from 'node:assert/strict';
+import {spawnSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
 import {chromium,firefox,webkit} from 'playwright';
 import {immutableBrowserArtifact} from '../../helpers/immutable-browser-artifact.mjs';
+
+if(process.platform==='linux'&&!process.env.DISPLAY&&process.env.OFU_P21_VIRTUAL_DISPLAY!=='1'){
+ const virtual=spawnSync('xvfb-run',['-a','-s','-screen 0 1920x1080x24',process.execPath,...process.argv.slice(1)],{stdio:'inherit',env:{...process.env,OFU_P21_VIRTUAL_DISPLAY:'1'}});
+ if(virtual.error)throw new Error('P21 graphical browser matrix requires xvfb-run: '+virtual.error.message);
+ process.exit(virtual.status??1);
+}
 
 const SOURCE=process.env.OFU_SOURCE_SHA;
 if(!SOURCE)throw new Error('OFU_SOURCE_SHA required');
@@ -85,7 +92,7 @@ function executableCandidates(name){
  return out.filter(x=>{try{fs.accessSync(x,fs.constants.X_OK);return true}catch{return false}});
 }
 function launchOptions(name,executablePath=null){
- const options={headless:true};
+ const options={headless:false};
  // Use each pinned Playwright runtime's governed default graphics backend.
  // Version-specific ANGLE overrides can disable WebGL2 even when that same
  // runtime exposes it under its default launch profile.

@@ -35,6 +35,8 @@ has(scheduler,/runtimes\.delete\(wrapped\)/,'navigation pacing wrapper disposal 
 has(bridge,/catch\(error\)\{base\.dispose\(\);throw error\}/,'strict renderer construction must dispose its base renderer on failure');
 has(bridge,/releaseContext\(\).*pixel\.remove\(\);throw error/s,'failed strict WebGL construction must release its context and provisional canvas');
 assert.doesNotMatch(soak,/--use-gl=angle|--use-angle=swiftshader/,'P21 must not replace the pinned browser runtime\'s governed graphics backend');assertions++;
-has(soak,/name==='firefox'.*'webgl\.disabled':false.*'webgl\.force-enabled':true.*'webgl\.enable-webgl2':true/,'Firefox must expose its native WebGL2 path under the governed headless profile');
+has(soak,/name==='firefox'.*'webgl\.disabled':false.*'webgl\.force-enabled':true.*'webgl\.enable-webgl2':true/,'Firefox must expose its native WebGL2 path under the governed graphical profile');
+has(soak,/spawnSync\('xvfb-run'.*OFU_P21_VIRTUAL_DISPLAY:'1'/s,'Linux P21 must provide a bounded graphical display host for the real browser matrix');
+has(soak,/const options=\{headless:false\}/,'P21 must exercise full graphical browser processes rather than a graphics-disabled headless profile');
 
 console.log(JSON.stringify({status:'PASS',suite:'p21-transactional-living-bootstrap',assertions,oracleChanges:'NONE',timeoutChanges:'NONE',authorityWeakening:'NONE',resourceCeilingWeakening:'NONE'}));
