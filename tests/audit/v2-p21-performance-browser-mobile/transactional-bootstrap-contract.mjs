@@ -38,5 +38,6 @@ assert.doesNotMatch(soak,/--use-gl=angle|--use-angle=swiftshader/,'P21 must not 
 has(soak,/name==='firefox'.*'webgl\.disabled':false.*'webgl\.force-enabled':true.*'webgl\.enable-webgl2':true/,'Firefox must expose its native WebGL2 path under the governed graphical profile');
 has(soak,/spawnSync\('xvfb-run'.*OFU_P21_VIRTUAL_DISPLAY:'1'/s,'Linux P21 must provide a bounded graphical display host for the real browser matrix');
 has(soak,/const options=\{headless:false\}/,'P21 must exercise full graphical browser processes rather than a graphics-disabled headless profile');
+has(soak,/v2x14ProductExperience\?\.instance.*v2x14LivingAudioController\?\.instance.*v2CinematicExperience\?\.snapshot.*v2CinematicDepth\?\.snapshot.*v2CinematicMacroDirector\?\.snapshot/s,'resource sampling must begin only after the complete shipping V2 product has initialized');
 
 console.log(JSON.stringify({status:'PASS',suite:'p21-transactional-living-bootstrap',assertions,oracleChanges:'NONE',timeoutChanges:'NONE',authorityWeakening:'NONE',resourceCeilingWeakening:'NONE'}));
