@@ -1,6 +1,9 @@
 name: V2X Supreme Convergence
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
     branches:
       - development/v1.1-quality-exploration
