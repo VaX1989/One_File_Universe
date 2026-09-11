@@ -22,7 +22,13 @@ assert.ok(engines[browserName], `unsupported browser ${browserName}`);
 const identity = assertFrozenBase({identity: exactGitIdentity({branch: process.env.V1X_BRANCH || ''})});
 const outDir = path.resolve('reports/v1x-14-certification-evidence', identity.sha, browserName);
 fs.mkdirSync(path.join(outDir, 'frames'), {recursive: true});
-const browser = await engines[browserName].launch({headless: true});
+const launchOptions = {
+  headless: true,
+  ...(browserName === 'firefox'
+    ? {firefoxUserPrefs: {'webgl.disabled': false, 'webgl.force-enabled': true, 'webgl.forbid-software': false}}
+    : {})
+};
+const browser = await engines[browserName].launch(launchOptions);
 const context = await browser.newContext({viewport: {width: 1280, height: 800}, reducedMotion: 'reduce'});
 const page = await context.newPage();
 const pageErrors = [];
