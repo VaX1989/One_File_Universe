@@ -96,7 +96,7 @@ jobs:
       - name: V1X-14 Firefox exact readiness witness
         id: v1x14_firefox
         continue-on-error: true
-        run: node tests/v1x-14-certification-evidence/browser-evidence.mjs --browser=firefox
+        run: xvfb-run -a node tests/v1x-14-certification-evidence/browser-evidence.mjs --browser=firefox
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
