@@ -40,7 +40,44 @@ page.on('request', request => {
 });
 const target = pathToFileURL(path.resolve('dist/One_File_Universe.html')).href;
 await page.goto(target, {waitUntil: 'load'});
-await page.waitForFunction(() => OFU?.waveIVScaleRuntime?.snapshot && OFU?.waveIVInputRouter?.snapshot && OFU?.v1LivingProduct?.snapshot?.().initialized, null, {timeout: 30000});
+try {
+  await page.waitForFunction(() => OFU?.waveIVScaleRuntime?.snapshot && OFU?.waveIVInputRouter?.snapshot && OFU?.v1LivingProduct?.snapshot?.().initialized, null, {timeout: 30000});
+} catch (error) {
+  const diagnostics = await page.evaluate(() => {
+    const O = globalThis.OFU;
+    const living = O?.v1LivingProduct;
+    let webgl2 = false;
+    try { webgl2 = !!document.createElement('canvas').getContext('webgl2'); } catch {}
+    let scale = null;
+    let input = null;
+    let product = null;
+    let livingRuntime = null;
+    try { scale = O?.waveIVScaleRuntime?.snapshot?.() || null; } catch (e) { scale = {snapshotError: String(e?.message || e)}; }
+    try { input = O?.waveIVInputRouter?.snapshot?.() || null; } catch (e) { input = {snapshotError: String(e?.message || e)}; }
+    try { product = living?.snapshot?.() || null; } catch (e) { product = {snapshotError: String(e?.message || e)}; }
+    try { livingRuntime = living?.runtime?.snapshot?.() || null; } catch (e) { livingRuntime = {snapshotError: String(e?.message || e)}; }
+    return {
+      hasOFU: !!O,
+      hasScaleRuntime: !!O?.waveIVScaleRuntime,
+      hasScaleSnapshot: !!O?.waveIVScaleRuntime?.snapshot,
+      hasInputRouter: !!O?.waveIVInputRouter,
+      hasInputSnapshot: !!O?.waveIVInputRouter?.snapshot,
+      hasLivingProduct: !!living,
+      livingInitialized: product?.initialized ?? null,
+      livingUiError: product?.uiError ?? null,
+      productUI: !!O?.productUI,
+      baselineStatus: globalThis.__OFU_BASELINE_REPORT__?.status ?? null,
+      webgl2,
+      reducedMotion: globalThis.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? null,
+      visibilityState: document.visibilityState,
+      scale,
+      input,
+      product,
+      livingRuntime
+    };
+  });
+  throw new Error(`V1X-14 ${browserName} boot readiness timeout: ${JSON.stringify({diagnostics, pageErrors})}`, {cause: error});
+}
 assert.equal(new URL(page.url()).protocol, 'file:', 'journey must execute as direct-file');
 
 const sample = async label => page.evaluate(label => {
