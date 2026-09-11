@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {emittedComponent,loadComponents} from '../../tools/extensions/components.mjs';
+import {bundleLifeShippingRuntime} from '../../src/v2x-08-life-ecology-evolution-embodiment/shipping-bundle.mjs';
 
 const ROOT=process.cwd();
 const MATRIX='docs/parallel/V2X_OWNERSHIP_MATRIX.json';
@@ -33,6 +34,11 @@ for(const component of plan){
   list.push(component);
   bySource.set(component.source,list);
 }
+const lifeBundlePath='src/v2x-08-life-ecology-evolution-embodiment/shipping-runtime.js';
+const lifeBundleInputs=new Set(['model.js','embodiment.js','renderer.js','evolution.js','succession.js','provider.js','viewport-bridge.js','shipping-adapter.js'].map(name=>'src/v2x-08-life-ecology-evolution-embodiment/'+name));
+const lifeBundleComponent=(bySource.get(lifeBundlePath)||[])[0]||null;
+const lifeBundleValid=readText(lifeBundlePath).trimEnd()===bundleLifeShippingRuntime().replace(/\r\n?/g,'\n').trimEnd();
+const lifeBundleEmitted=Boolean(lifeBundleComponent&&html.includes(emittedComponent(lifeBundleComponent)));
 
 const ownersByPath=new Map();
 for(const [laneId,lane] of Object.entries(matrix.lanes||{})){
@@ -55,6 +61,7 @@ for(const [rel,laneIds] of ownersByPath){
   const manifested=components.length>0;
   const emitted=components.some(component=>html.includes(emittedComponent(component)));
   const directlyEmbedded=text?html.includes(text)||html.includes(text.replace(/<\/script/gi,'<\\/script')):false;
+  const deterministicBundleInput=laneIds.has('V2X-08')&&lifeBundleInputs.has(rel)&&lifeBundleValid&&lifeBundleEmitted;
   files.push({
     path:rel,
     laneIds:[...laneIds].sort(),
@@ -64,7 +71,9 @@ for(const [rel,laneIds] of ownersByPath){
     manifested,
     emitted,
     directlyEmbedded,
-    shipped:emitted||directlyEmbedded
+    deterministicBundleInput,
+    bundledBy:deterministicBundleInput?lifeBundleComponent.id:null,
+    shipped:emitted||directlyEmbedded||deterministicBundleInput
   });
 }
 files.sort((a,b)=>a.path.localeCompare(b.path));
@@ -88,6 +97,7 @@ const report={
   multiplyOwned,
   sourceComponentCollisions,
   hardFailures,
+  deterministicBundles:{lifeV2:{valid:lifeBundleValid,componentId:lifeBundleComponent?.id||null,artifactIncluded:lifeBundleEmitted,inputCount:lifeBundleInputs.size}},
   files
 };
 fs.mkdirSync(path.dirname(path.join(ROOT,REPORT)),{recursive:true});

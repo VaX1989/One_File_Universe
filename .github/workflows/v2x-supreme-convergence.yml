@@ -78,6 +78,8 @@ jobs:
         run: node tests/v2x-convergence/living-domain-composition.mjs
       - name: Living V2X context inspector witness
         run: node tests/v2x-convergence/living-context-inspector.mjs
+      - name: V2 cinematic experience contract
+        run: node tests/v2x-convergence/cinematic-experience-contract.mjs
       - name: Install governed release browser runtimes
         run: |
           npm install --no-save --package-lock=false playwright@1.62.1
@@ -86,5 +88,13 @@ jobs:
         run: node tests/v2x-14-product-experience/browser-direct-manipulation.mjs
       - name: V2X-14 product/audio/accessibility real-browser journey
         run: node tests/v2x-14-product-experience/browser-journey.mjs
+      - name: V2 cinematic real-browser journey
+        run: node tests/v2x-convergence/browser-cinematic-experience.mjs
       - name: Progressive release conformance exact source
         run: node tools/extensions/conformance.mjs RELEASE --exact
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v2-cinematic-${{ env.OFU_EXPECTED_SHA }}
+          path: dist/evidence/cinematic
+          if-no-files-found: warn

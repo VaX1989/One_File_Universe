@@ -25,7 +25,7 @@ export function validatePXEvidence(rows,build,source){
 }
 
 export function validatePXV1Evidence(rows,build,source){
- assert.equal(build.px?.version,'ofu-px-product-1');assert.equal(build.px.scope,'FULL_V1_WAVE_A_PRODUCT');assert.equal(build.sourceCommit,source);
+ assert.equal(build.px?.version,'ofu-px-product-1');assert.equal(build.px.scope,'FULL_V2_LIVING_PRODUCT_OVER_V1_COMPATIBILITY_RUNTIME');assert.equal(build.sourceCommit,source);
  assert.equal(build.visualUniverse?.primarySceneProvider,'v1.scene.living-world');
  hash(build.componentCompositionSha256);hash(build.px.registryDigest);hash(build.artifactSha256);
  assert.equal(build.componentCompositionSha256,createHash('sha256').update(JSON.stringify(build.additiveComponents)).digest('hex'));

@@ -2,6 +2,15 @@
   "schema": "ofu-conformance-1",
   "tests": [
     {
+      "id": "v2.zero-loss.final-audit",
+      "owner": "v2-artifact-falsification",
+      "tier": "FAST_LOCAL",
+      "command": ["node", "tests/v2-artifact-falsification/zero-loss-final-audit.mjs"],
+      "providers": ["v2x03.representation.macrocosm"],
+      "oracle": "all-development-families-explicitly-adopted-superseded-or-authoritatively-excluded",
+      "timeoutMs": 30000
+    },
+    {
       "id": "v2.exact-artifact.ownership-inventory",
       "owner": "v2-artifact-falsification",
       "tier": "RELEASE",

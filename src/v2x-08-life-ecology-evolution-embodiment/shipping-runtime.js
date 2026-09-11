@@ -15,6 +15,33 @@ const LIFE_V2_AUTHORITY = Object.freeze({
   temporalAuthority: 'P4_EXTERNAL_EVENT_ORDER',
 });
 
+const LIFE_V2_SCENARIO_ASSUMPTIONS = Object.freeze({
+  schema: 'ofu-v2x-08-life-scenario-assumptions-1',
+  scenarioId: 'V2X08_BOUNDED_ECOLOGY_SCENARIO_V1',
+  authority: 'MODEL_DERIVED_SIMULATION',
+  assumptionClass: 'MODEL_ASSUMPTION_NOT_OBSERVATION',
+  provenance: 'V2X-08 deterministic bounded ecology scenario prior; not measured, canonical, or universal biology.',
+  rationale: 'Keeps explicitly model-derived scenario evolution operable when a caller omits optional ecology parameters while preserving assumption provenance.',
+  uncertainty: 'UNQUANTIFIED_SCENARIO_PRIOR',
+  limitations: Object.freeze([
+    'Scenario priors are not observations and must not be promoted to canonical biology.',
+    'Rates and trait priors are illustrative bounded model inputs, not universal life constants.',
+    'Consumers must retain this assumption envelope when they expose derived demographic claims.',
+  ]),
+  values: Object.freeze({
+    birthPpm: 30_000n,
+    mortalityPpm: 20_000n,
+    resourcePerBirth: 1n,
+    nutrientPerBirth: 1n,
+    maintenancePerIndividual: 1n,
+    disturbanceMortalityPpm: 250_000n,
+    juvenileMaturationPpm: 0n,
+    matureSenescencePpm: 0n,
+    fecundityPpm: 500_000n,
+    resiliencePpm: 500_000n,
+  }),
+});
+
 const LIFE_V2_LIMITS = Object.freeze({
   maxPopulations: 64,
   maxLineages: 128,
@@ -311,8 +338,41 @@ function createLifeState(input) {
   });
 }
 
-function traitValue(lineage, key, fallback = 500_000n) {
-  return lineage.traits.find((trait) => trait.key === key)?.valuePpm ?? fallback;
+function scenarioProfilePpm(profile, key, assumptionsUsed) {
+  if (profile[key] != null) return asPpm(profile[key], key);
+  assumptionsUsed.add(`profile.${key}`);
+  return asPpm(LIFE_V2_SCENARIO_ASSUMPTIONS.values[key], `${key} scenario assumption`);
+}
+
+function scenarioProfileInt(profile, key, assumptionsUsed, min = 0n) {
+  if (profile[key] != null) return asInt(profile[key], key, min);
+  assumptionsUsed.add(`profile.${key}`);
+  return asInt(LIFE_V2_SCENARIO_ASSUMPTIONS.values[key], `${key} scenario assumption`, min);
+}
+
+function traitValue(lineage, key, assumptionsUsed) {
+  const explicit = lineage.traits.find((trait) => trait.key === key);
+  if (explicit) return explicit.valuePpm;
+  const assumptionKey = key === 'fecundity' ? 'fecundityPpm' : key === 'resilience' ? 'resiliencePpm' : null;
+  assert(assumptionKey, `missing explicit trait ${key} without governed scenario assumption`);
+  assumptionsUsed.add(`trait.${key}`);
+  return LIFE_V2_SCENARIO_ASSUMPTIONS.values[assumptionKey];
+}
+
+function scenarioAssumptionEnvelope(assumptionsUsed) {
+  const fields = Object.freeze([...assumptionsUsed].sort());
+  if (fields.length === 0) return null;
+  return Object.freeze({
+    schema: LIFE_V2_SCENARIO_ASSUMPTIONS.schema,
+    scenarioId: LIFE_V2_SCENARIO_ASSUMPTIONS.scenarioId,
+    authority: LIFE_V2_SCENARIO_ASSUMPTIONS.authority,
+    assumptionClass: LIFE_V2_SCENARIO_ASSUMPTIONS.assumptionClass,
+    provenance: LIFE_V2_SCENARIO_ASSUMPTIONS.provenance,
+    rationale: LIFE_V2_SCENARIO_ASSUMPTIONS.rationale,
+    uncertainty: LIFE_V2_SCENARIO_ASSUMPTIONS.uncertainty,
+    limitations: LIFE_V2_SCENARIO_ASSUMPTIONS.limitations,
+    fields,
+  });
 }
 
 function populationMap(state) {
@@ -331,15 +391,16 @@ function advanceEcology(state, event) {
   const lineages = lineageMap(state);
   const regionBudgets = new Map(Object.entries(state.regions).map(([id, region]) => [id, { ...region }]));
   const profile = event.profile ?? {};
+  const assumptionsUsed = new Set();
 
-  const birthPpm = asPpm(profile.birthPpm ?? 30_000, 'birthPpm');
-  const mortalityPpm = asPpm(profile.mortalityPpm ?? 20_000, 'mortalityPpm');
-  const resourcePerBirth = asInt(profile.resourcePerBirth ?? 1, 'resourcePerBirth', 1n);
-  const nutrientPerBirth = asInt(profile.nutrientPerBirth ?? 1, 'nutrientPerBirth', 1n);
-  const maintenancePerIndividual = asInt(profile.maintenancePerIndividual ?? 1, 'maintenancePerIndividual', 0n);
-  const disturbanceMortalityPpm = asPpm(profile.disturbanceMortalityPpm ?? 250_000, 'disturbanceMortalityPpm');
-  const juvenileMaturationPpm = asPpm(profile.juvenileMaturationPpm ?? 0, 'juvenileMaturationPpm');
-  const matureSenescencePpm = asPpm(profile.matureSenescencePpm ?? 0, 'matureSenescencePpm');
+  const birthPpm = scenarioProfilePpm(profile, 'birthPpm', assumptionsUsed);
+  const mortalityPpm = scenarioProfilePpm(profile, 'mortalityPpm', assumptionsUsed);
+  const resourcePerBirth = scenarioProfileInt(profile, 'resourcePerBirth', assumptionsUsed, 1n);
+  const nutrientPerBirth = scenarioProfileInt(profile, 'nutrientPerBirth', assumptionsUsed, 1n);
+  const maintenancePerIndividual = scenarioProfileInt(profile, 'maintenancePerIndividual', assumptionsUsed, 0n);
+  const disturbanceMortalityPpm = scenarioProfilePpm(profile, 'disturbanceMortalityPpm', assumptionsUsed);
+  const juvenileMaturationPpm = scenarioProfilePpm(profile, 'juvenileMaturationPpm', assumptionsUsed);
+  const matureSenescencePpm = scenarioProfilePpm(profile, 'matureSenescencePpm', assumptionsUsed);
 
   const demographicPlans = new Map();
   const diagnostics = [];
@@ -351,8 +412,8 @@ function advanceEcology(state, event) {
     const requests = regionPopulations.map((population) => {
       const lineage = lineages.get(population.lineageId);
       assert(lineage, `missing lineage ${population.lineageId}`);
-      const fecundity = traitValue(lineage, 'fecundity', 500_000n);
-      const resilience = traitValue(lineage, 'resilience', 500_000n);
+      const fecundity = traitValue(lineage, 'fecundity', assumptionsUsed);
+      const resilience = traitValue(lineage, 'resilience', assumptionsUsed);
       const effectiveBirthPpm = birthPpm * fecundity / PPM * region.opportunityPpm / PPM;
       const requestedBirths = population.abundance * effectiveBirthPpm / PPM;
       const disturbanceExposurePpm = region.disturbancePpm * (PPM - resilience) / PPM;
@@ -413,6 +474,8 @@ function advanceEcology(state, event) {
     region.nutrientPool = clamp(region.nutrientPool - totalBirths * nutrientPerBirth, 0n, MAX_INT);
   }
 
+  const scenarioAssumptions = scenarioAssumptionEnvelope(assumptionsUsed);
+
   for (const population of state.populations) {
     if (population.abundance === 0n) continue;
     assert(regionBudgets.has(population.regionId), `missing region ${population.regionId}`);
@@ -433,6 +496,8 @@ function advanceEcology(state, event) {
       deaths: plan.deaths,
       abundance: mutable.abundance,
       lifecycleStagePpm: mutable.lifecycleStagePpm,
+      authorityClass: LIFE_V2_AUTHORITY.class,
+      scenarioAssumptions,
     }));
   }
 
@@ -522,7 +587,7 @@ function advanceEcology(state, event) {
     interactions: state.interactions,
     regions: Object.fromEntries(regionBudgets),
   });
-  return Object.freeze({ state: next, diagnostics: Object.freeze(diagnostics) });
+  return Object.freeze({ state: next, diagnostics: Object.freeze(diagnostics), scenarioAssumptions });
 }
 
 function applyLineageEvent(state, event) {
@@ -597,7 +662,7 @@ function summarizeLifeState(state) {
     authorityClass: state.authority.class,
   });
 }
-return Object.freeze({LIFE_V2_AUTHORITY,LIFE_V2_LIMITS,createLifeState,advanceEcology,applyLineageEvent,replayLife,summarizeLifeState});
+return Object.freeze({LIFE_V2_AUTHORITY,LIFE_V2_SCENARIO_ASSUMPTIONS,LIFE_V2_LIMITS,createLifeState,advanceEcology,applyLineageEvent,replayLife,summarizeLifeState});
 })();
 __modules["embodiment.js"]=(()=>{
 'use strict';

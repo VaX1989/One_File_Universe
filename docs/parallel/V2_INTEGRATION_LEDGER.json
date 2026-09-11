@@ -1,6 +1,6 @@
 {
   "schema": "ofu-v2-integration-ledger-1",
-  "version": "2026-09-09.10",
+  "version": "2026-09-11.11",
   "status": "PROVISIONAL_V2_0_RELEASE_CANDIDATE_PENDING_EXACT_SHA_CERTIFICATION",
   "identityRule": "The candidate SHA and tree are the commit and tree containing this ledger; no self-referential Git identity is embedded here.",
   "release": {
@@ -65,9 +65,9 @@
     },
     {
       "lane": "V2X-08",
-      "disposition": "CENTRALLY_REIMPLEMENTED",
-      "shippingEvidence": ["config/components/v2x-08-life-ecology-evolution-embodiment.json", "src/domains/v1/life/v2x08-life-facade.js", "src/bootstrap/product/v2x-context-inspector.js", "tests/v2x-08/single-file-facade.mjs"],
-      "note": "Life scenario priors and ecology remain explicitly model-derived and are surfaced through the Living inspector."
+      "disposition": "INTEGRATED",
+      "shippingEvidence": ["config/components/v2x-08-life-ecology-evolution-embodiment.json", "src/v2x-08-life-ecology-evolution-embodiment/shipping-runtime.js", "src/v2x-08-life-ecology-evolution-embodiment/shipping-bundle.mjs", "src/domains/v1/life/v2x08-life-facade.js", "src/rendering/v2x-convergence/living-life-v2-consumer.js", "tests/v2x-08/life-shipping-viewport.mjs"],
+      "note": "The deterministic classic-script bundle preserves the lane model, ecology/evolution, embodiment, renderer, viewport and adapter modules byte-for-byte by reproducible transformation; the central Living consumer retains model-derived authority and aggregate representative semantics."
     },
     {
       "lane": "V2X-09",

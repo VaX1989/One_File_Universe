@@ -1,0 +1,17 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import { validateLedgerObject } from '../../tools/v2-zero-loss-harvest-validate.mjs';
+const source=JSON.parse(fs.readFileSync('docs/parallel/v2.0-00-zero-loss-harvest/ZERO_LOSS_HARVEST_LEDGER.json','utf8'));
+const clone=()=>structuredClone(source);const reject=(mutate,pattern)=>{const x=clone();mutate(x);assert.throws(()=>validateLedgerObject(x),pattern)};
+assert.doesNotThrow(()=>validateLedgerObject(clone()));
+reject(x=>x.lane.remainingOwnedBlockers.push('hidden'),/remaining owned blockers must be empty/);
+reject(x=>x.currentCheckpointHarvest[1].lane='V2X-01',/current checkpoint harvest duplicate lane/);
+reject(x=>x.currentCheckpointHarvest.find(r=>r.lane==='V2X-08').disposition='ALREADY_INTEGRATED',/shipping checkpoint disposition invalid/);
+reject(x=>x.currentCheckpointHarvest.find(r=>r.lane==='V2X-15').shippingPromotionPerformed=true,/shipping promotion falsely claimed/);
+reject(x=>x.researchAuthority['V2X-15'].canonicalPromotionPerformed=true,/canonical promotion falsely claimed/);
+reject(x=>x.authorityBoundary.ownedPaths.push('.github/workflows/harvest.yml'),/exact owned path set required/);
+reject(x=>x.authorityBoundary.ownedPaths[0]='.github/workflows/harvest.yml',/crosses central boundary/);
+reject(x=>x.centralSyncBase.sha='0'.repeat(39),/central sync SHA invalid/);
+reject(x=>x.currentCheckpointHarvest.find(r=>r.lane==='V2X-05').namespace='V2_0',/V2X-05 namespace fallback/);
+reject(x=>x.forensicSignals['V2X-10'].authorizedBaseRetainedMemoryPersistence=true,/memory falsely promoted/);
+console.log('V2 zero-loss harvest adversarial falsification: PASS');

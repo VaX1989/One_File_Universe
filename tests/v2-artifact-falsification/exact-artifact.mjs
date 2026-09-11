@@ -7,6 +7,7 @@ import {execFileSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
 import {chromium} from 'playwright';
 import {emittedComponent,loadComponents} from '../../tools/extensions/components.mjs';
+import {bundleLifeShippingRuntime} from '../../src/v2x-08-life-ecology-evolution-embodiment/shipping-bundle.mjs';
 
 const ROOT=process.cwd();
 const ARTIFACT='dist/One_File_Universe.html';
@@ -78,6 +79,7 @@ function developedInventory(plan,html){
   const matrix=JSON.parse(readText(OWNERSHIP));
   const bySource=new Map();
   for(const c of plan){const list=bySource.get(c.source)||[];list.push(c.id);bySource.set(c.source,list);}
+  const lifeBundlePath='src/v2x-08-life-ecology-evolution-embodiment/shipping-runtime.js',lifeBundleInputs=new Set(['model.js','embodiment.js','renderer.js','evolution.js','succession.js','provider.js','viewport-bridge.js','shipping-adapter.js'].map(name=>'src/v2x-08-life-ecology-evolution-embodiment/'+name)),lifeBundleComponent=plan.find(c=>c.source===lifeBundlePath),lifeBundleValid=readText(lifeBundlePath).trimEnd()===bundleLifeShippingRuntime().trimEnd(),lifeBundleEmitted=Boolean(lifeBundleComponent&&html.includes(emittedComponent(lifeBundleComponent)));
   const items=[];
   for(const [laneId,lane] of Object.entries(matrix.lanes||{})){
     if(!/^V2X-(?:0[1-9]|1[0-6])$/.test(laneId))continue;
@@ -86,7 +88,8 @@ function developedInventory(plan,html){
       const bytes=read(rel),text=/\.(?:js|mjs|json|css|glsl|wgsl|html|txt|md)$/i.test(rel)?normalized(bytes.toString('utf8')).trimEnd():null;
       const componentIds=bySource.get(rel)||[];
       const exactArtifactInclusion=text?html.includes(text)||html.includes(text.replace(/<\/script/gi,'<\\/script')):false;
-      items.push({laneId,path:rel,bytes:bytes.length,sha256:sha256(bytes),componentIds,manifested:componentIds.length>0,exactArtifactInclusion});
+      const deterministicBundleInput=laneId==='V2X-08'&&lifeBundleInputs.has(rel)&&lifeBundleValid&&lifeBundleEmitted;
+      items.push({laneId,path:rel,bytes:bytes.length,sha256:sha256(bytes),componentIds,manifested:componentIds.length>0,exactArtifactInclusion,deterministicBundleInput,bundledBy:deterministicBundleInput?lifeBundleComponent.id:null});
     }
   }
   items.sort((a,b)=>a.laneId.localeCompare(b.laneId)||a.path.localeCompare(b.path));
@@ -168,7 +171,7 @@ for(const c of plan){
   if(!html.includes(emittedComponent(c)))artifactMissing.push({id:c.id,source:c.source,placement:c.placement});
 }
 const parseFailures=parseScripts(html);
-const developed=developedInventory(plan,html),unshippedDeveloped=developed.filter(x=>!x.manifested&&!x.exactArtifactInclusion);
+const developed=developedInventory(plan,html),unshippedDeveloped=developed.filter(x=>!x.manifested&&!x.exactArtifactInclusion&&!x.deterministicBundleInput);
 const sourceToComponents=new Map();for(const c of plan){const list=sourceToComponents.get(c.source)||[];list.push(c);sourceToComponents.set(c.source,list);}
 const duplicateSources=[...sourceToComponents.entries()].filter(([,cs])=>cs.length>1).map(([source,cs])=>({source,componentIds:cs.map(c=>c.id)}));
 const hashGroups=new Map();for(const c of plan){const list=hashGroups.get(c.sourceSha256)||[];list.push(c);hashGroups.set(c.sourceSha256,list);}
