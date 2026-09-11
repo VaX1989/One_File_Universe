@@ -77,6 +77,18 @@ try {
       livingRuntime
     };
   });
+  const bootFailure = {
+    schema: 'ofu-v1x14-boot-diagnostics-1',
+    laneId: 'V1X-14',
+    checkpoint: {sha: identity.sha, tree: identity.tree},
+    browser: browserName,
+    directFile: true,
+    diagnostics,
+    pageErrors,
+    timeoutMs: 30000,
+    authority: 'MEASURED_RUNTIME_FAILURE_EVIDENCE'
+  };
+  writeJson(path.join(outDir, 'boot-diagnostics.json'), bootFailure);
   throw new Error(`V1X-14 ${browserName} boot readiness timeout: ${stringifyDiagnostics({diagnostics, pageErrors})}`, {cause: error});
 }
 assert.equal(new URL(page.url()).protocol, 'file:', 'journey must execute as direct-file');

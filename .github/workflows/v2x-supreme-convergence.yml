@@ -90,6 +90,19 @@ jobs:
         run: node tests/v2x-14-product-experience/browser-journey.mjs
       - name: V2 cinematic real-browser journey
         run: node tests/v2x-convergence/browser-cinematic-experience.mjs
+      - name: V1X-14 Firefox exact readiness witness
+        id: v1x14_firefox
+        continue-on-error: true
+        run: node tests/v1x-14-certification-evidence/browser-evidence.mjs --browser=firefox
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v1x14-firefox-${{ env.OFU_EXPECTED_SHA }}
+          path: reports/v1x-14-certification-evidence/${{ env.OFU_EXPECTED_SHA }}/firefox
+          if-no-files-found: warn
+      - name: Enforce V1X-14 Firefox readiness
+        if: steps.v1x14_firefox.outcome != 'success'
+        run: exit 1
       - name: Progressive release conformance exact source
         run: node tools/extensions/conformance.mjs RELEASE --exact
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
