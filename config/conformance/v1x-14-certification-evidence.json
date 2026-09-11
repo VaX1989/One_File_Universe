@@ -23,7 +23,7 @@
       "id": "v1x14.browser-firefox",
       "owner": "v1x-14-certification-evidence",
       "tier": "LANE_TARGETED",
-      "command": ["xvfb-run", "-a", "node", "tests/v1x-14-certification-evidence/browser-evidence.mjs", "--browser=firefox"],
+      "command": ["node", "tests/v1x-14-certification-evidence/browser-evidence.mjs", "--browser=firefox"],
       "providers": ["v1.interaction.universal-exploration"],
       "oracle": "v1x14-browser-firefox-oracle-1",
       "timeoutMs": 180000
