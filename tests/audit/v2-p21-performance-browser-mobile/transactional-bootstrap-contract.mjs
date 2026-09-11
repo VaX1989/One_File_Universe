@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import vm from 'node:vm';
 import assert from 'node:assert/strict';
 
 const read=file=>fs.readFileSync(file,'utf8');
@@ -34,6 +35,9 @@ has(forward,/unsubscribeRaw\(\).*listeners\.clear\(\)/s,'forward wrapper disposa
 has(scheduler,/runtimes\.delete\(wrapped\)/,'navigation pacing wrapper disposal must release its runtime registry entry');
 has(bridge,/catch\(error\)\{base\.dispose\(\);throw error\}/,'strict renderer construction must dispose its base renderer on failure');
 has(bridge,/releaseContext\(\).*pixel\.remove\(\);throw error/s,'failed strict WebGL construction must release its context and provisional canvas');
+const bridgeSandbox={OFU:{v1LivingRenderer:{VERSION:'test-renderer',create(){}},renderWebGL2Resources:{createFrameConsumer(){}}}};bridgeSandbox.globalThis=bridgeSandbox;vm.runInNewContext(bridge,bridgeSandbox,{filename:'living-v2x13-bridge.js'});
+const mobileSurface=bridgeSandbox.OFU.v1LivingV2X13Bridge.consumerSurface(1688,780),portraitSurface=bridgeSandbox.OFU.v1LivingV2X13Bridge.consumerSurface(780,1688);
+for(const surface of [mobileSurface,portraitSurface]){assert.equal(surface.maxTrackedBytes,8388608,'strict consumer tracked-byte ceiling must not increase');assert.ok(surface.pixels<=surface.maxPixels,'strict consumer backing surface must leave bounded room for frame and shadow resources');assert.ok(surface.width<=2048&&surface.height<=2048,'strict consumer backing surface must respect its texture dimension ceiling');assert.equal(surface.constrained,true,'DPR-2 mobile backing surfaces must be deterministically constrained');assert.ok(surface.maxTrackedBytes-surface.reservedFrameBytes-surface.reservedShadowBytes-surface.pixels*8>=0,'strict consumer resource plan must fit the unchanged tracked-byte ceiling');assertions+=5;}
 assert.doesNotMatch(soak,/--use-gl=angle|--use-angle=swiftshader/,'P21 must not replace the pinned browser runtime\'s governed graphics backend');assertions++;
 has(soak,/name==='firefox'.*'webgl\.disabled':false.*'webgl\.force-enabled':true.*'webgl\.enable-webgl2':true/,'Firefox must expose its native WebGL2 path under the governed graphical profile');
 has(soak,/spawnSync\('xvfb-run'.*OFU_P21_VIRTUAL_DISPLAY:'1'/s,'Linux P21 must provide a bounded graphical display host for the real browser matrix');
