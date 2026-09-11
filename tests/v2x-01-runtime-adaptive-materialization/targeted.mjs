@@ -136,14 +136,20 @@ const pf=O.v2x01BoundedPrefetch.create({maxCandidates:3,maxRequests:2});assert.t
 console.log(JSON.stringify({status:'PASS',oracle:'V2X01_RUNTIME_TARGETED_INVARIANTS',generation:'V2_RUNTIME_2',starvationBound:{sameClassImmediateStartsBeforeWarm:lowObservedAt,crossClassInteractionsBeforePrefetch:prefetchObservedAt,workloadOrder:domainOrder.slice(0,8)},adaptivePolicy:{version:O.v2x01Contracts.ADAPTIVE_POLICY_VERSION,packet:runtimePacket},streaming:{success:streamSnap,budget:streamBudgetSnap,startTimeout:streamStartTimeoutSnap},snapshot:snap,detachedSnapshot:detachedSnap,fallbackSnapshot:fallbackSnap,releaseSnapshot:releaseSnap,quarantineSnapshot:quarantineSnap,prefetch:pf.snapshot()}));
 
 // Exercise the shipping Living binding against the real registration and request contracts.
-let livingDraws=0;
-O.v1LivingRenderer={create:()=>({render:async()=>{livingDraws++},state:()=>({}),dispose(){}})};
+const livingDraws=[];
+O.v1LivingRenderer={create:()=>({render:async s=>{livingDraws.push(s.revision)},state:()=>({}),dispose(){}})};
 vm.runInThisContext(fs.readFileSync('src/runtime/living-materialization-binding.js','utf8'),{filename:'src/runtime/living-materialization-binding.js'});
 const livingBound=O.v1LivingRenderer.create({width:390,height:844},null);
 await livingBound.render({stage:'UNIVERSE',semanticScale:'galaxy',revision:0,historyDepth:0});
-assert.equal(livingDraws,1);
+assert.deepEqual(livingDraws,[0]);
+await Promise.all([
+ livingBound.render({stage:'ORBIT',semanticScale:'orbit',revision:1,historyDepth:1,body:{canonicalId:'world-1'}}),
+ livingBound.render({stage:'HUMAN',semanticScale:'human',revision:2,historyDepth:2,body:{canonicalId:'world-1'}})
+]);
+await livingBound.render({stage:'ORBIT',semanticScale:'orbit',revision:1,historyDepth:1,body:{canonicalId:'world-1'}});
+assert.deepEqual(livingDraws,[0,2],'superseded and out-of-order Living revisions must not replace the latest frame');
 assert.equal(livingBound.state().v2x01.failures,0);
-assert.equal(livingBound.state().v2x01.requests,1);
+assert.equal(livingBound.state().v2x01.requests,2);
 assert(livingBound.state().v2x01.runtimePacket);
 livingBound.dispose();
 console.log(JSON.stringify({status:'PASS',oracle:'V2X01_REAL_LIVING_MATERIALIZER_CONTRACT'}));
