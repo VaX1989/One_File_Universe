@@ -18,6 +18,7 @@ import {
 
 const browserName = (process.argv.find(x => x.startsWith('--browser=')) || '--browser=chromium').split('=')[1];
 const engines = {chromium, firefox, webkit};
+const stringifyDiagnostics = value => JSON.stringify(value, (_, candidate) => typeof candidate === 'bigint' ? candidate.toString() : candidate);
 assert.ok(engines[browserName], `unsupported browser ${browserName}`);
 const identity = assertFrozenBase({identity: exactGitIdentity({branch: process.env.V1X_BRANCH || ''})});
 const outDir = path.resolve('reports/v1x-14-certification-evidence', identity.sha, browserName);
@@ -76,7 +77,7 @@ try {
       livingRuntime
     };
   });
-  throw new Error(`V1X-14 ${browserName} boot readiness timeout: ${JSON.stringify({diagnostics, pageErrors})}`, {cause: error});
+  throw new Error(`V1X-14 ${browserName} boot readiness timeout: ${stringifyDiagnostics({diagnostics, pageErrors})}`, {cause: error});
 }
 assert.equal(new URL(page.url()).protocol, 'file:', 'journey must execute as direct-file');
 
