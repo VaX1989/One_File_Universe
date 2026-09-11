@@ -24,7 +24,7 @@ const identity = assertFrozenBase({identity: exactGitIdentity({branch: process.e
 const outDir = path.resolve('reports/v1x-14-certification-evidence', identity.sha, browserName);
 fs.mkdirSync(path.join(outDir, 'frames'), {recursive: true});
 const launchOptions = {
-  headless: true,
+  headless: browserName !== 'firefox',
   ...(browserName === 'firefox'
     ? {firefoxUserPrefs: {'webgl.disabled': false, 'webgl.force-enabled': true, 'webgl.forbid-software': false}}
     : {})
