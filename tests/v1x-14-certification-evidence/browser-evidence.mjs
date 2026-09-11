@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
+import {spawnSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
 import {chromium, firefox, webkit} from 'playwright';
 import {
@@ -20,6 +21,15 @@ const browserName = (process.argv.find(x => x.startsWith('--browser=')) || '--br
 const engines = {chromium, firefox, webkit};
 const stringifyDiagnostics = value => JSON.stringify(value, (_, candidate) => typeof candidate === 'bigint' ? candidate.toString() : candidate);
 assert.ok(engines[browserName], `unsupported browser ${browserName}`);
+if (browserName === 'firefox' && process.platform === 'linux' && !process.env.DISPLAY && process.env.OFU_V1X14_XVFB_REEXEC !== '1') {
+  const child = spawnSync('xvfb-run', ['-a', process.execPath, ...process.argv.slice(1)], {
+    stdio: 'inherit',
+    env: {...process.env, OFU_V1X14_XVFB_REEXEC: '1'}
+  });
+  if (child.error) throw child.error;
+  if (child.signal) throw new Error(`V1X-14 Firefox Xvfb child terminated by ${child.signal}`);
+  process.exit(child.status ?? 1);
+}
 const identity = assertFrozenBase({identity: exactGitIdentity({branch: process.env.V1X_BRANCH || ''})});
 const outDir = path.resolve('reports/v1x-14-certification-evidence', identity.sha, browserName);
 fs.mkdirSync(path.join(outDir, 'frames'), {recursive: true});
