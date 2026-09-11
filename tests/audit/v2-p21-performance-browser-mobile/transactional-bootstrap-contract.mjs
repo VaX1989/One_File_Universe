@@ -8,6 +8,7 @@ const forward=read('src/exploration/v1/living-forward-navigation.js');
 const scale=read('src/bootstrap/product/scale-runtime.js');
 const scheduler=read('src/bootstrap/product/renderer-scheduler.js');
 const bridge=read('src/rendering/v1/living-v2x13-bridge.js');
+const soak=read('tests/audit/v2-p21-performance-browser-mobile/browser-resource-soak.mjs');
 let assertions=0;
 const has=(source,pattern,message)=>{assert.match(source,pattern,message);assertions++};
 
@@ -33,5 +34,6 @@ has(forward,/unsubscribeRaw\(\).*listeners\.clear\(\)/s,'forward wrapper disposa
 has(scheduler,/runtimes\.delete\(wrapped\)/,'navigation pacing wrapper disposal must release its runtime registry entry');
 has(bridge,/catch\(error\)\{base\.dispose\(\);throw error\}/,'strict renderer construction must dispose its base renderer on failure');
 has(bridge,/releaseContext\(\).*pixel\.remove\(\);throw error/s,'failed strict WebGL construction must release its context and provisional canvas');
+assert.doesNotMatch(soak,/--use-gl=angle|--use-angle=swiftshader/,'P21 must not replace the pinned browser runtime\'s governed graphics backend');assertions++;
 
 console.log(JSON.stringify({status:'PASS',suite:'p21-transactional-living-bootstrap',assertions,oracleChanges:'NONE',timeoutChanges:'NONE',authorityWeakening:'NONE',resourceCeilingWeakening:'NONE'}));

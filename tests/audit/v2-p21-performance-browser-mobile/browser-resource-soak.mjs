@@ -73,7 +73,9 @@ function executableCandidates(name){
 }
 function launchOptions(name,executablePath=null){
  const options={headless:true};
- if(name==='chromium')options.args=['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader'];
+ // Use each pinned Playwright runtime's governed default graphics backend.
+ // Version-specific ANGLE overrides can disable WebGL2 even when that same
+ // runtime exposes it under its default launch profile.
  if(executablePath)options.executablePath=executablePath;
  return options;
 }
