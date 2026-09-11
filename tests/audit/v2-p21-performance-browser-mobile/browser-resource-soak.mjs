@@ -89,6 +89,7 @@ function launchOptions(name,executablePath=null){
  // Use each pinned Playwright runtime's governed default graphics backend.
  // Version-specific ANGLE overrides can disable WebGL2 even when that same
  // runtime exposes it under its default launch profile.
+ if(name==='firefox')options.firefoxUserPrefs={'webgl.disabled':false,'webgl.force-enabled':true,'webgl.enable-webgl2':true};
  if(executablePath)options.executablePath=executablePath;
  return options;
 }

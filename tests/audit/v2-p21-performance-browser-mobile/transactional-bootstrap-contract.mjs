@@ -35,5 +35,6 @@ has(scheduler,/runtimes\.delete\(wrapped\)/,'navigation pacing wrapper disposal 
 has(bridge,/catch\(error\)\{base\.dispose\(\);throw error\}/,'strict renderer construction must dispose its base renderer on failure');
 has(bridge,/releaseContext\(\).*pixel\.remove\(\);throw error/s,'failed strict WebGL construction must release its context and provisional canvas');
 assert.doesNotMatch(soak,/--use-gl=angle|--use-angle=swiftshader/,'P21 must not replace the pinned browser runtime\'s governed graphics backend');assertions++;
+has(soak,/name==='firefox'.*'webgl\.disabled':false.*'webgl\.force-enabled':true.*'webgl\.enable-webgl2':true/,'Firefox must expose its native WebGL2 path under the governed headless profile');
 
 console.log(JSON.stringify({status:'PASS',suite:'p21-transactional-living-bootstrap',assertions,oracleChanges:'NONE',timeoutChanges:'NONE',authorityWeakening:'NONE',resourceCeilingWeakening:'NONE'}));
