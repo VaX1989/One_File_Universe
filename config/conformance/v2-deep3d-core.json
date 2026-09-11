@@ -1,7 +1,7 @@
 {
   "schema":"ofu-conformance-1",
   "tests":[
-    {"id":"v2.deep3d.spatial-address","owner":"product","tier":"FAST_LOCAL","command":["node","tests/deep3d/spatial-address.mjs"],"providers":[],"oracle":"v2-deep3d-hierarchical-precision-adversarial","timeoutMs":30000},
-    {"id":"v2.deep3d.render-packets","owner":"product","tier":"FAST_LOCAL","command":["node","tests/deep3d/render-packets.mjs"],"providers":[],"oracle":"v2-deep3d-gpu-neutral-semantic-packet-determinism","timeoutMs":30000}
+    {"id":"v2.deep3d.spatial-address","owner":"product","tier":"FAST_LOCAL","command":["node","tests/deep3d/spatial-address.mjs"],"providers":["v2.deep3d.spatial.transport"],"oracle":"v2-deep3d-hierarchical-precision-adversarial","timeoutMs":30000},
+    {"id":"v2.deep3d.render-packets","owner":"product","tier":"FAST_LOCAL","command":["node","tests/deep3d/render-packets.mjs"],"providers":["v2.deep3d.render.scene"],"oracle":"v2-deep3d-gpu-neutral-semantic-packet-determinism","timeoutMs":30000}
   ]
 }
