@@ -177,16 +177,12 @@ jobs:
           test "$(jq -r .prerelease <<<"$RELEASE_JSON")" = true
           test "$(jq -r .target_commitish <<<"$RELEASE_JSON")" = "$SOURCE_SHA"
           test "$(jq -r .tag_name <<<"$RELEASE_JSON")" = "$RELEASE_TAG"
-          TAG_REF_JSON="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$RELEASE_TAG")"
-          TAG_OBJECT_TYPE="$(jq -r .object.type <<<"$TAG_REF_JSON")"
-          TAG_OBJECT_SHA="$(jq -r .object.sha <<<"$TAG_REF_JSON")"
-          if test "$TAG_OBJECT_TYPE" = tag; then
-            TAG_OBJECT_SHA="$(gh api "repos/$GITHUB_REPOSITORY/git/tags/$TAG_OBJECT_SHA" --jq .object.sha)"
-          elif test "$TAG_OBJECT_TYPE" != commit; then
-            echo "unexpected release tag object type: $TAG_OBJECT_TYPE" >&2
+          # A draft release has no tag ref until GitHub publishes it.  Any
+          # live ref at this boundary is therefore an identity collision.
+          if gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$RELEASE_TAG" >/dev/null 2>&1; then
+            echo 'refusing publication: preview release tag became occupied while the draft was staged' >&2
             exit 1
           fi
-          test "$TAG_OBJECT_SHA" = "$SOURCE_SHA"
       - name: Publish only after verified draft
         shell: bash
         env:
