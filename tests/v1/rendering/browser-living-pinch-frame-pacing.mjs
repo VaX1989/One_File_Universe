@@ -11,13 +11,18 @@ const errors=[],requests=[];
 page.on('pageerror',error=>errors.push(String(error?.message||error)));
 page.on('request',request=>{const url=request.url();if(!url.startsWith('file:')&&!url.startsWith('blob:')&&!url.startsWith('data:'))requests.push(url);});
 
-const sample=()=>page.evaluate(()=>{
- const runtime=OFU.v1LivingProduct.runtime.snapshot(),renderer=OFU.v1LivingProduct.renderer.state(),pacing=OFU.v1LivingProduct.runtime.navigationPacingSnapshot();
- const canvas=document.getElementById('living-view'),ctx=canvas.getContext('2d'),pixels=ctx.getImageData(0,0,canvas.width,canvas.height).data;
+const sample=(refreshVisual=true)=>page.evaluate(async refreshVisual=>{
+ const product=OFU.v1LivingProduct,runtime=product.runtime.snapshot();
+ if(refreshVisual)await product.renderer.render(runtime);
+ const renderer=product.renderer.state(),pacing=product.runtime.navigationPacingSnapshot();
+ const gpuPrimary=renderer.deep3d?.primaryBackend==='DEEP3D_WEBGL2_V2X13',canvas=document.getElementById(gpuPrimary?'living-gl':'living-view');
+ let pixels;
+ if(gpuPrimary){const gl=canvas.getContext('webgl2');pixels=new Uint8Array(canvas.width*canvas.height*4);gl.readPixels(0,0,canvas.width,canvas.height,gl.RGBA,gl.UNSIGNED_BYTE,pixels);if(gl.getError()!==gl.NO_ERROR)throw new Error('Deep3D pinch visual sampling failed');}
+ else pixels=canvas.getContext('2d').getImageData(0,0,canvas.width,canvas.height).data;
  let hash=2166136261,nonEmpty=0;const sx=Math.max(1,Math.floor(canvas.width/64)),sy=Math.max(1,Math.floor(canvas.height/40));
  for(let y=0;y<canvas.height;y+=sy)for(let x=0;x<canvas.width;x+=sx){const i=(y*canvas.width+x)*4;for(let k=0;k<4;k++){hash^=pixels[i+k];hash=Math.imul(hash,16777619)>>>0;}if(pixels[i+3]&&(pixels[i]||pixels[i+1]||pixels[i+2]))nonEmpty++;}
- return {runtime:{revision:runtime.revision,stage:runtime.stage,node:runtime.node?.canonicalId||runtime.node?.entityId||null,body:runtime.body?.canonicalId||runtime.body?.entityId||null,historyDepth:runtime.historyDepth,navigationCoordinate:runtime.navigationCoordinate},renderer:{authority:renderer.authority,frames:renderer.metrics.frames,readyRevision:renderer.readyRevision},pacing,canvas:{hash,nonEmpty},input:OFU.v1LivingProduct.snapshot().input,scheduler:OFU.v1LivingRuntime.NAVIGATION_PACING_VERSION};
-});
+ return {runtime:{revision:runtime.revision,stage:runtime.stage,node:runtime.node?.canonicalId||runtime.node?.entityId||null,body:runtime.body?.canonicalId||runtime.body?.entityId||null,historyDepth:runtime.historyDepth,navigationCoordinate:runtime.navigationCoordinate},renderer:{authority:renderer.authority,frames:renderer.metrics.frames,readyRevision:renderer.readyRevision},pacing,canvas:{hash,nonEmpty,surfaceId:canvas.id,gpuPrimary,hidden:canvas.hidden},input:product.snapshot().input,scheduler:OFU.v1LivingRuntime.NAVIGATION_PACING_VERSION};
+},refreshVisual);
 const waitReady=()=>page.waitForFunction(()=>OFU.v1LivingProduct.renderer.state().readyRevision===OFU.v1LivingProduct.runtime.snapshot().revision,null,{timeout:10000});
 const raf2=()=>page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
 
@@ -30,6 +35,7 @@ try{
  assert.equal(before.renderer.authority,'PRESENTATION_ONLY');
  assert.equal(before.pacing.strategy,'RAF_LATEST_PINCH_COORDINATE_WITH_RUNTIME_NORMALIZED_SYNC_BOUNDARIES_AND_TERMINAL_FLUSH');
  assert.ok(before.canvas.nonEmpty>0);
+ if(before.canvas.gpuPrimary)assert.deepEqual({surface:before.canvas.surfaceId,hidden:before.canvas.hidden},{surface:'living-gl',hidden:false},'pinch evidence must sample the visible Deep3D primary surface');
 
  const active=await page.evaluate(()=>{
   const product=OFU.v1LivingProduct,runtime=product.runtime,canvas=document.getElementById('living-view'),rect=canvas.getBoundingClientRect(),before=runtime.snapshot(),p0=runtime.navigationPacingSnapshot(),r0=product.renderer.state();
@@ -51,7 +57,7 @@ try{
  assert.equal(active.afterRevision,active.beforeRevision);assert.equal(active.afterCoordinate,active.beforeCoordinate);assert.ok(active.pending>=active.inputEvents);
  assert.equal(active.input.activePointers,2);assert.equal(active.input.pinchActive,true);
 
- const released=await sample();
+ const released=await sample(false);
  assert.equal(released.pacing.frames-before.pacing.frames,1);assert.equal(released.pacing.terminalCommits-before.pacing.terminalCommits,1);assert.equal(released.pacing.pendingEvents,0);
  assert.equal(released.runtime.revision,before.runtime.revision+1);assert.equal(released.runtime.stage,'REGION');assert.ok(Math.abs(released.runtime.navigationCoordinate-active.target)<1e-6);
  assert.equal(released.input.activePointers,0);assert.equal(released.input.pinchActive,false);
