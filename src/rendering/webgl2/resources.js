@@ -1,7 +1,7 @@
 (function(root){
 'use strict';
 const O=root.OFU=root.OFU||{};
-const VERSION='ofu-render-webgl2-resources-7';
+const VERSION='ofu-render-webgl2-resources-8';
 const AUTHORITY='PRESENTATION_ONLY';
 const FRAME_VERSION='ofu-render-webgl2-frame-consumer-3';
 const FRAME_BACKEND='V2X13_WEBGL2_PIXEL_CONSUMER';
@@ -60,6 +60,10 @@ layout(location=0) in vec3 aPosition;uniform mat4 uViewProjection;uniform float 
 const FLAT_FRAGMENT=`#version 300 es
 precision highp float;
 out vec4 outColor;uniform vec3 uColor;uniform float uOpacity;void main(){outColor=vec4(uColor,uOpacity);}`;
+const POINT_FRAGMENT=`#version 300 es
+precision highp float;
+out vec4 outColor;uniform vec3 uColor;uniform vec3 uEmissive;uniform float uOpacity;
+void main(){vec2 q=gl_PointCoord*2.0-1.0;float d=length(q);if(d>1.0)discard;float core=pow(max(0.0,1.0-d),0.72);float edge=1.0-smoothstep(0.68,1.0,d);outColor=vec4(uColor+uEmissive*(0.45+core*1.8),uOpacity*edge);}`;
 const SHADOW_VERTEX=`#version 300 es
 precision highp float;
 layout(location=0) in vec3 aPosition;uniform mat4 uShadowMatrix;void main(){gl_Position=uShadowMatrix*vec4(aPosition,1.0);}`;
@@ -114,6 +118,7 @@ function createFrameConsumer(initialGl,{canvas=null,maxDraws=2048,maxVertices=10
  function setMatrix(program,name,value){const loc=essentialUniform(program,name);gl.uniformMatrix4fv(loc,false,value)}
  function program(id,vertexSource,fragmentSource){let p=programs.get(id);if(p)return p;p=manager.createProgram(id,{vertexSource,fragmentSource});programs.set(id,p);return p}
  function flatProgram(){return program('v2x13.program.flat',FLAT_VERTEX,FLAT_FRAGMENT)}
+ function pointProgram(){return program('v2x13.program.round-point',FLAT_VERTEX,POINT_FRAGMENT)}
  function litProgram(fog,shadow){const P=O.renderPresentationShaders;if(!P||typeof P.variant!=='function')fail('DEPENDENCY','renderPresentationShaders required for lit frames');const v=P.variant({shadow:Boolean(shadow),fog,alpha:'blend'});return program('v2x13.program.'+v.key,v.vertex,v.fragment)}
  function shadowProgram(){return program('v2x13.program.shadow-depth',SHADOW_VERTEX,SHADOW_FRAGMENT)}
  function volumetricProgram(){return program('v2x13.program.volumetric',VOLUME_VERTEX,VOLUME_FRAGMENT)}
@@ -127,9 +132,9 @@ function createFrameConsumer(initialGl,{canvas=null,maxDraws=2048,maxVertices=10
  function renderDraw(frame,draw,index,shadowState=null){const prefix='v2x13.frame.'+frame.frameId+'.'+index,ids=[],mode=primitiveEnum(draw.primitive);let vao=null;try{
    vao=manager.createVertexArray(prefix+'.vao');ids.push(prefix+'.vao');gl.bindVertexArray(vao);
    const pos=manager.createBuffer(prefix+'.pos',gl.ARRAY_BUFFER,draw.positions,gl.STREAM_DRAW||gl.STATIC_DRAW);ids.push(prefix+'.pos');gl.bindBuffer(gl.ARRAY_BUFFER,pos);gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,3,gl.FLOAT,false,0,0);
-   let p;if(draw.lit){const nor=manager.createBuffer(prefix+'.nor',gl.ARRAY_BUFFER,draw.normals,gl.STREAM_DRAW||gl.STATIC_DRAW);ids.push(prefix+'.nor');gl.bindBuffer(gl.ARRAY_BUFFER,nor);gl.enableVertexAttribArray(1);gl.vertexAttribPointer(1,3,gl.FLOAT,false,0,0);p=litProgram(frame.fog,Boolean(shadowState))}else p=flatProgram();
+   let p;if(draw.lit){const nor=manager.createBuffer(prefix+'.nor',gl.ARRAY_BUFFER,draw.normals,gl.STREAM_DRAW||gl.STATIC_DRAW);ids.push(prefix+'.nor');gl.bindBuffer(gl.ARRAY_BUFFER,nor);gl.enableVertexAttribArray(1);gl.vertexAttribPointer(1,3,gl.FLOAT,false,0,0);p=litProgram(frame.fog,Boolean(shadowState))}else p=draw.primitive==='POINTS'?pointProgram():flatProgram();
    gl.useProgram(p);setMatrix(p,'uViewProjection',frame.camera.viewProjection);
-   if(draw.lit){setMatrix(p,'uModel',new Float32Array(IDENTITY));const m=draw.material;const uniforms=[['uBaseColor','3fv',m.baseColor],['uEmissive','3fv',m.emissive],['uRoughness','1f',m.roughness],['uMetallic','1f',m.metallic],['uOpacity','1f',m.opacity],['uLightDirection','3fv',frame.lighting.direction],['uLightColor','3fv',frame.lighting.color],['uLightIntensity','1f',frame.lighting.intensity],['uViewPosition','3fv',frame.camera.position],['uAmbient','1f',frame.lighting.ambient]];for(const [name,kind,value] of uniforms){const loc=essentialUniform(p,name);if(kind==='3fv')gl.uniform3fv(loc,value);else gl.uniform1f(loc,value)}if(shadowState){if(gl.activeTexture)gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,shadowState.target.texture);let loc=essentialUniform(p,'uShadowAtlas');gl.uniform1i(loc,0);setMatrix(p,'uShadowMatrix',frame.shadow.viewProjection);loc=essentialUniform(p,'uShadowRect');gl.uniform4fv(loc,frame.shadow.uvRect);loc=essentialUniform(p,'uShadowBias');gl.uniform1f(loc,frame.shadow.bias)}}else{let loc=essentialUniform(p,'uColor');gl.uniform3fv(loc,draw.material.baseColor);loc=essentialUniform(p,'uOpacity');gl.uniform1f(loc,draw.material.opacity);loc=essentialUniform(p,'uPointSize');gl.uniform1f(loc,draw.material.pointSize)}
+   if(draw.lit){setMatrix(p,'uModel',new Float32Array(IDENTITY));const m=draw.material;const uniforms=[['uBaseColor','3fv',m.baseColor],['uEmissive','3fv',m.emissive],['uRoughness','1f',m.roughness],['uMetallic','1f',m.metallic],['uOpacity','1f',m.opacity],['uLightDirection','3fv',frame.lighting.direction],['uLightColor','3fv',frame.lighting.color],['uLightIntensity','1f',frame.lighting.intensity],['uViewPosition','3fv',frame.camera.position],['uAmbient','1f',frame.lighting.ambient]];for(const [name,kind,value] of uniforms){const loc=essentialUniform(p,name);if(kind==='3fv')gl.uniform3fv(loc,value);else gl.uniform1f(loc,value)}if(shadowState){if(gl.activeTexture)gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,shadowState.target.texture);let loc=essentialUniform(p,'uShadowAtlas');gl.uniform1i(loc,0);setMatrix(p,'uShadowMatrix',frame.shadow.viewProjection);loc=essentialUniform(p,'uShadowRect');gl.uniform4fv(loc,frame.shadow.uvRect);loc=essentialUniform(p,'uShadowBias');gl.uniform1f(loc,frame.shadow.bias)}}else{let loc=essentialUniform(p,'uColor');gl.uniform3fv(loc,draw.material.baseColor);if(draw.primitive==='POINTS'){loc=essentialUniform(p,'uEmissive');gl.uniform3fv(loc,draw.material.emissive)}loc=essentialUniform(p,'uOpacity');gl.uniform1f(loc,draw.material.opacity);loc=essentialUniform(p,'uPointSize');gl.uniform1f(loc,draw.material.pointSize)}
    if(draw.material.opacity<1&&gl.BLEND!=null){gl.enable(gl.BLEND);if(gl.blendFunc)gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA)}else if(gl.BLEND!=null)gl.disable(gl.BLEND);
    if(draw.indices){const ib=manager.createBuffer(prefix+'.idx',gl.ELEMENT_ARRAY_BUFFER,draw.indices,gl.STREAM_DRAW||gl.STATIC_DRAW);ids.push(prefix+'.idx');gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ib);gl.drawElements(mode,draw.indices.length,gl.UNSIGNED_INT,0);return {drawCalls:1,vertices:draw.vertexCount,indices:draw.indices.length}}
    gl.drawArrays(mode,0,draw.vertexCount);return {drawCalls:1,vertices:draw.vertexCount,indices:0};

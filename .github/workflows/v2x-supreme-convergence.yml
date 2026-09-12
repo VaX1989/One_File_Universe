@@ -87,6 +87,8 @@ jobs:
         run: |
           npm install --no-save --package-lock=false playwright@1.62.1
           npx playwright install --with-deps chromium firefox webkit
+      - name: Deep3D visual evolution exact A/B baseline
+        run: node tests/deep3d/browser-visual-evolution.mjs
       - name: V2X-14 direct manipulation real-browser journey
         run: node tests/v2x-14-product-experience/browser-direct-manipulation.mjs
       - name: V2X-14 product/audio/accessibility real-browser journey
@@ -112,5 +114,7 @@ jobs:
         if: always()
         with:
           name: v2-cinematic-${{ env.OFU_EXPECTED_SHA }}
-          path: dist/evidence/cinematic
+          path: |
+            dist/evidence/cinematic
+            dist/evidence/deep3d-visual-evolution
           if-no-files-found: warn

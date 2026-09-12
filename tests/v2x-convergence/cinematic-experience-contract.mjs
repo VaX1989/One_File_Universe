@@ -46,6 +46,8 @@ assert.match(macro,/semanticMutation:false/);
 assert.match(macro,/cameraAuthority:false/);
 assert.match(macro,/navigationAuthority:false/);
 assert.match(macro,/networkResources:0/);
+assert.match(macro,/normalPrimaryPath:false/);
+assert.match(macro,/PRESENTATION_UNDERLAY_SUPERSEDED_BY_DEEP3D_PRIMARY/);
 assert.match(macro,/MAX_BOOT_ATTEMPTS=240/);
 assert.match(macro,/unsubscribe\?\.\(\)/);
 assert.match(macro,/cancelAnimationFrame/);
@@ -56,6 +58,8 @@ assert.match(css,/safe-area-inset-bottom/);
 assert.match(css,/#living-view:focus-visible/);
 assert.match(css,/#v2-cinematic-macro/);
 assert.match(css,/#v2-cinematic-macro[^}]*pointer-events:none/s);
+assert.match(css,/#living-canvas-wrap[^}]*z-index:2/s);
+assert.match(css,/#v2-cinematic-macro[^}]*z-index:1/s);
 assert.match(macro,/setAttribute\('aria-hidden','true'\)/);
 
 async function proveMacroCameraAuthority(){
@@ -102,6 +106,8 @@ async function proveMacroCameraAuthority(){
  assert.equal(state.navigationAuthority,false);
  assert.equal(state.semanticMutation,false);
  assert.equal(state.networkResources,0);
+ assert.equal(state.normalPrimaryPath,false);
+ assert.equal(state.layerRole,'PRESENTATION_UNDERLAY_SUPERSEDED_BY_DEEP3D_PRIMARY');
  assert.equal(state.active,true);
  assert.equal(canvas.hidden,false);
  assert.equal(rafCalls,1,'boot should schedule one coalesced presentation redraw');

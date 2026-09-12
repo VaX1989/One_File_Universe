@@ -1,7 +1,7 @@
 (function(root){
 'use strict';
 if(typeof document==='undefined')return;
-const O=root.OFU=root.OFU||{},VERSION='ofu-v2-cinematic-macro-director-6',AUTHORITY='PRESENTATION_ONLY',MAX_BOOT_ATTEMPTS=240;
+const O=root.OFU=root.OFU||{},VERSION='ofu-v2-cinematic-macro-director-7',AUTHORITY='PRESENTATION_ONLY',MAX_BOOT_ATTEMPTS=240;
 const macroStages=new Set(['UNIVERSE','GALAXY','REGION','NEIGHBORHOOD','SYSTEM']);
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const short=x=>String(x||'').slice(0,8);
@@ -28,7 +28,7 @@ function schedule(){invalidations++;if(scheduled){coalescedInvalidations++;retur
 function scheduleBoot(){if(stage||bootTimer||bootAttempts>=MAX_BOOT_ATTEMPTS)return;bootTimer=root.setTimeout(()=>{bootTimer=0;boot();},25);}
 function boot(){if(stage)return true;bootAttempts++;const candidate=document.getElementById('living-stage');if(!dependencies()||!candidate){scheduleBoot();return false;}const next=document.createElement('canvas');next.id='v2-cinematic-macro';next.hidden=true;next.setAttribute('aria-hidden','true');next.dataset.authority=AUTHORITY;candidate.append(next);const nextContext=next.getContext('2d',{alpha:false});if(!nextContext){next.remove();scheduleBoot();return false;}stage=candidate;canvas=next;g=nextContext;unsubscribe=O.v1LivingProduct.runtime.onChange(schedule);stage.addEventListener('pointermove',pointerMove,{passive:true,capture:true});stage.addEventListener('wheel',schedule,{passive:true,capture:true});root.addEventListener('resize',schedule,{passive:true});schedule();return true;}
 function dispose(){root.clearTimeout(bootTimer);bootTimer=0;if(rafId)root.cancelAnimationFrame?.(rafId);rafId=0;scheduled=false;unsubscribe?.();unsubscribe=null;stage?.removeEventListener('pointermove',pointerMove,{capture:true});stage?.removeEventListener('wheel',schedule,{capture:true});root.removeEventListener('resize',schedule);canvas?.remove();stage=canvas=g=null;active=false;}
-function snapshot(){return Object.freeze({version:VERSION,authority:AUTHORITY,active,stage:lastStage,frames,heroIdentity:lastHero,presentedRevision,scheduled,bootAttempts,maxBootAttempts:MAX_BOOT_ATTEMPTS,maxSurfacePixels:1800000,invalidations,coalescedInvalidations,redrawSkips,continuousAnimation:false,semanticMutation:false,cameraAuthority:false,navigationAuthority:false,networkResources:0});}
+function snapshot(){return Object.freeze({version:VERSION,authority:AUTHORITY,active,stage:lastStage,frames,heroIdentity:lastHero,presentedRevision,scheduled,bootAttempts,maxBootAttempts:MAX_BOOT_ATTEMPTS,maxSurfacePixels:1800000,invalidations,coalescedInvalidations,redrawSkips,continuousAnimation:false,semanticMutation:false,cameraAuthority:false,navigationAuthority:false,networkResources:0,normalPrimaryPath:false,layerRole:'PRESENTATION_UNDERLAY_SUPERSEDED_BY_DEEP3D_PRIMARY'});}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 O.v2CinematicMacroDirector=Object.freeze({VERSION,AUTHORITY,macroStages:Object.freeze([...macroStages]),snapshot,dispose});
 })(globalThis);
