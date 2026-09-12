@@ -1,6 +1,6 @@
 {
   "schema": "ofu-v2-integration-ledger-1",
-  "version": "2026-09-12.19",
+  "version": "2026-09-12.20",
   "status": "PROVISIONAL_V2_0_RELEASE_CANDIDATE_PENDING_EXACT_SHA_CERTIFICATION",
   "identityRule": "The candidate SHA and tree are the commit and tree containing this ledger; no self-referential Git identity is embedded here.",
   "release": {
@@ -177,7 +177,8 @@
     {"test":"audit.p21.performance-browser-mobile-resource-soak","classification":"BOUNDED_WEBKIT_WARMUP_MISCLASSIFIED_AS_LEAK","resolution":"The resource oracle distinguishes sustained monotonic accumulation from a one-time bounded warm-up followed by an exact plateau. Repeated growth remains release-blocking, while the observed WebKit DOM sequence 1221,1224,1224,... is correctly retained as bounded plateau evidence rather than falsely reported as an unreleased-resource leak."},
     {"test":"px.release.p21-browser-shards","classification":"MONOLITHIC_THREE_BROWSER_PROCESS_TIMEOUT","resolution":"The existing P21 oracle is executed as three conformance shards, one each for Chromium, Firefox and WebKit. Every shard retains the complete desktop soak, mobile pinch/orientation, reduced-motion, offline, zero-network and resource assertions with its own unchanged 840-second bound and separate evidence file."},
     {"test":"v1x14.release-evidence-lineage","classification":"STALE_ONE_OFF_LANE_BRANCH_ASSUMPTION","resolution":"The harvested V1X-14 evidence runner still authenticates the immutable V1X base and exact head, but now permits only the named convergence, canonical development, stable main and v2.0.0 release lineages in addition to its historical lane. Arbitrary feature branches remain rejected."},
-    {"test":"px.release.exact-conformance-wrapper","classification":"OBSOLETE_JOB_TIMEOUT_AFTER_RELEASE_SUITE_EXPANSION","resolution":"The PX main-target wrapper retains the complete owner-qualified exact conformance suite and now gives it a 60-minute job envelope. The prior 15-minute envelope hard-cancelled the valid expanded three-browser P21 release workload before assertions could complete."}
+    {"test":"px.release.exact-conformance-wrapper","classification":"OBSOLETE_JOB_TIMEOUT_AFTER_RELEASE_SUITE_EXPANSION","resolution":"The PX main-target wrapper retains the complete owner-qualified exact conformance suite and now gives it a 60-minute job envelope. The prior 15-minute envelope hard-cancelled the valid expanded three-browser P21 release workload before assertions could complete."},
+    {"test":"legacy.direct-file.product.firefox-linux","classification":"LEGACY_BOOT_DEADLINE_BELOW_DEEP3D_SOFTWARE_RENDERER_ENVELOPE","resolution":"The exact direct-file founder journey retains every runtime, frame, visual, navigation, persistence and zero-network assertion while allowing 90 seconds for initial convergence on the governed Linux Firefox software-renderer path. A failed boot now reports each required subsystem, uiError, page errors and unexpected requests instead of an opaque timeout."}
   ],
   "knownReleaseCriticalDefects": [],
   "deferredPostV2": [
