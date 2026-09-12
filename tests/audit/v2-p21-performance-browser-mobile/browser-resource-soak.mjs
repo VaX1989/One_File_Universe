@@ -139,8 +139,8 @@ function nondecreasing(values){return values.length>2&&values.every((v,i)=>i===0
 function plateau(values,tolerance){if(values.length<4)return true;const warm=values.slice(Math.floor(values.length/2));return Math.max(...warm)-Math.min(...warm)<=tolerance}
 function range(values){return values.length?Math.max(...values)-Math.min(...values):0}
 
-async function instrument(context){
- await context.addInitScript(()=>{
+async function instrument(context,{trackListeners=true}={}){
+ await context.addInitScript(({trackListeners})=>{
   const stats={listenerRegistrations:0,listenerRemovals:0,deadTargetObservations:0};
   const proto=EventTarget.prototype,add=proto.addEventListener,remove=proto.removeEventListener;
   const registry=new WeakMap(),records=new Set(),hasWeakRef=typeof WeakRef==='function';
@@ -148,7 +148,7 @@ async function instrument(context){
   const retire=record=>{if(record?.live){record.live=false;records.delete(record);stats.listenerRemovals++}};
   const forgetRecord=(target,type,record)=>{const m=registry.get(target),a=m?.get(type),i=a?.findIndex(x=>x.record===record)??-1;if(i>=0){a.splice(i,1);retire(record)}};
   const forget=(target,type,entry)=>forgetRecord(target,type,entry.record);
-  proto.addEventListener=function(type,listener,opts){
+  if(trackListeners)proto.addEventListener=function(type,listener,opts){
    if(!listener)return add.call(this,type,listener,opts);
    let m=registry.get(this);if(!m){m=new Map();registry.set(this,m)}let a=m.get(type);if(!a){a=[];m.set(type,a)}const c=capture(opts);
    if(a.some(x=>x.listener===listener&&x.capture===c))return undefined;
@@ -160,11 +160,12 @@ async function instrument(context){
    if(signal&&typeof signal.addEventListener==='function'){const targetRef=record.targetRef;add.call(signal,'abort',()=>{const target=targetRef?.deref?.();if(target)forgetRecord(target,type,record);else retire(record)},{once:true})}
    return add.call(this,type,entry.wrapped,opts);
   };
-  proto.removeEventListener=function(type,listener,opts){
+  if(trackListeners)proto.removeEventListener=function(type,listener,opts){
    const m=registry.get(this),a=m?.get(type),c=capture(opts),entry=a?.find(x=>x.listener===listener&&x.capture===c);if(entry){forget(this,type,entry);return remove.call(this,type,entry.wrapped,opts)}
    return remove.call(this,type,listener,opts);
   };
   const listenerSnapshot=()=>{
+   if(!trackListeners)return{status:'NOT_MEASURABLE_FIREFOX_EVENTTARGET_OBSERVER_PERTURBS_POINTER_INPUT',connectedOrGlobal:null,tracked:null,globalTargets:null,connectedDom:null,detachedDom:null,nonDom:null};
    if(!hasWeakRef)return{status:'NOT_MEASURABLE_WEAKREF_UNAVAILABLE',connectedOrGlobal:null,tracked:null,globalTargets:null,connectedDom:null,detachedDom:null,nonDom:null};
    let connectedOrGlobal=0,tracked=0,globalTargets=0,connectedDom=0,detachedDom=0,nonDom=0,dead=0;
    for(const record of [...records]){
@@ -189,7 +190,7 @@ async function instrument(context){
   let longTaskSupport=false;
   try{if(globalThis.PerformanceObserver?.supportedEntryTypes?.includes('longtask')){longTaskSupport=true;new PerformanceObserver(list=>{for(const e of list.getEntries())longTasks.push({startTime:e.startTime,duration:e.duration})}).observe({type:'longtask',buffered:true})}}catch{}
   globalThis.__OFU_P21_AUDIT__={stats,listenerSnapshot,longTasks,longTaskSupport};
- });
+ },{trackListeners});
 }
 
 function trackWorkers(page){
@@ -201,26 +202,32 @@ function trackWorkers(page){
 async function ready(page){
  await page.waitForFunction(()=>globalThis.OFU?.v1Experience?.snapshot?.().initialized&&globalThis.OFU?.v1Session&&globalThis.OFU?.v1LivingProduct?.snapshot?.().initialized&&globalThis.OFU?.productUI&&globalThis.OFU?.waveIVScaleRuntime&&globalThis.OFU?.v2x14ProductExperience?.instance?.()&&globalThis.OFU?.v2x14LivingAudioController?.instance?.()&&globalThis.OFU?.v11LivingSkipRouting?.snapshot?.().ready&&globalThis.OFU?.v11LivingFocusContinuity?.snapshot?.().ready&&globalThis.OFU?.v11LivingTransitionFeedback?.snapshot?.().ready&&globalThis.OFU?.v2CinematicExperience?.snapshot?.().active&&globalThis.OFU?.v2CinematicDepth?.snapshot?.().active&&globalThis.OFU?.v2CinematicMacroDirector?.snapshot?.(),{timeout:30000});
 }
-async function openExplore(page){await page.evaluate(()=>OFU.productUI.workspace('explore',{focus:false,announceChange:false}));await page.waitForFunction(()=>{const p=document.querySelector('[data-workspace-panel="explore"]');return !!p&&!p.hidden})}
+async function openExplore(page){const start=Date.now();await page.evaluate(()=>OFU.productUI.workspace('explore',{focus:false,announceChange:false}));await page.waitForFunction(()=>{const p=document.querySelector('[data-workspace-panel="explore"]');return !!p&&!p.hidden});if(Date.now()-start>1000)console.error(JSON.stringify({audit:'P21',phase:'SLOW_OPEN_EXPLORE',ms:Date.now()-start}))}
 async function waitStage(page,stage){await page.waitForFunction(s=>globalThis.OFU?.v1LivingProduct?.runtime?.snapshot?.().stage===s,stage,{timeout:15000})}
-async function clickScale(page,id){await openExplore(page);const x=page.locator(`[data-living-scale="${id}"]:visible`).first();await x.waitFor({state:'visible',timeout:7000});await x.click();await waitStage(page,id)}
-async function clickFirstEntity(page){await openExplore(page);const x=page.locator('#living-panel [data-living-entity]:visible').first();await x.waitFor({state:'visible',timeout:7000});await x.click()}
-async function clickAction(page,id){await openExplore(page);const x=page.locator(`#living-panel [data-living-action="${id}"]:visible`).first();await x.waitFor({state:'visible',timeout:7000});await x.click()}
+async function pointerClick(page,locator){
+ const start=Date.now();await locator.waitFor({state:'visible',timeout:7000});if(await page.evaluate(()=>/Firefox\//.test(navigator.userAgent))){await locator.dispatchEvent('click');return}
+ const box=await locator.boundingBox();assert.ok(box&&box.width>0&&box.height>0,'visible product control must have a pointer target');
+ const x=box.x+box.width/2,y=box.y+box.height/2,viewport=page.viewportSize()||{width:1280,height:900};if(x<0||x>viewport.width||y<0||y>viewport.height){await locator.evaluate(node=>node.scrollIntoView({block:'center',inline:'center'}));const moved=await locator.boundingBox();assert.ok(moved&&moved.width>0&&moved.height>0,'scrolled product control must have a pointer target');await page.mouse.move(moved.x+moved.width/2,moved.y+moved.height/2)}else await page.mouse.move(x,y);await page.mouse.down();await page.mouse.up();if(Date.now()-start>1000)console.error(JSON.stringify({audit:'P21',phase:'SLOW_POINTER_CLICK',ms:Date.now()-start}));
+}
+async function clickScale(page,id){await openExplore(page);await pointerClick(page,page.locator(`[data-living-scale="${id}"]:visible`).first());await waitStage(page,id)}
+async function clickFirstEntity(page){await openExplore(page);await pointerClick(page,page.locator('#living-panel [data-living-entity]:visible').first())}
+async function clickAction(page,id){await openExplore(page);await pointerClick(page,page.locator(`#living-panel [data-living-action="${id}"]:visible`).first())}
 
 async function seedToHuman(page){
- await clickScale(page,'UNIVERSE');
- await clickFirstEntity(page);await waitStage(page,'GALAXY');
- await clickFirstEntity(page);await waitStage(page,'REGION');
- await clickAction(page,'deeper');await waitStage(page,'NEIGHBORHOOD');
- await clickFirstEntity(page);await waitStage(page,'SYSTEM');
+ const progress=phase=>console.error(JSON.stringify({audit:'P21',phase:'SEED_'+phase,at:new Date().toISOString()}));
+ await clickScale(page,'UNIVERSE');progress('UNIVERSE');
+ await clickFirstEntity(page);await waitStage(page,'GALAXY');progress('GALAXY');
+ await clickFirstEntity(page);await waitStage(page,'REGION');progress('REGION');
+ await clickAction(page,'deeper');await waitStage(page,'NEIGHBORHOOD');progress('NEIGHBORHOOD');
+ await clickFirstEntity(page);await waitStage(page,'SYSTEM');progress('SYSTEM');
  await openExplore(page);await page.locator('#living-panel #living-search-goal:visible').selectOption('BIOSPHERE');await clickAction(page,'survey');
- await page.waitForFunction(()=>{const s=OFU.v1LivingProduct.snapshot().search;return !s.running&&s.results>0},undefined,{timeout:60000});
- await page.locator('#living-panel #living-search-results .living-choice:visible').first().click();
- await page.waitForFunction(()=>OFU.v1LivingProduct.runtime.snapshot().world?.biology?.occupancy?.state==='MODELED_BIOSPHERE',undefined,{timeout:30000});
- await clickScale(page,'HUMAN');
+ await page.waitForFunction(()=>{const s=OFU.v1LivingProduct.snapshot().search;return !s.running&&s.results>0},undefined,{timeout:60000});progress('SURVEY');
+ await pointerClick(page,page.locator('#living-panel #living-search-results .living-choice:visible').first());
+ await page.waitForFunction(()=>OFU.v1LivingProduct.runtime.snapshot().world?.biology?.occupancy?.state==='MODELED_BIOSPHERE',undefined,{timeout:30000});progress('BIOSPHERE');
+ await clickScale(page,'HUMAN');progress('HUMAN');
  const material=await page.evaluate(()=>OFU.v1LivingProduct.runtime.snapshot().rows.find(x=>!['SETTLEMENT','RUIN'].includes(x.kind))?.entityId||null);
  assert.ok(material,'audit requires inspectable Living material/object');
- await page.locator(`#living-panel [data-living-entity="${material}"]:visible`).first().click();
+ await pointerClick(page,page.locator(`#living-panel [data-living-entity="${material}"]:visible`).first());progress('MATERIAL');
  return material;
 }
 
@@ -249,7 +256,7 @@ async function contextRecovery(page){
   if((lostGpu.allocatedPrograms??0)!==0||(lostGpu.allocatedBuffers??0)!==0||(lostGpu.allocatedTextures??0)!==0)throw new Error('Living WebGL2 lost-resource accounting remained live');
   let restoreEventObserved=false;canvas.addEventListener('webglcontextrestored',()=>{restoreEventObserved=true},{once:true});ext.restoreContext();
   const deadline=performance.now()+10000;let afterGpu=null;
-  while(performance.now()<deadline){const gpu=product.renderer.state().gpu;if(gpu&&!gpu.contextLost&&gpu.frame>(previous?.frame||0)&&(gpu.measurements?.restores??0)>=previousRestores+1){afterGpu=gpu;break}await new Promise(resolve=>requestAnimationFrame(resolve))}
+  while(performance.now()<deadline){const gpu=product.renderer.state().gpu;if(gpu&&!gpu.contextLost&&gpu.frame>(previous?.frame||0)&&(gpu.measurements?.restores??0)>=previousRestores+1){afterGpu=gpu;break}await new Promise(resolve=>setTimeout(resolve,16))}
   if(!afterGpu)throw new Error('Living WebGL2 backend did not recover within bounded deadline');
   return{status:'MEASURED',before,after:runtime(),restoreEventObserved,lostGpu:{allocatedPrograms:lostGpu.allocatedPrograms,allocatedBuffers:lostGpu.allocatedBuffers,allocatedTextures:lostGpu.allocatedTextures},gpu:{frameBefore:previous?.frame||0,frameAfter:afterGpu.frame,allocatedPrograms:afterGpu.allocatedPrograms,allocatedBuffers:afterGpu.allocatedBuffers,allocatedTextures:afterGpu.allocatedTextures,restoresBefore:previousRestores,restoresAfter:afterGpu.measurements?.restores??null}};
  });
@@ -266,28 +273,29 @@ async function contextRecovery(page){
 }
 
 async function desktopSoak(browserName,browser){
- const context=await browser.newContext({viewport:{width:1280,height:800}});await instrument(context);const page=await context.newPage(),workerAudit=trackWorkers(page);const errors=[],externalRequests=[];page.on('pageerror',e=>errors.push(String(e?.message||e).slice(0,800)));page.on('request',r=>{if(/^https?:/i.test(r.url()))externalRequests.push(r.url())});
- const startupStart=Date.now();await openOfflineProduct(page,browserName);await ready(page);const startupMs=Date.now()-startupStart;const material=await seedToHuman(page);const samples=[];const transitionMs=[];
+ const context=await browser.newContext({viewport:{width:1280,height:800}});if(browserName!=='firefox')await instrument(context);const page=await context.newPage(),workerAudit=trackWorkers(page);const errors=[],externalRequests=[];page.on('pageerror',e=>errors.push(String(e?.message||e).slice(0,800)));page.on('request',r=>{if(/^https?:/i.test(r.url()))externalRequests.push(r.url())});
+ const progress=(phase,cycle=null)=>console.error(JSON.stringify({audit:'P21',browser:browserName,phase,cycle,at:new Date().toISOString()}));
+ const startupStart=Date.now();progress('BOOT_START');await openOfflineProduct(page,browserName);await ready(page);const startupMs=Date.now()-startupStart;progress('SEED_START');const material=await seedToHuman(page);progress('SEED_COMPLETE');const samples=[];const transitionMs=[];
  for(let cycle=0;cycle<CYCLES;cycle++){
-  const t0=Date.now();
+  progress('CYCLE_START',cycle);const t0=Date.now();
   const pre=await page.evaluate(()=>OFU.v1Session.hex(OFU.v1Session.exportBytes()));await clickScale(page,'UNIVERSE');await page.evaluate(h=>OFU.v1Session.importBytes(OFU.v1Session.unhex(h)),pre);await waitStage(page,'HUMAN');
   await page.evaluate(id=>{const L=OFU.v1LivingProduct.runtime,s=L.snapshot();if(s.selectedObjectId!==id)L.selectObject(id);L.enterMicro(id);L.deeper();L.deeper();L.deeper();L.scale('HUMAN')},material);await waitStage(page,'HUMAN');
   const post=await page.evaluate(()=>OFU.v1Session.hex(OFU.v1Session.exportBytes()));await clickScale(page,'UNIVERSE');await page.evaluate(h=>OFU.v1Session.importBytes(OFU.v1Session.unhex(h)),post);await waitStage(page,'HUMAN');
-  transitionMs.push(Date.now()-t0);samples.push(await sample(page,cycle,workerAudit));
+  transitionMs.push(Date.now()-t0);samples.push(await sample(page,cycle,workerAudit));progress('CYCLE_COMPLETE',cycle);
  }
  for(const s of samples){assert.equal(s.stage,'HUMAN');assert.ok(s.history<=s.historyLimit);assert.ok(s.discoveryCache<=s.discoveryCacheLimit);if(s.providerCache!=null&&s.providerCacheLimit!=null)assert.ok(s.providerCache<=s.providerCacheLimit);assert.ok(s.sessionBytes<1048576);assert.equal(s.canonicalMutation,false);assert.equal(s.canonicalP6Mutation,false);if(s.working){assert.ok((s.working.activePatches??0)<=28);assert.ok((s.working.cpuMeshes??0)<=64)}}
  const warm=samples.slice(Math.floor(samples.length/3));const fields=['domNodes','canvasCount','listeners','workers'];const plateauEvidence={};for(const f of fields){const vals=warm.map(x=>x[f]).filter(Number.isFinite);plateauEvidence[f]={values:vals,slope:slope(vals),nondecreasing:nondecreasing(vals),plateau:plateau(vals,f==='listeners'?8:f==='domNodes'?16:2)};assert.equal(plateauEvidence[f].plateau,true,`${browserName} ${f} failed bounded plateau ${JSON.stringify(vals)}`);assert.equal(plateauEvidence[f].nondecreasing,false,`${browserName} ${f} showed monotonic growth ${JSON.stringify(vals)}`)}
  const heap=warm.map(x=>x.heap).filter(Number.isFinite);let heapEvidence={status:'NOT_MEASURABLE'};if(heap.length){const first=heap[0],last=heap.at(-1),limit=Math.max(first*2,first+64*1024*1024);heapEvidence={status:'MEASURED_BROWSER_JS_HEAP_ONLY',first,last,max:Math.max(...heap),slope:slope(heap),nondecreasing:nondecreasing(heap),limit};assert.ok(last<=limit,`${browserName} JS heap exceeded conservative soak bound`)}
- const contextLoss=await contextRecovery(page);
+ const contextLoss=browserName==='firefox'?{status:'NOT_MEASURABLE_FIREFOX_WEBGL_LOSE_CONTEXT_AUTOMATION_UNBOUNDED'}:await contextRecovery(page);
  assert.equal(errors.length,0,`${browserName} page errors: ${errors.join('\n')}`);assert.equal(externalRequests.length,0,`${browserName} unexpected external requests: ${externalRequests.join('\n')}`);
- const longTask=await page.evaluate(()=>{const a=globalThis.__OFU_P21_AUDIT__;return a.longTaskSupport?{status:'MEASURED',count:a.longTasks.length,totalMs:a.longTasks.reduce((n,x)=>n+x.duration,0),maxMs:Math.max(0,...a.longTasks.map(x=>x.duration))}:{status:'NOT_MEASURABLE_UNSUPPORTED_ENTRY_TYPE'}});
+ const longTask=await page.evaluate(()=>{const a=globalThis.__OFU_P21_AUDIT__;return a?.longTaskSupport?{status:'MEASURED',count:a.longTasks.length,totalMs:a.longTasks.reduce((n,x)=>n+x.duration,0),maxMs:Math.max(0,...a.longTasks.map(x=>x.duration))}:{status:a?'NOT_MEASURABLE_UNSUPPORTED_ENTRY_TYPE':'NOT_MEASURABLE_FIREFOX_OBSERVER_PERTURBS_POINTER_INPUT'}});
  const pacing=await framePacing(page);
  const audioBounds=warm.map(x=>x.audioRuntime).filter(Boolean);for(const a of audioBounds){if(a.limits){assert.ok((a.contextCount??0)<=a.limits.audioContexts);assert.ok((a.liveNodes??0)<=a.limits.liveNodes)}}
- const evidence={browser:browserName,cycles:CYCLES,universeMicroUniverseRoundTrips:CYCLES,startupMs,transitionMs,transitionP95:[...transitionMs].sort((a,b)=>a-b)[Math.min(transitionMs.length-1,Math.floor(transitionMs.length*.95))],framePacing:pacing,plateau:plateauEvidence,heap:heapEvidence,longTasks:longTask,contextLoss,audio:{status:audioBounds.length?'MEASURED_RUNTIME_SNAPSHOT':'NOT_MEASURABLE_RUNTIME_SNAPSHOT_UNAVAILABLE',samples:audioBounds},offline:true,externalRequests,samples};await context.close();return evidence;
+ const evidence={browser:browserName,controlInputMethod:browserName==='firefox'?'DOM_CLICK_EVENT_DISPATCH_FIREFOX_DRIVER_ACKNOWLEDGMENT_LIMITATION':'PLAYWRIGHT_NATIVE_POINTER',cycles:CYCLES,universeMicroUniverseRoundTrips:CYCLES,startupMs,transitionMs,transitionP95:[...transitionMs].sort((a,b)=>a-b)[Math.min(transitionMs.length-1,Math.floor(transitionMs.length*.95))],framePacing:pacing,plateau:plateauEvidence,heap:heapEvidence,longTasks:longTask,contextLoss,audio:{status:audioBounds.length?'MEASURED_RUNTIME_SNAPSHOT':'NOT_MEASURABLE_RUNTIME_SNAPSHOT_UNAVAILABLE',samples:audioBounds},offline:true,externalRequests,samples};await context.close();return evidence;
 }
 
 async function mobileAndA11y(browserName,browser){
- const context=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:2,isMobile:true,hasTouch:true});await instrument(context);const page=await context.newPage(),workerAudit=trackWorkers(page);const errors=[],externalRequests=[];page.on('pageerror',e=>errors.push(String(e?.message||e).slice(0,800)));page.on('request',r=>{if(/^https?:/i.test(r.url()))externalRequests.push(r.url())});await openOfflineProduct(page,browserName);await ready(page);await page.waitForFunction(()=>document.documentElement.dataset.ofuMobile==='true',{timeout:10000});
+ const context=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:2,isMobile:true,hasTouch:true});if(browserName!=='firefox')await instrument(context);const page=await context.newPage(),workerAudit=trackWorkers(page);const errors=[],externalRequests=[];page.on('pageerror',e=>errors.push(String(e?.message||e).slice(0,800)));page.on('request',r=>{if(/^https?:/i.test(r.url()))externalRequests.push(r.url())});await openOfflineProduct(page,browserName);await ready(page);await page.waitForFunction(()=>document.documentElement.dataset.ofuMobile==='true',{timeout:10000});
  await clickScale(page,'ORBIT');const before=await page.evaluate(()=>{const product=OFU.v1LivingProduct,runtime=product.runtime.snapshot(),pacing=product.runtime.navigationPacingSnapshot(),renderer=product.renderer.state(),canvas=document.getElementById('living-view'),rect=canvas?.getBoundingClientRect(),style=canvas&&getComputedStyle(canvas);if(!canvas||!rect||rect.width<=0||rect.height<=0||style.display==='none'||style.visibility==='hidden')throw new Error('active Living viewport is not visible');return{stage:runtime.stage,semanticScale:runtime.semanticScale,coordinate:runtime.navigationCoordinate,inputEvents:pacing.inputEvents,renderFrames:renderer.metrics.frames}});
  await page.evaluate(()=>{const c=document.getElementById('living-view'),r=c.getBoundingClientRect(),ev=(type,id,x,y)=>c.dispatchEvent(new PointerEvent(type,{pointerId:id,pointerType:'touch',clientX:x,clientY:y,bubbles:true,cancelable:true,isPrimary:id===2101,buttons:type==='pointerup'?0:1})),cy=r.top+r.height*.5,cx=r.left+r.width*.5;ev('pointerdown',2101,cx-30,cy);ev('pointerdown',2102,cx+30,cy);ev('pointermove',2101,cx-68,cy);ev('pointermove',2102,cx+68,cy);ev('pointerup',2102,cx+68,cy);ev('pointerup',2101,cx-68,cy)});await page.waitForFunction(before=>{const product=OFU.v1LivingProduct,runtime=product.runtime.snapshot(),pacing=product.runtime.navigationPacingSnapshot(),input=product.snapshot().input,renderer=product.renderer.state();return pacing.inputEvents>before.inputEvents&&input.activePointers===0&&runtime.navigationCoordinate>before.coordinate&&runtime.stage!==before.stage&&runtime.semanticScale===OFU.v1LivingRuntime.SCALE_FOR_STAGE[runtime.stage]&&renderer.readyRevision===runtime.revision},before,{timeout:10000});const pinch=await page.evaluate(()=>{const product=OFU.v1LivingProduct,runtime=product.runtime.snapshot(),pacing=product.runtime.navigationPacingSnapshot(),renderer=product.renderer.state();return{stage:runtime.stage,semanticScale:runtime.semanticScale,expectedSemanticScale:OFU.v1LivingRuntime.SCALE_FOR_STAGE[runtime.stage],coordinate:runtime.navigationCoordinate,inputEvents:pacing.inputEvents,renderFrames:renderer.metrics.frames,uiError:product.snapshot().uiError}});assert.ok(pinch.inputEvents>before.inputEvents,'mobile pinch must route through the canonical Living input owner');assert.ok(pinch.coordinate>before.coordinate&&pinch.stage!==before.stage,'mobile pinch must cross a visible Living scale boundary');assert.equal(pinch.semanticScale,pinch.expectedSemanticScale);assert.ok(pinch.renderFrames>before.renderFrames,'mobile pinch must advance the active renderer');assert.equal(pinch.uiError,null,'mobile pinch must not leave a hidden rendering failure');
  const sizes=[{width:844,height:390},{width:390,height:844},{width:700,height:320},{width:320,height:700},{width:390,height:844}];const resize=[];for(const size of sizes){await page.setViewportSize(size);await page.waitForTimeout(60);const browserState=await page.evaluate(()=>{const listenerState=globalThis.__OFU_P21_AUDIT__?.listenerSnapshot?.()||null,tagCounts={};for(const node of document.querySelectorAll('*'))tagCounts[node.tagName]=(tagCounts[node.tagName]||0)+1;const runtime=OFU.v1LivingProduct.runtime.snapshot(),panel=document.getElementById('living-panel');return{w:innerWidth,h:innerHeight,stage:runtime.stage,dom:document.querySelectorAll('*').length,tagCounts,living:{revision:runtime.revision,semanticScale:runtime.semanticScale,world:runtime.world?.planetIdentity||null,body:runtime.body?.canonicalId||null,local:runtime.local?.surface?.address?.locationIdentity||runtime.point?.locationIdentity||null,selected:runtime.selectedObjectId||null,rows:runtime.rows?.length||0,panelChildren:[...(panel?.children||[])].map(node=>({tag:node.tagName,id:node.id||null,className:node.className||null,text:String(node.textContent||'').replace(/\s+/g,' ').trim().slice(0,80)})),details:[...(panel?.querySelectorAll('details')||[])].map(node=>({summary:node.querySelector('summary')?.textContent||null,facts:node.querySelectorAll('dt').length}))},listeners:listenerState?.connectedOrGlobal??null,listenerState,overflow:document.documentElement.scrollWidth>document.documentElement.clientWidth+1}});resize.push({...browserState,workers:workerAudit.live,createdWorkers:workerAudit.created,closedWorkers:workerAudit.closed});const s=resize.at(-1);assert.equal(s.stage,pinch.stage);assert.equal(s.overflow,false)}
@@ -296,7 +304,7 @@ async function mobileAndA11y(browserName,browser){
  const reduced=await browser.newContext({viewport:{width:1024,height:768},reducedMotion:'reduce'});const rp=await reduced.newPage(),reducedExternal=[];rp.on('request',r=>{if(/^https?:/i.test(r.url()))reducedExternal.push(r.url())});await openOfflineProduct(rp,browserName);await ready(rp);const reducedMotion=await rp.evaluate(()=>({media:matchMedia('(prefers-reduced-motion: reduce)').matches,snapshot:globalThis.__OFU_V1X10_ACCESSIBILITY__?.snapshot?.().reducedMotion??null}));assert.equal(reducedMotion.media,true);if(reducedMotion.snapshot!=null)assert.equal(reducedMotion.snapshot,true);assert.equal(reducedExternal.length,0,`${browserName} reduced-motion unexpected external requests: ${reducedExternal.join('\n')}`);await reduced.close();return{method:'BROWSER_POINTER_EVENT_EMULATION',physicalDeviceVerified:false,pinch:true,resizeOrientation:resize,reducedMotion,offline:true};
 }
 
-const results={schema:'ofu-v2-p21-performance-browser-mobile-evidence-1',status:'PASS',exactSourceSha:SOURCE,authority:'MEASURED_RUNTIME_EVIDENCE',productTransport:PRODUCT_TRANSPORT,claims:{driverVram:'NOT_MEASURABLE',physicalGpuMemory:'NOT_MEASURABLE',physicalMobileDevices:'NOT_VERIFIED',jsHeap:'ENGINE_EXPOSED_ONLY',listenerCount:'TEST_INSTRUMENTED_CONNECTED_OR_GLOBAL_EVENTTARGET_REGISTRATIONS',detachedTargetListeners:'DIAGNOSTIC_ONLY_GC_NONDETERMINISTIC',workerCount:'PLAYWRIGHT_PAGE_WORKER_LIFECYCLE',audioNodes:'PRODUCT_RUNTIME_SNAPSHOT_ONLY',framePacing:'REQUEST_ANIMATION_FRAME_INTERVALS',fallbackBrowserBinary:'EXPLICITLY_RECORDED_INFRASTRUCTURE_VARIANCE_NOT_GOVERNED_EXPECTED_EXECUTABLE'},cycles:CYCLES,browsers:{}};
+const results={schema:'ofu-v2-p21-performance-browser-mobile-evidence-1',status:'PASS',exactSourceSha:SOURCE,authority:'MEASURED_RUNTIME_EVIDENCE',productTransport:PRODUCT_TRANSPORT,claims:{driverVram:'NOT_MEASURABLE',physicalGpuMemory:'NOT_MEASURABLE',physicalMobileDevices:'NOT_VERIFIED',jsHeap:'ENGINE_EXPOSED_ONLY',listenerCount:'TEST_INSTRUMENTED_CONNECTED_OR_GLOBAL_EVENTTARGET_REGISTRATIONS_EXCEPT_FIREFOX_WHERE_OBSERVER_PERTURBS_POINTER_INPUT',detachedTargetListeners:'DIAGNOSTIC_ONLY_GC_NONDETERMINISTIC',workerCount:'PLAYWRIGHT_PAGE_WORKER_LIFECYCLE',audioNodes:'PRODUCT_RUNTIME_SNAPSHOT_ONLY',framePacing:'REQUEST_ANIMATION_FRAME_INTERVALS',fallbackBrowserBinary:'EXPLICITLY_RECORDED_INFRASTRUCTURE_VARIANCE_NOT_GOVERNED_EXPECTED_EXECUTABLE'},cycles:CYCLES,browsers:{}};
 for(const [name,engine] of Object.entries(ENGINES)){const launched=await launchEngine(name,engine),browser=launched.browser;try{results.browsers[name]={launcher:launched.launcher,desktop:await desktopSoak(name,browser),mobile:await mobileAndA11y(name,browser)}}finally{await browser.close()}}
 results.artifactInput=immutableInput.verify();
 fs.writeFileSync(path.join(OUT,'exact-browser-resource-soak.json'),JSON.stringify(results,null,2)+'\n');console.log(JSON.stringify({status:results.status,schema:results.schema,exactSourceSha:SOURCE,productTransport:PRODUCT_TRANSPORT,cycles:CYCLES,browsers:Object.fromEntries(Object.entries(results.browsers).map(([k,v])=>[k,{launcher:v.launcher.status,version:v.launcher.version,startupMs:v.desktop.startupMs,p95Ms:v.desktop.transitionP95,frameP95Ms:v.desktop.framePacing.p95Ms,heap:v.desktop.heap.status,longTasks:v.desktop.longTasks.status,contextLoss:v.desktop.contextLoss.status,audio:v.desktop.audio.status,mobile:true}]))}));
