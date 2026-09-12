@@ -1,6 +1,6 @@
 {
   "schema": "ofu-v2-integration-ledger-1",
-  "version": "2026-09-12.23",
+  "version": "2026-09-12.24",
   "status": "PROVISIONAL_V2_0_RELEASE_CANDIDATE_PENDING_EXACT_SHA_CERTIFICATION",
   "identityRule": "The candidate SHA and tree are the commit and tree containing this ledger; no self-referential Git identity is embedded here.",
   "release": {
@@ -178,7 +178,7 @@
     {"test":"px.release.p21-browser-shards","classification":"MONOLITHIC_THREE_BROWSER_PROCESS_TIMEOUT","resolution":"The existing P21 oracle is executed as three conformance shards, one each for Chromium, Firefox and WebKit. Every shard retains the complete desktop soak, mobile pinch/orientation, reduced-motion, offline, zero-network and resource assertions with its own unchanged 840-second bound and separate evidence file."},
     {"test":"v1x14.release-evidence-lineage","classification":"STALE_ONE_OFF_LANE_BRANCH_ASSUMPTION","resolution":"The harvested V1X-14 evidence runner still authenticates the immutable V1X base and exact head, but now permits only the named convergence, canonical development, stable main and v2.0.0 release lineages in addition to its historical lane. Arbitrary feature branches remain rejected."},
     {"test":"px.release.exact-conformance-wrapper","classification":"OBSOLETE_JOB_TIMEOUT_AFTER_RELEASE_SUITE_EXPANSION","resolution":"The PX main-target wrapper retains the complete owner-qualified exact conformance suite and now gives it a 60-minute job envelope. The prior 15-minute envelope hard-cancelled the valid expanded three-browser P21 release workload before assertions could complete."},
-    {"test":"legacy.direct-file.product.firefox-linux","classification":"FIREFOX_WEBGL2_PROFILE_NOT_PROVISIONED","resolution":"Hosted Linux Firefox reported AllowWebgl2:false while constructing the strict V2X-13 Living renderer. The founder journey now provisions the same governed native WebGL2 preferences as the passing P21 Firefox release shard, preserving the strict WebGL2 consumer and all runtime, frame, visual, navigation, persistence, offline and zero-network assertions. Transactional bootstrap diagnostics remain active for genuine constructor failures."},
+    {"test":"legacy.direct-file.product.firefox-linux","classification":"HEADLESS_FIREFOX_GL_DRIVER_UNAVAILABLE_ON_HOSTED_LINUX","resolution":"Hosted Linux Firefox first reported AllowWebgl2:false and, after the correct preferences were applied, FEATURE_FAILURE_WEBGL_EXHAUSTED_DRIVERS. The founder journey now self-hosts Linux Firefox in the same bounded Xvfb graphical profile proven by the P21 and V1X-14 release evidence, while preserving the strict V2X-13 WebGL2 consumer and every runtime, frame, visual, navigation, persistence, offline and zero-network assertion. Transactional bootstrap diagnostics remain active for genuine constructor failures."},
     {"test":"product.v11.living-pinch-handoff","classification":"CROSS_TASK_RAF_OBSERVER_RACE","resolution":"The native pointer event and its immediate frame-pacing sample now execute in the same browser task, proving that no synchronous redraw occurs. The subsequent two-RAF witness still requires exactly one canonical paced rotation frame, visible pixel change and unchanged canonical identity."}
   ],
   "knownReleaseCriticalDefects": [],
