@@ -8,6 +8,7 @@ const required = [
 ];
 export function attachWaveAProduct(manifest, plan) {
   const ids = new Set(plan.map(c => c.id));
+  const capabilities = new Set(plan.flatMap(c => c.provides || []));
   for (const id of required) assert.ok(ids.has(id), 'Wave A assembly missing ' + id);
   assert.ok(manifest.px.registryManifest.providers.some(p => p.id === 'v1.scene.living-world'),
     'Wave A foreground must use the sealed scene provider');
@@ -19,15 +20,34 @@ export function attachWaveAProduct(manifest, plan) {
   };
   const canvas = 'ofu-wave-a-living-renderer-1';
   const globe = 'ofu-v1-world-webgl2-1';
+  const genericDeep3D = 'DEEP3D_WEBGL2_V2X13';
+  const specializedPlanet = 'DEEP3D_PLANET_SPECIALIZED_WEBGL2';
+  const primaryPixelBackendPolicy = Object.fromEntries([
+    'UNIVERSE', 'GALAXY', 'REGION', 'NEIGHBORHOOD', 'SYSTEM', 'ORBIT',
+    'APPROACH', 'GLOBAL_SURFACE', 'REGIONAL_SURFACE', 'LOCAL_SURFACE', 'HUMAN',
+    'MATERIAL', 'MICROSTRUCTURE', 'MOLECULAR', 'ATOMIC'
+  ].map(scale => {
+    if (['UNIVERSE', 'GALAXY', 'REGION', 'NEIGHBORHOOD'].includes(scale) && capabilities.has('v2.deep3d.product.primary.macro')) return [scale, genericDeep3D];
+    if (scale === 'SYSTEM' && capabilities.has('v2.deep3d.product.primary.system')) return [scale, genericDeep3D];
+    if (['ORBIT', 'APPROACH'].includes(scale) && capabilities.has('v2.deep3d.product.primary.planet')) return [scale, specializedPlanet];
+    if (['GLOBAL_SURFACE', 'REGIONAL_SURFACE', 'LOCAL_SURFACE'].includes(scale) && capabilities.has('v2.deep3d.product.primary.surface')) return [scale, genericDeep3D];
+    if (scale === 'HUMAN' && capabilities.has('v2.deep3d.product.primary.local')) return [scale, genericDeep3D];
+    if (['MATERIAL', 'MICROSTRUCTURE', 'MOLECULAR', 'ATOMIC'].includes(scale) && capabilities.has('v2.deep3d.product.primary.matter')) return [scale, genericDeep3D];
+    return [scale, canvas];
+  }));
+  const allDeep3DPrimary = Object.values(primaryPixelBackendPolicy).every(backend => backend !== canvas);
   manifest.visualUniverse = {
-    version: 'ofu-wave-a-living-universe-1', authority: 'PRESENTATION_ONLY',
+    version: allDeep3DPrimary ? 'ofu-v2-deep3d-living-universe-1' : 'ofu-wave-a-living-universe-1', authority: 'PRESENTATION_ONLY',
     primarySceneProvider: 'v1.scene.living-world',
     primaryScenePolicy: Object.fromEntries([
       'UNIVERSE', 'GALAXY', 'REGION', 'NEIGHBORHOOD', 'SYSTEM', 'ORBIT',
       'APPROACH', 'GLOBAL_SURFACE', 'REGIONAL_SURFACE', 'LOCAL_SURFACE', 'HUMAN',
       'MATERIAL', 'MICROSTRUCTURE', 'MOLECULAR', 'ATOMIC'
     ].map(scale => [scale, canvas])),
-    globeBackend: globe, fallback: 'BOUNDED_MODEL_SAMPLED_CANVAS',
+    primaryScenePolicyRole: 'SEMANTIC_RENDERER_OWNER_NOT_PIXEL_BACKEND',
+    primaryPixelBackendPolicy,
+    semanticCanvasRole: allDeep3DPrimary ? 'INTERACTION_ACCESSIBILITY_AND_LABEL_OVERLAY_ONLY' : 'PRIMARY_WHERE_DEEP3D_CAPABILITY_IS_ABSENT',
+    globeBackend: globe, fallback: allDeep3DPrimary ? 'NO_PRIMARY_PIXEL_FALLBACK_WEBGL2_REQUIRED' : 'BOUNDED_MODEL_SAMPLED_CANVAS',
     duplicatePrimaryRendererAllowed: false, decorativeObjectsCanonical: false,
     scientificAuthorityOfRenderings: false
   };

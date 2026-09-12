@@ -27,6 +27,10 @@ ok(product.legacyPresentation.primary===false,'legacy presentation is explicitly
 for(const field of Object.keys(historical))ok(product.legacyPresentation[field]===historical[field],'historical descriptor preserved '+field);
 assert.deepEqual(Object.keys(product.visualUniverse.primaryScenePolicy),Array.from(O.v1LivingRuntime.stages));cases++;
 ok(Object.values(product.visualUniverse.primaryScenePolicy).every(v=>v===O.v1LivingRenderer.VERSION),'every actual runtime stage has its real foreground renderer');
+assert.deepEqual(Object.keys(product.visualUniverse.primaryPixelBackendPolicy),Array.from(O.v1LivingRuntime.stages));cases++;
+ok(['UNIVERSE','GALAXY','REGION','NEIGHBORHOOD','SYSTEM','GLOBAL_SURFACE','REGIONAL_SURFACE','LOCAL_SURFACE','HUMAN','MATERIAL','MICROSTRUCTURE','MOLECULAR','ATOMIC'].every(scale=>product.visualUniverse.primaryPixelBackendPolicy[scale]==='DEEP3D_WEBGL2_V2X13'),'generic Deep3D WebGL2 is the declared primary pixel backend for all composed non-planet scales');
+ok(['ORBIT','APPROACH'].every(scale=>product.visualUniverse.primaryPixelBackendPolicy[scale]==='DEEP3D_PLANET_SPECIALIZED_WEBGL2'),'planet approach scales retain the proven specialized WebGL2 primary pass');
+ok(product.visualUniverse.semanticCanvasRole==='INTERACTION_ACCESSIBILITY_AND_LABEL_OVERLAY_ONLY','Canvas is not falsely declared as the primary pixel backend after full Deep3D convergence');
 ok(product.planetPresentation.globeBackend===O.v1WorldWebGL2.VERSION,'globe backend identity is executable');
 ok(product.visualUniverse.primarySceneProvider==='v1.scene.living-world','manifest binds actual composed scene');
 ok(product.worldConvergence.modelHistoryCommitsCanonicalEvents===false&&product.worldConvergence.canonicalP6Changed===false,'authority separation remains explicit');

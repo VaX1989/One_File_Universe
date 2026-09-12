@@ -41,6 +41,8 @@ if(foundationManifest.artifactSha256!==[...artifacts][0])throw new Error('founda
 if(fullManifest.productVersion!=='2.0.0'||fullManifest.releaseLine!=='v2.0.0'||fullManifest.releaseStatus!=='STABLE_RELEASE'||fullManifest.candidateOnly!==false)throw new Error('v2.0.0 release identity missing');
 if(fullManifest.worldConvergence?.developmentCandidate!==false||fullManifest.worldConvergence?.releaseVersionDeclared!==true)throw new Error('world convergence release identity drift');
 if(fullManifest.visualUniverse?.primarySceneProvider!=='v1.scene.living-world')throw new Error('shipping Living foreground provider missing');
+if(!Object.values(fullManifest.visualUniverse?.primaryPixelBackendPolicy||{}).length||!Object.values(fullManifest.visualUniverse.primaryPixelBackendPolicy).every(value=>String(value).includes('DEEP3D')))throw new Error('shipping Deep3D primary pixel topology missing');
+if(fullManifest.visualUniverse?.semanticCanvasRole!=='INTERACTION_ACCESSIBILITY_AND_LABEL_OVERLAY_ONLY')throw new Error('shipping Canvas role is not constrained to semantic overlay duties');
 if(fullManifest.runtime?.strictSingleFile!==true||fullManifest.runtime?.directFile!==true||fullManifest.runtime?.offline!==true||fullManifest.runtime?.networkRequired!==false)throw new Error('single-file/offline runtime contract drift');
 
 const living=docs.filter(v=>v.schema==='ofu-v2-living-browser-evidence-1');

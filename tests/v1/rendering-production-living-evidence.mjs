@@ -32,6 +32,8 @@ assert.equal(manifest.candidateOnly,false);
 assert.equal(manifest.worldConvergence?.developmentCandidate,false);
 assert.equal(manifest.worldConvergence?.releaseVersionDeclared,true);
 assert.equal(manifest.visualUniverse?.primarySceneProvider,'v1.scene.living-world');
+assert(Object.values(manifest.visualUniverse?.primaryPixelBackendPolicy||{}).every(value=>String(value).includes('DEEP3D')),'all shipping scale stages must declare a Deep3D primary pixel backend');
+assert.equal(manifest.visualUniverse?.semanticCanvasRole,'INTERACTION_ACCESSIBILITY_AND_LABEL_OVERLAY_ONLY');
 assert.equal(manifest.runtime?.directFile,true);
 assert.equal(manifest.runtime?.offline,true);
 assert.equal(manifest.runtime?.networkRequired,false);
