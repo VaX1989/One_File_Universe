@@ -18,6 +18,22 @@
       "budget": {"entities":16384,"bytes":8388608,"operations":131072,"queue":32},
       "evidence": [{"id":"v2.deep3d.surface-adapter","tier":"FAST_LOCAL"}],
       "mandatory": false
+    },
+    {
+      "contract": "ofu-px-contracts-1",
+      "id": "v2.deep3d.adapter.local",
+      "version": "1.0.0",
+      "owner": "product",
+      "kind": "scene",
+      "authority": {"class":"PRESENTATION_ONLY","contract":"ofu-px-contracts-1","model":"v2.deep3d.adapter.local","version":"1.0.0","sources":["src/rendering/deep3d/local-adapter.js","src/rendering/local/local-experience-provider.js"],"assumptions":["V2X-07 supplies bounded local terrain, embodiment identities and upstream authority metadata."],"limitations":["Local positions and extents remain model/presentation encodings and are not canonical metric geodesy."],"evidence":[]},
+      "fidelity": {"regime":"human-local-adapter","validity":"Bounded V2X-07 terrain and embodiments become camera-relative mesh packets.","resolution":"At most 2,304 terrain vertices and 768 bounded local objects.","uncertainty":"Inherited model and presentation uncertainty remains explicit; raster pixels are device-dependent."},
+      "lifecycle": "SHIPPING",
+      "requires": [{"id":"v2.deep3d.render.scene","version":"1.0.0","authority":"PRESENTATION_ONLY"}],
+      "claims": ["deep3d.local.bounded","deep3d.local.identity-preserved"],
+      "operations": ["REPRESENT"],
+      "budget": {"entities":768,"bytes":8388608,"operations":131072,"queue":16},
+      "evidence": [{"id":"v2.deep3d.local-adapter","tier":"FAST_LOCAL"}],
+      "mandatory": false
     }
   ]
 }

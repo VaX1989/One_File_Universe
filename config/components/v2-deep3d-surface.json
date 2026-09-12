@@ -26,6 +26,19 @@
       "authority": "PRESENTATION_ONLY",
       "provenance": "Bounded adapter from ready V2X-06 Living surface frames into camera-relative Deep3D mesh and curve packets while retaining model-derived and presentation-only epistemic boundaries.",
       "provides": ["v2.deep3d.adapter.surface"]
+    },
+    {
+      "id": "v2.deep3d.local-adapter.runtime",
+      "version": "1.0.0",
+      "owner": "product",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/rendering/deep3d/local-adapter.js",
+      "dependencies": ["v2.deep3d.render-packets.runtime","v2.deep3d.surface-providers","v2x07.render.local-experience-provider"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Bounded adapter from the V2X-07 local experience materialization into camera-relative Deep3D terrain and embodiment meshes while preserving upstream identity and source-authority metadata.",
+      "provides": ["v2.deep3d.adapter.local"]
     }
   ]
 }

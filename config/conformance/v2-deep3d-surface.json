@@ -9,6 +9,15 @@
       "providers": ["v2.deep3d.adapter.surface"],
       "oracle": "v2-deep3d-surface-bounded-camera-relative-science-boundary",
       "timeoutMs": 30000
+    },
+    {
+      "id": "v2.deep3d.local-adapter",
+      "owner": "product",
+      "tier": "FAST_LOCAL",
+      "command": ["node", "tests/deep3d/local-adapter.mjs"],
+      "providers": ["v2.deep3d.adapter.local"],
+      "oracle": "v2-deep3d-local-bounded-identity-and-source-authority-boundary",
+      "timeoutMs": 30000
     }
   ]
 }
