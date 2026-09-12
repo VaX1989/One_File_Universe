@@ -33,10 +33,9 @@ function assertPreviewTransaction(source){
 
   const ownership=segment(source,'Reconfirm staged release and tag ownership immediately before publication','Publish only after verified draft');
   assert(/releases\/\$RELEASE_ID/.test(ownership)&&/\.draft/.test(ownership)&&/\.target_commitish/.test(ownership)&&/\.tag_name/.test(ownership),`${file}: pre-publication boundary must re-authenticate the exact staged release`);
-  assert(/git\/ref\/tags\/\$RELEASE_TAG/.test(ownership),`${file}: pre-publication boundary must read the live release tag object`);
-  assert(/TAG_OBJECT_TYPE/.test(ownership)&&/TAG_OBJECT_SHA/.test(ownership),`${file}: pre-publication boundary must resolve tag ownership`);
-  assert(/git\/tags\/\$TAG_OBJECT_SHA/.test(ownership),`${file}: annotated release tags must be resolved before source comparison`);
-  assert(/test "\$TAG_OBJECT_SHA" = "\$SOURCE_SHA"/.test(ownership),`${file}: pre-publication tag must be bound to the exact source commit`);
+  assert(/if gh api "repos\/\$GITHUB_REPOSITORY\/git\/ref\/tags\/\$RELEASE_TAG"[^\n]*; then/.test(ownership),`${file}: pre-publication boundary must fail closed if the live release tag is occupied`);
+  assert(/exit 1/.test(ownership),`${file}: occupied pre-publication tag must abort the transaction`);
+  assert(!/TAG_OBJECT_SHA/.test(ownership),`${file}: draft publication must not require a tag object that GitHub has not created yet`);
 
   const publish=stepIndex(source,'Publish only after verified draft');
   const finalVerify=stepIndex(source,'Final published release, tag and asset verification');
@@ -67,11 +66,8 @@ function assertPreviewTransaction(source){
 
 assert.equal(assertPreviewTransaction(text),true);
 
-const noPrePublishTagRead=text.replace('TAG_REF_JSON="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$RELEASE_TAG")"','TAG_REF_JSON="{}"');
-assert.throws(()=>assertPreviewTransaction(noPrePublishTagRead),/live release tag object/);
-
-const noPrePublishSourceBinding=text.replace('test "$TAG_OBJECT_SHA" = "$SOURCE_SHA"','test -n "$TAG_OBJECT_SHA"');
-assert.throws(()=>assertPreviewTransaction(noPrePublishSourceBinding),/exact source commit/);
+const noPrePublishTagGuard=text.replace('if gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$RELEASE_TAG" >/dev/null 2>&1; then','if false; then');
+assert.throws(()=>assertPreviewTransaction(noPrePublishTagGuard),/fail closed if the live release tag is occupied/);
 
 const cleanupBeforePublish=text.replace(
   /(      - name: Publish only after verified draft[\s\S]*?      - name: Cleanup failed unpublished preview transaction)/,
@@ -93,4 +89,33 @@ const weakenedFinal=finalSegment.replace('test "$TAG_OBJECT_SHA" = "$SOURCE_SHA"
 const noFinalSourceBinding=text.slice(0,finalStart)+weakenedFinal+text.slice(finalEnd);
 assert.throws(()=>assertPreviewTransaction(noFinalSourceBinding),/published tag to the exact source commit/);
 
-console.log(JSON.stringify({status:'PASS',suite:'release-transaction-boundary',workflow:file,syntheticCases:5}));
+const stableFile='.github/workflows/v2-stable-release.yml';
+const stableText=fs.readFileSync(stableFile,'utf8');
+const stableStepIndex=name=>{
+  const index=stableText.indexOf(`- name: ${name}`);
+  assert(index>=0,`${stableFile}: missing step ${name}`);
+  return index;
+};
+const stableOwnership=stableText.slice(
+  stableStepIndex('Reconfirm staged release and tag ownership immediately before publication'),
+  stableStepIndex('Publish only after verified draft')
+);
+assert(/releases\/\$RELEASE_ID/.test(stableOwnership)&&/\.draft/.test(stableOwnership)&&/\.target_commitish/.test(stableOwnership)&&/\.tag_name/.test(stableOwnership),`${stableFile}: pre-publication boundary must re-authenticate the exact staged release`);
+assert(/if gh api "repos\/\$GITHUB_REPOSITORY\/git\/ref\/tags\/\$RELEASE_TAG"[^\n]*; then/.test(stableOwnership),`${stableFile}: pre-publication boundary must fail closed if the stable tag is occupied`);
+assert(!/TAG_OBJECT_SHA/.test(stableOwnership),`${stableFile}: draft publication must not require a tag object that GitHub has not created yet`);
+
+const stablePublished=stableText.slice(
+  stableStepIndex('Final published release, tag and asset verification'),
+  stableStepIndex('Cleanup failed unpublished V2 transaction')
+);
+assert(/git\/ref\/tags\/\$RELEASE_TAG/.test(stablePublished)&&/test "\$TAG_OBJECT_SHA" = "\$SOURCE_SHA"/.test(stablePublished),`${stableFile}: published stable tag must be bound to the exact source commit`);
+assert(/gh release download/.test(stablePublished)&&/sha256sum/.test(stablePublished)&&/cmp -s/.test(stablePublished),`${stableFile}: final stable verification must re-download and byte-compare the published artifact`);
+
+const stableCleanup=stableText.slice(stableStepIndex('Cleanup failed unpublished V2 transaction'));
+assert(/steps\.draft\.outputs\.release_id/.test(stableCleanup)&&/TAG_EXISTS=false/.test(stableCleanup),`${stableFile}: cleanup must target the exact draft and tolerate GitHub's absent draft tag`);
+assert(/if test -n "\$RELEASE_JSON"; then/.test(stableCleanup)&&/if test "\$TAG_EXISTS" = true; then/.test(stableCleanup),`${stableFile}: cleanup must independently remove only transaction-owned release and tag state`);
+
+const weakenedStableOwnership=stableOwnership.replace('if gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$RELEASE_TAG" >/dev/null 2>&1; then','if false; then');
+assert(!/if gh api "repos\/\$GITHUB_REPOSITORY\/git\/ref\/tags\/\$RELEASE_TAG"[^\n]*; then/.test(weakenedStableOwnership),`${stableFile}: synthetic occupied-tag guard removal must be detected`);
+
+console.log(JSON.stringify({status:'PASS',suite:'release-transaction-boundary',workflows:[file,stableFile],syntheticCases:5}));
