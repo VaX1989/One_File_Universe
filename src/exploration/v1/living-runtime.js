@@ -183,7 +183,7 @@ function create({ctx,key,universeId=null,onCanonicalSelection=null,galaxySource=
   return apply({...frame,stage,point,node,objectId:null},{push});
  }
  function inspectAtmosphere(){V.assert(world,'world required');const point=W.location(world.planetIdentity,0,0),h=AS.surfaceHierarchy(frame.body,{});return apply({...frame,stage:'LOCAL_SURFACE',point,node:h.localSurface,objectId:null});}
- function scale(stage){return navigate(stage,{source:'living-scale-selector'})}
+ function scale(stage){stage=String(stage||'').toUpperCase();const availability=navigationAvailability(stage);V.assert(availability.enabled,availability.reason);return stage===frame.stage?snapshot():navigate(stage,{source:'living-scale-selector'})}
  function selectObject(id){V.assert(local,'local world context required');V.assert(local.objects.some(o=>o.entityId===id),'unknown local object');frame={...frame,objectId:id};retained={...retained,body:frame.body,point:frame.point,objectId:id};return emit();}
  function enterMicro(id=frame.objectId){
   V.assert(local&&id,'select a local material or organism first');

@@ -24,7 +24,9 @@ const PRODUCT=process.env.P21_PRODUCT_URL||DEFAULT_PRODUCT;
 const PRODUCT_TRANSPORT=process.env.P21_PRODUCT_URL?'DIAGNOSTIC_HTTP_OVERRIDE':'IMMUTABLE_EXACT_SHIPPING_FILE_URL';
 const OUT=path.resolve('dist/evidence/v2-p21-performance-browser-mobile');
 fs.mkdirSync(OUT,{recursive:true});
-const ENGINES={chromium,firefox,webkit};
+const ALL_ENGINES={chromium,firefox,webkit},requestedBrowser=String(process.env.P21_BROWSER||'').toLowerCase();
+assert.ok(!requestedBrowser||Object.hasOwn(ALL_ENGINES,requestedBrowser),'P21_BROWSER must be chromium, firefox, or webkit');
+const ENGINES=requestedBrowser?{[requestedBrowser]:ALL_ENGINES[requestedBrowser]}:ALL_ENGINES;
 const CYCLES=Number(process.env.P21_CYCLES||12);
 assert.ok(Number.isInteger(CYCLES)&&CYCLES>=8&&CYCLES<=40,'P21_CYCLES must be 8..40');
 
