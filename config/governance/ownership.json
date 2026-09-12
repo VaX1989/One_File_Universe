@@ -1,0 +1,33 @@
+{
+  "version": "2026-09-08.1",
+  "status": "BOOTSTRAP_PERSONAL_REPOSITORY",
+  "sourceOfTruth": "config/governance/areas.json",
+  "bootstrapOwner": "VaX1989",
+  "note": "Organization teams are target-state names only until an OFU GitHub organization and teams actually exist.",
+  "areaOwners": {
+    "core": {"owners":["VaX1989"],"targetTeam":"ofu-core"},
+    "runtime": {"owners":["VaX1989"],"targetTeam":"ofu-runtime"},
+    "build": {"owners":["VaX1989"],"targetTeam":"ofu-build"},
+    "rendering": {"owners":["VaX1989"],"targetTeam":"ofu-rendering"},
+    "astronomy": {"owners":["VaX1989"],"targetTeam":"ofu-astronomy"},
+    "planetology": {"owners":["VaX1989"],"targetTeam":"ofu-planetology"},
+    "surface": {"owners":["VaX1989"],"targetTeam":"ofu-surface"},
+    "life": {"owners":["VaX1989"],"targetTeam":"ofu-life"},
+    "civilization": {"owners":["VaX1989"],"targetTeam":"ofu-civilization"},
+    "individuals": {"owners":["VaX1989"],"targetTeam":"ofu-individuals"},
+    "matter": {"owners":["VaX1989"],"targetTeam":"ofu-matter"},
+    "gameplay": {"owners":["VaX1989"],"targetTeam":"ofu-gameplay"},
+    "persistence": {"owners":["VaX1989"],"targetTeam":"ofu-persistence"},
+    "product": {"owners":["VaX1989"],"targetTeam":"ofu-product"},
+    "accessibility": {"owners":["VaX1989"],"targetTeam":"ofu-accessibility"},
+    "audio": {"owners":["VaX1989"],"targetTeam":"ofu-audio"},
+    "science-review": {"owners":["VaX1989"],"targetTeam":"ofu-science-review"},
+    "security": {"owners":["VaX1989"],"targetTeam":"ofu-security"},
+    "community": {"owners":["VaX1989"],"targetTeam":"ofu-community"}
+  },
+  "integration": {
+    "model": "SERIAL_INTEGRATION_LEASE",
+    "currentBootstrapIntegrators": ["VaX1989"],
+    "maxActivePromotionLeases": 1
+  }
+}

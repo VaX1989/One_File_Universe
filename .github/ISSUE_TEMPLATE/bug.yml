@@ -1,0 +1,30 @@
+name: Bug report
+description: Reproducible defect or regression
+title: "bug: "
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What is wrong?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction
+      description: Exact steps, universe identity/seed if relevant, browser/runtime, and expected vs actual behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Logs, screenshots, hashes, test output, or minimal reproduction. Do not include secrets.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options: [Unknown, Core, Runtime, Build, Rendering, Astronomy, Planetology, Surface, Life, Civilization, Individuals, Matter, Gameplay, Product-UX, Accessibility, Audio, Persistence, Science, Security, Community]
+    validations:
+      required: true

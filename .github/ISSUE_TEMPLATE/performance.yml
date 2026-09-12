@@ -1,0 +1,26 @@
+name: Performance or resource issue
+description: Latency, frame pacing, memory/resource growth, context loss, browser/device performance
+title: "perf: "
+body:
+  - type: textarea
+    id: symptom
+    attributes:
+      label: Symptom
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, browser/version, hardware where known, artifact/source SHA, viewport/device profile.
+    validations:
+      required: true
+  - type: textarea
+    id: measurement
+    attributes:
+      label: Measurements
+      description: Include method and distinguish measured values from estimates.
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction journey

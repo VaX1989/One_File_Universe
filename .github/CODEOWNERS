@@ -1,0 +1,9 @@
+# GENERATED from config/governance/areas.json and ownership.json.
+# Do not hand-edit without updating the machine-readable source of truth.
+
+* @VaX1989
+/.github/CODEOWNERS @VaX1989
+/config/governance/** @VaX1989
+/GOVERNANCE.md @VaX1989
+/LICENSE @VaX1989
+/LICENSING.md @VaX1989

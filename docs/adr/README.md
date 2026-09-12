@@ -30,6 +30,8 @@ ADRs capture decisions with durable semantic consequences. `Accepted` means the 
 | [024](ADR-024-certified-history-and-frontier-dag.md) | Certified history and forward frontier DAG | Accepted |
 | [025](ADR-025-parallel-development-ownership.md) | Exact-base ownership and additive parallel development | Accepted |
 | [026](ADR-026-artifact-size-and-bounded-working-set.md) | Large distribution artifact and bounded runtime working set | Accepted |
+| [027](ADR-027-open-source-and-dual-licensing.md) | GPL-3.0-only Open Source core and optional commercial dual licensing | Accepted |
+| [028](ADR-028-community-scale-governance-and-serial-integration-lease.md) | Community-scale governance and serial canonical integration lease | Accepted |
 
 ## ADR policy
 
@@ -38,6 +40,7 @@ ADRs capture decisions with durable semantic consequences. `Accepted` means the 
 - Languages, compressors, allocators, exact renderer optimizations and global numeric formats are not frozen merely for architectural neatness; they require evidence.
 - ADR-015 already reserves model-regime semantics, including future non-classical compatibility; the founder-vision formalization does not duplicate that decision.
 - ADR-023 through ADR-026 are accepted by explicit founder ratification on 2026-09-05, not merely because a PR exists. Their implementation and promotion still require evidence and normal protected integration.
+- ADR-027 and ADR-028 were explicitly ratified by the founder on 2026-09-08 for the forward Open Source/community foundation; their repository implementation remains subject to normal review and integration evidence.
 - ADR filenames and headings use a unique three-digit identifier. `tests/governance/adr-hygiene.mjs` enforces identifier uniqueness, index coverage, heading alignment, explicit status and valid index links.
 
 ADR-023 through ADR-026 were ratified by the founder's 2026-09-05 Absolute Completion Mission. Their acceptance governs forward implementation and does not rewrite earlier canonical evidence or historical ADR statuses. See [the active v1.0 contract](../governance/V1_IMPLEMENTATION_CONTRACT.md).

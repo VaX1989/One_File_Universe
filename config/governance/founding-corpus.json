@@ -1,0 +1,30 @@
+{
+  "version": "2026-09-08.1",
+  "recordKind": "PRE_COMMUNITY_SCALE_FOUNDING_CORPUS_BOUNDARY",
+  "recordedDate": "2026-09-08",
+  "purpose": "Identify the exact pre-community-scale project corpus before the open-source governance foundation is integrated. This record preserves provenance chronology; it is not by itself a legal title opinion.",
+  "boundary": {
+    "repository": "VaX1989/One_File_Universe",
+    "branch": "development/v1.1-quality-exploration",
+    "commit": "ae406dbc8ac64fbd9161566ac1367bfacf2496f9",
+    "tree": "e62971a10f3f54912197bc3904ac2f64e6c525cc"
+  },
+  "publishedHistoricalRelease": {
+    "tag": "v1.0.0",
+    "commit": "38dd0d7c0ccc4a100dc3b75d3d159c6933bc4c16",
+    "tree": "b7576ebe21b3448b69e35c9cd8d279f51e4332fb",
+    "artifact": "One_File_Universe.html",
+    "artifactBytes": 1512784,
+    "artifactSha256": "013d4277da9acebcbb739275c27f6e05ccbc838840738cd2f9b03bb8f5def61a"
+  },
+  "repositoryOwnerAtBoundary": "VaX1989",
+  "projectStewardAtBoundary": "VaX1989",
+  "claims": {
+    "preCommunityScaleBoundaryRecorded": true,
+    "exclusiveCopyrightOwnershipOfEveryPath": "NOT_ASSERTED_PENDING_IP_AUDIT",
+    "completeCommercialRelicensingChainOfTitle": "NOT_ASSERTED_PENDING_IP_AUDIT",
+    "thirdPartyCodeDataAssetsRequireClassification": true,
+    "materialAIAssistanceRequiresHumanAccountabilityAndProvenanceWhenRelevant": true
+  },
+  "auditStatus": "IP_AND_PROVENANCE_AUDIT_REQUIRED"
+}
