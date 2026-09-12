@@ -1,6 +1,6 @@
 {
   "schema": "ofu-v2-integration-ledger-1",
-  "version": "2026-09-12.25",
+  "version": "2026-09-12.26",
   "status": "PROVISIONAL_V2_0_RELEASE_CANDIDATE_PENDING_EXACT_SHA_CERTIFICATION",
   "identityRule": "The candidate SHA and tree are the commit and tree containing this ledger; no self-referential Git identity is embedded here.",
   "release": {
@@ -181,7 +181,8 @@
     {"test":"legacy.direct-file.product.firefox-linux","classification":"HEADLESS_FIREFOX_GL_DRIVER_UNAVAILABLE_ON_HOSTED_LINUX","resolution":"Hosted Linux Firefox first reported AllowWebgl2:false and, after the correct preferences were applied, FEATURE_FAILURE_WEBGL_EXHAUSTED_DRIVERS. The founder journey now self-hosts Linux Firefox in the same bounded Xvfb graphical profile proven by the P21 and V1X-14 release evidence, while preserving the strict V2X-13 WebGL2 consumer and every runtime, frame, visual, navigation, persistence, offline and zero-network assertion. Transactional bootstrap diagnostics remain active for genuine constructor failures."},
     {"test":"product.v11.living-pinch-handoff","classification":"CROSS_TASK_RAF_OBSERVER_RACE","resolution":"The native pointer event and its immediate frame-pacing sample now execute in the same browser task, proving that no synchronous redraw occurs. The subsequent two-RAF witness still requires exactly one canonical paced rotation frame, visible pixel change and unchanged canonical identity."},
     {"test":"px.explorer-beta.source-resume","classification":"STALE_SOURCE_ASSIGNMENT_REGEX","resolution":"The source oracle now requires the actual state.resumeStatus='restored' assignment rather than an object-literal fragment that has never represented the transactional resume implementation. Runtime session resume, selection and persistence journeys remain independently enforced."},
-    {"test":"px.browser-product.firefox-click","classification":"REDUNDANT_TRIAL_ACTIONABILITY_OBSERVER_STALL","resolution":"The PX founder journey retains a real Playwright user click with visibility, scrolling and native actionability checks. A redundant preceding trial click that could stall headed Firefox after actionability had already succeeded was removed; no product transition or post-click assertion was changed."}
+    {"test":"px.browser-product.firefox-click","classification":"REDUNDANT_TRIAL_ACTIONABILITY_OBSERVER_STALL","resolution":"The PX founder journey retains a real Playwright user click with visibility, scrolling and native actionability checks. A redundant preceding trial click that could stall headed Firefox after actionability had already succeeded was removed; no product transition or post-click assertion was changed."},
+    {"test":"rendering.production.v2-living-seal","classification":"STALE_LEGACY_PX_RENDER_CALL_REQUIREMENT","resolution":"The V2-specific cross-runtime seal now requires registered legacy PX globe/surface compatibility renderers to remain dormant while the declared v1.scene.living-world/Deep3D foreground owns primary pixels. Provider bindings, cross-scale reconcile/refine/project activity, exact artifact identity and all five platform proofs remain mandatory."}
   ],
   "knownReleaseCriticalDefects": [],
   "deferredPostV2": [
