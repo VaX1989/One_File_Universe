@@ -81,6 +81,7 @@
           "Reducing a rendering budget must not reposition retained nodes; bounded omission is reported explicitly with available-count and truncation witnesses.",
           "When relation cues exceed the bounded projection limit, deterministic category-preserving projection retains cues from every nonempty relation class before allocating additional slots.",
           "Unknown material, phase and mixture remainders remain explicitly labelled unresolved rather than being presented as known chemistry or phase inventory.",
+          "Chemistry authority and formula/element descriptor availability are separate facts: descriptorless model-derived components remain model-derived while descriptor coverage is reported independently, and only explicit unresolved authority is labelled unresolved.",
           "Integer femtometre source coordinates are centered with exact integer arithmetic before bounded conversion to presentation-space numbers, including large safe-integer offsets.",
           "Biological presentation revalidates relation bounds and compartment endpoints; COARSE_MODEL_ONLY cannot be upgraded through injected rich relation cues or provider material-commitment claims.",
           "Regime-local journey presentation revalidates nested descriptor caps and source/computed atomic authority before projection; an explicit empty source structure never falls back to representative atoms."
@@ -91,6 +92,7 @@
           "Microstructure phases, interfaces and defects plus mixture, bond and reaction relations are semantic cues rather than simulated geometry or dynamics.",
           "Fixed-point structural coordinates are centered and normalized for display while original integer coordinates, source-space coordinates and units remain separately retained.",
           "Computed atomic structure is explicitly distinguished from source-backed experimental structure.",
+          "Formula/element descriptor coverage never upgrades chemistry authority or selected-object identity; descriptorless, partially described and fully described component sets are reported explicitly.",
           "Node and relation budgets can omit otherwise available bounded cues; omission is exposed through truncation witnesses and is never presented as a complete inventory.",
           "Dense relation classes cannot silently starve every cue from another nonempty class; per-category projected and omitted counts remain explicit.",
           "Tissue and biological presentation validates deterministic identity/ordinal uniqueness and material-unit closure before emitting cues; invalid closures fail closed.",
@@ -104,13 +106,13 @@
         "regime": "microscopic-matter",
         "validity": "Authority-labelled bounded presentation spanning tissue cells, provider-supported cell organization, material composition, microstructure descriptors, molecular topology and atomic structures.",
         "resolution": "TISSUE to CELL semantic continuity plus at most 256 provider nodes and 128 semantic relations per projected representation, with stable retained-node placement, category-preserving relation projection, explicit truncation witnesses and fail-closed regime-local input validation.",
-        "uncertainty": "Source-backed, computed/model-derived, unresolved, presentation-only and budget-truncated states remain distinguishable; no visualization upgrades model authority."
+        "uncertainty": "Source-backed, computed/model-derived, descriptorless, unresolved, presentation-only and budget-truncated states remain distinguishable; no visualization upgrades model authority."
       },
       "lifecycle": "SHIPPING",
       "requires": [
         {"id": "v2x12.model.matter-continuity", "version": "1.0.0", "authority": "MODEL_DERIVED_SIMULATION"}
       ],
-      "claims": ["representation.microscopic-matter-v2", "representation.tissue-cell-cues-v1", "representation.biological-matter-cues-v1", "representation.explicit-truncation-witness-v1", "representation.category-preserving-relations-v1", "representation.unresolved-material-fidelity-v1", "representation.unresolved-remainder-cues-v1", "representation.exact-fm-presentation-normalization-v1", "representation.presentation-closure-guard-v1", "representation.fail-closed-biological-boundary-v1", "representation.fail-closed-journey-boundary-v1", "representation.empty-source-no-fallback-v1"],
+      "claims": ["representation.microscopic-matter-v2", "representation.tissue-cell-cues-v1", "representation.biological-matter-cues-v1", "representation.explicit-truncation-witness-v1", "representation.category-preserving-relations-v1", "representation.unresolved-material-fidelity-v1", "representation.unresolved-remainder-cues-v1", "representation.explicit-unknown-chemistry-claim-state-v1", "representation.chemistry-descriptor-coverage-witness-v1", "representation.exact-fm-presentation-normalization-v1", "representation.presentation-closure-guard-v1", "representation.fail-closed-biological-boundary-v1", "representation.fail-closed-journey-boundary-v1", "representation.empty-source-no-fallback-v1"],
       "operations": ["INSPECT", "REPRESENT"],
       "budget": {"entities": 256, "bytes": 262144, "operations": 2048, "queue": 32},
       "evidence": [
