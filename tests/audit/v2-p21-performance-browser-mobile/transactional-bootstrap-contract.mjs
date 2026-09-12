@@ -46,5 +46,11 @@ has(soak,/v2x14ProductExperience\?\.instance.*v2x14LivingAudioController\?\.inst
 has(soak,/const timer=setTimeout\(\(\)=>finish\(false\),deadlineMs\)/,'bounded pacing must own a deadline inside the browser page');
 has(soak,/const finish=completed=>.*clearTimeout\(timer\).*cancelAnimationFrame\(frame\)/,'bounded pacing must settle and cancel the browser-side animation-frame operation before teardown');
 assert.doesNotMatch(soak,/Promise\.race\(\[measurement,deadline\]\)/,'bounded pacing must not abandon an in-flight page evaluation');assertions++;
+const growthStart=soak.indexOf('function sustainedGrowth'),growthEnd=soak.indexOf('function plateau',growthStart),growthSandbox={};
+assert.ok(growthStart>=0&&growthEnd>growthStart,'sustained resource-growth detector must remain present');assertions++;
+vm.runInNewContext(`${soak.slice(growthStart,growthEnd)};result={warmup:sustainedGrowth([1221,1224,1224,1224,1224,1224,1224,1224]),leak:sustainedGrowth([10,11,12,13,14,15,16,17]),oscillation:sustainedGrowth([10,11,10,11,10,11,10,11])}`,growthSandbox);
+assert.equal(growthSandbox.result.warmup,false,'one bounded warm-up allocation followed by a plateau is not a leak');assertions++;
+assert.equal(growthSandbox.result.leak,true,'sustained monotonic accumulation must remain release-blocking');assertions++;
+assert.equal(growthSandbox.result.oscillation,false,'reclaimed oscillating resources are not monotonic accumulation');assertions++;
 
 console.log(JSON.stringify({status:'PASS',suite:'p21-transactional-living-bootstrap',assertions,oracleChanges:'NONE',timeoutChanges:'NONE',authorityWeakening:'NONE',resourceCeilingWeakening:'NONE'}));
