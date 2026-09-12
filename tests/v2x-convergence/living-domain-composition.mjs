@@ -40,7 +40,7 @@ const O={
 const sandbox={OFU:O,Object,Array,String,Number,Math,Set,Map,Error,TypeError,console};sandbox.globalThis=sandbox;vm.createContext(sandbox);
 vm.runInContext(fs.readFileSync(new URL('../../src/rendering/v2x-convergence/living-domain-composition.js',import.meta.url),'utf8'),sandbox,{filename:'living-domain-composition.js'});
 assert.equal(sandbox.OFU.v1LivingRenderer.__v2xDomainComposed,true);
-assert.equal(sandbox.OFU.v2xLivingDomainComposition.VERSION,'ofu-v2x-living-domain-composition-3');
+assert.equal(sandbox.OFU.v2xLivingDomainComposition.VERSION,'ofu-v2x-living-domain-composition-5');
 assert.deepEqual(Array.from(sandbox.OFU.v2xLivingDomainComposition.SYSTEM_STAGES),['SYSTEM','ORBIT','APPROACH']);
 const renderer=sandbox.OFU.v1LivingRenderer.create(canvas,glCanvas,{onActivate:n=>calls.activated.push(n),onPoint:p=>calls.points.push(p),onObject:id=>calls.objects.push(id)});
 await renderer.render({stage:'SYSTEM',semanticScale:'system',revision:1,continuousDistanceRadii:100,rows:[star,planet],system:{canonicalId:'system-a'}});
