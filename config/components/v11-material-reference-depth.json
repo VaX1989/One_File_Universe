@@ -1,0 +1,31 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1.material.reference-properties",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/materials/reference-properties.js",
+      "dependencies": ["v1.micro.materials"],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Selective V1X-19 harvest: bounded formula-unit reference mass intervals from CIAAW Standard Atomic Weights 2024. Reference constants remain SOURCE_BACKED_REFERENCE; world chemistry retains its original authority and is never promoted.",
+      "provides": ["v1.material.reference-properties"]
+    },
+    {
+      "id": "v1.convergence.material-reference-context",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/convergence/material-reference-context.js",
+      "dependencies": ["v1.material.reference-properties", "v1.convergence.material-context", "v1.providers.bindings"],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Adds bounded reference-property inspection to the shipping material-source query without changing canonical facts, material identity, chemistry authority or the microscopic ladder.",
+      "provides": ["v1.convergence.material-reference-context"]
+    }
+  ]
+}

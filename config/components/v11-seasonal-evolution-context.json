@@ -1,0 +1,23 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1.evolution.seasonal-context",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/evolution/seasonal-context.js",
+      "dependencies": [
+        "v1.evolution.local-lineage-context",
+        "v1.ecology.seasonal-opportunity"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Selective V1X-17 harvest connecting exact local lineage history to bounded seasonal ecological opportunity as descriptive inspection context only. It creates no fitness measurement, selection coefficient, adaptation evidence, evolutionary event, canonical P6 state or P4 history."
+      ,"provides": [
+        "v1.evolution.seasonal-context"
+      ]
+    }
+  ]
+}

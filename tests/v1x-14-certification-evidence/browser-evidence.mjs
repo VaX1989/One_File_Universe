@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
+import {spawnSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
 import {chromium, firefox, webkit} from 'playwright';
 import {
@@ -18,11 +19,27 @@ import {
 
 const browserName = (process.argv.find(x => x.startsWith('--browser=')) || '--browser=chromium').split('=')[1];
 const engines = {chromium, firefox, webkit};
+const stringifyDiagnostics = value => JSON.stringify(value, (_, candidate) => typeof candidate === 'bigint' ? candidate.toString() : candidate);
 assert.ok(engines[browserName], `unsupported browser ${browserName}`);
+if (browserName === 'firefox' && process.platform === 'linux' && !process.env.DISPLAY && process.env.OFU_V1X14_XVFB_REEXEC !== '1') {
+  const child = spawnSync('xvfb-run', ['-a', process.execPath, ...process.argv.slice(1)], {
+    stdio: 'inherit',
+    env: {...process.env, OFU_V1X14_XVFB_REEXEC: '1'}
+  });
+  if (child.error) throw child.error;
+  if (child.signal) throw new Error(`V1X-14 Firefox Xvfb child terminated by ${child.signal}`);
+  process.exit(child.status ?? 1);
+}
 const identity = assertFrozenBase({identity: exactGitIdentity({branch: process.env.V1X_BRANCH || ''})});
 const outDir = path.resolve('reports/v1x-14-certification-evidence', identity.sha, browserName);
 fs.mkdirSync(path.join(outDir, 'frames'), {recursive: true});
-const browser = await engines[browserName].launch({headless: true});
+const launchOptions = {
+  headless: browserName !== 'firefox',
+  ...(browserName === 'firefox'
+    ? {firefoxUserPrefs: {'webgl.disabled': false, 'webgl.force-enabled': true, 'webgl.forbid-software': false}}
+    : {})
+};
+const browser = await engines[browserName].launch(launchOptions);
 const context = await browser.newContext({viewport: {width: 1280, height: 800}, reducedMotion: 'reduce'});
 const page = await context.newPage();
 const pageErrors = [];
@@ -34,7 +51,56 @@ page.on('request', request => {
 });
 const target = pathToFileURL(path.resolve('dist/One_File_Universe.html')).href;
 await page.goto(target, {waitUntil: 'load'});
-await page.waitForFunction(() => OFU?.waveIVScaleRuntime?.snapshot && OFU?.waveIVInputRouter?.snapshot && OFU?.v1LivingProduct?.snapshot?.().initialized, null, {timeout: 30000});
+try {
+  await page.waitForFunction(() => OFU?.waveIVScaleRuntime?.snapshot && OFU?.waveIVInputRouter?.snapshot && OFU?.v1LivingProduct?.snapshot?.().initialized, null, {timeout: 30000});
+} catch (error) {
+  const diagnostics = await page.evaluate(() => {
+    const O = globalThis.OFU;
+    const living = O?.v1LivingProduct;
+    let webgl2 = false;
+    try { webgl2 = !!document.createElement('canvas').getContext('webgl2'); } catch {}
+    let scale = null;
+    let input = null;
+    let product = null;
+    let livingRuntime = null;
+    try { scale = O?.waveIVScaleRuntime?.snapshot?.() || null; } catch (e) { scale = {snapshotError: String(e?.message || e)}; }
+    try { input = O?.waveIVInputRouter?.snapshot?.() || null; } catch (e) { input = {snapshotError: String(e?.message || e)}; }
+    try { product = living?.snapshot?.() || null; } catch (e) { product = {snapshotError: String(e?.message || e)}; }
+    try { livingRuntime = living?.runtime?.snapshot?.() || null; } catch (e) { livingRuntime = {snapshotError: String(e?.message || e)}; }
+    return {
+      hasOFU: !!O,
+      hasScaleRuntime: !!O?.waveIVScaleRuntime,
+      hasScaleSnapshot: !!O?.waveIVScaleRuntime?.snapshot,
+      hasInputRouter: !!O?.waveIVInputRouter,
+      hasInputSnapshot: !!O?.waveIVInputRouter?.snapshot,
+      hasLivingProduct: !!living,
+      livingInitialized: product?.initialized ?? null,
+      livingUiError: product?.uiError ?? null,
+      productUI: !!O?.productUI,
+      baselineStatus: globalThis.__OFU_BASELINE_REPORT__?.status ?? null,
+      webgl2,
+      reducedMotion: globalThis.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? null,
+      visibilityState: document.visibilityState,
+      scale,
+      input,
+      product,
+      livingRuntime
+    };
+  });
+  const bootFailure = {
+    schema: 'ofu-v1x14-boot-diagnostics-1',
+    laneId: 'V1X-14',
+    checkpoint: {sha: identity.sha, tree: identity.tree},
+    browser: browserName,
+    directFile: true,
+    diagnostics,
+    pageErrors,
+    timeoutMs: 30000,
+    authority: 'MEASURED_RUNTIME_FAILURE_EVIDENCE'
+  };
+  writeJson(path.join(outDir, 'boot-diagnostics.json'), bootFailure);
+  throw new Error(`V1X-14 ${browserName} boot readiness timeout: ${stringifyDiagnostics({diagnostics, pageErrors})}`, {cause: error});
+}
 assert.equal(new URL(page.url()).protocol, 'file:', 'journey must execute as direct-file');
 
 const sample = async label => page.evaluate(label => {

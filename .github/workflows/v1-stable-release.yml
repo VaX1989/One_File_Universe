@@ -5,37 +5,110 @@ on:
     workflows: ['V1 Definitive Certification']
     types: [completed]
     branches: [main]
+  pull_request:
+    paths:
+      - '.github/workflows/v1-stable-release.yml'
+      - 'tests/governance/v1-stable-release-freeze.mjs'
 
 concurrency:
-  group: v1-stable-release
+  group: v1-stable-release-${{ github.event_name }}-${{ github.event.pull_request.head.ref || github.event.workflow_run.head_sha || github.ref_name }}
   cancel-in-progress: false
 
 permissions:
-  contents: write
+  contents: read
   actions: read
 
 env:
   GH_TOKEN: ${{ github.token }}
   RELEASE_TAG: v1.0.0
   RELEASE_TITLE: One File Universe v1.0.0
-  SOURCE_SHA: ${{ github.event.workflow_run.head_sha }}
-  V1_RUN_ID: ${{ github.event.workflow_run.id }}
+  V1_RELEASE_SHA: 38dd0d7c0ccc4a100dc3b75d3d159c6933bc4c16
+  V1_RELEASE_ASSET_SHA256: 013d4277da9acebcbb739275c27f6e05ccbc838840738cd2f9b03bb8f5def61a
+  V1_RELEASE_ASSET_BYTES: '1512784'
+  SOURCE_SHA: ${{ github.event.workflow_run.head_sha || github.event.pull_request.head.sha || github.sha }}
+  V1_RUN_ID: ${{ github.event.workflow_run.id || '' }}
 
 jobs:
+  policy:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5 / Node 24 runtime
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5 / Node 24 runtime
+        with:
+          node-version: '24.20.0'
+      - name: Verify exact policy source
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+      - name: Verify immutable stable release policy
+        run: node tests/governance/v1-stable-release-freeze.mjs
+
+  release-state:
+    if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      publish_needed: ${{ steps.state.outputs.publish_needed }}
+    steps:
+      - name: Verify immutable v1.0.0 identity or authorize first publication
+        id: state
+        shell: bash
+        run: |
+          set -euo pipefail
+          if TAG_JSON="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$RELEASE_TAG" 2>/dev/null)"; then
+            TAG_TYPE="$(jq -r .object.type <<<"$TAG_JSON")"
+            TAG_SHA="$(jq -r .object.sha <<<"$TAG_JSON")"
+            test "$TAG_TYPE" = commit
+            test "$TAG_SHA" = "$V1_RELEASE_SHA"
+
+            RELEASE_JSON="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE_TAG")"
+            test "$(jq -r .draft <<<"$RELEASE_JSON")" = false
+            test "$(jq -r .prerelease <<<"$RELEASE_JSON")" = false
+            test "$(jq -r .target_commitish <<<"$RELEASE_JSON")" = "$V1_RELEASE_SHA"
+            ASSET_COUNT="$(jq '[.assets[] | select(.name=="One_File_Universe.html")] | length' <<<"$RELEASE_JSON")"
+            ASSET_DIGEST="$(jq -r '.assets[] | select(.name=="One_File_Universe.html") | .digest' <<<"$RELEASE_JSON")"
+            ASSET_BYTES="$(jq -r '.assets[] | select(.name=="One_File_Universe.html") | .size' <<<"$RELEASE_JSON")"
+            ASSET_STATE="$(jq -r '.assets[] | select(.name=="One_File_Universe.html") | .state' <<<"$RELEASE_JSON")"
+            test "$ASSET_COUNT" = 1
+            test "$ASSET_DIGEST" = "sha256:$V1_RELEASE_ASSET_SHA256"
+            test "$ASSET_BYTES" = "$V1_RELEASE_ASSET_BYTES"
+            test "$ASSET_STATE" = uploaded
+            echo 'v1.0.0 already exists with the frozen commit and certified asset identity; publication is an idempotent no-op'
+            echo 'publish_needed=false' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if gh api "repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE_TAG" >/dev/null 2>&1; then
+            echo 'release exists without its immutable stable tag' >&2
+            exit 1
+          fi
+          test "$SOURCE_SHA" = "$V1_RELEASE_SHA"
+          echo 'publish_needed=true' >> "$GITHUB_OUTPUT"
+
   verify-publish:
-    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main'
+    needs: release-state
+    if: github.event_name == 'workflow_run' && needs.release-state.outputs.publish_needed == 'true'
+    permissions:
+      contents: write
+      actions: read
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5 / Node 24 runtime
         with:
           ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Require exact unchanged main and unused stable identity
         shell: bash
         run: |
           set -euo pipefail
+          test "$SOURCE_SHA" = "$V1_RELEASE_SHA"
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           test "$(git ls-remote origin refs/heads/main | cut -f1)" = "$SOURCE_SHA"
           test -z "$(git ls-remote origin refs/tags/$RELEASE_TAG | cut -f1)"

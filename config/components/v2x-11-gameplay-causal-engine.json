@@ -1,0 +1,83 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v2x11.gameplay.contracts",
+      "version": "1.0.0",
+      "owner": "gameplay",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/gameplay/contracts.js",
+      "dependencies": ["v1.session.runtime"],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "V2X-11 typed bounded gameplay proposal, cost, effect and receipt contracts. No canonical scientific authority.",
+      "provides": ["v2x11.gameplay.contracts"]
+    },
+    {
+      "id": "v2x11.gameplay.p2-resource-normalizer",
+      "version": "1.0.0",
+      "owner": "gameplay",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/gameplay/p2-resource-normalizer.js",
+      "dependencies": ["v2x11.gameplay.contracts"],
+      "authority": "DERIVED",
+      "provenance": "V2X-11 deterministic compatibility boundary for P2-decoded canonical integers. BigInt resource units are accepted only within the existing resource-unit and JavaScript safe-integer bounds, then normalized to Number; no budget widening or authority promotion.",
+      "provides": ["v2x11.gameplay.p2-resource-normalizer"]
+    },
+    {
+      "id": "v2x11.simulation.cross-domain",
+      "version": "1.0.0",
+      "owner": "simulation",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/simulation/cross-domain/causal-engine.js",
+      "dependencies": ["v2x11.gameplay.p2-resource-normalizer"],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "V2X-11 bounded deterministic causal DAG router. Domain equations remain owned by domain adapters; issued plan/execution objects are runtime capabilities and cannot be forged by public digest recomputation.",
+      "provides": ["v2x11.simulation.cross-domain"]
+    },
+    {
+      "id": "v2x11.simulation.p4-gameplay-bridge",
+      "version": "1.0.0",
+      "owner": "simulation",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/simulation/temporal-adapters/p4-gameplay-bridge.js",
+      "dependencies": ["v2x11.gameplay.p2-resource-normalizer", "v2x11.simulation.cross-domain", "v1.session.runtime"],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "V2X-11 additive exact-compatibility P4 transition contract for bounded gameplay overlay state, resource costs, causal receipts and compactable/replayable consequences; accepts only executions issued by the causal engine; P4 core remains unchanged.",
+      "provides": ["v2x11.simulation.p4-gameplay-bridge"]
+    },
+    {
+      "id": "v2x11.gameplay.runtime",
+      "version": "1.0.0",
+      "owner": "gameplay",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/gameplay/runtime.js",
+      "dependencies": ["v2x11.simulation.cross-domain", "v2x11.simulation.p4-gameplay-bridge", "v1.providers.bindings"],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "V2X-11 governed gameplay facade and product-neutral governed-action adapter. When central product context exists, perform/propose derive the target and modeled world only from the current central selection and reject caller context overrides; all accepted actions still traverse proposal validation, causal execution and the additive P4 gameplay transition before becoming persistent consequences. Scientific temporal projections delegate to existing domain-owned functions when available.",
+      "provides": ["v2x11.gameplay.runtime", "v2x11.gameplay.governed-action-adapter"]
+    },
+    {
+      "id": "v2x11.session.governed-gameplay",
+      "version": "1.0.0",
+      "owner": "gameplay",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/gameplay/session-bridge.js",
+      "dependencies": ["v2x11.gameplay.runtime", "v2x10.session.retained-individuals"],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Convergence-owned V2X-11 extension of the existing central portable session. It persists bounded gameplay P4 archives per canonical target inside the same ofu.v1.session envelope used by V2X-10; no second browser persistence authority, camera, selection, history or scientific authority is introduced.",
+      "provides": ["v2x11.session.governed-gameplay"]
+    }
+  ]
+}

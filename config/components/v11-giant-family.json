@@ -1,0 +1,22 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1.planetology.giant-family",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/planetology/giant-family.js",
+      "dependencies": [
+        "v1.models.environment.world-system"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Selective V1X-16 harvest of the low-fidelity giant family taxonomy for post-v1 exploration diversity. Family bins consume only the existing modeled giant prior/mass/composition proxy and explicitly make no radius, atmosphere, EOS, population-calibration or canonical composition claim.",
+      "provides": [
+        "v1.planetology.giant-family"
+      ]
+    }
+  ]
+}

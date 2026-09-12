@@ -4,10 +4,12 @@ on:
   push:
     branches:
       - feature/p3-universe-skeleton
+      - main
+      - 'development/v1.*'
   pull_request:
 
 concurrency:
-  group: p3-conformance-${{ github.event.pull_request.head.ref || github.ref_name }}
+  group: p3-conformance-${{ github.event_name }}-${{ github.event.pull_request.head.ref || github.ref_name }}
   cancel-in-progress: true
 
 env:
@@ -17,21 +19,50 @@ permissions:
   contents: read
 
 jobs:
-  node:
+  route:
     runs-on: ubuntu-latest
+    outputs:
+      run: ${{ steps.phase-gate.outputs.run }}
+      adapter_status: ${{ steps.phase-gate.outputs.adapter_status }}
+      fail_closed: ${{ steps.phase-gate.outputs.fail_closed }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # Node 24 runtime
         with:
           ref: ${{ env.OFU_SOURCE_SHA }}
-      - uses: actions/setup-node@v4
+          fetch-depth: 0
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # Node 24 runtime
         with:
           node-version: '24.20.0'
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.13'
       - name: Verify exact source checkout
         shell: bash
         run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Route historical P3 evidence
+        id: phase-gate
+        shell: bash
+        env:
+          OFU_BASE_REF: ${{ github.event.pull_request.base.ref || github.ref_name }}
+          OFU_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: node tools/ci/phase-gate.mjs --phases P3 --base-ref "$OFU_BASE_REF" --base-sha "$OFU_BASE_SHA" --head-sha "$OFU_SOURCE_SHA"
+
+  node:
+    needs: route
+    if: ${{ needs.route.outputs.run == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # Node 24 runtime
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # Node 24 runtime
+        with:
+          node-version: '24.20.0'
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # Node 24 runtime
+        with:
+          python-version: '3.13.15'
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Browser evidence matrix verifier regressions
+        run: node tests/governance/browser-evidence-matrix-seal.mjs
       - name: Foundation
         run: node tools/validate-foundation.mjs
       - name: P1
@@ -46,23 +77,25 @@ jobs:
         run: node tests/p3/p3-canonical-performance.mjs
       - name: Generic phase-evidence isolation
         run: node tests/integration/evidence-isolation-generic.mjs
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6 / Node 24 runtime
         if: always()
         with:
-          name: p3-node-${{ github.sha }}
+          name: p3-node-${{ env.OFU_SOURCE_SHA }}
           path: dist/evidence/p3-*.json
 
   browser:
+    needs: route
+    if: ${{ needs.route.outputs.run == 'true' }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         browser: [chromium, firefox, webkit]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # Node 24 runtime
         with:
           ref: ${{ env.OFU_SOURCE_SHA }}
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # Node 24 runtime
         with:
           node-version: '24.20.0'
       - name: Verify exact source checkout
@@ -74,13 +107,15 @@ jobs:
         run: node tests/p3/browser-p3.mjs
         env:
           BROWSER: ${{ matrix.browser }}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6 / Node 24 runtime
         if: always()
         with:
-          name: p3-linux-${{ matrix.browser }}-${{ github.sha }}
+          name: p3-linux-${{ matrix.browser }}-${{ env.OFU_SOURCE_SHA }}
           path: dist/evidence/p3-*.json
 
   platform:
+    needs: route
+    if: ${{ needs.route.outputs.run == 'true' }}
     strategy:
       fail-fast: false
       matrix:
@@ -91,10 +126,10 @@ jobs:
             browser: webkit
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # Node 24 runtime
         with:
           ref: ${{ env.OFU_SOURCE_SHA }}
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # Node 24 runtime
         with:
           node-version: '24.20.0'
       - name: Verify exact source checkout
@@ -106,8 +141,37 @@ jobs:
         run: node tests/p3/browser-p3.mjs
         env:
           BROWSER: ${{ matrix.browser }}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6 / Node 24 runtime
         if: always()
         with:
-          name: p3-${{ matrix.os }}-${{ matrix.browser }}-${{ github.sha }}
+          name: p3-${{ matrix.os }}-${{ matrix.browser }}-${{ env.OFU_SOURCE_SHA }}
           path: dist/evidence/p3-*.json
+
+  seal:
+    if: ${{ always() && needs.route.outputs.run == 'true' }}
+    needs: [route, node, browser, platform]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require all exact-head P3 jobs
+        shell: bash
+        run: |
+          test '${{ needs.node.result }}' = success
+          test '${{ needs.browser.result }}' = success
+          test '${{ needs.platform.result }}' = success
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # Node 24 runtime
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # Node 24 runtime
+        with:
+          node-version: '24.20.0'
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7 / Node 24 runtime
+        with:
+          pattern: p3-*-${{ env.OFU_SOURCE_SHA }}
+          path: evidence
+          merge-multiple: true
+      - name: Require bounded exact-source cross-runtime P3 agreement
+        run: node tools/ci/verify-browser-evidence-matrix.mjs --mode p3 --root evidence --source-sha "$OFU_SOURCE_SHA"

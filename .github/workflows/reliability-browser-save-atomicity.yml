@@ -1,0 +1,50 @@
+name: Reliability Browser Save Atomicity
+
+on:
+  push:
+    branches:
+      - 'development/v1.*'
+    paths:
+      - 'src/domains/v1/session.js'
+      - 'tests/v1/browser-save-atomicity.mjs'
+      - 'tests/v1/session-persistence.mjs'
+      - '.github/workflows/reliability-browser-save-atomicity.yml'
+  pull_request:
+    branches:
+      - 'development/v1.*'
+    paths:
+      - 'src/domains/v1/session.js'
+      - 'tests/v1/browser-save-atomicity.mjs'
+      - 'tests/v1/session-persistence.mjs'
+      - '.github/workflows/reliability-browser-save-atomicity.yml'
+
+concurrency:
+  group: reliability-browser-save-atomicity-${{ github.event_name }}-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+permissions:
+  contents: read
+
+jobs:
+  exact-head:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # Node 24 runtime
+        with:
+          ref: '${{ env.OFU_SOURCE_SHA }}'
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # Node 24 runtime
+        with:
+          node-version: '24.20.0'
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Workflow reproducibility guard
+        run: node tests/governance/workflow-reproducibility.mjs
+      - name: First-save atomic rollback regression
+        run: node tests/v1/browser-save-atomicity.mjs
+      - name: Full session persistence regression
+        run: node tests/v1/session-persistence.mjs

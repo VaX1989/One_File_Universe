@@ -1,0 +1,22 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1.planetology.bulk-diagnostics",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/planetology/bulk-physical-diagnostics.js",
+      "dependencies": [
+        "v1.environment.atmospheric-column"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Selective V1X-16 extraction of pure spherical gravity/density diagnostics over existing modeled mass/radius inputs. It is ordered after the existing giant-family and atmospheric-column wrappers, preserves their fields, and makes no canonical promotion, empirical calibration, measurement, probability, P4, P5 or P6 claim.",
+      "provides": [
+        "v1.planetology.bulk-diagnostics"
+      ]
+    }
+  ]
+}

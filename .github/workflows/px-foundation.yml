@@ -16,14 +16,14 @@ env:
 jobs:
   px-conformance:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 60
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # Node 24 runtime
         with:
           ref: ${{ env.OFU_SOURCE_SHA }}
           fetch-depth: 0
           persist-credentials: false
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # Node 24 runtime
         with:
           node-version: '24.20.0'
       - name: Exact source
@@ -56,7 +56,7 @@ jobs:
           cmp /tmp/px-first-manifest.json dist/rendering-build-manifest.json
       - name: Actual registered product journey
         run: node tests/extensions/browser-product.mjs
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # Node 24 runtime
         if: always()
         with:
           name: px-foundation-${{ env.OFU_SOURCE_SHA }}

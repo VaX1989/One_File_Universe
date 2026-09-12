@@ -1,0 +1,23 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1.ecology.causal-niche",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/ecology/causal-niche.js",
+      "dependencies": [
+        "v1.convergence.world-context",
+        "v1.models.planetology.causality-trace"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Selective post-v1 implementation harvest from V1X-17. Connects modeled planetary/environment drivers to modeled local population roles through bounded heuristic attribution; no canonical P6/P4 promotion.",
+      "provides": [
+        "v1.ecology.causal-niche"
+      ]
+    }
+  ]
+}

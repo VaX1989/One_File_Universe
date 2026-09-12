@@ -4,6 +4,7 @@ import {
   BASE_SHA,
   BASE_TREE,
   CONTRACT_SET,
+  CERTIFICATION_BRANCHES,
   LANE_BRANCH,
   assertAuthorityClass,
   assertContinuity,
@@ -15,6 +16,7 @@ import {
   assertResponsibleProductionDelta,
   assertSingleRuntimeAuthority,
   evidenceJson,
+  isCertificationExecutionBranch,
   responsibleProductionDelta,
   stableJson,
   validateEvidenceManifest
@@ -32,6 +34,9 @@ fail(() => assertAuthorityClass('CONFIDENCE_HIGH'), /ungoverned authority class/
 assert.equal(assertNoAuthorityPromotion({sourceAuthority: 'PRESENTATION_ONLY', claimedAuthority: 'PRESENTATION_ONLY'}), true);
 fail(() => assertNoAuthorityPromotion({sourceAuthority: 'PRESENTATION_ONLY', claimedAuthority: 'CANONICAL_PROVEN'}), /cannot be promoted/);
 fail(() => assertNoAuthorityPromotion({sourceAuthority: 'MODEL_DERIVED_SIMULATION', claimedAuthority: 'CANONICAL_PROVEN'}), /cannot be promoted/);
+for (const branch of CERTIFICATION_BRANCHES) assert.equal(isCertificationExecutionBranch(branch), true);
+assert.equal(isCertificationExecutionBranch('release/v2.0.0'), true);
+assert.equal(isCertificationExecutionBranch('feature/unrelated'), false);
 
 const laneOnly = [
   'tests/v1x-14-certification-evidence/anti-regression.mjs',

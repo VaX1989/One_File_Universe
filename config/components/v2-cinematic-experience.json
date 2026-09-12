@@ -1,0 +1,70 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v2.cinematic.style",
+      "version": "1.0.0",
+      "owner": "cinematic",
+      "kind": "style",
+      "stage": "full",
+      "placement": "style",
+      "source": "src/cinematic/v2/experience.css",
+      "dependencies": ["v1.product.living-style"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "V2 cinematic lane. Shared compositing, safe-zone, responsive and reduced-motion treatment over the convergence-owned Living viewport. It cannot own navigation, selection, history, camera or scientific state.",
+      "provides": ["v2.cinematic.style"]
+    },
+    {
+      "id": "v2.cinematic.macro-director",
+      "version": "1.1.0",
+      "owner": "cinematic",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/cinematic/v2/macro-director.js",
+      "dependencies": ["v2x02.camera.living-binding", "v1.product.living-universe", "v1x02.spatial-universe.runtime", "v1x04.system.provider"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "V2 cinematic lane. Post-boot presentation layer over the convergence-owned Living product. It reads the live Living snapshot plus renderer.cameraAuthority.snapshot(), transforms that authoritative camera through OFU.v2x02LivingCameraComposition.orientationAngles(), and reuses the existing spatial/system presentation providers. Its aria-hidden, pointer-transparent macro canvas replaces macro pixels only while macro stages are active; it owns no scale, camera, selection, navigation, history, scene-model or scientific state.",
+      "provides": ["v2.cinematic.macro-director"]
+    },
+    {
+      "id": "v2.cinematic.experience",
+      "version": "1.0.0",
+      "owner": "cinematic",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/cinematic/v2/experience.js",
+      "dependencies": ["v1.product.living-universe", "v2.cinematic.style", "v2.cinematic.macro-director"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "V2 cinematic lane. Non-owning observer of Living stage metadata that classifies presentation regime, transient arrival phase and first-run visual guidance. User input immediately dismisses transient presentation; no semantic API is invoked.",
+      "provides": ["v2.cinematic.experience"]
+    },
+    {
+      "id": "v2.cinematic.depth-style",
+      "version": "1.0.0",
+      "owner": "cinematic",
+      "kind": "style",
+      "stage": "full",
+      "placement": "style",
+      "source": "src/cinematic/v2/depth-compositor.css",
+      "dependencies": ["v2.cinematic.style"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "V2 cinematic lane. Presentation-only depth compositor surface with bounded opacity, balanced-tier reduction, reduced-motion behavior and forced-colors suppression.",
+      "provides": ["v2.cinematic.depth-style"]
+    },
+    {
+      "id": "v2.cinematic.depth",
+      "version": "1.0.0",
+      "owner": "cinematic",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/cinematic/v2/depth-compositor.js",
+      "dependencies": ["v2.cinematic.experience", "v2.cinematic.depth-style"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "V2 cinematic lane. Bounded deterministic non-animated atmospheric/depth accents derived only from already-public presentation identifiers. Maximum star accents are fixed; no navigation, camera, selection, model or history API is called.",
+      "provides": ["v2.cinematic.depth"]
+    }
+  ]
+}

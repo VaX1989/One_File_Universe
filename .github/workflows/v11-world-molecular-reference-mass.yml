@@ -1,0 +1,45 @@
+name: V1.1 World Molecular Reference Mass
+on:
+  push:
+    branches:
+      - development/v1.1-quality-exploration
+  pull_request:
+    paths:
+      - 'src/domains/v1/molecular/reference-mass.js'
+      - 'tests/v1/molecular/reference-mass.mjs'
+      - 'config/components/v11-molecular-reference-mass.json'
+      - '.github/workflows/v11-world-molecular-reference-mass.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v11-world-molecular-reference-mass-${{ github.event_name }}-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+jobs:
+  molecular-reference-mass:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5 / Node 24 runtime
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5 / Node 24 runtime
+        with:
+          node-version: '24.20.0'
+      - name: Verify exact source
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Syntax
+        run: |
+          node --check src/domains/v1/molecular/reference-mass.js
+          node --check tests/v1/molecular/reference-mass.mjs
+      - name: Existing material reference oracle
+        run: node tests/v1/materials/reference-properties.mjs
+      - name: Molecular reference mass oracle
+        run: node tests/v1/molecular/reference-mass.mjs
+      - name: Live component graph integrity
+        run: node tests/extensions/components.mjs

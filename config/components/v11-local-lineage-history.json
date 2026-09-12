@@ -1,0 +1,23 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1.evolution.local-lineage-context",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/evolution/local-lineage-context.js",
+      "dependencies": [
+        "v1.evolution.history",
+        "v1.ecology.causal-niche"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Selective V1X-17 harvest of lineage-event identity and trace reconciliation. Connects exact local modeled populations back to the bounded shipping evolution ledger and modeled trace-potential evidence without canonical P6/P4 promotion, fossil-observation claims or sample-to-global-abundance inference.",
+      "provides": [
+        "v1.evolution.local-lineage-context"
+      ]
+    }
+  ]
+}

@@ -5,10 +5,11 @@ on:
     branches:
       - integration/p1-p4-one-file-baseline
       - main
+      - 'development/v1.*'
   pull_request:
 
 concurrency:
-  group: p1-p4-baseline-${{ github.event.pull_request.head.ref || github.ref_name }}
+  group: p1-p4-baseline-${{ github.event_name }}-${{ github.event.pull_request.head.ref || github.ref_name }}
   cancel-in-progress: true
 
 env:
@@ -18,18 +19,45 @@ permissions:
   contents: read
 
 jobs:
-  exact-head:
+  route:
     runs-on: ubuntu-latest
+    outputs:
+      run: ${{ steps.phase-gate.outputs.run }}
+      adapter_status: ${{ steps.phase-gate.outputs.adapter_status }}
+      fail_closed: ${{ steps.phase-gate.outputs.fail_closed }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # Node 24 runtime
         with:
           ref: ${{ env.OFU_SOURCE_SHA }}
-      - uses: actions/setup-node@v4
+          fetch-depth: 0
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # Node 24 runtime
         with:
           node-version: '24.20.0'
-      - uses: actions/setup-python@v5
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Route historical P1-P4 baseline evidence
+        id: phase-gate
+        shell: bash
+        env:
+          OFU_BASE_REF: ${{ github.event.pull_request.base.ref || github.ref_name }}
+          OFU_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: node tools/ci/phase-gate.mjs --phases P1,P2,P3,P4 --base-ref "$OFU_BASE_REF" --base-sha "$OFU_BASE_SHA" --head-sha "$OFU_SOURCE_SHA"
+
+  exact-head:
+    needs: route
+    if: ${{ needs.route.outputs.run == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # Node 24 runtime
         with:
-          python-version: '3.13'
+          ref: ${{ env.OFU_SOURCE_SHA }}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # Node 24 runtime
+        with:
+          node-version: '24.20.0'
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # Node 24 runtime
+        with:
+          python-version: '3.13.15'
       - name: Verify exact source checkout
         shell: bash
         run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
@@ -58,7 +86,7 @@ jobs:
           node tools/build-ofu.mjs > /tmp/build-second.json
           cmp /tmp/One_File_Universe.first.html dist/One_File_Universe.html
           cmp /tmp/p1-p4-build-manifest.first.json dist/p1-p4-build-manifest.json
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6 / Node 24 runtime
         with:
           name: p1-p4-certified-build-${{ env.OFU_SOURCE_SHA }}
           path: |
@@ -67,16 +95,18 @@ jobs:
             dist/evidence/
 
   browser-linux:
+    needs: route
+    if: ${{ needs.route.outputs.run == 'true' }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         browser: [chromium, firefox, webkit]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # Node 24 runtime
         with:
           ref: ${{ env.OFU_SOURCE_SHA }}
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # Node 24 runtime
         with:
           node-version: '24.20.0'
       - name: Verify exact source checkout
@@ -89,13 +119,15 @@ jobs:
         run: node tests/baseline/browser-p1-p4.mjs
         env:
           BROWSER: ${{ matrix.browser }}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6 / Node 24 runtime
         if: always()
         with:
           name: p1-p4-linux-x64-${{ matrix.browser }}-${{ env.OFU_SOURCE_SHA }}
           path: dist/evidence/baseline/
 
   browser-platform:
+    needs: route
+    if: ${{ needs.route.outputs.run == 'true' }}
     strategy:
       fail-fast: false
       matrix:
@@ -106,10 +138,10 @@ jobs:
             browser: webkit
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # Node 24 runtime
         with:
           ref: ${{ env.OFU_SOURCE_SHA }}
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # Node 24 runtime
         with:
           node-version: '24.20.0'
       - name: Verify exact source checkout
@@ -122,15 +154,15 @@ jobs:
         run: node tests/baseline/browser-p1-p4.mjs
         env:
           BROWSER: ${{ matrix.browser }}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6 / Node 24 runtime
         if: always()
         with:
           name: p1-p4-${{ runner.os }}-${{ runner.arch }}-${{ matrix.browser }}-${{ env.OFU_SOURCE_SHA }}
           path: dist/evidence/baseline/
 
   seal:
-    if: ${{ always() }}
-    needs: [exact-head, browser-linux, browser-platform]
+    if: ${{ always() && needs.route.outputs.run == 'true' }}
+    needs: [route, exact-head, browser-linux, browser-platform]
     runs-on: ubuntu-latest
     steps:
       - name: Require every baseline gate

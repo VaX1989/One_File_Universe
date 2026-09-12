@@ -1,0 +1,53 @@
+name: V1.1 World Seasonal Evolution Context
+on:
+  push:
+    branches:
+      - development/v1.1-quality-exploration
+  pull_request:
+    paths:
+      - 'src/domains/v1/evolution/seasonal-context.js'
+      - 'tests/v1/evolution/seasonal-context.mjs'
+      - 'config/components/v11-seasonal-evolution-context.json'
+      - '.github/workflows/v11-world-seasonal-evolution-context.yml'
+      - 'src/domains/v1/ecology/seasonal-opportunity.js'
+      - 'src/domains/v1/evolution/local-lineage-context.js'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v11-world-seasonal-evolution-context-${{ github.event_name }}-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+jobs:
+  seasonal-evolution-context:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5 / Node 24 runtime
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5 / Node 24 runtime
+        with:
+          node-version: '24.20.0'
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Syntax
+        run: |
+          node --check src/domains/v1/evolution/seasonal-context.js
+          node --check tests/v1/evolution/seasonal-context.mjs
+      - name: Local lineage history regression
+        run: node tests/v1/evolution/local-lineage-context.mjs
+      - name: Seasonal ecology regression
+        run: node tests/v1/ecology/seasonal-opportunity.mjs
+      - name: Seasonal evolution context oracle
+        run: node tests/v1/evolution/seasonal-context.mjs
+      - name: Live component graph integrity
+        run: node tests/extensions/components.mjs
+      - name: Workflow reproducibility guard
+        run: node tests/governance/workflow-reproducibility.mjs

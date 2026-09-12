@@ -1,40 +1,71 @@
 name: P1 Conformance
 on:
   push:
-    branches: [main, 'feature/**']
+    branches: [main, 'feature/**', 'development/v1.*']
   pull_request:
+concurrency:
+  group: p1-conformance-${{ github.event_name }}-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
 env:
   OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 permissions:
   contents: read
 jobs:
+  route:
+    runs-on: ubuntu-latest
+    outputs:
+      run: ${{ steps.phase-gate.outputs.run }}
+      adapter_status: ${{ steps.phase-gate.outputs.adapter_status }}
+      fail_closed: ${{ steps.phase-gate.outputs.fail_closed }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # Node 24 runtime
+        with:
+          ref: '${{ env.OFU_SOURCE_SHA }}'
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # Node 24 runtime
+        with: {node-version: '24.20.0'}
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Route historical P1 evidence
+        id: phase-gate
+        shell: bash
+        env:
+          OFU_BASE_REF: ${{ github.event.pull_request.base.ref || github.ref_name }}
+          OFU_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: node tools/ci/phase-gate.mjs --phases P1 --base-ref "$OFU_BASE_REF" --base-sha "$OFU_BASE_SHA" --head-sha "$OFU_SOURCE_SHA"
   node-and-build:
+    needs: route
+    if: ${{ needs.route.outputs.run == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with: {ref: '${{ env.OFU_SOURCE_SHA }}'}
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # Node 24 runtime
+        with: {ref: '${{ env.OFU_SOURCE_SHA }}', persist-credentials: false}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # Node 24 runtime
         with: {node-version: '24.20.0'}
-      - uses: actions/setup-python@v5
-        with: {python-version: '3.13'}
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # Node 24 runtime
+        with: {python-version: '3.13.15'}
       - name: Verify exact source checkout
         shell: bash
         run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
       - run: npm test
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6 / Node 24 runtime
         with:
           name: p1-build
           path: dist/
   browser-direct-open:
+    needs: route
+    if: ${{ needs.route.outputs.run == 'true' }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         browser: [chromium, firefox, webkit]
     steps:
-      - uses: actions/checkout@v4
-        with: {ref: '${{ env.OFU_SOURCE_SHA }}'}
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # Node 24 runtime
+        with: {ref: '${{ env.OFU_SOURCE_SHA }}', persist-credentials: false}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # Node 24 runtime
         with: {node-version: '24.20.0'}
       - name: Verify exact source checkout
         shell: bash
@@ -45,12 +76,14 @@ jobs:
       - run: node tests/browser/direct-open.mjs
         env:
           BROWSER: ${{ matrix.browser }}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6 / Node 24 runtime
         if: always()
         with:
           name: p1-browser-linux-${{ matrix.browser }}
           path: dist/evidence/
   platform-direct-open:
+    needs: route
+    if: ${{ needs.route.outputs.run == 'true' }}
     strategy:
       fail-fast: false
       matrix:
@@ -61,9 +94,9 @@ jobs:
             browser: webkit
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
-        with: {ref: '${{ env.OFU_SOURCE_SHA }}'}
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # Node 24 runtime
+        with: {ref: '${{ env.OFU_SOURCE_SHA }}', persist-credentials: false}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # Node 24 runtime
         with: {node-version: '24.20.0'}
       - name: Verify exact source checkout
         shell: bash
@@ -74,19 +107,19 @@ jobs:
       - run: node tests/browser/direct-open.mjs
         env:
           BROWSER: ${{ matrix.browser }}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6 / Node 24 runtime
         if: always()
         with:
           name: p1-browser-${{ matrix.os }}-${{ matrix.browser }}
           path: dist/evidence/
   aggregate-evidence:
-    if: ${{ always() }}
-    needs: [node-and-build, browser-direct-open, platform-direct-open]
+    if: ${{ always() && needs.route.outputs.run == 'true' }}
+    needs: [route, node-and-build, browser-direct-open, platform-direct-open]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with: {ref: '${{ env.OFU_SOURCE_SHA }}'}
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # Node 24 runtime
+        with: {ref: '${{ env.OFU_SOURCE_SHA }}', persist-credentials: false}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # Node 24 runtime
         with: {node-version: '24.20.0'}
       - name: Verify exact source checkout
         shell: bash
@@ -97,12 +130,12 @@ jobs:
           test '${{ needs.node-and-build.result }}' = 'success'
           test '${{ needs.browser-direct-open.result }}' = 'success'
           test '${{ needs.platform-direct-open.result }}' = 'success'
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7 / Node 24 runtime
         with:
           pattern: p1-*
           path: collected
       - run: node tools/aggregate-p1-evidence.mjs collected
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6 / Node 24 runtime
         if: always()
         with:
           name: p1-aggregate

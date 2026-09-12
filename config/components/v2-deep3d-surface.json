@@ -1,0 +1,57 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v2.deep3d.surface-providers",
+      "version": "1.0.0",
+      "owner": "product",
+      "kind": "data",
+      "stage": "full",
+      "placement": "resource",
+      "source": "src/rendering/deep3d/surface-provider-catalog.json",
+      "dependencies": ["v2.deep3d.providers"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Provider registration for the V2X-06 to Deep3D surface presentation adapter; it grants no scientific, camera, selection, geodesy or persistence authority.",
+      "provides": ["v2.deep3d.surface-provider-catalog"]
+    },
+    {
+      "id": "v2.deep3d.surface-adapter.runtime",
+      "version": "1.0.0",
+      "owner": "product",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/rendering/deep3d/surface-adapter.js",
+      "dependencies": ["v2.deep3d.render-packets.runtime","v2.deep3d.surface-providers","v2x-06.renderer.living-surface"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Bounded adapter from ready V2X-06 Living surface frames into camera-relative Deep3D mesh and curve packets while retaining model-derived and presentation-only epistemic boundaries.",
+      "provides": ["v2.deep3d.adapter.surface"]
+    },
+    {
+      "id": "v2.deep3d.local-adapter.runtime",
+      "version": "1.0.0",
+      "owner": "product",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/rendering/deep3d/local-adapter.js",
+      "dependencies": ["v2.deep3d.render-packets.runtime","v2.deep3d.surface-providers","v2x07.render.local-experience-provider"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Bounded adapter from the V2X-07 local experience materialization into camera-relative Deep3D terrain and embodiment meshes while preserving upstream identity and source-authority metadata.",
+      "provides": ["v2.deep3d.adapter.local"]
+    },
+    {
+      "id": "v2.deep3d.matter-adapter.runtime",
+      "version": "1.0.0",
+      "owner": "product",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/rendering/deep3d/matter-adapter.js",
+      "dependencies": ["v2.deep3d.render-packets.runtime","v2.deep3d.surface-providers","v2x12.matter.presentation"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Bounded adapter from V2X-12 microscopic presentations into camera-relative Deep3D point and semantic-curve packets; source and coordinate authority, unresolved chemistry and non-classical limitations remain explicit.",
+      "provides": ["v2.deep3d.adapter.matter"]
+    }
+  ]
+}

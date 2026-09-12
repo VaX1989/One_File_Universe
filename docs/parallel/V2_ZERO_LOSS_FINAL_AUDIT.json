@@ -1,0 +1,46 @@
+{
+  "schema": "ofu-v2-zero-loss-final-audit-1",
+  "version": "2026-09-11.1",
+  "status": "PASS",
+  "policy": "Adopt shipping semantics, not branch ancestry. A centrally reimplemented successor supersedes its lane implementation only when executable source and a release oracle remain in the final composition.",
+  "sourceAuthorities": {
+    "centralLedger": "docs/parallel/V2_INTEGRATION_LEDGER.json",
+    "pr259Head": "7aa33657628a63569561dc97489c9699e8f8874d",
+    "pr259Evidence": "docs/parallel/v2.0-00-zero-loss-harvest/ZERO_LOSS_HARVEST_LEDGER.json",
+    "pr267Head": "68d79fa5f98dad56acd44b4098680e5c96dc0613"
+  },
+  "allowedDispositions": ["ADOPTED", "SUPERSEDED", "INTENTIONALLY_EXCLUDED_WITH_AUTHORITY"],
+  "families": [
+    {"id":"V2X-01","shippingEligible":true,"disposition":"ADOPTED","evidence":["config/components/v2x-01-runtime-adaptive-materialization.json","tests/v2x-01-runtime-adaptive-materialization/soak.mjs"]},
+    {"id":"V2X-02","shippingEligible":true,"disposition":"SUPERSEDED","reason":"The central Living camera/travel adapter supersedes the lane-owned camera while retaining its bounded continuous-travel semantics.","evidence":["src/v2x-02-camera-spatial-travel/continuous-travel.js","tests/v2x-convergence/living-camera-authority.mjs"]},
+    {"id":"V2X-03","shippingEligible":true,"disposition":"ADOPTED","evidence":["src/rendering/v2x-convergence/macrocosm-composition.js","tests/v2x-convergence/macrocosm-composition.mjs"]},
+    {"id":"V2X-04","shippingEligible":true,"disposition":"SUPERSEDED","reason":"System, orbit, and approach semantics are consumed by the newer central domain compositor.","evidence":["src/rendering/v2x-convergence/living-domain-composition.js","config/components/v2x-04-system-planet-approach.json"]},
+    {"id":"V2X-05","shippingEligible":true,"disposition":"SUPERSEDED","reason":"The strict bounded Deep Planet model is retained through the central Living composition and science oracle.","evidence":["config/components/v2x-05-deep-planet-science.json","tests/v2x-05/deep-planet-oracles.mjs"]},
+    {"id":"V2X-06","shippingEligible":true,"disposition":"SUPERSEDED","reason":"The central surface compositor supersedes lane presentation ownership while retaining terrain, geology, and hydrology packets.","evidence":["config/components/v2x-06-surface-terrain-geology-hydrology.json","tests/v2x-06-surface/cross-scale-integration.mjs"]},
+    {"id":"V2X-07","shippingEligible":true,"disposition":"SUPERSEDED","reason":"Central Living navigation owns Local/Human traversal and consumes the bounded lane adapters.","evidence":["src/rendering/local/v2x07-local-traversal-adapter.js","tests/v2x-07-human-scale-local-traversal/local-experience.mjs"]},
+    {"id":"V2X-08","shippingEligible":true,"disposition":"ADOPTED","reason":"The deterministic classic-script runtime reproducibly bundles the lane model, evolution, succession, provider, embodiment, renderer, viewport bridge, and shipping adapter; the central Living consumer adds the final visible composition without escalating model-derived claims.","evidence":["src/v2x-08-life-ecology-evolution-embodiment/model.js","src/v2x-08-life-ecology-evolution-embodiment/evolution.js","src/v2x-08-life-ecology-evolution-embodiment/succession.js","src/v2x-08-life-ecology-evolution-embodiment/provider.js","src/v2x-08-life-ecology-evolution-embodiment/embodiment.js","src/v2x-08-life-ecology-evolution-embodiment/renderer.js","src/v2x-08-life-ecology-evolution-embodiment/viewport-bridge.js","src/v2x-08-life-ecology-evolution-embodiment/shipping-adapter.js","src/v2x-08-life-ecology-evolution-embodiment/shipping-bundle.mjs","src/v2x-08-life-ecology-evolution-embodiment/shipping-runtime.js","src/rendering/v2x-convergence/living-life-v2-consumer.js","tests/v2x-08/life-shipping-viewport.mjs"]},
+    {"id":"V2X-09","shippingEligible":true,"disposition":"SUPERSEDED","reason":"The central context inspector retains civilization, economy, settlement, and history projections with explicit provenance.","evidence":["config/components/v2x-09-civilization-economy-city.json","tests/v2x-09-civilization-economy-city/civilization-economy-city.mjs"]},
+    {"id":"V2X-10","shippingEligible":true,"disposition":"SUPERSEDED","reason":"The central deterministic individuals provider supersedes the older branch implementation and preserves revisit identity.","evidence":["src/domains/v1/individuals/provider.js","tests/v2x10/convergence-blockers.mjs"]},
+    {"id":"V2X-11","shippingEligible":true,"disposition":"ADOPTED","evidence":["config/components/v2x-11-gameplay-causal-engine.json","tests/v2x-convergence/living-governed-causal-journey.mjs"]},
+    {"id":"V2X-12","shippingEligible":true,"disposition":"SUPERSEDED","reason":"The convergence-owned continuity adapter preserves selected-source identity and fails closed for unresolved chemistry.","evidence":["src/domains/v1/micro/matter-continuity-v2.js","tests/v2x-12-matter-continuity/run.mjs"]},
+    {"id":"V2X-13","shippingEligible":true,"disposition":"SUPERSEDED","reason":"The strict WebGL2 consumer is subordinate to the central Living renderer and owns no independent scene or camera.","evidence":["src/rendering/v1/living-v2x13-bridge.js","tests/v2x-convergence/living-v2x13-pixel-binding.mjs"]},
+    {"id":"V2X-14","shippingEligible":true,"disposition":"ADOPTED","evidence":["src/product/v2x14/product-experience.js","tests/v2x-14-product-experience/browser-journey.mjs"]},
+    {"id":"V2X-15","shippingEligible":false,"disposition":"INTENTIONALLY_EXCLUDED_WITH_AUTHORITY","reason":"RESEARCH_ONLY astronomy/planetology material remains provenance and falsification evidence; it was not authorized as canonical or shipping science.","evidence":["docs/parallel/V2X_RESEARCH_HARVEST_CURRENT.json"]},
+    {"id":"V2X-16","shippingEligible":false,"disposition":"INTENTIONALLY_EXCLUDED_WITH_AUTHORITY","reason":"RESEARCH_ONLY life/civilization/matter dynamics remain provenance and falsification evidence; they were not authorized as canonical history or matter truth.","evidence":["docs/parallel/V2X_RESEARCH_HARVEST_CURRENT.json"]},
+    {"id":"V2.0-00-ZERO-LOSS-HARVEST","shippingEligible":true,"disposition":"ADOPTED","reason":"PR #259's four evidence-only files are retained unchanged as the authenticated branch genealogy and adversarial harvest record.","evidence":["docs/parallel/v2.0-00-zero-loss-harvest/CHECKPOINT.json","docs/parallel/v2.0-00-zero-loss-harvest/ZERO_LOSS_HARVEST_LEDGER.json","tools/v2-zero-loss-harvest-validate.mjs","tests/v2-zero-loss-harvest/adversarial.mjs"]},
+    {"id":"V2-CINEMATIC","shippingEligible":true,"disposition":"ADOPTED","reason":"PR #267's presentation-only motion, depth, macro staging, shader cues, accessibility, and browser witness are reconciled over the newer central substrate.","evidence":["config/components/v2-cinematic-experience.json","src/cinematic/v2/experience.js","src/cinematic/v2/depth-compositor.js","src/cinematic/v2/macro-director.js","tests/v2x-convergence/cinematic-experience-contract.mjs","tests/v2x-convergence/browser-cinematic-experience.mjs"]}
+  ],
+  "cinematicReconciliation": {
+    "status": "RECONCILED",
+    "semanticSource": "PR #267",
+    "preserved": ["presentation-only authority", "bounded pixels", "authoritative camera observation", "offline single-file composition", "reduced-motion and forced-colors behavior"],
+    "excludedObsoleteImplementationDetails": [
+      {"path":"config/conformance/v11-living-wheel-normalization.json","change":"timeoutMs 30000 to 60000","reason":"A timeout expansion is not a cinematic product semantic and is excluded under the stronger release test-integrity rule."}
+    ],
+    "oracleChanges": "NONE",
+    "timeoutChanges": "NONE",
+    "authorityWeakening": "NONE",
+    "resourceCeilingWeakening": "NONE"
+  },
+  "missing": []
+}

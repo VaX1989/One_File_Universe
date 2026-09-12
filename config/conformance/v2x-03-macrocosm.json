@@ -1,0 +1,10 @@
+{
+  "schema": "ofu-conformance-1",
+  "tests": [
+    {"id":"v2x03.macrocosm.determinism","owner":"v2x-03-macrocosm","tier":"FAST_LOCAL","command":["node","tests/v2x-03/macrocosm-oracles.mjs"],"providers":["v2x03.representation.macrocosm"],"oracle":"v2x03-macrocosm-deterministic-revisit","timeoutMs":30000},
+    {"id":"v2x03.macrocosm.depth-bounds","owner":"v2x-03-macrocosm","tier":"LANE_TARGETED","command":["node","tests/v2x-03/macrocosm-oracles.mjs"],"providers":["v2x03.representation.macrocosm"],"oracle":"v2x03-macrocosm-depth-bounds-and-pick-separation","timeoutMs":30000},
+    {"id":"v2x03.macrocosm.continuity-identity","owner":"v2x-03-macrocosm","tier":"LANE_TARGETED","command":["node","tests/v2x-03/continuity-identity.mjs"],"providers":["v2x03.representation.macrocosm"],"oracle":"v2x03-macrocosm-cross-scale-continuity-identity","timeoutMs":30000},
+    {"id":"v2x03.macrocosm.no-legacy-layout","owner":"v2x-03-macrocosm","tier":"LANE_TARGETED","command":["node","tests/v2x-03/macrocosm-oracles.mjs"],"providers":["v2x03.representation.macrocosm"],"oracle":"v2x03-macrocosm-adversarial-legacy-representation-disabled","timeoutMs":30000},
+    {"id":"v2x03.macrocosm.artifact-hook","owner":"v2x-03-macrocosm","tier":"LANE_TARGETED","command":["node","tests/v2x-03/macrocosm-oracles.mjs"],"providers":["v2x03.representation.macrocosm"],"oracle":"v2x03-macrocosm-shipping-component-to-convergence-consumer-hook","timeoutMs":30000}
+  ]
+}

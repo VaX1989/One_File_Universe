@@ -25,7 +25,7 @@ export function validatePXEvidence(rows,build,source){
 }
 
 export function validatePXV1Evidence(rows,build,source){
- assert.equal(build.px?.version,'ofu-px-product-1');assert.equal(build.px.scope,'FULL_V1_WAVE_A_PRODUCT');assert.equal(build.sourceCommit,source);
+ assert.equal(build.px?.version,'ofu-px-product-1');assert.equal(build.px.scope,'FULL_V2_LIVING_PRODUCT_OVER_V1_COMPATIBILITY_RUNTIME');assert.equal(build.sourceCommit,source);
  assert.equal(build.visualUniverse?.primarySceneProvider,'v1.scene.living-world');
  hash(build.componentCompositionSha256);hash(build.px.registryDigest);hash(build.artifactSha256);
  assert.equal(build.componentCompositionSha256,createHash('sha256').update(JSON.stringify(build.additiveComponents)).digest('hex'));
@@ -43,7 +43,8 @@ export function validatePXV1Evidence(rows,build,source){
   assert.equal(r.registry?.sealed,true);assert.equal(r.registry?.bindingsSealed,true);assert.equal(r.registry.manifestDigest,build.px.registryDigest);
   assert.equal(r.registry.entries,providers.length);assert.equal(new Set(r.registry.bound).size,r.registry.bound.length);for(const id of required)assert(r.registry.bound.includes(id),'mandatory bound provider '+id);for(const id of shippingCallable)assert(r.registry.bound.includes(id),'shipping callable provider not bound '+id);
   assert.deepEqual([...r.providerChecks].sort(),directPXCallable);assert.equal(r.canonicalBefore,r.canonicalAfter);assert.equal(r.p4Before,r.p4After);hash(r.canonicalBefore);hash(r.p4Before);
-  assert(r.metrics?.renderCalls>0&&r.metrics.reconciliations>=30&&r.metrics.refinements>0&&r.metrics.projections>0,'actual bidirectional v1 seam execution required');
+  assert(r.metrics?.renderCalls===0,'legacy PX compatibility renderers must remain dormant under the V2 Living foreground');
+  assert(r.metrics?.reconciliations>=30&&r.metrics.refinements>0&&r.metrics.projections>0,'actual bidirectional v1 scale seam execution required');
   assert(r.workingSet?.pxCacheEntries<=16&&r.workingSet?.pxWitnessCount<=32,'v1 PX working set exceeded');
   assert(r.workingSet?.livingHistoryDepth<=64&&r.workingSet?.livingDiscoveryCacheEntries<=12,'v1 Living working set exceeded');
   assert(r.workingSet?.resources?.entries>0&&r.workingSet.resources.totalDecodedBytes<=67108864,'v1 resource working set exceeded');

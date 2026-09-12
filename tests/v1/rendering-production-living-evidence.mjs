@@ -25,13 +25,15 @@ for(let i=lines.length-1;i>=0;i--){
 assert(result,'v1 browser product evidence JSON missing');
 const manifest=JSON.parse(fs.readFileSync(path.join(root,'dist','rendering-build-manifest.json'),'utf8'));
 assert.equal(manifest.sourceCommit,sourceCommit,'full product manifest source mismatch');
-assert.equal(manifest.productVersion,'1.0.0');
-assert.equal(manifest.releaseLine,'v1.0.0');
-assert.equal(manifest.releaseStatus,'HISTORICAL_BASELINE');
+assert.equal(manifest.productVersion,'2.0.0');
+assert.equal(manifest.releaseLine,'v2.0.0');
+assert.equal(manifest.releaseStatus,'STABLE_RELEASE');
 assert.equal(manifest.candidateOnly,false);
 assert.equal(manifest.worldConvergence?.developmentCandidate,false);
 assert.equal(manifest.worldConvergence?.releaseVersionDeclared,true);
 assert.equal(manifest.visualUniverse?.primarySceneProvider,'v1.scene.living-world');
+assert(Object.values(manifest.visualUniverse?.primaryPixelBackendPolicy||{}).every(value=>String(value).includes('DEEP3D')),'all shipping scale stages must declare a Deep3D primary pixel backend');
+assert.equal(manifest.visualUniverse?.semanticCanvasRole,'INTERACTION_ACCESSIBILITY_AND_LABEL_OVERLAY_ONLY');
 assert.equal(manifest.runtime?.directFile,true);
 assert.equal(manifest.runtime?.offline,true);
 assert.equal(manifest.runtime?.networkRequired,false);
@@ -44,7 +46,7 @@ assert.equal(result.pageErrors,0);
 assert.equal(result.physicalDevices,'NOT_VERIFIED');
 
 const evidence={
-  schema:'ofu-v1-living-browser-evidence-1',
+  schema:'ofu-v2-living-browser-evidence-1',
   status:'PASS',
   suite:result.suite,
   sourceCommit,
@@ -53,7 +55,8 @@ const evidence={
   productVersion:manifest.productVersion,
   releaseLine:manifest.releaseLine,
   releaseStatus:manifest.releaseStatus,
-  historicalBaseline:true,
+  historicalBaseline:false,
+  stableRelease:true,
   foregroundProvider:manifest.visualUniverse.primarySceneProvider,
   foregroundVersion:manifest.visualUniverse.version,
   browser:result.browser||browser,
@@ -78,6 +81,6 @@ const evidence={
 };
 const evidenceDir=path.resolve(process.env.OFU_RENDER_EVIDENCE_DIR||'dist/evidence/rendering-production');
 fs.mkdirSync(evidenceDir,{recursive:true});
-const out=path.join(evidenceDir,`v1-living-${process.platform}-${process.arch}-${evidence.browser}-dpr${evidence.dpr}.json`);
+const out=path.join(evidenceDir,`v2-living-${process.platform}-${process.arch}-${evidence.browser}-dpr${evidence.dpr}.json`);
 fs.writeFileSync(out,JSON.stringify(evidence,null,2)+'\n');
 console.log(JSON.stringify(evidence));

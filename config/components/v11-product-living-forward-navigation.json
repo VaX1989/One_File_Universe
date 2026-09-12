@@ -1,0 +1,31 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1.exploration.living-forward-navigation",
+      "version": "1.0.0",
+      "owner": "exploration",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/exploration/v1/living-forward-navigation.js",
+      "dependencies": ["v1.exploration.living-runtime"],
+      "authority": "DERIVED",
+      "provenance": "Post-v1 reversible Living navigation controller. Replays only bounded known product navigation commands and fails closed when exact forward context cannot be proven; no canonical or scientific authority is created.",
+      "provides": ["v1.exploration.living-forward-navigation"]
+    },
+    {
+      "id": "v1.product.living-forward-controls",
+      "version": "1.0.0",
+      "owner": "product",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/bootstrap/product/living-forward-controls.js",
+      "dependencies": ["v1.exploration.living-forward-navigation", "v1.product.living-universe"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Post-v1 shipping Living Back/Forward controls and keyboard continuity over the derived reversible navigation controller. Product controls never mint semantic or scientific authority.",
+      "provides": ["v1.product.living-forward-controls"]
+    }
+  ]
+}

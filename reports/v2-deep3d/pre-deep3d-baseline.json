@@ -1,0 +1,7 @@
+{
+  "schema":"ofu-v2-deep3d-baseline-1","status":"PASS","sha":"4c12e93a216ca386177671c24dc06d63f3713021","purpose":"Immutable pre-Deep3D regression reference after exact evidence-hygiene repair; not a release candidate.",
+  "evidenceHygiene":{"status":"PASS","mode":"EXACT_READ_ONLY","trackedEvidenceMutation":"NONE"},
+  "workflows":[
+    {"name":"V1.1 World Bulk Physical Diagnostics","runId":34626111419,"conclusion":"success"},{"name":"V2X Supreme Convergence","runId":34626111324,"conclusion":"success"},{"name":"Post-v1 Development Gate","runId":34626111315,"conclusion":"success"},{"name":"Exact Source Reproduction Bundle","runId":34626111271,"conclusion":"success"},{"name":"Foundation Integrity","runId":34626111358,"conclusion":"success"},{"name":"Product v1.1 Living Forward Navigation","runId":34626111464,"conclusion":"success"},{"name":"Reliability Rendering Evidence Bounds","runId":34626111359,"conclusion":"success"}
+  ]
+}

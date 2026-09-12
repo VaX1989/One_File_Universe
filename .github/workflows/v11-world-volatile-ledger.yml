@@ -1,0 +1,50 @@
+name: V1.1 World Volatile Ledger
+on:
+  push:
+    branches:
+      - development/v1.1-quality-exploration
+  pull_request:
+    paths:
+      - 'src/domains/v1/planetology/volatile-ledger.js'
+      - 'tests/v1/planetology/volatile-ledger.mjs'
+      - 'config/components/v11-volatile-ledger.json'
+      - '.github/workflows/v11-world-volatile-ledger.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v11-world-volatile-ledger-${{ github.event_name }}-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+jobs:
+  volatile-ledger:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5 / Node 24 runtime
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5 / Node 24 runtime
+        with:
+          node-version: '24.20.0'
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Syntax
+        run: |
+          node --check src/domains/v1/planetology/volatile-ledger.js
+          node --check tests/v1/planetology/volatile-ledger.mjs
+      - name: Existing planetology/environment oracles
+        run: |
+          node tests/v1/planetology/causal-system.mjs
+          node tests/v1/environment/world-system.mjs
+          node tests/v1/planetology/causality-trace.mjs
+      - name: Volatile ledger oracle
+        run: node tests/v1/planetology/volatile-ledger.mjs
+      - name: Live component graph integrity
+        run: node tests/extensions/components.mjs

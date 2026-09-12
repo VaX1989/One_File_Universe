@@ -10,13 +10,16 @@ const browser=await chromium.launch({headless:true});const context=await browser
 const errors=[],requests=[];page.on('pageerror',e=>errors.push(String(e.message||e).slice(0,500)));page.on('request',r=>requests.push({url:r.url(),type:r.resourceType(),nav:r.isNavigationRequest()}));
 const url=pathToFileURL(file).href,shots=[];
 const shot=async name=>{const out=path.join(evidenceDir,`v09-${name}.png`);await page.screenshot({path:out,fullPage:true});shots.push(path.basename(out))};
+const waitReady=()=>page.waitForFunction(()=>globalThis.__OFU_BASELINE_REPORT__?.status==='READY'&&OFU?.v08ExploreNavigation?.state?.ready&&OFU?.v09ExplorerBeta?.state?.ready&&OFU?.v09ExplorerScene?.snapshot().ready,{},{timeout:30000});
 try{
  await page.goto(url,{waitUntil:'load'});
- await page.waitForFunction(()=>globalThis.__OFU_BASELINE_REPORT__?.status==='READY'&&OFU?.v08ExploreNavigation?.state?.ready&&OFU?.v09ExplorerBeta?.state?.ready&&OFU?.v09ExplorerScene?.snapshot().ready,{},{timeout:30000});
+ await waitReady();
  const initial=await page.evaluate(()=>({text:String(document.querySelector('[data-workspace-panel="explore"]')?.innerText||'').replace(/\s+/g,' ').trim(),targets:OFU.v08ExploreNavigation.state.targets.length,beta:OFU.v09ExplorerBeta.snapshot(),scene:OFU.v09ExplorerScene.snapshot()}));
  for(const phrase of ['Explorer Beta','Where you are','Discover','Try something different','World differences','Recent & bookmarked'])if(!initial.text.includes(phrase))throw new Error('missing Explorer Beta hierarchy: '+phrase);
  if(/galaxyX|sectorX|siteX|[0-9a-f]{40,}/i.test(initial.text))throw new Error('technical identity leaked into Explore');
  if(initial.scene.bodies.length!==initial.targets||!initial.scene.selection)throw new Error('scene seam target mismatch');
+ if(initial.beta.trail.canBack||initial.beta.trail.canForward)throw new Error('fresh exploration trail must start at one stable destination');
+ if(initial.beta.state.resumeStatus!=='none'||initial.beta.state.resumedToken!==null)throw new Error('fresh browser context must not claim a resumed destination '+JSON.stringify(initial.beta.state));
  await shot('desktop-explore');
  if(initial.targets>1){
   const first=await page.evaluate(()=>OFU.v09ExplorerBeta.snapshot().session.current);
@@ -25,17 +28,33 @@ try{
   const pinned=await page.evaluate(()=>OFU.v09ExplorerBeta.snapshot().session.pinned);if(!pinned)throw new Error('comparison pin not stored');
   await page.click('[data-explore-target="0"]');await page.waitForFunction(pinned=>OFU.v09ExplorerBeta.snapshot().session.current!==pinned,pinned);
   await page.waitForFunction(()=>document.querySelectorAll('#beta-compare-body tr').length>=6);
-  const compare=await page.evaluate(()=>({rows:document.querySelectorAll('#beta-compare-body tr').length,copy:document.getElementById('beta-compare-copy')?.textContent,recent:document.querySelectorAll('#beta-recent-list .beta-world-card').length,bookmarks:document.querySelectorAll('#beta-bookmark-list .beta-world-card').length}));
-  if(compare.rows<6||compare.recent<1||compare.bookmarks<1||!/compared with pinned/i.test(compare.copy||''))throw new Error('comparison/session flow incomplete '+JSON.stringify(compare));
+  const forwardDestination=await page.evaluate(()=>OFU.v09ExplorerBeta.snapshot().session.current);
+  await page.click('#beta-back');await page.waitForFunction(pinned=>OFU.v09ExplorerBeta.snapshot().session.current===pinned,pinned);
+  const backed=await page.evaluate(()=>({beta:OFU.v09ExplorerBeta.snapshot(),backDisabled:document.getElementById('beta-back').disabled,forwardDisabled:document.getElementById('beta-forward').disabled}));
+  if(backed.beta.state.lastAction!=='trail-back'||backed.forwardDisabled||!backed.beta.trail.canForward)throw new Error('back trail did not preserve forward destination '+JSON.stringify(backed));
+  await page.click('#beta-forward');await page.waitForFunction(token=>OFU.v09ExplorerBeta.snapshot().session.current===token,forwardDestination);
+  const forwarded=await page.evaluate(()=>({beta:OFU.v09ExplorerBeta.snapshot(),forwardDisabled:document.getElementById('beta-forward').disabled}));
+  if(forwarded.beta.state.lastAction!=='trail-forward'||forwarded.beta.trail.canForward||!forwarded.forwardDisabled)throw new Error('forward trail did not restore tip '+JSON.stringify(forwarded));
+  await page.keyboard.press('[');await page.waitForFunction(pinned=>OFU.v09ExplorerBeta.snapshot().session.current===pinned,pinned);await page.keyboard.press(']');await page.waitForFunction(token=>OFU.v09ExplorerBeta.snapshot().session.current===token,forwardDestination);
+  const compare=await page.evaluate(()=>({rows:document.querySelectorAll('#beta-compare-body tr').length,copy:document.getElementById('beta-compare-copy')?.textContent,recent:document.querySelectorAll('#beta-recent-list .beta-world-card').length,bookmarks:document.querySelectorAll('#beta-bookmark-list .beta-world-card').length,trail:OFU.v09ExplorerBeta.snapshot().trail}));
+  if(compare.rows<6||compare.recent<1||compare.bookmarks<1||!/compared with pinned/i.test(compare.copy||'')||!compare.trail.canBack)throw new Error('comparison/session/trail flow incomplete '+JSON.stringify(compare));
  }
+ const resumeExpected=await page.evaluate(()=>{const s=OFU.v09ExplorerBeta.snapshot();return{token:s.session.current,trailDepth:s.trail.depth,trailCursor:s.trail.cursor,bookmarks:[...s.session.bookmarks],pinned:s.session.pinned}});
+ await page.reload({waitUntil:'load'});await waitReady();await page.waitForFunction(()=>OFU.v09ExplorerBeta.snapshot().state.resumeStatus!=='pending');
+ const resumed=await page.evaluate(()=>{const s=OFU.v09ExplorerBeta.snapshot();return{beta:s,note:document.getElementById('beta-session-note')?.textContent||'',rendererToken:OFU.v09ExplorerCore.serializePlanetKey(OFU.v08ExploreNavigation.state.targets[OFU.v08ExploreNavigation.state.selectedIndex].key)}});
+ if(resumed.beta.state.resumeStatus!=='restored'||resumed.beta.state.resumedToken!==resumeExpected.token||resumed.beta.session.current!==resumeExpected.token||resumed.rendererToken!==resumeExpected.token)throw new Error('startup resume did not restore the last authoritative selected destination '+JSON.stringify({resumeExpected,resumed}));
+ if(resumed.beta.trail.depth!==resumeExpected.trailDepth||resumed.beta.trail.cursor!==resumeExpected.trailCursor)throw new Error('startup resume mutated trail history '+JSON.stringify({resumeExpected,trail:resumed.beta.trail}));
+ if(JSON.stringify(resumed.beta.session.bookmarks)!==JSON.stringify(resumeExpected.bookmarks)||resumed.beta.session.pinned!==resumeExpected.pinned)throw new Error('startup resume mutated saved exploration state');
+ if(!/Resumed your last explored destination/i.test(resumed.note))throw new Error('startup resume lacks user-visible session feedback '+JSON.stringify(resumed.note));
+ await shot('desktop-resumed-session');
  await page.click('[data-open-workspace="inspect"]');await page.waitForFunction(()=>OFU.productUI.state.workspace==='inspect');await page.waitForFunction(()=>/sections below separate|outside the range|selected world is changing|part of the generated universe/i.test(document.getElementById('inspector-overview-copy')?.textContent||''));
  const inspect=await page.evaluate(()=>({overview:document.getElementById('inspector-overview-copy')?.textContent,environment:document.getElementById('inspector-environment-copy')?.textContent,biology:document.getElementById('inspector-biology-copy')?.textContent,technical:document.querySelector('.raw-details')?.open===true}));
  if(inspect.technical)throw new Error('advanced technical details opened by default');if(!/world|object/i.test(inspect.overview||'')||!/environment|forcing|waiting/i.test(inspect.environment||''))throw new Error('plain-language Inspector missing '+JSON.stringify(inspect));
  await shot('desktop-inspect');
  await page.click('[data-workspace="explore"]');await page.setViewportSize({width:390,height:844});await page.waitForFunction(()=>document.documentElement.dataset.ofuMobile==='true'&&__OFU_MOBILE_INTERACTION__?.snapshot().active===true);await page.waitForFunction(()=>__OFU_MOBILE_INTERACTION__.snapshot().sheet==='peek');
- const mobile=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,sheet:__OFU_MOBILE_INTERACTION__.snapshot().sheet,breadcrumb:getComputedStyle(document.querySelector('.beta-breadcrumbs')).overflowX,scene:OFU.v09ExplorerScene.snapshot()}));
- if(mobile.overflow>2||mobile.sheet!=='peek'||mobile.scene.ready!==true)throw new Error('mobile Explorer Beta composition failed '+JSON.stringify(mobile));
+ const mobile=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,sheet:__OFU_MOBILE_INTERACTION__.snapshot().sheet,breadcrumb:getComputedStyle(document.querySelector('.beta-breadcrumbs')).overflowX,scene:OFU.v09ExplorerScene.snapshot(),forwardPresent:!!document.getElementById('beta-forward'),resumeStatus:OFU.v09ExplorerBeta.snapshot().state.resumeStatus}));
+ if(mobile.overflow>2||mobile.sheet!=='peek'||mobile.scene.ready!==true||!mobile.forwardPresent||mobile.resumeStatus!=='restored')throw new Error('mobile Explorer Beta composition failed '+JSON.stringify(mobile));
  await shot('mobile-explore');
  const unexpected=requests.filter(r=>!(r.nav&&r.type==='document'&&r.url===url)&&!r.url.startsWith('data:')&&!r.url.startsWith('blob:')&&!r.url.startsWith('about:'));if(unexpected.length)throw new Error('unexpected network requests '+JSON.stringify(unexpected));if(errors.length)throw new Error('page errors '+JSON.stringify(errors));
- const evidence={status:'PASS',exactSourceSha:sourceSha,product:'Explorer Beta',orientation:true,boundedDiscovery:true,comparison:true,sessionState:true,plainLanguageInspector:true,laneBSceneSeam:true,mobileViewportFirst:true,offline:true,screenshots:shots};fs.writeFileSync(path.join(evidenceDir,'v09-explorer-beta.json'),JSON.stringify(evidence,null,2)+'\n');console.log(JSON.stringify(evidence));
+ const evidence={status:'PASS',exactSourceSha:sourceSha,product:'Explorer Beta',orientation:true,boundedDiscovery:true,comparison:true,sessionState:true,reversibleTrail:true,keyboardTrail:true,startupSessionResume:true,plainLanguageInspector:true,laneBSceneSeam:true,mobileViewportFirst:true,offline:true,screenshots:shots};fs.writeFileSync(path.join(evidenceDir,'v09-explorer-beta.json'),JSON.stringify(evidence,null,2)+'\n');console.log(JSON.stringify(evidence));
 }finally{await context.close();await browser.close()}

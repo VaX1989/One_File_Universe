@@ -1,0 +1,44 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v2x10.model.persistent-individuals",
+      "version": "2.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/individuals/provider.js",
+      "dependencies": [],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Convergence-owned single-file adapter over the final V2X-10 persistent-individual semantics: deterministic world/settlement/birth-ordinal identity, mortality-aware demographic refinement, bounded retained individual state, unknown genealogy unless retained, structured model-derived culture and proposal-only actions requiring governed admission.",
+      "provides": ["v2x10.model.persistent-individuals"]
+    },
+    {
+      "id": "v2x10.session.retained-individuals",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/domains/v1/individuals/session-bridge.js",
+      "dependencies": ["v2x10.model.persistent-individuals", "v1.session.runtime"],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Extends the one authoritative v1 portable session at the same ofu.v1.session browser key with integrity-protected bounded retained-person state and a conservative persisted demographic minimum-flow ledger. Aggregate deltas never invent simultaneous unobserved birth/death churn and canonical P4 state remains unchanged.",
+      "provides": ["v2x10.session.retained-individuals"]
+    },
+    {
+      "id": "v2x.frontier.providers.v2x10-persistent-individuals",
+      "version": "1.0.0",
+      "owner": "v2x-10-persistent-individuals",
+      "kind": "data",
+      "stage": "foundation",
+      "placement": "resource",
+      "source": "config/extensions/v2x-10-persistent-individuals/providers.json",
+      "dependencies": ["v2x10.model.persistent-individuals"],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Governed V2X-10 frontier provider catalog for bounded persistent-individual refinement. It remains outside the active PX shipping-provider namespace except through the explicitly ratified central Living/session consumers and performs no canonical admission.",
+      "provides": ["v2x10.model.persistent-individuals.catalog"]
+    }
+  ]
+}

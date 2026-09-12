@@ -1,0 +1,83 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v2x03.galaxy-field.runtime",
+      "version": "1.0.0",
+      "owner": "product",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/rendering/galaxy/galaxy-field.js",
+      "dependencies": [],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "V2X-03 bounded deterministic galaxy morphology and decorative density presentation; no calibrated observation or canonical stellar-population claim.",
+      "provides": ["v2x03.galaxy-field"]
+    },
+    {
+      "id": "v2x03.macrocosm-batches.runtime",
+      "version": "2.0.0",
+      "owner": "product",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/rendering/macro/macrocosm-batches.js",
+      "dependencies": ["v2x03.galaxy-field.runtime"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "V2X-03 bounded decorative and canonical-object batch/LOD planning for macrocosm presentation; reported bytes are modeled upload accounting, not GPU memory measurements.",
+      "provides": ["v2x03.macrocosm-batches"]
+    },
+    {
+      "id": "v2x03.region-refinement.runtime",
+      "version": "1.0.0",
+      "owner": "product",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/rendering/region/region-refinement.js",
+      "dependencies": [],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "V2X-03 stable identity-preserving region refinement presentation without ownership of canonical cross-scale semantics.",
+      "provides": ["v2x03.region-refinement"]
+    },
+    {
+      "id": "v2x03.neighborhood-depth.runtime",
+      "version": "1.0.0",
+      "owner": "product",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/rendering/neighborhood/neighborhood-depth.js",
+      "dependencies": ["v1x02.spatial-universe.runtime"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "V2X-03 depth/fog/pick presentation consuming only the externally owned V1X-02 camera projection seam, not the V1X-02 representation layout.",
+      "provides": ["v2x03.neighborhood-depth"]
+    },
+    {
+      "id": "v2x03.macrocosm-provider.runtime",
+      "version": "2.0.0",
+      "owner": "product",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/rendering/macro/macrocosm-provider.js",
+      "dependencies": ["v1x02.spatial-universe.runtime","v2x03.galaxy-field.runtime","v2x03.macrocosm-batches.runtime","v2x03.region-refinement.runtime","v2x03.neighborhood-depth.runtime"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "V2X-03 additive macrocosm representation provider with identity-keyed cosmic-web/galaxy 3D layout and bounded all-scale render-packet adapters; V1X-02 is used only for external camera projection. Camera, scale, selection, central resource admission and canonical astronomy remain externally governed.",
+      "provides": ["v2x03.macrocosm-provider","ofu-v2x-03-macrocosm-consumer-1","ofu-v2x-03-macrocosm-consumer-2"]
+    },
+    {
+      "id": "v2x.frontier.providers.v2x03-macrocosm",
+      "version": "2.0.0",
+      "owner": "v2x-03-macrocosm",
+      "kind": "data",
+      "stage": "foundation",
+      "placement": "resource",
+      "source": "config/extensions/v2x-03-macrocosm/provider-catalog.json",
+      "dependencies": ["v2x03.macrocosm-provider.runtime","v2x03.macrocosm-batches.runtime"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Lane-owned additive frontier provider catalog for V2X-03 macrocosm presentation. It is not auto-registered into the active PX shipping graph until a release consumer binding is ratified; the provider runtime remains reachable through the convergence-owned macrocosm composition component.",
+      "provides": ["v2x03.macrocosm-provider-catalog"]
+    }
+  ]
+}

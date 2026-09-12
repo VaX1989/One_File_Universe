@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {planComponents,emittedComponent,manifestOf} from '../../tools/extensions/components.mjs';
+import {planComponents,loadComponents,emittedComponent,manifestOf,addComponents} from '../../tools/extensions/components.mjs';
 let cases=0;
 const fixture=(id,overrides={})=>({id,version:'1.0.0',owner:'test',kind:'code',stage:'foundation',placement:'script',source:'src/test/'+id+'.js',dependencies:[],authority:'DERIVED',provenance:'synthetic fixture',provides:[id],...overrides});
 const read=()=>Buffer.from('globalThis.fixture=1;');
@@ -16,4 +16,14 @@ for(const kind of ['code','style','glsl','wgsl','worker','html','table','data','
 }
 assert.throws(()=>planComponents([a],{read:()=>Buffer.from('broken{')}),SyntaxError);cases++;
 assert.throws(()=>planComponents([a],{read,maxBytes:1}),/byte budget/);cases++;
-console.log(JSON.stringify({status:'PASS',suite:'px-components',cases}));
+{
+ const replacementTokens="globalThis.tokens={root:'$',suffix:\"$'\",match:'$&',prefix:'$`'};";
+ const component=planComponents([fixture('test.replace-tokens')],{read:()=>Buffer.from(replacementTokens)})[0];
+ const baseHtml='<!doctype html><html><head><style>base</style></head><body><main>fixture</main></body></html>';
+ const composed=addComponents(baseHtml,[component],'foundation');
+ assert(composed.includes(replacementTokens),'component source containing String.replace tokens must be emitted byte-for-byte');
+ assert.equal((composed.match(/<\/html>/g)||[]).length,1,'component injection must not duplicate document suffix');
+ cases+=2;
+}
+const integrated=loadComponents();assert(integrated.length>0,'live component manifests must compose');assert.equal(new Set(integrated.map(component=>component.id)).size,integrated.length,'live component ids must remain unique');cases+=2;
+console.log(JSON.stringify({status:'PASS',suite:'px-components',cases,integratedComponents:integrated.length}));

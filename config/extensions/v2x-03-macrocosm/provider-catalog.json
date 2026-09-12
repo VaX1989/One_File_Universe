@@ -1,0 +1,30 @@
+{
+  "schema": "ofu-provider-catalog-1",
+  "owners": [{"id":"v2x-03-macrocosm","prefixes":["v2x03"],"kinds":["representation"],"authorities":["PRESENTATION_ONLY"]}],
+  "canonicalAdmissions": [],
+  "providers": [{
+    "contract":"ofu-px-contracts-1",
+    "id":"v2x03.representation.macrocosm",
+    "version":"2.0.0",
+    "owner":"v2x-03-macrocosm",
+    "kind":"representation",
+    "authority":{
+      "class":"PRESENTATION_ONLY",
+      "contract":"ofu-px-contracts-1",
+      "model":"v2x03.macrocosm",
+      "version":"2.0.0",
+      "sources":["src/rendering/macro/macrocosm-provider.js","src/rendering/macro/macrocosm-batches.js","src/rendering/galaxy/galaxy-field.js","src/rendering/region/region-refinement.js","src/rendering/neighborhood/neighborhood-depth.js","src/v1x-02-spatial-universe/spatial-universe.js"],
+      "assumptions":["Stable upstream identity is supplied by governed discovery/model providers.","Camera frames are supplied by the governed external camera owner.","Astronomy morphology or density hints retain their upstream authority and are only consumed as presentation context here."],
+      "limitations":["Generated galaxy density particles, dust cues, clusters, morphology components, cosmic-web placements and identity-keyed presentation coordinates are presentation-only and are not calibrated observations.","The provider does not own camera, semantic scale, canonical selection, temporal state, persistence, registry semantics, central resource admission, renderer backend or astronomical equations.","V1X-02 is consumed only for its governed camera projection seam and neighborhood source projection helpers; V2X-03 Universe and Galaxy layout never call the V1X-02 representation() path.","Decorative particles are never canonical discovery results and are never selectable or navigable; explicit upstream non-selectable/non-navigable constraints are preserved by region and neighborhood refinement.","Region interpolation communicates continuity but is not a claim of physical motion or canonical region boundaries; reduced-motion mode removes the continuous blend.","Canonical-key snapshots are bounded, acyclic and isolated from upstream mutation; malformed or oversized keys fail closed.","Each macrocosm request scans at most 4096 upstream records before the smaller quality/materialization caps are applied; oversized requests fail closed.","Canonical-object upload packets are at most one modeled draw and 96 packed instances; Galaxy decorative batching remains at most three modeled draws. GPU, driver and heap memory are not measured by this lane."],
+      "evidence":[]
+    },
+    "fidelity":{"regime":"product","validity":"Deterministic identity-keyed macrocosm presentation for Universe, Galaxy, Region and Neighborhood with cosmic-web density variation, morphology-aware 3D placement, progressive refinement and externally governed camera projection.","resolution":"At most 4096 upstream records scanned per request, 64 represented upstream entities, 96 region children, 96 canonical packed instances and bounded quality-profile decorative fields; Galaxy decorative batching remains at most 3 draws and canonical-object batching at most 1 modeled draw.","uncertainty":"Generated spatial, density, depth and morphology cues are presentation-only; stronger upstream positions or facts retain their declared authority without promotion."},
+    "lifecycle":"SHIPPING",
+    "requires":[{"id":"v1x02.representation.spatial-universe","version":"1.0.0","authority":"PRESENTATION_ONLY"},{"id":"px.interaction.camera","version":"1.0.0","authority":"PRESENTATION_ONLY"}],
+    "claims":["representation.macrocosm-3d","representation.cosmic-web-density-variation","representation.galaxy-morphology-bounded","representation.galaxy-components-presentation-only","representation.decorative-density-nonselectable","representation.source-interaction-constraints-preserved","representation.region-refinement-continuity","representation.cross-scale-identity-continuity","representation.query-order-stable-bounded-neighborhood","representation.input-scan-bounded","representation.no-legacy-layout-dependency","representation.integration-render-packet","representation.all-scale-bounded-render-packets"],
+    "operations":["REPRESENT","PROJECT","REFINE"],
+    "budget":{"entities":1536,"bytes":1048576,"operations":8192,"queue":96},
+    "evidence":[{"id":"v2x03.macrocosm.determinism","tier":"FAST_LOCAL"},{"id":"v2x03.macrocosm.depth-bounds","tier":"LANE_TARGETED"},{"id":"v2x03.macrocosm.continuity-identity","tier":"LANE_TARGETED"},{"id":"v2x03.macrocosm.no-legacy-layout","tier":"LANE_TARGETED"},{"id":"v2x03.macrocosm.artifact-hook","tier":"LANE_TARGETED"}],
+    "mandatory":false
+  }]
+}

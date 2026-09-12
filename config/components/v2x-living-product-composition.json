@@ -1,0 +1,93 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v2x.living.domain-composition",
+      "version": "3.0.0",
+      "owner": "product",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/rendering/v2x-convergence/living-domain-composition.js",
+      "dependencies": [
+        "v2.central.living-v2x13-bridge",
+        "v1.product.deep3d-system-primary-bridge",
+        "v2.deep3d.surface-adapter.runtime",
+        "v2.deep3d.local-adapter.runtime",
+        "v2.deep3d.matter-adapter.runtime",
+        "v2x04.render.orbit-3d",
+        "v2x04.render.stellar-appearance",
+        "v2x04.render.multi-star-illumination",
+        "v2x04.render.body-cues",
+        "v2x04.render.approach-continuity",
+        "v2x04.render.approach-lod",
+        "v2x-06.surface.address",
+        "v2x-06.surface.geography",
+        "v2x-06.surface.hydrology",
+        "v2x-06.terrain.hierarchical",
+        "v2x-06.renderer.living-surface",
+        "v2x07.render.local-experience-provider",
+        "v2x12.matter.continuity",
+        "v2x12.matter.presentation",
+        "v2x05.deep-planet.provider"
+      ],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Convergence-owned Living product compositor. It consumes the strict final V2X-13 pixel path over the sole V2X-02 camera; SYSTEM, ORBIT and APPROACH consume the fail-closed V2X-04 SystemProvider2 and reversible approach stack; GLOBAL/REGIONAL/LOCAL surface consume V2X-06 through the bounded Deep3D surface adapter; HUMAN consumes V2X-07 through the bounded Deep3D local adapter; MATERIAL through ATOMIC consume V2X-12 through the bounded Deep3D matter adapter. Camera, selection, scale, canonical geodesy and scientific authority remain external; legacy system fallback is forbidden.",
+      "provides": ["v2x.living.domain-composition", "v2.deep3d.product.primary.surface", "v2.deep3d.product.primary.local", "v2.deep3d.product.primary.matter"]
+    },
+    {
+      "id": "v2x.living.life-v2-consumer",
+      "version": "1.0.0",
+      "owner": "product",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/rendering/v2x-convergence/living-life-v2-consumer.js",
+      "dependencies": [
+        "v2x.living.domain-composition",
+        "v2x08.runtime.life-v2"
+      ],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Convergence-owned additive V2X-08 shipping consumer. On the Human stage it fail-closes the old generic ORGANISM cue, materializes the audited V2X-08 viewport packet from current modeled aggregate life state, maps normalized local descriptors into the existing local presentation frame, exposes aggregate-population selection targets, and verifies revisit tokens without acquiring camera, semantic-scale, selection, persistence, temporal-admission, canonical-biology or persistent-person authority.",
+      "provides": ["v2x.living.life-v2-consumer"]
+    },
+    {
+      "id": "v2x.living.context-inspector",
+      "version": "2.1.0",
+      "owner": "product",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/bootstrap/product/v2x-context-inspector.js",
+      "dependencies": [
+        "v1.product.living-universe",
+        "v2x.living.life-v2-consumer",
+        "v2x05.deep-planet.provider",
+        "v2x08.model.life-single-file-facade",
+        "v2x09.civilization.api",
+        "v2x10.model.persistent-individuals",
+        "v2x10.session.retained-individuals"
+      ],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Convergence-owned read-only Living inspector. It exposes V2X-05 INSPECTOR_CONTEXT diagnostics with provenance, uncertainty, causal trace, research-only routing and nonclaims, together with V2X-08 life, V2X-09 civilization and V2X-10 deterministic bounded resident identities backed by the central retained-person session bridge. It never promotes model-derived or research-only state to canonical truth.",
+      "provides": ["v2x.living.context-inspector"]
+    },
+    {
+      "id": "v2x.living.governed-actions",
+      "version": "1.0.0",
+      "owner": "product",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/bootstrap/product/living-governed-actions.js",
+      "dependencies": [
+        "v1.product.living-universe",
+        "v2x.living.context-inspector",
+        "v2x11.session.governed-gameplay"
+      ],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Convergence-owned non-authoritative Living control surface for V2X-11. User actions consume the current central canonical selection and invoke the governed gameplay facade through the central session extension; causal receipts and consequences remain MODEL_DERIVED_SIMULATION overlays, are P4 replayable, survive central save/reload/revisit and never own camera, selection, semantic scale, canonical history or scientific truth.",
+      "provides": ["v2x.living.governed-actions"]
+    }
+  ]
+}

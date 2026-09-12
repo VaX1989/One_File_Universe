@@ -1,0 +1,23 @@
+{
+  "schema": "ofu-conformance-1",
+  "tests": [
+    {
+      "id": "v2x11.gameplay-core",
+      "owner": "v2x-11-gameplay-causal-engine",
+      "tier": "LANE_TARGETED",
+      "command": ["node", "tests/v2x-11-gameplay-causal-engine/core.mjs"],
+      "providers": ["v1.interaction.player-agency", "v1.persistence.session"],
+      "oracle": "v2x11-gameplay-determinism-bounds-replay-v1",
+      "timeoutMs": 120000
+    },
+    {
+      "id": "v2x11.cross-domain-journey",
+      "owner": "v2x-11-gameplay-causal-engine",
+      "tier": "LANE_TARGETED",
+      "command": ["node", "tests/v2x-11-gameplay-causal-engine/cross-domain-journey.mjs"],
+      "providers": ["v1.interaction.player-agency", "v1.persistence.session"],
+      "oracle": "v2x11-cross-domain-causal-provenance-v1",
+      "timeoutMs": 120000
+    }
+  ]
+}

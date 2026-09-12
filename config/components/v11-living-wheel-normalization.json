@@ -1,0 +1,22 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1.product.input-wheel-normalization",
+      "version": "1.1.0",
+      "owner": "product",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/bootstrap/product/v11-wheel-normalization.js",
+      "dependencies": [
+        "v1.rendering.living-renderer"
+      ],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Post-v1 Living input compatibility: unit-aware line/page WheelEvent normalization is presentation-only and redispatches into the existing shipping pixel-wheel path; it does not mutate canonical/scientific authority.",
+      "provides": [
+        "v1.product.input-wheel-normalization"
+      ]
+    }
+  ]
+}

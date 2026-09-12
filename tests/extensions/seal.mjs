@@ -137,7 +137,7 @@ const v1Build = {
   visualUniverse: {primarySceneProvider: 'v1.scene.living-world'},
   px: {
     ...build.px,
-    scope: 'FULL_V1_WAVE_A_PRODUCT',
+    scope: 'FULL_V2_LIVING_PRODUCT_OVER_V1_COMPATIBILITY_RUNTIME',
     registryManifest: {providers: v1Providers},
   },
 };
@@ -192,7 +192,7 @@ const v1Rows = platformTuples.map(tuple => {
     canonicalAfter: digest,
     p4Before: digest,
     p4After: digest,
-    metrics: {renderCalls: 100, reconciliations: 100, refinements: 50, projections: 50},
+    metrics: {renderCalls: 0, reconciliations: 100, refinements: 50, projections: 50},
     workingSet: {
       pxCacheEntries: 1,
       pxWitnessCount: 1,
@@ -210,7 +210,9 @@ for (const mutate of [
   x => { x[0].providerChecks.push('v1.model.astronomy'); },
   x => { x[0].registry.bound = x[0].registry.bound.filter(id => id !== 'v1.model.astronomy'); },
   x => { x[0].registry.bound = x[0].registry.bound.filter(id => id !== 'v1.scene.living-world'); },
+  x => { x[0].metrics.renderCalls = 1; },
   x => { x[0].journeys = x[0].journeys.filter(j => !(j.viewport.width === 390 && j.stage === 'SYSTEM')); },
+  x => { x[0].journeys = x[0].journeys.filter(j => !(j.viewport.width === 844 && j.stage === 'SYSTEM')); },
 ]) {
   const changed = structuredClone(v1Rows);
   mutate(changed);

@@ -1,0 +1,23 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1.ecology.local-interaction-network",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/ecology/local-trophic-context.js",
+      "dependencies": [
+        "v1.ecology.local-biogeography",
+        "v1.ecology.query"
+      ],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Selective V1X-17 post-v1 harvest. Filters the existing modeled ecosystem interaction graph to exact modeled local-population endpoints and exposes bounded descriptive topology only; no empirical food-web, rate, stability, selection, P4 or canonical P6 claim.",
+      "provides": [
+        "v1.ecology.local-interaction-network"
+      ]
+    }
+  ]
+}

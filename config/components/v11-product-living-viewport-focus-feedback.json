@@ -1,0 +1,18 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v1.product.living-viewport-focus-feedback",
+      "version": "1.1.0",
+      "owner": "product",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/bootstrap/product/living-viewport-focus-feedback.js",
+      "dependencies": ["v1.product.living-universe", "v1.product.living-forward-controls", "v1.product.living-keyboard-workspace", "v1.product.living-focus-continuity"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Post-v1 accessibility and keyboard-orientation feedback for the shipping Living viewport. Mirrors renderer keyboard focus into a visible polite status, exposes the actual canvas keyboard shortcuts to assistive technology, and clears stale focused-object labels when Living navigation changes. It never drives navigation, selection, simulation, persistence, scientific state or canonical authority.",
+      "provides": ["v1.product.living-viewport-focus-feedback"]
+    }
+  ]
+}

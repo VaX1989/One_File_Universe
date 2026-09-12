@@ -1,0 +1,25 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import process from 'node:process';
+import assert from 'node:assert/strict';
+import {pathToFileURL} from 'node:url';
+import {chromium} from 'playwright';
+const sourceSha=process.env.OFU_SOURCE_SHA;if(!sourceSha)throw new Error('OFU_SOURCE_SHA required');
+const manifest=JSON.parse(fs.readFileSync('dist/rendering-build-manifest.json','utf8'));assert.equal(manifest.sourceCommit,sourceSha,'exact-source shipping build required');
+const file=path.resolve('dist/One_File_Universe.html'),evidenceDir=path.resolve('dist/evidence/product-v11');fs.mkdirSync(evidenceDir,{recursive:true});
+const browser=await chromium.launch({headless:true}),context=await browser.newContext({viewport:{width:1280,height:800},offline:true}),page=await context.newPage();
+const requests=[],errors=[];page.on('request',r=>requests.push({url:r.url(),type:r.resourceType(),nav:r.isNavigationRequest()}));page.on('pageerror',e=>errors.push(String(e.message||e).slice(0,500)));
+const url=pathToFileURL(file).href;
+try{
+ await page.goto(url,{waitUntil:'load'});
+ await page.waitForFunction(()=>globalThis.__OFU_BASELINE_REPORT__?.status==='READY'&&OFU?.v1LivingProduct?.snapshot?.().initialized&&OFU?.v11LivingSkipRouting?.snapshot?.().ready&&OFU?.v1x10Accessibility?.snapshot?.().initialized,null,{timeout:30000});
+ await page.evaluate(()=>OFU.productUI?.workspace?.('explore',{focus:false,announceChange:false}));
+ const before=await page.evaluate(()=>{const s=OFU.v1LivingProduct.runtime.snapshot(),link=document.querySelector('#v1x10-skip-links a[href="#living-view"]'),living=document.getElementById('living-view');return{stage:s.stage,node:s.node?.canonicalId||s.node?.entityId||null,foreground:OFU.v1LivingProduct.snapshot().foregroundOwner,href:link?.getAttribute('href')||null,label:link?.textContent||null,routed:link?.dataset?.ofuLivingSkipRouted||null,authority:OFU.v11LivingSkipRouting.snapshot().authority,livingVisible:!!living&&living.getBoundingClientRect().width>0&&living.getBoundingClientRect().height>0}});
+ assert.equal(before.foreground,'WAVE_A_LIVING_VIEWPORT');assert.equal(before.href,'#living-view');assert.equal(before.label,'Skip to living universe viewport');assert.equal(before.routed,'true');assert.equal(before.authority,'PRESENTATION_ONLY');assert(before.livingVisible,'shipping Living viewport must be visible');
+ const link=page.locator('#v1x10-skip-links a[href="#living-view"]');await link.focus();assert.equal(await page.evaluate(()=>document.activeElement?.getAttribute('href')),'#living-view');await page.keyboard.press('Enter');await page.waitForFunction(()=>document.activeElement?.id==='living-view',null,{timeout:5000});
+ const after=await page.evaluate(()=>{const s=OFU.v1LivingProduct.runtime.snapshot();return{stage:s.stage,node:s.node?.canonicalId||s.node?.entityId||null,active:document.activeElement?.id||null,legacyFocused:document.activeElement?.id==='planet-view',routing:OFU.v11LivingSkipRouting.snapshot()}});assert.equal(after.active,'living-view');assert.equal(after.legacyFocused,false);assert.equal(after.stage,before.stage);assert.equal(after.node,before.node,'skip activation must not mutate Living navigation identity');assert(after.routing.activations>=1);
+ await page.evaluate(()=>OFU.v1x10Accessibility.sync());const persisted=await page.evaluate(()=>({href:document.querySelector('#v1x10-skip-links a')?.getAttribute('href'),label:document.querySelector('#v1x10-skip-links a')?.textContent,routes:OFU.v11LivingSkipRouting.snapshot().routes}));assert.equal(persisted.href,'#living-view','V1X accessibility resync must not revert shipping viewport routing');assert.equal(persisted.label,'Skip to living universe viewport');assert.equal(persisted.routes,1,'routing should be idempotent');
+ await page.setViewportSize({width:390,height:844});await page.waitForTimeout(50);const mobile=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,href:document.querySelector('#v1x10-skip-links a')?.getAttribute('href'),livingVisible:document.getElementById('living-view')?.getBoundingClientRect().width>0}));assert(mobile.overflow<=2,'skip routing must not create mobile overflow');assert.equal(mobile.href,'#living-view');assert.equal(mobile.livingVisible,true);
+ const unexpected=requests.filter(r=>!(r.nav&&r.type==='document'&&r.url===url)&&!r.url.startsWith('data:')&&!r.url.startsWith('blob:')&&!r.url.startsWith('about:'));assert.deepEqual(unexpected,[],'direct-file skip journey must not require network');assert.deepEqual(errors,[],'skip journey must not emit page errors');
+ const evidence={status:'PASS',exactSourceSha:sourceSha,product:'Living viewport skip routing',shippingForeground:'living-view',legacyTargetSuperseded:'planet-view',keyboardSkipActivation:true,navigationMutation:false,idempotent:true,mobileResponsive:true,authority:'PRESENTATION_ONLY',directFile:true,offline:true};fs.writeFileSync(path.join(evidenceDir,'living-skip-routing.json'),JSON.stringify(evidence,null,2)+'\n');console.log(JSON.stringify(evidence));
+}finally{await context.close();await browser.close()}

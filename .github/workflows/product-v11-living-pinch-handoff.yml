@@ -1,0 +1,59 @@
+name: Product v1.1 Living Pinch Handoff
+
+on:
+  pull_request:
+    paths:
+      - 'src/bootstrap/product/living-pinch-handoff.js'
+      - 'config/components/v11-product-living-pinch-handoff.json'
+      - 'tests/product/v11-living-pinch-handoff.mjs'
+      - 'tests/product/browser-v11-living-pinch-handoff.mjs'
+      - '.github/workflows/product-v11-living-pinch-handoff.yml'
+  push:
+    branches:
+      - 'development/v1.*'
+    paths:
+      - 'src/bootstrap/product/living-pinch-handoff.js'
+      - 'config/components/v11-product-living-pinch-handoff.json'
+      - 'tests/product/v11-living-pinch-handoff.mjs'
+      - 'tests/product/browser-v11-living-pinch-handoff.mjs'
+      - '.github/workflows/product-v11-living-pinch-handoff.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: product-v11-living-pinch-handoff-${{ github.event_name }}-${{ github.event.pull_request.head.ref || github.ref }}
+  cancel-in-progress: true
+
+env:
+  OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+permissions:
+  contents: read
+
+jobs:
+  exact-head-product:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5 / Node 24 runtime
+        with:
+          ref: '${{ env.OFU_SOURCE_SHA }}'
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5 / Node 24 runtime
+        with:
+          node-version: '24.20.0'
+      - name: Verify exact source
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Living pinch handoff contracts
+        run: node tests/product/v11-living-pinch-handoff.mjs
+      - name: Build shipping single-file product
+        run: |
+          node tools/build-ofu-rendering-v09.mjs
+          test "$(grep -Eoc "(src|href)=[\"']https?://" dist/One_File_Universe.html)" -eq 0
+          grep -q "connect-src 'none'" dist/One_File_Universe.html
+      - name: Install pinned Chromium oracle
+        run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium
+      - name: Visible Living pinch-to-drag evidence
+        run: node tests/product/browser-v11-living-pinch-handoff.mjs

@@ -4,7 +4,13 @@ on:
   push:
     branches:
       - feature/p4-temporal-kernel
+      - main
+      - 'development/v1.*'
   pull_request:
+
+concurrency:
+  group: p4-conformance-${{ github.event_name }}-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
 
 env:
   OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -13,13 +19,40 @@ permissions:
   contents: read
 
 jobs:
-  node-replay:
+  route:
     runs-on: ubuntu-latest
+    outputs:
+      run: ${{ steps.phase-gate.outputs.run }}
+      adapter_status: ${{ steps.phase-gate.outputs.adapter_status }}
+      fail_closed: ${{ steps.phase-gate.outputs.fail_closed }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # Node 24 runtime
         with:
           ref: ${{ env.OFU_SOURCE_SHA }}
-      - uses: actions/setup-node@v4
+          fetch-depth: 0
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # Node 24 runtime
+        with:
+          node-version: '24.20.0'
+      - name: Verify exact source checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - name: Route historical P4 evidence
+        id: phase-gate
+        shell: bash
+        env:
+          OFU_BASE_REF: ${{ github.event.pull_request.base.ref || github.ref_name }}
+          OFU_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: node tools/ci/phase-gate.mjs --phases P4 --base-ref "$OFU_BASE_REF" --base-sha "$OFU_BASE_SHA" --head-sha "$OFU_SOURCE_SHA"
+
+  node-replay:
+    needs: route
+    if: ${{ needs.route.outputs.run == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # Node 24 runtime
+        with:
+          ref: ${{ env.OFU_SOURCE_SHA }}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # Node 24 runtime
         with:
           node-version: '24.20.0'
       - name: Verify exact source checkout
@@ -29,6 +62,7 @@ jobs:
       - run: node tests/p4/semantic-closure-tests.mjs
       - run: node tests/p4/archive-lineage-tests.mjs
       - run: node tests/p4/checkpoint-authority-tests.mjs
+      - run: node tests/p4/evidence-aggregator-resource-tests.mjs
       - run: node tests/integration/p2-p4-contract-tests.mjs
       - name: Execute real P3 to P4 integration invariants
         run: node tests/integration/p3-p4-contract-tests.mjs
@@ -43,22 +77,24 @@ jobs:
           cmp /tmp/ofu-first-manifest.json dist/build-manifest.json
       - run: node tools/p4-benchmark.mjs
       - run: node tests/integration/evidence-isolation-generic.mjs
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6 / Node 24 runtime
         with:
           name: p4-node
           path: dist/evidence/p4/
 
   browser-linux:
+    needs: route
+    if: ${{ needs.route.outputs.run == 'true' }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         browser: [chromium, firefox, webkit]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # Node 24 runtime
         with:
           ref: ${{ env.OFU_SOURCE_SHA }}
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # Node 24 runtime
         with:
           node-version: '24.20.0'
       - name: Verify exact source checkout
@@ -71,12 +107,14 @@ jobs:
           BROWSER: ${{ matrix.browser }}
           EXPECTED_PLATFORM: linux
           EXPECTED_ARCH: x64
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6 / Node 24 runtime
         with:
           name: p4-linux-x64-${{ matrix.browser }}
           path: dist/evidence/p4/
 
   browser-platform:
+    needs: route
+    if: ${{ needs.route.outputs.run == 'true' }}
     strategy:
       fail-fast: false
       matrix:
@@ -91,10 +129,10 @@ jobs:
             arch: arm64
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # Node 24 runtime
         with:
           ref: ${{ env.OFU_SOURCE_SHA }}
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # Node 24 runtime
         with:
           node-version: '24.20.0'
       - name: Verify exact source checkout
@@ -107,20 +145,20 @@ jobs:
           BROWSER: ${{ matrix.browser }}
           EXPECTED_PLATFORM: ${{ matrix.platform }}
           EXPECTED_ARCH: ${{ matrix.arch }}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6 / Node 24 runtime
         with:
           name: p4-${{ matrix.platform }}-${{ matrix.arch }}-${{ matrix.browser }}
           path: dist/evidence/p4/
 
   aggregate:
-    if: ${{ always() }}
-    needs: [node-replay, browser-linux, browser-platform]
+    if: ${{ always() && needs.route.outputs.run == 'true' }}
+    needs: [route, node-replay, browser-linux, browser-platform]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # Node 24 runtime
         with:
           ref: ${{ env.OFU_SOURCE_SHA }}
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # Node 24 runtime
         with:
           node-version: '24.20.0'
       - name: Verify exact source checkout
@@ -132,12 +170,12 @@ jobs:
           test '${{ needs.node-replay.result }}' = success
           test '${{ needs.browser-linux.result }}' = success
           test '${{ needs.browser-platform.result }}' = success
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7 / Node 24 runtime
         with:
           pattern: p4-*
           path: collected
       - run: node tools/aggregate-p4-evidence.mjs collected
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6 / Node 24 runtime
         if: always()
         with:
           name: p4-aggregate

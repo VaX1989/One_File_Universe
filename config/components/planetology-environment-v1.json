@@ -26,6 +26,19 @@
       "authority": "MODEL_DERIVED_SIMULATION",
       "provenance": "Wave A shipping bounded geology, climate, hydrology, cryosphere, causal multiscale topography, materials, location/time queries and P4-admission proposals; no canonical P5/P6 promotion.",
       "provides": ["v1.models.environment.world-system"]
+    },
+    {
+      "id": "v1.models.planetology.causality-trace",
+      "version": "1.0.0",
+      "owner": "v1",
+      "kind": "code",
+      "stage": "foundation",
+      "placement": "script",
+      "source": "src/domains/v1/planetology/causality-trace.js",
+      "dependencies": ["v1.models.common", "v1.models.environment.world-system", "v1.convergence.world-context"],
+      "authority": "MODEL_DERIVED_SIMULATION",
+      "provenance": "Selective V1X-16 harvest: bounded normalized planetary-to-local causal attribution over existing modeled state. Formal explanatory seam only; no physical-conservation or canonical-truth claim.",
+      "provides": ["v1.models.planetology.causality-trace"]
     }
   ]
 }

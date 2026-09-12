@@ -1,0 +1,16 @@
+{
+  "schema":"ofu-components-1",
+  "components":[{
+    "id":"v2x.living.approach-body-coherence",
+    "version":"1.0.0",
+    "owner":"product",
+    "kind":"code",
+    "stage":"full",
+    "placement":"script",
+    "source":"src/rendering/v2x-convergence/living-approach-body-coherence.js",
+    "dependencies":["v2x.living.domain-composition"],
+    "authority":"PRESENTATION_ONLY",
+    "provenance":"Presentation-only reconciliation for direct ORBIT/APPROACH transitions. If the already-selected canonical planet is absent from the current bounded rows view, the renderer receives a non-mutating snapshot copy containing that same body so V2X-04 can compose the approach system consistently. Runtime, selection and canonical world state remain authoritative and unchanged.",
+    "provides":["v2x.living.approach-body-coherence"]
+  }]
+}
