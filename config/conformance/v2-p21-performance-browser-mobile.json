@@ -7,12 +7,43 @@
       "tier": "LANE_TARGETED",
       "command": [
         "node",
-        "tests/audit/v2-p21-performance-browser-mobile/browser-resource-soak.mjs"
+        "tests/audit/v2-p21-performance-browser-mobile/browser-resource-soak.mjs",
+        "--browser=chromium"
       ],
       "providers": [
         "v1.scene.living-world"
       ],
       "oracle": "ofu-v2-p21-performance-browser-mobile-evidence-1",
+      "timeoutMs": 840000
+    },
+    {
+      "id": "audit.p21.performance-browser-mobile-resource-soak-firefox",
+      "owner": "v2-p21-audit",
+      "tier": "LANE_TARGETED",
+      "command": [
+        "node",
+        "tests/audit/v2-p21-performance-browser-mobile/browser-resource-soak.mjs",
+        "--browser=firefox"
+      ],
+      "providers": [
+        "v1.scene.living-world"
+      ],
+      "oracle": "ofu-v2-p21-performance-browser-mobile-firefox-evidence-1",
+      "timeoutMs": 840000
+    },
+    {
+      "id": "audit.p21.performance-browser-mobile-resource-soak-webkit",
+      "owner": "v2-p21-audit",
+      "tier": "LANE_TARGETED",
+      "command": [
+        "node",
+        "tests/audit/v2-p21-performance-browser-mobile/browser-resource-soak.mjs",
+        "--browser=webkit"
+      ],
+      "providers": [
+        "v1.scene.living-world"
+      ],
+      "oracle": "ofu-v2-p21-performance-browser-mobile-webkit-evidence-1",
       "timeoutMs": 840000
     },
     {

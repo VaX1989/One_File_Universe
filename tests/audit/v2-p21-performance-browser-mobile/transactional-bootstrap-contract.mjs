@@ -10,6 +10,7 @@ const scale=read('src/bootstrap/product/scale-runtime.js');
 const scheduler=read('src/bootstrap/product/renderer-scheduler.js');
 const bridge=read('src/rendering/v1/living-v2x13-bridge.js');
 const soak=read('tests/audit/v2-p21-performance-browser-mobile/browser-resource-soak.mjs');
+const conformance=JSON.parse(read('config/conformance/v2-p21-performance-browser-mobile.json'));
 let assertions=0;
 const has=(source,pattern,message)=>{assert.match(source,pattern,message);assertions++};
 
@@ -52,5 +53,9 @@ vm.runInNewContext(`${soak.slice(growthStart,growthEnd)};result={warmup:sustaine
 assert.equal(growthSandbox.result.warmup,false,'one bounded warm-up allocation followed by a plateau is not a leak');assertions++;
 assert.equal(growthSandbox.result.leak,true,'sustained monotonic accumulation must remain release-blocking');assertions++;
 assert.equal(growthSandbox.result.oscillation,false,'reclaimed oscillating resources are not monotonic accumulation');assertions++;
+const browserShards=conformance.tests.filter(test=>test.id.startsWith('audit.p21.performance-browser-mobile-resource-soak'));
+assert.deepEqual(browserShards.map(test=>test.command.at(-1)).sort(),['--browser=chromium','--browser=firefox','--browser=webkit'],'release conformance must give every browser its own bounded P21 process');assertions++;
+assert.ok(browserShards.every(test=>test.timeoutMs===840000&&test.providers.includes('v1.scene.living-world')),'each P21 browser shard must retain the full release bound and shipping provider');assertions++;
+has(soak,/argumentBrowser\|\|environmentBrowser/,'P21 must accept governed CLI shards while preserving hosted environment selection');
 
 console.log(JSON.stringify({status:'PASS',suite:'p21-transactional-living-bootstrap',assertions,oracleChanges:'NONE',timeoutChanges:'NONE',authorityWeakening:'NONE',resourceCeilingWeakening:'NONE'}));
