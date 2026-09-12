@@ -2,7 +2,7 @@
 'use strict';
 const O=root.OFU=root.OFU||{},L=O.v1LivingRenderer,S=O.v1x04SystemScene,A=O.deep3dSystemAdapter,X=O.v1x02SpatialUniverse,M=O.deep3dMacroAdapter,G=O.deep3dWebGL2Backend;
 if(!L||!S||!A||!X||!M||!G)throw new Error('Deep3D living primary bridge dependencies missing');
-const VERSION='ofu-deep3d-living-primary-bridge-2',PRIMARY_STAGES=Object.freeze(['UNIVERSE','GALAXY','REGION','NEIGHBORHOOD','SYSTEM']);
+const VERSION='ofu-deep3d-living-primary-bridge-3',PRIMARY_STAGES=Object.freeze(['UNIVERSE','GALAXY','REGION','NEIGHBORHOOD','SYSTEM']),PLANET_STAGES=Object.freeze(['ORBIT','APPROACH']);
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const norm=v=>{const n=Math.hypot(v[0],v[1],v[2])||1;return v.map(x=>x/n)};
 const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
@@ -30,7 +30,7 @@ function install(){
   function rotate(dx,dy){yaw+=Number(dx||0)*.006;pitch=clamp(pitch+Number(dy||0)*.004,-1.35,1.35);const result=base.rotate(dx,dy);schedulePrimary();return result}
   function setTravelDistance(distanceRadii,band){const d=Number(distanceRadii);if(Number.isFinite(d)&&d>0)travelDistanceRadii=d;if(band)travelBand=String(band);const result=base.setTravelDistance(distanceRadii,band);schedulePrimary();return result}
   function resize(){const result=base.resize();schedulePrimary();return result}
-  function state(){const s=base.state(),primary=PRIMARY_STAGES.includes(lastSnapshot?.stage);return {...s,deep3d:Object.freeze({version:VERSION,primaryScale:primary?lastSnapshot.stage:null,primaryBackend:primary&&!lastError?'DEEP3D_WEBGL2_V2X13':null,legacyCanvasPixelsPrimary:false,canvasRole:primary?'INTERACTION_ACCESSIBILITY_OVERLAY':'LEGACY_OR_SCALE_SPECIALIST',migratedPrimaryScales:PRIMARY_STAGES,lost,lastError,lastWitness,backend:backend?.snapshot?.()||null,cameraAuthority:'EXTERNAL_READ_ONLY',selectionAuthority:'EXTERNAL_READ_ONLY',scientificAuthority:false})}}
+  function state(){const s=base.state(),primary=PRIMARY_STAGES.includes(lastSnapshot?.stage),planet=PLANET_STAGES.includes(lastSnapshot?.stage)&&s.gpu?.deep3d?.primary===true,scale=primary||planet?lastSnapshot.stage:null,primaryBackend=primary&&!lastError?'DEEP3D_WEBGL2_V2X13':planet?'DEEP3D_PLANET_SPECIALIZED_WEBGL2':null;return {...s,deep3d:Object.freeze({version:VERSION,primaryScale:scale,primaryBackend,legacyCanvasPixelsPrimary:false,canvasRole:primary?'INTERACTION_ACCESSIBILITY_OVERLAY':planet?'PLANET_SPECIALIZED_GPU_WITH_CANVAS_UI':'LEGACY_OR_SCALE_SPECIALIST',migratedPrimaryScales:Object.freeze([...PRIMARY_STAGES,...PLANET_STAGES]),planet:s.gpu?.deep3d||null,lost,lastError,lastWitness,backend:backend?.snapshot?.()||null,cameraAuthority:'EXTERNAL_READ_ONLY',selectionAuthority:'EXTERNAL_READ_ONLY',scientificAuthority:false})}}
   function dispose(){releaseBackend();return base.dispose()}
   const onLost=e=>{if(!PRIMARY_STAGES.includes(lastSnapshot?.stage))return;e?.preventDefault?.();lost=true;try{backend?.contextLost?.()}catch(_error){}glCanvas.hidden=true};
   const onRestored=()=>{if(!PRIMARY_STAGES.includes(lastSnapshot?.stage))return;try{const gl=glCanvas.getContext('webgl2',contextOptions);if(backend&&gl)backend.contextRestored(gl);lost=false;renderPrimary(lastSnapshot)}catch(error){lastError=String(error?.message||error);releaseBackend();glCanvas.hidden=true}};
@@ -39,5 +39,5 @@ function install(){
  }
  O.v1LivingRenderer=Object.freeze({...legacy,create,DEEP3D_PRIMARY_BRIDGE:VERSION});return O.v1LivingRenderer;
 }
-O.deep3dLivingPrimaryBridge=Object.freeze({VERSION,PRIMARY_STAGES,cameraRelativeViewProjection,sourceFromSnapshot,selectedEntityId,macroDescriptor,install});install();
+O.deep3dLivingPrimaryBridge=Object.freeze({VERSION,PRIMARY_STAGES,PLANET_STAGES,cameraRelativeViewProjection,sourceFromSnapshot,selectedEntityId,macroDescriptor,install});install();
 })(typeof globalThis!=='undefined'?globalThis:this);
