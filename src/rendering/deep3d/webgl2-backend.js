@@ -39,9 +39,10 @@ function createBackend(gl,{canvas=null,frameConsumer=null,consumerOptions={}}={}
  let renderCount=0,lastWitness=null;
  function render(scene,frame){const compiled=compileScene(scene,frame),underlying=consumer.render(compiled);renderCount++;lastWitness=Object.freeze({version:VERSION,authority:AUTHORITY,backend:BACKEND,sceneFingerprint:compiled.deep3d.sceneFingerprint,packetCount:compiled.deep3d.packetCount,semanticSignature:compiled.semanticSignature,pixelIdentityClaim:false,primaryRendererAuthority:false,cameraAuthority:'EXTERNAL_READ_ONLY',sceneCompositionAuthority:'EXTERNAL_READ_ONLY',v2x13:underlying});return lastWitness}
  function replayLastFrame(){if(typeof consumer.replayLastFrame!=='function')throw new Error('V2X-13 replay unavailable');const underlying=consumer.replayLastFrame();return Object.freeze({version:VERSION,authority:AUTHORITY,backend:BACKEND,replay:true,v2x13:underlying,lastSemanticWitness:lastWitness})}
+ function captureLastFrameSignal(){if(typeof consumer.captureLastFrameSignal!=='function')throw new Error('V2X-13 framebuffer signal unavailable');return consumer.captureLastFrameSignal()}
  function snapshot(){return Object.freeze({version:VERSION,authority:AUTHORITY,backend:BACKEND,renderCount,lastWitness,primaryRendererAuthority:false,cameraAuthority:'EXTERNAL_READ_ONLY',resourceLifecycle:'V2X13_DELEGATED',v2x13:typeof consumer.snapshot==='function'?consumer.snapshot():null})}
  const delegate=name=>(...args)=>{if(typeof consumer[name]!=='function')throw new Error('V2X-13 '+name+' unavailable');return consumer[name](...args)};
- return Object.freeze({VERSION,AUTHORITY,BACKEND,render,replayLastFrame,snapshot,contextLost:delegate('contextLost'),contextRestored:delegate('contextRestored'),dispose:delegate('dispose')});
+ return Object.freeze({VERSION,AUTHORITY,BACKEND,render,replayLastFrame,captureLastFrameSignal,snapshot,contextLost:delegate('contextLost'),contextRestored:delegate('contextRestored'),dispose:delegate('dispose')});
 }
 O.deep3dWebGL2Backend=Object.freeze({VERSION,AUTHORITY,BACKEND,DOMAINS,FAMILY_PRIMITIVE,expandLineStripPositions,compileDraw,compileScene,createBackend});
 })(typeof globalThis!=='undefined'?globalThis:this);

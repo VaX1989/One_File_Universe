@@ -26,7 +26,7 @@ async function boot(viewport,{reducedMotion='no-preference',forcedColors='none',
  assert.equal(await page.evaluate(()=>navigator.onLine),false,'cinematic product journey must continue offline');
  await page.evaluate(()=>OFU.productUI.workspace('explore',{focus:false,announceChange:false}));
  await page.waitForFunction(()=>!document.querySelector('[data-workspace-panel="explore"]').hidden);
- async function waitStage(stage){await page.waitForFunction(s=>OFU.v1LivingProduct.runtime.snapshot().stage===s,stage,{timeout:30000});await page.waitForFunction(()=>{const p=OFU.v1LivingProduct.snapshot(),s=OFU.v1LivingProduct.runtime.snapshot();return p.uiError===null&&p.render.readyRevision===s.revision;},{timeout:30000});await page.waitForTimeout(40);}
+  async function waitStage(stage){try{await page.waitForFunction(s=>OFU.v1LivingProduct.runtime.snapshot().stage===s,stage,{timeout:30000});await page.waitForFunction(()=>{const p=OFU.v1LivingProduct.snapshot(),s=OFU.v1LivingProduct.runtime.snapshot();return p.uiError===null&&p.render.readyRevision===s.revision;},{timeout:30000});await page.waitForTimeout(40);}catch(error){const diagnostic=await page.evaluate(()=>{const p=OFU.v1LivingProduct.snapshot(),s=OFU.v1LivingProduct.runtime.snapshot();return{stage:s.stage,revision:s.revision,lastError:s.lastError,uiError:p.uiError,readyRevision:p.render.readyRevision,render:p.render}});throw new Error('cinematic stage '+stage+' did not converge: '+JSON.stringify(diagnostic),{cause:error})}}
  async function frame(label){
   await page.waitForTimeout(reducedMotion==='reduce'?20:360);
   await page.locator('#living-stage').scrollIntoViewIfNeeded();

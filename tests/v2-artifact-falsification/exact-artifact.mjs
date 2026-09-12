@@ -162,7 +162,7 @@ async function browserAudit(){
     if(await button.isDisabled())throw new Error('exact artifact Living scale control is disabled: '+targetStage);
     await button.click();
     await page.waitForFunction(stage=>{const p=OFU.v1LivingProduct.snapshot(),s=OFU.v1LivingProduct.runtime.snapshot();return s.stage===stage&&p.uiError===null&&p.render.readyRevision===s.revision},targetStage,{timeout:30000});
-    journey.push(await page.evaluate(()=>{const p=OFU.v1LivingProduct.snapshot(),s=OFU.v1LivingProduct.runtime.snapshot();return{stage:s.stage,semanticScale:s.semanticScale,revision:s.revision,sceneScale:p.render.sceneScale,frameCount:p.render.metrics.frames,drawnObjects:p.render.metrics.drawnObjects,pickCount:p.render.pickCount,uiError:p.uiError,composition:p.render.v2xComposition||null,pixel:p.render.v2x13||null}}));
+    journey.push(await page.evaluate(()=>{const p=OFU.v1LivingProduct.snapshot(),s=OFU.v1LivingProduct.runtime.snapshot();return{stage:s.stage,semanticScale:s.semanticScale,revision:s.revision,sceneScale:p.render.sceneScale,frameCount:p.render.metrics.frames,drawnObjects:p.render.metrics.drawnObjects,pickCount:p.render.pickCount,uiError:p.uiError,composition:p.render.v2xComposition||null,pixel:p.render.v2x13||null,deep3d:p.render.deep3d||null}}));
   }
   const target=before.canvases.filter(c=>c.visible).sort((a,b)=>b.width*b.height-a.width*a.height)[0];
   if(target){await page.mouse.move(Math.max(1,target.left+target.width/2),Math.max(1,target.top+target.height/2));await page.mouse.wheel(0,72);await page.waitForTimeout(200);}
@@ -178,7 +178,7 @@ async function browserAudit(){
   const witnessedComponents=new Set();
   if(afterAction.macro?.providerCalls>0){witnessedComponents.add('v2x.convergence.macrocosm-composition');witnessedComponents.add('v2x03.macrocosm-provider.runtime');}
   if(journey.some(x=>x.composition?.owner==='V2X-04')){witnessedComponents.add('v2x.living.domain-composition');witnessedComponents.add('v2x04.render.orbit-3d');}
-  if(journey.some(x=>x.pixel?.frameCount>0)){witnessedComponents.add('v2.central.living-v2x13-bridge');witnessedComponents.add('v2x13.render.webgl2-resources');}
+  if(journey.some(x=>x.pixel?.suppressed===true&&x.deep3d?.backend?.v2x13?.frameCount>0)){witnessedComponents.add('v2.central.living-v2x13-bridge');witnessedComponents.add('v2x13.render.webgl2-resources');}
   const life=afterAction.product?.render?.lifeV2Consumption;if(life?.provider){witnessedComponents.add('v2x.living.life-v2-consumer');witnessedComponents.add('v2x08.runtime.life-v2');}
   if(afterAction.visibleModelContext)witnessedComponents.add('v2x.living.context-inspector');
   if(afterAction.visibleGovernedActions)witnessedComponents.add('v2x.living.governed-actions');
