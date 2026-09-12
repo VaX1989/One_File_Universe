@@ -1,6 +1,6 @@
 {
   "schema": "ofu-v2-integration-ledger-1",
-  "version": "2026-09-11.12",
+  "version": "2026-09-12.13",
   "status": "PROVISIONAL_V2_0_RELEASE_CANDIDATE_PENDING_EXACT_SHA_CERTIFICATION",
   "identityRule": "The candidate SHA and tree are the commit and tree containing this ledger; no self-referential Git identity is embedded here.",
   "release": {
@@ -122,6 +122,7 @@
     {"scope":"navigation-camera-travel","sources":["src/exploration/v1/living-runtime.js","src/rendering/v1/living-renderer.js","src/v2x-02-camera-spatial-travel/continuous-travel.js"],"authority":"SINGLE_CENTRAL_LIVING_NAVIGATION_AUTHORITY"},
     {"scope":"domain-scene-composition","sources":["src/rendering/v2x-convergence/living-domain-composition.js","config/components/v2x-living-product-composition.json"],"authority":"CENTRAL_SCENE_COMPOSITION_PRESENTATION_ONLY"},
     {"scope":"v2x13-primary-pixel-binding","sources":["src/rendering/v1/living-v2x13-bridge.js","config/components/v2-central-living-renderer-binding.json"],"authority":"CENTRAL_LIVING_RENDERER_REMAINS_PRIMARY"},
+    {"scope":"deep3d-primary-product-pixels","sources":["src/rendering/deep3d/living-primary-bridge.js","src/rendering/deep3d/webgl2-backend.js","tests/deep3d/browser-visual-evolution.mjs"],"authority":"CENTRAL_LIVING_DEEP3D_PRIMARY_WITH_PRESENTATION_ONLY_CINEMATIC_UNDERLAY"},
     {"scope":"life-civilization-individual-context","sources":["src/bootstrap/product/v2x-context-inspector.js","src/domains/v1/life/v2x08-life-facade.js","src/domains/v1/individuals/provider.js"],"authority":"MODEL_DERIVED_SIMULATION_AND_PRESENTATION_ONLY"}
   ],
   "cinematicReleaseDisposition": {
@@ -130,7 +131,7 @@
     "convergenceCommit": "500d98d483fc3e133a6e050cb406d6d2c905bcf1",
     "evidence": ["config/components/v2-cinematic-experience.json", "tests/v2x-convergence/cinematic-experience-contract.mjs", "tests/v2x-convergence/browser-cinematic-experience.mjs"],
     "authority": "PRESENTATION_ONLY",
-    "note": "The convergence branch contains the cinematic depth, motion, lighting and responsive composition. It remains subordinate to the central Living camera, scale, selection and input authorities and has no perpetual animation loop."
+    "note": "PR #267 is closed without a GitHub merge because its release-safe cinematic work was centrally integrated and superseded at the authenticated convergence commit. The convergence branch contains the cinematic depth, motion, lighting and responsive composition. It remains subordinate to the central Living camera, scale, selection and input authorities and has no perpetual animation loop."
   },
   "zeroLossReleaseDisposition": {
     "disposition": "INTEGRATED",
@@ -167,7 +168,11 @@
     {"test":"v2.release-identity","classification":"HISTORICAL_V1_LABEL_ON_V2_COMPOSED_PRODUCT","resolution":"Package, manifest and founder-visible product identity are v2.0.0 while immutable v1.0.0 remains explicit historical provenance."},
     {"test":"founder.session-restore-render","classification":"STALE_ASYNC_LIVING_RENDER_AFTER_CANONICAL_RESTORE","resolution":"The adaptive materialization binding now rejects superseded and out-of-order render completions, so the renderer cannot remain on an older stage than the restored canonical Living revision."},
     {"test":"v2.exact-artifact.falsification","classification":"DEAD_OPTIONAL_ARTIFACT_BYTES_AND_ONE_HOP_CONSEQUENCE_ORACLE","resolution":"Unconsumed optional and superseded modules are removed from shipping manifests with exact file-level dispositions; the exact artifact now traverses visible cosmic controls and proves transitive component-to-visible consequence paths."},
-    {"test":"browser.release-artifact-isolation","classification":"MUTABLE_DIST_ARTIFACT_RACE","resolution":"Release browser consumers materialize a dedicated exact-hash artifact input and verify identical bytes before and after each browser evidence transaction."}
+    {"test":"browser.release-artifact-isolation","classification":"MUTABLE_DIST_ARTIFACT_RACE","resolution":"Release browser consumers materialize a dedicated exact-hash artifact input and verify identical bytes before and after each browser evidence transaction."},
+    {"test":"deep3d.visual-evolution","classification":"OBSOLETE_HIDDEN_RENDERER_OWNERSHIP_AND_INSUFFICIENT_VISIBLE_EVOLUTION","resolution":"The central Living Deep3D bridge now owns the primary product pixels across all fifteen shipping scales, with the cinematic layer retained only as a presentation underlay. Exact-baseline A/B browser evidence requires visible depth, parallax, framing, coverage, lighting and richness changes without creating another camera, selection or truth authority."},
+    {"test":"founder.local-surface-navigation","classification":"EXCESSIVE_INTERACTIVE_LOCAL_TERRAIN_DETAIL_TIER","resolution":"The Local Surface composition uses the bounded 17x17 adaptive terrain tier at detail 720000 instead of crossing into the 33x33 tier, preserving the same nine-patch model/presentation authority while restoring native-click transition latency to the release envelope."},
+    {"test":"audit.p21.performance-browser-mobile-resource-soak","classification":"UNBOUNDED_BACKGROUND_RAF_MEASUREMENT","resolution":"Frame-pacing evidence brings the page to the foreground and bounds the requestAnimationFrame sampling window. Full samples remain measured evidence; a browser-throttled deadline is reported honestly as NOT_MEASURABLE_BACKGROUND_RAF_THROTTLED instead of deadlocking certification or fabricating timing."},
+    {"test":"legacy.direct-file.product","classification":"STALE_V1_RENDERER_AND_UNBOUNDED_WHEEL_ORACLE_ASSUMPTIONS","resolution":"Superseded legacy renderer scheduling is parked behind the active Deep3D owner, and direct-file wheel/pacing oracles sample the actual Living Deep3D surface with bounded completion while retaining native input and UI-health assertions."}
   ],
   "knownReleaseCriticalDefects": [],
   "deferredPostV2": [
