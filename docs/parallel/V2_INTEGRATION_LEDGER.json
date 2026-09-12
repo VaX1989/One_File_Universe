@@ -1,0 +1,211 @@
+{
+  "schema": "ofu-v2-integration-ledger-1",
+  "version": "2026-09-12.18",
+  "status": "PROVISIONAL_V2_0_RELEASE_CANDIDATE_PENDING_EXACT_SHA_CERTIFICATION",
+  "identityRule": "The candidate SHA and tree are the commit and tree containing this ledger; no self-referential Git identity is embedded here.",
+  "release": {
+    "productVersion": "2.0.0",
+    "releaseLine": "v2.0.0",
+    "releaseStatus": "STABLE_RELEASE",
+    "candidateOnly": false,
+    "historicalBase": {
+      "release": "v1.0.0",
+      "sourceCommit": "38dd0d7c0ccc4a100dc3b75d3d159c6933bc4c16",
+      "sourceTree": "b7576ebe21b3448b69e35c9cd8d279f51e4332fb",
+      "immutable": true
+    }
+  },
+  "parallelBase": {
+    "sha": "2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7",
+    "tree": "99e6b5ff6229d9c34d381e778c5689bf2367d256",
+    "launchStatus": "FULL",
+    "releaseCertification": "SUPERSEDED_BY_FINAL_CONVERGENCE_CERTIFICATION"
+  },
+  "dispositionVocabulary": ["INTEGRATED", "CENTRALLY_REIMPLEMENTED", "RESEARCH_ONLY", "EVIDENCE_ONLY", "DEFERRED_POST_V2_0", "NOT_APPLICABLE_TO_RELEASE"],
+  "laneDispositions": [
+    {
+      "lane": "V2X-01",
+      "disposition": "INTEGRATED",
+      "shippingEvidence": ["config/components/v2x-01-runtime-adaptive-materialization.json", "tests/v2x-01-runtime-adaptive-materialization/targeted.mjs", "tests/v2x-01-runtime-adaptive-materialization/soak.mjs"]
+    },
+    {
+      "lane": "V2X-02",
+      "disposition": "CENTRALLY_REIMPLEMENTED",
+      "shippingEvidence": ["src/v2x-02-camera-spatial-travel/continuous-travel.js", "src/rendering/v1/living-renderer.js", "tests/v2x-convergence/living-camera-authority.mjs"],
+      "note": "The lane travel model is shipped through a convergence-owned Living adapter; canonical Living navigation remains the single scale, camera and travel authority."
+    },
+    {
+      "lane": "V2X-03",
+      "disposition": "INTEGRATED",
+      "shippingEvidence": ["config/components/v2x-03-macrocosm.json", "src/rendering/v2x-convergence/macrocosm-composition.js", "tests/v2x-convergence/macrocosm-composition.mjs"]
+    },
+    {
+      "lane": "V2X-04",
+      "disposition": "CENTRALLY_REIMPLEMENTED",
+      "shippingEvidence": ["config/components/v2x-04-system-planet-approach.json", "src/rendering/v2x-convergence/living-domain-composition.js", "tests/v2x-convergence/living-domain-composition.mjs"],
+      "note": "Orbit, stellar appearance and illumination packets are consumed by the central Living compositor without acquiring camera, scene or truth authority."
+    },
+    {
+      "lane": "V2X-05",
+      "disposition": "CENTRALLY_REIMPLEMENTED",
+      "shippingEvidence": ["config/components/v2x-05-deep-planet-science.json", "src/rendering/v2x-convergence/living-domain-composition.js", "tests/v2x-05/deep-planet-oracles.mjs"],
+      "note": "Bounded reduced-order Deep Planet context is consumed while unknown surface inputs remain unknown."
+    },
+    {
+      "lane": "V2X-06",
+      "disposition": "CENTRALLY_REIMPLEMENTED",
+      "shippingEvidence": ["config/components/v2x-06-surface-terrain-geology-hydrology.json", "src/rendering/v2x-convergence/living-domain-composition.js", "tests/v2x-06-surface/cross-scale-integration.mjs"],
+      "note": "Surface packets are composed centrally as model/presentation output and do not claim canonical elevation or geodesy."
+    },
+    {
+      "lane": "V2X-07",
+      "disposition": "CENTRALLY_REIMPLEMENTED",
+      "shippingEvidence": ["config/components/v2x-07-human-scale-local-traversal.json", "src/rendering/v2x-convergence/living-domain-composition.js", "tests/v2x-07-human-scale-local-traversal/local-experience.mjs"],
+      "note": "Local placement and embodiment are consumed beneath central selection, camera and rendering composition."
+    },
+    {
+      "lane": "V2X-08",
+      "disposition": "INTEGRATED",
+      "shippingEvidence": ["config/components/v2x-08-life-ecology-evolution-embodiment.json", "src/v2x-08-life-ecology-evolution-embodiment/shipping-runtime.js", "src/v2x-08-life-ecology-evolution-embodiment/shipping-bundle.mjs", "src/domains/v1/life/v2x08-life-facade.js", "src/rendering/v2x-convergence/living-life-v2-consumer.js", "tests/v2x-08/life-shipping-viewport.mjs"],
+      "note": "The deterministic classic-script bundle preserves the lane model, ecology/evolution, embodiment, renderer, viewport and adapter modules byte-for-byte by reproducible transformation; the central Living consumer retains model-derived authority and aggregate representative semantics."
+    },
+    {
+      "lane": "V2X-09",
+      "disposition": "CENTRALLY_REIMPLEMENTED",
+      "shippingEvidence": ["config/components/v2x-09-civilization-economy-city.json", "src/bootstrap/product/v2x-context-inspector.js", "tests/v2x-09-civilization-economy-city/civilization-economy-city.mjs"],
+      "note": "Civilization, economy, settlement and history projections expose model provenance; presentation coordinates never become scientific coordinates."
+    },
+    {
+      "lane": "V2X-10",
+      "disposition": "CENTRALLY_REIMPLEMENTED",
+      "shippingEvidence": ["config/components/v2x-10-persistent-individuals.json", "src/domains/v1/individuals/provider.js", "src/bootstrap/product/v2x-context-inspector.js", "tests/v2x10/run.mjs"],
+      "note": "Deterministic individual identity/refinement is shipped through the central Living context and existing persistence/revisit authority."
+    },
+    {
+      "lane": "V2X-11",
+      "disposition": "INTEGRATED",
+      "shippingEvidence": ["config/components/v2x-11-gameplay-causal-engine.json", "tests/v2x-11-gameplay-causal-engine/cross-domain-journey.mjs", "tests/v1x-12-persistence-gameplay-intervention/governed-action-journey.mjs"],
+      "note": "Governed causal actions remain model-derived simulation unless admitted through the canonical event system."
+    },
+    {
+      "lane": "V2X-12",
+      "disposition": "CENTRALLY_REIMPLEMENTED",
+      "shippingEvidence": ["config/components/v2x-12-matter-continuity.json", "src/domains/v1/micro/matter-continuity-v2.js", "src/rendering/v2x-convergence/living-domain-composition.js", "tests/v2x-12-matter-continuity/run.mjs"],
+      "note": "Matter through atomic-depth representations preserve the exact selected source and fail closed for unresolved chemistry."
+    },
+    {
+      "lane": "V2X-13",
+      "disposition": "CENTRALLY_REIMPLEMENTED",
+      "shippingEvidence": ["config/components/v2x-13-rendering-platform.json", "config/components/v2-central-living-renderer-binding.json", "src/rendering/v1/living-v2x13-bridge.js", "tests/v2x-convergence/living-v2x13-pixel-binding.mjs"],
+      "note": "The V2X-13 WebGL2 pixel consumer is bound beneath the central Living renderer and owns no independent scene, camera or semantic-scale authority."
+    },
+    {
+      "lane": "V2X-14",
+      "disposition": "INTEGRATED",
+      "shippingEvidence": ["config/components/v2x-14-product-experience.json", "config/components/v2x-14-systemic-audio.json", "tests/v2x-14-product-experience/contracts.mjs"],
+      "note": "Responsive UX, accessibility observers and bounded audio are shipped; physical mobile and physical assistive-technology certification are not claimed."
+    },
+    {
+      "lane": "V2X-15",
+      "disposition": "RESEARCH_ONLY",
+      "shippingEvidence": ["docs/parallel/V2X_RESEARCH_HARVEST_CURRENT.json"],
+      "note": "Only limitations and falsification constraints were harvested; research kernels were not promoted as canonical truth."
+    },
+    {
+      "lane": "V2X-16",
+      "disposition": "RESEARCH_ONLY",
+      "shippingEvidence": ["docs/parallel/V2X_RESEARCH_HARVEST_CURRENT.json"],
+      "note": "Only bounded mechanisms and failure boundaries were harvested; research dynamics were not promoted as canonical history or matter truth."
+    }
+  ],
+  "centralReimplementations": [
+    {"scope":"navigation-camera-travel","sources":["src/exploration/v1/living-runtime.js","src/rendering/v1/living-renderer.js","src/v2x-02-camera-spatial-travel/continuous-travel.js"],"authority":"SINGLE_CENTRAL_LIVING_NAVIGATION_AUTHORITY"},
+    {"scope":"domain-scene-composition","sources":["src/rendering/v2x-convergence/living-domain-composition.js","config/components/v2x-living-product-composition.json"],"authority":"CENTRAL_SCENE_COMPOSITION_PRESENTATION_ONLY"},
+    {"scope":"v2x13-primary-pixel-binding","sources":["src/rendering/v1/living-v2x13-bridge.js","config/components/v2-central-living-renderer-binding.json"],"authority":"CENTRAL_LIVING_RENDERER_REMAINS_PRIMARY"},
+    {"scope":"deep3d-primary-product-pixels","sources":["src/rendering/deep3d/living-primary-bridge.js","src/rendering/deep3d/webgl2-backend.js","tests/deep3d/browser-visual-evolution.mjs"],"authority":"CENTRAL_LIVING_DEEP3D_PRIMARY_WITH_PRESENTATION_ONLY_CINEMATIC_UNDERLAY"},
+    {"scope":"life-civilization-individual-context","sources":["src/bootstrap/product/v2x-context-inspector.js","src/domains/v1/life/v2x08-life-facade.js","src/domains/v1/individuals/provider.js"],"authority":"MODEL_DERIVED_SIMULATION_AND_PRESENTATION_ONLY"}
+  ],
+  "cinematicReleaseDisposition": {
+    "disposition": "INTEGRATED",
+    "sourcePr": 267,
+    "convergenceCommit": "500d98d483fc3e133a6e050cb406d6d2c905bcf1",
+    "evidence": ["config/components/v2-cinematic-experience.json", "tests/v2x-convergence/cinematic-experience-contract.mjs", "tests/v2x-convergence/browser-cinematic-experience.mjs"],
+    "authority": "PRESENTATION_ONLY",
+    "note": "PR #267 is closed without a GitHub merge because its release-safe cinematic work was centrally integrated and superseded at the authenticated convergence commit. The convergence branch contains the cinematic depth, motion, lighting and responsive composition. It remains subordinate to the central Living camera, scale, selection and input authorities and has no perpetual animation loop."
+  },
+  "zeroLossReleaseDisposition": {
+    "disposition": "INTEGRATED",
+    "sourcePr": 259,
+    "convergenceCommit": "500d98d483fc3e133a6e050cb406d6d2c905bcf1",
+    "evidence": ["docs/parallel/V2_ZERO_LOSS_FINAL_AUDIT.json", "tools/v2-zero-loss-harvest-validate.mjs", "tests/v2-zero-loss-harvest/adversarial.mjs"],
+    "note": "The canonical convergence incorporated the authenticated shipping and evidence disposition; the source PR is superseded and must not be blindly merged."
+  },
+  "nonShippingSourceDispositions": [
+    {"source":"src/runtime/lifecycle/lifecycle-coordinator.js","disposition":"DEFERRED_POST_V2_0","reason":"The active Living runtime already owns lifecycle, resize and context-recovery integration; this unconsumed lane wrapper would create duplicate lifecycle ownership if shipped."},
+    {"source":"src/runtime/prefetch/bounded-prefetch.js","disposition":"DEFERRED_POST_V2_0","reason":"No release-critical product path requests speculative prefetch; the bounded implementation and tests remain retained for post-v2 optimization without dead artifact bytes."},
+    {"source":"src/domains/v1/surface/cross-scale-adapter.js","disposition":"EVIDENCE_ONLY","reason":"The central Living navigation and domain compositor directly preserve surface identity and scale continuity; this lane adapter is superseded and is not a second shipping scale authority."},
+    {"source":"src/product/exploration/local/local-traversal.js","disposition":"EVIDENCE_ONLY","reason":"The bounded traversal model remains tested evidence, while canonical Living navigation and the shipping LocalExperienceProvider own the actual Human-stage path."},
+    {"source":"src/rendering/local/upstream-adapters.js","disposition":"EVIDENCE_ONLY","reason":"The central Living domain compositor directly supplies the governed surface and local inputs, so the lane integration-request adapter is retained only as falsification evidence."},
+    {"source":"src/rendering/local/v2x07-local-traversal-adapter.js","disposition":"EVIDENCE_ONLY","reason":"This byte-identical convergence rehome duplicated the retained traversal evidence and was never consumed by the canonical Living path."},
+    {"source":"src/rendering/core/platform.js","disposition":"EVIDENCE_ONLY","reason":"The release uses the strict bounded WebGL2 frame consumer directly; the standalone unconsumed platform facade is not a shipping runtime authority."},
+    {"source":"src/rendering/webgl2/timer-query.js","disposition":"DEFERRED_POST_V2_0","reason":"Disjoint GPU timing is optional measured evidence and is not required by the stable WebGL2 product path."},
+    {"source":"src/rendering/webgpu/primitive-pass.js","disposition":"DEFERRED_POST_V2_0","reason":"WebGPU remains an optional future enhancement; v2.0.0 requires and ships the deterministic strict WebGL2 path."}
+  ],
+  "auditPrograms": [
+    {"program":"P20","disposition":"INTEGRATED","releaseCriticalScope":"determinism, persistence, replay, authority and realistic security falsification","evidence":["config/conformance/v2-p20-determinism-persistence-security.json","tests/audit/v2-determinism-persistence-security.mjs"]},
+    {"program":"P21","disposition":"INTEGRATED","releaseCriticalScope":"ordinary-use resource bounds, context recovery, browser/mobile emulation and compact layout","evidence":["config/conformance/v2-p21-performance-browser-mobile.json","tests/audit/v2-p21-performance-browser-mobile/browser-resource-soak.mjs"],"deferredScope":["physical Android","physical iOS","extreme-duration soak beyond the release envelope"]},
+    {"program":"P22","disposition":"INTEGRATED","releaseCriticalScope":"strict science authority and unknown-preservation oracle","evidence":["config/conformance/v2-science-authority-promotion.json","tests/audit/v2-science-authority-oracle.mjs"]},
+    {"program":"P23","disposition":"EVIDENCE_ONLY","releaseCriticalScope":"exact artifact composition, reachability, deterministic double build and ownership inventory","evidence":["config/conformance/v2-exact-artifact-falsification.json","tests/v2-artifact-falsification/exact-artifact.mjs","tests/v2-artifact-falsification/ownership-inventory.mjs"]},
+    {"program":"PROMPT-24","disposition":"EVIDENCE_ONLY","releaseCriticalScope":"same-SHA final certification, merge authentication, exact-development recertification and exact-main recertification","closureBinding":"Executed after the containing candidate commit is frozen; results are external immutable CI/release evidence and do not mutate this ledger."}
+  ],
+  "resolvedExactHeadDefects": [
+    {"test":"founder.visual.cosmic-labels","classification":"OVERLAPPING_PRIMARY_SCENE_LABELS","resolution":"The active Living renderer applies bounded deterministic collision avoidance to macro object labels while preserving every pick target and canonical identity."},
+    {"test":"audit.p21.performance-browser-mobile-resource-soak","classification":"WEBKIT_OFFLINE_FILE_TRANSPORT_ORACLE_DEFECT","resolution":"External HTTP traffic is blocked before file launch; offline mode is asserted before the product journey because WebKit offline transport rejects file navigation itself."},
+    {"test":"v2x03.neighborhood-composition","classification":"MISSING_PRESENTATION_PLACEMENT_ADAPTER","resolution":"Central composition derives bounded identity-based presentation positions before Neighborhood depth projection; the visible browser selector journey requires nonempty pickable Stars content."},
+    {"test":"v2x02.travel.fast","classification":"NUMERIC_ROUND_TRIP_ORACLE_DEFECT","resolution":"Finite IEEE-754 residue is bounded by scaled machine epsilon without changing runtime semantics."},
+    {"test":"v2x12.matter.continuity-biology","classification":"EXPLICIT_NEGATIVE_CHEMISTRY_CLAIM_GAP","resolution":"Unresolved chemistry now declares knownChemistryClaim=false and remains unsupported rather than fabricated."},
+    {"test":"audit.p21.performance-browser-mobile-resource-soak","classification":"STALE_HIDDEN_LEGACY_INPUT_SURFACE","resolution":"The oracle now drives the visible Living scale rail and actual two-pointer Living viewport path, then verifies coherent stage, scale, rendering and UI health."},
+    {"test":"v2.release-identity","classification":"HISTORICAL_V1_LABEL_ON_V2_COMPOSED_PRODUCT","resolution":"Package, manifest and founder-visible product identity are v2.0.0 while immutable v1.0.0 remains explicit historical provenance."},
+    {"test":"founder.session-restore-render","classification":"STALE_ASYNC_LIVING_RENDER_AFTER_CANONICAL_RESTORE","resolution":"The adaptive materialization binding now rejects superseded and out-of-order render completions, so the renderer cannot remain on an older stage than the restored canonical Living revision."},
+    {"test":"v2.exact-artifact.falsification","classification":"DEAD_OPTIONAL_ARTIFACT_BYTES_AND_ONE_HOP_CONSEQUENCE_ORACLE","resolution":"Unconsumed optional and superseded modules are removed from shipping manifests with exact file-level dispositions; the exact artifact now traverses visible cosmic controls and proves transitive component-to-visible consequence paths."},
+    {"test":"browser.release-artifact-isolation","classification":"MUTABLE_DIST_ARTIFACT_RACE","resolution":"Release browser consumers materialize a dedicated exact-hash artifact input and verify identical bytes before and after each browser evidence transaction."},
+    {"test":"deep3d.visual-evolution","classification":"OBSOLETE_HIDDEN_RENDERER_OWNERSHIP_AND_INSUFFICIENT_VISIBLE_EVOLUTION","resolution":"The central Living Deep3D bridge now owns the primary product pixels across all fifteen shipping scales, with the cinematic layer retained only as a presentation underlay. Exact-baseline A/B browser evidence requires visible depth, parallax, framing, coverage, lighting and richness changes without creating another camera, selection or truth authority."},
+    {"test":"founder.local-surface-navigation","classification":"EXCESSIVE_INTERACTIVE_LOCAL_TERRAIN_DETAIL_TIER","resolution":"The Local Surface composition uses the bounded 17x17 adaptive terrain tier at detail 720000 instead of crossing into the 33x33 tier, preserving the same nine-patch model/presentation authority while restoring native-click transition latency to the release envelope."},
+    {"test":"audit.p21.performance-browser-mobile-resource-soak","classification":"UNCANCELLED_BACKGROUND_RAF_EVALUATION","resolution":"Frame-pacing evidence brings the page to the foreground and settles its deadline inside the browser page, cancelling any remaining animation-frame callback before context teardown. Full samples remain measured evidence; a browser-throttled deadline is reported honestly as NOT_MEASURABLE_BACKGROUND_RAF_THROTTLED instead of deadlocking certification or fabricating timing."},
+    {"test":"legacy.direct-file.product","classification":"STALE_V1_RENDERER_AND_UNBOUNDED_WHEEL_ORACLE_ASSUMPTIONS","resolution":"Superseded legacy renderer scheduling is parked behind the active Deep3D owner, and direct-file wheel/pacing oracles sample the actual Living Deep3D surface with bounded completion while retaining native input and UI-health assertions."},
+    {"test":"px.release.exact-source-propagation","classification":"MISSING_EXACT_SOURCE_CHILD_ENVIRONMENT","resolution":"The definitive conformance runner now supplies its authenticated Git head as OFU_SOURCE_SHA to every exact-mode child process, while still rejecting a conflicting caller pin. Exact child artifact and browser evidence therefore binds automatically to the same source as the parent release transaction."},
+    {"test":"audit.p21.performance-browser-mobile-resource-soak","classification":"BOUNDED_WEBKIT_WARMUP_MISCLASSIFIED_AS_LEAK","resolution":"The resource oracle distinguishes sustained monotonic accumulation from a one-time bounded warm-up followed by an exact plateau. Repeated growth remains release-blocking, while the observed WebKit DOM sequence 1221,1224,1224,... is correctly retained as bounded plateau evidence rather than falsely reported as an unreleased-resource leak."},
+    {"test":"px.release.p21-browser-shards","classification":"MONOLITHIC_THREE_BROWSER_PROCESS_TIMEOUT","resolution":"The existing P21 oracle is executed as three conformance shards, one each for Chromium, Firefox and WebKit. Every shard retains the complete desktop soak, mobile pinch/orientation, reduced-motion, offline, zero-network and resource assertions with its own unchanged 840-second bound and separate evidence file."},
+    {"test":"v1x14.release-evidence-lineage","classification":"STALE_ONE_OFF_LANE_BRANCH_ASSUMPTION","resolution":"The harvested V1X-14 evidence runner still authenticates the immutable V1X base and exact head, but now permits only the named convergence, canonical development, stable main and v2.0.0 release lineages in addition to its historical lane. Arbitrary feature branches remain rejected."}
+  ],
+  "knownReleaseCriticalDefects": [],
+  "deferredPostV2": [
+    {"disposition":"DEFERRED_POST_V2_0","scope":"Physical Android and physical iOS execution","claim":"NOT_VERIFIED_PHYSICAL_DEVICE"},
+    {"disposition":"DEFERRED_POST_V2_0","scope":"Physical assistive-technology certification","claim":"NOT_VERIFIED_PHYSICAL_ASSISTIVE_TECHNOLOGY"},
+    {"disposition":"DEFERRED_POST_V2_0","scope":"Exhaustive historical screenshot differential and extreme-duration adversarial soak","claim":"RETAINED_AS_POST_RELEASE_HARDENING_NOT_REPORTED_PASS"}
+  ],
+  "historicalTransactions": [
+    {"id":"V2-BASE-00-01","kind":"BASE_CONFORMANCE_REPAIR","scope":"tests/v2x-03/continuity-identity.mjs"},
+    {"id":"V2-BASE-00-02","kind":"OWNERSHIP_FREEZE","scope":"docs/parallel/V2_CENTRAL_AUTHORITY_MAP.json"},
+    {"id":"V2-BASE-00-03","kind":"ARTIFACT_AUDIT","scope":"tests/governance/v2-parallel-base-artifact-audit.mjs"},
+    {"id":"V2-01-01","kind":"PEER_PARALLEL_LAUNCH_AUTHENTICATION","scope":"docs/parallel/V2_PARALLEL_BASE_CURRENT.json"},
+    {"id":"V2-01-02","kind":"PROVIDER_ACTIVATION_RECONCILIATION","sourceCheckpoint":"PR-238@d3e43e134bc75dc45db3c6ed290b7d490ade2f26"},
+    {"id":"V2-01-03","kind":"WORKFLOW_REACHABILITY_HARDENING","scope":".github/workflows/v2x-supreme-convergence.yml"},
+    {"id":"V2-01-04","kind":"NUMERIC_ORACLE_REPAIR","scope":"V2X-02 real camera journey numeric wrapper"},
+    {"id":"V2-01-05","kind":"V2X12_FINAL_CHECKPOINT_INTEGRATION","sourceCheckpoint":"PR-250@62870a190e8ae9fc0e735c6b14c9ab53b7a2977c/tree-943b01d6e0bc77f66296d40b274a5e6bd337c5c7"},
+    {"id":"V2-01-06","kind":"V2X05_FINAL_CHECKPOINT_INTEGRATION","sourceCheckpoint":"PR-252@faf8b56ec0ccf8486ac19620ea6056110f57f044/tree-0343455ad875d758ae4eba7481ce948044affc9b"},
+    {"id":"V2-01-07","kind":"V2X13_FINAL_CHECKPOINT_INTEGRATION","sourceCheckpoint":"PR-254@f7beb5f80656ba80015dfa2658b09d66ca17179d/tree-1ea9fcb97074dfe99210ce9e714d2923e2c8db32"},
+    {"id":"V2-01-08","kind":"V2X09_FINAL_CHECKPOINT_INTEGRATION","sourceCheckpoint":"PR-246@8dbdb80a53356d72448ae39537cdeb2154e4a516/tree-9dac21faed055db0091e0da7ea7e7edc09e973d2"},
+    {"id":"V2-01-09","kind":"V2X14_FINAL_CHECKPOINT_INTEGRATION","sourceCheckpoint":"PR-251@36c768d37466d77ee00565138928470ad98549d5/tree-b72fe5f637d0746ee914d37fe120fa53ec1fec15"},
+    {"id":"V2-01-10","kind":"V2X08_FINAL_CHECKPOINT_INTEGRATION","sourceCheckpoint":"PR-257@08340ef972e9de8ea0ed7a6eea64df361ac19a35/tree-490cc06881ff120867de5797ae8cdcbe0732ca88"},
+    {"id":"V2-01-11","kind":"V2X10_FINAL_CHECKPOINT_INTEGRATION","sourceCheckpoint":"PR-260@01906772cf70cc704a7d9d66750e777aeffd69e2/tree-c3775c95727bd0ca28b1687675daf8530ab2e5af"},
+    {"id":"V2-01-12","kind":"V2X11_FINAL_CHECKPOINT_INTEGRATION","sourceCheckpoint":"PR-241@a55713580c2ccf21b840235e09700aacbf030c2f/tree-60d56ad5c0fb68ed240d1df2bafda642bf4bc368"}
+  ],
+  "certification": {
+    "release": "PENDING_EXACT_SHA",
+    "sourceAffectingWorkComplete": true,
+    "exactSourceBinding": "THE_COMMIT_CONTAINING_THIS_LEDGER",
+    "requiredRemainingTransactions": ["Exact candidate release-critical certification", "PR #237 exact-head merge to canonical development", "Exact merged-development release-critical certification", "Exact main promotion and release-critical certification", "v2.0.0 publication and downloaded-asset verification"]
+  },
+  "promotionLaw": "No prior-SHA evidence certifies a later source SHA. Every source-affecting repair creates a new candidate and restarts final exact-SHA certification."
+}

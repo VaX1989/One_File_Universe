@@ -1,0 +1,79 @@
+{
+  "schema": "ofu-v2-lane-current-1",
+  "lane": "V2X-08",
+  "title": "Life 2.0 - Ecology, Evolution, Organisms, Behavior and Visual Embodiment",
+  "status": "LANE_IMPLEMENTATION_COMPLETE_PENDING_EXACT_CANDIDATE_EXECUTION",
+  "authenticatedParallelBase": {
+    "sha": "2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7",
+    "tree": "99e6b5ff6229d9c34d381e778c5689bf2367d256",
+    "launchStatus": "FULL"
+  },
+  "branch": "parallel/v2.0-08-life-ecology-evolution-embodiment-2026-09-07",
+  "implementationHeadBeforeCheckpoint": {
+    "sha": "f0d862e4b70dc0c893a47d4ff6220123eb557cdb",
+    "tree": "0897a3901b9e306835fcea2978ac4dc0412d7083"
+  },
+  "implemented": [
+    "Deterministic bounded Life viewport packet bridge over the existing rich ecology/evolution provider",
+    "Model-derived morphology and behavior opportunity carried into PRESENTATION_ONLY render descriptors",
+    "Selectable aggregate-population representative targets without persistent-individual promotion",
+    "Absent-life reasons that do not claim impossibility of life",
+    "Fail-closed revisit token with event identity plus deterministic packet fingerprint",
+    "Deterministic ESM-to-classic-script Life runtime bundler compatible with the one-file component builder",
+    "Candidate additive shipping component and convergence hook contract",
+    "Visible descendant-lineage evolution witness, resource bounds, anti-generic-fallback falsification and one-file injection witness"
+  ],
+  "files": {
+    "source": [
+      "src/v2x-08-life-ecology-evolution-embodiment/viewport-bridge.js",
+      "src/v2x-08-life-ecology-evolution-embodiment/shipping-adapter.js",
+      "src/v2x-08-life-ecology-evolution-embodiment/shipping-bundle.mjs"
+    ],
+    "tests": [
+      "tests/v2x-08/life-viewport-bridge-unit.mjs",
+      "tests/v2x-08/life-shipping-viewport.mjs",
+      "tests/v2x-08/life-artifact-reachability.mjs"
+    ],
+    "convergenceHook": "config/extensions/v2x-08-life-ecology-evolution-embodiment/life-v2-shipping-hook.json"
+  },
+  "authority": {
+    "ecology": "MODEL_DERIVED_SIMULATION",
+    "evolution": "MODEL_DERIVED_SIMULATION",
+    "morphology": "MODEL_DERIVED_SIMULATION",
+    "behaviorOpportunity": "MODEL_DERIVED_SIMULATION",
+    "renderGeometry": "PRESENTATION_ONLY",
+    "temporalAdmission": "EXTERNAL_P4_OR_GOVERNED_GAMEPLAY",
+    "persistentIndividualIdentity": false,
+    "canonicalAlienBiology": false
+  },
+  "evidencePlan": {
+    "historicalRegressions": [
+      "node tests/v2x-08/life-ecology-evolution-embodiment.mjs",
+      "node tests/v2x-08/life-evolution-succession.mjs",
+      "node tests/v2x-08/life-provider-renderer.mjs",
+      "node tests/v2x-08/single-file-facade.mjs"
+    ],
+    "newUnit": "node tests/v2x-08/life-viewport-bridge-unit.mjs",
+    "newIntegration": "node tests/v2x-08/life-shipping-viewport.mjs",
+    "artifact": "node tools/build-ofu-rendering-v09.mjs && node tests/v2x-08/life-artifact-reachability.mjs",
+    "broadRegression": "npm test",
+    "governedRuntime": "Node 24.20.x"
+  },
+  "localDiagnosticEvidence": {
+    "runtime": "Node 22.16.0",
+    "viewportBridgeHarness": "PASS",
+    "shippingBundleSyntheticClassicScriptHarness": "PASS",
+    "classification": "DIAGNOSTIC_ONLY_NOT_GOVERNED_RUNTIME"
+  },
+  "centralAuthorityBoundariesPreserved": true,
+  "remainingCentralConvergenceHooks": [
+    "PRIMARY_SHIPPING_MANIFEST",
+    "CENTRAL_LIVING_CONSUMER",
+    "V2X07_LOCAL_SPACE_MAPPING",
+    "V2X13_PRIMARY_RENDERER_CONSUMPTION",
+    "CENTRAL_SELECTION_REGISTRATION",
+    "CENTRAL_PERSISTENCE_REPLAY_REGISTRATION"
+  ],
+  "knownLaneOwnedUnfinishedWork": [],
+  "completionRule": "Promote this checkpoint to LANE_READY_FOR_CENTRAL_CONVERGENCE after exact candidate execution of the listed tests on governed Node 24.20.x. Central hooks remain convergence-owned and are not lane incompleteness."
+}

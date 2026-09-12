@@ -6,8 +6,8 @@
       "owner": "v2x-06-surface-terrain-geology-hydrology",
       "tier": "LANE_TARGETED",
       "command": ["node", "tests/v2x-06-surface/surface-terrain-geology-hydrology.mjs"],
-      "providers": ["v2x-06.model.surface-geography", "v2x-06.representation.hierarchical-terrain", "v2x-06.renderer.living-surface"],
-      "oracle": "ofu-v2x-06-surface-terrain-geology-hydrology-oracle-1",
+      "providers": ["v2x-06.model.surface-geography", "v2x-06.query.world-space-surface", "v2x-06.representation.hierarchical-terrain", "v2x-06.renderer.living-surface"],
+      "oracle": "ofu-v2x-06-surface-terrain-geology-hydrology-oracle-2",
       "timeoutMs": 30000
     },
     {

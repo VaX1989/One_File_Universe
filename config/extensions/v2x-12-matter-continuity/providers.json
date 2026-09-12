@@ -23,25 +23,29 @@
         "version": "1.0.0",
         "sources": [
           "src/domains/v1/micro/matter-continuity-v2.js",
+          "src/domains/v1/micro/matter-continuity-unit-contract.js",
           "src/domains/v1/materials/reference-properties.js",
           "research/v1x-19-matter-microphysics-2026-09-06@9fb5e65e75bb21515f3c541033da25f8fc4d94a6"
         ],
         "assumptions": [
-          "Cross-regime continuity is semantic and commitment-based; representative micro/molecular/atomic states are bounded local materializations rather than whole-object enumeration."
+          "Cross-regime continuity is semantic and commitment-based; representative micro/molecular/atomic states are bounded local materializations rather than whole-object enumeration.",
+          "Source coordinate units are explicit and non-fm structural coordinates are accepted only through exact conversion to integer femtometres with source-space provenance retained."
         ],
         "limitations": [
           "Material component ppm is never reinterpreted as mole fraction.",
           "Reaction networks are topology descriptors only; kinetics and thermodynamics are not solved.",
           "Source-backed structure requires explicit provenance and licensing metadata before V2X-12 treats the source claim as eligible.",
+          "Computed structural coordinates remain model-derived and never inherit source-backed experimental authority.",
+          "Nested V2X-12 per-field caps are independent ceilings subject to the global PX data budget; simultaneous saturation of every nested maximum is not claimed, and oversized compound records fail closed.",
           "No molecular dynamics, reactive molecular dynamics, electron-orbit, orbital, wavefunction or quantum-dynamics claim is made."
         ],
         "evidence": []
       },
       "fidelity": {
         "regime": "matter-continuity-v2",
-        "validity": "Bounded source-aware material, representative microstructure, chemistry topology and atomic structural continuity layered over shipping v1 matter providers.",
-        "resolution": "Tissue/cell descriptor bridge plus MATERIAL, MICROSTRUCTURE, MOLECULAR and ATOMIC semantic regimes with explicit finite caps.",
-        "uncertainty": "Unknown chemistry, unsupported source provenance, unmeasured kinetics and non-classical states remain explicitly unresolved or unsupported."
+        "validity": "Bounded source-aware material, tissue/cell organization, representative microstructure, chemistry topology and atomic structural continuity layered over shipping v1 matter providers.",
+        "resolution": "Tissue/cell descriptor bridge plus MATERIAL, MICROSTRUCTURE, MOLECULAR and ATOMIC semantic regimes with explicit finite caps and fail-closed source-unit conversion.",
+        "uncertainty": "Unknown chemistry, unsupported source provenance, global data-budget rejection, unmeasured kinetics and non-classical states remain explicitly unresolved or unsupported."
       },
       "lifecycle": "SHIPPING",
       "requires": [],
@@ -67,29 +71,46 @@
         "version": "1.0.0",
         "sources": [
           "src/rendering/microscopic/matter-continuity-provider.js",
-          "src/domains/v1/micro/matter-continuity-v2.js"
+          "src/domains/v1/micro/matter-continuity-v2.js",
+          "src/domains/v1/micro/matter-continuity-unit-contract.js"
         ],
         "assumptions": [
-          "Semantic magnification and normalized display coordinates can communicate regime changes without asserting literal Euclidean zoom or new scientific authority."
+          "Semantic magnification and normalized display coordinates can communicate regime changes without asserting literal Euclidean zoom or new scientific authority.",
+          "Bounded tissue cells and cell compartments can be projected with inherited model store/material units while display placement remains presentation-only.",
+          "Cell compartments, membranes, gradients, transport capacities and material-flow topology can be exposed as bounded semantic cues without claiming literal morphology, flux rates or metabolic kinetics.",
+          "Reducing a rendering budget must not reposition retained nodes; bounded omission is reported explicitly with available-count and truncation witnesses.",
+          "When relation cues exceed the bounded projection limit, deterministic category-preserving projection retains cues from every nonempty relation class before allocating additional slots.",
+          "Unknown material, phase and mixture remainders remain explicitly labelled unresolved rather than being presented as known chemistry or phase inventory.",
+          "Integer femtometre source coordinates are centered with exact integer arithmetic before bounded conversion to presentation-space numbers, including large safe-integer offsets.",
+          "Biological presentation revalidates relation bounds and compartment endpoints; COARSE_MODEL_ONLY cannot be upgraded through injected rich relation cues or provider material-commitment claims.",
+          "Regime-local journey presentation revalidates nested descriptor caps and source/computed atomic authority before projection; an explicit empty source structure never falls back to representative atoms."
         ],
         "limitations": [
-          "Molecular grid placement is presentation-only.",
-          "Fixed-point structural coordinates can be normalized for display while original integer coordinates remain separately retained.",
+          "Tissue-cell, material, molecular and biological compartment placement is presentation-only.",
+          "Tissue phenotype/store-unit cues are inherited bounded model descriptors and are not measured cell observations or physical morphology.",
+          "Microstructure phases, interfaces and defects plus mixture, bond and reaction relations are semantic cues rather than simulated geometry or dynamics.",
+          "Fixed-point structural coordinates are centered and normalized for display while original integer coordinates, source-space coordinates and units remain separately retained.",
+          "Computed atomic structure is explicitly distinguished from source-backed experimental structure.",
+          "Node and relation budgets can omit otherwise available bounded cues; omission is exposed through truncation witnesses and is never presented as a complete inventory.",
+          "Dense relation classes cannot silently starve every cue from another nonempty class; per-category projected and omitted counts remain explicit.",
+          "Tissue and biological presentation validates deterministic identity/ordinal uniqueness and material-unit closure before emitting cues; invalid closures fail closed.",
+          "Oversized biological relation arrays, invalid compartment endpoints and coarse-state authority injection fail closed at the presentation boundary.",
+          "Mismatched atomic source authority, site/provenance counts, duplicate source-site identity and out-of-cap nested journey descriptors fail closed before projection.",
           "The provider owns no shared camera, scale, selection, input or canonical mutation authority."
         ],
         "evidence": []
       },
       "fidelity": {
         "regime": "microscopic-matter",
-        "validity": "Authority-labelled bounded presentation of V2X-12 material, microstructure, molecular and atomic representations.",
-        "resolution": "At most 256 provider nodes per projected microscopic representation.",
-        "uncertainty": "Source-backed, computed/model-derived, unresolved and presentation-only geometry are exposed as distinct fidelity states."
+        "validity": "Authority-labelled bounded presentation spanning tissue cells, provider-supported cell organization, material composition, microstructure descriptors, molecular topology and atomic structures.",
+        "resolution": "TISSUE to CELL semantic continuity plus at most 256 provider nodes and 128 semantic relations per projected representation, with stable retained-node placement, category-preserving relation projection, explicit truncation witnesses and fail-closed regime-local input validation.",
+        "uncertainty": "Source-backed, computed/model-derived, unresolved, presentation-only and budget-truncated states remain distinguishable; no visualization upgrades model authority."
       },
       "lifecycle": "SHIPPING",
       "requires": [
         {"id": "v2x12.model.matter-continuity", "version": "1.0.0", "authority": "MODEL_DERIVED_SIMULATION"}
       ],
-      "claims": ["representation.microscopic-matter-v2"],
+      "claims": ["representation.microscopic-matter-v2", "representation.tissue-cell-cues-v1", "representation.biological-matter-cues-v1", "representation.explicit-truncation-witness-v1", "representation.category-preserving-relations-v1", "representation.unresolved-material-fidelity-v1", "representation.unresolved-remainder-cues-v1", "representation.exact-fm-presentation-normalization-v1", "representation.presentation-closure-guard-v1", "representation.fail-closed-biological-boundary-v1", "representation.fail-closed-journey-boundary-v1", "representation.empty-source-no-fallback-v1"],
       "operations": ["INSPECT", "REPRESENT"],
       "budget": {"entities": 256, "bytes": 262144, "operations": 2048, "queue": 32},
       "evidence": [

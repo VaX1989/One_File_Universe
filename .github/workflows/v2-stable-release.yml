@@ -1,0 +1,309 @@
+name: V2 Stable Release Publisher
+
+on:
+  workflow_run:
+    workflows: ['V2X Supreme Convergence']
+    types: [completed]
+    branches: [main]
+  pull_request:
+    paths:
+      - '.github/workflows/v2-stable-release.yml'
+      - '.github/workflows/v2x-supreme-convergence.yml'
+
+concurrency:
+  group: v2-stable-release-${{ github.event_name }}-${{ github.event.pull_request.head.ref || github.event.workflow_run.head_sha || github.ref_name }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  GH_TOKEN: ${{ github.token }}
+  RELEASE_TAG: v2.0.0
+  RELEASE_TITLE: One File Universe v2.0.0
+  SOURCE_SHA: ${{ github.event.workflow_run.head_sha || github.event.pull_request.head.sha || github.sha }}
+  V2X_RUN_ID: ${{ github.event.workflow_run.id || '' }}
+
+jobs:
+  policy:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: '24.20.0'
+      - name: Verify exact policy source
+        shell: bash
+        run: |
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          node tests/governance/privileged-workflow-dependencies.mjs
+          node tests/governance/workflow-credential-boundary.mjs
+
+  release-state:
+    if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      publish_needed: ${{ steps.state.outputs.publish_needed }}
+    steps:
+      - name: Require unused stable v2 identity
+        id: state
+        shell: bash
+        run: |
+          set -euo pipefail
+          if gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$RELEASE_TAG" >/dev/null 2>&1; then
+            echo 'v2.0.0 tag already exists; stable release identity is immutable and must not be replaced' >&2
+            exit 1
+          fi
+          if gh api "repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE_TAG" >/dev/null 2>&1; then
+            echo 'v2.0.0 release already exists without an admissible fresh transaction' >&2
+            exit 1
+          fi
+          echo 'publish_needed=true' >> "$GITHUB_OUTPUT"
+
+  verify-publish:
+    needs: release-state
+    if: github.event_name == 'workflow_run' && needs.release-state.outputs.publish_needed == 'true'
+    permissions:
+      contents: write
+      actions: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: '24.20.0'
+
+      - name: Require exact unchanged main and successful triggering certification
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git ls-remote origin refs/heads/main | cut -f1)" = "$SOURCE_SHA"
+          test -z "$(git ls-remote origin refs/tags/$RELEASE_TAG | cut -f1)"
+          test "$V2X_RUN_ID" != ''
+          TRIGGER="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$V2X_RUN_ID")"
+          test "$(jq -r .name <<<"$TRIGGER")" = 'V2X Supreme Convergence'
+          test "$(jq -r .head_branch <<<"$TRIGGER")" = main
+          test "$(jq -r .head_sha <<<"$TRIGGER")" = "$SOURCE_SHA"
+          test "$(jq -r .status <<<"$TRIGGER")" = completed
+          test "$(jq -r .conclusion <<<"$TRIGGER")" = success
+
+      - name: Require exact-main rendering and reproduction gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          require_run() {
+            local workflow="$1"
+            for i in {1..40}; do
+              gh run list --workflow "$workflow" --branch main --commit "$SOURCE_SHA" --limit 50 --json databaseId,headSha,conclusion,status > /tmp/runs.json
+              RUN_ID="$(jq -r --arg sha "$SOURCE_SHA" '[.[] | select(.headSha==$sha and .status=="completed" and .conclusion=="success")][0].databaseId // empty' /tmp/runs.json)"
+              if test -n "$RUN_ID"; then
+                printf '%s\n' "$RUN_ID" > "/tmp/$(echo "$workflow" | tr '[:upper:] ' '[:lower:]_').run"
+                echo "$workflow -> $RUN_ID"
+                return 0
+              fi
+              sleep 30
+            done
+            echo "No successful exact-main run for $workflow @ $SOURCE_SHA" >&2
+            return 1
+          }
+          require_run 'Rendering Production'
+          require_run 'Exact Source Reproduction Bundle'
+
+      - name: Download exact deterministic production artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          RENDER_ID="$(cat /tmp/rendering_production.run)"
+          gh run download "$RENDER_ID" -n "rendering-production-build-$SOURCE_SHA" -D release-build
+          test -f release-build/One_File_Universe.html
+          test -f release-build/rendering-build-manifest.json
+
+      - name: Verify V2 artifact identity, integrity and runtime contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('node:fs');
+          const crypto=require('node:crypto');
+          const manifest=JSON.parse(fs.readFileSync('release-build/rendering-build-manifest.json','utf8'));
+          const html=fs.readFileSync('release-build/One_File_Universe.html');
+          const digest=crypto.createHash('sha256').update(html).digest('hex');
+          const req=(ok,msg)=>{if(!ok)throw new Error(msg)};
+          req(manifest.status==='PASS','build status is not PASS');
+          req(manifest.sourceCommit===process.env.SOURCE_SHA,'artifact source is not exact released main');
+          req(manifest.productVersion==='2.0.0','productVersion is not 2.0.0');
+          req(manifest.releaseLine==='v2.0.0','releaseLine is not v2.0.0');
+          req(manifest.releaseStatus==='STABLE_RELEASE','releaseStatus drift');
+          req(manifest.candidateOnly===false,'artifact is candidate-only');
+          req(manifest.artifact==='One_File_Universe.html','unexpected artifact name');
+          req(manifest.artifactSha256===digest,'manifest/artifact SHA mismatch');
+          req(manifest.artifactBytes===html.length,'manifest/artifact byte-count mismatch');
+          req(manifest.runtime?.strictSingleFile===true,'single-file contract mismatch');
+          req(manifest.runtime?.directFile===true,'direct-file contract mismatch');
+          req(manifest.runtime?.offline===true && manifest.runtime?.networkRequired===false,'offline contract mismatch');
+          req(manifest.runtime?.externalRuntimeDependencies===false,'external runtime dependency contract mismatch');
+          req(!/(src|href)=["'][^"']*https?:\/\//i.test(html.toString('utf8')),'external runtime URL found');
+          fs.writeFileSync('expected-sha256.txt',digest+'\n');
+          fs.writeFileSync('expected-bytes.txt',String(html.length)+'\n');
+          NODE
+
+      - name: Prepare stable V2 release notes
+        shell: bash
+        run: |
+          set -euo pipefail
+          TREE="$(git rev-parse HEAD^{tree})"
+          SHA256="$(tr -d '\n' < expected-sha256.txt)"
+          BYTES="$(tr -d '\n' < expected-bytes.txt)"
+          RENDER_ID="$(cat /tmp/rendering_production.run)"
+          REPRO_ID="$(cat /tmp/exact_source_reproduction_bundle.run)"
+          cat > release-notes.md <<EOF
+          # One File Universe v2.0.0
+
+          Certified stable V2 convergence of the single-file living multiscale universe.
+
+          ## Certified release identity
+          - released commit: \`$SOURCE_SHA\`
+          - tree: \`$TREE\`
+          - standalone asset: \`One_File_Universe.html\`
+          - HTML SHA-256: \`$SHA256\`
+          - HTML bytes: \`$BYTES\`
+          - strict single-file: \`true\`
+          - direct \`file:\` operation: \`true\`
+          - runtime network required: \`false\`
+          - V2X Supreme Convergence: https://github.com/$GITHUB_REPOSITORY/actions/runs/$V2X_RUN_ID
+          - Rendering Production: https://github.com/$GITHUB_REPOSITORY/actions/runs/$RENDER_ID
+          - Exact Source Reproduction Bundle: https://github.com/$GITHUB_REPOSITORY/actions/runs/$REPRO_ID
+
+          Scientific and presentation authority remain bounded by the repository's certified manifests. Physical Android/iOS verification is not implied by browser automation.
+          EOF
+
+      - name: Reconfirm exact live main immediately before draft creation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git ls-remote origin refs/heads/main | cut -f1)" = "$SOURCE_SHA"
+          test -z "$(git ls-remote origin refs/tags/$RELEASE_TAG | cut -f1)"
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then exit 1; fi
+
+      - name: Stage draft release only
+        id: draft
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release create "$RELEASE_TAG" release-build/One_File_Universe.html --target "$SOURCE_SHA" --title "$RELEASE_TITLE" --notes-file release-notes.md --draft
+          RELEASE_ID="$(gh release view "$RELEASE_TAG" --json databaseId --jq .databaseId)"
+          test -n "$RELEASE_ID"
+          echo "release_id=$RELEASE_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Re-download remote draft asset and verify bytes/hash
+        shell: bash
+        env:
+          RELEASE_ID: ${{ steps.draft.outputs.release_id }}
+        run: |
+          set -euo pipefail
+          RELEASE_JSON="$(gh api "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID")"
+          test "$(jq -r .draft <<<"$RELEASE_JSON")" = true
+          test "$(jq -r .prerelease <<<"$RELEASE_JSON")" = false
+          test "$(jq -r .target_commitish <<<"$RELEASE_JSON")" = "$SOURCE_SHA"
+          test "$(jq -r .tag_name <<<"$RELEASE_JSON")" = "$RELEASE_TAG"
+          rm -rf remote-draft && mkdir remote-draft
+          gh release download "$RELEASE_TAG" -p One_File_Universe.html -D remote-draft
+          test "$(sha256sum remote-draft/One_File_Universe.html | cut -d' ' -f1)" = "$(tr -d '\n' < expected-sha256.txt)"
+          test "$(stat -c%s remote-draft/One_File_Universe.html)" = "$(tr -d '\n' < expected-bytes.txt)"
+          cmp -s release-build/One_File_Universe.html remote-draft/One_File_Universe.html
+
+      - name: Abort stale V2 transaction if main moved
+        shell: bash
+        run: |
+          set -euo pipefail
+          LIVE_MAIN="$(git ls-remote origin refs/heads/main | cut -f1)"
+          test "$LIVE_MAIN" = "$SOURCE_SHA"
+
+      - name: Reconfirm staged release and tag ownership immediately before publication
+        shell: bash
+        env:
+          RELEASE_ID: ${{ steps.draft.outputs.release_id }}
+        run: |
+          set -euo pipefail
+          RELEASE_JSON="$(gh api "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID")"
+          test "$(jq -r .draft <<<"$RELEASE_JSON")" = true
+          test "$(jq -r .target_commitish <<<"$RELEASE_JSON")" = "$SOURCE_SHA"
+          test "$(jq -r .tag_name <<<"$RELEASE_JSON")" = "$RELEASE_TAG"
+          TAG_REF_JSON="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$RELEASE_TAG")"
+          TAG_OBJECT_TYPE="$(jq -r .object.type <<<"$TAG_REF_JSON")"
+          TAG_OBJECT_SHA="$(jq -r .object.sha <<<"$TAG_REF_JSON")"
+          if test "$TAG_OBJECT_TYPE" = tag; then
+            TAG_OBJECT_SHA="$(gh api "repos/$GITHUB_REPOSITORY/git/tags/$TAG_OBJECT_SHA" --jq .object.sha)"
+          else
+            test "$TAG_OBJECT_TYPE" = commit
+          fi
+          test "$TAG_OBJECT_SHA" = "$SOURCE_SHA"
+
+      - name: Publish only after verified draft
+        shell: bash
+        env:
+          RELEASE_ID: ${{ steps.draft.outputs.release_id }}
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" -X PATCH -F draft=false -F prerelease=false > /tmp/published.json
+          test "$(jq -r .draft /tmp/published.json)" = false
+          test "$(jq -r .prerelease /tmp/published.json)" = false
+
+      - name: Final published release, tag and asset verification
+        shell: bash
+        env:
+          RELEASE_ID: ${{ steps.draft.outputs.release_id }}
+        run: |
+          set -euo pipefail
+          test "$(git ls-remote origin refs/heads/main | cut -f1)" = "$SOURCE_SHA"
+          RELEASE_JSON="$(gh api "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID")"
+          test "$(jq -r .draft <<<"$RELEASE_JSON")" = false
+          test "$(jq -r .prerelease <<<"$RELEASE_JSON")" = false
+          test "$(jq -r .target_commitish <<<"$RELEASE_JSON")" = "$SOURCE_SHA"
+          test "$(jq -r .tag_name <<<"$RELEASE_JSON")" = "$RELEASE_TAG"
+          TAG_REF_JSON="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$RELEASE_TAG")"
+          TAG_OBJECT_TYPE="$(jq -r .object.type <<<"$TAG_REF_JSON")"
+          TAG_OBJECT_SHA="$(jq -r .object.sha <<<"$TAG_REF_JSON")"
+          if test "$TAG_OBJECT_TYPE" = tag; then TAG_OBJECT_SHA="$(gh api "repos/$GITHUB_REPOSITORY/git/tags/$TAG_OBJECT_SHA" --jq .object.sha)"; fi
+          test "$TAG_OBJECT_SHA" = "$SOURCE_SHA"
+          rm -rf published-release && mkdir published-release
+          gh release download "$RELEASE_TAG" -p One_File_Universe.html -D published-release
+          test "$(sha256sum published-release/One_File_Universe.html | cut -d' ' -f1)" = "$(tr -d '\n' < expected-sha256.txt)"
+          test "$(stat -c%s published-release/One_File_Universe.html)" = "$(tr -d '\n' < expected-bytes.txt)"
+          cmp -s release-build/One_File_Universe.html published-release/One_File_Universe.html
+
+      - name: Cleanup failed unpublished V2 transaction
+        if: failure()
+        shell: bash
+        env:
+          RELEASE_ID: ${{ steps.draft.outputs.release_id }}
+        run: |
+          set -euo pipefail
+          test -n "${RELEASE_ID:-}" || exit 0
+          RELEASE_JSON="$(gh api "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" 2>/dev/null || true)"
+          test -n "$RELEASE_JSON" || exit 0
+          test "$(jq -r .draft <<<"$RELEASE_JSON")" = true || exit 1
+          test "$(jq -r .target_commitish <<<"$RELEASE_JSON")" = "$SOURCE_SHA" || exit 1
+          test "$(jq -r .tag_name <<<"$RELEASE_JSON")" = "$RELEASE_TAG" || exit 1
+          TAG_REF_JSON="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$RELEASE_TAG" 2>/dev/null || true)"
+          if test -n "$TAG_REF_JSON"; then
+            TAG_OBJECT_TYPE="$(jq -r .object.type <<<"$TAG_REF_JSON")"
+            TAG_OBJECT_SHA="$(jq -r .object.sha <<<"$TAG_REF_JSON")"
+            if test "$TAG_OBJECT_TYPE" = tag; then TAG_OBJECT_SHA="$(gh api "repos/$GITHUB_REPOSITORY/git/tags/$TAG_OBJECT_SHA" --jq .object.sha)"; fi
+            test "$TAG_OBJECT_SHA" != "$SOURCE_SHA" && exit 1
+          fi
+          gh api "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" -X DELETE
+          if test -n "$TAG_REF_JSON"; then gh api "repos/$GITHUB_REPOSITORY/git/refs/tags/$RELEASE_TAG" -X DELETE; fi

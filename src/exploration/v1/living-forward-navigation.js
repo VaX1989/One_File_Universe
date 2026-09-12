@@ -14,13 +14,13 @@ function fingerprint(s){return JSON.stringify({
  point:s.point?.locationIdentity||null,object:s.selectedObjectId||null,epoch:s.world?.civilization?.epoch??null,semanticScale:s.semanticScale,distance:stable(s.continuousDistanceRadii)
 })}
 function create(options={}){
- const raw=Base.create(options),known=[],forward=[],listeners=new Set();let suppress=0,forwardCount=0,invalidations=0;
+ const raw=Base.create(options),known=[],forward=[],listeners=new Set();let suppress=0,forwardCount=0,invalidations=0,disposed=false;
  const limit=Math.max(8,Math.min(Number(raw.snapshot().maxHistory||Base.MAX_HISTORY||64),Number(Base.MAX_HISTORY||64)));
  function trim(stack){while(stack.length>limit)stack.shift()}
  function decorated(){const s=raw.snapshot();return Object.freeze({...s,forwardDepth:forward.length,forwardKnownDepth:known.length,forwardNavigationVersion:VERSION,forwardNavigationAvailable:forward.length>0,forwardCount,forwardInvalidations:invalidations})}
  function notify(){const s=decorated();for(const fn of listeners)fn(s);return s}
  function invalidate(){if(known.length||forward.length)invalidations++;known.length=0;forward.length=0}
- raw.onChange(()=>{if(suppress)return;invalidate();notify()});
+ const unsubscribeRaw=raw.onChange(()=>{if(suppress)return;invalidate();notify()});
  function onChange(fn){if(typeof fn!=='function')throw new TypeError('Living forward navigation listener required');listeners.add(fn);return()=>listeners.delete(fn)}
  function record(name,args,after){known.push(Object.freeze({name,args:Object.freeze([...args]),after:fingerprint(after)}));trim(known);forward.length=0}
  function historyWasPushed(name,args,before,after){if(after.revision===before.revision)return false;if(HISTORY_METHODS.has(name))return true;if(name==='navigate'||name==='at')return args[1]?.push!==false;if(CONDITIONAL_HISTORY_METHODS.has(name))return after.stage!==before.stage;return false}
@@ -56,7 +56,8 @@ function create(options={}){
  }
  const overrides={};
  for(const name of [...HISTORY_METHODS,...CONDITIONAL_HISTORY_METHODS,...NON_HISTORY_MUTATIONS,'navigate','at'])if(typeof raw[name]==='function')overrides[name]=(...args)=>invoke(name,args);
- return Object.freeze({...raw,...overrides,snapshot:decorated,onChange,back,forward:forwardTravel,FORWARD_NAVIGATION_VERSION:VERSION});
+ function dispose(){if(disposed)return false;disposed=true;unsubscribeRaw();listeners.clear();known.length=0;forward.length=0;return raw.dispose?.()??true}
+ return Object.freeze({...raw,...overrides,snapshot:decorated,onChange,back,forward:forwardTravel,dispose,FORWARD_NAVIGATION_VERSION:VERSION});
 }
 O.v1LivingRuntime=Object.freeze({...Base,FORWARD_NAVIGATION_VERSION:VERSION,create});
 })(typeof globalThis!=='undefined'?globalThis:this);

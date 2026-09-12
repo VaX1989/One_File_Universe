@@ -1,0 +1,120 @@
+name: V2X Supreme Convergence
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - development/v1.1-quality-exploration
+      - integration/v2x-supreme-total-convergence-2026-09-07
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  OFU_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+jobs:
+  exact-head-certification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ env.OFU_EXPECTED_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24.20.0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13.15'
+      - name: Exact source identity
+        shell: bash
+        run: |
+          test "$(git rev-parse HEAD)" = "$OFU_EXPECTED_SHA"
+          git diff --exit-code
+          test -z "$(git status --porcelain)"
+      - name: Full repository test and reproducible build stack
+        run: npm test
+      - name: V2X provider activation boundary
+        run: node tests/v2x-convergence/provider-activation-boundary.mjs
+      - name: V2.0 central authority freeze
+        run: node tests/governance/v2-central-authority-map.mjs
+      - name: V2.0 artifact composition and reproducibility audit
+        run: node tests/governance/v2-parallel-base-artifact-audit.mjs
+      - name: Rebuild actual Living shipping product
+        run: node tools/build-ofu-rendering-v09.mjs
+      - name: V2X-07 Local/Human upstream adapters
+        run: node tests/v2x-07-human-scale-local-traversal/upstream-adapters.mjs
+      - name: V2X-07 Local/Human environment matrix
+        run: node tests/v2x-07-human-scale-local-traversal/environment-matrix.mjs
+      - name: V2X-07 Local/Human product experience
+        run: node tests/v2x-07-human-scale-local-traversal/local-experience.mjs
+      - name: V2X-10 convergence blocker regressions
+        run: node tests/v2x10/convergence-blockers.mjs
+      - name: V2X-11 governed causal save-reload-revisit witness
+        run: node tests/v2x-convergence/living-governed-causal-journey.mjs
+      - name: V2X-12 matter authority and deterministic continuity
+        run: node tests/v2x-12-matter-continuity/run.mjs
+      - name: P22 strict science authority oracle
+        run: node tests/audit/v2-science-authority-oracle.mjs --strict --json
+      - name: V2X-14 product contracts
+        run: node tests/v2x-14-product-experience/contracts.mjs
+      - name: V2X-14 direct manipulation ownership
+        run: node tests/v2x-14-product-experience/direct-manipulation-contract.mjs
+      - name: V2X-14 responsive accessibility CSS
+        run: node tests/v2x-14-product-experience/css-contract.mjs
+      - name: V2X-14 systemic audio resource bounds
+        run: node tests/v2x-14-product-experience/audio-resource-contract.mjs
+      - name: V2X-14 exact artifact reachability
+        run: node tests/v2x-14-product-experience/artifact-reachability.mjs
+      - name: Living macrocosm composition witness
+        run: node tests/v2x-convergence/macrocosm-composition.mjs
+      - name: Living single-camera authority witness
+        run: node tests/v2x-convergence/living-camera-authority.mjs
+      - name: Living V2X domain composition witness
+        run: node tests/v2x-convergence/living-domain-composition.mjs
+      - name: Living V2X context inspector witness
+        run: node tests/v2x-convergence/living-context-inspector.mjs
+      - name: V2 cinematic experience contract
+        run: node tests/v2x-convergence/cinematic-experience-contract.mjs
+      - name: Install governed release browser runtimes
+        run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium firefox webkit
+      - name: Deep3D visual evolution exact A/B baseline
+        run: node tests/deep3d/browser-visual-evolution.mjs
+      - name: V2X-14 direct manipulation real-browser journey
+        run: node tests/v2x-14-product-experience/browser-direct-manipulation.mjs
+      - name: V2X-14 product/audio/accessibility real-browser journey
+        run: node tests/v2x-14-product-experience/browser-journey.mjs
+      - name: V2 cinematic real-browser journey
+        run: node tests/v2x-convergence/browser-cinematic-experience.mjs
+      - name: V1X-14 Firefox exact readiness witness
+        id: v1x14_firefox
+        continue-on-error: true
+        run: xvfb-run -a node tests/v1x-14-certification-evidence/browser-evidence.mjs --browser=firefox
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v1x14-firefox-${{ env.OFU_EXPECTED_SHA }}
+          path: reports/v1x-14-certification-evidence/${{ env.OFU_EXPECTED_SHA }}/firefox
+          if-no-files-found: warn
+      - name: Enforce V1X-14 Firefox readiness
+        if: steps.v1x14_firefox.outcome != 'success'
+        run: exit 1
+      - name: Progressive release conformance exact source
+        run: node tools/extensions/conformance.mjs RELEASE --exact
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v2-cinematic-${{ env.OFU_EXPECTED_SHA }}
+          path: |
+            dist/evidence/cinematic
+            dist/evidence/deep3d-visual-evolution
+          if-no-files-found: warn

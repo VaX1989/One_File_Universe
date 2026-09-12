@@ -1,0 +1,41 @@
+{
+  "schema": "ofu-components-1",
+  "components": [
+    {
+      "id": "v2.central.living-v2x01-runtime-binding",
+      "version": "1.0.0",
+      "owner": "runtime",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/runtime/living-materialization-binding.js",
+      "dependencies": [
+        "v1.rendering.living-renderer",
+        "ofu.v2x01.materialization.runtime"
+      ],
+      "authority": "MEASURED_RUNTIME_EVIDENCE",
+      "provenance": "Central convergence binding of the final V2X-01 adaptive materialization runtime to the actual Living renderer path. It consumes read-only stage, selection, scale and history inputs, gates render preparation through bounded requestAdaptive materialization and exposes measured-runtime packets without acquiring selection, camera, history, persistence, scene or scientific authority.",
+      "provides": [
+        "v2.central.living-v2x01-runtime-binding"
+      ]
+    },
+    {
+      "id": "v2.central.living-v2x13-bridge",
+      "version": "1.1.0",
+      "owner": "rendering",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/rendering/v1/living-v2x13-bridge.js",
+      "dependencies": [
+        "v2x02.camera.living-binding",
+        "v2x13.render.webgl2-resources"
+      ],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Central convergence-owned strict pixel binding. The Living renderer remains the single primary scene authority; V2X-13 consumes the read-only V2X-02 camera packet and externally composed scene/semantic-scale state, fails closed when the required strict WebGL2 consumer is unavailable, and owns no canonical truth or independent navigation authority.",
+      "provides": [
+        "v2.central.living-v2x13-bridge"
+      ]
+    }
+  ]
+}

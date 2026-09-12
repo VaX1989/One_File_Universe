@@ -46,18 +46,21 @@ function freeze(v){if(!v||typeof v!=='object'||Object.isFrozen(v))return v;for(c
 function text(v){return typeof v==='string'?v:String(v??'')}
 function int(v,f=0){const n=Number(v);return Number.isSafeInteger(n)?n:Math.trunc(Number.isFinite(n)?n:f)}
 function clamp(v,lo=0,hi=1000000){return Math.max(lo,Math.min(hi,int(v)))}
+function knownPpm(v){return typeof v==='number'&&Number.isFinite(v)&&v>=0&&v<=1000000?Math.round(v):null}
 function arr(v){return Array.isArray(v)?v:[]}
 function assertBound(name,n,max){if(n>max)throw new RangeError('V2X-09 '+name+' bound exceeded: '+n+' > '+max)}
+function assertUniqueIds(name,rows,key){const seen=new Set();for(const row of arr(rows)){const id=text(row?.[key]);if(!id)throw new TypeError('V2X-09 '+name+' missing '+key);if(seen.has(id))throw new RangeError('V2X-09 duplicate '+name+' id: '+id);seen.add(id)}return seen}
 function hash32(s){let h=2166136261>>>0;for(const ch of text(s)){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)>>>0}return h>>>0}
 function deriveId(kind,...parts){return 'v2x09:'+kind+':'+hash32(parts.map(text).join('|')).toString(16).padStart(8,'0')}
 function unit(seed,salt){return (hash32(text(seed)+'|'+text(salt))%1000001)}
 function sortId(xs,key){return xs.slice().sort((a,b)=>text(a?.[key]).localeCompare(text(b?.[key])))}
-function sourceAuthority(v){const a=v?.authority;const candidate=typeof a==='string'?a:(a?.authorityClass??a?.class??a?.authority??v?.authorityClass);return text(candidate||'MODEL_DERIVED_SIMULATION').toUpperCase()}
+function sourceAuthority(v){const a=v?.authority;const candidate=typeof a==='string'?a:(a?.authorityClass??a?.class??a?.authority??v?.authorityClass);return typeof candidate==='string'&&Object.values(AUTHORITY).includes(candidate)?candidate:null}
 function validateCivilization(state){
   if(!state||state.state!=='MODELED_CIVILIZATION')return false;
-  assertBound('settlements',arr(state.settlements).length,LIMITS.settlements);
-  assertBound('resources',arr(state.resources).length,LIMITS.resources);
-  assertBound('tradeEdges',arr(state.tradeEdges).length,LIMITS.tradeEdges);
+  const settlements=arr(state.settlements),resources=arr(state.resources),tradeEdges=arr(state.tradeEdges),regions=arr(state.regions),polities=arr(state.polities),infrastructure=arr(state.infrastructure),historyProposals=arr(state?.history?.proposals);
+  assertBound('settlements',settlements.length,LIMITS.settlements);assertBound('resources',resources.length,LIMITS.resources);assertBound('tradeEdges',tradeEdges.length,LIMITS.tradeEdges);
+  assertUniqueIds('settlement',settlements,'settlementId');assertUniqueIds('resource',resources,'resourceId');assertUniqueIds('trade edge',tradeEdges,'edgeId');
+  assertUniqueIds('region',regions,'regionId');assertUniqueIds('polity',polities,'polityId');assertUniqueIds('infrastructure asset',infrastructure,'infrastructureId');assertUniqueIds('history proposal',historyProposals,'eventProposalId');
   return true;
 }
 function techLevel(t,key){return clamp(t?.[key]??0,0,8)}
@@ -85,7 +88,10 @@ function goodForResource(r){
   if(c.includes('ENERGY')||c.includes('FUEL'))return 'ENERGY_SERVICE';
   return 'MATERIAL_GOODS';
 }
-function tradeDegree(state,settlementId){return arr(state?.tradeEdges).filter(e=>e.from===settlementId||e.to===settlementId).length}
+function tradeDegree(state,settlementId){
+  const activeSettlements=new Set(arr(state?.settlements).filter(s=>text(s?.status||'UNKNOWN').toUpperCase()==='ACTIVE').map(s=>text(s.settlementId)));
+  return arr(state?.tradeEdges).filter(e=>text(e?.status||'UNKNOWN').toUpperCase()==='ACTIVE'&&activeSettlements.has(text(e.from))&&activeSettlements.has(text(e.to))&&(e.from===settlementId||e.to===settlementId)).length;
+}
 
-O.v2x09CivilizationCore=Object.freeze({VERSION,ECONOMY_CONTRACT,MORPHOLOGY_CONTRACT,IMPACT_CONTRACT,AUTHORITY,LIMITS,GOODS,TECH_KEYS,CAPABILITY_GRAPH,LIMITATIONS,freeze,text,int,clamp,arr,assertBound,hash32,deriveId,unit,sortId,sourceAuthority,validateCivilization,techLevel,technologyProfile,goodForResource,tradeDegree});
+O.v2x09CivilizationCore=Object.freeze({VERSION,ECONOMY_CONTRACT,MORPHOLOGY_CONTRACT,IMPACT_CONTRACT,AUTHORITY,LIMITS,GOODS,TECH_KEYS,CAPABILITY_GRAPH,LIMITATIONS,freeze,text,int,clamp,knownPpm,arr,assertBound,assertUniqueIds,hash32,deriveId,unit,sortId,sourceAuthority,validateCivilization,techLevel,technologyProfile,goodForResource,tradeDegree});
 })(typeof globalThis!=='undefined'?globalThis:this);

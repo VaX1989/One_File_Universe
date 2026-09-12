@@ -11,30 +11,35 @@ const errors=[],requests=[];
 page.on('pageerror',error=>errors.push(String(error?.message||error)));
 page.on('request',request=>{const url=request.url();if(!url.startsWith('file:')&&!url.startsWith('blob:')&&!url.startsWith('data:'))requests.push(url);});
 
-const hashCanvas=()=>{
- const canvas=document.getElementById('living-view'),ctx=canvas.getContext('2d'),pixels=ctx.getImageData(0,0,canvas.width,canvas.height).data;
- let hash=2166136261,nonEmpty=0;
- const sx=Math.max(1,Math.floor(canvas.width/64)),sy=Math.max(1,Math.floor(canvas.height/40));
- for(let y=0;y<canvas.height;y+=sy)for(let x=0;x<canvas.width;x+=sx){const i=(y*canvas.width+x)*4;for(let k=0;k<4;k++){hash^=pixels[i+k];hash=Math.imul(hash,16777619)>>>0;}if(pixels[i+3]&&(pixels[i]||pixels[i+1]||pixels[i+2]))nonEmpty++;}
- return {hash,nonEmpty,width:canvas.width,height:canvas.height};
-};
-
 try{
  await page.goto(target,{waitUntil:'load'});
  await page.waitForFunction(()=>OFU?.v1LivingProduct?.snapshot?.().initialized&&OFU?.v1LivingRenderer?.FRAME_PACING_VERSION&&OFU?.productUI,null,{timeout:30000});
  await page.evaluate(async()=>{await OFU.v1LivingProduct.ready();OFU.productUI.workspace('explore',{focus:false,announceChange:false});});
  await page.waitForTimeout(100);
- const before=await page.evaluate(hashCanvas=>{
+ await page.evaluate(()=>{
+  globalThis.__ofuFramePacingVisualSample=async()=>{
+   const product=OFU.v1LivingProduct,runtime=product.runtime.snapshot();
+   await product.renderer.render(runtime);
+   const state=product.renderer.state(),gpuPrimary=state.deep3d?.primaryBackend==='DEEP3D_WEBGL2_V2X13',canvas=document.getElementById(gpuPrimary?'living-gl':'living-view');
+   let pixels;
+   if(gpuPrimary){const gl=canvas.getContext('webgl2');pixels=new Uint8Array(canvas.width*canvas.height*4);gl.readPixels(0,0,canvas.width,canvas.height,gl.RGBA,gl.UNSIGNED_BYTE,pixels);if(gl.getError()!==gl.NO_ERROR)throw new Error('Deep3D visual sampling failed');}
+   else pixels=canvas.getContext('2d').getImageData(0,0,canvas.width,canvas.height).data;
+   let hash=2166136261,nonEmpty=0;const sx=Math.max(1,Math.floor(canvas.width/64)),sy=Math.max(1,Math.floor(canvas.height/40));
+   for(let y=0;y<canvas.height;y+=sy)for(let x=0;x<canvas.width;x+=sx){const i=(y*canvas.width+x)*4;for(let k=0;k<4;k++){hash^=pixels[i+k];hash=Math.imul(hash,16777619)>>>0;}if(pixels[i+3]&&(pixels[i]||pixels[i+1]||pixels[i+2]))nonEmpty++;}
+   return {hash,nonEmpty,width:canvas.width,height:canvas.height,surfaceId:canvas.id,gpuPrimary,hidden:canvas.hidden};
+  };
+ });
+ const before=await page.evaluate(async()=>{
+  const canvas=await __ofuFramePacingVisualSample();
   const runtime=OFU.v1LivingProduct.runtime.snapshot(),renderer=OFU.v1LivingProduct.renderer.state();
-  const canvas=document.getElementById('living-view'),ctx=canvas.getContext('2d'),pixels=ctx.getImageData(0,0,canvas.width,canvas.height).data;
-  let hash=2166136261,nonEmpty=0,sx=Math.max(1,Math.floor(canvas.width/64)),sy=Math.max(1,Math.floor(canvas.height/40));
-  for(let y=0;y<canvas.height;y+=sy)for(let x=0;x<canvas.width;x+=sx){const i=(y*canvas.width+x)*4;for(let k=0;k<4;k++){hash^=pixels[i+k];hash=Math.imul(hash,16777619)>>>0;}if(pixels[i+3]&&(pixels[i]||pixels[i+1]||pixels[i+2]))nonEmpty++;}
-  return {runtime:{revision:runtime.revision,stage:runtime.stage,node:runtime.node?.canonicalId||runtime.node?.entityId||null,historyDepth:runtime.historyDepth},renderer:{authority:renderer.authority,frames:renderer.metrics.frames,readyRevision:renderer.readyRevision,framePacing:renderer.framePacing},canvas:{hash,nonEmpty,width:canvas.width,height:canvas.height},scheduler:OFU.v1LivingRenderer.FRAME_PACING_VERSION};
- },hashCanvas.toString());
+  return {runtime:{revision:runtime.revision,stage:runtime.stage,node:runtime.node?.canonicalId||runtime.node?.entityId||null,historyDepth:runtime.historyDepth},renderer:{authority:renderer.authority,frames:renderer.metrics.frames,readyRevision:renderer.readyRevision,framePacing:renderer.framePacing,deep3dPrimary:renderer.deep3d?.primaryBackend||null},canvas,scheduler:OFU.v1LivingRenderer.FRAME_PACING_VERSION};
+ });
  assert.equal(before.renderer.authority,'PRESENTATION_ONLY');
  assert.equal(before.renderer.framePacing.strategy,'RAF_COALESCED_ROTATION');
  assert.equal(before.renderer.framePacing.pendingEvents,0);
  assert.ok(before.canvas.nonEmpty>0,'Living canvas must contain visible pixels before the pacing probe');
+ assert.equal(before.canvas.hidden,false,'active presentation surface must be visible');
+ if(before.renderer.deep3dPrimary)assert.deepEqual({surface:before.canvas.surfaceId,gpuPrimary:before.canvas.gpuPrimary},{surface:'living-gl',gpuPrimary:true},'Deep3D stages must be sampled from the GPU-primary surface');
 
  const immediate=await page.evaluate(()=>{
   const canvas=document.getElementById('living-view'),rect=canvas.getBoundingClientRect(),runtime=OFU.v1LivingProduct.runtime.snapshot(),before=OFU.v1LivingProduct.renderer.state();
@@ -54,12 +59,11 @@ try{
 
  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
  await page.waitForFunction(()=>OFU.v1LivingProduct.renderer.state().framePacing.pendingEvents===0,null,{timeout:5000});
- const after=await page.evaluate(()=>{
-  const runtime=OFU.v1LivingProduct.runtime.snapshot(),renderer=OFU.v1LivingProduct.renderer.state(),canvas=document.getElementById('living-view'),ctx=canvas.getContext('2d'),pixels=ctx.getImageData(0,0,canvas.width,canvas.height).data;
-  let hash=2166136261,nonEmpty=0,sx=Math.max(1,Math.floor(canvas.width/64)),sy=Math.max(1,Math.floor(canvas.height/40));
-  for(let y=0;y<canvas.height;y+=sy)for(let x=0;x<canvas.width;x+=sx){const i=(y*canvas.width+x)*4;for(let k=0;k<4;k++){hash^=pixels[i+k];hash=Math.imul(hash,16777619)>>>0;}if(pixels[i+3]&&(pixels[i]||pixels[i+1]||pixels[i+2]))nonEmpty++;}
-  return {runtime:{revision:runtime.revision,stage:runtime.stage,node:runtime.node?.canonicalId||runtime.node?.entityId||null,historyDepth:runtime.historyDepth},renderer:{authority:renderer.authority,frames:renderer.metrics.frames,readyRevision:renderer.readyRevision,framePacing:renderer.framePacing},canvas:{hash,nonEmpty,width:canvas.width,height:canvas.height},input:OFU.v1LivingProduct.snapshot().input};
+ const afterState=await page.evaluate(()=>{
+  const runtime=OFU.v1LivingProduct.runtime.snapshot(),renderer=OFU.v1LivingProduct.renderer.state();
+  return {runtime:{revision:runtime.revision,stage:runtime.stage,node:runtime.node?.canonicalId||runtime.node?.entityId||null,historyDepth:runtime.historyDepth},renderer:{authority:renderer.authority,frames:renderer.metrics.frames,readyRevision:renderer.readyRevision,framePacing:renderer.framePacing},input:OFU.v1LivingProduct.snapshot().input};
  });
+ const after={...afterState,canvas:await page.evaluate(()=>__ofuFramePacingVisualSample())};
  const inputDelta=after.renderer.framePacing.inputEvents-before.renderer.framePacing.inputEvents;
  const pacingFrames=after.renderer.framePacing.frames-before.renderer.framePacing.frames;
  const coalesced=after.renderer.framePacing.coalescedEvents-before.renderer.framePacing.coalescedEvents;

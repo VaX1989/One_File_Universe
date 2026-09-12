@@ -9,6 +9,42 @@
       "providers": ["v2x08.model.life-single-file"],
       "oracle": "v2x08-life-single-file-bounded-authority",
       "timeoutMs": 30000
+    },
+    {
+      "id": "v2x08.life.viewport-bridge-unit",
+      "owner": "v2x-08-life-ecology-evolution-embodiment",
+      "tier": "FAST_LOCAL",
+      "command": ["node", "tests/v2x-08/life-viewport-bridge-unit.mjs"],
+      "providers": ["v2x08.model.life-single-file"],
+      "oracle": "v2x08-life-v2-deterministic-bounded-viewport-authority",
+      "timeoutMs": 30000
+    },
+    {
+      "id": "v2x08.life.shipping-viewport",
+      "owner": "v2x-08-life-ecology-evolution-embodiment",
+      "tier": "LANE_TARGETED",
+      "command": ["node", "tests/v2x-08/life-shipping-viewport.mjs"],
+      "providers": ["v2x08.model.life-single-file"],
+      "oracle": "v2x08-life-v2-rich-embodiment-evolution-anti-fallback",
+      "timeoutMs": 30000
+    },
+    {
+      "id": "v2x08.life.living-consumer",
+      "owner": "product",
+      "tier": "LANE_TARGETED",
+      "command": ["node", "tests/v2x-convergence/living-life-v2-consumer.mjs"],
+      "providers": ["v2x08.model.life-single-file"],
+      "oracle": "ofu-v2x-living-life-v2-consumer-witness-1",
+      "timeoutMs": 30000
+    },
+    {
+      "id": "v2x08.life.artifact-reachability",
+      "owner": "v2x-08-life-ecology-evolution-embodiment",
+      "tier": "INTEGRATION",
+      "command": ["node", "tests/v2x-08/life-artifact-reachability.mjs"],
+      "providers": ["v2x08.model.life-single-file"],
+      "oracle": "v2x08-life-v2-deterministic-classic-bundle-one-file-injection",
+      "timeoutMs": 60000
     }
   ]
 }

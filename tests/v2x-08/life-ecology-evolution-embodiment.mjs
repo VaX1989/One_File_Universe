@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {
   LIFE_V2_AUTHORITY,
   LIFE_V2_LIMITS,
+  LIFE_V2_SCENARIO_ASSUMPTIONS,
   createLifeState,
   advanceEcology,
   applyLineageEvent,
@@ -65,6 +66,15 @@ function fixture(overrides = {}) {
   });
 }
 
+function populationByLineage(state) {
+  return Object.fromEntries(state.populations.map((population) => [population.lineageId, {
+    abundance: population.abundance,
+    energyStore: population.energyStore,
+    nutrientStore: population.nutrientStore,
+    regionId: population.regionId,
+  }]));
+}
+
 const base = fixture();
 equal(base.authority.class, 'MODEL_DERIVED_SIMULATION', 'life v2 must remain model-derived');
 equal(LIFE_V2_AUTHORITY.abiogenesisStatus, 'NOT_MODELED', 'abiogenesis must remain out of scope');
@@ -82,6 +92,35 @@ const event = {
     disturbanceMortalityPpm: 300_000,
   },
 };
+equal(LIFE_V2_SCENARIO_ASSUMPTIONS.assumptionClass, 'MODEL_ASSUMPTION_NOT_OBSERVATION', 'scenario priors must be explicitly classified as assumptions, not observations');
+const explicitOnly = advanceEcology(base, {
+  ...event,
+  eventKey: 'p4:explicit-only',
+  profile: { ...event.profile, juvenileMaturationPpm: 0, matureSenescencePpm: 0 },
+});
+equal(explicitOnly.scenarioAssumptions, null, 'fully explicit profile and lineage traits must not manufacture an assumption envelope');
+
+const assumptionFixture = createLifeState({
+  eventKey: 'fixture:assumption-provenance',
+  lineages: [{ id: 'lin-assumed', traits: [] }],
+  populations: [{
+    id: 'pop-assumed', lineageId: 'lin-assumed', regionId: 'r-assumed', abundance: 100,
+    energyStore: 0, nutrientStore: 0,
+    lifecycleStagePpm: { juvenile: 200_000, mature: 700_000, senescent: 100_000 },
+  }],
+  interactions: [],
+  regions: { 'r-assumed': { resourcePool: 1000, nutrientPool: 1000, disturbancePpm: 0, opportunityPpm: PPM } },
+});
+const assumedAdvance = advanceEcology(assumptionFixture, { type: 'LIFE_ADVANCE', eventKey: 'p4:assumed' });
+check(assumedAdvance.scenarioAssumptions?.assumptionClass === 'MODEL_ASSUMPTION_NOT_OBSERVATION', 'omitted ecology parameters must surface governed assumption authority');
+check(assumedAdvance.scenarioAssumptions?.provenance.includes('not measured'), 'scenario assumption provenance must deny observational authority');
+for (const field of [
+  'profile.birthPpm', 'profile.mortalityPpm', 'profile.resourcePerBirth', 'profile.nutrientPerBirth',
+  'profile.maintenancePerIndividual', 'profile.disturbanceMortalityPpm', 'profile.juvenileMaturationPpm',
+  'profile.matureSenescencePpm', 'trait.fecundity', 'trait.resilience',
+]) check(assumedAdvance.scenarioAssumptions.fields.includes(field), `missing governed assumption witness for ${field}`);
+check(assumedAdvance.diagnostics.every((entry) => entry.scenarioAssumptions === assumedAdvance.scenarioAssumptions), 'downstream demographic diagnostics must retain the exact assumption envelope');
+
 const first = advanceEcology(base, event).state;
 const second = advanceEcology(base, event).state;
 equal(first, second, 'identical state + event must replay identically');
@@ -98,6 +137,65 @@ const resourcePoor = fixture({
 });
 const resourcePoorNext = advanceEcology(resourcePoor, event).state;
 check(resourcePoorNext.populations[0].abundance <= base.populations[0].abundance, 'zero birth resources must prevent resource-funded growth');
+
+const sharedLineages = [
+  { id: 'lin-small', traits: [{ key: 'fecundity', valuePpm: PPM }, { key: 'resilience', valuePpm: PPM }] },
+  { id: 'lin-large', traits: [{ key: 'fecundity', valuePpm: PPM }, { key: 'resilience', valuePpm: PPM }] },
+];
+function limitedResourceFixture(ids) {
+  return createLifeState({
+    eventKey: 'fixture:limited',
+    lineages: sharedLineages,
+    populations: [
+      { id: ids.small, lineageId: 'lin-small', regionId: 'r', abundance: 100, energyStore: 0, nutrientStore: 0 },
+      { id: ids.large, lineageId: 'lin-large', regionId: 'r', abundance: 300, energyStore: 0, nutrientStore: 0 },
+    ],
+    interactions: [],
+    regions: { r: { resourcePool: 100, nutrientPool: 100, disturbancePpm: 0, opportunityPpm: PPM } },
+  });
+}
+const saturatedGrowthEvent = {
+  type: 'LIFE_ADVANCE', eventKey: 'p4:limited',
+  profile: { birthPpm: PPM, mortalityPpm: 0, resourcePerBirth: 1, nutrientPerBirth: 1, maintenancePerIndividual: 0, disturbanceMortalityPpm: 0 },
+};
+const limitedA = advanceEcology(limitedResourceFixture({ small: 'a-small', large: 'z-large' }), saturatedGrowthEvent).state;
+const limitedB = advanceEcology(limitedResourceFixture({ small: 'z-small', large: 'a-large' }), saturatedGrowthEvent).state;
+equal(populationByLineage(limitedA), populationByLineage(limitedB), 'renaming population IDs must not redirect shared regional birth resources between unchanged ecological roles');
+equal(populationByLineage(limitedA)['lin-small'].abundance, 125n, 'limited birth resources must be proportionally allocated to small population');
+equal(populationByLineage(limitedA)['lin-large'].abundance, 375n, 'limited birth resources must be proportionally allocated to large population');
+equal(limitedA.regions.r.resourcePool, 0n, 'allocated births must consume the explicit shared resource budget exactly in divisible fixture');
+equal(limitedA.regions.r.nutrientPool, 0n, 'allocated births must consume the explicit shared nutrient budget exactly in divisible fixture');
+
+function interactionFixture(edgeIds) {
+  return createLifeState({
+    eventKey: 'fixture:interaction',
+    lineages: [
+      { id: 'lin-p1', traits: [{ key: 'fecundity', valuePpm: 0 }, { key: 'resilience', valuePpm: PPM }] },
+      { id: 'lin-p2', traits: [{ key: 'fecundity', valuePpm: 0 }, { key: 'resilience', valuePpm: PPM }] },
+      { id: 'lin-prey', traits: [{ key: 'fecundity', valuePpm: 0 }, { key: 'resilience', valuePpm: PPM }] },
+    ],
+    populations: [
+      { id: 'predator-1', lineageId: 'lin-p1', regionId: 'r', abundance: 100, energyStore: 0, nutrientStore: 0 },
+      { id: 'predator-2', lineageId: 'lin-p2', regionId: 'r', abundance: 100, energyStore: 0, nutrientStore: 0 },
+      { id: 'prey', lineageId: 'lin-prey', regionId: 'r', abundance: 100, energyStore: 0, nutrientStore: 0 },
+    ],
+    interactions: [
+      { id: edgeIds.first, kind: 'PREDATION', sourcePopulationId: 'predator-1', targetPopulationId: 'prey', intensityPpm: PPM, assimilationPpm: PPM },
+      { id: edgeIds.second, kind: 'PREDATION', sourcePopulationId: 'predator-2', targetPopulationId: 'prey', intensityPpm: PPM, assimilationPpm: PPM },
+    ],
+    regions: { r: { resourcePool: 0, nutrientPool: 0, disturbancePpm: 0, opportunityPpm: 0 } },
+  });
+}
+const interactionEvent = {
+  type: 'LIFE_ADVANCE', eventKey: 'p4:interaction',
+  profile: { birthPpm: 0, mortalityPpm: 0, resourcePerBirth: 1, nutrientPerBirth: 1, maintenancePerIndividual: 0, disturbanceMortalityPpm: 0 },
+};
+const interactionA = advanceEcology(interactionFixture({ first: 'a-edge', second: 'z-edge' }), interactionEvent).state;
+const interactionB = advanceEcology(interactionFixture({ first: 'z-edge', second: 'a-edge' }), interactionEvent).state;
+equal(populationByLineage(interactionA), populationByLineage(interactionB), 'renaming interaction IDs must not change simultaneous ecological pressure outcomes');
+equal(populationByLineage(interactionA)['lin-prey'].abundance, 0n, 'oversubscribed predation pressure must never remove more than represented prey abundance');
+equal(populationByLineage(interactionA)['lin-p1'].energyStore, 50n, 'simultaneous predation must share bounded removal without first-edge privilege');
+equal(populationByLineage(interactionA)['lin-p2'].energyStore, 50n, 'simultaneous predation must share bounded removal symmetrically in symmetric fixture');
 
 throws(() => applyLineageEvent(base, {
   type: 'SPECIATION',
@@ -148,6 +246,27 @@ check(samples.every((sample) => sample.presentation.authorityClass === 'PRESENTA
 const selection = projectSelectionToAggregate(samples[0], base);
 equal(selection.populationId, 'pop-a', 'sample selection must project back to its modeled aggregate');
 equal(selection.inferenceGuard, 'LOCAL_SAMPLE_MUST_NOT_INFER_GLOBAL_ABUNDANCE', 'selection handoff must carry abundance inference guard');
+
+const skewed = createLifeState({
+  eventKey: 'fixture:skewed',
+  lineages: [
+    { id: 'lin-dominant', traits: [] },
+    { id: 'lin-rare-a', traits: [] },
+    { id: 'lin-rare-b', traits: [] },
+  ],
+  populations: [
+    { id: 'dominant', lineageId: 'lin-dominant', regionId: 'r', abundance: 98 },
+    { id: 'rare-a', lineageId: 'lin-rare-a', regionId: 'r', abundance: 1 },
+    { id: 'rare-b', lineageId: 'lin-rare-b', regionId: 'r', abundance: 1 },
+  ],
+  interactions: [],
+  regions: { r: { resourcePool: 0, nutrientPool: 0, opportunityPpm: PPM } },
+});
+const skewedSamples = materializeLocalOrganisms(skewed, { regionId: 'r', maxSamples: 3, viewportKey: 'skewed-view' });
+equal(skewedSamples.length, 3, 'apportionment must fill bounded sample budget when represented abundance exists');
+equal(skewedSamples.filter((sample) => sample.populationId === 'dominant').length, 3, 'largest-remainder apportionment must not force a rare population sample at the expense of a 98% aggregate');
+equal(skewedSamples.filter((sample) => sample.populationId !== 'dominant').length, 0, 'sub-sample rare aggregates may remain unmaterialized rather than receiving order-biased minimum-one privilege');
+throws(() => materializeLocalOrganisms(base, { regionId: 'r1', maxSamples: Number.NaN }), /maxSamples must be a non-negative finite number/, 'invalid sample budgets must fail closed');
 
 const sterile = createLifeState({ eventKey: 'fixture:sterile', lineages: [], populations: [], interactions: [], regions: { r0: { resourcePool: 1000, nutrientPool: 1000, opportunityPpm: PPM } } });
 equal(materializeLocalOrganisms(sterile, { regionId: 'r0', maxSamples: 128 }), [], 'sterile path must remain visually empty');

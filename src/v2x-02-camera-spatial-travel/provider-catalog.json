@@ -13,14 +13,14 @@
     {
       "contract": "ofu-px-contracts-1",
       "id": "v2x02.interaction.continuous-travel",
-      "version": "1.0.0",
+      "version": "2.1.0",
       "owner": "v2x-02-camera-spatial-travel",
       "kind": "interaction",
       "authority": {
         "class": "PRESENTATION_ONLY",
         "contract": "ofu-px-contracts-1",
         "model": "v2x02.continuous-travel",
-        "version": "1.0.0",
+        "version": "2.1.0",
         "sources": [
           "src/v1x-01-camera-scale-frames/reference-frames.js",
           "src/v1x-01-camera-scale-frames/semantic-distance.js",
@@ -30,32 +30,37 @@
         ],
         "assumptions": [
           "The injected V1X camera instance remains the sole mutable camera and continuous-distance authority.",
-          "Selection, parent lineage, surface target and history tokens are observed as read-only context and never admitted as world mutations."
+          "Selection, parent lineage, surface target and history tokens are observed as read-only context and never admitted as world mutations.",
+          "Raw wheel line/page normalization is bounded before delegation to the frozen V1X semantic-distance conversion functions.",
+          "Executable rewind is defined only for controller-observed operations whose before/after camera digests form one contiguous verified journal."
         ],
         "limitations": [
           "Camera paths, reference-frame transforms and cinematic interpolation are presentation-only and are not physical trajectories, orbital phases or scientific position measurements.",
           "Hierarchical local frames preserve bounded reversible presentation context; this provider does not claim one globally precise floating-point coordinate across cosmic-to-microscopic scales.",
+          "External camera commands, external selection observations and spatial mutations that invalidate a reference-frame return witness fail closed by discarding stale reverse capability.",
+          "Rewind rollback is compensating presentation recovery over the frozen camera API; it is not a canonical transaction and does not rewrite history.",
           "This additive lane does not commandeer the convergence-owned Living renderer or central input router; those consumers must adopt the exposed controller/provider through their owned seam."
         ],
         "evidence": [
           {
             "id": "v2x02.travel.fast",
             "kind": "PRESENTATION_TEST",
-            "digest": "f7135b10dc077a4f2402a2bc19ea000af966066ebcaedbddefa7add53abe2b62"
+            "digest": "946ef2859304de0c78ad5b17f73aec121d6f4766c1ffab6a3fde719970b5107e"
           }
         ]
       },
       "fidelity": {
         "regime": "product",
-        "validity": "Bounded continuous presentation travel over the frozen V1X camera, semantic-distance and reference-frame authorities.",
-        "resolution": "Frame-paced accumulated distance/look intents, bounded local translation and hierarchical reference-frame handoffs through the supported spatial ladder.",
-        "uncertainty": "Interpolation timing and camera path are perceptual product choices; scientific distance, orbital phase and unsupported micro continuity remain outside this provider's authority."
+        "validity": "Bounded continuous presentation travel over the frozen V1X camera, semantic-distance and reference-frame authorities, with fail-closed reversible operation journaling and verified anchor restoration.",
+        "resolution": "Frame-paced accumulated distance/look intents, bounded local translation, explicit wheel unit normalization, hierarchical reference-frame handoffs, nested bounded anchors and exact-within-tolerance rewind for observed presentation operations.",
+        "uncertainty": "Interpolation timing and camera path are perceptual product choices; scientific distance, orbital phase and unsupported micro continuity remain outside this provider's authority. Rewind correctness is conditional on a contiguous observed command stream, stable selection context and the frozen V1X reference-return semantics."
       },
       "lifecycle": "SHIPPING",
       "requires": [],
       "claims": [
         "interaction.continuous-travel",
-        "interaction.camera-journey-context"
+        "interaction.camera-journey-context",
+        "interaction.reversible-camera-travel"
       ],
       "operations": ["TRAVEL"],
       "budget": {

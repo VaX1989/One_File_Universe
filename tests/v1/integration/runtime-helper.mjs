@@ -11,7 +11,7 @@ export function load({extraComponents=[]}={}){
  const plan=loadComponents(),byId=new Map(plan.map(c=>[c.id,c])),ids=new Set();
  function include(id){if(ids.has(id))return;const c=byId.get(id);if(!c)throw new Error('Unregistered test dependency '+id);ids.add(id);c.dependencies.forEach(include);}
  include('v1.exploration.living-runtime');include('v1.rendering.world-presentation');include('v1.rendering.lod-budget');include('v1x.shipping.bindings');for(const id of extraComponents)include(id);
- globalThis.__OFU_PX_TEST_CATALOGS__=plan.filter(c=>c.id.startsWith('px.providers.')).map(c=>JSON.parse(c.content));
+ globalThis.__OFU_PX_TEST_CATALOGS__=plan.filter(c=>c.id.startsWith('px.providers.')||(ids.has(c.id)&&c.kind==='data'&&c.provides.some(value=>value.startsWith('px.providers.')))).map(c=>JSON.parse(c.content));
  globalThis.__OFU_PX_TEST_REGIMES__=plan.filter(c=>c.id.startsWith('px.regimes.')).map(c=>JSON.parse(c.content));
  for(const c of plan)if(ids.has(c.id)&&c.kind==='code')read(c.source);
  // Headless scene activation adapters: raster/GPU correctness is tested in real browsers.

@@ -1,0 +1,12 @@
+{
+  "schema": "ofu-v2-zero-loss-harvest-checkpoint-2",
+  "version": "2026-09-08.2",
+  "lane": "parallel/v2.0-00-zero-loss-harvest-2026-09-07",
+  "status": "COMPLETE",
+  "authorizedBase": {"sha":"2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7","tree":"99e6b5ff6229d9c34d381e778c5689bf2367d256"},
+  "centralSyncBase": {"sha":"8767e81d953a7d6c2bce334749c609d9b1be0805","tree":"f9a6d9fb26cf624cdcea59bc03ae1ac3417eb4cd"},
+  "ownedPaths": ["docs/parallel/v2.0-00-zero-loss-harvest/ZERO_LOSS_HARVEST_LEDGER.json","docs/parallel/v2.0-00-zero-loss-harvest/CHECKPOINT.json","tools/v2-zero-loss-harvest-validate.mjs","tests/v2-zero-loss-harvest/adversarial.mjs"],
+  "remainingOwnedBlockers": [],
+  "prePushEvidence": {"validator":"PASS","adversarial":"PASS","previousExactHeadRepositorySuites":{"pass":9,"fail":1,"failureClassification":"STALE_CENTRAL_SYNC_PATH_MISMATCH"}},
+  "centralSyncPurpose": "Carry convergence-owned bytes unchanged so base-branch workflow/test expectations exist at lane head; PR diff remains lane-owned only."
+}

@@ -8,6 +8,13 @@ export const CONTRACT_SET = 'OFU-V1X-CONTRACT-SET-2026-09-06.1';
 export const MATRIX_VERSION = '2026-09-06.1';
 export const LANE_ID = 'V1X-14';
 export const LANE_BRANCH = 'parallel/v1x-14-certification-evidence-2026-09-06';
+export const CERTIFICATION_BRANCHES = Object.freeze([
+  LANE_BRANCH,
+  'integration/v1.0-definitive-product-convergence-2026-09-05',
+  'integration/v2x-supreme-total-convergence-2026-09-07',
+  'development/v1.1-quality-exploration',
+  'main'
+]);
 export const OWNER_NAMESPACE = 'v1x-14-certification-evidence';
 export const BASE_SHA = '760c0c70bccb6afd7c7b07600c0f5be3f80e7b19';
 export const BASE_TREE = '3324e6354b5ff1b90156d1693e6051595b6f1219';
@@ -96,10 +103,14 @@ export function exactGitIdentity({cwd = process.cwd(), branch = process.env.V1X_
   return Object.freeze({sha, tree, branch: actualBranch});
 }
 
+export function isCertificationExecutionBranch(branch) {
+  return !branch || CERTIFICATION_BRANCHES.includes(branch) || /^release\/v2\.0\.0(?:[-/].*)?$/.test(branch);
+}
+
 export function assertFrozenBase({cwd = process.cwd(), identity = exactGitIdentity({cwd})} = {}) {
   assert.equal(gitText(['show', '-s', '--format=%T', BASE_SHA], {cwd}), BASE_TREE, 'frozen base tree mismatch');
   assert.equal(git(['merge-base', '--is-ancestor', BASE_SHA, identity.sha], {cwd, allowFailure: true}).status, 0, 'frozen base is not an ancestor of target HEAD');
-  if (identity.branch) assert.equal(identity.branch, LANE_BRANCH, 'execution is not on the write-authorized lane branch');
+  assert.equal(isCertificationExecutionBranch(identity.branch), true, 'execution is not on an authorized certification lineage');
   return identity;
 }
 

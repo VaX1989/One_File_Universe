@@ -2,21 +2,8 @@
   "schema": "ofu-components-1",
   "components": [
     {
-      "id": "v2x14.product.experience",
-      "version": "2.0.0",
-      "owner": "v2x-14-product-experience",
-      "kind": "code",
-      "stage": "full",
-      "placement": "script",
-      "source": "src/product/v2x14/product-experience.js",
-      "dependencies": ["v1.product.living-universe"],
-      "authority": "PRESENTATION_ONLY",
-      "provenance": "Living-native current-location, breadcrumb, selection, focus-recovery and accessibility projection. It observes Living state and never routes native input or mutates canonical selection, scale, camera, persistence or science state.",
-      "provides": ["v2x14.product.experience"]
-    },
-    {
       "id": "v2x14.product.discovery",
-      "version": "1.0.0",
+      "version": "4.0.0",
       "owner": "v2x-14-product-experience",
       "kind": "code",
       "stage": "full",
@@ -24,12 +11,25 @@
       "source": "src/product/v2x14/discovery.js",
       "dependencies": ["v1.product.living-universe"],
       "authority": "PRESENTATION_ONLY",
-      "provenance": "Bounded sparse discovery wrapper around the existing Living searchWorlds and enterKey APIs. It caps results, preserves continuation cursors and never enumerates the universe or directly mutates canonical selection.",
+      "provenance": "Read-only observer over the convergence-owned Living bounded survey. It reflects bounded progress and availability without owning search state, invoking searchWorlds or enterKey, exposing canonical keys, enumerating the universe, or creating a second discovery UI.",
       "provides": ["v2x14.product.discovery"]
     },
     {
+      "id": "v2x14.product.experience",
+      "version": "8.0.0",
+      "owner": "v2x-14-product-experience",
+      "kind": "code",
+      "stage": "full",
+      "placement": "script",
+      "source": "src/product/v2x14/product-experience.js",
+      "dependencies": ["v1.product.living-universe", "v2x14.product.discovery"],
+      "authority": "PRESENTATION_ONLY",
+      "provenance": "Non-owning Living accessibility and direct-manipulation observer. Native pointer, drag, pinch, wheel, keyboard and click selection remain convergence-owned; this lane observes bounded central input state, publishes reversible presentation-only metadata, and never calls travel, renderer-input or selection APIs. Unknown stage remains unknown; the canonical viewport label and aria-pressed state are preserved. Reversible aria-current is added only when no other owner supplies it and yields permanently to external ownership. Skip routing, focus continuity, transition announcements, bounded survey UI and context docking remain convergence-owned Living capabilities rather than duplicated lane UI.",
+      "provides": ["v2x14.product.experience"]
+    },
+    {
       "id": "v2x14.product.style",
-      "version": "1.0.0",
+      "version": "4.0.0",
       "owner": "v2x-14-product-experience",
       "kind": "style",
       "stage": "full",
@@ -37,7 +37,7 @@
       "source": "src/product/v2x14/product-experience.css",
       "dependencies": [],
       "authority": "PRESENTATION_ONLY",
-      "provenance": "Lane-owned skip-link, structured-current-context, compact safe-area and reduced-motion styling. No product truth or input authority.",
+      "provenance": "Lane styling is gated by V2X-14 presentation markers. It hardens the real Living canvas with touch-action and overscroll containment, focus-visible and reduced-motion behavior, and keeps optional systemic-audio controls at 44px desktop / 48px coarse-pointer targets with portrait, landscape, forced-colors and safe-area handling. It does not create or style duplicate Living skip, context, survey, focus or announcement surfaces.",
       "provides": ["v2x14.product.style"]
     }
   ]

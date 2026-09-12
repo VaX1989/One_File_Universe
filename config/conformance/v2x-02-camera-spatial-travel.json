@@ -5,9 +5,9 @@
       "id": "v2x02.travel.fast",
       "owner": "v2x-02-camera-spatial-travel",
       "tier": "FAST_LOCAL",
-      "command": ["node", "tests/v2x-02-camera-spatial-travel/real-camera-journey.mjs"],
+      "command": ["node", "tests/v2x-02-camera-spatial-travel/real-camera-journey-numeric-wrapper.mjs"],
       "providers": ["v2x02.interaction.continuous-travel"],
-      "oracle": "v2x02-real-camera-journey-oracle-1",
+      "oracle": "v2x02-real-camera-journey-oracle-6",
       "timeoutMs": 30000
     },
     {
@@ -16,7 +16,7 @@
       "tier": "INTEGRATION",
       "command": ["node", "tests/v2x-02-camera-spatial-travel/registry-binding.mjs"],
       "providers": ["v2x02.interaction.continuous-travel"],
-      "oracle": "v2x02-registry-binding-oracle-1",
+      "oracle": "v2x02-registry-binding-oracle-3",
       "timeoutMs": 60000
     }
   ]

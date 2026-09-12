@@ -1,0 +1,32 @@
+{
+  "schema": "ofu-conformance-1",
+  "tests": [
+    {
+      "id": "v2x-07.local-experience",
+      "owner": "v2x-07-human-scale-local-traversal",
+      "tier": "LANE_TARGETED",
+      "command": ["node", "tests/v2x-07-human-scale-local-traversal/local-experience.mjs"],
+      "providers": ["v1x-06.scene.surface-human", "v1x-06.renderer.surface-human", "v1x-06.interaction.surface-local-travel"],
+      "oracle": "ofu-v2x-07-local-experience-test-9",
+      "timeoutMs": 30000
+    },
+    {
+      "id": "v2x-07.environment-matrix",
+      "owner": "v2x-07-human-scale-local-traversal",
+      "tier": "LANE_TARGETED",
+      "command": ["node", "tests/v2x-07-human-scale-local-traversal/environment-matrix.mjs"],
+      "providers": ["v1x-06.scene.surface-human", "v1x-06.renderer.surface-human"],
+      "oracle": "ofu-v2x-07-environment-matrix-test-5",
+      "timeoutMs": 30000
+    },
+    {
+      "id": "v2x-07.upstream-adapters",
+      "owner": "v2x-07-human-scale-local-traversal",
+      "tier": "LANE_TARGETED",
+      "command": ["node", "tests/v2x-07-human-scale-local-traversal/upstream-adapters.mjs"],
+      "providers": ["v1x-06.interaction.surface-local-travel"],
+      "oracle": "ofu-v2x-07-upstream-adapters-test-11",
+      "timeoutMs": 30000
+    }
+  ]
+}

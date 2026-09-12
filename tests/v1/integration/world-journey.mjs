@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {load,DEFAULT_KEY} from './runtime-helper.mjs';
 const {O,runtime:r}=load();let cases=0;const ok=(v,m)=>{assert.ok(v,m);cases++;};
+const initial=r.snapshot(),sameStage=r.scale('UNIVERSE');ok(sameStage.revision===initial.revision&&sameStage.historyDepth===initial.historyDepth,'selecting the active Living scale is an idempotent bounded no-op');
 const roots=r.snapshot().rows,galaxies=new Set(),systems=new Set(),worlds=new Set(),classes=new Set();
 ok(roots.length>=3,'multiple actual P3 galaxies are directly available');
 for(const galaxy of roots.filter(g=>g.entityId!==r.seedGraph.galaxy.entityId).slice(0,2)){

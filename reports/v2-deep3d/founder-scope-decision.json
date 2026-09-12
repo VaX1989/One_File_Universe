@@ -1,0 +1,5 @@
+{
+  "schema":"ofu-v2-founder-scope-decision-1","decisionDate":"2026-09-11","status":"ACTIVE_IMPLEMENTATION_SCOPE","release":"v2.0.0",
+  "decision":"Expand the still-unreleased V2.0 shipping scope to include the OFU-owned hierarchical multiscale Deep3D RenderScene/RenderPacket architecture with a preferred WebGPU backend and a complete WebGL2 direct-file/offline backend.",
+  "historicalDecisionsPreserved":true,"supersedesForCurrentUnreleasedV2Only":["DEFERRED_POST_V2_0 dispositions for shipping-eligible Deep3D/WebGPU rendering work"],"doesNotPromoteCapabilitiesWithoutExecutableEvidence":true,"authorityBoundary":"Renderer consumes canonical/model/presentation-authorized state and never becomes scientific, simulation, identity, persistence or history authority.","baselineSha":"4c12e93a216ca386177671c24dc06d63f3713021"
+}

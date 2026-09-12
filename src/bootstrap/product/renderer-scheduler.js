@@ -2,9 +2,24 @@
 'use strict';
 if(typeof root.requestAnimationFrame!=='function'||root.__OFU_WAVE_IV_RAF_GATE__)return;
 const native=root.requestAnimationFrame.bind(root),nativeCancel=typeof root.cancelAnimationFrame==='function'?root.cancelAnimationFrame.bind(root):()=>{};
-const state={version:'ofu-wave-iv-render-scheduler-1',suspendedPlanetFrames:0,executedPlanetFrames:0,livingPacerInstalled:false,livingRotationInputs:0,livingRotationFrames:0,livingRotationCoalesced:0,livingNavigationPacerInstalled:false,livingPinchInputs:0,livingPinchFrames:0,livingPinchCoalesced:0,livingPinchStaleDrops:0,livingPinchBoundaryCommits:0,livingPinchTerminalCommits:0,livingPinchCancelledEvents:0,livingWheelInputs:0,livingWheelFrames:0,livingWheelCoalesced:0,livingWheelStaleDrops:0,livingWheelBoundaryCommits:0,livingRendererFactoryArmed:false,livingRuntimeFactoryArmed:false};
+const state={version:'ofu-wave-iv-render-scheduler-1',suspendedPlanetFrames:0,executedPlanetFrames:0,parkedPlanetFrames:0,resumedPlanetFrames:0,livingPacerInstalled:false,livingRotationInputs:0,livingRotationFrames:0,livingRotationCoalesced:0,livingNavigationPacerInstalled:false,livingPinchInputs:0,livingPinchFrames:0,livingPinchCoalesced:0,livingPinchStaleDrops:0,livingPinchBoundaryCommits:0,livingPinchTerminalCommits:0,livingPinchCancelledEvents:0,livingWheelInputs:0,livingWheelFrames:0,livingWheelCoalesced:0,livingWheelStaleDrops:0,livingWheelBoundaryCommits:0,livingRendererFactoryArmed:false,livingRuntimeFactoryArmed:false};
 function isPlanetFrame(fn){if(typeof fn!=='function'||fn.name!=='frame')return false;try{return /inspectorTarget\(\)/.test(Function.prototype.toString.call(fn))&&/localFrame\(now\)/.test(Function.prototype.toString.call(fn))}catch{return false}}
-function gated(fn){if(!isPlanetFrame(fn))return native(fn);const proxy=t=>{const scale=root.OFU?.waveIVScaleRuntime?.snapshot?.().semanticScale,macro=scale==='galaxy'||scale==='galactic_region'||scale==='stellar_neighborhood'||scale==='system';if(macro){state.suspendedPlanetFrames++;native(proxy);return}state.executedPlanetFrames++;fn(t)};return native(proxy)}
+const MACRO=new Set(['galaxy','galactic_region','stellar_neighborhood','system']);
+let parkedPlanetFrame=null,scaleUnsubscribe=null;
+function livingOwnsForeground(){const snapshot=root.OFU?.v1LivingProduct?.snapshot?.();return snapshot?.initialized===true&&snapshot.foregroundOwner==='WAVE_A_LIVING_VIEWPORT'}
+function resumeParkedPlanetFrame(){
+ const scale=root.OFU?.waveIVScaleRuntime?.snapshot?.().semanticScale;if(!parkedPlanetFrame||!scale||MACRO.has(scale)||livingOwnsForeground())return false;
+ const callback=parkedPlanetFrame;parkedPlanetFrame=null;state.resumedPlanetFrames++;native(callback);return true;
+}
+function bindPlanetFrameResume(){
+ if(scaleUnsubscribe)return true;const runtime=root.OFU?.waveIVScaleRuntime;if(!runtime?.on)return false;
+ scaleUnsubscribe=runtime.on('scaleChanged',resumeParkedPlanetFrame);return true;
+}
+function gated(fn){
+ if(!isPlanetFrame(fn))return native(fn);
+ const proxy=t=>{const scale=root.OFU?.waveIVScaleRuntime?.snapshot?.().semanticScale;if(livingOwnsForeground()||scale&&MACRO.has(scale)){state.suspendedPlanetFrames++;state.parkedPlanetFrames++;parkedPlanetFrame=proxy;bindPlanetFrameResume();return}state.executedPlanetFrames++;fn(t)};
+ return native(proxy);
+}
 function installLivingPacer(){
  const O=root.OFU,living=O?.v1LivingRenderer;if(!living?.create)return false;
  if(living.FRAME_PACING_VERSION){state.livingPacerInstalled=true;return true;}
@@ -76,7 +91,8 @@ function installLivingNavigationPacer(){
   const finishPinchNavigation=({cancelled=false}={})=>{if(cancelled){cancelPendingAsInterrupted();return runtime.snapshot();}return events?commitPending(true):runtime.snapshot();};
   const navigationPacingSnapshot=()=>Object.freeze({...pacing});
   const wheelPacingSnapshot=()=>Object.freeze({...wheelPacing});
-  const wrapped=Object.freeze({...runtime,setNavigationCoordinate,travelBy,finishPinchNavigation,navigationPacingSnapshot,wheelPacingSnapshot});runtimes.add(wrapped);return wrapped;
+  let wrapped=null;const dispose=()=>{cancelPendingAsInterrupted();dropPendingWheel();if(wrapped)runtimes.delete(wrapped);return runtime.dispose?.()??true};
+  wrapped=Object.freeze({...runtime,setNavigationCoordinate,travelBy,finishPinchNavigation,navigationPacingSnapshot,wheelPacingSnapshot,dispose});runtimes.add(wrapped);return wrapped;
  }
  const doc=root.document,isLivingPointer=e=>e?.pointerType==='touch'&&(e.target?.id==='living-view'||e.composedPath?.().some?.(node=>node?.id==='living-view'));
  if(doc?.addEventListener){
