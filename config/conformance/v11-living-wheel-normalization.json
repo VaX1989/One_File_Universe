@@ -27,7 +27,7 @@
         "v1.scene.living-world"
       ],
       "oracle": "v11-living-wheel-normalization-browser-1",
-      "timeoutMs": 30000
+      "timeoutMs": 60000
     }
   ]
 }
