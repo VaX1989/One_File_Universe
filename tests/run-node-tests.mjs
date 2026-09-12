@@ -16,3 +16,4 @@ const parsed=JSON.parse(save);parsed.payload.canonicalProtocolVersion='ofu-canon
 assert.throws(()=>O.canonical.canonicalObject(0.1),/safe integers/);
 assert.doesNotThrow(()=>O.renderer.probe());assert.deepEqual(O.renderer.probe(),{webgl2:false,webgpu:false,worker:false,blob:true,sharedArrayBuffer:true,secureContext:false});assert.equal(O.renderer.render(null,{star:{temperatureK:5000}}).backend,'unavailable');
 console.log('P1 node conformance: PASS');console.log('p1CorpusDigest='+v.corpusDigest);
+await import('./audit/v2-science-authority-oracle-tests.mjs');

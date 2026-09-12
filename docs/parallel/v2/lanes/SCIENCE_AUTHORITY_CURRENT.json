@@ -1,0 +1,112 @@
+{
+  "schema": "ofu-v2-lane-checkpoint-3",
+  "lane": "SCIENCE_AUTHORITY",
+  "branch": "audit/v2.0-science-authority-2026-09-07",
+  "writePolicy": "EVIDENCE_TESTS_ONLY_NO_PRODUCTION_WRITES",
+  "status": "COMPLETE",
+  "base": {
+    "sha": "2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7",
+    "tree": "99e6b5ff6229d9c34d381e778c5689bf2367d256",
+    "launchStatus": "FULL",
+    "liveBaseRecordStatus": "READY_FOR_MASSIVE_PARALLEL_EXECUTION",
+    "authorizedPrompts": "01-23"
+  },
+  "integrationBase": {
+    "sha": "8767e81d953a7d6c2bce334749c609d9b1be0805",
+    "tree": "f9a6d9fb26cf624cdcea59bc03ae1ac3417eb4cd",
+    "synchronized": true
+  },
+  "finalization": {
+    "preCheckpointHeadSha": "9d78943439618bd453ed39f21cd9b3b9b67df769",
+    "checkpointSemantics": "The Git commit containing this record is the authoritative FINAL_SHA and its tree is the authoritative FINAL_TREE.",
+    "productionMutationPerformed": false,
+    "ownedChangesIntentionalAndComplete": true,
+    "temporaryExperimentalDuplicateDeadWorkRemaining": false,
+    "remainingBlockersWithinAuthorizedScope": [],
+    "integrationReady": true
+  },
+  "ownedDelta": {
+    "files": [
+      "tests/audit/v2-science-authority-oracle.mjs",
+      "tests/audit/v2-science-authority-oracle-tests.mjs",
+      "tests/run-node-tests.mjs",
+      "docs/parallel/v2/evidence/science-authority/BASE_2977C11A_FALSIFICATION.json",
+      "docs/parallel/v2/lanes/SCIENCE_AUTHORITY_CURRENT.json"
+    ],
+    "sharedRunnerChange": "Exactly one additive import line invoking tests/audit/v2-science-authority-oracle-tests.mjs.",
+    "productionFilesChanged": 0,
+    "deletionsRelativeToIntegrationBase": 0
+  },
+  "tests": {
+    "result": "PASS_FOR_ALL_LANE_OWNED_AND_CANONICAL_REPOSITORY_TESTS",
+    "exactHeadTested": "4d7d82330571a95ec90074ea3bc69fce679013cb",
+    "workflowRunId": 34216924172,
+    "jobId": 102030768211,
+    "runtime": "Node 24.20.0",
+    "exactSourceIdentity": "PASS",
+    "npmTest": "PASS",
+    "reproducibleBuild": "PASS",
+    "auditSuite": {
+      "status": "PASS",
+      "checks": 9,
+      "cleanFixtureFindings": 0,
+      "adversarialFixtureFindings": 9,
+      "strictAdversarialExitCode": 1,
+      "missingRequiredInputBehavior": "FAIL_CLOSED",
+      "exactRepositorySourceOracleExecution": true,
+      "liveFindingCount": 9,
+      "liveFindingIds": ["P22-001","P22-002","P22-003","P22-004","P22-005","P22-006","P22-007","P22-008","P22-009"]
+    },
+    "v2ArtifactComposition": {
+      "status": "PASS",
+      "artifactBytes": 2544756,
+      "artifactSha256": "4c01a0d9900e89f5e2a0c2ea7ce3c2b418815e264ccbefdb8a958c2b11951c71",
+      "manifestCount": 292,
+      "v2xReachableCount": 80
+    }
+  },
+  "scientificVerdict": "FALSIFIED_REPAIR_REQUIRED_OUTSIDE_AUDIT_OWNERSHIP",
+  "activeExternalProductionFindings": ["P22-001","P22-002","P22-003","P22-004","P22-005","P22-006","P22-007","P22-008","P22-009"],
+  "externalDependencies": {
+    "CENTRAL_CONVERGENCE": ["P22-001","P22-002","P22-009"],
+    "V2X_08_DOMAIN_OWNER": ["P22-003"],
+    "V2X_09_DOMAIN_OWNER": ["P22-004","P22-005","P22-007"],
+    "INDIVIDUALS_DOMAIN_OWNER": ["P22-006"],
+    "MATTER_RENDERING_OWNER": ["P22-008"]
+  },
+  "externalFailureProof": {
+    "auditHeadRun": {
+      "sha": "4d7d82330571a95ec90074ea3bc69fce679013cb",
+      "runId": 34216924172,
+      "jobId": 102030768211,
+      "failedAfterLaneTestsAt": "Living V2X context inspector witness",
+      "error": "V2X-09 module set including advanced composition required"
+    },
+    "integrationBaseRun": {
+      "sha": "8767e81d953a7d6c2bce334749c609d9b1be0805",
+      "runId": 34213950873,
+      "jobId": 102021177474,
+      "sameFailedStep": "Living V2X context inspector witness",
+      "sameFailureExistsWithoutAuditDelta": true
+    },
+    "classification": "OBJECTIVELY_EXTERNAL_TO_AUTHORIZED_SCIENCE_AUDIT_SCOPE"
+  },
+  "exactArtifactBrowserScienceEvidence": {
+    "status": "NOT_ESTABLISHED",
+    "reason": "The external Living context-inspector witness fails before browser installation/conformance steps; this does not block completion of the evidence/tests-only science audit lane."
+  },
+  "strictConvergenceGate": {
+    "command": "node tests/audit/v2-science-authority-oracle.mjs --strict --json",
+    "requiredProductionPromotionResult": "PASS_WITH_ZERO_FINDINGS",
+    "mustNotBeWeakenedOrRemoved": true
+  },
+  "closure": {
+    "laneOwnedDefectsRemaining": 0,
+    "laneOwnedFailingTestsRemaining": 0,
+    "laneOwnedIncompleteImplementationRemaining": 0,
+    "laneOwnedIntegrationGapsRemaining": 0,
+    "laneOwnedUnresolvedDependenciesRemaining": 0,
+    "temporaryOrDeadWorkRemaining": 0,
+    "status": "COMPLETE"
+  }
+}
