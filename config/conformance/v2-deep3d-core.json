@@ -7,6 +7,7 @@
     {"id":"v2.deep3d.backend-selector","owner":"product","tier":"FAST_LOCAL","command":["node","tests/deep3d/backend-selector.mjs"],"providers":["v2.deep3d.backend.selection"],"oracle":"v2-deep3d-secure-webgpu-direct-file-webgl2-selection","timeoutMs":30000},
     {"id":"v2.deep3d.webgpu-backend","owner":"product","tier":"FAST_LOCAL","command":["node","tests/deep3d/webgpu-backend.mjs"],"providers":["v2.deep3d.backend.webgpu"],"oracle":"v2-deep3d-webgpu-command-resource-and-semantic-parity","timeoutMs":30000},
     {"id":"v2.deep3d.webgl2-backend","owner":"product","tier":"FAST_LOCAL","command":["node","tests/deep3d/webgl2-backend.mjs"],"providers":["v2.deep3d.backend.webgl2"],"oracle":"v2-deep3d-webgl2-v2x13-delegation-and-fail-closed-families","timeoutMs":30000},
-    {"id":"v2.deep3d.system-adapter","owner":"product","tier":"FAST_LOCAL","command":["node","tests/deep3d/system-adapter.mjs"],"providers":["v2.deep3d.adapter.system"],"oracle":"v2-deep3d-system-true3d-identity-and-science-boundary","timeoutMs":30000}
+    {"id":"v2.deep3d.system-adapter","owner":"product","tier":"FAST_LOCAL","command":["node","tests/deep3d/system-adapter.mjs"],"providers":["v2.deep3d.adapter.system"],"oracle":"v2-deep3d-system-true3d-identity-and-science-boundary","timeoutMs":30000},
+    {"id":"v2.deep3d.living-system-primary","owner":"product","tier":"FAST_LOCAL","command":["node","tests/deep3d/living-primary-bridge.mjs"],"providers":["v2.deep3d.product.primary.system"],"oracle":"v2-deep3d-system-visible-primary-webgl2-with-canvas-overlay-only","timeoutMs":30000}
   ]
 }
