@@ -1,0 +1,171 @@
+#!/usr/bin/env python3
+"""Independent numerical and adversarial witnesses for V2X-15 research kernels.
+
+Numerical values are computed independently in Python. A small Node subprocess is
+also used to falsify contract regressions that cannot be detected by a
+cross-language scalar oracle alone: MIST-II rotating-family mass semantics,
+non-synthetic atmospheric-escape threshold provenance, and Nu-Rayleigh onset
+provenance.
+"""
+from __future__ import annotations
+
+import json
+import math
+import pathlib
+import subprocess
+
+G = 6.67430e-11
+M_EARTH = 5.9722e24
+M_SUN = 1.98847e30
+R_EARTH = 6_371_000.0
+R_GAS = 8.31446261815324
+ROOT = pathlib.Path(__file__).resolve().parents[2]
+
+
+def rocky_radius_prem(mass_earth: float, cmf: float) -> float:
+    if not (1.0 <= mass_earth <= 8.0 and 0.0 <= cmf <= 0.4):
+        raise ValueError("outside source-backed rocky domain")
+    return (1.07 - 0.21 * cmf) * mass_earth ** (1.0 / 3.7)
+
+
+def hill_delta(star_mass_solar: float, m1_earth: float, m2_earth: float, a1_au: float, a2_au: float) -> float:
+    ratio = ((m1_earth + m2_earth) * M_EARTH) / (star_mass_solar * M_SUN)
+    rh = ((a1_au + a2_au) / 2.0) * (ratio / 3.0) ** (1.0 / 3.0)
+    return (a2_au - a1_au) / rh
+
+
+def minimum_outer_axis_hill(star_mass_solar: float, m1_earth: float, m2_earth: float, a1_au: float) -> float:
+    mu_third = ((((m1_earth + m2_earth) * M_EARTH) / (star_mass_solar * M_SUN)) / 3.0) ** (1.0 / 3.0)
+    k = math.sqrt(3.0) * mu_third
+    if k >= 1.0:
+        raise ValueError("low-mass Hill approximation breakdown")
+    return a1_au * (1.0 + k) / (1.0 - k)
+
+
+def collision_critical_amd(alpha: float, gamma: float, iterations: int = 160) -> tuple[float, float, float, float]:
+    if not (0.0 < alpha < 1.0 and gamma > 0.0):
+        raise ValueError("invalid alpha/gamma")
+
+    def f(e1: float) -> float:
+        return alpha * e1 + gamma * e1 / math.sqrt(alpha * (1.0 - e1 * e1) + gamma * gamma * e1 * e1) - 1.0 + alpha
+
+    lo = 0.0
+    hi = math.nextafter(1.0, 0.0)
+    if f(lo) > 0.0 or f(hi) < 0.0:
+        raise ValueError("root not bracketed")
+    for _ in range(iterations):
+        mid = (lo + hi) / 2.0
+        if f(mid) > 0.0:
+            hi = mid
+        else:
+            lo = mid
+    e1c = (lo + hi) / 2.0
+    e2c = 1.0 - alpha - alpha * e1c
+    cc = gamma * math.sqrt(alpha) * (1.0 - math.sqrt(1.0 - e1c * e1c)) + (1.0 - math.sqrt(1.0 - e2c * e2c))
+    return e1c, e2c, cc, f(e1c)
+
+
+def pair_relative_amd(alpha: float, gamma: float, e1: float, e2: float) -> float:
+    return gamma * math.sqrt(alpha) * (1.0 - math.sqrt(1.0 - e1 * e1)) + (1.0 - math.sqrt(1.0 - e2 * e2))
+
+
+def scale_height(t_kelvin: float, molar_mass: float, gravity: float) -> float:
+    return R_GAS * t_kelvin / (molar_mass * gravity)
+
+
+def grey_temperature(teff: float, tau: float) -> float:
+    return teff * ((3.0 / 4.0) * (tau + 2.0 / 3.0)) ** 0.25
+
+
+def impact_loss(x: float) -> float:
+    if not 0.0 <= x <= 1.0:
+        raise ValueError("outside scenario domain")
+    return max(0.0, min(1.0, 0.4 * x + 1.4 * x * x - 0.8 * x * x * x))
+
+
+def orbital_mean_flux_factor(e: float) -> float:
+    if not 0.0 <= e < 1.0:
+        raise ValueError("invalid eccentricity")
+    return 1.0 / math.sqrt(1.0 - e * e)
+
+
+def energy_limited_rate_erkaev(
+    mass_earth: float,
+    planet_radius_earth: float,
+    rxuv_earth: float,
+    xuv_flux: float,
+    efficiency: float,
+    roche_k: float,
+) -> float:
+    """Erkaev/Salz convention: pi * eta * F_XUV * R_p * R_XUV^2 / (G M_p K)."""
+    if mass_earth <= 0 or planet_radius_earth <= 0 or rxuv_earth < planet_radius_earth:
+        raise ValueError("invalid planet/XUV radius geometry")
+    if xuv_flux < 0 or not (0 < efficiency <= 1) or not (0 < roche_k <= 1):
+        raise ValueError("invalid energy-limited escape input")
+    rp = planet_radius_earth * R_EARTH
+    rxuv = rxuv_earth * R_EARTH
+    return efficiency * math.pi * rp * rxuv * rxuv * xuv_flux / (G * mass_earth * M_EARTH * roche_k)
+
+
+def adversarial_contract_witnesses() -> dict[str, str]:
+    script = r"""
+import assert from 'node:assert/strict';
+import { mistInterpolationContract } from './research/v2x/astronomy/stellar-contracts.mjs';
+import { classifyEscapeRegime } from './research/v2x/planetology/oracles.mjs';
+import { nusseltRayleighScenario } from './research/v2x/planetology/bulk-and-geodynamics.mjs';
+const domain={ageMinLog10Years:5,ageMaxLog10Years:10.3,massMinSolar:0.1,massMaxSolar:300,fehMin:-3,fehMax:0.5};
+const lowMassRotating=mistInterpolationContract({releaseId:'MIST-II-2026',gridHash:'sha256:synthetic',gridDomain:domain,ageLog10Years:9,initialMassSolar:1,feh:0,alphaFe:0.2,rotationFraction:0.4});
+assert.equal(lowMassRotating.status,'RESEARCH_REQUIRED');
+assert.equal(lowMassRotating.reason,'MIST_II_ROTATING_FAMILY_USES_MASS_DEPENDENT_OMEGA_RAMP_BELOW_1P8_MSUN');
+const fullRotation=mistInterpolationContract({releaseId:'MIST-II-2026',gridHash:'sha256:synthetic',gridDomain:domain,ageLog10Years:9,initialMassSolar:2,feh:0,alphaFe:0.2,rotationFraction:0.4});
+assert.equal(fullRotation.status,'INTERPOLATION_CONTRACT_READY');
+const anonymousThresholds=classifyEscapeRegime({jeansParameter:2,thresholdSetId:'arbitrary-set',thresholdSetHash:'sha256:arbitrary'});
+assert.equal(anonymousThresholds.status,'RESEARCH_REQUIRED');
+assert.equal(anonymousThresholds.reason,'EXPLICIT_ESCAPE_THRESHOLDS_REQUIRED_FOR_NON_SYNTHETIC_THRESHOLD_SET');
+const explicitThresholds=classifyEscapeRegime({jeansParameter:2,thresholdSetId:'versioned-set',thresholdSetHash:'sha256:versioned',hydrodynamicJeansMax:3,jeansLikeMin:30,boilOffJeansMax:20});
+assert.equal(explicitThresholds.regime,'HYDRODYNAMIC_ESCAPE_CANDIDATE');
+const anonymousNuRa=nusseltRayleighScenario({rayleighNumber:1e7,regime:'MOBILE_LID_LIKE'});
+assert.equal(anonymousNuRa.status,'RESEARCH_REQUIRED');
+assert.equal(anonymousNuRa.reason,'CRITICAL_RAYLEIGH_AND_PARAMETER_PROVENANCE_REQUIRED_FOR_PHYSICAL_NU_RA_SCENARIO');
+const belowOnset=nusseltRayleighScenario({rayleighNumber:1000,regime:'MOBILE_LID_LIKE',criticalRayleighNumber:1708,parameterSetId:'synthetic-convection',parameterSetHash:'sha256:synthetic-convection'});
+assert.equal(belowOnset.status,'RESEARCH_REQUIRED');
+assert.equal(belowOnset.reason,'AT_OR_BELOW_DECLARED_CONVECTION_ONSET');
+const supercritical=nusseltRayleighScenario({rayleighNumber:1e7,regime:'MOBILE_LID_LIKE',criticalRayleighNumber:1708,parameterSetId:'synthetic-convection',parameterSetHash:'sha256:synthetic-convection'});
+assert.equal(supercritical.status,'MODEL_DERIVED_SCENARIO');
+assert.equal(supercritical.physicalNusseltAuthorized,false);
+process.stdout.write(JSON.stringify({mistLowMassRotation:lowMassRotating.status,mistFullRotation:fullRotation.status,anonymousEscapeThresholds:anonymousThresholds.status,explicitEscapeThresholds:explicitThresholds.regime,anonymousNuRa:anonymousNuRa.status,belowOnsetNuRa:belowOnset.status,supercriticalNuRa:supercritical.status}));
+"""
+    completed = subprocess.run(
+        ["node", "--input-type=module", "-e", script],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return json.loads(completed.stdout)
+
+
+if __name__ == "__main__":
+    e1c_08, e2c_08, cc_08, residual_08 = collision_critical_amd(0.8, 1.0)
+    out = {
+        "rocky_1_cmf033_rearth": rocky_radius_prem(1.0, 0.33),
+        "rocky_8_cmf033_rearth": rocky_radius_prem(8.0, 0.33),
+        "rocky_8_cmf0_rearth": rocky_radius_prem(8.0, 0.0),
+        "hill_1_102": hill_delta(1.0, 1.0, 1.0, 1.0, 1.02),
+        "hill_1_105": hill_delta(1.0, 1.0, 1.0, 1.0, 1.05),
+        "hill_min_outer_earth_pair_1au": minimum_outer_axis_hill(1.0, 1.0, 1.0, 1.0),
+        "critical_amd_alpha08_gamma1_e1": e1c_08,
+        "critical_amd_alpha08_gamma1_e2": e2c_08,
+        "critical_amd_alpha08_gamma1_relative": cc_08,
+        "critical_amd_alpha08_gamma1_root_residual": residual_08,
+        "pair_amd_alpha08_gamma1_e005_e005": pair_relative_amd(0.8, 1.0, 0.05, 0.05),
+        "pair_amd_alpha08_gamma1_e02_e02": pair_relative_amd(0.8, 1.0, 0.2, 0.2),
+        "earth_scale_height_m": scale_height(288.0, 0.02897, 9.80665),
+        "grey_255_tau_2_3_k": grey_temperature(255.0, 2.0 / 3.0),
+        "impact_loss_x_05": impact_loss(0.5),
+        "mean_flux_factor_e_05": orbital_mean_flux_factor(0.5),
+        "energy_limited_erkaev_example_kg_s": energy_limited_rate_erkaev(1.0, 1.0, 1.1, 10.0, 0.1, 0.9),
+        "hill_threshold_2sqrt3": 2.0 * math.sqrt(3.0),
+        "adversarial_contract_witnesses": adversarial_contract_witnesses(),
+    }
+    print(json.dumps(out, sort_keys=True, indent=2))

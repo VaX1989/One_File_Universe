@@ -1,0 +1,164 @@
+{
+  "schema": "ofu-v2x15-final-closure-2",
+  "lane": "V2X-15_ASTRONOMY_PLANETOLOGY_FRONTIER",
+  "branch": "research/v2.0-15-astronomy-planetology-frontier-2026-09-07",
+  "pullRequest": 249,
+  "status": "COMPLETE",
+  "authority": "RESEARCH_ONLY",
+  "canonicalPromotionPerformed": false,
+  "authorizedParallelBase": {
+    "sha": "2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7",
+    "tree": "99e6b5ff6229d9c34d381e778c5689bf2367d256",
+    "pointerVersion": "2026-09-08.1",
+    "pointerStatus": "READY_FOR_MASSIVE_PARALLEL_EXECUTION",
+    "parallelLaunchStatus": "FULL"
+  },
+  "lineage": {
+    "priorV2x15Head": "6768689d85a5e3e094429eea0b73aaaa4497bcaf",
+    "priorV2x15Tree": "db9676b62da9410ab3dc5e0de5eb9a05b6e0e319",
+    "v2ForwardReconciliationCommit": "1d98dfe8602278d34e27d03ede94921b5625ff73",
+    "historyPreserved": true,
+    "forcePushPerformed": false
+  },
+  "implementationCheckpoint": {
+    "sha": "fbea8bb1e7619227a4ae16bcc33b6a82da0b5977",
+    "tree": "8378ca1908d9309b09d2d313898630f9626da185",
+    "promotionPacketSchema": "ofu-v2x15-promotion-packets-7"
+  },
+  "currentConvergenceSyncCheckpoint": {
+    "sha": "5275285d2e46eda8709e5ebb8782960c268a5bcf",
+    "tree": "0513767d3bd04cac9d6fa261643a847209a90c77",
+    "centralParentSha": "8767e81d953a7d6c2bce334749c609d9b1be0805",
+    "centralParentTree": "f9a6d9fb26cf624cdcea59bc03ae1ac3417eb4cd",
+    "syncMode": "TWO_PARENT_FORWARD_SYNC_CENTRAL_TREE_PLUS_UNCHANGED_V2X15_OWNED_BLOBS",
+    "centralOwnedDiffIntroduced": false,
+    "prChangedPathsAfterSync": 14
+  },
+  "ownedChangedPaths": [
+    "research/v2x/PROMOTION_PACKETS.json",
+    "research/v2x/astronomy/HANDOFF.json",
+    "research/v2x/astronomy/README.md",
+    "research/v2x/astronomy/SOURCE_LEDGER.json",
+    "research/v2x/astronomy/dynamics.mjs",
+    "research/v2x/astronomy/oracles.mjs",
+    "research/v2x/astronomy/stellar-contracts.mjs",
+    "research/v2x/planetology/README.md",
+    "research/v2x/planetology/SOURCE_LEDGER.json",
+    "research/v2x/planetology/bulk-and-geodynamics.mjs",
+    "research/v2x/planetology/climate-and-escape.mjs",
+    "research/v2x/planetology/oracles.mjs",
+    "research/v2x/reference-oracle.py",
+    "research/v2x/run-tests.mjs"
+  ],
+  "ownershipClosure": {
+    "allOwnedChangesIntentional": true,
+    "knownTemporaryIncompleteDuplicateOrDeadRepositoryWork": false,
+    "knownUncommittedRemoteWork": false,
+    "knownInternallySolvableCodeDefects": [],
+    "dependencyEligibleWorkRemaining": [],
+    "remainingLaneBlockers": [],
+    "centralConvergenceOwnedPathsModifiedByLane": false
+  },
+  "scientificHardeningCompleted": [
+    "MIST-II full Omega/Omega_crit=0.4 rotating-family requests below 1.8 solar masses fail closed and exact track-family provenance remains required.",
+    "Atmospheric escape threshold identities cannot inherit anonymous numeric Jeans thresholds; non-synthetic sets require explicit numeric boundaries.",
+    "Nu-Ra physical scenario authority requires critical-Rayleigh ID/hash provenance and fails closed at or below onset; unnormalized scaling remains diagnostic only.",
+    "Hill/AMD/N-body/observability/stellar/multiplicity/EOS/sub-Neptune/climate/escape/geodynamics/volatile/impact/erosion research kernels retain explicit domains, provenance, limitations and bounded-resource behavior."
+  ],
+  "resourceBounds": {
+    "nBodyPlanetsMax": 16,
+    "nBodyStepsMax": 100000,
+    "stellarGridCellsMax": 262144,
+    "stellarAxisLengthMax": 4096,
+    "multiplicityCellsMax": 100000,
+    "waterEosCellsMax": 262144,
+    "subNeptune4dCellsMax": 262144,
+    "zonalClimateZonesMax": 256,
+    "climateSubstepsMax": 10000,
+    "unboundedRetainedRuntimeStateAdded": false
+  },
+  "exactExecutableBlobVerification": {
+    "method": "Git blob SHA-1 verification against GitHub current-head blobs before execution",
+    "files": {
+      "research/v2x/astronomy/dynamics.mjs": "a6b4a8da6425f0b2d378c4c116088a7ff3872ed0",
+      "research/v2x/astronomy/oracles.mjs": "b1c9b3f41a91d65b6af3cb4252a40195a3952e26",
+      "research/v2x/astronomy/stellar-contracts.mjs": "a01ce221639aa34de522cfcf8d91051a15db685b",
+      "research/v2x/planetology/bulk-and-geodynamics.mjs": "5acbbbfafbd49e28046e056e66e5bcd81069a4c8",
+      "research/v2x/planetology/climate-and-escape.mjs": "dbc7b01e2f56712f1a2d48f07c304a13c51cac3b",
+      "research/v2x/planetology/oracles.mjs": "3385b4781d4ae1c4f786bf314fec8a560b96bb67",
+      "research/v2x/reference-oracle.py": "620903dce3db5b51627518ec3863edfb35e95b65",
+      "research/v2x/run-tests.mjs": "694277990d670642ee84e15be6fe6f483f9c6fb7"
+    },
+    "allMatched": true
+  },
+  "testsAndEvidence": {
+    "freshDirectLaneExecution": {
+      "testedCheckpoint": "5275285d2e46eda8709e5ebb8782960c268a5bcf",
+      "nodeRuntime": "v22.16.0",
+      "pythonRuntime": "3.13.5",
+      "nodeCommand": "node research/v2x/run-tests.mjs",
+      "nodeResult": "PASS: V2X-15 research convergence tests: PASS",
+      "pythonCommand": "python3 research/v2x/reference-oracle.py",
+      "pythonResult": "PASS",
+      "adversarialWitnesses": {
+        "mistLowMassRotation": "RESEARCH_REQUIRED",
+        "mistFullRotation": "INTERPOLATION_CONTRACT_READY",
+        "anonymousEscapeThresholds": "RESEARCH_REQUIRED",
+        "explicitEscapeThresholds": "HYDRODYNAMIC_ESCAPE_CANDIDATE",
+        "anonymousNuRa": "RESEARCH_REQUIRED",
+        "belowOnsetNuRa": "RESEARCH_REQUIRED",
+        "supercriticalNuRa": "MODEL_DERIVED_SCENARIO"
+      }
+    },
+    "hostedExactSyncCheckpoint": {
+      "workflow": "V2X Supreme Convergence",
+      "runId": 34214916226,
+      "jobId": 102024301947,
+      "nodeRuntime": "v24.20.0",
+      "pythonRuntime": "3.13.15",
+      "exactSourceIdentity": "PASS",
+      "fullRepositoryTestAndReproducibleBuildStack": "PASS",
+      "providerActivationBoundary": "PASS",
+      "centralAuthorityFreeze": "PASS",
+      "artifactCompositionAndReproducibilityAudit": "PASS",
+      "livingProductRebuild": "PASS",
+      "v2x10ConvergenceBlockers": "PASS",
+      "macrocosmComposition": "PASS",
+      "singleCameraAuthority": "PASS",
+      "livingDomainComposition": "PASS",
+      "nextFailure": "EXTERNAL_V2X09_LIVING_CONTEXT_INSPECTOR_DEPENDENCY",
+      "v2x15FailureObserved": false
+    },
+    "priorDeterministicAdversarialCases": 6788
+  },
+  "externalNonLaneConvergenceEvidence": {
+    "centralHeadAtVerification": "8767e81d953a7d6c2bce334749c609d9b1be0805",
+    "failure": "Living V2X context inspector fails because src/v2x-09-civilization-economy-city/index.js requires an advanced V2X-09 module set absent from current central composition.",
+    "ownerLane": "V2X-09",
+    "ownerBranch": "parallel/v2.0-09-civilization-economy-city-2026-09-07",
+    "ownerRepairSha": "10114d3c67a292c20b5c494e654ed52adcd2789b",
+    "ownerRepairTree": "1b9055da1b70d65a17676546e6df25fc082caa01",
+    "centralToOwnerRepairDelta": ["src/v2x-09-civilization-economy-city/index.js"],
+    "ownerRepairHostedContextInspectorResult": "PASS",
+    "v2x15OwnershipAllowsRepair": false,
+    "classification": "PROVEN_EXTERNAL_CENTRAL_INTEGRATION_LAG_NOT_A_V2X15_BLOCKER"
+  },
+  "promotionAndArtifactLaw": {
+    "researchSourceArtifactReachabilityClaimed": false,
+    "currentChain": "research source -> deterministic oracles -> promotion packet -> central selective promotion",
+    "selectivePromotionPrerequisitesAreLaneBlockers": false,
+    "centralSelectivePromotionMustPreserveAuthorityAndProvenance": true
+  },
+  "externalScientificPromotionPrerequisites": [
+    "exact versioned MIST fixtures and track-family metadata",
+    "population-conditioned multiplicity/selection tables",
+    "high-pressure water EOS and phase maps",
+    "sub-Neptune evolution grids",
+    "XUV/escape calibration families",
+    "reduced-climate parameter families",
+    "rheology/critical-Rayleigh/Nu-Ra normalization calibration",
+    "erosion calibration",
+    "trusted long-horizon dynamics references"
+  ],
+  "closureStatement": "V2X-15 is COMPLETE. All dependency-eligible work inside exact lane ownership is implemented, provenance-bounded, resource-bounded, byte-authenticated and freshly tested. Remaining selective scientific promotion inputs and the observed V2X-09 central integration lag are outside V2X-15 ownership and do not represent unfinished V2X-15 work. This handoff metadata is the only intended final lane change after the tested convergence-sync checkpoint."
+}
