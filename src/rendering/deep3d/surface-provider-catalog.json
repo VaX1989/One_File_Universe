@@ -21,6 +21,22 @@
     },
     {
       "contract": "ofu-px-contracts-1",
+      "id": "v2.deep3d.adapter.matter",
+      "version": "1.0.0",
+      "owner": "product",
+      "kind": "scene",
+      "authority": {"class":"PRESENTATION_ONLY","contract":"ofu-px-contracts-1","model":"v2.deep3d.adapter.matter","version":"1.0.0","sources":["src/rendering/deep3d/matter-adapter.js","src/rendering/microscopic/matter-continuity-provider.js"],"assumptions":["V2X-12 supplies bounded nodes, relations, stable source identity and explicit coordinate authority."],"limitations":["Node placement and relation lines are semantic presentation; no exact spatial arrangement, trajectory, quantum dynamics or physical bond geometry is claimed."],"evidence":[]},
+      "fidelity": {"regime":"matter-adapter","validity":"Bounded V2X-12 semantic nodes and resolvable relationships become camera-relative point and curve packets.","resolution":"At most 192 nodes and 128 semantic relations.","uncertainty":"Inherited model/source authority remains explicit; unresolved chemistry remains unresolved."},
+      "lifecycle": "SHIPPING",
+      "requires": [{"id":"v2.deep3d.render.scene","version":"1.0.0","authority":"PRESENTATION_ONLY"}],
+      "claims": ["deep3d.matter.bounded","deep3d.matter.source-identity-preserved"],
+      "operations": ["REPRESENT"],
+      "budget": {"entities":192,"bytes":1048576,"operations":4096,"queue":12},
+      "evidence": [{"id":"v2.deep3d.matter-adapter","tier":"FAST_LOCAL"}],
+      "mandatory": false
+    },
+    {
+      "contract": "ofu-px-contracts-1",
       "id": "v2.deep3d.adapter.local",
       "version": "1.0.0",
       "owner": "product",

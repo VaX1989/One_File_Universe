@@ -11,6 +11,15 @@
       "timeoutMs": 30000
     },
     {
+      "id": "v2.deep3d.matter-adapter",
+      "owner": "product",
+      "tier": "FAST_LOCAL",
+      "command": ["node", "tests/deep3d/matter-adapter.mjs"],
+      "providers": ["v2.deep3d.adapter.matter"],
+      "oracle": "v2-deep3d-matter-bounded-source-identity-and-science-boundary",
+      "timeoutMs": 30000
+    },
+    {
       "id": "v2.deep3d.local-adapter",
       "owner": "product",
       "tier": "FAST_LOCAL",

@@ -14,6 +14,7 @@
         "v1.product.deep3d-system-primary-bridge",
         "v2.deep3d.surface-adapter.runtime",
         "v2.deep3d.local-adapter.runtime",
+        "v2.deep3d.matter-adapter.runtime",
         "v2x04.render.orbit-3d",
         "v2x04.render.stellar-appearance",
         "v2x04.render.multi-star-illumination",
@@ -31,8 +32,8 @@
         "v2x05.deep-planet.provider"
       ],
       "authority": "PRESENTATION_ONLY",
-      "provenance": "Convergence-owned Living product compositor. It consumes the strict final V2X-13 pixel path over the sole V2X-02 camera; SYSTEM, ORBIT and APPROACH consume the fail-closed V2X-04 SystemProvider2 and reversible approach stack; GLOBAL/REGIONAL/LOCAL surface consume V2X-06 through the bounded Deep3D surface adapter; HUMAN consumes V2X-07 through the bounded Deep3D local adapter; MATERIAL through ATOMIC consume V2X-12. Camera, selection, scale, canonical geodesy and scientific authority remain external; legacy system fallback is forbidden.",
-      "provides": ["v2x.living.domain-composition", "v2.deep3d.product.primary.surface", "v2.deep3d.product.primary.local"]
+      "provenance": "Convergence-owned Living product compositor. It consumes the strict final V2X-13 pixel path over the sole V2X-02 camera; SYSTEM, ORBIT and APPROACH consume the fail-closed V2X-04 SystemProvider2 and reversible approach stack; GLOBAL/REGIONAL/LOCAL surface consume V2X-06 through the bounded Deep3D surface adapter; HUMAN consumes V2X-07 through the bounded Deep3D local adapter; MATERIAL through ATOMIC consume V2X-12 through the bounded Deep3D matter adapter. Camera, selection, scale, canonical geodesy and scientific authority remain external; legacy system fallback is forbidden.",
+      "provides": ["v2x.living.domain-composition", "v2.deep3d.product.primary.surface", "v2.deep3d.product.primary.local", "v2.deep3d.product.primary.matter"]
     },
     {
       "id": "v2x.living.life-v2-consumer",
