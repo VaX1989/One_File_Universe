@@ -1,6 +1,6 @@
 {
   "schema": "ofu-v2-integration-ledger-1",
-  "version": "2026-09-12.13",
+  "version": "2026-09-12.14",
   "status": "PROVISIONAL_V2_0_RELEASE_CANDIDATE_PENDING_EXACT_SHA_CERTIFICATION",
   "identityRule": "The candidate SHA and tree are the commit and tree containing this ledger; no self-referential Git identity is embedded here.",
   "release": {
@@ -172,7 +172,8 @@
     {"test":"deep3d.visual-evolution","classification":"OBSOLETE_HIDDEN_RENDERER_OWNERSHIP_AND_INSUFFICIENT_VISIBLE_EVOLUTION","resolution":"The central Living Deep3D bridge now owns the primary product pixels across all fifteen shipping scales, with the cinematic layer retained only as a presentation underlay. Exact-baseline A/B browser evidence requires visible depth, parallax, framing, coverage, lighting and richness changes without creating another camera, selection or truth authority."},
     {"test":"founder.local-surface-navigation","classification":"EXCESSIVE_INTERACTIVE_LOCAL_TERRAIN_DETAIL_TIER","resolution":"The Local Surface composition uses the bounded 17x17 adaptive terrain tier at detail 720000 instead of crossing into the 33x33 tier, preserving the same nine-patch model/presentation authority while restoring native-click transition latency to the release envelope."},
     {"test":"audit.p21.performance-browser-mobile-resource-soak","classification":"UNBOUNDED_BACKGROUND_RAF_MEASUREMENT","resolution":"Frame-pacing evidence brings the page to the foreground and bounds the requestAnimationFrame sampling window. Full samples remain measured evidence; a browser-throttled deadline is reported honestly as NOT_MEASURABLE_BACKGROUND_RAF_THROTTLED instead of deadlocking certification or fabricating timing."},
-    {"test":"legacy.direct-file.product","classification":"STALE_V1_RENDERER_AND_UNBOUNDED_WHEEL_ORACLE_ASSUMPTIONS","resolution":"Superseded legacy renderer scheduling is parked behind the active Deep3D owner, and direct-file wheel/pacing oracles sample the actual Living Deep3D surface with bounded completion while retaining native input and UI-health assertions."}
+    {"test":"legacy.direct-file.product","classification":"STALE_V1_RENDERER_AND_UNBOUNDED_WHEEL_ORACLE_ASSUMPTIONS","resolution":"Superseded legacy renderer scheduling is parked behind the active Deep3D owner, and direct-file wheel/pacing oracles sample the actual Living Deep3D surface with bounded completion while retaining native input and UI-health assertions."},
+    {"test":"px.release.exact-source-propagation","classification":"MISSING_EXACT_SOURCE_CHILD_ENVIRONMENT","resolution":"The definitive conformance runner now supplies its authenticated Git head as OFU_SOURCE_SHA to every exact-mode child process, while still rejecting a conflicting caller pin. Exact child artifact and browser evidence therefore binds automatically to the same source as the parent release transaction."}
   ],
   "knownReleaseCriticalDefects": [],
   "deferredPostV2": [

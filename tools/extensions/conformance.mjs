@@ -53,12 +53,17 @@ export function providerCatalogsForConformance(plan){
  }
  return catalogs;
 }
+export function conformanceChildEnvironment(exact,source,environment=process.env){
+ if(!exact)return environment;
+ return {...environment,OFU_SOURCE_SHA:source};
+}
 export function runConformance(tier,{root=process.cwd(),exact=false}={}){
  check(TIERS.includes(tier),'unknown tier');const tests=loadConformance(root),plan=loadComponents(root),catalogs=providerCatalogsForConformance(plan);
  validateCoverage(catalogs,tests);const source=execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),tree=execFileSync('git',['rev-parse','HEAD^{tree}'],{cwd:root,encoding:'utf8'}).trim(),dirty=execFileSync('git',['status','--porcelain'],{cwd:root,encoding:'utf8'}).trim().length>0;
  if(exact){check(!dirty,'exact evidence requires clean source');check(!process.env.OFU_SOURCE_SHA||process.env.OFU_SOURCE_SHA===source,'source SHA mismatch');}
+ const childEnvironment=conformanceChildEnvironment(exact,source);
  const results=[];
- for(const t of tests.filter(t=>TIERS.indexOf(t.tier)<=TIERS.indexOf(tier))){const start=performance.now(),command=t.command[0]==='node'?process.execPath:t.command[0],r=spawnSync(command,t.command.slice(1),{cwd:root,env:process.env,encoding:'utf8',timeout:t.timeoutMs,maxBuffer:8*1024*1024});
+ for(const t of tests.filter(t=>TIERS.indexOf(t.tier)<=TIERS.indexOf(tier))){const start=performance.now(),command=t.command[0]==='node'?process.execPath:t.command[0],r=spawnSync(command,t.command.slice(1),{cwd:root,env:childEnvironment,encoding:'utf8',timeout:t.timeoutMs,maxBuffer:8*1024*1024});
   check(!r.error&&r.status===0,t.id+' failed\n'+String(r.stderr||r.error||r.stdout).slice(-4000));
   const value=parseJsonResult(r.stdout,t.id);
   check(value.status==='PASS',t.id+' did not report PASS');

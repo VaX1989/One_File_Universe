@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {loadConformance,providerCatalogsForConformance,validateConformance,validateCoverage} from '../../tools/extensions/conformance.mjs';
+import {conformanceChildEnvironment,loadConformance,providerCatalogsForConformance,validateConformance,validateCoverage} from '../../tools/extensions/conformance.mjs';
 import {loadComponents} from '../../tools/extensions/components.mjs';
 const tests=loadConformance();
 const plan=loadComponents();
@@ -13,4 +13,9 @@ const activeCatalogComponents=plan.filter(c=>c.id.startsWith('px.providers.'));
 const frontierCatalogComponents=plan.filter(c=>c.id.startsWith('v2x.frontier.providers.'));
 assert.ok(activeCatalogComponents.length>0,'active shipping catalogs must remain present');cases++;
 assert.ok(frontierCatalogComponents.length>0,'frontier catalogs must remain independently testable');cases++;
+const source='a'.repeat(40),baseEnvironment={PATH:'test-path'};
+const exactEnvironment=conformanceChildEnvironment(true,source,baseEnvironment);
+assert.deepEqual(exactEnvironment,{PATH:'test-path',OFU_SOURCE_SHA:source},'exact conformance must pin every child to the authenticated source');cases++;
+assert.notEqual(exactEnvironment,baseEnvironment,'exact conformance must not mutate the parent environment');cases++;
+assert.equal(conformanceChildEnvironment(false,source,baseEnvironment),baseEnvironment,'non-exact conformance preserves the caller environment');cases++;
 console.log(JSON.stringify({status:'PASS',suite:'px-conformance',cases,catalogs:catalogs.length,activeCatalogs:activeCatalogComponents.length,frontierCatalogs:frontierCatalogComponents.length}));
