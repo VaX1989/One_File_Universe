@@ -1,0 +1,117 @@
+{
+  "schema": "ofu-v2-parallel-lane-checkpoint-1",
+  "lane": "AUDIT_DETERMINISM_PERSISTENCE_SECURITY",
+  "mode": "READ_MOSTLY_RELIABILITY_ADVERSARIAL_STATE_AUDIT",
+  "authority": "EVIDENCE_INPUT_ONLY",
+  "promotionAuthority": false,
+  "authorizedFrozenBase": {
+    "sha": "2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7",
+    "tree": "99e6b5ff6229d9c34d381e778c5689bf2367d256"
+  },
+  "convergenceSynchronizationBase": {
+    "sha": "8767e81d953a7d6c2bce334749c609d9b1be0805",
+    "tree": "f9a6d9fb26cf624cdcea59bc03ae1ac3417eb4cd"
+  },
+  "verifiedIntegrationReadySource": {
+    "sha": "1901ad7c57be53f74f5c4812bed8a821c429bf50",
+    "tree": "17319157d289950863bdbfe0c17dc88db683c844",
+    "branch": "audit/v2.0-determinism-persistence-security-2026-09-07",
+    "mergeBaseWithConvergence": "8767e81d953a7d6c2bce334749c609d9b1be0805",
+    "behindConvergenceBy": 0,
+    "productionWrites": 0,
+    "changedProductionFilesAgainstConvergence": 0,
+    "ownedChangedPathsAgainstConvergence": [
+      "tests/audit/v2-determinism-persistence-security.mjs",
+      "tests/run-node-tests.mjs",
+      "docs/parallel/v2/lanes/AUDIT_DETERMINISM_PERSISTENCE_SECURITY_CURRENT.json"
+    ]
+  },
+  "audit": {
+    "suite": "tests/audit/v2-determinism-persistence-security.mjs",
+    "status": "PASS",
+    "cases": 172,
+    "determinismWitnesses": 4,
+    "repetitions": 2,
+    "portableSaveMetamorphicVariants": 64,
+    "productionWrites": 0,
+    "coverage": [
+      "portable-save deterministic serialization, integrity and hostile bounds",
+      "session persistence and transactional rollback",
+      "P4 replay ordering, compaction and semantic closure",
+      "extension registry collision and authority rejection",
+      "cross-scale identity stability and duplicate rejection",
+      "central single-writer and fail-closed authority freeze"
+    ]
+  },
+  "exactSourceEvidence": {
+    "workflow": "V2X Supreme Convergence",
+    "runId": 34214604197,
+    "jobId": 102023289222,
+    "sourceSha": "1901ad7c57be53f74f5c4812bed8a821c429bf50",
+    "nodeVersion": "24.20.0",
+    "exactSourceIdentity": "PASS",
+    "fullRepositoryTestAndReproducibleBuild": "PASS",
+    "auditSuite": "PASS",
+    "p2FuzzIterations": 24000,
+    "p4PropertyHistories": 2000,
+    "p4PropertyEvents": 16041,
+    "p4MetamorphicEvents": 2048,
+    "p4Compactions": 73,
+    "providerActivationBoundary": "PASS",
+    "centralAuthorityFreeze": "PASS",
+    "artifactCompositionAndReproducibilityAudit": "PASS",
+    "livingShippingRebuild": "PASS",
+    "v2x10ConvergenceBlockers": "PASS",
+    "livingMacrocosmComposition": "PASS",
+    "livingSingleCameraAuthority": "PASS",
+    "livingDomainComposition": "PASS",
+    "foundationIntegrityRunId": 34214604110,
+    "foundationIntegrity": "PASS",
+    "p1ConformanceRunId": 34214604170,
+    "p1ExactCheckout": "PASS",
+    "p1NpmTest": "PASS",
+    "chromiumDirectOpen": "PASS",
+    "firefoxDirectOpen": "PASS",
+    "macosWebKitDirectOpen": "PASS"
+  },
+  "externalBaselineDefect": {
+    "classification": "INHERITED_CONVERGENCE_CONTEXT_INSPECTOR_DEFECT",
+    "laneRegression": false,
+    "withinLaneOwnership": false,
+    "convergenceBaseRunId": 34213950873,
+    "convergenceBaseJobId": 102021177474,
+    "synchronizedLaneRunId": 34214604197,
+    "synchronizedLaneJobId": 102023289222,
+    "failingStep": "Living V2X context inspector witness",
+    "exactFailure": "Error: V2X-09 module set including advanced composition required",
+    "failureSource": "src/v2x-09-civilization-economy-city/index.js",
+    "consumerWitness": "tests/v2x-convergence/living-context-inspector.mjs",
+    "proof": "The live convergence base and the synchronized audit head fail at the same central V2X-09 guard after the audit-owned full repository stack and all preceding V2X convergence witnesses pass.",
+    "laneRepairProhibitedByOwnership": true
+  },
+  "cleanliness": {
+    "temporaryWork": false,
+    "experimentalWork": false,
+    "duplicateWork": false,
+    "knownDeadWork": false,
+    "ambiguousOwnedWork": false,
+    "unresolvedReviewThreads": 0,
+    "allOwnedChangesIntentional": true,
+    "allOwnedChangesComplete": true
+  },
+  "remainingLaneBlockers": [],
+  "integrationContract": {
+    "applyOnlyOwnedDelta": true,
+    "productionWrites": 0,
+    "centralConvergenceWrites": 0,
+    "mergeIntoCentralPerformed": false,
+    "note": "This lane is synchronized with the recorded convergence base while preserving an exact three-path audit-only delta. The central V2X context-inspector defect is pre-existing on that convergence base and is not a lane blocker or lane-owned repair surface."
+  },
+  "finalRecordSemantics": {
+    "metadataOnlySuccessor": true,
+    "verifiedSourceCheckpoint": "1901ad7c57be53f74f5c4812bed8a821c429bf50",
+    "note": "This final checkpoint commit only updates this evidence record. Its own exact SHA and tree are authenticated after commit to avoid self-reference; no test or production semantics change after the verified integration-ready source checkpoint."
+  },
+  "pullRequest": 240,
+  "state": "COMPLETE"
+}
