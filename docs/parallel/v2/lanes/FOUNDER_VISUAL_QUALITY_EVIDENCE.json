@@ -1,0 +1,77 @@
+{
+  "schema": "ofu-founder-visual-quality-evidence-1",
+  "lane": "FOUNDER_VISUAL_QUALITY",
+  "auditStatus": "COMPLETE",
+  "founderQualityAcceptance": "REJECTED",
+  "authority": "HUMAN_FOUNDER_REVIEW_OVER_EXACT_BROWSER_EVIDENCE",
+  "subjects": {
+    "v1": {
+      "sourceSha": "38dd0d7c0ccc4a100dc3b75d3d159c6933bc4c16",
+      "sourceTree": "b7576ebe21b3448b69e35c9cd8d279f51e4332fb",
+      "sourceBundleRunId": 34056646777,
+      "sourceBundleArtifactId": 9996156457,
+      "sourceBundleDigest": "sha256:49ad6229b943d60319c71e3e049805119df7a1772deff9c3344da5d9c9e7e7bd",
+      "oneFileSha256": "013d4277da9acebcbb739275c27f6e05ccbc838840738cd2f9b03bb8f5def61a",
+      "oneFileBytes": 1512784,
+      "releaseEquivalent": true
+    },
+    "v2": {
+      "sourceSha": "2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7",
+      "sourceTree": "99e6b5ff6229d9c34d381e778c5689bf2367d256",
+      "sourceBundleRunId": 34163623637,
+      "sourceBundleArtifactId": 10033418164,
+      "sourceBundleDigest": "sha256:5448332bca05076a71a74a5ac7e005c75c5d89b770df5803ac6b04bc252dcdfd",
+      "oneFileSha256": "b928653d0eb33dcc7dc140428de1b98d75fb9ef1021f35cf3e1f80a4608a0310",
+      "oneFileBytes": 2478960
+    }
+  },
+  "buildVerification": {
+    "sourceBundleSHA256SUMS": "PASS_BOTH",
+    "node22BuildHashesStable": true,
+    "node24_11_1BuildHashesStable": true,
+    "v1Node24BuildEqualsPublishedRelease": true,
+    "canonicalNode24_20_0NotAvailableLocally": true,
+    "scientificNote": "Browser audit uses exact authenticated source and deterministic one-file bytes; local Node patch version differs from canonical 24.20.0, but Node 22.16.0 and Node 24.11.1 produced byte-identical outputs and v1 reproduced the published release exactly."
+  },
+  "browserExecution": {
+    "browser": "Chromium 144.0.7559.96 (Debian trixie)",
+    "playwrightCore": "1.57.0-beta-1764944708000",
+    "loadMode": "EXACT_BYTES_SET_CONTENT",
+    "reasonForLoadMode": "Environment policy blocks file: and loopback navigation; exact one-file bytes are loaded directly into the document. Direct file: operation of v1 is separately release-certified; this audit measures visible content and user journeys, not file-scheme compatibility.",
+    "rendererSettlement": "Every forward screenshot requires render.readyRevision === runtime.revision and render.metrics.frames > 0.",
+    "shards": [
+      "v1/macro",
+      "v2/macro",
+      "v1/life",
+      "v2/life",
+      "v1/civilization",
+      "v2/civilization",
+      "v1/matter",
+      "v2/matter"
+    ],
+    "allShards": "PASS",
+    "pageErrors": 0,
+    "unexpectedNetworkRequests": 0,
+    "aggregate": "PASS_13_DOMAINS_FORWARD_AND_REVERSE"
+  },
+  "classifications": [
+    {"domain":"Universe","classification":"PARITY","acceptance":"OPEN_PRODUCTION_DEFECT","rationale":"Primary universe scene remains effectively the same small labeled galaxy cluster on a dark star field; helper copy changes do not materially alter spatial embodiment.","owner":"MACROCOSM_OWNER + RENDERING_PLATFORM","forwardScreenshotEvidence":{"shape":[779,1039,3],"mae":1.752318129533557,"changedPixelFraction":0.020306876489564248,"v1Sha256":"db13a0fb66ba3c6e2ada24929b3dd1db88fbe21b3eeac62e04ed2de803a1e5ca","v2Sha256":"d94d9704deabaa33d25f85e248886f9372f0e6f954ecd5e231ae60d71db4ac2b","v1Bytes":277968,"v2Bytes":126208}},
+    {"domain":"Galaxy","classification":"PARITY","acceptance":"OPEN_PRODUCTION_DEFECT","rationale":"Primary galaxy scene remains a dense labeled cluster with broadly the same spatial composition; no material founder-visible depth increase.","owner":"MACROCOSM_OWNER + RENDERING_PLATFORM","forwardScreenshotEvidence":{"shape":[779,1039,3],"mae":2.389402930552278,"changedPixelFraction":0.027984348533014736,"v1Sha256":"9c78b0046798e7a74d8693e99e6e04d3ecf7255918a0dd563b6ad40572d591d3","v2Sha256":"b0877d6120dea6062783a5b99b4d943a630774911aa552ffb057f4aec28f3be1","v1Bytes":366813,"v2Bytes":223386}},
+    {"domain":"Region","classification":"PARITY","acceptance":"OPEN_PRODUCTION_DEFECT","rationale":"Region presentation remains substantially the same clustered labels/systems with no material change in embodied traversal quality.","owner":"MACROCOSM_OWNER + RENDERING_PLATFORM","forwardScreenshotEvidence":{"shape":[779,1039,3],"mae":2.689326781824629,"changedPixelFraction":0.03099034941517036,"v1Sha256":"1b86637e64560bfb46993c690e164aef74c0de7b0b7d4a03cd774407f6b734e6","v2Sha256":"115c3c3835fa5076c265360d1e68c0c6a8a3d843e496e96bcfae3cabaaf2005e","v1Bytes":296466,"v2Bytes":151529}},
+    {"domain":"Neighborhood","classification":"REGRESSION","acceptance":"OPEN_PRODUCTION_DEFECT","rationale":"V1 presents a populated local stellar cluster; the settled V2 Neighborhood viewport is largely empty star field and loses visible local structure.","owner":"MACROCOSM_OWNER + RENDERING_PLATFORM","forwardScreenshotEvidence":{"shape":[779,1039,3],"mae":1.8087237860373133,"changedPixelFraction":0.01696728734675017,"v1Sha256":"dec264d936641ed8179c17673010d756eab6deb64aea5e6e37d95157a22a9387","v2Sha256":"173e485f794020f59d3be982632b96a4623e993f5094a957c3da6fbc86455315","v1Bytes":296121,"v2Bytes":103686}},
+    {"domain":"System","classification":"MINOR_IMPROVEMENT","acceptance":"OPEN_PRODUCTION_DEFECT","rationale":"V2 improves glow, object treatment and cleanliness, but the primary scene remains a sparse flat orbit chart rather than a materially embodied system.","owner":"SYSTEM_PLANETOLOGY_OWNER + RENDERING_PLATFORM","forwardScreenshotEvidence":{"shape":[779,1039,3],"mae":4.1934041775958,"changedPixelFraction":0.3375221311100705,"v1Sha256":"89295dfa50ff796efad148185a5bea56be72697728fe1ceb50bb238c7d1269eb","v2Sha256":"84256fcd83a4257d76283b1d78910c38263fedf4c2c243cafb04d743e1c47df7","v1Bytes":276294,"v2Bytes":145232}},
+    {"domain":"Planet","classification":"PARITY","acceptance":"OPEN_PRODUCTION_DEFECT","rationale":"The primary planet view remains essentially the same large shaded sphere; supporting text does not constitute material visual improvement.","owner":"SYSTEM_PLANETOLOGY_OWNER + RENDERING_PLATFORM","forwardScreenshotEvidence":{"shape":[779,1039,3],"mae":0.7738712258709639,"changedPixelFraction":0.009018002646466869,"v1Sha256":"f0f696d3179b7b7568e35fe338214383e10a5c145d8575c3d18ce3aa7b0cf5af","v2Sha256":"82e78a1bd281ccbf258f3a40461400da4a7ad22079d66a4b04745ac03c62271b","v1Bytes":284046,"v2Bytes":164029}},
+    {"domain":"Surface","classification":"MATERIAL_IMPROVEMENT","acceptance":"PASS","rationale":"V2 replaces the pale flat rectangular global surface with a visibly spatial polygonal globe/patch mesh with material regions and relief cues.","owner":"NONE","forwardScreenshotEvidence":{"shape":[779,1039,3],"mae":79.75358782411085,"changedPixelFraction":0.5863839156095831,"v1Sha256":"45096ecb172703d0d40c2d4e8369086aa5aac692d4a7f63b26ddef541a39ea67","v2Sha256":"d8ea12db4f715b8c73ae91db5a408443a3a9691f7d95abed7649f4f839a8eefa","v1Bytes":39090,"v2Bytes":300043}},
+    {"domain":"Human","classification":"MATERIAL_IMPROVEMENT","acceptance":"PASS","rationale":"V2 replaces the flat isometric grid with a horizon/ground scene, depth cues and local presentation objects, materially improving spatial presence.","owner":"NONE","forwardScreenshotEvidence":{"shape":[779,1039,3],"mae":59.2671053558213,"changedPixelFraction":0.7549868356188247,"v1Sha256":"2cec0053f93b3d1a306bfaa2993f8dac9eb06ef71c3a712cbac5f9361f65dfff","v2Sha256":"438e68b7ae0bbfbd99321919a548cf043a08e6da682b6782b69e5926d716ef11","v1Bytes":113900,"v2Bytes":72284}},
+    {"domain":"Life","classification":"PARITY","acceptance":"OPEN_PRODUCTION_DEFECT","rationale":"The BIOSPHERE discovery route resolves to a planet view visually indistinguishable in primary embodiment from the historical baseline; organisms/ecology are not visibly embodied.","owner":"parallel/v2.0-08-life-ecology-evolution-embodiment-2026-09-07","forwardScreenshotEvidence":{"shape":[779,1039,3],"mae":0.8520943782965007,"changedPixelFraction":0.012635582006496322,"v1Sha256":"7b3d2f80c7a44baacfeb5c70e94a3c6884af34d718b0336506d6156dd78d22f9","v2Sha256":"0b519c13788182cb9587b6c62a040b2b7e0a804b532d19ae05f48dedafe91358","v1Bytes":298990,"v2Bytes":176364}},
+    {"domain":"Civilization","classification":"PARITY","acceptance":"OPEN_PRODUCTION_DEFECT","rationale":"The CIVILIZATION discovery route resolves to the same primary planet presentation as Life; city/civilization embodiment is not visible in the founder viewport.","owner":"parallel/v2.0-09-civilization-economy-city-2026-09-07","forwardScreenshotEvidence":{"shape":[779,1039,3],"mae":0.8520943782965007,"changedPixelFraction":0.012635582006496322,"v1Sha256":"7b3d2f80c7a44baacfeb5c70e94a3c6884af34d718b0336506d6156dd78d22f9","v2Sha256":"0b519c13788182cb9587b6c62a040b2b7e0a804b532d19ae05f48dedafe91358","v1Bytes":298990,"v2Bytes":176364}},
+    {"domain":"Matter","classification":"REGRESSION","acceptance":"OPEN_PRODUCTION_DEFECT","rationale":"V1 exposes a clear constituent/material bar; V2 reduces the primary matter scene to a tiny isolated swatch in a large empty field, losing visible information and embodiment.","owner":"parallel/v2.0-12-matter-cell-molecular-atomic-2026-09-07 + RENDERING_PLATFORM","forwardScreenshotEvidence":{"shape":[779,1039,3],"mae":10.470682739855107,"changedPixelFraction":0.3592214297098647,"v1Sha256":"3d3384dd36ef96da191b5fc0be7b3d8e7dbb45b84adcb0fa271b4b74bd27ebcd","v2Sha256":"621120644693f69382f59799f9208d6a969e75072df862cf8e4eec390a0f378b","v1Bytes":233261,"v2Bytes":128624}},
+    {"domain":"Molecular","classification":"MINOR_IMPROVEMENT","acceptance":"OPEN_PRODUCTION_DEFECT","rationale":"V2 spatially separates the molecular markers, but the scene is still a sparse circle schematic without materially richer molecular embodiment.","owner":"parallel/v2.0-12-matter-cell-molecular-atomic-2026-09-07 + RENDERING_PLATFORM","forwardScreenshotEvidence":{"shape":[779,1039,3],"mae":4.186824663951011,"changedPixelFraction":0.33721448860301884,"v1Sha256":"9a5fcca546508eff8a52dd4a3c075a47d0a89459adb0639c2cec47f810e164c6","v2Sha256":"362324d5f9a61c3789cf5e19dcc962031ffca0f051b8ee13697cef4b6f9f3349","v1Bytes":261467,"v2Bytes":137116}},
+    {"domain":"Atomic","classification":"MINOR_IMPROVEMENT","acceptance":"OPEN_PRODUCTION_DEFECT","rationale":"V2 distributes atomic markers more spatially, but remains simple circle primitives without materially richer atomic embodiment.","owner":"parallel/v2.0-12-matter-cell-molecular-atomic-2026-09-07 + RENDERING_PLATFORM","forwardScreenshotEvidence":{"shape":[779,1039,3],"mae":5.008766370020217,"changedPixelFraction":0.34203175018934223,"v1Sha256":"c7d62ca148b632c4a294f52c63a189893b36d73b78b09a0d1018a414c1e57008","v2Sha256":"cae7b9fcce0c1acef861cf45a3c93eee0964eff182d48396177d7e65d0a015ca","v1Bytes":269576,"v2Bytes":134684}}
+  ],
+  "summary": {"REGRESSION":2,"PARITY":6,"MINOR_IMPROVEMENT":3,"MATERIAL_IMPROVEMENT":2,"NOT_VERIFIED":0,"domainsBelowMaterialImprovement":11,"domainsPassingMaterialImprovement":2},
+  "reverseJourney": {"status":"PASS","macro":"Human -> Surface -> Planet -> System -> Neighborhood -> Region -> Galaxy -> Universe via visible scale controls","life":"BIOSPHERE result -> visible Back -> System","civilization":"CIVILIZATION result -> visible Back -> System","matter":"Atomic -> Molecular -> Microstructure -> Material -> Human via visible Back controls","internalStateMutationUsed":false},
+  "laneBlockers": [],
+  "productionAcceptance": "REJECTED_UNTIL_ALL_11_OPEN_FINDINGS_REACH_MATERIAL_IMPROVEMENT_OR_ARE_EXPLICITLY_RESCOPED_BY_CENTRAL_AUTHORITY",
+  "localReviewDerivative": {"sha256":"3c2ed737aa51f619144395463ac67c261ca709126159f9999805a971a83ffa79","bytes":207371,"committed":false,"role":"LOCAL_REVIEW_AID_ONLY","note":"Human classifications were made from the exact forward PNGs generated by the final harness. Exact PNG SHA-256 values are recorded per domain. The compact JPEG contact sheet was a local derivative and is intentionally not part of the integration diff."}
+}

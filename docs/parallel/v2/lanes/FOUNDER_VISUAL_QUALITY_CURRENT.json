@@ -1,0 +1,52 @@
+{
+  "schema": "ofu-v2-parallel-lane-checkpoint-2",
+  "lane": "FOUNDER_VISUAL_QUALITY",
+  "mode": "READ_MOSTLY_PRODUCT_QUALITY_ADVERSARIAL_VISUAL_AUDIT",
+  "authorityClass": "MEASURED_RUNTIME_EVIDENCE",
+  "productionWrites": false,
+  "status": "COMPLETE",
+  "founderQualityAcceptance": "REJECTED",
+  "laneBlockers": [],
+  "base": {"sha":"2977c11a0ac97eba8fd7b6b7df9c958ea1a2d9a7","tree":"99e6b5ff6229d9c34d381e778c5689bf2367d256","launchStatus":"FULL"},
+  "baselineV1": {"sha":"38dd0d7c0ccc4a100dc3b75d3d159c6933bc4c16","tree":"b7576ebe21b3448b69e35c9cd8d279f51e4332fb","releasedArtifactSha256":"013d4277da9acebcbb739275c27f6e05ccbc838840738cd2f9b03bb8f5def61a","artifactBytes":1512784},
+  "v2Artifact": {"sha256":"b928653d0eb33dcc7dc140428de1b98d75fb9ef1021f35cf3e1f80a4608a0310","artifactBytes":2478960},
+  "finalCheckpoint": {"commitRole":"FINAL_LANE_CHECKPOINT","selfReferencePolicy":"Exact final commit SHA/tree are authenticated after this atomic commit and recorded in PR #255 and the external handoff.","noFurtherBranchWritesAfterThisCheckpoint":true},
+  "pullRequest": {"number":255,"base":"integration/v2x-supreme-total-convergence-2026-09-07","integrationDisposition":"READY_FOR_EVIDENCE_INTEGRATION"},
+  "finalOwnedFiles": [
+    "tests/audit/founder-visual-quality/differential-browser.mjs",
+    "tests/audit/founder-visual-quality/aggregate.mjs",
+    "tests/audit/founder-visual-quality/contract.mjs",
+    "docs/parallel/v2/lanes/FOUNDER_VISUAL_QUALITY_EVIDENCE.json",
+    "docs/parallel/v2/lanes/FOUNDER_VISUAL_QUALITY_REPORT.md",
+    "docs/parallel/v2/lanes/FOUNDER_VISUAL_QUALITY_CURRENT.json"
+  ],
+  "verification": {
+    "sourceBundleChecksums":"PASS_BOTH","v1ExactReleaseReproduction":"PASS","v2DeterministicBuild":"PASS","node22VsNode24_11_1ArtifactIdentity":"PASS",
+    "syntax":["node --check tests/audit/founder-visual-quality/differential-browser.mjs — PASS","node --check tests/audit/founder-visual-quality/aggregate.mjs — PASS"],
+    "contract":"PASS_13_DOMAINS",
+    "browserShards":{"v1/macro":"PASS","v2/macro":"PASS","v1/life":"PASS","v2/life":"PASS","v1/civilization":"PASS","v2/civilization":"PASS","v1/matter":"PASS","v2/matter":"PASS"},
+    "aggregate":"PASS_13_DOMAINS_FORWARD_AND_REVERSE","pageErrors":0,"unexpectedNetworkRequests":0,"browser":"Chromium 144.0.7559.96","loadMode":"EXACT_BYTES_SET_CONTENT"
+  },
+  "classificationSummary": {"Universe":"PARITY","Galaxy":"PARITY","Region":"PARITY","Neighborhood":"REGRESSION","System":"MINOR_IMPROVEMENT","Planet":"PARITY","Surface":"MATERIAL_IMPROVEMENT","Human":"MATERIAL_IMPROVEMENT","Life":"PARITY","Civilization":"PARITY","Matter":"REGRESSION","Molecular":"MINOR_IMPROVEMENT","Atomic":"MINOR_IMPROVEMENT","reverseJourney":"PASS"},
+  "counts": {"REGRESSION":2,"PARITY":6,"MINOR_IMPROVEMENT":3,"MATERIAL_IMPROVEMENT":2,"NOT_VERIFIED":0,"openProductionFindings":11},
+  "closedAuditDefects": ["FVQ-EVIDENCE-001","FVQ-DIFF-001","FVQ-REVERSE-001"],
+  "externalProductionFindings": [
+    {"id":"FVQ-UNIVERSE-001","priority":"P1","classification":"PARITY","owner":"MACROCOSM_OWNER + RENDERING_PLATFORM"},
+    {"id":"FVQ-GALAXY-001","priority":"P1","classification":"PARITY","owner":"MACROCOSM_OWNER + RENDERING_PLATFORM"},
+    {"id":"FVQ-REGION-001","priority":"P1","classification":"PARITY","owner":"MACROCOSM_OWNER + RENDERING_PLATFORM"},
+    {"id":"FVQ-NEIGHBORHOOD-001","priority":"P1","classification":"REGRESSION","owner":"MACROCOSM_OWNER + RENDERING_PLATFORM"},
+    {"id":"FVQ-SYSTEM-001","priority":"P1","classification":"MINOR_IMPROVEMENT","owner":"SYSTEM_PLANETOLOGY_OWNER + RENDERING_PLATFORM"},
+    {"id":"FVQ-PLANET-001","priority":"P1","classification":"PARITY","owner":"SYSTEM_PLANETOLOGY_OWNER + RENDERING_PLATFORM"},
+    {"id":"FVQ-LIFE-001","priority":"P1","classification":"PARITY","owner":"parallel/v2.0-08-life-ecology-evolution-embodiment-2026-09-07"},
+    {"id":"FVQ-CIVILIZATION-001","priority":"P1","classification":"PARITY","owner":"parallel/v2.0-09-civilization-economy-city-2026-09-07"},
+    {"id":"FVQ-MATTER-001","priority":"P1","classification":"REGRESSION","owner":"parallel/v2.0-12-matter-cell-molecular-atomic-2026-09-07 + RENDERING_PLATFORM"},
+    {"id":"FVQ-MOLECULAR-001","priority":"P1","classification":"MINOR_IMPROVEMENT","owner":"parallel/v2.0-12-matter-cell-molecular-atomic-2026-09-07 + RENDERING_PLATFORM"},
+    {"id":"FVQ-ATOMIC-001","priority":"P1","classification":"MINOR_IMPROVEMENT","owner":"parallel/v2.0-12-matter-cell-molecular-atomic-2026-09-07 + RENDERING_PLATFORM"}
+  ],
+  "centralDependencies": [
+    "Do not promote founder-quality acceptance until the 11 open production findings are remediated or explicitly rescoped.",
+    "Shared viewport/camera/scale/primary-renderer/input/persistence authority remains convergence-owned.",
+    "Any later materially integrated candidate requires fresh exact-candidate evidence; this checkpoint certifies only V2 base 2977c11... against v1.0.0."
+  ],
+  "scientificIntegrity": {"automatedClassificationPromotion":false,"humanReviewAuthority":true,"exactSourceAuthenticated":true,"rendererSettledScreenshots":true,"internalStateMutationUsedForJourney":false,"canonicalNode24_20_0UnavailableLocally":true}
+}

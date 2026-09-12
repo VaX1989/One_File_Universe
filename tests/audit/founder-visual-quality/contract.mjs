@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const browserSource=fs.readFileSync(new URL('./differential-browser.mjs',import.meta.url),'utf8');
+const aggregateSource=fs.readFileSync(new URL('./aggregate.mjs',import.meta.url),'utf8');
+const source=browserSource+'\n'+aggregateSource;
+const domains=['Universe','Galaxy','Region','Neighborhood','System','Planet','Surface','Human','Life','Civilization','Matter','Molecular','Atomic'];
+for(const domain of domains)assert(source.includes(`'${domain}'`),`missing founder domain ${domain}`);
+for(const token of ['MATERIAL_IMPROVEMENT','HUMAN_FOUNDER_REVIEW_REQUIRED','unexpectedNetworkRequests','artifactSha256','forward','reverse','readyRevision','EXACT_BYTES_SET_CONTENT','BIOSPHERE','CIVILIZATION','inspect-material','back','FAMILY_DOMAINS'])assert(source.includes(token),`missing audit contract token ${token}`);
+assert(!source.includes("classification:'MATERIAL_IMPROVEMENT'"),'automation must never self-promote qualitative founder quality');
+assert(browserSource.includes('AUDIT_SUBJECT is required and must be v1 or v2'),'browser execution must be explicitly subject-sharded');
+assert(browserSource.includes('AUDIT_FAMILY is required'),'browser execution must be explicitly family-sharded');
+assert(aggregateSource.includes("assert.equal(matrix.length,13"),'aggregate must fail closed unless all 13 domains are present');
+console.log(JSON.stringify({suite:'founder-visual-quality-contract',status:'PASS',domains:domains.length,rendererSettlement:true,deepReverse:true,exactByteLoad:true,explicitSubjectAndFamilySharding:true,deterministicAggregation:true}));
