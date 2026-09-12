@@ -1,0 +1,23 @@
+{
+  "schema": "ofu-provider-catalog-1",
+  "owners": [{"id":"product","prefixes":["v2.deep3d"],"kinds":["scene"],"authorities":["PRESENTATION_ONLY"]}],
+  "canonicalAdmissions": [],
+  "providers": [
+    {
+      "contract": "ofu-px-contracts-1",
+      "id": "v2.deep3d.adapter.surface",
+      "version": "1.0.0",
+      "owner": "product",
+      "kind": "scene",
+      "authority": {"class":"PRESENTATION_ONLY","contract":"ofu-px-contracts-1","model":"v2.deep3d.adapter.surface","version":"1.0.0","sources":["src/rendering/deep3d/surface-adapter.js","src/rendering/surface/living-surface.js"],"assumptions":["The ready V2X-06 Living surface frame preserves its upstream model authority and bounded projection."],"limitations":["Terrain height, material color, coastline and river geometry are presentation encodings, not measured elevation, canonical geodesy or empirical paths."],"evidence":[]},
+      "fidelity": {"regime":"surface-adapter","validity":"Bounded V2X-06 surface cells and paths become camera-relative mesh and curve packets.","resolution":"Existing adaptive V2X-06 patch budget with deterministic terrain and path packet bounds.","uncertainty":"Inherited model and presentation limitations remain explicit; raster pixels are device-dependent."},
+      "lifecycle": "SHIPPING",
+      "requires": [{"id":"v2.deep3d.render.scene","version":"1.0.0","authority":"PRESENTATION_ONLY"}],
+      "claims": ["deep3d.surface.bounded","deep3d.surface.model-authority-preserved"],
+      "operations": ["REPRESENT"],
+      "budget": {"entities":16384,"bytes":8388608,"operations":131072,"queue":32},
+      "evidence": [{"id":"v2.deep3d.surface-adapter","tier":"FAST_LOCAL"}],
+      "mandatory": false
+    }
+  ]
+}
