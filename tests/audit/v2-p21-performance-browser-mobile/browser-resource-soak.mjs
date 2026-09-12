@@ -120,13 +120,16 @@ async function launchEngine(name,engine){
   throw new Error(`${name} browser runtime unavailable after bounded pinned-cache fallback; expected=${engine.executablePath()} candidates=${JSON.stringify(attempted)} original=${original.slice(0,1200)}`);
  }
 }
-async function framePacing(page){
- return page.evaluate(async()=>{
+async function framePacing(page,{targetSamples=90,deadlineMs=12000}={}){
+ await page.bringToFront();
+ const measurement=page.evaluate(async target=>{
   const samples=[];let last=performance.now();
-  await new Promise(resolve=>{let left=90;const tick=now=>{samples.push(now-last);last=now;if(--left<=0)resolve();else requestAnimationFrame(tick)};requestAnimationFrame(tick)});
-  const sorted=[...samples].sort((a,b)=>a-b),pick=q=>sorted[Math.min(sorted.length-1,Math.floor(sorted.length*q))]||0;
-  return {status:'MEASURED_RAF_INTERVALS',samples:samples.length,p50Ms:pick(.5),p95Ms:pick(.95),maxMs:Math.max(0,...samples),over50ms:samples.filter(x=>x>50).length};
- });
+  await new Promise(resolve=>{let left=target;const tick=now=>{samples.push(now-last);last=now;if(--left<=0)resolve();else requestAnimationFrame(tick)};requestAnimationFrame(tick)});
+  return samples;
+ },targetSamples).then(samples=>({completed:true,samples}),error=>({completed:false,samples:[],error:String(error?.message||error)}));
+ const deadline=new Promise(resolve=>setTimeout(()=>resolve({completed:false,samples:[],deadline:true}),deadlineMs));
+ const result=await Promise.race([measurement,deadline]),samples=result.samples||[],sorted=[...samples].sort((a,b)=>a-b),pick=q=>sorted[Math.min(sorted.length-1,Math.floor(sorted.length*q))]||0;
+ return {status:result.completed?'MEASURED_RAF_INTERVALS':'NOT_MEASURABLE_BACKGROUND_RAF_THROTTLED',samples:samples.length,targetSamples,deadlineMs,completed:result.completed,p50Ms:pick(.5),p95Ms:pick(.95),maxMs:Math.max(0,...samples),over50ms:samples.filter(x=>x>50).length};
 }
 function slope(values){
  if(values.length<2)return null;
