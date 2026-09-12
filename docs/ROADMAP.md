@@ -356,34 +356,273 @@ A later phase MAY prototype earlier to reduce risk, but no prototype silently ov
 
 ---
 
-## Post-v1 successor direction — Local AI & Ultimate Complexity
+# Forward development from the V2.0 convergence candidate
 
-This section is an **additive planning pointer**, not a new historical P13 and not a change to the certified scope/status of P0-P12. Per ADR-024, future orchestration lives in the Forward Frontier layer rather than rewriting certified development history.
+This is the **single canonical product-strategy continuation** of the historical P0–P12 roadmap. It does not create P13, rewrite certified history, or change the scientific dependency semantics in [`docs/frontier/WORKSTREAM_DAG.json`](frontier/WORKSTREAM_DAG.json). ADR-024 remains the authority for the complementary forward-frontier DAG.
 
-The reviewed founder proposal `OFU-AI-ULTIMATE-SPEC` is adopted as a long-range successor direction through:
+Detailed competitive research is an input to this section, not roadmap authority. Repository evidence, the Constitution, accepted ADRs, the architecture contracts, the V2 integration ledger, and exact release certification always outrank research recommendations.
 
-- [`docs/frontier/AI_AND_ULTIMATE_COMPLEXITY.md`](frontier/AI_AND_ULTIMATE_COMPLEXITY.md) — human-readable adjudication, corrected architecture and sequencing;
-- [`docs/frontier/AI_ULTIMATE_SUCCESSOR_PROGRAM.json`](frontier/AI_ULTIMATE_SUCCESSOR_PROGRAM.json) — machine-readable reserved successor metadata.
+## Current release horizon — close V2.0; do not reopen it
 
-### Current priority remains v1 closure
+As of the authenticated strategy-integration base, V2.0 is represented by draft PR #237 on `integration/v2x-supreme-total-convergence-2026-09-07`. The composed head declares a provisional V2.0 release candidate, but canonical promotion is **not complete** while exact-SHA release certification remains red and the PR remains unmerged.
 
-AI does **not** become a v1.0.0 completion criterion. The immediate critical path remains P9/P10/P11 product work expressed by the current frontier program:
+The current release scope is therefore **frozen to certification/repair work**. No strategic feature below is admitted into V2.0 merely because it is identity-defining or high value.
 
-1. replace grid/schematic primary cosmic presentation with genuinely spatial viewport-first exploration;
-2. deliver continuous camera/semantic-scale travel through galaxy → region → system → planet → surface while preserving identity/context;
-3. materially improve surface/life/civilization visual embodiment without scientific overclaim;
-4. stabilize persistence/resources/accessibility and real user journeys;
-5. restore exact-head certification and preserve deterministic source reproduction;
-6. obtain appropriate device evidence before mature mobile claims.
+Current release closure means:
 
-### AI successor activation
+1. classify and repair the failing exact-source release-conformance gate without weakening or deleting the gate;
+2. rerun same-SHA release, browser, artifact, determinism, provenance and resource evidence required by the release transaction;
+3. preserve the central authority map and exact artifact composition;
+4. merge only the expected certified head through the governed promotion path;
+5. recertify the resulting canonical target before any release claim;
+6. keep physical mobile and physical assistive-technology claims explicitly unverified until executed evidence exists.
 
-- `AI-F0` is reserved for local-inference feasibility and may be authorized as a separate research lane once it does not compete with the v1 founder-experience critical path.
-- `AI-F1+` require explicit activation after the applicable v1 experience and certification gates are evidenced.
-- model size, quantization, embedded-weight packaging and inference backend remain measured feasibility choices rather than frozen requirements.
-- WebGPU is optional acceleration, never a required truth/runtime authority.
-- any future AI edition must retain a fully functional non-AI standard edition and must never allow generated tokens to directly author canonical state.
+**Acceptance condition:** the exact candidate and resulting canonical promotion satisfy the repository release transaction with no fabricated PASS and no new feature scope.
 
-### Ultimate complexity sequencing
+## Strategic product expression — THE SAME UNIVERSE ACROSS SCALE
 
-The proposal's U1-U9 labels do not create a second competing linear roadmap. U1 maps to current v1 closure; U2-U9 map onto the existing frontier owners for planetary causality, life/evolution, civilization/history, individuals, microscopic/material continuity, cross-domain causality and long-range convergence. The authoritative mapping is maintained in the successor roadmap document and its machine-readable companion.
+The competitive research does **not** replace the founder vision. It makes an existing constitutional/product idea legible as a product promise:
+
+> **The same universe across scale.**  
+> The selected thing keeps its identity, the world remembers governed consequences, and the product can explain what is known, derived, modeled, measured, illustrative, or unknown.
+
+This expression is supported by existing architecture rather than being a new authority model:
+
+- canonical identity and selection remain renderer-independent;
+- cross-scale continuity uses explicit `REFINE`, `PROJECT`, and `RECONCILE` semantics where supported;
+- persistence/replay remains owned by the governed temporal/persistence system;
+- model-derived life, civilization, people, matter and interventions remain model-derived unless separately promoted;
+- rendering remains presentation authority, not scientific truth;
+- WebGL2 remains the portable baseline; WebGPU is optional enhancement only;
+- one-file, direct-open/offline operation and deterministic/reproducible build identity remain non-negotiable baseline properties.
+
+The product must make these engineering properties visible to ordinary users. Architecture that cannot be perceived as stable identity, memory, consequence, explanation, ownership or continuity is not yet a product advantage.
+
+## Roadmap admission rule
+
+A major new initiative should materially improve at least **two** of the following:
+
+- identity continuity;
+- causal consequence;
+- persistent memory / replay;
+- explainability / scientific integrity;
+- scale legibility / wonder;
+- local-first ownership / reproducibility;
+
+and must not create an unacceptable regression in the others, resource bounds, accessibility, or central authority. A feature that adds domain breadth without strengthening the connected product normally stays research/optional rather than entering the critical path.
+
+## Dependency order
+
+Future development is intentionally sequenced to prevent another unconverged breadth wave:
+
+`V2.0 release closure`
+→ `cross-scale Identity Thread`
+→ `revisit + persistent causal history`
+→ `Explain This provenance/uncertainty`
+→ `semantic scale legibility`
+→ `one gold cross-domain causal journey`
+→ `Explore / Inspect / Lab coherence`
+→ `cinematic embodiment of those same systems`
+→ `causal discovery`
+→ `deeper persons / civilization / environment continuity`
+→ `deeper matter continuity`
+→ `deterministic counterfactual and research frontiers`.
+
+Parallel research may continue where ownership is isolated, but no later family may be used to compensate for a red upstream product-identity gate.
+
+## Next stable evolution — identity, memory, explanation and legibility
+
+No version number is assigned here. This is the next capability horizon after certified V2.0 closure.
+
+### 1. Cross-scale Identity Thread
+
+**Live state:** PARTIAL / architecture already ratified. Stable entity IDs, central selection, retained navigation context and multiple cross-scale bridges exist; continuity is not yet equally strong or equally visible across all model regimes.
+
+**Owners:** kernel/addressing, exploration/navigation, selection, domain providers, persistence.
+
+**Acceptance:** the same selected object can be followed through every supported refinement/projection path and back with machine-verifiable ancestry, no unexplained identity replacement, and explicit `UNSUPPORTED` where a bridge does not exist.
+
+### 2. REFINE / PROJECT / RECONCILE product completion
+
+**Live state:** ALREADY PLANNED / PARTIALLY IMPLEMENTED. These operations are architectural contracts, not a new strategic invention.
+
+**Owners:** architecture-defined provider boundaries plus exploration/navigation and domain-specific adapters.
+
+**Acceptance:** every advertised cross-scale bridge declares its operation, authority and fidelity; round trips preserve parent identity; cached or late-materialized representations reconcile against current authoritative state instead of becoming competing truth.
+
+### 3. Persistent causal history and revisit
+
+**Live state:** PARTIAL. Deterministic save/replay and governed causal-action infrastructure exist, while several V2 model domains still expose bounded projections rather than complete persistent personal/domain history.
+
+**Owners:** temporal, gameplay, persistence, replay, domain reducers.
+
+**Acceptance:** a user can make one governed intervention, leave the context, save/reload or revisit it, and inspect what changed, what persisted, and which accepted event/projection caused the change.
+
+### 4. Explain This — provenance, authority and uncertainty
+
+**Live state:** PARTIAL. Authority classes, provenance metadata and the Living context inspector exist; explanation is not yet universal for every important visible fact/visual.
+
+**Owners:** domain providers, diagnostics, inspector/product UI, evidence metadata.
+
+**Acceptance:** for every major user-visible claim or representation the user can determine whether it is canonical/proven, derived, model-derived, measured runtime evidence, presentation-only, user-authored/event-derived, or unknown/unsupported, and can reach the relevant assumptions/source lineage without reading source code.
+
+### 5. Semantic logarithmic scale navigation
+
+**Live state:** PARTIAL / SHIPPING CANDIDATE. V2 has bounded continuous travel over semantic distance with a central navigation authority; the presentation path explicitly does not claim a physical trajectory.
+
+**Owners:** exploration/navigation, camera presentation, product input.
+
+**Acceptance:** wheel/pinch/keyboard/direct manipulation move through a comprehensible logarithmic scale model while preserving focus and reverse context; semantic regime changes are legible rather than disguised as physically continuous simulation when they are not.
+
+### 6. Physical mobile and accessibility validation
+
+**Live state:** DEFERRED POST-V2. Responsive/coarse-pointer/accessibility code exists, but physical mobile and physical assistive-technology certification is not claimed.
+
+**Owners:** product UX, accessibility, runtime/resource adaptation, certification.
+
+**Acceptance:** defined physical device/assistive-technology journeys pass with truthful capability disclosure and bounded resource behavior.
+
+## Category-leadership horizon — make continuity meaningful
+
+These initiatives follow the next-stable identity/memory/explanation gates. They are not independent feature lanes.
+
+### 7. One gold cross-domain intervention journey
+
+**Live state:** PARTIAL. The V2 causal engine and cross-domain journey tests exist; OFU still needs a founder-visible, comprehensible exemplar where consequences remain inspectable across domains and revisit.
+
+**Owners:** gameplay, temporal/persistence, selected domain adapters, product presentation.
+
+**Acceptance:** one bounded intervention produces causally attributable modeled consequences in at least two connected domains, survives replay/revisit, preserves authority labels, and can be explained without a hidden state inspector.
+
+### 8. Explore / Inspect / Lab progressive disclosure
+
+**Live state:** PARTIAL / ARCHITECTURALLY PLANNED. Exploration and inspection exist; architecture already reserves inspection/lab projections; the experience is not yet one fully coherent tri-modal product loop.
+
+**Owners:** product orchestration, exploration, inspectors, diagnostics/lab projections.
+
+**Acceptance:** the same selected entity moves between Explore, Inspect and Lab without identity reset, state fork, duplicated camera authority, or incompatible terminology; novice exploration stays light while expert detail remains reachable.
+
+### 9. Cinematic scientific embodiment
+
+**Live state:** PARTIAL. The V2 WebGL2 pixel consumer, Living renderer, lighting/material/resource machinery and systemic audio exist, but current embodiment is not the competitive target for premium cosmic/planet/local/micro presentation.
+
+**Owners:** rendering, camera presentation, domain representation providers, product UI, systemic audio.
+
+**Acceptance:** core identity-thread journeys achieve premium framing, motion, lighting/material depth and coherent audio while remaining interactive, bounded, accessible and truth-preserving. Visual continuity must never imply scientific/model continuity that does not exist.
+
+### 10. Causal discovery
+
+**Live state:** NEXT HORIZON. Sparse discovery exists; a general product loop for finding anomalies, historical traces and causal consequences that are grounded in actual state/history is not yet a mature shipping system.
+
+**Owners:** exploration, temporal/history queries, domain providers, product information design.
+
+**Acceptance:** discoveries are derived from actual modeled/canonical state or explicitly labeled presentation/research cues; following a discovery reveals why it is interesting and connects to entity/history context rather than becoming a checklist collectible.
+
+## Longer-term development — deepen the same reality, not separate games
+
+### Bounded persistent individuals
+
+V2 candidate work provides deterministic bounded individual identity/refinement and revisit continuity, but the Living inspector explicitly does not yet claim retained personal memory, mortality-aware refinement, or canonical persons/genealogy. Future work should add those only through bounded, replay-safe contracts.
+
+**Acceptance:** stable model-person identity survives revisit; any retained memory/knowledge/relationship/genealogy claim has explicit authority and bounded history; deaths/retirement never silently rematerialize identities.
+
+### Deeper civilization ↔ environment coupling
+
+Civilization/economy/history projections are model-derived. Extend them only where physical/environmental inputs and causal adapters can support explainable feedback in both directions.
+
+**Acceptance:** at least one civilization action changes an environmental/material constraint through a versioned modeled causal path and the later civilization state can trace that consequence without promoting presentation coordinates or speculative history to truth.
+
+### Stronger matter / micro continuity
+
+V2 matter continuity already preserves selected-source identity into bounded microscopic/molecular/atomic representations and fails closed on unresolved chemistry. Future work should improve scientifically justified property bridges rather than merely increase particle count.
+
+**Acceptance:** every deeper representation identifies its source object/material context, declared model/fidelity, unknown chemistry, and reversible projection target; deeper detail never creates unsupported upstream facts.
+
+### Deterministic counterfactual comparison
+
+Counterfactual branches are not ordinary canonical history. They remain non-canonical experiment/lab state until a future explicit contract exists.
+
+**Acceptance:** from the same baseline checkpoint a user can run bounded deterministic alternative interventions, compare before/after outcomes and return to canonical history without ambiguity about which branch is authoritative.
+
+### Optional WebGPU profile
+
+WebGPU remains optional. It is not a V2 baseline promise and must not become necessary for scientific truth, persistence, navigation or core product access.
+
+**Acceptance:** an Enhanced WebGPU path may ship only when its semantic output/selection/replay contracts are parity-tested against the WebGL2 baseline and absence/failure degrades gracefully without changing universe state.
+
+## Research frontier
+
+Research is encouraged where it can strengthen connected causal chains, but research evidence is not shipping authority. Priority research families are:
+
+- stellar history → atmospheric/climate forcing → biosphere consequences;
+- long-horizon civilization ↔ planetary-environment feedback;
+- scientifically justified material-property bridges across macro/micro regimes;
+- uncertainty-aware rendering that makes model confidence/knownness visible without inventing precision;
+- additional validated cross-domain science suitable for bounded deterministic providers;
+- optional grounded local inference after the non-AI product is already coherent and useful.
+
+The accepted frontier DAG continues to own scientific workstream dependency/maturity metadata. Research promotion still requires its normal scientific, determinism, provenance, budget and compatibility gates.
+
+## Explicit scope defense — NOT OFU
+
+The following are not direct competitive goals for the baseline product:
+
+- an AAA content-production race or asset-volume competition;
+- an MMO or server-dependent universe baseline;
+- a generic metaverse or social network;
+- a generic game engine;
+- a full specialist astrophysics research solver;
+- a full molecular-dynamics package;
+- a full civilization grand-strategy game;
+- disconnected scale-specific mini-apps stitched together by transitions;
+- a cinematic landing-page spectacle whose imagery is not backed by persistent explorable state.
+
+Dedicated research tools may inform OFU, and optional enhanced profiles may exist, but they do not displace the core identity: one addressable, persistent, causal, explainable universe that remains locally ownable.
+
+## Strategic reconciliation table
+
+| Strategic recommendation | Live implementation status | Canonical placement | Primary owner / subsystem | Dependency | User-visible acceptance condition |
+|---|---|---|---|---|---|
+| Same Universe Across Scale thesis | Already implicit in Vision/ADR-023; partially visible | Product expression / roadmap principle | product + architecture-wide | Constitution + identity authority | User recognizes one persistent reality rather than scene/minigame replacement |
+| Identity Thread | Partial | Next stable evolution | kernel + exploration + providers + persistence | V2 closure | Follow selected object down/up supported scales with verifiable ancestry |
+| REFINE / PROJECT / RECONCILE | Architecture already defines; partial implementations | Next stable evolution / conformance | domain providers + exploration | Identity Thread | Advertised bridges round-trip identity and reconcile stale representations |
+| Persistent causal history / revisit | Partial | Next stable evolution | temporal + gameplay + persistence | Identity Thread | Intervene → leave/reload → return → inspect persistent consequence |
+| Explain This / provenance | Partial | Next stable evolution | providers + diagnostics + inspector | history/selection context | Major visible claims expose authority, assumptions and unknowns |
+| Semantic logarithmic scale navigation | Partial / V2 candidate | Next stable evolution polish | navigation + camera + input | Identity Thread | Continuous focus-preserving travel with honest regime transitions |
+| Gold cross-domain intervention | Partial infrastructure | Category-leadership horizon | gameplay + temporal + domains | history + explainability | One action yields persistent, attributable multi-domain consequence |
+| Causal discovery | Not mature | Category-leadership horizon | exploration + history queries | gold causal journey | Discoveries arise from real state/history and explain why they matter |
+| Cinematic art direction | Partial | Category-leadership horizon | rendering + product + audio | identity-thread journey | Premium presentation without authority/performance/accessibility regression |
+| Explore / Inspect / Lab | Partial / architecturally planned | Category-leadership horizon | product orchestration | explainability + scale legibility | Same selection/context flows across all three modes |
+| Bounded persistent individuals | Partial model identity | Longer-term | individuals + demography + temporal | revisit/history | Stable people with only bounded, authority-honest retained state |
+| Deeper civilization/environment coupling | Partial model systems | Longer-term / research-backed | civilization + planet/environment + causal engine | gold causal journey | Bidirectional consequence is inspectable and provenance-honest |
+| Matter/micro continuity | Partial V2 candidate | Longer-term strengthening | matter + micro + exploration | Identity Thread | Source identity survives deeper regimes; unresolved chemistry stays unknown |
+| Deterministic counterfactuals | Not shipping | Longer-term / Lab | temporal + simulation + product Lab | robust replay | Compare deterministic alternatives without confusing canonical history |
+| Optional WebGPU | Architecture reserved; not baseline support | Optional enhancement | rendering/runtime | WebGL2 parity evidence | Same semantics with graceful fallback |
+| One-file/offline preservation | Constitutional and shipping baseline | Invariant / admission gate | build + runtime + persistence + release | none | Core product opens locally without required network/server and remains reproducible |
+| Explicit scope exclusions | New strategic clarification consistent with non-goals | Roadmap scope defense | product strategy + governance | none | New initiatives cannot silently turn OFU into a disconnected specialist/AAA/server product |
+
+## Reserved successor overlay — Local AI and Ultimate Complexity
+
+The previously reviewed `OFU-AI-ULTIMATE-SPEC` remains a **reserved long-range successor**, not an active replacement for the product sequence above. Its durable constraints remain:
+
+- generated tokens never directly author canonical truth/state;
+- unknown/unsupported remains unknown/unsupported;
+- OFU Standard remains useful and complete without local inference;
+- inference backend/model size/quantization are measured experiments;
+- WebGPU is optional acceleration only;
+- AI feasibility must not displace identity, revisit, explanation, scale legibility, causal product or certification work.
+
+See [`docs/frontier/AI_AND_ULTIMATE_COMPLEXITY.md`](frontier/AI_AND_ULTIMATE_COMPLEXITY.md) and [`docs/frontier/AI_ULTIMATE_SUCCESSOR_PROGRAM.json`](frontier/AI_ULTIMATE_SUCCESSOR_PROGRAM.json) for the reserved successor research/program metadata.
+
+---
+
+## Canonical planning pointers
+
+- **Certified historical roadmap and product-strategy sequence:** this file.
+- **Scientific/frontier workstream dependency metadata:** [`docs/frontier/WORKSTREAM_DAG.json`](frontier/WORKSTREAM_DAG.json).
+- **Human-readable frontier view:** [`docs/FRONTIER_WORKSTREAMS.md`](FRONTIER_WORKSTREAMS.md).
+- **Live V2 integration/release evidence:** [`docs/parallel/V2_INTEGRATION_LEDGER.json`](parallel/V2_INTEGRATION_LEDGER.json) and the exact PR/workflow state.
+- **Architecture contracts:** [`docs/ARCHITECTURE.md`](ARCHITECTURE.md) and accepted ADRs.
+- **Constitutional invariants:** [`docs/CONSTITUTION.md`](CONSTITUTION.md).
+
+Research reports, lane ledgers, integration records, issues and PR descriptions may inform or execute this roadmap, but they do not become competing roadmap authority.
