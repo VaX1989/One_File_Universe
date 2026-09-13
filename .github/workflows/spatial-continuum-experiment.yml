@@ -97,11 +97,19 @@ jobs:
       - name: Run browser product path
         env:
           OFU_CONTINUUM_EVIDENCE_DIR: reports/ci/chromium-convergence
-        run: npm run test:continuum:browser
+        run: npm run test:continuum:open
       - name: Run multi-world falsification
         env:
           OFU_CONTINUUM_EVIDENCE_DIR: reports/ci/chromium-convergence
-        run: npm run test:continuum:generalization
+        run: npm run test:continuum:open-generalization
+      - name: Run accessibility, mobile and context recovery
+        env:
+          OFU_CONTINUUM_EVIDENCE_DIR: reports/ci/chromium-convergence
+        run: npm run test:continuum:accessibility-mobile
+      - name: Capture all-scale temporal visual evidence
+        env:
+          OFU_CONTINUUM_EVIDENCE_DIR: reports/ci/chromium-convergence/visual-sequence
+        run: npm run test:continuum:visual
       - name: Run performance and resource soak
         env:
           OFU_CONTINUUM_EVIDENCE_DIR: reports/ci/chromium-convergence

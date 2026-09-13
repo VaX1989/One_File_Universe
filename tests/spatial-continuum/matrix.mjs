@@ -4,8 +4,9 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 import { chromium, firefox, webkit } from 'playwright';
+import { selectFirstLocalSample, selectFirstSupportedWorld } from './open-journey-helper.mjs';
 
-const root=process.cwd(),artifact=path.join(root,'dist','One_File_Universe_Spatial_Continuum.html'),fileUrl=pathToFileURL(artifact).href,evidenceDir=path.resolve(process.env.OFU_CONTINUUM_EVIDENCE_DIR||path.join(root,'reports','local','spatial-continuum-r3'));
+const root=process.cwd(),artifact=path.join(root,'dist','One_File_Universe_Spatial_Continuum.html'),fileUrl=pathToFileURL(artifact).href,evidenceDir=path.resolve(process.env.OFU_CONTINUUM_EVIDENCE_DIR||path.join(root,'reports','local','spatial-continuum-r4'));
 fs.mkdirSync(evidenceDir,{recursive:true});
 const allEngines={chromium,firefox,webkit},requested=String(process.env.OFU_CONTINUUM_BROWSER||'').toLowerCase(),engines=requested?{[requested]:allEngines[requested]}:allEngines,results=[];
 if(Object.values(engines).some(value=>!value))throw new Error('Unknown OFU_CONTINUUM_BROWSER: '+requested);
@@ -28,11 +29,12 @@ for(const [name,type] of Object.entries(engines)){
     await page.waitForFunction(()=>globalThis.__OFU_SPATIAL_CONTINUUM__?.status==='FAIL'||globalThis.__OFU_SPATIAL_CONTINUUM__?.snapshot?.().status==='READY',undefined,{timeout:120000});
     const startup=await page.evaluate(()=>globalThis.__OFU_SPATIAL_CONTINUUM__?.status==='FAIL'?globalThis.__OFU_SPATIAL_CONTINUUM__:null);
     if(startup)throw new Error('Continuum startup failed: '+JSON.stringify(startup));
-    const initial=await page.evaluate(()=>__OFU_SPATIAL_CONTINUUM__.snapshot()),bodyMetric=initial.render.pickTargets.body;
-    const picked=await page.evaluate(({x,y})=>__OFU_SPATIAL_CONTINUUM__.renderer.pick(x,y)?.id||null,{x:bodyMetric.clientX,y:bodyMetric.clientY});
-    assert.equal(picked,initial.worldIdentity,name+' renderer picking must match its visible body');
+    const initial=await page.evaluate(()=>__OFU_SPATIAL_CONTINUUM__.snapshot()),galaxyId=Object.keys(initial.render.pickTargets.macro)[0],galaxyMetric=initial.render.pickTargets.macro[galaxyId];assert.equal(initial.state.scale.semanticStage,'UNIVERSE');
+    const picked=await page.evaluate(({x,y})=>__OFU_SPATIAL_CONTINUUM__.renderer.pick(x,y)?.id||null,{x:galaxyMetric.clientX,y:galaxyMetric.clientY});
+    assert.equal(picked,galaxyId,name+' renderer picking must match its visible galaxy');
+    const world=await selectFirstSupportedWorld(page);assert.ok(world.worldIdentity);await selectFirstLocalSample(page);
     const stages=[];
-    for(const stage of ['ORBIT','HUMAN','ATOMIC','SYSTEM']){await page.evaluate(stage=>{__OFU_SPATIAL_CONTINUUM__.travelTo(stage);__OFU_SPATIAL_CONTINUUM__.settle()},stage);await page.waitForTimeout(80);const state=await page.evaluate(()=>__OFU_SPATIAL_CONTINUUM__.snapshot());assert.equal(state.state.scale.semanticStage,stage);assert.equal(state.render.sceneCount,1);assert.equal(state.render.cameraCount,1);assert.ok(state.render.activeMeshes>0);stages.push({stage,activeMeshes:state.render.activeMeshes,backend:state.render.backend})}
+    for(const stage of ['ORBIT','HUMAN','ATOMIC','SYSTEM','UNIVERSE']){await page.evaluate(stage=>{__OFU_SPATIAL_CONTINUUM__.travelTo(stage);__OFU_SPATIAL_CONTINUUM__.settle()},stage);await page.waitForTimeout(80);const state=await page.evaluate(()=>__OFU_SPATIAL_CONTINUUM__.snapshot());assert.equal(state.state.scale.semanticStage,stage);assert.equal(state.render.sceneCount,1);assert.equal(state.render.cameraCount,1);assert.ok(state.render.activeMeshes>0);stages.push({stage,activeMeshes:state.render.activeMeshes,backend:state.render.backend})}
     await page.screenshot({path:path.join(evidenceDir,'matrix-'+name+'.png')});
     assert.deepEqual(errors,[]);assert.deepEqual(network,[]);
     results.push({browser:name,status:'PASS',version:await browser.version(),directFile:true,offline:true,webgl:initial.render.backend,stages});

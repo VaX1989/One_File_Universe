@@ -2,7 +2,7 @@ import { CONTINUUM_STOPS, MAX_SCALE_COORDINATE, stageForCoordinate, stopForStage
 import { createTargetAwareCamera } from './camera.js';
 import { createContinuousScale } from './scale-model.js';
 
-export function createContinuumKernel({graph, frames, targets, initialStage='SYSTEM', reducedMotion=false, transitionDurationMs=1050} = {}) {
+export function createContinuumKernel({graph, frames, targets, initialStage='UNIVERSE', reducedMotion=false, transitionDurationMs=1050} = {}) {
   if (!graph || !frames || !targets) throw new TypeError('Spatial graph, reference frames, and camera targets are required');
   const scale=createContinuousScale({initial:initialStage,durationMs:transitionDurationMs,reducedMotion});
   let activeGraph=graph,activeFrames=frames,activeTargets=targets,camera=createTargetAwareCamera({anchorId:graph.focusId,focusId:graph.focusId,targets,frames});
@@ -58,6 +58,8 @@ export function createContinuumKernel({graph, frames, targets, initialStage='SYS
   }
   return Object.freeze({
     travelTo,travelBy,back,select,snapshot,
+    checkpoint(now=0){return capture(now)},
+    restore(checkpoint,now=0){if(!checkpoint?.camera||!Number.isFinite(Number(checkpoint.coordinate)))throw new TypeError('A valid continuum checkpoint is required');if(activeGraph.get(checkpoint.focusId))activeGraph.setFocus(checkpoint.focusId);camera.restore({...checkpoint.camera,anchorId:activeGraph.focusId,focusId:activeGraph.focusId,aimId:activeGraph.focusId});scale.setTarget(checkpoint.coordinate,now,{reducedMotion});revision++;return snapshot(now)},
     rebind({graph:nextGraph,frames:nextFrames,targets:nextTargets},now=0){
       if(!nextGraph||!nextFrames||!nextTargets)throw new TypeError('Rebind requires spatial graph, frames, and targets');
       const prior=camera.pose(scale.sample(now).coordinate);activeGraph=nextGraph;activeFrames=nextFrames;activeTargets=nextTargets;camera=createTargetAwareCamera({anchorId:activeGraph.focusId,focusId:activeGraph.focusId,targets:activeTargets,frames:activeFrames});camera.restore({...prior,anchorId:activeGraph.focusId,focusId:activeGraph.focusId,aimId:activeGraph.focusId,localPosition:[0,0,0]});history.length=0;revision++;return snapshot(now);
