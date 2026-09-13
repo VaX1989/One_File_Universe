@@ -1,0 +1,63 @@
+{
+  "status": "PASS",
+  "suite": "spatial-continuum-browser",
+  "browserVersion": "151.0.7922.34",
+  "directFile": true,
+  "offline": true,
+  "runtimeNetworkRequests": 0,
+  "worldIdentity": "9e2041b4c8550e86edc574c42cba1bb31224a2ac7a9e8ffaea232310ce24d98e",
+  "identityEvidence": {
+    "body": "9e2041b4c8550e86edc574c42cba1bb31224a2ac7a9e8ffaea232310ce24d98e",
+    "modelWorld": "9e2041b4c8550e86edc574c42cba1bb31224a2ac7a9e8ffaea232310ce24d98e",
+    "materialWorld": "9e2041b4c8550e86edc574c42cba1bb31224a2ac7a9e8ffaea232310ce24d98e",
+    "navigationEntityId": "2b618096266bf06162398a404355940664f5e8459d2be0787dab271c80c553e7"
+  },
+  "sourceSampleIdentity": "4a7f86b77a6ef7aa8eba823a7a80662f4ac5614076d8c76e30bb64c639f20d35",
+  "planetDiameter": {
+    "orbit": 838.9571096789542,
+    "approachEarly": 1046.7612437152857,
+    "approachMid": 1459.3958013439965,
+    "approachLate": 1459.3958013439965,
+    "approachSettled": 1459.3958013439965
+  },
+  "performance": {
+    "samples": 153,
+    "median": 50,
+    "p95": 83.30000000000291,
+    "p99": 100,
+    "longFrames34": 115,
+    "longFrames50": 42,
+    "inputResponseMedian": 19.399999976158142
+  },
+  "resources": {
+    "meshCount": 96,
+    "materialCount": 26,
+    "textureCount": 1
+  },
+  "contextLoss": {
+    "result": "EXERCISED",
+    "losses": 1,
+    "restores": 1
+  },
+  "mobile": {
+    "canvas": {
+      "width": 844,
+      "height": 390
+    },
+    "controls": {
+      "top": 271.796875,
+      "height": 112.609375
+    },
+    "context": {
+      "width": 0,
+      "height": 0
+    },
+    "inner": {
+      "width": 844,
+      "height": 390
+    },
+    "pinchContinuous": true
+  },
+  "reducedMotionElapsedMs": 289,
+  "evidenceDirectory": "E:\\One_File_Universe\\docs\\experiments\\spatial-continuum\\evidence"
+}
