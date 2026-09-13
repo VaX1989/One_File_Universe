@@ -1,0 +1,69 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+import { chromium } from 'playwright';
+
+const root=process.cwd(),artifact=path.join(root,'dist','One_File_Universe_Spatial_Continuum.html');
+const evidenceDir=path.resolve(process.env.OFU_CONTINUUM_EVIDENCE_DIR||path.join(root,'reports','local','spatial-continuum'));
+fs.mkdirSync(evidenceDir,{recursive:true});
+const fileUrl=pathToFileURL(artifact).href;
+const browser=await chromium.launch({headless:true});
+
+async function open({viewport={width:1440,height:900},reducedMotion='no-preference'}={}){
+  const context=await browser.newContext({viewport,reducedMotion,deviceScaleFactor:1});
+  const page=await context.newPage(),errors=[],network=[];
+  page.on('pageerror',error=>errors.push(String(error.stack||error)));
+  page.on('console',message=>{if(message.type()==='error')errors.push('console: '+message.text())});
+  page.on('request',request=>{if(/^https?:/i.test(request.url()))network.push(request.url())});
+  await page.goto(fileUrl,{waitUntil:'load'});
+  try{await page.waitForFunction(()=>globalThis.__OFU_SPATIAL_CONTINUUM__?.snapshot?.().status==='READY',{timeout:30000})}catch(error){const diagnostic=await page.evaluate(()=>({continuum:globalThis.__OFU_SPATIAL_CONTINUUM__||null,text:document.body.innerText.slice(-4000)}));throw new Error('Continuum startup failed: '+JSON.stringify({errors,diagnostic}),{cause:error})}
+  await page.waitForTimeout(300);
+  return{context,page,errors,network};
+}
+const snap=page=>page.evaluate(()=>__OFU_SPATIAL_CONTINUUM__.snapshot());
+const settle=page=>page.evaluate(()=>__OFU_SPATIAL_CONTINUUM__.waitForSettled(8000));
+const shot=(page,name)=>page.screenshot({path:path.join(evidenceDir,name),animations:'allow'});
+async function travel(page,stage,{capture=true}={}){
+  const shouldCapture=capture&&page.viewportSize()?.width===1440;
+  await page.evaluate(stage=>__OFU_SPATIAL_CONTINUUM__.travelTo(stage),stage);
+  await settle(page);await page.waitForTimeout(100);
+  if(shouldCapture)await shot(page,stage.toLowerCase()+'.png');
+  const state=await snap(page);assert.equal(state.state.scale.semanticStage,stage);return state;
+}
+
+const desktop=await open(),{page}=desktop;
+try{
+  const initial=await snap(page);assert.equal(initial.render.backend,'WEBGL2');assert.equal(initial.render.cameraCount,1);assert.equal(initial.render.sceneCount,1);assert.equal(initial.runtimeNetworkResources,0);assert.equal(desktop.network.length,0);assert.equal(initial.worldIdentity,initial.state.graph.focusId);assert.ok(initial.state.graph.focusAncestry.includes(initial.worldIdentity));
+  const identity=await page.evaluate(()=>({body:__OFU_SPATIAL_CONTINUUM__.world.bodyId,modelWorld:__OFU_SPATIAL_CONTINUUM__.world.planetIdentity,materialWorld:__OFU_SPATIAL_CONTINUUM__.world.representations.material.metadata.worldIdentity,navigationEntityId:__OFU_SPATIAL_CONTINUUM__.world.body.entityId}));assert.equal(identity.body,identity.modelWorld);assert.equal(identity.body,identity.materialWorld);assert.notEqual(identity.body,identity.navigationEntityId,'canonical identity must not collapse into a derived navigation entity');
+  await shot(page,'system.png');
+  const bodyTarget=initial.render.pickTargets.body;assert.equal(bodyTarget.visible,true);assert.ok(bodyTarget.clientX>=0&&bodyTarget.clientX<=1440&&bodyTarget.clientY>=0&&bodyTarget.clientY<=900);await page.mouse.click(bodyTarget.clientX,bodyTarget.clientY);await page.waitForTimeout(50);assert.equal((await snap(page)).state.graph.focusId,initial.worldIdentity);
+
+  const orbit=await travel(page,'ORBIT');
+  await page.evaluate(()=>__OFU_SPATIAL_CONTINUUM__.travelTo('APPROACH'));await page.waitForTimeout(140);await shot(page,'approach-early.png');const early=await snap(page);await page.waitForTimeout(390);await shot(page,'approach-mid.png');const mid=await snap(page);await page.waitForTimeout(390);await shot(page,'approach-late.png');const late=await snap(page);await settle(page);await page.waitForTimeout(100);await shot(page,'approach-settled.png');const approach=await snap(page);
+  assert.ok(approach.render.pickTargets.body.diameterCssPx>orbit.render.pickTargets.body.diameterCssPx*1.35,'planet must visibly grow from orbit to approach');assert.ok(early.render.pickTargets.body.diameterCssPx<=mid.render.pickTargets.body.diameterCssPx&&mid.render.pickTargets.body.diameterCssPx<=late.render.pickTargets.body.diameterCssPx,'approach growth must be monotonic');
+
+  for(const stage of ['GLOBAL_SURFACE','REGIONAL_SURFACE','LOCAL_SURFACE','HUMAN'])await travel(page,stage);
+  const human=await snap(page);assert.equal(human.worldIdentity,initial.worldIdentity);assert.ok(human.state.graph.focusAncestry.includes(initial.worldIdentity));
+  await page.locator('#continuum-canvas').focus();const beforeMove=human.state.camera.localPosition;await page.keyboard.down('w');await page.waitForTimeout(240);await page.keyboard.up('w');await page.waitForTimeout(80);assert.notDeepEqual((await snap(page)).state.camera.localPosition,beforeMove,'advertised WASD must move the local camera');
+  const sampleTarget=(await snap(page)).render.pickTargets.sample;assert.equal(sampleTarget.visible,true);assert.ok(sampleTarget.clientX>=0&&sampleTarget.clientX<=1440&&sampleTarget.clientY>=0&&sampleTarget.clientY<=900);const directSamplePick=await page.evaluate(({x,y})=>__OFU_SPATIAL_CONTINUUM__.renderer.pick(x,y)?.id||null,{x:sampleTarget.clientX,y:sampleTarget.clientY});if(directSamplePick!==initial.sourceSampleIdentity){const scan=await page.evaluate(({x,y})=>{for(let radius=0;radius<=240;radius+=12)for(let dy=-radius;dy<=radius;dy+=12)for(let dx=-radius;dx<=radius;dx+=12){const hit=__OFU_SPATIAL_CONTINUUM__.renderer.pick(x+dx,y+dy);if(hit)return{x:x+dx,y:y+dy,id:hit.id,dx,dy}}return null},{x:sampleTarget.clientX,y:sampleTarget.clientY});throw new Error('renderer projection/picking divergence '+JSON.stringify({sampleTarget,directSamplePick,scan}))}await page.mouse.click(sampleTarget.clientX,sampleTarget.clientY);await page.waitForTimeout(80);assert.equal((await snap(page)).state.graph.focusId,initial.sourceSampleIdentity,'visible sample pick must select the rendered sample');
+  for(const stage of ['MATERIAL','MICROSTRUCTURE','MOLECULAR','ATOMIC']){const state=await travel(page,stage);assert.equal(state.sourceSampleIdentity,initial.sourceSampleIdentity);assert.ok(state.state.graph.focusAncestry.includes(initial.worldIdentity));assert.ok(state.render.activeMeshes>0,stage+' must not be blank');if(stage==='MICROSTRUCTURE')assert.equal(state.render.lod.screenSpaceDriven,true);}
+  await travel(page,'HUMAN',{capture:false});const microReversed=await snap(page);assert.equal(microReversed.state.graph.focusId,initial.sourceSampleIdentity,'atomic reverse must restore the exact inspected sample at human scale');await shot(page,'human-reversed-from-atomic.png');
+  await travel(page,'ATOMIC',{capture:false});
+  await page.evaluate(()=>__OFU_SPATIAL_CONTINUUM__.travelTo('SYSTEM'));await page.waitForTimeout(120);await page.evaluate(()=>__OFU_SPATIAL_CONTINUUM__.travelTo('HUMAN'));await settle(page);assert.equal((await snap(page)).state.scale.semanticStage,'HUMAN','interrupted travel must converge to the newer target');
+  for(const stage of ['LOCAL_SURFACE','REGIONAL_SURFACE','GLOBAL_SURFACE','APPROACH','ORBIT','SYSTEM']){await travel(page,stage,{capture:false});if(stage==='ORBIT')await shot(page,'orbit-reversed.png')}const reversed=await snap(page);assert.equal(reversed.worldIdentity,initial.worldIdentity);assert.equal(reversed.state.graph.focusId,initial.worldIdentity);await shot(page,'system-reversed.png');
+
+  for(const stage of ['HUMAN','MATERIAL','MICROSTRUCTURE','MOLECULAR','ATOMIC','HUMAN','SYSTEM'])await travel(page,stage,{capture:false});const stableCounts=await snap(page);for(const stage of ['HUMAN','SYSTEM','HUMAN','SYSTEM'])await travel(page,stage,{capture:false});const postSoak=await snap(page);assert.equal(postSoak.render.meshCount,stableCounts.render.meshCount);assert.equal(postSoak.render.materialCount,stableCounts.render.materialCount);assert.equal(postSoak.render.textureCount,stableCounts.render.textureCount);
+
+  await page.evaluate(()=>__OFU_SPATIAL_CONTINUUM__.resetMetrics());await page.waitForTimeout(250);for(const stage of ['ORBIT','APPROACH','GLOBAL_SURFACE','REGIONAL_SURFACE','LOCAL_SURFACE','HUMAN'])await travel(page,stage,{capture:false});await page.waitForTimeout(300);const performance=await snap(page);assert.ok(performance.performance.samples>60);assert.ok(performance.performance.inputResponseMedian<120,'input must produce a visible frame promptly');
+
+  const contextBefore=performance.render.contextRestores;const contextResult=await page.evaluate(async()=>{const canvas=document.querySelector('#continuum-canvas'),gl=canvas.getContext('webgl2'),extension=gl?.getExtension('WEBGL_lose_context');if(!extension)return'UNAVAILABLE';extension.loseContext();await new Promise(resolve=>setTimeout(resolve,180));extension.restoreContext();await new Promise(resolve=>setTimeout(resolve,700));return'EXERCISED'});const contextAfter=await snap(page);if(contextResult==='EXERCISED')assert.ok(contextAfter.render.contextRestores>contextBefore,'renderer must observe WebGL context restoration');
+
+  const mobile=await open({viewport:{width:844,height:390}});await travel(mobile.page,'APPROACH');await shot(mobile.page,'mobile-landscape-844x390.png');const mobileBefore=(await snap(mobile.page)).state.scale.coordinate;await mobile.page.dispatchEvent('#continuum-canvas','pointerdown',{pointerId:11,pointerType:'touch',clientX:300,clientY:190,buttons:1});await mobile.page.dispatchEvent('#continuum-canvas','pointerdown',{pointerId:12,pointerType:'touch',clientX:500,clientY:190,buttons:1});await mobile.page.dispatchEvent('#continuum-canvas','pointermove',{pointerId:12,pointerType:'touch',clientX:680,clientY:190,buttons:1});await mobile.page.dispatchEvent('#continuum-canvas','pointerup',{pointerId:12,pointerType:'touch',clientX:680,clientY:190,buttons:0});await mobile.page.dispatchEvent('#continuum-canvas','pointerup',{pointerId:11,pointerType:'touch',clientX:300,clientY:190,buttons:0});await mobile.page.waitForTimeout(80);const mobileAfter=(await snap(mobile.page)).state.scale.targetCoordinate;assert.ok(mobileAfter>mobileBefore,'touch pinch-out must continuously move deeper');const layout=await mobile.page.evaluate(()=>{const canvas=document.querySelector('#continuum-canvas').getBoundingClientRect(),controls=document.querySelector('.continuum-bottom').getBoundingClientRect(),context=document.querySelector('.continuum-context').getBoundingClientRect();return{canvas:{width:canvas.width,height:canvas.height},controls:{top:controls.top,height:controls.height},context:{width:context.width,height:context.height},inner:{width:innerWidth,height:innerHeight}}});assert.ok(layout.canvas.width>=840&&layout.canvas.height>=386);assert.ok(layout.controls.height<145,'mobile chrome must not consume most of the world');assert.equal(mobile.network.length,0);assert.deepEqual(mobile.errors,[]);await mobile.context.close();
+
+  const reduced=await open({reducedMotion:'reduce'});const reducedStart=Date.now();await travel(reduced.page,'ATOMIC',{capture:false});const reducedElapsed=Date.now()-reducedStart,reducedState=await snap(reduced.page);assert.equal(await reduced.page.evaluate(()=>__OFU_SPATIAL_CONTINUUM__.reducedMotion),true);assert.ok(reducedElapsed<1000,'reduced motion path must shorten motion while retaining context');assert.equal(reducedState.worldIdentity,initial.worldIdentity);assert.ok(reducedState.state.graph.focusAncestry.includes(initial.worldIdentity));assert.deepEqual(reduced.errors,[]);await reduced.context.close();
+
+  assert.deepEqual(desktop.errors,[]);
+  const result={status:'PASS',suite:'spatial-continuum-browser',browserVersion:await browser.version(),directFile:true,offline:true,runtimeNetworkRequests:desktop.network.length,worldIdentity:initial.worldIdentity,identityEvidence:identity,sourceSampleIdentity:initial.sourceSampleIdentity,planetDiameter:{orbit:orbit.render.pickTargets.body.diameterCssPx,approachEarly:early.render.pickTargets.body.diameterCssPx,approachMid:mid.render.pickTargets.body.diameterCssPx,approachLate:late.render.pickTargets.body.diameterCssPx,approachSettled:approach.render.pickTargets.body.diameterCssPx},performance:performance.performance,resources:{meshCount:postSoak.render.meshCount,materialCount:postSoak.render.materialCount,textureCount:postSoak.render.textureCount},contextLoss:{result:contextResult,losses:contextAfter.render.contextLosses,restores:contextAfter.render.contextRestores},mobile:{...layout,pinchContinuous:true},reducedMotionElapsedMs:reducedElapsed,evidenceDirectory:evidenceDir};
+  fs.writeFileSync(path.join(evidenceDir,'browser-results.json'),JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result,null,2));
+}finally{await desktop.context.close();await browser.close()}
