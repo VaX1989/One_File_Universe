@@ -10,12 +10,10 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/spatial-continuum-experiment.yml'
-  push:
-    branches: ['experiment/spatial-continuum-architecture-2026-09-13']
 
 concurrency:
-  # A push to the active experiment branch also updates the Draft PR. Key both
-  # events by the source branch so only one exact-head matrix consumes runners.
+  # The Draft PR is the authoritative automatic lane; workflow_dispatch covers
+  # deliberate branch-only runs without attaching duplicate checks to the PR SHA.
   group: spatial-continuum-${{ github.event.pull_request.head.ref || github.ref_name }}
   cancel-in-progress: true
 
