@@ -3,13 +3,15 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { AUTHORITY, CONTINUUM_STOPS, stageForCoordinate } from '../../src/experiments/spatial-continuum/constants.js';
+import { presentationOrbitAuthority, spatialAuthority } from '../../src/experiments/spatial-continuum/authority.js';
 import { createTargetAwareCamera, distanceForProjectedCoverage } from '../../src/experiments/spatial-continuum/camera.js';
 import { surfaceTargetFromModel } from '../../src/experiments/spatial-continuum/geodesy.js';
 import { createContinuumKernel } from '../../src/experiments/spatial-continuum/kernel.js';
 import { createReferenceFrameRegistry } from '../../src/experiments/spatial-continuum/reference-frames.js';
 import { createContinuousScale, representationHandoff } from '../../src/experiments/spatial-continuum/scale-model.js';
 import { createSpatialGraph } from '../../src/experiments/spatial-continuum/spatial-graph.js';
-import { perceptualLod, projectedSpanPixels, terrainPatchPlan } from '../../src/experiments/spatial-continuum/lod.js';
+import { perceptualLod, projectedSpanPixels, sparseTerrainPatchPlan, terrainPatchPlan } from '../../src/experiments/spatial-continuum/lod.js';
+import { deterministicTerrainHeightMeters } from '../../src/experiments/spatial-continuum/terrain-field.js';
 
 const root=process.cwd(),sha=value=>crypto.createHash('sha256').update(value).digest('hex');
 const graph=()=>createSpatialGraph([
@@ -43,6 +45,7 @@ assert.throws(()=>createSpatialGraph([{id:'a',kind:'X',parentId:'b',frameId:'x',
 const spatial=graph();assert.equal(spatial.snapshot().singleFocusAuthority,true);assert.deepEqual(spatial.ancestry('sample').map(node=>node.id),['sample','surface','body','system']);
 
 const registry=frames();assert.deepEqual(registry.toRootMeters([1,0,0],'body'),[102,0,0]);assert.deepEqual(registry.cameraRelativeFloat32([1,0,0],'body',[0,0,0],'system'),[102,0,0]);assert.ok(Math.abs(registry.toRootMeters([1,0,0],'rotated')[1]-1)<1e-12);assert.equal(registry.snapshot().cpuPrecision,'FLOAT64_HIERARCHICAL');assert.equal(registry.snapshot().lowestCommonAncestorRebasing,true);
+const orbitAuthority=presentationOrbitAuthority();assert.equal(orbitAuthority.entity,AUTHORITY.CANONICAL);assert.equal(orbitAuthority.position,AUTHORITY.PRESENTATION_ONLY);assert.equal(orbitAuthority.phase,AUTHORITY.PRESENTATION_ONLY);assert.throws(()=>spatialAuthority({entity:'CANONICAL',position:'FICTION',orientation:'UNKNOWN',phase:'UNKNOWN',bounds:'UNKNOWN',geometry:'UNKNOWN',elevation:'UNKNOWN'}),/position authority/);
 const extreme=createReferenceFrameRegistry([{id:'root',metersPerUnit:1e20},{id:'far',parentId:'root',metersPerUnit:1,originInParent:[1,0,0]},{id:'a',parentId:'far',metersPerUnit:1,originInParent:[2,0,0]},{id:'b',parentId:'far',metersPerUnit:1,originInParent:[5,0,0]}]);assert.deepEqual(extreme.relativeMeters([0,0,0],'b',[0,0,0],'a'),[3,0,0],'LCA-relative math must preserve local precision below a 1e20 m ancestor');assert.deepEqual(extreme.renderRelativeToHandoffFloat32([0,0,0],'b',{from:{frameId:'a',point:[0,0,0]},to:{frameId:'b',point:[0,0,0]},progress:.5},1),[1.5,0,0]);
 const geodesy=surfaceTargetFromModel({bodyId:'body',locationIdentity:'point',latMicroDeg:0,lonMicroDeg:0,radiusM:100});assert.deepEqual(geodesy.bodyFixedMeters,[100,0,0]);assert.ok(Math.abs(geodesy.tangent.east[2]-1)<1e-12);assert.equal(geodesy.canonicalGeodesyClaim,false);
 assert.ok(Math.abs(distanceForProjectedCoverage(20,.6,1)/distanceForProjectedCoverage(10,.6,1)-2)<1e-12,'camera distance must derive proportionally from target bounds');const camera=createTargetAwareCamera({anchorId:'body',focusId:'body',targets:targets(),frames:registry}),bodyPose=camera.pose(1);assert.equal(bodyPose.targetDerived,true);assert.equal(bodyPose.hardCodedCartesianPose,false);assert.equal(bodyPose.derivation.fromRadiusM,100);assert.equal(camera.pose(0).derivation.fromRadiusM,100000);
@@ -50,6 +53,7 @@ assert.ok(Math.abs(distanceForProjectedCoverage(20,.6,1)/distanceForProjectedCov
 const handoff=representationHandoff(2.5);assert.deepEqual(Object.keys(handoff.weights),['APPROACH','GLOBAL_SURFACE']);assert.ok(handoff.weights.APPROACH>0&&handoff.weights.GLOBAL_SURFACE>0);assert.equal(stageForCoordinate(2.51).stage,'GLOBAL_SURFACE');
 const farLod=perceptualLod({projectedSpanPx:600,targetErrorPx:96}),nearLod=perceptualLod({projectedSpanPx:9000,targetErrorPx:96});assert.equal(farLod.selected,24);assert.equal(nearLod.selected,80);assert.ok(projectedSpanPixels({worldSpan:10,cameraDistance:10,verticalFovRadians:Math.PI/2,viewportHeightPx:1000})>499);
 const coarsePatches=terrainPatchPlan({projectedSpanPx:180,targetErrorPx:40}),finePatches=terrainPatchPlan({projectedSpanPx:1600,targetErrorPx:6});assert.equal(coarsePatches.activePatchCount,1);assert.equal(finePatches.activePatchCount,16);assert.equal(finePatches.bounded,true);assert.equal(new Set(finePatches.patches.map(patch=>patch.id)).size,16);
+const sparseFar=sparseTerrainPatchPlan({cameraAltitudeM:240000,verticalFovRadians:.62,viewportHeightPx:900,viewportWidthPx:1440}),sparseNear=sparseTerrainPatchPlan({cameraAltitudeM:6,verticalFovRadians:.62,viewportHeightPx:900,viewportWidthPx:1440});assert.equal(sparseFar.coordinateUnit,'METRE');assert.equal(sparseNear.bounded,true);assert.equal(sparseNear.mixedLod,true);assert.ok(Math.max(...sparseNear.levels)>Math.max(...sparseFar.levels));assert.ok(sparseNear.culledPatchCount>0);assert.equal(new Set(sparseNear.patches.map(item=>item.id)).size,sparseNear.activePatchCount);assert.equal(deterministicTerrainHeightMeters(0,0,'world'),0);assert.equal(deterministicTerrainHeightMeters(1234.5,-987.25,'world'),deterministicTerrainHeightMeters(1234.5,-987.25,'world'));
 const scale=createContinuousScale({durationMs:1000});scale.setStage('APPROACH',0);const midway=scale.sample(500);assert.ok(midway.coordinate>0&&midway.coordinate<2);scale.setStage('SYSTEM',500);assert.equal(scale.sample(500).interruptions,1);const reduced=createContinuousScale({durationMs:1000,reducedMotion:true});reduced.setStage('ATOMIC',0);assert.equal(reduced.sample(80).coordinate,10);
 
 const kernel=createContinuumKernel({graph:spatial,frames:registry,targets:targets(),transitionDurationMs:1000});

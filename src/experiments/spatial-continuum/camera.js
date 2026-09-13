@@ -48,7 +48,7 @@ export function createTargetAwareCamera({anchorId,focusId,aimId=focusId,targets,
     if(!target)throw new Error('Missing camera target: '+profile.target);
     const metresPerRenderUnit=target.radiusM/target.renderRadius, renderDistance=distanceForProjectedCoverage(target.renderRadius,profile.fov,profile.coverage), direction=directionFor(profile.direction,target,yaw,pitch,frames);
     if(profile.direction==='HUMAN'){
-      const local=[localPosition[0],1.7+localPosition[1],3.2+localPosition[2]],localLook=normalize([Math.sin(yaw)*Math.cos(pitch),Math.sin(pitch),-Math.cos(yaw)*Math.cos(pitch)]),position=frames.directionToRoot(local,target.frameId).map(value=>value/metresPerRenderUnit),look=normalize(frames.directionToRoot(localLook,target.frameId)),targetPoint=position.map((value,axis)=>value+look[axis]*6);
+      const humanPitch=clamp(pitch-.18,-.82,.62),local=[localPosition[0],1.7+localPosition[1],3.2+localPosition[2]],localLook=normalize([Math.sin(yaw)*Math.cos(humanPitch),Math.sin(humanPitch),-Math.cos(yaw)*Math.cos(humanPitch)]),position=frames.directionToRoot(local,target.frameId).map(value=>value/metresPerRenderUnit),look=normalize(frames.directionToRoot(localLook,target.frameId)),targetPoint=position.map((value,axis)=>value+look[axis]*6);
       return{profile,target,origin:origin(target),metresPerRenderUnit,renderDistance,position,targetPoint,up:target.up||[0,1,0],direction:look};
     }
     return{profile,target,origin:origin(target),metresPerRenderUnit,renderDistance,position:direction.map(value=>value*renderDistance),targetPoint:[0,0,0],up:target.up||[0,1,0],direction};

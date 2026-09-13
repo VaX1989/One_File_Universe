@@ -1,3 +1,5 @@
+import { authorityValue } from './authority.js';
+
 const finiteVector = (value, label) => {
   if (!Array.isArray(value) || value.length !== 3 || value.some(item => !Number.isFinite(Number(item)))) {
     throw new TypeError(label + ' must be a finite 3-vector');
@@ -37,7 +39,10 @@ export function referenceFrame(spec) {
     originInParent:finiteVector(spec.originInParent||[0,0,0],'originInParent'),
     metersPerUnit,
     orientation:quaternion(spec.orientation||[0,0,0,1]),
-    authority:String(spec.authority||'PRESENTATION_ONLY')
+    authority:authorityValue(spec.authority||spec.transformAuthority||'PRESENTATION_ONLY','reference-frame transform authority'),
+    transformAuthority:authorityValue(spec.transformAuthority||spec.authority||'PRESENTATION_ONLY','reference-frame transform authority'),
+    entityAuthority:authorityValue(spec.entityAuthority||'UNKNOWN','reference-frame entity authority'),
+    phaseAuthority:authorityValue(spec.phaseAuthority||'UNKNOWN','reference-frame phase authority')
   });
 }
 
@@ -155,7 +160,7 @@ export function createReferenceFrameRegistry(specs) {
     },
     snapshot(){
       return Object.freeze({
-        contract:'ofu-spatial-continuum-reference-frames-2',frameCount:frames.size,
+        contract:'ofu-spatial-continuum-reference-frames-3',frameCount:frames.size,
         frames:Object.freeze([...frames.values()]),roots:Object.freeze([...frames.values()].filter(frame=>frame.parentId==null).map(frame=>frame.id)),
         cpuPrecision:'FLOAT64_HIERARCHICAL',gpuPrecision:'LCA_RELATIVE_FLOAT32',lowestCommonAncestorRebasing:true
       });

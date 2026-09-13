@@ -5,13 +5,13 @@ import { createContinuousScale } from './scale-model.js';
 export function createContinuumKernel({graph, frames, targets, initialStage='SYSTEM', reducedMotion=false, transitionDurationMs=1050} = {}) {
   if (!graph || !frames || !targets) throw new TypeError('Spatial graph, reference frames, and camera targets are required');
   const scale=createContinuousScale({initial:initialStage,durationMs:transitionDurationMs,reducedMotion});
-  const camera=createTargetAwareCamera({anchorId:graph.focusId,focusId:graph.focusId,targets,frames});
+  let activeGraph=graph,activeFrames=frames,activeTargets=targets,camera=createTargetAwareCamera({anchorId:graph.focusId,focusId:graph.focusId,targets,frames});
   const history=[];
   let revision=0;
 
   const capture = now => {
     const sampled=scale.sample(now), pose=camera.pose(sampled.coordinate);
-    return Object.freeze({coordinate:sampled.coordinate,stage:sampled.semanticStage,camera:pose,focusId:graph.focusId});
+    return Object.freeze({coordinate:sampled.coordinate,stage:sampled.semanticStage,camera:pose,focusId:activeGraph.focusId});
   };
   const pushHistory = now => {
     const entry=capture(now), last=history.at(-1);
@@ -32,12 +32,12 @@ export function createContinuumKernel({graph, frames, targets, initialStage='SYS
   function back(now=0) {
     const entry=history.pop();
     if (!entry) return snapshot(now);
-    graph.setFocus(entry.focusId);camera.restore(entry.camera);revision++;
+    if(activeGraph.get(entry.focusId)){activeGraph.setFocus(entry.focusId);camera.restore(entry.camera)}revision++;
     scale.setTarget(entry.coordinate,now,{reducedMotion});
     return snapshot(now);
   }
   function select(id, now=0, options={}) {
-    if (options.push!==false) pushHistory(now);const node=graph.setFocus(id);camera.setFocus(node.id,{anchorId:node.id,aimId:node.id});revision++;
+    if (options.push!==false) pushHistory(now);const node=activeGraph.setFocus(id);camera.setFocus(node.id,{anchorId:node.id,aimId:node.id});revision++;
     return snapshot(now);
   }
   function snapshot(now=0) {
@@ -47,10 +47,10 @@ export function createContinuumKernel({graph, frames, targets, initialStage='SYS
       revision,
       scale:scaleState,
       camera:cameraState,
-      graph:graph.snapshot(),
-      frames:frames.snapshot(),
+      graph:activeGraph.snapshot(),
+      frames:activeFrames.snapshot(),
       historyDepth:history.length,
-      sameCanonicalFocus:cameraState.focusId===graph.focusId,
+      sameCanonicalFocus:cameraState.focusId===activeGraph.focusId,
       semanticStageDerivedFromScale:stageForCoordinate(scaleState.coordinate).stage,
       representationHandoff:scaleState.handoff,
       bounded:Object.freeze({history:history.length<=64,scale:scaleState.coordinate>=0&&scaleState.coordinate<=MAX_SCALE_COORDINATE})
@@ -58,6 +58,10 @@ export function createContinuumKernel({graph, frames, targets, initialStage='SYS
   }
   return Object.freeze({
     travelTo,travelBy,back,select,snapshot,
+    rebind({graph:nextGraph,frames:nextFrames,targets:nextTargets},now=0){
+      if(!nextGraph||!nextFrames||!nextTargets)throw new TypeError('Rebind requires spatial graph, frames, and targets');
+      const prior=camera.pose(scale.sample(now).coordinate);activeGraph=nextGraph;activeFrames=nextFrames;activeTargets=nextTargets;camera=createTargetAwareCamera({anchorId:activeGraph.focusId,focusId:activeGraph.focusId,targets:activeTargets,frames:activeFrames});camera.restore({...prior,anchorId:activeGraph.focusId,focusId:activeGraph.focusId,aimId:activeGraph.focusId,localPosition:[0,0,0]});history.length=0;revision++;return snapshot(now);
+    },
     orbit(dx,dy){camera.orbit(dx,dy);revision++;},
     moveLocal(forward,right,dt){camera.moveLocal(forward,right,dt);revision++;},
     settle(now=0){scale.settle(now);return snapshot(now);},
