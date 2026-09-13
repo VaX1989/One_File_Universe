@@ -14,7 +14,9 @@ on:
     branches: ['experiment/spatial-continuum-architecture-2026-09-13']
 
 concurrency:
-  group: spatial-continuum-${{ github.event_name }}-${{ github.event.pull_request.head.ref || github.ref_name }}
+  # A push to the active experiment branch also updates the Draft PR. Key both
+  # events by the source branch so only one exact-head matrix consumes runners.
+  group: spatial-continuum-${{ github.event.pull_request.head.ref || github.ref_name }}
   cancel-in-progress: true
 
 permissions:
