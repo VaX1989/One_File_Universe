@@ -1,0 +1,181 @@
+import { Engine } from '@babylonjs/core/Engines/engine.js';
+import { Scene } from '@babylonjs/core/scene.js';
+import { FreeCamera } from '@babylonjs/core/Cameras/freeCamera.js';
+import { DirectionalLight } from '@babylonjs/core/Lights/directionalLight.js';
+import { HemisphericLight } from '@babylonjs/core/Lights/hemisphericLight.js';
+import { PointLight } from '@babylonjs/core/Lights/pointLight.js';
+import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial.js';
+import { DynamicTexture } from '@babylonjs/core/Materials/Textures/dynamicTexture.js';
+import { Texture } from '@babylonjs/core/Materials/Textures/texture.js';
+import { SceneInstrumentation } from '@babylonjs/core/Instrumentation/sceneInstrumentation.js';
+import { Color3, Color4 } from '@babylonjs/core/Maths/math.color.js';
+import { Matrix, Quaternion, Vector3 } from '@babylonjs/core/Maths/math.vector.js';
+import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder.js';
+import { Mesh } from '@babylonjs/core/Meshes/mesh.js';
+import { VertexData } from '@babylonjs/core/Meshes/mesh.vertexData.js';
+import { TransformNode } from '@babylonjs/core/Meshes/transformNode.js';
+import { VertexBuffer } from '@babylonjs/core/Buffers/buffer.js';
+import '@babylonjs/core/Culling/ray.js';
+import '@babylonjs/core/Meshes/thinInstanceMesh.js';
+import { sparseTerrainPatchPlan } from './lod.js';
+import { deterministicTerrainHeight } from './terrain-field.js';
+
+const clamp01=value=>Math.max(0,Math.min(1,Number(value)||0));
+const smooth=value=>{const t=clamp01(value);return t*t*(3-2*t)};
+const mix=(a,b,t)=>a+(b-a)*t;
+const hash=value=>{let out=2166136261;for(const char of String(value)){out^=char.charCodeAt(0);out=Math.imul(out,16777619)}return out>>>0};
+const randomFactory=seed=>{let value=hash(seed)||1;return()=>{value^=value<<13;value^=value>>>17;value^=value<<5;return(value>>>0)/4294967296}};
+const color=(hex)=>Color3.FromHexString(hex);
+
+function alphaMaterial(scene,name,hex,{emissive=null,alpha=1,disableLighting=false}={}){
+  const material=new StandardMaterial(name,scene);material.diffuseColor=color(hex);material.specularColor=new Color3(.12,.16,.2);material.alpha=alpha;material.disableLighting=disableLighting;material.metadata={baseAlpha:alpha};
+  if(emissive)material.emissiveColor=color(emissive);return material;
+}
+
+function setLayer(layer,value){
+  const alpha=clamp01(value);layer.root.setEnabled(alpha>.001);
+  for(const material of layer.materials)material.alpha=alpha*(material.metadata?.baseAlpha??1);
+}
+
+function textureForPlanet(scene,world){
+  const icy=world.sample?.kind==='ICE',seed=world.bodyId,texture=new DynamicTexture('planet-surface',{width:512,height:256},scene,false,Texture.BILINEAR_SAMPLINGMODE),ctx=texture.getContext(),rnd=randomFactory(seed);
+  const gradient=ctx.createLinearGradient(0,0,0,256),stops=icy?['#d8f1f4','#6e9daa','#2f6072','#78a9b5','#eef7f5']:['#88bfd2','#276a87','#123d59','#235d75','#c6d8d5'];gradient.addColorStop(0,stops[0]);gradient.addColorStop(.24,stops[1]);gradient.addColorStop(.52,stops[2]);gradient.addColorStop(.78,stops[3]);gradient.addColorStop(1,stops[4]);ctx.fillStyle=gradient;ctx.fillRect(0,0,512,256);
+  for(let i=0;i<34;i++){
+    const x=rnd()*512,y=rnd()*256,rx=16+rnd()*80,ry=7+rnd()*35,rotation=rnd()*Math.PI;
+    ctx.save();ctx.translate(x,y);ctx.rotate(rotation);const land=ctx.createRadialGradient(-rx*.2,-ry*.2,2,0,0,rx);land.addColorStop(0,icy?'#f0f7ef':rnd()>.45?'#d5b57b':'#7fa16d');land.addColorStop(.62,icy?'#a8c8c9':rnd()>.35?'#6c7e56':'#9b7752');land.addColorStop(1,icy?'rgba(110,150,158,0)':'rgba(40,64,53,0)');ctx.fillStyle=land;ctx.beginPath();ctx.ellipse(0,0,rx,ry,0,0,Math.PI*2);ctx.fill();ctx.restore();
+  }
+  for(let i=0;i<96;i++){ctx.fillStyle=`rgba(238,246,242,${.025+rnd()*.09})`;ctx.beginPath();ctx.ellipse(rnd()*512,rnd()*256,6+rnd()*28,1+rnd()*5,rnd()*Math.PI,0,Math.PI*2);ctx.fill()}
+  texture.update(false);return texture;
+}
+
+function createStarfield(scene,seed){
+  const root=new TransformNode('spatial-starfield-root',scene),rnd=randomFactory(seed+'sky'),materials=['#e9f0ff','#9fd7ff','#ffd8ad'].map((hex,index)=>alphaMaterial(scene,'starfield-material-'+index,hex,{emissive:hex,disableLighting:true,alpha:index?0.78:0.56}));
+  for(let group=0;group<materials.length;group++){const mesh=MeshBuilder.CreateSphere('spatial-starfield-'+group,{diameter:1,segments:4},scene),matrices=[];mesh.material=materials[group];mesh.parent=root;mesh.isPickable=false;for(let i=group;i<690;i+=materials.length){const radius=95+rnd()*150,y=2*rnd()-1,theta=rnd()*Math.PI*2,planar=Math.sqrt(1-y*y),scale=.3+rnd()**4*1.7;Matrix.Compose(new Vector3(scale,scale,scale),Quaternion.Identity(),new Vector3(radius*planar*Math.cos(theta),radius*y,radius*planar*Math.sin(theta))).copyToArray(matrices,matrices.length)}mesh.thinInstanceSetBuffer('matrix',Float32Array.from(matrices),16,true)}return{root,materials};
+}
+
+function terrainPatchMesh(scene,name,segments){
+  const mesh=new Mesh(name,scene),positions=[],normals=[],colors=[],indices=[],sources=[];
+  for(let z=0;z<=segments;z++)for(let x=0;x<=segments;x++){positions.push(x/segments-.5,0,z/segments-.5);normals.push(0,1,0);colors.push(1,1,1,1)}
+  const at=(x,z)=>z*(segments+1)+x;
+  for(let z=0;z<segments;z++)for(let x=0;x<segments;x++){const a=at(x,z),b=at(x+1,z),c=at(x,z+1),d=at(x+1,z+1);indices.push(a,c,b,b,c,d)}
+  const edges=[Array.from({length:segments+1},(_,i)=>at(i,0)),Array.from({length:segments+1},(_,i)=>at(segments,i)),Array.from({length:segments+1},(_,i)=>at(segments-i,segments)),Array.from({length:segments+1},(_,i)=>at(0,segments-i))];
+  for(const edge of edges){const skirt=edge.map(source=>{const index=positions.length/3,s=source*3;positions.push(positions[s],0,positions[s+2]);normals.push(0,1,0);colors.push(1,1,1,1);sources[index]=source;return index});for(let i=0;i<segments;i++)indices.push(edge[i],skirt[i],edge[i+1],edge[i+1],skirt[i],skirt[i+1])}
+  const data=new VertexData();data.positions=positions;data.normals=normals;data.colors=colors;data.indices=indices;data.applyToMesh(mesh,true);mesh.metadata={base:Float32Array.from(positions),surfaceVertexCount:(segments+1)**2,skirtSources:Object.freeze(sources)};return mesh;
+}
+
+function createTerrainPatchLayer(scene,seed,{maxPatches=48,segments=12}={}){
+  const root=new TransformNode('terrain-patches-root',scene),material=alphaMaterial(scene,'terrain-patches-material','#ffffff');material.useVertexColors=true;material.specularColor=new Color3(.05,.07,.08);material.backFaceCulling=false;
+  const pool=Array.from({length:maxPatches},(_,index)=>{const mesh=terrainPatchMesh(scene,'terrain-patch-'+index,segments);mesh.material=material;mesh.parent=root;mesh.isPickable=false;mesh.metadata.patchId=null;mesh.metadata.lastUsed=0;mesh.setEnabled(false);return mesh}),resident=new Map();let epoch=0,generations=0,evictions=0;
+  const updateMesh=(mesh,patch)=>{if(mesh.metadata.patchId===patch.id)return;const base=mesh.metadata.base,positions=Float32Array.from(base),colors=new Float32Array(base.length/3*4),normals=new Float32Array(base.length),spacing=patch.sizeM/segments,epsilon=Math.max(.25,spacing*.5),filter={minimumWavelengthM:spacing*2},surface=mesh.metadata.surfaceVertexCount,skirtDepth=Math.max(3,spacing*.18);for(let vertex=0;vertex<surface;vertex++){const i=vertex*3,x=patch.centerEastM+base[i]*patch.sizeM,z=patch.centerNorthM+base[i+2]*patch.sizeM,height=deterministicTerrainHeight(x,z,seed,filter),dx=deterministicTerrainHeight(x+epsilon,z,seed,filter)-deterministicTerrainHeight(x-epsilon,z,seed,filter),dz=deterministicTerrainHeight(x,z+epsilon,seed,filter)-deterministicTerrainHeight(x,z-epsilon,seed,filter),length=Math.hypot(dx,2*epsilon,dz);positions[i]=x;positions[i+1]=height;positions[i+2]=z;normals.set([-dx/length,2*epsilon/length,-dz/length],i);const lowToGreen=smooth(clamp01((height+25)/230)),greenToRock=smooth(clamp01((height-260)/900)),low=[.16,.21,.18],green=[.22,.4,.25],rock=[.66,.62,.54],c=[mix(mix(low[0],green[0],lowToGreen),rock[0],greenToRock),mix(mix(low[1],green[1],lowToGreen),rock[1],greenToRock),mix(mix(low[2],green[2],lowToGreen),rock[2],greenToRock),1];colors.set(c,vertex*4)}for(let vertex=surface;vertex<positions.length/3;vertex++){const source=mesh.metadata.skirtSources[vertex],sourceI=source*3,i=vertex*3;positions.set([positions[sourceI],positions[sourceI+1]-skirtDepth,positions[sourceI+2]],i);normals.set([0,1,0],i);colors.set(colors.slice(source*4,source*4+4),vertex*4)}mesh.updateVerticesData(VertexBuffer.PositionKind,positions);mesh.updateVerticesData(VertexBuffer.NormalKind,normals);mesh.updateVerticesData(VertexBuffer.ColorKind,colors);mesh.metadata.patchId=patch.id;mesh.metadata.level=patch.level;mesh.metadata.minimumWavelengthM=filter.minimumWavelengthM;mesh.refreshBoundingInfo();};
+  return{root,mesh:pool[0],materials:[material],pool,maxPatches,segments,resident,activeCount:0,get generations(){return generations},get evictions(){return evictions},apply(plan){if(plan.activePatchCount>pool.length)throw new Error('Terrain patch plan exceeded its pool');epoch++;const activeIds=new Set(plan.patches.map(item=>item.id));for(const mesh of pool)mesh.setEnabled(false);for(const patch of plan.patches){let mesh=resident.get(patch.id);if(!mesh){mesh=pool.find(item=>item.metadata.patchId==null)||pool.filter(item=>!activeIds.has(item.metadata.patchId)).sort((a,b)=>a.metadata.lastUsed-b.metadata.lastUsed)[0];if(!mesh)throw new Error('Terrain residency pool cannot satisfy active patch plan');if(mesh.metadata.patchId!=null){resident.delete(mesh.metadata.patchId);evictions++}updateMesh(mesh,patch);resident.set(patch.id,mesh);generations++}mesh.metadata.lastUsed=epoch;mesh.setEnabled(true)}this.activeCount=plan.activePatchCount;return this.activeCount;}};
+}
+
+function createSystem(scene,world){
+  const root=new TransformNode('system-root',scene),materials=[],planetMeshes=[],orbitMeshes=[],selectedId=world.bodyId,rnd=randomFactory(world.systemId),planets=world.bodies.filter(body=>body.kind==='planet');
+  const star=MeshBuilder.CreateSphere('canonical-host-star',{diameter:2.2,segments:32},scene),starMat=alphaMaterial(scene,'star-material','#ffd39a',{emissive:'#ffb862'});star.material=starMat;star.parent=root;star.metadata={canonicalId:world.systemId+':star',selectable:false};materials.push(starMat);
+  const light=new PointLight('host-star-light',new Vector3(0,0,0),scene);light.diffuse=new Color3(1,.72,.48);light.intensity=135;light.range=90;light.parent=root;
+  const sorted=planets.map((body,index)=>{const semimajor=Number(body.facts?.baselineSemiMajorAxisMicroAu||body.facts?.semiMajorAxisMicroAu||index+1);return{body,semimajor,index}}).sort((a,b)=>a.semimajor-b.semimajor),min=Math.min(...sorted.map(x=>x.semimajor)),max=Math.max(...sorted.map(x=>x.semimajor));
+  let selectedOrbitX=10;
+  for(const [order,row] of sorted.entries()){
+    const orbitRadius=5+(max===min?order/(Math.max(1,sorted.length-1)):(row.semimajor-min)/(max-min))*13;
+    const ring=MeshBuilder.CreateTorus('orbit-guide-'+order,{diameter:2,thickness:.018,tessellation:96},scene),ringMat=alphaMaterial(scene,'orbit-guide-material-'+order,'#6f8fab',{emissive:'#36516a',alpha:.34,disableLighting:true});ring.material=ringMat;ring.parent=root;ring.metadata={orbitRadiusM:Math.hypot(...row.body.positionM)};ring.scaling.z=.72+.18*rnd();materials.push(ringMat);orbitMeshes.push(ring);
+    const selected=row.body.id===selectedId,radius=selected?.8:.18+Math.min(.25,Math.cbrt(Number(row.body.facts?.baselineMassMilliEarth||1000)/1000)*.08),mesh=MeshBuilder.CreateSphere('canonical-planet-'+order,{diameter:2,segments:selected?40:16},scene),mat=alphaMaterial(scene,'planet-material-'+order,selected?'#4d94ad':['#b58b65','#8293a6','#7f6b93','#ba9b72'][order%4],{emissive:selected?'#071823':null});mesh.material=mat;mesh.scaling.setAll(radius);mesh.parent=root;mesh.metadata={canonicalId:row.body.id,selectable:true,selected,baseScale:radius,body:row.body};materials.push(mat);planetMeshes.push(mesh);
+  }
+  const selected=planetMeshes.find(mesh=>mesh.metadata.selected);if(!selected)throw new Error('Selected canonical world is absent from its rendered system');
+  selected.material.diffuseTexture=textureForPlanet(scene,world);selected.material.diffuseTexture.uScale=-1;selected.material.specularColor=new Color3(.18,.28,.34);
+  const atmosphere=MeshBuilder.CreateSphere('presentation-atmosphere',{diameter:2.08,segments:28},scene),atmosphereMat=alphaMaterial(scene,'atmosphere-material','#77cfff',{emissive:'#205774',alpha:.32,disableLighting:true});atmosphereMat.backFaceCulling=false;atmosphere.parent=selected;atmosphere.material=atmosphereMat;atmosphere.isPickable=false;materials.push(atmosphereMat);
+  const clouds=MeshBuilder.CreateSphere('presentation-clouds',{diameter:2.025,segments:28},scene),cloudMat=alphaMaterial(scene,'cloud-material','#e7f4f1',{emissive:'#66818a',alpha:.16});cloudMat.backFaceCulling=false;clouds.parent=selected;clouds.material=cloudMat;clouds.isPickable=false;materials.push(cloudMat);
+  const target=MeshBuilder.CreateTorus('retained-surface-target',{diameter:.3,thickness:.025,tessellation:48},scene),targetMat=alphaMaterial(scene,'retained-target-material','#f4c36f',{emissive:'#cc7d24',alpha:.9,disableLighting:true}),normal=new Vector3(...world.surfaceTarget.bodyFixedUnit);target.position.copyFrom(normal.scale(1.035));target.rotationQuaternion=new Quaternion();Quaternion.FromUnitVectorsToRef(Vector3.UpReadOnly,normal,target.rotationQuaternion);target.parent=selected;target.material=targetMat;target.isPickable=false;materials.push(targetMat);
+  return{root,materials,planetMeshes,orbitMeshes,selected,atmosphereMat,cloudMat,targetMat,light};
+}
+
+function createLocalDetail(scene,world,highTerrain){
+  const root=new TransformNode('local-detail-root',scene),materials=[],rnd=randomFactory(world.sampleId),rockMat=alphaMaterial(scene,'rock-field-material','#756a5e'),accent=alphaMaterial(scene,'sample-rock-material','#c99b61',{emissive:'#2a1709'});materials.push(rockMat,accent);
+  const sample=MeshBuilder.CreatePolyhedron('inspected-source-sample',{type:2,size:.16},scene);sample.position.set(...world.sampleLocalPoint);sample.rotation.set(.2,.6,.08);sample.material=accent;sample.parent=root;sample.metadata={canonicalId:world.sampleId,selectable:true,sample:true,baseScale:1};
+  const rock=MeshBuilder.CreatePolyhedron('terrain-rock-field',{type:2,size:1},scene),matrices=[];rock.material=rockMat;rock.parent=root;rock.isPickable=false;for(let i=0;i<34;i++){const size=.12+rnd()*.22,x=(rnd()-.5)*22,z=(rnd()-.5)*22,matrix=Matrix.Compose(new Vector3(size,size*(.5+rnd()),size),Quaternion.RotationYawPitchRoll(rnd()*2,rnd()*2,rnd()*2),new Vector3(x,deterministicTerrainHeight(x,z,world.bodyId)+.14,z));matrix.copyToArray(matrices,matrices.length)}rock.thinInstanceSetBuffer('matrix',Float32Array.from(matrices),16,true);
+  return{root,materials,sample,highTerrain,rockInstances:34};
+}
+
+function createMaterialLayer(scene,world){
+  const root=new TransformNode('material-root',scene),materials=[],components=world.representations.material.components||[],rnd=randomFactory(world.sampleId+'material'),palette=world.sample.kind==='ICE'?['#8ed9e7','#bceef2','#73aebf']:['#b88b5a','#6ba6ad','#8075a5','#55606b'];
+  for(const [index,component] of (components.length?components:[{id:'UNKNOWN',ppm:1000000}]).slice(0,4).entries()){const mat=alphaMaterial(scene,'material-component-mat-'+index,palette[index%palette.length],{emissive:world.sample.kind==='ICE'?'#173640':null,alpha:.82}),mesh=MeshBuilder.CreatePolyhedron('material-volume-group-'+index,{type:2,size:1},scene),matrices=[];mat.specularColor=new Color3(.65,.78,.82);materials.push(mat);mesh.material=mat;mesh.parent=root;mesh.isPickable=false;const count=Math.max(3,Math.round(12*Number(component.ppm||0)/1e6));for(let i=0;i<count;i++){const angle=i/count*Math.PI*2+rnd()*.3,radius=.6+(i%3)*1.15,base=.75+rnd()*.65,matrix=Matrix.Compose(new Vector3(base*(.7+rnd()*.5),base*(.85+rnd()*.9),base*(.7+rnd()*.5)),Quaternion.RotationYawPitchRoll(rnd()*2,rnd()*1.4,rnd()*1.4),new Vector3(Math.cos(angle)*radius,(rnd()-.5)*2.4,Math.sin(angle)*radius*.65));matrix.copyToArray(matrices,matrices.length)}mesh.thinInstanceSetBuffer('matrix',Float32Array.from(matrices),16,true);}
+  const frame=MeshBuilder.CreateTorus('material-source-tether',{diameter:9.2,thickness:.035,tessellation:96},scene),frameMat=alphaMaterial(scene,'material-frame-mat','#d6b779',{emissive:'#6f5428',alpha:.75,disableLighting:true});frame.rotation.x=Math.PI/2;frame.material=frameMat;frame.parent=root;materials.push(frameMat);return{root,materials};
+}
+
+function createMicrostructureLayer(scene,world){
+  const root=new TransformNode('microstructure-root',scene),materials=[alphaMaterial(scene,'grain-a','#70a6a0'),alphaMaterial(scene,'grain-b','#bd8b68'),alphaMaterial(scene,'grain-c','#7c78a8')],rnd=randomFactory(world.sampleId+'grains');
+  for(let group=0;group<3;group++){const mesh=MeshBuilder.CreatePolyhedron('presentation-grain-group-'+group,{type:2,size:1},scene),matrices=[];mesh.material=materials[group];mesh.parent=root;mesh.isPickable=false;for(let i=group;i<52;i+=3){const radius=1.5+rnd()*3.2,angle=rnd()*Math.PI*2,scale=.55+rnd()*.7,matrix=Matrix.Compose(new Vector3(scale,.5+rnd(),.5+rnd()),Quaternion.RotationYawPitchRoll(rnd()*3,rnd()*3,rnd()*3),new Vector3(Math.cos(angle)*radius+(rnd()-.5)*1.5,(rnd()-.5)*4,Math.sin(angle)*radius*.55));matrix.copyToArray(matrices,matrices.length)}mesh.thinInstanceSetBuffer('matrix',Float32Array.from(matrices),16,true);}
+  return{root,materials};
+}
+
+function createMolecularLayer(scene,world){
+  const root=new TransformNode('molecular-root',scene),materials=[alphaMaterial(scene,'site-oxygen','#d97d6b',{emissive:'#37110c'}),alphaMaterial(scene,'site-silicon','#76a8c3',{emissive:'#102c3b'}),alphaMaterial(scene,'bond-material','#9fb2bd',{emissive:'#273139'})],positions=[[-2.8,0,0],[-1.4,1.4,.4],[-1.2,-1.5,-.3],[0,0,0],[1.5,1.3,-.2],[1.5,-1.25,.4],[2.9,0,0],[0,2.4,.2],[0,-2.35,-.2]],meshes=[];
+  const sphereAt=(position,index)=>{const mesh=MeshBuilder.CreateSphere('contextual-molecular-site-'+index,{diameter:index%3===0?1.1:.72,segments:24},scene);mesh.position.set(...position);mesh.material=materials[index%3===0?1:0];mesh.parent=root;mesh.isPickable=false;meshes.push(mesh);};positions.forEach(sphereAt);
+  const bond=(a,b,index)=>{const start=new Vector3(...a),end=new Vector3(...b),delta=end.subtract(start),length=delta.length(),mesh=MeshBuilder.CreateCylinder('contextual-bond-'+index,{height:length,diameter:.13,tessellation:12},scene);mesh.position=start.add(end).scale(.5);mesh.rotationQuaternion=new Quaternion();Quaternion.FromUnitVectorsToRef(Vector3.UpReadOnly,delta.normalize(),mesh.rotationQuaternion);mesh.material=materials[2];mesh.parent=root;mesh.isPickable=false;};
+  [[0,1],[0,2],[1,3],[2,3],[3,4],[3,5],[4,6],[5,6],[3,7],[3,8]].forEach(([a,b],index)=>bond(positions[a],positions[b],index));return{root,materials,meshes};
+}
+
+function createAtomicLayer(scene,world){
+  const root=new TransformNode('atomic-root',scene),nucleusMat=alphaMaterial(scene,'nucleus-material','#ffb064',{emissive:'#783513'}),cloudMat=alphaMaterial(scene,'probability-cloud-material','#6bbad8',{emissive:'#27617b',alpha:.16,disableLighting:true}),pointMat=alphaMaterial(scene,'probability-sample-material','#a4dded',{emissive:'#477d91',alpha:.48,disableLighting:true}),materials=[nucleusMat,cloudMat,pointMat],rnd=randomFactory(world.sampleId+'atomic');
+  const nucleus=MeshBuilder.CreateSphere('contextual-nucleons',{diameter:.58,segments:16},scene),nucleusMatrices=[];nucleus.material=nucleusMat;nucleus.parent=root;nucleus.isPickable=false;for(let i=0;i<12;i++)Matrix.Translation((rnd()-.5)*1.25,(rnd()-.5)*1.25,(rnd()-.5)*1.25).copyToArray(nucleusMatrices,nucleusMatrices.length);nucleus.thinInstanceSetBuffer('matrix',Float32Array.from(nucleusMatrices),16,true);
+  const cloud=MeshBuilder.CreateSphere('presentation-probability-density',{diameter:7.2,segments:48},scene);cloud.material=cloudMat;cloud.parent=root;cloud.isPickable=false;
+  const point=MeshBuilder.CreateSphere('probability-samples',{diameter:.09,segments:8},scene),matrices=[];point.material=pointMat;point.parent=root;point.isPickable=false;
+  for(let i=0;i<96;i++){const r=Math.max(1.7,Math.min(4.1,Math.abs((rnd()+rnd()+rnd())-1.5)*3.4+1.2)),theta=rnd()*Math.PI*2,phi=Math.acos(2*rnd()-1);Matrix.Translation(r*Math.sin(phi)*Math.cos(theta),r*Math.cos(phi),r*Math.sin(phi)*Math.sin(theta)).copyToArray(matrices,matrices.length)}point.thinInstanceSetBuffer('matrix',Float32Array.from(matrices),16,true);
+  return{root,materials};
+}
+
+export function createContinuumRenderer(canvas,world,{onContextChange=()=>{}}={}){
+  const engine=new Engine(canvas,false,{preserveDrawingBuffer:false,stencil:false,disableWebGL2Support:false,premultipliedAlpha:false,powerPreference:'high-performance'},false),scene=new Scene(engine);scene.clearColor=new Color4(.002,.006,.018,1);scene.ambientColor=new Color3(.08,.1,.14);scene.skipPointerMovePicking=true;
+  const instrumentation=new SceneInstrumentation(scene);
+  const gl=engine._gl,debugRenderer=gl?.getExtension?.('WEBGL_debug_renderer_info'),timerExtension=gl?.getExtension?.('EXT_disjoint_timer_query_webgl2'),gpuQueries=[],gpuTimings=[],gpuDisjoint={count:0};
+  const camera=new FreeCamera('continuum-camera',new Vector3(0,10,48),scene);camera.minZ=.015;camera.maxZ=1200;camera.fov=.66;camera.inputs.clear();scene.activeCamera=camera;
+  const hemi=new HemisphericLight('ambient-key',new Vector3(.2,1,.1),scene);hemi.intensity=.55;hemi.diffuse=new Color3(.55,.7,.82);hemi.groundColor=new Color3(.05,.035,.025);
+  const sun=new DirectionalLight('terrain-sun',new Vector3(-.45,-.82,.38),scene);sun.intensity=1.6;sun.diffuse=new Color3(1,.82,.62);
+  let activeWorld=world,starfield,system,terrain,local,material,micro,molecular,atomic;
+  function buildWorldLayers(nextWorld){activeWorld=nextWorld;starfield=createStarfield(scene,nextWorld.systemId);system=createSystem(scene,nextWorld);terrain=createTerrainPatchLayer(scene,nextWorld.bodyId);local=createLocalDetail(scene,nextWorld,terrain);material=createMaterialLayer(scene,nextWorld);micro=createMicrostructureLayer(scene,nextWorld);molecular=createMolecularLayer(scene,nextWorld);atomic=createAtomicLayer(scene,nextWorld)}
+  function disposeWorldLayers(){if(system?.light)system.light.dispose();for(const layer of [starfield,system,terrain,local,material,micro,molecular,atomic]){for(const materialItem of layer?.materials||[])materialItem.dispose(true,true);layer?.root?.dispose(false,true)}}
+  buildWorldLayers(world);
+  let disposed=false,lastSnapshot=null,lastRenderKey=null,lastLod=null,hovered=null,contextLosses=0,contextRestores=0,lastResize=[0,0],lastScaling=0,readinessScheduled=false,readyResolved=false,resolveReady;const ready=new Promise(resolve=>{resolveReady=resolve}),finishReady=()=>{if(!readyResolved){readyResolved=true;resolveReady(true)}},timings=[],stageTimings=new Map();
+  const onLost=()=>{contextLosses++;gpuQueries.length=0;lastRenderKey=null;onContextChange('lost')},onRestored=()=>{contextRestores++;lastRenderKey=null;onContextChange('restored')};canvas.addEventListener('webglcontextlost',onLost);canvas.addEventListener('webglcontextrestored',onRestored);
+  const pollGpuTimers=()=>{if(!timerExtension)return;for(let index=gpuQueries.length-1;index>=0;index--){const query=gpuQueries[index];if(!gl.getQueryParameter(query,gl.QUERY_RESULT_AVAILABLE))continue;gpuQueries.splice(index,1);const disjoint=gl.getParameter(timerExtension.GPU_DISJOINT_EXT);if(disjoint)gpuDisjoint.count++;else{gpuTimings.push(gl.getQueryParameter(query,gl.QUERY_RESULT)/1e6);if(gpuTimings.length>600)gpuTimings.shift()}gl.deleteQuery(query)}};
+
+  function update(snapshot){
+    if(disposed)return;const updateStarted=performance.now();lastSnapshot=snapshot;const coordinate=snapshot.scale.coordinate,weights=snapshot.representationHandoff.weights,pose=snapshot.camera,rect=canvas.getBoundingClientRect(),size=[Math.round(rect.width),Math.round(rect.height)],settledScaling=Math.max(1,Math.min(1.35,Math.sqrt(Math.max(1,size[0]*size[1])/760000))),scaling=snapshot.scale.moving?Math.max(1.6,settledScaling):settledScaling;if(size[0]!==lastResize[0]||size[1]!==lastResize[1]||Math.abs(scaling-lastScaling)>.01){lastResize=size;lastScaling=scaling;engine.setHardwareScalingLevel(scaling);engine.resize();lastRenderKey=null}const renderKey=[snapshot.revision,coordinate.toFixed(5),pose.revision,size[0],size[1],scaling.toFixed(2)].join(':');if(renderKey===lastRenderKey)return;lastRenderKey=renderKey;
+    camera.position.set(...pose.position);camera.setTarget(new Vector3(...pose.target));camera.upVector.set(...pose.up);camera.fov=pose.fov;const cameraSpan=Math.max(.01,Vector3.Distance(camera.position,new Vector3(...pose.target)));camera.minZ=Math.max(.005,cameraSpan/50000);camera.maxZ=Math.max(180,cameraSpan*120);
+    const systemWeight=weights.SYSTEM||0,orbitWeight=weights.ORBIT||0,approachWeight=weights.APPROACH||0,globalWeight=weights.GLOBAL_SURFACE||0,regionalWeight=weights.REGIONAL_SURFACE||0,localWeight=weights.LOCAL_SURFACE||0,humanWeight=weights.HUMAN||0,materialWeight=weights.MATERIAL||0,microWeight=weights.MICROSTRUCTURE||0,molecularWeight=weights.MOLECULAR||0,atomicWeight=weights.ATOMIC||0,focusedBodyId=snapshot.graph.focus.kind==='PLANET'?snapshot.graph.focusId:activeWorld.bodyId;
+    const renderPoint=(point,frameId)=>activeWorld.frames.renderRelativeToHandoffFloat32(point,frameId,pose.renderOrigin,pose.metresPerRenderUnit),systemPosition=renderPoint([0,0,0],activeWorld.frameIds.system);system.root.position.set(...systemPosition);
+    for(const mesh of system.planetMeshes){const position=renderPoint([0,0,0],mesh.metadata.body.frameId);mesh.position.set(position[0]-systemPosition[0],position[1]-systemPosition[1],position[2]-systemPosition[2]);const physicalScale=mesh.metadata.body.radiusM/pose.metresPerRenderUnit,markerScale=mesh.metadata.baseScale*(weights.SYSTEM||0);mesh.scaling.setAll(Math.max(physicalScale,markerScale));}
+    for(const ring of system.orbitMeshes){const radius=ring.metadata.orbitRadiusM/pose.metresPerRenderUnit;ring.scaling.x=radius;ring.scaling.y=radius;ring.scaling.z=radius*(ring.metadata.flattening||.82);}
+    for(const mesh of system.planetMeshes){const isFocused=mesh.metadata.canonicalId===focusedBodyId,alpha=isFocused?Math.max(systemWeight,orbitWeight,approachWeight,globalWeight):systemWeight;mesh.material.alpha=alpha;mesh.setEnabled(alpha>.001)}
+    for(const materialItem of system.materials){if(system.planetMeshes.some(mesh=>mesh.material===materialItem)||materialItem===system.atmosphereMat||materialItem===system.cloudMat||materialItem===system.targetMat)continue;materialItem.alpha=systemWeight*(materialItem.metadata?.baseAlpha??1)}
+    system.atmosphereMat.alpha=Math.max(orbitWeight*.22,approachWeight*.36,globalWeight*.28);system.cloudMat.alpha=Math.max(orbitWeight*.1,approachWeight*.2,globalWeight*.16);
+    system.targetMat.alpha=Math.max(approachWeight*.18,globalWeight*.9);
+    system.light.intensity=135*Math.max(systemWeight,orbitWeight,approachWeight,globalWeight*.14);
+    for(const layer of [terrain,local]){const position=renderPoint([0,0,0],activeWorld.frameIds.local);layer.root.position.set(...position);layer.root.rotationQuaternion=Quaternion.FromArray(activeWorld.frames.orientationToRoot(activeWorld.frameIds.local));layer.root.scaling.setAll(1/pose.metresPerRenderUnit);}
+    for(const layer of [material,micro,molecular,atomic]){const position=renderPoint([0,0,0],coordinate<7.5?activeWorld.frameIds.sample:activeWorld.frameIds.micro);layer.root.position.set(...position);layer.root.rotationQuaternion=Quaternion.FromArray(activeWorld.frames.orientationToRoot(activeWorld.frameIds.sample));}
+    const terrainWeight=regionalWeight+localWeight+humanWeight,terrainDistanceM=Math.max(.1,Vector3.Distance(camera.position,terrain.root.position)*pose.metresPerRenderUnit),terrainErrorPx=coordinate<3.5?18:coordinate<4.5?10:coordinate<5.5?5:3;
+    if(terrainWeight>.001){lastLod=sparseTerrainPatchPlan({cameraEastM:pose.localPosition?.[0]||0,cameraNorthM:pose.localPosition?.[2]||0,cameraAltitudeM:terrainDistanceM,verticalFovRadians:camera.fov,viewportHeightPx:Math.max(1,size[1]),viewportWidthPx:Math.max(1,size[0]),targetErrorPx:terrainErrorPx,baseSegments:terrain.segments,maxPatches:terrain.maxPatches});terrain.apply(lastLod)}
+    setLayer(terrain,terrainWeight);setLayer(local,localWeight*.45+humanWeight);
+    setLayer(material,materialWeight);setLayer(micro,microWeight);setLayer(molecular,molecularWeight);setLayer(atomic,atomicWeight);
+    const spaceAlpha=1-smooth(clamp01((coordinate-2.7)/1.2));setLayer(starfield,spaceAlpha);const surfaceSky=smooth(clamp01((coordinate-3.1)/.8))*(1-smooth(clamp01((coordinate-6.25)/.55)));scene.clearColor.set(mix(.002,.025,surfaceSky),mix(.006,.075,surfaceSky),mix(.018,.12,surfaceSky),1);
+    pollGpuTimers();let gpuQuery=null;if(timerExtension&&gpuQueries.length<16){gpuQuery=gl.createQuery();gl.beginQuery(timerExtension.TIME_ELAPSED_EXT,gpuQuery)}const renderStarted=performance.now();try{scene.render()}finally{if(gpuQuery){gl.endQuery(timerExtension.TIME_ELAPSED_EXT);gpuQueries.push(gpuQuery)}}const renderMs=performance.now()-renderStarted,totalMs=performance.now()-updateStarted,record={stage:snapshot.scale.semanticStage,renderMs,totalMs,drawCalls:instrumentation.drawCallsCounter.current,activeMeshes:scene.getActiveMeshes().length};timings.push(record);if(timings.length>600)timings.shift();const stageRows=stageTimings.get(record.stage)||[];stageRows.push(record);if(stageRows.length>120)stageRows.shift();stageTimings.set(record.stage,stageRows);if(scene.isReady())finishReady();else if(!readinessScheduled){readinessScheduled=true;scene.executeWhenReady(()=>{readinessScheduled=false;lastRenderKey=null;if(lastSnapshot&&!disposed)update(lastSnapshot);finishReady()})}
+  }
+
+  function pick(clientX,clientY){
+    const rect=canvas.getBoundingClientRect(),x=clientX-rect.left,y=clientY-rect.top,result=scene.pick(x,y,mesh=>mesh?.metadata?.selectable===true&&mesh.isEnabled()&&mesh.isVisible&&mesh.isPickable,false,camera);
+    if(!result?.hit||!result.pickedMesh?.metadata?.canonicalId)return null;
+    return Object.freeze({id:result.pickedMesh.metadata.canonicalId,mesh:result.pickedMesh,point:result.pickedPoint?Object.freeze([result.pickedPoint.x,result.pickedPoint.y,result.pickedPoint.z]):null,distance:result.distance});
+  }
+  function hover(clientX,clientY){
+    const hit=pick(clientX,clientY),next=hit?.mesh||null;if(hovered&&hovered!==next){hovered.scaling.scaleInPlace(1/1.08);lastRenderKey=null}if(next&&hovered!==next){next.scaling.scaleInPlace(1.08);lastRenderKey=null}hovered=next;canvas.style.cursor=next?'pointer':'grab';return hit;
+  }
+  function snapshot(){
+    const instruments=engine.getCaps(),rect=canvas.getBoundingClientRect(),viewport=camera.viewport.toGlobal(engine.getRenderWidth(),engine.getRenderHeight());
+    const targetMetrics=mesh=>{mesh.computeWorldMatrix(true);const center=mesh.getBoundingInfo().boundingSphere.centerWorld,radius=mesh.getBoundingInfo().boundingSphere.radiusWorld,projected=Vector3.Project(center,Matrix.IdentityReadOnly,scene.getTransformMatrix(),viewport),distance=Vector3.Distance(camera.position,center),diameter=distance>0?2*radius/distance*(rect.height/(2*Math.tan(camera.fov/2))):null;return Object.freeze({clientX:rect.left+projected.x/Math.max(1,engine.getRenderWidth())*rect.width,clientY:rect.top+projected.y/Math.max(1,engine.getRenderHeight())*rect.height,diameterCssPx:diameter,distance,visible:mesh.isEnabled()&&mesh.isVisible&&mesh.visibility>0})},focusedBodyId=lastSnapshot?.graph?.focus?.kind==='PLANET'?lastSnapshot.graph.focusId:activeWorld.bodyId,focusedBody=system.planetMeshes.find(mesh=>mesh.metadata.canonicalId===focusedBodyId)||system.selected;
+    const percentile=(rows,key,p)=>{if(!rows.length)return null;const values=rows.map(row=>row[key]).sort((a,b)=>a-b);return values[Math.min(values.length-1,Math.floor((values.length-1)*p))]},numericPercentile=(values,p)=>{if(!values.length)return null;const sorted=[...values].sort((a,b)=>a-b);return sorted[Math.min(sorted.length-1,Math.floor((sorted.length-1)*p))]},profile=Object.freeze({samples:timings.length,renderMedianMs:percentile(timings,'renderMs',.5),renderP95Ms:percentile(timings,'renderMs',.95),updateMedianMs:percentile(timings,'totalMs',.5),updateP95Ms:percentile(timings,'totalMs',.95),gpu:Object.freeze({supported:!!timerExtension,samples:gpuTimings.length,medianMs:numericPercentile(gpuTimings,.5),p95Ms:numericPercentile(gpuTimings,.95),disjointSamples:gpuDisjoint.count}),byStage:Object.freeze(Object.fromEntries([...stageTimings].map(([stage,rows])=>[stage,Object.freeze({samples:rows.length,renderMedianMs:percentile(rows,'renderMs',.5),renderP95Ms:percentile(rows,'renderMs',.95),drawCalls:rows.at(-1)?.drawCalls,activeMeshes:rows.at(-1)?.activeMeshes})])))}),maskedRenderer=gl?.getParameter?.(gl.RENDERER)||null,unmaskedRenderer=debugRenderer?gl.getParameter(debugRenderer.UNMASKED_RENDERER_WEBGL):null,unmaskedVendor=debugRenderer?gl.getParameter(debugRenderer.UNMASKED_VENDOR_WEBGL):null,softwareRenderer=/swiftshader|llvmpipe|software/i.test(String(unmaskedRenderer||maskedRenderer));
+    return Object.freeze({contract:'ofu-spatial-continuum-renderer-3',engine:'Babylon.js',engineVersion:'9.26.0',backend:engine.webGLVersion===2?'WEBGL2':'WEBGL1',webglVersion:engine.webGLVersion,gpuIdentity:Object.freeze({maskedRenderer,unmaskedRenderer,unmaskedVendor,softwareRenderer,physicalGpuVerified:!!unmaskedRenderer&&!softwareRenderer}),sceneReady:readyResolved,meshCount:scene.meshes.length,materialCount:scene.materials.length,textureCount:scene.textures.length,totalVertices:scene.getTotalVertices(),activeMeshes:scene.getActiveMeshes().length,drawCalls:instrumentation.drawCallsCounter.current,hardwareScalingLevel:engine.getHardwareScalingLevel(),terrainPatchPool:terrain.pool.length,activeTerrainPatches:terrain.activeCount,terrainTarget:activeWorld.terrainTarget,terrainResidency:Object.freeze({resident:terrain.resident.size,capacity:terrain.pool.length,bounded:terrain.resident.size<=terrain.pool.length,generations:terrain.generations,evictions:terrain.evictions}),terrainCoordinateUnit:'METRE',terrainFrequencyPolicy:'LOD_NYQUIST_BAND_LIMITED',terrainSeamPolicy:'SHARED_FIELD_WITH_SKIRTS',thinInstanceCounts:Object.freeze({stars:690,localRocks:local.rockInstances,material:material.root.getChildMeshes().reduce((sum,mesh)=>sum+(mesh.thinInstanceCount||0),0),micro:micro.root.getChildMeshes().reduce((sum,mesh)=>sum+(mesh.thinInstanceCount||0),0),atomic:atomic.root.getChildMeshes().reduce((sum,mesh)=>sum+(mesh.thinInstanceCount||0),0)}),contextLosses,contextRestores,disposed,lastStage:lastSnapshot?.scale?.semanticStage||null,maxTextureSize:instruments.maxTextureSize,rendererOwnedPicking:true,sceneTransformsFromReferenceFrames:true,renderOrigin:lastSnapshot?.camera?.renderOrigin||null,metresPerRenderUnit:lastSnapshot?.camera?.metresPerRenderUnit||null,sceneCount:1,cameraCount:scene.cameras.length,lod:lastLod,profile,pickTargets:Object.freeze({body:targetMetrics(focusedBody),bodies:Object.freeze(Object.fromEntries(system.planetMeshes.map(mesh=>[mesh.metadata.canonicalId,targetMetrics(mesh)]))),sample:targetMetrics(local.sample)})});
+  }
+  function rebind(nextWorld){if(disposed)throw new Error('Cannot rebind a disposed renderer');if(!nextWorld?.bodyId)throw new TypeError('A materialized OFU world is required');hovered=null;disposeWorldLayers();buildWorldLayers(nextWorld);lastSnapshot=null;lastRenderKey=null;lastLod=null;return Object.freeze({bodyId:nextWorld.bodyId,sceneCount:1,cameraCount:scene.cameras.length})}
+  function dispose(){if(disposed)return false;disposed=true;canvas.removeEventListener('webglcontextlost',onLost);canvas.removeEventListener('webglcontextrestored',onRestored);for(const query of gpuQueries)try{gl.deleteQuery(query)}catch{}instrumentation.dispose();scene.dispose();engine.dispose();return true}
+  return Object.freeze({update,pick,hover,snapshot,rebind,dispose,ready,engine,scene,camera});
+}

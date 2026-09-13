@@ -1,0 +1,360 @@
+{
+  "status": "PASS",
+  "suite": "spatial-continuum-performance-resource",
+  "environment": {
+    "browser": "151.0.7922.34",
+    "headless": true,
+    "physicalGpu": false,
+    "viewport": "1440x900"
+  },
+  "idleDemandRendering": {
+    "rendererSamplesAdded": 0
+  },
+  "continuousTransitions": [
+    {
+      "stage": "ORBIT",
+      "durationMs": 1228
+    },
+    {
+      "stage": "APPROACH",
+      "durationMs": 1137
+    },
+    {
+      "stage": "GLOBAL_SURFACE",
+      "durationMs": 1121
+    },
+    {
+      "stage": "REGIONAL_SURFACE",
+      "durationMs": 1163
+    },
+    {
+      "stage": "LOCAL_SURFACE",
+      "durationMs": 1102
+    },
+    {
+      "stage": "HUMAN",
+      "durationMs": 1120
+    }
+  ],
+  "animationCadence": {
+    "samples": 137,
+    "median": 50,
+    "p95": 100,
+    "p99": 116.69999999999891,
+    "longFrames34": 115,
+    "longFrames50": 59,
+    "inputResponseMedian": 19.5
+  },
+  "rendererCpu": {
+    "samples": 160,
+    "renderMedianMs": 1.0999999642372131,
+    "renderP95Ms": 3,
+    "updateMedianMs": 2,
+    "updateP95Ms": 10.199999988079071,
+    "byStage": {
+      "SYSTEM": {
+        "samples": 18,
+        "renderMedianMs": 0.9000000357627869,
+        "renderP95Ms": 13.199999988079071,
+        "drawCalls": 9,
+        "activeMeshes": 9
+      },
+      "ORBIT": {
+        "samples": 22,
+        "renderMedianMs": 1,
+        "renderP95Ms": 1.5,
+        "drawCalls": 8,
+        "activeMeshes": 8
+      },
+      "APPROACH": {
+        "samples": 20,
+        "renderMedianMs": 0.9000000357627869,
+        "renderP95Ms": 1.0999999642372131,
+        "drawCalls": 8,
+        "activeMeshes": 8
+      },
+      "GLOBAL_SURFACE": {
+        "samples": 17,
+        "renderMedianMs": 0.8999999761581421,
+        "renderP95Ms": 1.5,
+        "drawCalls": 8,
+        "activeMeshes": 8
+      },
+      "REGIONAL_SURFACE": {
+        "samples": 20,
+        "renderMedianMs": 1,
+        "renderP95Ms": 1.600000023841858,
+        "drawCalls": 7,
+        "activeMeshes": 7
+      },
+      "LOCAL_SURFACE": {
+        "samples": 22,
+        "renderMedianMs": 1.2000000476837158,
+        "renderP95Ms": 2,
+        "drawCalls": 17,
+        "activeMeshes": 17
+      },
+      "HUMAN": {
+        "samples": 31,
+        "renderMedianMs": 1.300000011920929,
+        "renderP95Ms": 2.700000047683716,
+        "drawCalls": 4,
+        "activeMeshes": 4
+      },
+      "MATERIAL": {
+        "samples": 3,
+        "renderMedianMs": 0.7999999523162842,
+        "renderP95Ms": 0.7999999523162842,
+        "drawCalls": 3,
+        "activeMeshes": 3
+      },
+      "MICROSTRUCTURE": {
+        "samples": 1,
+        "renderMedianMs": 1.899999976158142,
+        "renderP95Ms": 1.899999976158142,
+        "drawCalls": 4,
+        "activeMeshes": 4
+      },
+      "MOLECULAR": {
+        "samples": 3,
+        "renderMedianMs": 4,
+        "renderP95Ms": 4,
+        "drawCalls": 20,
+        "activeMeshes": 20
+      },
+      "ATOMIC": {
+        "samples": 3,
+        "renderMedianMs": 1.2000000476837158,
+        "renderP95Ms": 1.2000000476837158,
+        "drawCalls": 4,
+        "activeMeshes": 4
+      }
+    }
+  },
+  "hardwareScalingLevel": 1.2727922061357855,
+  "resources": {
+    "meshes": 54,
+    "materials": 24,
+    "textures": 1,
+    "vertices": 58264,
+    "terrainPool": 16,
+    "sceneCount": 1,
+    "cameraCount": 1
+  },
+  "resourceSoak": {
+    "loops": 10,
+    "samples": [
+      {
+        "loop": 0,
+        "heap": {
+          "usedJSHeapSize": 30609396,
+          "totalJSHeapSize": 103357992,
+          "jsHeapSizeLimit": 4395630592
+        },
+        "resources": {
+          "meshes": 54,
+          "materials": 24,
+          "textures": 1,
+          "vertices": 58264,
+          "terrainPool": 16,
+          "sceneCount": 1,
+          "cameraCount": 1
+        },
+        "history": 6
+      },
+      {
+        "loop": 1,
+        "heap": {
+          "usedJSHeapSize": 29341291,
+          "totalJSHeapSize": 100370827,
+          "jsHeapSizeLimit": 4395630592
+        },
+        "resources": {
+          "meshes": 54,
+          "materials": 24,
+          "textures": 1,
+          "vertices": 58264,
+          "terrainPool": 16,
+          "sceneCount": 1,
+          "cameraCount": 1
+        },
+        "history": 14
+      },
+      {
+        "loop": 2,
+        "heap": {
+          "usedJSHeapSize": 28914856,
+          "totalJSHeapSize": 99892644,
+          "jsHeapSizeLimit": 4395630592
+        },
+        "resources": {
+          "meshes": 54,
+          "materials": 24,
+          "textures": 1,
+          "vertices": 58264,
+          "terrainPool": 16,
+          "sceneCount": 1,
+          "cameraCount": 1
+        },
+        "history": 21
+      },
+      {
+        "loop": 3,
+        "heap": {
+          "usedJSHeapSize": 29221029,
+          "totalJSHeapSize": 100191501,
+          "jsHeapSizeLimit": 4395630592
+        },
+        "resources": {
+          "meshes": 54,
+          "materials": 24,
+          "textures": 1,
+          "vertices": 58264,
+          "terrainPool": 16,
+          "sceneCount": 1,
+          "cameraCount": 1
+        },
+        "history": 28
+      },
+      {
+        "loop": 4,
+        "heap": {
+          "usedJSHeapSize": 28966101,
+          "totalJSHeapSize": 99122765,
+          "jsHeapSizeLimit": 4395630592
+        },
+        "resources": {
+          "meshes": 54,
+          "materials": 24,
+          "textures": 1,
+          "vertices": 58264,
+          "terrainPool": 16,
+          "sceneCount": 1,
+          "cameraCount": 1
+        },
+        "history": 35
+      },
+      {
+        "loop": 5,
+        "heap": {
+          "usedJSHeapSize": 28492170,
+          "totalJSHeapSize": 98624782,
+          "jsHeapSizeLimit": 4395630592
+        },
+        "resources": {
+          "meshes": 54,
+          "materials": 24,
+          "textures": 1,
+          "vertices": 58264,
+          "terrainPool": 16,
+          "sceneCount": 1,
+          "cameraCount": 1
+        },
+        "history": 42
+      },
+      {
+        "loop": 6,
+        "heap": {
+          "usedJSHeapSize": 28926779,
+          "totalJSHeapSize": 99054379,
+          "jsHeapSizeLimit": 4395630592
+        },
+        "resources": {
+          "meshes": 54,
+          "materials": 24,
+          "textures": 1,
+          "vertices": 58264,
+          "terrainPool": 16,
+          "sceneCount": 1,
+          "cameraCount": 1
+        },
+        "history": 49
+      },
+      {
+        "loop": 7,
+        "heap": {
+          "usedJSHeapSize": 28775749,
+          "totalJSHeapSize": 98890533,
+          "jsHeapSizeLimit": 4395630592
+        },
+        "resources": {
+          "meshes": 54,
+          "materials": 24,
+          "textures": 1,
+          "vertices": 58264,
+          "terrainPool": 16,
+          "sceneCount": 1,
+          "cameraCount": 1
+        },
+        "history": 56
+      },
+      {
+        "loop": 8,
+        "heap": {
+          "usedJSHeapSize": 29023196,
+          "totalJSHeapSize": 99106212,
+          "jsHeapSizeLimit": 4395630592
+        },
+        "resources": {
+          "meshes": 54,
+          "materials": 24,
+          "textures": 1,
+          "vertices": 58264,
+          "terrainPool": 16,
+          "sceneCount": 1,
+          "cameraCount": 1
+        },
+        "history": 63
+      },
+      {
+        "loop": 9,
+        "heap": {
+          "usedJSHeapSize": 28737853,
+          "totalJSHeapSize": 98805181,
+          "jsHeapSizeLimit": 4395630592
+        },
+        "resources": {
+          "meshes": 54,
+          "materials": 24,
+          "textures": 1,
+          "vertices": 58264,
+          "terrainPool": 16,
+          "sceneCount": 1,
+          "cameraCount": 1
+        },
+        "history": 64
+      },
+      {
+        "loop": 10,
+        "heap": {
+          "usedJSHeapSize": 29324493,
+          "totalJSHeapSize": 99372065,
+          "jsHeapSizeLimit": 4395630592
+        },
+        "resources": {
+          "meshes": 54,
+          "materials": 24,
+          "textures": 1,
+          "vertices": 58264,
+          "terrainPool": 16,
+          "sceneCount": 1,
+          "cameraCount": 1
+        },
+        "history": 64
+      }
+    ],
+    "memory": {
+      "available": true,
+      "startBytes": 30609396,
+      "endBytes": 29324493,
+      "minBytes": 28492170,
+      "maxBytes": 30609396,
+      "deltaBytes": -1284903,
+      "samples": 11
+    }
+  },
+  "limitations": [
+    "Headless Chromium/software rendering is not physical-GPU frame-pacing evidence.",
+    "Draw calls use Babylon SceneInstrumentation and reflect the most recently rendered frame."
+  ]
+}

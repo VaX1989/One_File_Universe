@@ -1,0 +1,102 @@
+{
+  "status": "PASS",
+  "suite": "spatial-continuum-browser-matrix",
+  "continuumTested": [
+    "chromium",
+    "firefox",
+    "webkit"
+  ],
+  "blocked": [],
+  "results": [
+    {
+      "browser": "chromium",
+      "status": "PASS",
+      "version": "151.0.7922.34",
+      "directFile": true,
+      "offline": true,
+      "webgl": "WEBGL2",
+      "stages": [
+        {
+          "stage": "ORBIT",
+          "activeMeshes": 8,
+          "backend": "WEBGL2"
+        },
+        {
+          "stage": "HUMAN",
+          "activeMeshes": 23,
+          "backend": "WEBGL2"
+        },
+        {
+          "stage": "ATOMIC",
+          "activeMeshes": 4,
+          "backend": "WEBGL2"
+        },
+        {
+          "stage": "SYSTEM",
+          "activeMeshes": 9,
+          "backend": "WEBGL2"
+        }
+      ]
+    },
+    {
+      "browser": "firefox",
+      "status": "PASS",
+      "version": "153.0",
+      "directFile": true,
+      "offline": true,
+      "webgl": "WEBGL2",
+      "stages": [
+        {
+          "stage": "ORBIT",
+          "activeMeshes": 8,
+          "backend": "WEBGL2"
+        },
+        {
+          "stage": "HUMAN",
+          "activeMeshes": 23,
+          "backend": "WEBGL2"
+        },
+        {
+          "stage": "ATOMIC",
+          "activeMeshes": 4,
+          "backend": "WEBGL2"
+        },
+        {
+          "stage": "SYSTEM",
+          "activeMeshes": 9,
+          "backend": "WEBGL2"
+        }
+      ]
+    },
+    {
+      "browser": "webkit",
+      "status": "PASS",
+      "version": "26.5",
+      "directFile": true,
+      "offline": true,
+      "webgl": "WEBGL2",
+      "stages": [
+        {
+          "stage": "ORBIT",
+          "activeMeshes": 8,
+          "backend": "WEBGL2"
+        },
+        {
+          "stage": "HUMAN",
+          "activeMeshes": 23,
+          "backend": "WEBGL2"
+        },
+        {
+          "stage": "ATOMIC",
+          "activeMeshes": 4,
+          "backend": "WEBGL2"
+        },
+        {
+          "stage": "SYSTEM",
+          "activeMeshes": 9,
+          "backend": "WEBGL2"
+        }
+      ]
+    }
+  ]
+}
