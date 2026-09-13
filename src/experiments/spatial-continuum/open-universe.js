@@ -1,6 +1,7 @@
 import { AUTHORITY } from './constants.js';
 import { createReadOnlyAuthorityRuntime } from './authority-runtime.js';
 import { createMaterializationCache } from './materialization-cache.js';
+import { modelCoordinatesFromDirection } from './planetary-topology.js';
 import { addressFromNode, createSpatialAddress } from './spatial-address.js';
 import { captureGenuineOFUWorld } from './world-adapter.js';
 
@@ -63,8 +64,9 @@ export function createOpenUniverseAuthority(root=globalThis,{ctx,seedKey,maxGala
   function materializeWorld({latMicroDeg=null,lonMicroDeg=null,sampleId=null}={}){
     if(!path.body||!['planet','moon'].includes(path.body.kind))throw new Error('Select a supported planetary body before materializing a world');
     const latitude=latMicroDeg==null?0:Number(latMicroDeg),longitude=lonMicroDeg==null?0:Number(lonMicroDeg),key=`world:${idOf(path.body)}:${latitude}:${longitude}:${sampleId||'auto'}`;
-    try{world=cache.materialize(key,()=>captureGenuineOFUWorld(root,{runtime,canonicalKey:path.body.canonicalKey,profile:'lazy',latMicroDeg:latitude,lonMicroDeg:longitude,sampleId}),{kind:'WORLD',pin:true});remember([world.graph.get(world.bodyId),world.graph.get(world.surfaceId),world.graph.get(world.sampleId)]);path=Object.freeze({...path,surface:world.graph.get(world.surfaceId),sample:world.graph.get(world.sampleId)});focus=path.body;lastFailure=null;revision++;pinPath();return world}catch(error){lastFailure=Object.freeze({stage:'WORLD',focusId:idOf(path.body),reason:String(error?.message||error)});throw error}
+    try{world=cache.materialize(key,()=>captureGenuineOFUWorld(root,{runtime,canonicalKey:path.body.canonicalKey,profile:'lazy',latMicroDeg:latitude,lonMicroDeg:longitude,sampleId}),{kind:'WORLD',pin:true});remember([world.graph.get(world.bodyId),world.graph.get(world.surfaceId),world.graph.get(world.sampleId)]);path=Object.freeze({...path,surface:world.graph.get(world.surfaceId),sample:null});focus=path.body;lastFailure=null;revision++;pinPath();return world}catch(error){lastFailure=Object.freeze({stage:'WORLD',focusId:idOf(path.body),reason:String(error?.message||error)});throw error}
   }
+  function retargetSurface(bodyFixedUnit){const coordinates=modelCoordinatesFromDirection(bodyFixedUnit),next=materializeWorld(coordinates);focus=path.body;revision++;return next}
   function selectSample(sampleId){
     if(!world)throw new Error('A surface context must be materialized before selecting a sample');
     const object=world.local.objects.find(candidate=>candidate.entityId===String(sampleId));if(!object)throw new Error('Unknown local object: '+sampleId);
@@ -84,5 +86,5 @@ export function createOpenUniverseAuthority(root=globalThis,{ctx,seedKey,maxGala
   function cameraTargets(worldContext=world){if(!worldContext)throw new Error('A backing world is required for continuum camera targets');const current=worldContext.cameraTargets;return Object.freeze({...current,universe:Object.freeze({...current.universe,id:idOf(universe)}),galaxy:Object.freeze({...current.galaxy,id:idOf(path.galaxy||galaxies[0])}),region:Object.freeze({...current.region,id:idOf(path.region||path.galaxy||galaxies[0])}),neighborhood:Object.freeze({...current.neighborhood,id:idOf(path.neighborhood||path.region||path.galaxy||galaxies[0])})})}
   function snapshot(){const currentAddress=address(),cacheState=cache.snapshot();return Object.freeze({contract:'ofu-open-universe-authority-1',revision,universeId:universe.universeId,focusId:idOf(focus),focusKind:String(focus.kind).toUpperCase(),stage:stageForPath(),path,currentAddress,visibleGalaxies:galaxies.length,selectableGalaxies:galaxies.length,catalogue:Object.freeze(catalogueFor()),worldIdentity:world?.bodyId||null,surfaceIdentity:world?.surfaceId||null,sampleIdentity:world?.sampleId||null,cache:cacheState,materialization:Object.freeze({state:lastFailure?'FAILED':world?'READY':'IDLE',blocker:lastFailure}),bounded:galaxies.length<=maxGalaxies&&cacheState.bounded,scientificAuthority:Object.freeze({macroIdentity:AUTHORITY.CANONICAL,macroPlacement:AUTHORITY.PRESENTATION_ONLY,surfaceCoordinates:AUTHORITY.MODEL_DERIVED,terrain:AUTHORITY.PRESENTATION_ONLY})})}
   function dispose(){cache.clear();runtime.dispose();return true}
-  return Object.freeze({runtime,universe,seedGraph,galaxies,cache,graph,get world(){return world},get path(){return path},get focus(){return focus},select,focusBody,focusSurface,focusSample,regionsFor,systemsFor,bodiesFor,catalogueFor,cameraTargets,materializeWorld,selectSample,snapshot,dispose});
+  return Object.freeze({runtime,universe,seedGraph,galaxies,cache,graph,get world(){return world},get path(){return path},get focus(){return focus},select,focusBody,focusSurface,focusSample,regionsFor,systemsFor,bodiesFor,catalogueFor,cameraTargets,materializeWorld,retargetSurface,selectSample,snapshot,dispose});
 }

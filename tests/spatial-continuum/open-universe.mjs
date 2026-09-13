@@ -61,9 +61,14 @@ try{
   await page.evaluate(()=>__OFU_SPATIAL_CONTINUUM__.settle());await page.waitForTimeout(80);
   const orbital=await page.evaluate(()=>__OFU_SPATIAL_CONTINUUM__.snapshot());
   assert.equal(orbital.state.scale.semanticStage,'ORBIT');assert.equal(orbital.worldIdentity,selected);assert.ok(orbital.openUniverse.currentAddress.ids.includes(selected));assert.equal(orbital.openUniverse.cache.bounded,true);assert.equal(orbital.render.sceneCount,1);assert.equal(orbital.render.cameraCount,1);
+  assert.equal(orbital.openUniverse.currentAddress.ids.includes(orbital.openUniverse.sampleIdentity),false,'a lazily proposed sample must not enter the user-owned address before selection');
   await page.screenshot({path:path.join(evidenceDir,'selected-world-orbit.png')});
+  await page.evaluate(()=>{__OFU_SPATIAL_CONTINUUM__.travelTo('APPROACH');__OFU_SPATIAL_CONTINUUM__.settle()});await page.waitForTimeout(60);
+  const approach=await page.evaluate(()=>__OFU_SPATIAL_CONTINUUM__.snapshot()),bodyTarget=approach.render.pickTargets.body,priorSurface=approach.openUniverse.surfaceIdentity;
+  const selectedSurface=await page.evaluate(({x,y})=>__OFU_SPATIAL_CONTINUUM__.chooseSurfaceTarget(x,y)?.world.surfaceId||null,{x:bodyTarget.clientX+bodyTarget.diameterCssPx*.12,y:bodyTarget.clientY});assert.ok(selectedSurface);assert.notEqual(selectedSurface,priorSurface,'selecting a new point on the rendered globe must retarget the surface context');
+  await page.evaluate(()=>__OFU_SPATIAL_CONTINUUM__.settle());await page.waitForTimeout(60);const global=await page.evaluate(()=>__OFU_SPATIAL_CONTINUUM__.snapshot());assert.equal(global.state.scale.semanticStage,'GLOBAL_SURFACE');assert.equal(global.openUniverse.surfaceIdentity,selectedSurface);assert.ok(global.openUniverse.currentAddress.ids.includes(selectedSurface));assert.equal(global.render.planetaryLod.topology,'CUBE_SPHERE');assert.equal(global.render.planetaryLod.faces,6);assert.equal(global.render.planetaryLod.bounded,true);await page.screenshot({path:path.join(evidenceDir,'selected-surface-global.png')});
   assert.deepEqual(errors,[]);
 
-  const output={status:'PASS',suite:'spatial-continuum-r4-open-universe',visibleGalaxies:initial.openUniverse.visibleGalaxies,distinctGalaxyBranches:branches.length,selectedWorld:selected,address:orbital.openUniverse.currentAddress.serialized,cache:orbital.openUniverse.cache,rendererOwnedGalaxyPicking:true,runtimeNetworkRequests:network.length,errors};
+  const output={status:'PASS',suite:'spatial-continuum-r4-open-universe',visibleGalaxies:initial.openUniverse.visibleGalaxies,distinctGalaxyBranches:branches.length,selectedWorld:selected,selectedSurface,address:global.openUniverse.currentAddress.serialized,cache:global.openUniverse.cache,rendererOwnedGalaxyPicking:true,rendererOwnedSurfacePicking:true,planetaryTopology:global.render.planetaryLod.topology,runtimeNetworkRequests:network.length,errors};
   fs.writeFileSync(path.join(evidenceDir,'open-universe.json'),JSON.stringify(output,null,2)+'\n');console.log(JSON.stringify(output,null,2));
 }finally{await context.close();await browser.close()}
