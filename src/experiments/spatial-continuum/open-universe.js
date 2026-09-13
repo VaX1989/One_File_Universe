@@ -10,7 +10,7 @@ const randomFactory=seed=>{let value=hash(seed)||1;return()=>{value^=value<<13;v
 const idOf=node=>String(node?.canonicalId||node?.entityId||node?.id||'');
 const navigationId=node=>String(node?.entityId||node?.id||'');
 const keyString=key=>Object.keys(key||{}).sort().map(name=>`${name}=${String(key[name])}`).join(';');
-const sourceAuthority=node=>String(node?.sourceAuthority||'').includes('CANONICAL')?AUTHORITY.CANONICAL:String(node?.sourceAuthority||'').includes('MODEL')?AUTHORITY.MODEL_DERIVED:AUTHORITY.UNKNOWN;
+const sourceAuthority=node=>String(node?.sourceAuthority||node?.authority||'').includes('CANONICAL')?AUTHORITY.CANONICAL:String(node?.sourceAuthority||node?.authority||'').includes('MODEL')?AUTHORITY.MODEL_DERIVED:String(node?.sourceAuthority||node?.authority||'').includes('PRESENTATION')?AUTHORITY.PRESENTATION_ONLY:AUTHORITY.UNKNOWN;
 
 export function macroPresentationNode(node,{scopeId='universe',index=0,total=1,selected=false}={}){
   if(!node)throw new TypeError('Macro presentation requires an authority node');
@@ -27,6 +27,7 @@ export function createOpenUniverseAuthority(root=globalThis,{ctx,seedKey,maxGala
   ctx=ctx||preview?.ctx;seedKey=seedKey||preview?.chosen?.key;
   if(!AS||!ctx||!seedKey)throw new Error('Released OFU macro authority is not ready');
   const runtime=createReadOnlyAuthorityRuntime(root,{ctx,seedKey}),universe=runtime.universe,seedGraph=runtime.seedGraph,cache=createMaterializationCache({maxEntries:cacheEntries});
+  const sameSystem=(candidate,system)=>!!candidate?.canonicalKey&&!!system?.canonicalKey&&AS.SYSTEM_FIELDS.every(field=>String(candidate.canonicalKey[field])===String(system.canonicalKey[field]));
   const rootAddress=createSpatialAddress([{id:universe.entityId,kind:'UNIVERSE',authority:AUTHORITY.CANONICAL,key:{universeId:universe.universeId},capabilities:['TRAVEL']}]);
   const discovered=AS.discoverGalaxies({ctx,universeNode:universe,window:seedGraph.galaxy.metadata.discoveryWindow,cursor:0,limit:Math.max(3,maxGalaxies),maxProbes:4096}),galaxies=[seedGraph.galaxy,...discovered.galaxies.filter(node=>idOf(node)!==idOf(seedGraph.galaxy))].slice(0,maxGalaxies);
   const nodeIndex=new Map([[idOf(universe),universe],...galaxies.flatMap(node=>[[idOf(node),node],[navigationId(node),node]])]);
@@ -57,12 +58,13 @@ export function createOpenUniverseAuthority(root=globalThis,{ctx,seedKey,maxGala
     if(kind==='galaxy'){regionsFor(node);path=Object.freeze({...path,galaxy:node,region:null,neighborhood:null,system:null,body:null,surface:null,sample:null});world=null}
     else if(kind==='galactic_region'){if(node.parentId!==navigationId(path.galaxy))throw new Error('Region is outside the focused galaxy');const context=systemsFor(node);path=Object.freeze({...path,region:node,neighborhood:context.neighborhood,system:null,body:null,surface:null,sample:null});world=null}
     else if(kind==='system'){const expected=systemsFor(path.region).nodes.some(candidate=>idOf(candidate)===id);if(!expected)throw new Error('System is outside the focused region');bodiesFor(node);path=Object.freeze({...path,system:node,body:null,surface:null,sample:null});world=null}
-    else if(['planet','moon','star'].includes(kind)){if(!path.system||!bodiesFor(path.system).nodes.some(candidate=>idOf(candidate)===id))throw new Error('Body is outside the focused system');path=Object.freeze({...path,body:node,surface:null,sample:null});world=null}
+    else if(['planet','moon','star'].includes(kind)){if(!path.system||!sameSystem(node,path.system))throw new Error('Body is outside the focused system');bodiesFor(path.system);path=Object.freeze({...path,body:node,surface:null,sample:null});world=null}
     else throw new Error('Unsupported open-universe selection kind: '+kind);
     focus=node;revision++;pinPath();return snapshot();
   }
   function materializeWorld({latMicroDeg=null,lonMicroDeg=null,sampleId=null}={}){
     if(!path.body||!['planet','moon'].includes(path.body.kind))throw new Error('Select a supported planetary body before materializing a world');
+    const bulkClass=String(path.body.metadata?.facts?.bulkPriorClass||'UNKNOWN').toUpperCase();if(['GAS_GIANT','ICE_GIANT'].includes(bulkClass)){const error=new Error(`NO_SOLID_SURFACE: ${bulkClass.toLowerCase().replaceAll('_',' ')} supports orbital focus but not terrestrial descent`);error.code='NO_SOLID_SURFACE';lastFailure=Object.freeze({stage:'SURFACE',focusId:idOf(path.body),reason:error.message,capability:'ORBIT_ONLY'});throw error}
     const latitude=latMicroDeg==null?0:Number(latMicroDeg),longitude=lonMicroDeg==null?0:Number(lonMicroDeg),key=`world:${idOf(path.body)}:${latitude}:${longitude}:${sampleId||'auto'}`;
     try{world=cache.materialize(key,()=>captureGenuineOFUWorld(root,{runtime,canonicalKey:path.body.canonicalKey,profile:'lazy',latMicroDeg:latitude,lonMicroDeg:longitude,sampleId}),{kind:'WORLD',pin:true});path=Object.freeze({...path,surface:world.graph.get(world.surfaceId),sample:null});focus=path.body;lastFailure=null;revision++;pinPath();return world}catch(error){lastFailure=Object.freeze({stage:'WORLD',focusId:idOf(path.body),reason:String(error?.message||error)});throw error}
   }

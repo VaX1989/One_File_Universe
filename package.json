@@ -16,6 +16,8 @@
     "test:continuum:browser": "node tests/spatial-continuum/browser.mjs",
     "test:continuum:open": "node tests/spatial-continuum/open-universe.mjs",
     "test:continuum:generalization": "node tests/spatial-continuum/generalization.mjs",
+    "test:continuum:open-generalization": "node tests/spatial-continuum/open-generalization.mjs",
+    "test:continuum:accessibility-mobile": "node tests/spatial-continuum/open-accessibility-mobile.mjs",
     "test:continuum:matrix": "node tests/spatial-continuum/matrix.mjs",
     "test:continuum:performance": "node tests/spatial-continuum/performance.mjs",
     "evidence:continuum": "node tools/assemble-spatial-continuum-evidence.mjs"

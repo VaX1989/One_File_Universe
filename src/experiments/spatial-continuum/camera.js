@@ -7,14 +7,14 @@ const normalize=value=>{const length=Math.hypot(...value);return length>0?value.
 const logMix=(a,b,t)=>Math.exp(mix(Math.log(a),Math.log(b),t));
 
 const PROFILES=Object.freeze([
-  Object.freeze({target:'universe',coverage:.50,fov:.72,direction:'UNIVERSE'}),
-  Object.freeze({target:'galaxy',coverage:.62,fov:.68,direction:'GALAXY'}),
-  Object.freeze({target:'region',coverage:.72,fov:.66,direction:'REGION'}),
-  Object.freeze({target:'neighborhood',coverage:.58,fov:.66,direction:'NEIGHBORHOOD'}),
+  Object.freeze({target:'universe',coverage:.68,fov:.72,direction:'UNIVERSE'}),
+  Object.freeze({target:'galaxy',coverage:.72,fov:.68,direction:'GALAXY'}),
+  Object.freeze({target:'region',coverage:.78,fov:.66,direction:'REGION'}),
+  Object.freeze({target:'neighborhood',coverage:.70,fov:.66,direction:'NEIGHBORHOOD'}),
   Object.freeze({target:'system',coverage:.50,fov:.66,direction:'SYSTEM'}),
   Object.freeze({target:'body',coverage:.58,fov:.64,direction:'ORBIT'}),
   Object.freeze({target:'body',coverage:1.08,fov:.61,direction:'APPROACH'}),
-  Object.freeze({target:'body',coverage:1.42,fov:.60,direction:'SURFACE'}),
+  Object.freeze({target:'body',coverage:1.08,fov:.60,direction:'SURFACE'}),
   Object.freeze({target:'regional',coverage:1.85,fov:.62,direction:'LOCAL'}),
   Object.freeze({target:'local',coverage:1.92,fov:.66,direction:'LOCAL'}),
   Object.freeze({target:'human',coverage:1.82,fov:.74,direction:'HUMAN'}),

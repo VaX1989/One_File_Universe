@@ -1,0 +1,11 @@
+export async function selectFirstSupportedWorld(page){
+  const galaxyId=await page.evaluate(()=>{const galaxy=__OFU_SPATIAL_CONTINUUM__.openUniverse.galaxies[0];return String(galaxy.canonicalId||galaxy.entityId)});await page.evaluate(id=>__OFU_SPATIAL_CONTINUUM__.chooseDestination(id),galaxyId);
+  const regionId=await page.evaluate(()=>__OFU_SPATIAL_CONTINUUM__.openUniverse.catalogueFor('GALAXY')[0]?.id||null);if(!regionId)throw new Error('No region is available in the first genuine galaxy');await page.evaluate(id=>__OFU_SPATIAL_CONTINUUM__.chooseDestination(id),regionId);await page.evaluate(()=>{__OFU_SPATIAL_CONTINUUM__.travelTo('NEIGHBORHOOD');__OFU_SPATIAL_CONTINUUM__.settle()});
+  const systems=await page.evaluate(()=>__OFU_SPATIAL_CONTINUUM__.openUniverse.catalogueFor('NEIGHBORHOOD').map(item=>item.id));
+  const failures=[];for(const systemId of systems){await page.evaluate(id=>__OFU_SPATIAL_CONTINUUM__.chooseDestination(id),systemId);const bodies=await page.evaluate(()=>__OFU_SPATIAL_CONTINUUM__.openUniverse.catalogueFor('SYSTEM').filter(item=>item.kind==='PLANET'||item.kind==='MOON').map(item=>item.id));for(const bodyId of bodies)try{await page.evaluate(id=>__OFU_SPATIAL_CONTINUUM__.chooseDestination(id),bodyId);await page.evaluate(()=>__OFU_SPATIAL_CONTINUUM__.settle());const result=await page.evaluate(()=>__OFU_SPATIAL_CONTINUUM__.snapshot());if(result.worldIdentity===bodyId)return result;failures.push({systemId,bodyId,error:result.openUniverse.materialization.blocker?.reason||'SURFACE_CONTEXT_UNAVAILABLE'})}catch(error){failures.push({systemId,bodyId,error:String(error?.message||error)})}}
+  throw new Error('No supported genuine world was found: '+JSON.stringify(failures));
+}
+
+export async function selectFirstLocalSample(page){
+  await page.evaluate(()=>{__OFU_SPATIAL_CONTINUUM__.travelTo('HUMAN');__OFU_SPATIAL_CONTINUUM__.settle()});const sampleId=await page.evaluate(()=>__OFU_SPATIAL_CONTINUUM__.openUniverse.localDestinations().nodes[0]?.id||null);if(!sampleId)throw new Error('No local sample destination is available');await page.evaluate(id=>__OFU_SPATIAL_CONTINUUM__.chooseSample(id),sampleId);return sampleId;
+}

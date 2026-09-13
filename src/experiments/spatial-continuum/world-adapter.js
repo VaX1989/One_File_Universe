@@ -24,12 +24,18 @@ export function captureGenuineOFUWorld(root=globalThis,{profile='origin',orbitSl
   const sample=state.local.objects.find(item=>item.entityId===String(selectedSampleId||'')) || state.local.objects.find(item=>item.kind==='ROCK') || state.local.objects.find(item=>['WATER','ICE','ARTIFACT','ORGANISM'].includes(item.kind));
   if (!sample) throw new Error('Genuine OFU local context has no inspectable sample');
   const source=runtime.query('v1.query.material-source',{...state.point,historyEpoch:state.world?.civilization?.epoch??0,objectId:sample.entityId});
-  const microSession=O.v1MicroPipeline.createSession(source,{microFeatures:64,molecularUnits:24,atoms:96});
+  let microSession=null;const representationCache=new Map(),representationMetrics={sessionCreations:0,materializations:0};
+  const representation=name=>{
+    if(representationCache.has(name))return representationCache.get(name);
+    if(!microSession){microSession=O.v1MicroPipeline.createSession(source,{microFeatures:64,molecularUnits:24,atoms:96});representationMetrics.sessionCreations++}
+    const value=microSession.materialize(name);representationCache.set(name,value);representationMetrics.materializations++;return value;
+  };
   const representations=Object.freeze({
-    material:microSession.materialize('material'),
-    microstructure:microSession.materialize('microstructure'),
-    molecular:microSession.materialize('molecular'),
-    atomic:microSession.materialize('atomic')
+    get material(){return representation('material')},
+    get microstructure(){return representation('microstructure')},
+    get molecular(){return representation('molecular')},
+    get atomic(){return representation('atomic')},
+    snapshot(){return Object.freeze({contract:'ofu-lazy-micro-representations-1',resident:Object.freeze([...representationCache.keys()]),sessionCreations:representationMetrics.sessionCreations,materializations:representationMetrics.materializations,bounded:representationCache.size<=4})}
   });
   const systemId=idOf(system), bodyId=idOf(body), surfaceId=state.point.locationIdentity, sampleId=sample.entityId;
   const nodes=[
