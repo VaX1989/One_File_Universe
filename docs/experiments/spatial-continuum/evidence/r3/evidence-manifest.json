@@ -1,0 +1,1167 @@
+{
+  "contract": "ofu-spatial-continuum-r3-evidence-1",
+  "status": "PASS",
+  "source": {
+    "repository": "VaX1989/One_File_Universe",
+    "commit": "9140811ffbdee805dbeb57b25f35fe48ee421c83",
+    "tree": "11fb6ae45159d812a6a73d3334b18a0bbe4e934a",
+    "clean": true
+  },
+  "base": {
+    "repository": "VaX1989/One_File_Universe",
+    "sha": "5f3dbdcccc409c3bc29684e062ad7730ddea0c69",
+    "tree": "f84f05f9a12e110bb48f7605d8f577b0886dfe02"
+  },
+  "artifact": {
+    "file": "One_File_Universe_Spatial_Continuum.html",
+    "bytes": 4620166,
+    "sha256": "e6befd497121f1f9434557caaf7b75758b6c9c7813cdd4e83f3e8b8786b1ce76"
+  },
+  "engine": {
+    "name": "Babylon.js",
+    "package": "@babylonjs/core",
+    "version": "9.26.0",
+    "license": "Apache-2.0",
+    "licenseSha256": "3a1160f88f3ffdafee129832f8bf5806073f77a43962f15a13ab63f1a5047372",
+    "licenseEmbedded": true,
+    "backendBaseline": "WebGL2",
+    "webgpuRequired": false
+  },
+  "claims": {
+    "canonicalIdentityPreserved": true,
+    "dynamicSiblingMaterialization": true,
+    "singleSceneRebinding": true,
+    "rendererOwnedPicking": true,
+    "metricTerrain": true,
+    "sparseMixedLod": true,
+    "terrainElevationAuthority": "PRESENTATION_ONLY",
+    "orbitPositionAuthority": "PRESENTATION_ONLY",
+    "directFile": true,
+    "offline": true,
+    "runtimeNetworkRequests": 0,
+    "continuumBrowsers": [
+      "chromium",
+      "firefox",
+      "webkit"
+    ],
+    "physicalGpuEvidence": "VERIFIED"
+  },
+  "suites": {
+    "browser-results.json": {
+      "sha256": "63596682d4ad90d8a250cb3a6af6a88f97e9440b3480d946837c400eab3a76ce",
+      "data": {
+        "status": "PASS",
+        "suite": "spatial-continuum-browser",
+        "browserVersion": "151.0.7922.34",
+        "directFile": true,
+        "offline": true,
+        "runtimeNetworkRequests": 0,
+        "worldIdentity": "9e2041b4c8550e86edc574c42cba1bb31224a2ac7a9e8ffaea232310ce24d98e",
+        "identityEvidence": {
+          "body": "9e2041b4c8550e86edc574c42cba1bb31224a2ac7a9e8ffaea232310ce24d98e",
+          "modelWorld": "9e2041b4c8550e86edc574c42cba1bb31224a2ac7a9e8ffaea232310ce24d98e",
+          "materialWorld": "9e2041b4c8550e86edc574c42cba1bb31224a2ac7a9e8ffaea232310ce24d98e",
+          "navigationEntityId": "2b618096266bf06162398a404355940664f5e8459d2be0787dab271c80c553e7"
+        },
+        "sourceSampleIdentity": "4a7f86b77a6ef7aa8eba823a7a80662f4ac5614076d8c76e30bb64c639f20d35",
+        "planetDiameter": {
+          "orbit": 824.4694950039591,
+          "approachEarly": 1148.0216771534392,
+          "approachMid": 1521.2686321395015,
+          "approachLate": 1521.2686321395015,
+          "approachSettled": 1521.2686321395015
+        },
+        "performance": {
+          "samples": 139,
+          "median": 50,
+          "p95": 100,
+          "p99": 116.59999999999854,
+          "longFrames34": 113,
+          "longFrames50": 66,
+          "inputResponseMedian": 28
+        },
+        "resources": {
+          "meshCount": 86,
+          "materialCount": 24,
+          "textureCount": 1,
+          "totalVertices": 61816,
+          "terrainPatchPool": 48,
+          "thinInstanceCounts": {
+            "stars": 690,
+            "localRocks": 34,
+            "material": 12,
+            "micro": 52,
+            "atomic": 108
+          }
+        },
+        "contextLoss": {
+          "result": "EXERCISED",
+          "losses": 1,
+          "restores": 1,
+          "functionallyRecovered": true
+        },
+        "mobile": {
+          "landscape": {
+            "canvas": {
+              "width": 844,
+              "height": 390
+            },
+            "controls": {
+              "top": 271.796875,
+              "height": 112.609375
+            },
+            "context": {
+              "width": 0,
+              "height": 0
+            },
+            "inner": {
+              "width": 844,
+              "height": 390
+            },
+            "scroll": {
+              "width": 844,
+              "height": 390
+            },
+            "pinchContinuous": true
+          },
+          "portrait": {
+            "canvas": {
+              "x": 0,
+              "y": 59,
+              "width": 390,
+              "height": 785,
+              "top": 59,
+              "right": 390,
+              "bottom": 844,
+              "left": 0
+            },
+            "controls": {
+              "x": 8,
+              "y": 729.359375,
+              "width": 374,
+              "height": 109.046875,
+              "top": 729.359375,
+              "right": 382,
+              "bottom": 838.40625,
+              "left": 8
+            },
+            "inner": {
+              "width": 390,
+              "height": 844
+            },
+            "scroll": {
+              "width": 390,
+              "height": 844
+            }
+          },
+          "tablet": {
+            "activeMeshes": 38
+          },
+          "orientationChange": true,
+          "highDpr": true
+        },
+        "accessibility": {
+          "skipLink": true,
+          "canvasFocus": true,
+          "keyboardLandmarkTravel": true,
+          "keyboardBodySelection": true,
+          "zoom200": true,
+          "forcedColors": true
+        },
+        "reducedMotionElapsedMs": 331,
+        "evidenceDirectory": "E:\\One_File_Universe\\reports\\local\\spatial-continuum-r3"
+      }
+    },
+    "generalization-results.json": {
+      "sha256": "de858a43821ec6145b392b70821206c166792d690a69857944afc956f896fa2f",
+      "data": {
+        "status": "PASS",
+        "suite": "spatial-continuum-r3-generalization",
+        "worlds": 3,
+        "fullForwardReverse": true,
+        "rendererOwnedAlternateBodyPicking": true,
+        "dynamicSiblingMaterialization": true,
+        "singleSceneRebinding": true,
+        "targetDerivedCamera": true,
+        "frameDerivedRendering": true,
+        "surfaceTargetContinuity": true,
+        "results": [
+          {
+            "orbitSlot": 0,
+            "bodyId": "b9cd88d27bc2698e76f403b84c14373ae8972e726213a3d6a7165a08beb3c216",
+            "bodyClass": "TERRESTRIAL",
+            "radiusM": 9265618,
+            "surfaceId": "866e95134cd2ec8be5444cf59a96c1f3e39cbc6d035f63548765b944457529be",
+            "sampleKind": "ROCK",
+            "sampleId": "b96ea6d02b9d75e42088d10c2e63b88a0157e3804854b433ca2db8a474e5bef2",
+            "latitudeDeg": 0,
+            "longitudeDeg": 0,
+            "alternatePick": null,
+            "resources": {
+              "meshes": 100,
+              "materials": 38,
+              "textures": 1,
+              "totalVertices": 122608,
+              "terrainPatchPool": 48
+            },
+            "rendererProfile": {
+              "samples": 23,
+              "renderMedianMs": 2.5,
+              "renderP95Ms": 16.599999964237213,
+              "updateMedianMs": 7.099999964237213,
+              "updateP95Ms": 87.5,
+              "gpu": {
+                "supported": false,
+                "samples": 0,
+                "medianMs": null,
+                "p95Ms": null,
+                "disjointSamples": 0
+              },
+              "byStage": {
+                "SYSTEM": {
+                  "samples": 4,
+                  "renderMedianMs": 3.699999988079071,
+                  "renderP95Ms": 21.100000023841858,
+                  "drawCalls": 21,
+                  "activeMeshes": 21
+                },
+                "ORBIT": {
+                  "samples": 2,
+                  "renderMedianMs": 1.4000000357627869,
+                  "renderP95Ms": 1.4000000357627869,
+                  "drawCalls": 14,
+                  "activeMeshes": 14
+                },
+                "APPROACH": {
+                  "samples": 2,
+                  "renderMedianMs": 1.0999999642372131,
+                  "renderP95Ms": 1.0999999642372131,
+                  "drawCalls": 14,
+                  "activeMeshes": 14
+                },
+                "GLOBAL_SURFACE": {
+                  "samples": 2,
+                  "renderMedianMs": 1.100000023841858,
+                  "renderP95Ms": 1.100000023841858,
+                  "drawCalls": 14,
+                  "activeMeshes": 14
+                },
+                "REGIONAL_SURFACE": {
+                  "samples": 2,
+                  "renderMedianMs": 6.399999976158142,
+                  "renderP95Ms": 6.399999976158142,
+                  "drawCalls": 47,
+                  "activeMeshes": 47
+                },
+                "LOCAL_SURFACE": {
+                  "samples": 2,
+                  "renderMedianMs": 4.5,
+                  "renderP95Ms": 4.5,
+                  "drawCalls": 37,
+                  "activeMeshes": 37
+                },
+                "HUMAN": {
+                  "samples": 2,
+                  "renderMedianMs": 3.800000011920929,
+                  "renderP95Ms": 3.800000011920929,
+                  "drawCalls": 29,
+                  "activeMeshes": 29
+                },
+                "MATERIAL": {
+                  "samples": 2,
+                  "renderMedianMs": 1.199999988079071,
+                  "renderP95Ms": 1.199999988079071,
+                  "drawCalls": 11,
+                  "activeMeshes": 11
+                },
+                "MICROSTRUCTURE": {
+                  "samples": 2,
+                  "renderMedianMs": 2.300000011920929,
+                  "renderP95Ms": 2.300000011920929,
+                  "drawCalls": 10,
+                  "activeMeshes": 10
+                },
+                "MOLECULAR": {
+                  "samples": 2,
+                  "renderMedianMs": 7.100000023841858,
+                  "renderP95Ms": 7.100000023841858,
+                  "drawCalls": 26,
+                  "activeMeshes": 26
+                },
+                "ATOMIC": {
+                  "samples": 1,
+                  "renderMedianMs": 1.199999988079071,
+                  "renderP95Ms": 1.199999988079071,
+                  "drawCalls": 10,
+                  "activeMeshes": 10
+                }
+              }
+            }
+          },
+          {
+            "orbitSlot": 2,
+            "bodyId": "43f4cd297cae5fab7b87c7527fcc8075ca0690cebe1b3e0f3b4bc85e1c4a2a69",
+            "bodyClass": "TERRESTRIAL",
+            "radiusM": 10201716,
+            "surfaceId": "75398b2c6dda997a39a66a98d679f94339d483ee390a47283c04d7e38114bcfe",
+            "sampleKind": "ROCK",
+            "sampleId": "e2fdbd0162fdf06968e87690d6147528abcff4ddb06582ddde4c37c250662439",
+            "latitudeDeg": 12.345678,
+            "longitudeDeg": 23.456789,
+            "alternatePick": {
+              "id": "d1a62533d3c203448b8df722ee5ff3369e03871f42672338f63a2dc4c7778b91",
+              "radiusM": 10905426,
+              "surfaceId": "bdee5a1450963809fa7f6cc9bef1f16c005526bf73e9e856b9a8797908424eb9",
+              "sampleKind": "ICE",
+              "materializedInPlace": true
+            },
+            "resources": {
+              "meshes": 100,
+              "materials": 38,
+              "textures": 1,
+              "totalVertices": 122608,
+              "terrainPatchPool": 48
+            },
+            "rendererProfile": {
+              "samples": 44,
+              "renderMedianMs": 2.599999964237213,
+              "renderP95Ms": 64.09999996423721,
+              "updateMedianMs": 3.800000011920929,
+              "updateP95Ms": 92.19999998807907,
+              "gpu": {
+                "supported": false,
+                "samples": 0,
+                "medianMs": null,
+                "p95Ms": null,
+                "disjointSamples": 0
+              },
+              "byStage": {
+                "SYSTEM": {
+                  "samples": 13,
+                  "renderMedianMs": 42.10000002384186,
+                  "renderP95Ms": 78,
+                  "drawCalls": 21,
+                  "activeMeshes": 21
+                },
+                "ORBIT": {
+                  "samples": 4,
+                  "renderMedianMs": 1.100000023841858,
+                  "renderP95Ms": 1.9000000357627869,
+                  "drawCalls": 12,
+                  "activeMeshes": 12
+                },
+                "APPROACH": {
+                  "samples": 4,
+                  "renderMedianMs": 1.399999976158142,
+                  "renderP95Ms": 1.800000011920929,
+                  "drawCalls": 12,
+                  "activeMeshes": 12
+                },
+                "GLOBAL_SURFACE": {
+                  "samples": 4,
+                  "renderMedianMs": 1,
+                  "renderP95Ms": 1.2999999523162842,
+                  "drawCalls": 12,
+                  "activeMeshes": 12
+                },
+                "REGIONAL_SURFACE": {
+                  "samples": 4,
+                  "renderMedianMs": 7,
+                  "renderP95Ms": 8.099999964237213,
+                  "drawCalls": 47,
+                  "activeMeshes": 47
+                },
+                "LOCAL_SURFACE": {
+                  "samples": 4,
+                  "renderMedianMs": 4.5,
+                  "renderP95Ms": 5.5,
+                  "drawCalls": 35,
+                  "activeMeshes": 35
+                },
+                "HUMAN": {
+                  "samples": 3,
+                  "renderMedianMs": 2.800000011920929,
+                  "renderP95Ms": 2.800000011920929,
+                  "drawCalls": 29,
+                  "activeMeshes": 29
+                },
+                "MATERIAL": {
+                  "samples": 2,
+                  "renderMedianMs": 0.800000011920929,
+                  "renderP95Ms": 0.800000011920929,
+                  "drawCalls": 9,
+                  "activeMeshes": 9
+                },
+                "MICROSTRUCTURE": {
+                  "samples": 2,
+                  "renderMedianMs": 0.800000011920929,
+                  "renderP95Ms": 0.800000011920929,
+                  "drawCalls": 8,
+                  "activeMeshes": 8
+                },
+                "MOLECULAR": {
+                  "samples": 2,
+                  "renderMedianMs": 2,
+                  "renderP95Ms": 2,
+                  "drawCalls": 24,
+                  "activeMeshes": 24
+                },
+                "ATOMIC": {
+                  "samples": 2,
+                  "renderMedianMs": 0.5,
+                  "renderP95Ms": 0.5,
+                  "drawCalls": 8,
+                  "activeMeshes": 8
+                }
+              }
+            }
+          },
+          {
+            "orbitSlot": 5,
+            "bodyId": "d1a62533d3c203448b8df722ee5ff3369e03871f42672338f63a2dc4c7778b91",
+            "bodyClass": "TERRESTRIAL",
+            "radiusM": 10905426,
+            "surfaceId": "585bab376d95cd4d9bf307f14fac050ed97a5552b00a3f34c265f4fe843009a9",
+            "sampleKind": "ICE",
+            "sampleId": "59501308d48472c27965ffe87d1ea3ed5f9a5316ba1550dae9081f041aeca402",
+            "latitudeDeg": -33,
+            "longitudeDeg": 151,
+            "alternatePick": null,
+            "resources": {
+              "meshes": 98,
+              "materials": 36,
+              "textures": 1,
+              "totalVertices": 122488,
+              "terrainPatchPool": 48
+            },
+            "rendererProfile": {
+              "samples": 24,
+              "renderMedianMs": 2.199999988079071,
+              "renderP95Ms": 19.5,
+              "updateMedianMs": 4.600000023841858,
+              "updateP95Ms": 72.89999997615814,
+              "gpu": {
+                "supported": false,
+                "samples": 0,
+                "medianMs": null,
+                "p95Ms": null,
+                "disjointSamples": 0
+              },
+              "byStage": {
+                "SYSTEM": {
+                  "samples": 4,
+                  "renderMedianMs": 2.899999976158142,
+                  "renderP95Ms": 19.5,
+                  "drawCalls": 21,
+                  "activeMeshes": 21
+                },
+                "ORBIT": {
+                  "samples": 2,
+                  "renderMedianMs": 1.199999988079071,
+                  "renderP95Ms": 1.199999988079071,
+                  "drawCalls": 9,
+                  "activeMeshes": 9
+                },
+                "APPROACH": {
+                  "samples": 2,
+                  "renderMedianMs": 1.100000023841858,
+                  "renderP95Ms": 1.100000023841858,
+                  "drawCalls": 9,
+                  "activeMeshes": 9
+                },
+                "GLOBAL_SURFACE": {
+                  "samples": 2,
+                  "renderMedianMs": 1.800000011920929,
+                  "renderP95Ms": 1.800000011920929,
+                  "drawCalls": 9,
+                  "activeMeshes": 9
+                },
+                "REGIONAL_SURFACE": {
+                  "samples": 2,
+                  "renderMedianMs": 12.600000023841858,
+                  "renderP95Ms": 12.600000023841858,
+                  "drawCalls": 45,
+                  "activeMeshes": 45
+                },
+                "LOCAL_SURFACE": {
+                  "samples": 2,
+                  "renderMedianMs": 4.899999976158142,
+                  "renderP95Ms": 4.899999976158142,
+                  "drawCalls": 40,
+                  "activeMeshes": 40
+                },
+                "HUMAN": {
+                  "samples": 2,
+                  "renderMedianMs": 5.399999976158142,
+                  "renderP95Ms": 5.399999976158142,
+                  "drawCalls": 29,
+                  "activeMeshes": 29
+                },
+                "MATERIAL": {
+                  "samples": 2,
+                  "renderMedianMs": 0.800000011920929,
+                  "renderP95Ms": 0.800000011920929,
+                  "drawCalls": 4,
+                  "activeMeshes": 4
+                },
+                "MICROSTRUCTURE": {
+                  "samples": 2,
+                  "renderMedianMs": 2,
+                  "renderP95Ms": 2,
+                  "drawCalls": 5,
+                  "activeMeshes": 5
+                },
+                "MOLECULAR": {
+                  "samples": 2,
+                  "renderMedianMs": 3.800000011920929,
+                  "renderP95Ms": 3.800000011920929,
+                  "drawCalls": 21,
+                  "activeMeshes": 21
+                },
+                "ATOMIC": {
+                  "samples": 2,
+                  "renderMedianMs": 1.300000011920929,
+                  "renderP95Ms": 1.300000011920929,
+                  "drawCalls": 5,
+                  "activeMeshes": 5
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "matrix-results.json": {
+      "sha256": "0c3c259446cdea49b10007e0cabec2c8d64aa67d2ab2b9e76b2b52e55a75d5ce",
+      "data": {
+        "status": "PASS",
+        "suite": "spatial-continuum-browser-matrix",
+        "continuumTested": [
+          "chromium",
+          "firefox",
+          "webkit"
+        ],
+        "blocked": [],
+        "results": [
+          {
+            "browser": "chromium",
+            "status": "PASS",
+            "version": "151.0.7922.34",
+            "directFile": true,
+            "offline": true,
+            "webgl": "WEBGL2",
+            "stages": [
+              {
+                "stage": "ORBIT",
+                "activeMeshes": 8,
+                "backend": "WEBGL2"
+              },
+              {
+                "stage": "HUMAN",
+                "activeMeshes": 23,
+                "backend": "WEBGL2"
+              },
+              {
+                "stage": "ATOMIC",
+                "activeMeshes": 4,
+                "backend": "WEBGL2"
+              },
+              {
+                "stage": "SYSTEM",
+                "activeMeshes": 9,
+                "backend": "WEBGL2"
+              }
+            ]
+          },
+          {
+            "browser": "firefox",
+            "status": "PASS",
+            "version": "153.0",
+            "directFile": true,
+            "offline": true,
+            "webgl": "WEBGL2",
+            "stages": [
+              {
+                "stage": "ORBIT",
+                "activeMeshes": 8,
+                "backend": "WEBGL2"
+              },
+              {
+                "stage": "HUMAN",
+                "activeMeshes": 23,
+                "backend": "WEBGL2"
+              },
+              {
+                "stage": "ATOMIC",
+                "activeMeshes": 4,
+                "backend": "WEBGL2"
+              },
+              {
+                "stage": "SYSTEM",
+                "activeMeshes": 9,
+                "backend": "WEBGL2"
+              }
+            ]
+          },
+          {
+            "browser": "webkit",
+            "status": "PASS",
+            "version": "26.5",
+            "directFile": true,
+            "offline": true,
+            "webgl": "WEBGL2",
+            "stages": [
+              {
+                "stage": "ORBIT",
+                "activeMeshes": 8,
+                "backend": "WEBGL2"
+              },
+              {
+                "stage": "HUMAN",
+                "activeMeshes": 23,
+                "backend": "WEBGL2"
+              },
+              {
+                "stage": "ATOMIC",
+                "activeMeshes": 4,
+                "backend": "WEBGL2"
+              },
+              {
+                "stage": "SYSTEM",
+                "activeMeshes": 9,
+                "backend": "WEBGL2"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "performance-results.json": {
+      "sha256": "8d097ba738bf98877c9c48cdac21d73e2caa46d2ee98de689c71a184e0eca8cf",
+      "data": {
+        "status": "PASS",
+        "suite": "spatial-continuum-performance-resource-r3",
+        "environment": {
+          "browser": "152.0.7977.83",
+          "channel": "chrome",
+          "headless": true,
+          "physicalGpu": true,
+          "viewport": "1440x900",
+          "gpu": {
+            "maskedRenderer": "WebKit WebGL",
+            "unmaskedRenderer": "ANGLE (NVIDIA, NVIDIA Quadro RTX 4000 (0x00001EB1) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+            "unmaskedVendor": "Google Inc. (NVIDIA)",
+            "softwareRenderer": false,
+            "physicalGpuVerified": true
+          }
+        },
+        "idleDemandRendering": {
+          "rendererSamplesAdded": 0
+        },
+        "continuousTransitions": [
+          {
+            "stage": "ORBIT",
+            "durationMs": 1084
+          },
+          {
+            "stage": "APPROACH",
+            "durationMs": 1107
+          },
+          {
+            "stage": "GLOBAL_SURFACE",
+            "durationMs": 1099
+          },
+          {
+            "stage": "REGIONAL_SURFACE",
+            "durationMs": 1089
+          },
+          {
+            "stage": "LOCAL_SURFACE",
+            "durationMs": 1099
+          },
+          {
+            "stage": "HUMAN",
+            "durationMs": 1074
+          }
+        ],
+        "animationCadence": {
+          "samples": 417,
+          "median": 16.700000000000728,
+          "p95": 16.80000000000291,
+          "p99": 50.10000000000218,
+          "longFrames34": 11,
+          "longFrames50": 9,
+          "inputResponseMedian": 13.099999964237213
+        },
+        "rendererCpu": {
+          "samples": 449,
+          "renderMedianMs": 1.199999988079071,
+          "renderP95Ms": 3.300000011920929,
+          "updateMedianMs": 2.100000023841858,
+          "updateP95Ms": 13.399999976158142,
+          "gpu": {
+            "supported": true,
+            "samples": 448,
+            "medianMs": 0.672224,
+            "p95Ms": 3.57168,
+            "disjointSamples": 0
+          },
+          "byStage": {
+            "SYSTEM": {
+              "samples": 48,
+              "renderMedianMs": 1.2000000476837158,
+              "renderP95Ms": 3.600000023841858,
+              "drawCalls": 9,
+              "activeMeshes": 9
+            },
+            "ORBIT": {
+              "samples": 63,
+              "renderMedianMs": 1.199999988079071,
+              "renderP95Ms": 2.100000023841858,
+              "drawCalls": 8,
+              "activeMeshes": 8
+            },
+            "APPROACH": {
+              "samples": 65,
+              "renderMedianMs": 0.8999999761581421,
+              "renderP95Ms": 1.199999988079071,
+              "drawCalls": 8,
+              "activeMeshes": 8
+            },
+            "GLOBAL_SURFACE": {
+              "samples": 64,
+              "renderMedianMs": 0.9000000357627869,
+              "renderP95Ms": 1.399999976158142,
+              "drawCalls": 7,
+              "activeMeshes": 7
+            },
+            "REGIONAL_SURFACE": {
+              "samples": 58,
+              "renderMedianMs": 1.800000011920929,
+              "renderP95Ms": 3.100000023841858,
+              "drawCalls": 29,
+              "activeMeshes": 29
+            },
+            "LOCAL_SURFACE": {
+              "samples": 46,
+              "renderMedianMs": 1.4000000357627869,
+              "renderP95Ms": 3,
+              "drawCalls": 24,
+              "activeMeshes": 24
+            },
+            "HUMAN": {
+              "samples": 82,
+              "renderMedianMs": 1.300000011920929,
+              "renderP95Ms": 3.5,
+              "drawCalls": 24,
+              "activeMeshes": 24
+            },
+            "MATERIAL": {
+              "samples": 8,
+              "renderMedianMs": 0.699999988079071,
+              "renderP95Ms": 0.7000000476837158,
+              "drawCalls": 3,
+              "activeMeshes": 3
+            },
+            "MICROSTRUCTURE": {
+              "samples": 6,
+              "renderMedianMs": 1.199999988079071,
+              "renderP95Ms": 1.300000011920929,
+              "drawCalls": 4,
+              "activeMeshes": 4
+            },
+            "ATOMIC": {
+              "samples": 4,
+              "renderMedianMs": 1,
+              "renderP95Ms": 1.100000023841858,
+              "drawCalls": 4,
+              "activeMeshes": 4
+            },
+            "MOLECULAR": {
+              "samples": 5,
+              "renderMedianMs": 3.300000011920929,
+              "renderP95Ms": 3.800000011920929,
+              "drawCalls": 20,
+              "activeMeshes": 20
+            }
+          }
+        },
+        "hardwareScalingLevel": 1.2727922061357855,
+        "resources": {
+          "meshes": 86,
+          "materials": 24,
+          "textures": 1,
+          "vertices": 61816,
+          "terrainPool": 48,
+          "sceneCount": 1,
+          "cameraCount": 1
+        },
+        "resourceSoak": {
+          "loops": 10,
+          "samples": [
+            {
+              "loop": 0,
+              "heap": {
+                "usedJSHeapSize": 35802896,
+                "totalJSHeapSize": 115372584,
+                "jsHeapSizeLimit": 4395630592
+              },
+              "resources": {
+                "meshes": 86,
+                "materials": 24,
+                "textures": 1,
+                "vertices": 61816,
+                "terrainPool": 48,
+                "sceneCount": 1,
+                "cameraCount": 1
+              },
+              "history": 6
+            },
+            {
+              "loop": 1,
+              "heap": {
+                "usedJSHeapSize": 30487800,
+                "totalJSHeapSize": 103831380,
+                "jsHeapSizeLimit": 4395630592
+              },
+              "resources": {
+                "meshes": 86,
+                "materials": 24,
+                "textures": 1,
+                "vertices": 61816,
+                "terrainPool": 48,
+                "sceneCount": 1,
+                "cameraCount": 1
+              },
+              "history": 14
+            },
+            {
+              "loop": 2,
+              "heap": {
+                "usedJSHeapSize": 30203135,
+                "totalJSHeapSize": 103532523,
+                "jsHeapSizeLimit": 4395630592
+              },
+              "resources": {
+                "meshes": 86,
+                "materials": 24,
+                "textures": 1,
+                "vertices": 61816,
+                "terrainPool": 48,
+                "sceneCount": 1,
+                "cameraCount": 1
+              },
+              "history": 21
+            },
+            {
+              "loop": 3,
+              "heap": {
+                "usedJSHeapSize": 30216579,
+                "totalJSHeapSize": 103532523,
+                "jsHeapSizeLimit": 4395630592
+              },
+              "resources": {
+                "meshes": 86,
+                "materials": 24,
+                "textures": 1,
+                "vertices": 61816,
+                "terrainPool": 48,
+                "sceneCount": 1,
+                "cameraCount": 1
+              },
+              "history": 28
+            },
+            {
+              "loop": 4,
+              "heap": {
+                "usedJSHeapSize": 30246951,
+                "totalJSHeapSize": 103549355,
+                "jsHeapSizeLimit": 4395630592
+              },
+              "resources": {
+                "meshes": 86,
+                "materials": 24,
+                "textures": 1,
+                "vertices": 61816,
+                "terrainPool": 48,
+                "sceneCount": 1,
+                "cameraCount": 1
+              },
+              "history": 35
+            },
+            {
+              "loop": 5,
+              "heap": {
+                "usedJSHeapSize": 30536425,
+                "totalJSHeapSize": 103798553,
+                "jsHeapSizeLimit": 4395630592
+              },
+              "resources": {
+                "meshes": 86,
+                "materials": 24,
+                "textures": 1,
+                "vertices": 61816,
+                "terrainPool": 48,
+                "sceneCount": 1,
+                "cameraCount": 1
+              },
+              "history": 42
+            },
+            {
+              "loop": 6,
+              "heap": {
+                "usedJSHeapSize": 30288874,
+                "totalJSHeapSize": 103532802,
+                "jsHeapSizeLimit": 4395630592
+              },
+              "resources": {
+                "meshes": 86,
+                "materials": 24,
+                "textures": 1,
+                "vertices": 61816,
+                "terrainPool": 48,
+                "sceneCount": 1,
+                "cameraCount": 1
+              },
+              "history": 49
+            },
+            {
+              "loop": 7,
+              "heap": {
+                "usedJSHeapSize": 30120154,
+                "totalJSHeapSize": 103352550,
+                "jsHeapSizeLimit": 4395630592
+              },
+              "resources": {
+                "meshes": 86,
+                "materials": 24,
+                "textures": 1,
+                "vertices": 61816,
+                "terrainPool": 48,
+                "sceneCount": 1,
+                "cameraCount": 1
+              },
+              "history": 56
+            },
+            {
+              "loop": 8,
+              "heap": {
+                "usedJSHeapSize": 30305752,
+                "totalJSHeapSize": 103532808,
+                "jsHeapSizeLimit": 4395630592
+              },
+              "resources": {
+                "meshes": 86,
+                "materials": 24,
+                "textures": 1,
+                "vertices": 61816,
+                "terrainPool": 48,
+                "sceneCount": 1,
+                "cameraCount": 1
+              },
+              "history": 63
+            },
+            {
+              "loop": 9,
+              "heap": {
+                "usedJSHeapSize": 30312586,
+                "totalJSHeapSize": 103532802,
+                "jsHeapSizeLimit": 4395630592
+              },
+              "resources": {
+                "meshes": 86,
+                "materials": 24,
+                "textures": 1,
+                "vertices": 61816,
+                "terrainPool": 48,
+                "sceneCount": 1,
+                "cameraCount": 1
+              },
+              "history": 64
+            },
+            {
+              "loop": 10,
+              "heap": {
+                "usedJSHeapSize": 30313748,
+                "totalJSHeapSize": 103533020,
+                "jsHeapSizeLimit": 4395630592
+              },
+              "resources": {
+                "meshes": 86,
+                "materials": 24,
+                "textures": 1,
+                "vertices": 61816,
+                "terrainPool": 48,
+                "sceneCount": 1,
+                "cameraCount": 1
+              },
+              "history": 64
+            }
+          ],
+          "memory": {
+            "available": true,
+            "startBytes": 35802896,
+            "endBytes": 30313748,
+            "minBytes": 30120154,
+            "maxBytes": 35802896,
+            "deltaBytes": -5489148,
+            "samples": 11
+          }
+        },
+        "physicalGpuEvidence": "VERIFIED",
+        "limitations": [
+          "A non-software unmasked renderer is verified; headless compositor cadence is not equivalent to display-present timing.",
+          "Draw calls use Babylon SceneInstrumentation; GPU time uses EXT_disjoint_timer_query_webgl2 when available."
+        ]
+      }
+    }
+  },
+  "images": [
+    {
+      "name": "approach-early.png",
+      "bytes": 309193,
+      "sha256": "f8138e0049b9aed564629604b57c05de25405bd21a9f707b3568f6796d9f9582"
+    },
+    {
+      "name": "approach-late.png",
+      "bytes": 459154,
+      "sha256": "1ec6c58744bd9ce0b97acd20e54ed8022327e59ed0974008faa080198894f555"
+    },
+    {
+      "name": "approach-mid.png",
+      "bytes": 459143,
+      "sha256": "f2a4470d1e8387a6d97d19da3ee0730ff49ec5c7eb880a5da93c82265d1a34b6"
+    },
+    {
+      "name": "approach-settled.png",
+      "bytes": 459154,
+      "sha256": "1ec6c58744bd9ce0b97acd20e54ed8022327e59ed0974008faa080198894f555"
+    },
+    {
+      "name": "atomic.png",
+      "bytes": 324810,
+      "sha256": "4afc071e5169d41b664fc16b678006192e7a42a5100f1b5c8da988b4f1898aba"
+    },
+    {
+      "name": "global_surface.png",
+      "bytes": 520036,
+      "sha256": "1e5e68f8665fe16671a0bd41ad4f2f4f781a04f280b95cbfd04c73a3ee770a89"
+    },
+    {
+      "name": "human-reversed-from-atomic.png",
+      "bytes": 295943,
+      "sha256": "a8139e9dbae203914d412b0fcaf4eac46a81b29afb5ad5c8428b090dc439dd6e"
+    },
+    {
+      "name": "human.png",
+      "bytes": 299390,
+      "sha256": "224d8c2819a1c6a81f0eb9fa3a28641e39a4d6de9ef4d2e8d4b55ca426ef2ec7"
+    },
+    {
+      "name": "local_surface.png",
+      "bytes": 336403,
+      "sha256": "a171ff020c7f4a1d5dca7f12d26d77607635de3b6f43d1031479067d3f6237d2"
+    },
+    {
+      "name": "material.png",
+      "bytes": 414150,
+      "sha256": "236306e3e1a5c764ada921de511560be180ba3026cf7d80f7ad3b9dc3babf713"
+    },
+    {
+      "name": "matrix-chromium.png",
+      "bytes": 166008,
+      "sha256": "a64422e5e306752ae4fea0e05c404590b672bbe8303c1c9597ea7f376df8aa5f"
+    },
+    {
+      "name": "matrix-firefox.png",
+      "bytes": 92454,
+      "sha256": "49003f7a96aa5a60b22bf29d7f03ef8187596495299c19bbc26cc0cb536c747f"
+    },
+    {
+      "name": "matrix-webkit.png",
+      "bytes": 151164,
+      "sha256": "acf91be682807438bbaa431310057b0f1fee9018749e36c2226d0f91a7242c7a"
+    },
+    {
+      "name": "microstructure.png",
+      "bytes": 565428,
+      "sha256": "60de6244a8a5ad4fe0a36260a48d2ddc1d9bd626a4493f67b906be72abae35d8"
+    },
+    {
+      "name": "mobile-landscape-844x390.png",
+      "bytes": 128728,
+      "sha256": "8141cc4a1079123ebff3cc83bf211f75bbb2363a4185095320741f87ee4b2223"
+    },
+    {
+      "name": "mobile-portrait-390x844-dpr2.png",
+      "bytes": 235365,
+      "sha256": "552b095213843efce31ab5d30cd02a70894400189bd7eaa8cbd0a2352faeddf5"
+    },
+    {
+      "name": "molecular.png",
+      "bytes": 431985,
+      "sha256": "425213191cc4c8e42ffb39f4f0b2512a6a74c3350baee26f6d23dcc007e8531a"
+    },
+    {
+      "name": "orbit-reversed.png",
+      "bytes": 311935,
+      "sha256": "eaf12ea8ff2446c52d47e47a7359c1607df992798dbda6fb62e16679baa0c747"
+    },
+    {
+      "name": "orbit.png",
+      "bytes": 311935,
+      "sha256": "ec8f9832b8424451243e0c8bb959cc8c6b3d2279579f412d0f49db06b8c8d147"
+    },
+    {
+      "name": "regional_surface.png",
+      "bytes": 426187,
+      "sha256": "fa9a1cc1b388434c1b87d447d611440d8e538dc7cac90e869d58557701b8475c"
+    },
+    {
+      "name": "system-reversed.png",
+      "bytes": 212152,
+      "sha256": "95e205e3f1d81f104a83b59b8f51dcef9fe14a121c34d25ebf971f535ed3c4bd"
+    },
+    {
+      "name": "system.png",
+      "bytes": 212561,
+      "sha256": "aa3013d028e67db43551981a328b615a02f822f05d753762e21cf65fff20ee5e"
+    },
+    {
+      "name": "tablet-1024x768-dpr2.png",
+      "bytes": 729370,
+      "sha256": "f7b9180078c855bdf934d296ecf9fbc2fb3d7acea3a1906b605141451a1ba2f5"
+    },
+    {
+      "name": "world-0-atomic.png",
+      "bytes": 317142,
+      "sha256": "2ae689bad784be4f74b95d333b5b0ffbb97572578276a546fd7a03e398a27495"
+    },
+    {
+      "name": "world-2-atomic.png",
+      "bytes": 327355,
+      "sha256": "dfd994b4de536d57f09bf6a1cf680a6c554f67ddcf084d69d9042436f9b2bc4b"
+    },
+    {
+      "name": "world-5-atomic.png",
+      "bytes": 316822,
+      "sha256": "bea51356dca1c7e9b27eb479eef37facb302a32f8d480fd4567d66e8cec5ee41"
+    },
+    {
+      "name": "world-alternate-human.png",
+      "bytes": 249824,
+      "sha256": "58fa8950cc5aa935c7faf60c20d6a845404883a140015451db1c75a1f5f56c9e"
+    },
+    {
+      "name": "world-alternate-orbit.png",
+      "bytes": 277485,
+      "sha256": "6cfeeb2d31e74da9fded04b805336089707321d0b1623ecc025eb9db93e24598"
+    }
+  ],
+  "researchSources": [
+    "https://cesium.com/learn/cesium-native/ref-doc/selection-algorithm-details.html",
+    "https://cesium.com/learn/cesium-native/ref-doc/structCesium3DTilesSelection_1_1TilesetOptions.html",
+    "https://registry.khronos.org/webgl/extensions/EXT_disjoint_timer_query_webgl2/"
+  ],
+  "recommendation": "CONTINUE_EXPERIMENT"
+}

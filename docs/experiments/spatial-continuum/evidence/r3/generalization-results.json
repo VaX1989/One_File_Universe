@@ -1,0 +1,356 @@
+{
+  "status": "PASS",
+  "suite": "spatial-continuum-r3-generalization",
+  "worlds": 3,
+  "fullForwardReverse": true,
+  "rendererOwnedAlternateBodyPicking": true,
+  "dynamicSiblingMaterialization": true,
+  "singleSceneRebinding": true,
+  "targetDerivedCamera": true,
+  "frameDerivedRendering": true,
+  "surfaceTargetContinuity": true,
+  "results": [
+    {
+      "orbitSlot": 0,
+      "bodyId": "b9cd88d27bc2698e76f403b84c14373ae8972e726213a3d6a7165a08beb3c216",
+      "bodyClass": "TERRESTRIAL",
+      "radiusM": 9265618,
+      "surfaceId": "866e95134cd2ec8be5444cf59a96c1f3e39cbc6d035f63548765b944457529be",
+      "sampleKind": "ROCK",
+      "sampleId": "b96ea6d02b9d75e42088d10c2e63b88a0157e3804854b433ca2db8a474e5bef2",
+      "latitudeDeg": 0,
+      "longitudeDeg": 0,
+      "alternatePick": null,
+      "resources": {
+        "meshes": 100,
+        "materials": 38,
+        "textures": 1,
+        "totalVertices": 122608,
+        "terrainPatchPool": 48
+      },
+      "rendererProfile": {
+        "samples": 23,
+        "renderMedianMs": 2.5,
+        "renderP95Ms": 16.599999964237213,
+        "updateMedianMs": 7.099999964237213,
+        "updateP95Ms": 87.5,
+        "gpu": {
+          "supported": false,
+          "samples": 0,
+          "medianMs": null,
+          "p95Ms": null,
+          "disjointSamples": 0
+        },
+        "byStage": {
+          "SYSTEM": {
+            "samples": 4,
+            "renderMedianMs": 3.699999988079071,
+            "renderP95Ms": 21.100000023841858,
+            "drawCalls": 21,
+            "activeMeshes": 21
+          },
+          "ORBIT": {
+            "samples": 2,
+            "renderMedianMs": 1.4000000357627869,
+            "renderP95Ms": 1.4000000357627869,
+            "drawCalls": 14,
+            "activeMeshes": 14
+          },
+          "APPROACH": {
+            "samples": 2,
+            "renderMedianMs": 1.0999999642372131,
+            "renderP95Ms": 1.0999999642372131,
+            "drawCalls": 14,
+            "activeMeshes": 14
+          },
+          "GLOBAL_SURFACE": {
+            "samples": 2,
+            "renderMedianMs": 1.100000023841858,
+            "renderP95Ms": 1.100000023841858,
+            "drawCalls": 14,
+            "activeMeshes": 14
+          },
+          "REGIONAL_SURFACE": {
+            "samples": 2,
+            "renderMedianMs": 6.399999976158142,
+            "renderP95Ms": 6.399999976158142,
+            "drawCalls": 47,
+            "activeMeshes": 47
+          },
+          "LOCAL_SURFACE": {
+            "samples": 2,
+            "renderMedianMs": 4.5,
+            "renderP95Ms": 4.5,
+            "drawCalls": 37,
+            "activeMeshes": 37
+          },
+          "HUMAN": {
+            "samples": 2,
+            "renderMedianMs": 3.800000011920929,
+            "renderP95Ms": 3.800000011920929,
+            "drawCalls": 29,
+            "activeMeshes": 29
+          },
+          "MATERIAL": {
+            "samples": 2,
+            "renderMedianMs": 1.199999988079071,
+            "renderP95Ms": 1.199999988079071,
+            "drawCalls": 11,
+            "activeMeshes": 11
+          },
+          "MICROSTRUCTURE": {
+            "samples": 2,
+            "renderMedianMs": 2.300000011920929,
+            "renderP95Ms": 2.300000011920929,
+            "drawCalls": 10,
+            "activeMeshes": 10
+          },
+          "MOLECULAR": {
+            "samples": 2,
+            "renderMedianMs": 7.100000023841858,
+            "renderP95Ms": 7.100000023841858,
+            "drawCalls": 26,
+            "activeMeshes": 26
+          },
+          "ATOMIC": {
+            "samples": 1,
+            "renderMedianMs": 1.199999988079071,
+            "renderP95Ms": 1.199999988079071,
+            "drawCalls": 10,
+            "activeMeshes": 10
+          }
+        }
+      }
+    },
+    {
+      "orbitSlot": 2,
+      "bodyId": "43f4cd297cae5fab7b87c7527fcc8075ca0690cebe1b3e0f3b4bc85e1c4a2a69",
+      "bodyClass": "TERRESTRIAL",
+      "radiusM": 10201716,
+      "surfaceId": "75398b2c6dda997a39a66a98d679f94339d483ee390a47283c04d7e38114bcfe",
+      "sampleKind": "ROCK",
+      "sampleId": "e2fdbd0162fdf06968e87690d6147528abcff4ddb06582ddde4c37c250662439",
+      "latitudeDeg": 12.345678,
+      "longitudeDeg": 23.456789,
+      "alternatePick": {
+        "id": "d1a62533d3c203448b8df722ee5ff3369e03871f42672338f63a2dc4c7778b91",
+        "radiusM": 10905426,
+        "surfaceId": "bdee5a1450963809fa7f6cc9bef1f16c005526bf73e9e856b9a8797908424eb9",
+        "sampleKind": "ICE",
+        "materializedInPlace": true
+      },
+      "resources": {
+        "meshes": 100,
+        "materials": 38,
+        "textures": 1,
+        "totalVertices": 122608,
+        "terrainPatchPool": 48
+      },
+      "rendererProfile": {
+        "samples": 44,
+        "renderMedianMs": 2.599999964237213,
+        "renderP95Ms": 64.09999996423721,
+        "updateMedianMs": 3.800000011920929,
+        "updateP95Ms": 92.19999998807907,
+        "gpu": {
+          "supported": false,
+          "samples": 0,
+          "medianMs": null,
+          "p95Ms": null,
+          "disjointSamples": 0
+        },
+        "byStage": {
+          "SYSTEM": {
+            "samples": 13,
+            "renderMedianMs": 42.10000002384186,
+            "renderP95Ms": 78,
+            "drawCalls": 21,
+            "activeMeshes": 21
+          },
+          "ORBIT": {
+            "samples": 4,
+            "renderMedianMs": 1.100000023841858,
+            "renderP95Ms": 1.9000000357627869,
+            "drawCalls": 12,
+            "activeMeshes": 12
+          },
+          "APPROACH": {
+            "samples": 4,
+            "renderMedianMs": 1.399999976158142,
+            "renderP95Ms": 1.800000011920929,
+            "drawCalls": 12,
+            "activeMeshes": 12
+          },
+          "GLOBAL_SURFACE": {
+            "samples": 4,
+            "renderMedianMs": 1,
+            "renderP95Ms": 1.2999999523162842,
+            "drawCalls": 12,
+            "activeMeshes": 12
+          },
+          "REGIONAL_SURFACE": {
+            "samples": 4,
+            "renderMedianMs": 7,
+            "renderP95Ms": 8.099999964237213,
+            "drawCalls": 47,
+            "activeMeshes": 47
+          },
+          "LOCAL_SURFACE": {
+            "samples": 4,
+            "renderMedianMs": 4.5,
+            "renderP95Ms": 5.5,
+            "drawCalls": 35,
+            "activeMeshes": 35
+          },
+          "HUMAN": {
+            "samples": 3,
+            "renderMedianMs": 2.800000011920929,
+            "renderP95Ms": 2.800000011920929,
+            "drawCalls": 29,
+            "activeMeshes": 29
+          },
+          "MATERIAL": {
+            "samples": 2,
+            "renderMedianMs": 0.800000011920929,
+            "renderP95Ms": 0.800000011920929,
+            "drawCalls": 9,
+            "activeMeshes": 9
+          },
+          "MICROSTRUCTURE": {
+            "samples": 2,
+            "renderMedianMs": 0.800000011920929,
+            "renderP95Ms": 0.800000011920929,
+            "drawCalls": 8,
+            "activeMeshes": 8
+          },
+          "MOLECULAR": {
+            "samples": 2,
+            "renderMedianMs": 2,
+            "renderP95Ms": 2,
+            "drawCalls": 24,
+            "activeMeshes": 24
+          },
+          "ATOMIC": {
+            "samples": 2,
+            "renderMedianMs": 0.5,
+            "renderP95Ms": 0.5,
+            "drawCalls": 8,
+            "activeMeshes": 8
+          }
+        }
+      }
+    },
+    {
+      "orbitSlot": 5,
+      "bodyId": "d1a62533d3c203448b8df722ee5ff3369e03871f42672338f63a2dc4c7778b91",
+      "bodyClass": "TERRESTRIAL",
+      "radiusM": 10905426,
+      "surfaceId": "585bab376d95cd4d9bf307f14fac050ed97a5552b00a3f34c265f4fe843009a9",
+      "sampleKind": "ICE",
+      "sampleId": "59501308d48472c27965ffe87d1ea3ed5f9a5316ba1550dae9081f041aeca402",
+      "latitudeDeg": -33,
+      "longitudeDeg": 151,
+      "alternatePick": null,
+      "resources": {
+        "meshes": 98,
+        "materials": 36,
+        "textures": 1,
+        "totalVertices": 122488,
+        "terrainPatchPool": 48
+      },
+      "rendererProfile": {
+        "samples": 24,
+        "renderMedianMs": 2.199999988079071,
+        "renderP95Ms": 19.5,
+        "updateMedianMs": 4.600000023841858,
+        "updateP95Ms": 72.89999997615814,
+        "gpu": {
+          "supported": false,
+          "samples": 0,
+          "medianMs": null,
+          "p95Ms": null,
+          "disjointSamples": 0
+        },
+        "byStage": {
+          "SYSTEM": {
+            "samples": 4,
+            "renderMedianMs": 2.899999976158142,
+            "renderP95Ms": 19.5,
+            "drawCalls": 21,
+            "activeMeshes": 21
+          },
+          "ORBIT": {
+            "samples": 2,
+            "renderMedianMs": 1.199999988079071,
+            "renderP95Ms": 1.199999988079071,
+            "drawCalls": 9,
+            "activeMeshes": 9
+          },
+          "APPROACH": {
+            "samples": 2,
+            "renderMedianMs": 1.100000023841858,
+            "renderP95Ms": 1.100000023841858,
+            "drawCalls": 9,
+            "activeMeshes": 9
+          },
+          "GLOBAL_SURFACE": {
+            "samples": 2,
+            "renderMedianMs": 1.800000011920929,
+            "renderP95Ms": 1.800000011920929,
+            "drawCalls": 9,
+            "activeMeshes": 9
+          },
+          "REGIONAL_SURFACE": {
+            "samples": 2,
+            "renderMedianMs": 12.600000023841858,
+            "renderP95Ms": 12.600000023841858,
+            "drawCalls": 45,
+            "activeMeshes": 45
+          },
+          "LOCAL_SURFACE": {
+            "samples": 2,
+            "renderMedianMs": 4.899999976158142,
+            "renderP95Ms": 4.899999976158142,
+            "drawCalls": 40,
+            "activeMeshes": 40
+          },
+          "HUMAN": {
+            "samples": 2,
+            "renderMedianMs": 5.399999976158142,
+            "renderP95Ms": 5.399999976158142,
+            "drawCalls": 29,
+            "activeMeshes": 29
+          },
+          "MATERIAL": {
+            "samples": 2,
+            "renderMedianMs": 0.800000011920929,
+            "renderP95Ms": 0.800000011920929,
+            "drawCalls": 4,
+            "activeMeshes": 4
+          },
+          "MICROSTRUCTURE": {
+            "samples": 2,
+            "renderMedianMs": 2,
+            "renderP95Ms": 2,
+            "drawCalls": 5,
+            "activeMeshes": 5
+          },
+          "MOLECULAR": {
+            "samples": 2,
+            "renderMedianMs": 3.800000011920929,
+            "renderP95Ms": 3.800000011920929,
+            "drawCalls": 21,
+            "activeMeshes": 21
+          },
+          "ATOMIC": {
+            "samples": 2,
+            "renderMedianMs": 1.300000011920929,
+            "renderP95Ms": 1.300000011920929,
+            "drawCalls": 5,
+            "activeMeshes": 5
+          }
+        }
+      }
+    }
+  ]
+}

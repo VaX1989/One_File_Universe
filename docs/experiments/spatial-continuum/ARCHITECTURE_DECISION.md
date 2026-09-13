@@ -1,4 +1,4 @@
-# ADR: Spatial Continuum rendering and navigation kernel (R2)
+# ADR: Spatial Continuum rendering and navigation kernel (R2 + R3)
 
 - Status: architectural direction validated; expansion and production adoption not yet accepted
 - Date: 2026-09-13
@@ -142,3 +142,39 @@ The experiment remains isolated behind its build target and Draft PR. Stable V2 
 `CONTINUE_EXPERIMENT`
 
 R2 validates the target-derived camera, frame-to-render pipeline, geodetic target contract, multi-world binding, bounded LOD, and engine-owned resource model. It does not satisfy the R2 expansion gate because physical-GPU performance and WebKit/Safari remain unproven and alternate-world surface materialization plus scalable sparse terrain refinement remain incomplete.
+
+## R3 superseding addendum
+
+- R3 implementation measured: `9140811ffbdee805dbeb57b25f35fe48ee421c83` / tree `11fb6ae45159d812a6a73d3334b18a0bbe4e934a`
+- Canonical evidence manifest: [evidence/r3/evidence-manifest.json](evidence/r3/evidence-manifest.json)
+- Experiment artifact: `4,620,166` bytes / SHA-256 `e6befd497121f1f9434557caaf7b75758b6c9c7813cdd4e83f3e8b8786b1ce76`
+
+R3 retains Babylon.js `9.26.0`. Profiling found no engine-level blocker, so the renderer bake-off was not reopened. The architectural decision now includes these additional contracts:
+
+1. **Component-level authority.** Canonical entity identity is independent from position, orientation, phase, bounds, geometry, and elevation authority. A real OFU body can therefore remain `CANONICAL` while its current orbit phase is honestly `PRESENTATION_ONLY`.
+2. **Metric surface space.** Planet target, terrain root, sample, and camera share one `LOCAL_ENU_METRES` contract. The deterministic field takes east/north metres and returns presentation-only elevation metres; changing LOD does not change the physical field.
+3. **Sparse adaptive terrain.** A bounded mixed-level quadtree selects patches recursively using projected geometric error and view-radius rejection. A fixed 48-mesh pool, deterministic residency keys, LRU-style eviction, skirts, and Nyquist-aware terrain band limiting bound resources and prevent coarse patches from sampling detail they cannot represent.
+4. **In-place genuine-world materialization.** A renderer-owned pick of a supported sibling materializes its own OFU world graph, body/surface/sample frames, material kind, camera bounds, and visual resources inside the existing Babylon scene and camera. Unsupported bodies fail closed with an explicit capability reason.
+5. **Measured GPU ownership.** The renderer exposes physical GPU identity and asynchronous `EXT_disjoint_timer_query_webgl2` measurements, respecting disjoint results. Event-demand rendering remains authoritative while idle.
+
+The quadtree follows the same high-level selection principles documented by Cesium Native: traverse a hierarchy, compare projected geometric error with a threshold, cull irrelevant children, and keep residency bounded. OFU's implementation is intentionally smaller and operates in the retained local tangent plane; it is not a Cesium 3D Tiles implementation. Primary R3 sources: [Cesium selection details](https://cesium.com/learn/cesium-native/ref-doc/selection-algorithm-details.html), [Cesium tileset selection options](https://cesium.com/learn/cesium-native/ref-doc/structCesium3DTilesSelection_1_1TilesetOptions.html), and [Khronos EXT_disjoint_timer_query_webgl2](https://registry.khronos.org/webgl/extensions/EXT_disjoint_timer_query_webgl2/).
+
+### R3 falsification result
+
+- Chromium `151.0.7922.34`, Firefox `153.0`, and WebKit `26.5` each run the Continuum artifact directly from `file:`, offline, through ORBIT, HUMAN, ATOMIC, and reverse SYSTEM with WebGL2 and zero network requests.
+- A real renderer pick changes focus to sibling world `d1a62533d3c203448b8df722ee5ff3369e03871f42672338f63a2dc4c7778b91`; the sibling completes ORBIT through HUMAN and reverse while scene/camera counts remain one.
+- On headless Chrome `152.0.7977.83` using a verified NVIDIA Quadro RTX 4000 / ANGLE D3D11 path, animation interval median/p95/p99 is `16.7/16.8/50.1 ms`, median input response is `13.1 ms`, renderer CPU median/p95 is `1.2/3.3 ms`, and GPU median/p95 is `0.672/3.572 ms` with 448 valid samples and zero disjoint samples.
+- Ten complete soak loops hold at 86 meshes, 24 materials, one texture, 61,816 vertices, a 48-patch pool, one scene, one camera, history 64, and forced-GC heap `35,802,896 → 30,313,748` bytes.
+- Context restoration is functional: the post-restore test requires a nonblank render, preserved canonical focus, renderer pick, travel, and HUMAN motion.
+
+### R3 remaining architectural boundary
+
+R3 proves sparse, bounded, physically metric refinement around a retained surface target. It does **not** yet prove a globe-wide cube-sphere/geodesic patch topology, horizon-aware planetary traversal, or seamless travel between arbitrary distant surface targets. The current view-radius test is local-tangent culling, not a complete globe horizon/frustum selector. Camera profiles still contribute high-level cinematic coverage/direction intent. The full V2 donor still initializes before the replacement takes ownership. Physical touch, display-present timing, screen-reader workflows, and production art remain unproven.
+
+Human image review also prevents promotion: alternate-world ORBIT is clearly planetary and materially better than V2's marker, but REGIONAL/LOCAL/HUMAN terrain remains sparse and experiment-grade; LOCAL can read as visually flat. Architectural evidence has advanced faster than product finish.
+
+### R3 recommendation
+
+`CONTINUE_EXPERIMENT`
+
+R3 closes the specific R2 blockers for physical-GPU evidence, WebKit Continuum execution, in-place alternate-world materialization, component authority, and sparse bounded LOD. Expansion into the four upper macro regimes remains premature until planet-wide surface topology/travel and the product-quality terrain differential are proven, and until the V2 donor boundary is reduced.
