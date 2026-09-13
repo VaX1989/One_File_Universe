@@ -14,6 +14,7 @@ import { perceptualLod, projectedSpanPixels, sparseTerrainPatchPlan, terrainPatc
 import { deterministicTerrainHeightMeters } from '../../src/experiments/spatial-continuum/terrain-field.js';
 import { createSpatialAddress } from '../../src/experiments/spatial-continuum/spatial-address.js';
 import { createMaterializationCache } from '../../src/experiments/spatial-continuum/materialization-cache.js';
+import { createContextualMicroGrammar } from '../../src/experiments/spatial-continuum/micro-grammar.js';
 import { macroPresentationNode } from '../../src/experiments/spatial-continuum/open-universe.js';
 import { CUBE_FACES, advanceSurfaceDirection, cubeFaceUvToDirection, cubeSphereTileAddress, directionToCubeFaceUv, modelCoordinatesFromDirection, planetaryPatchPlan, raySphereIntersection } from '../../src/experiments/spatial-continuum/planetary-topology.js';
 
@@ -23,6 +24,7 @@ assert.equal(systemAddress.depth,3);assert.deepEqual(systemAddress.ids,['u','g',
 const disposed=[],cache=createMaterializationCache({maxEntries:3,onDispose:(value,meta)=>disposed.push([value.id,meta.reason])});
 const make=id=>({id});cache.materialize('u',()=>make('u'),{kind:'UNIVERSE',pin:true});cache.materialize('g:a',()=>make('a'),{kind:'GALAXY'});cache.materialize('g:b',()=>make('b'),{kind:'GALAXY'});assert.equal(cache.get('g:a').id,'a');cache.materialize('g:c',()=>make('c'),{kind:'GALAXY'});assert.equal(cache.has('g:b'),false,'least-recently-used unpinned context must be evicted');assert.equal(cache.has('u'),true,'active ancestry pin must survive eviction');cache.materialize('g:b',()=>make('b2'),{kind:'GALAXY'});assert.equal(cache.snapshot().metrics.rematerializations,1);assert.equal(cache.snapshot().bounded,true);cache.clear();assert.ok(disposed.length>=4);
 const macroA=macroPresentationNode({entityId:'galaxy-a',kind:'galaxy',sourceAuthority:'CANONICAL_PROVEN',metadata:{modelProfile:{morphology:'DISK'}}},{scopeId:'u',index:1,total:8}),macroB=macroPresentationNode({entityId:'galaxy-a',kind:'galaxy',sourceAuthority:'CANONICAL_PROVEN',metadata:{modelProfile:{morphology:'DISK'}}},{scopeId:'u',index:1,total:8});assert.deepEqual(macroA,macroB);assert.equal(macroA.authority,AUTHORITY.CANONICAL);assert.equal(macroA.presentationAuthority,AUTHORITY.PRESENTATION_ONLY);assert.equal(macroA.morphology,'DISK');
+const rockGrammar=createContextualMicroGrammar({sampleId:'rock-a',sampleKind:'ROCK'}),iceGrammar=createContextualMicroGrammar({sampleId:'ice-a',sampleKind:'ICE'});assert.deepEqual(rockGrammar,createContextualMicroGrammar({sampleId:'rock-a',sampleKind:'ROCK'}));assert.notEqual(rockGrammar.family,iceGrammar.family);assert.notDeepEqual(rockGrammar.positions,iceGrammar.positions);assert.equal(rockGrammar.authority,AUTHORITY.PRESENTATION_ONLY);assert.equal(rockGrammar.claims.exactMolecularSpecies,false);assert.equal(rockGrammar.claims.exactNuclearComposition,false);
 const graph=()=>createSpatialGraph([
   {id:'system',kind:'SYSTEM',frameId:'system',authority:AUTHORITY.CANONICAL},
   {id:'body',kind:'PLANET',parentId:'system',frameId:'body',authority:AUTHORITY.CANONICAL},
