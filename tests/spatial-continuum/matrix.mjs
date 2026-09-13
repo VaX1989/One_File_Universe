@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 import { chromium, firefox, webkit } from 'playwright';
 
@@ -8,11 +9,17 @@ const root=process.cwd(),artifact=path.join(root,'dist','One_File_Universe_Spati
 fs.mkdirSync(evidenceDir,{recursive:true});
 const allEngines={chromium,firefox,webkit},requested=String(process.env.OFU_CONTINUUM_BROWSER||'').toLowerCase(),engines=requested?{[requested]:allEngines[requested]}:allEngines,results=[];
 if(Object.values(engines).some(value=>!value))throw new Error('Unknown OFU_CONTINUUM_BROWSER: '+requested);
+if(process.platform==='linux'&&!process.env.DISPLAY&&process.env.OFU_CONTINUUM_XVFB_REEXEC!=='1'&&(!requested||requested==='firefox')){
+  const child=spawnSync('xvfb-run',['-a','-s','-screen 0 1920x1080x24',process.execPath,...process.argv.slice(1)],{stdio:'inherit',env:{...process.env,OFU_CONTINUUM_XVFB_REEXEC:'1'}});
+  if(child.error)throw new Error('Firefox graphical Continuum profile requires xvfb-run: '+child.error.message);
+  if(child.signal)throw new Error('Firefox Xvfb child terminated by '+child.signal);
+  process.exit(child.status??1);
+}
 
 for(const [name,type] of Object.entries(engines)){
   let browser,launched=false;
   try{
-    browser=await type.launch({headless:true});launched=true;
+    browser=await type.launch({headless:!(name==='firefox'&&process.platform==='linux'),...(name==='firefox'?{firefoxUserPrefs:{'webgl.disabled':false,'webgl.force-enabled':true,'webgl.enable-webgl2':true,'webgl.forbid-software':false}}:{})});launched=true;
     const context=await browser.newContext({viewport:{width:1280,height:800}}),page=await context.newPage(),errors=[],network=[];
     page.on('pageerror',error=>errors.push(String(error.stack||error)));
     page.on('console',message=>{if(message.type()==='error')errors.push('console: '+message.text())});
@@ -34,6 +41,6 @@ for(const [name,type] of Object.entries(engines)){
   finally{await browser?.close().catch(()=>{})}
 }
 
-const required=requested?[requested]:['chromium','firefox'];for(const name of required)assert.equal(results.find(row=>row.browser===name)?.status,'PASS',name+' must execute the Continuum itself');
 const blocked=results.filter(row=>row.status!=='PASS'),output={status:blocked.length?'PASS_WITH_ENVIRONMENT_BLOCKER':'PASS',suite:'spatial-continuum-browser-matrix',continuumTested:results.filter(row=>row.status==='PASS').map(row=>row.browser),blocked:blocked.map(row=>row.browser),results};
 fs.writeFileSync(path.join(evidenceDir,'matrix-results.json'),JSON.stringify(output,null,2)+'\n');console.log(JSON.stringify(output,null,2));
+const required=requested?[requested]:['chromium','firefox'];for(const name of required)assert.equal(results.find(row=>row.browser===name)?.status,'PASS',name+' must execute the Continuum itself');
