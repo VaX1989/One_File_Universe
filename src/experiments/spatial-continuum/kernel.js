@@ -58,6 +58,8 @@ export function createContinuumKernel({graph, frames, targets, initialStage='UNI
   }
   return Object.freeze({
     travelTo,travelBy,back,select,snapshot,
+    checkpoint(now=0){return capture(now)},
+    restore(checkpoint,now=0){if(!checkpoint?.camera||!Number.isFinite(Number(checkpoint.coordinate)))throw new TypeError('A valid continuum checkpoint is required');if(activeGraph.get(checkpoint.focusId))activeGraph.setFocus(checkpoint.focusId);camera.restore({...checkpoint.camera,anchorId:activeGraph.focusId,focusId:activeGraph.focusId,aimId:activeGraph.focusId});scale.setTarget(checkpoint.coordinate,now,{reducedMotion});revision++;return snapshot(now)},
     rebind({graph:nextGraph,frames:nextFrames,targets:nextTargets},now=0){
       if(!nextGraph||!nextFrames||!nextTargets)throw new TypeError('Rebind requires spatial graph, frames, and targets');
       const prior=camera.pose(scale.sample(now).coordinate);activeGraph=nextGraph;activeFrames=nextFrames;activeTargets=nextTargets;camera=createTargetAwareCamera({anchorId:activeGraph.focusId,focusId:activeGraph.focusId,targets:activeTargets,frames:activeFrames});camera.restore({...prior,anchorId:activeGraph.focusId,focusId:activeGraph.focusId,aimId:activeGraph.focusId,localPosition:[0,0,0]});history.length=0;revision++;return snapshot(now);
