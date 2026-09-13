@@ -14,50 +14,109 @@
   },
   "sourceSampleIdentity": "4a7f86b77a6ef7aa8eba823a7a80662f4ac5614076d8c76e30bb64c639f20d35",
   "planetDiameter": {
-    "orbit": 838.9571096789542,
-    "approachEarly": 1046.7612437152857,
-    "approachMid": 1459.3958013439965,
-    "approachLate": 1459.3958013439965,
-    "approachSettled": 1459.3958013439965
+    "orbit": 824.4694950039591,
+    "approachEarly": 1177.8842463740457,
+    "approachMid": 1521.2686321395015,
+    "approachLate": 1521.2686321395015,
+    "approachSettled": 1521.2686321395015
   },
   "performance": {
-    "samples": 153,
+    "samples": 145,
     "median": 50,
     "p95": 83.30000000000291,
-    "p99": 100,
-    "longFrames34": 115,
-    "longFrames50": 42,
-    "inputResponseMedian": 19.399999976158142
+    "p99": 83.40000000000873,
+    "longFrames34": 123,
+    "longFrames50": 57,
+    "inputResponseMedian": 15.100000023841858
   },
   "resources": {
-    "meshCount": 96,
-    "materialCount": 26,
-    "textureCount": 1
+    "meshCount": 54,
+    "materialCount": 24,
+    "textureCount": 1,
+    "totalVertices": 58264,
+    "terrainPatchPool": 16,
+    "thinInstanceCounts": {
+      "stars": 690,
+      "localRocks": 34,
+      "material": 12,
+      "micro": 52,
+      "atomic": 108
+    }
   },
   "contextLoss": {
     "result": "EXERCISED",
     "losses": 1,
-    "restores": 1
+    "restores": 1,
+    "functionallyRecovered": true
   },
   "mobile": {
-    "canvas": {
-      "width": 844,
-      "height": 390
+    "landscape": {
+      "canvas": {
+        "width": 844,
+        "height": 390
+      },
+      "controls": {
+        "top": 271.796875,
+        "height": 112.609375
+      },
+      "context": {
+        "width": 0,
+        "height": 0
+      },
+      "inner": {
+        "width": 844,
+        "height": 390
+      },
+      "scroll": {
+        "width": 844,
+        "height": 390
+      },
+      "pinchContinuous": true
     },
-    "controls": {
-      "top": 271.796875,
-      "height": 112.609375
+    "portrait": {
+      "canvas": {
+        "x": 0,
+        "y": 59,
+        "width": 390,
+        "height": 785,
+        "top": 59,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "controls": {
+        "x": 8,
+        "y": 729.359375,
+        "width": 374,
+        "height": 109.046875,
+        "top": 729.359375,
+        "right": 382,
+        "bottom": 838.40625,
+        "left": 8
+      },
+      "inner": {
+        "width": 390,
+        "height": 844
+      },
+      "scroll": {
+        "width": 390,
+        "height": 844
+      }
     },
-    "context": {
-      "width": 0,
-      "height": 0
+    "tablet": {
+      "activeMeshes": 5
     },
-    "inner": {
-      "width": 844,
-      "height": 390
-    },
-    "pinchContinuous": true
+    "orientationChange": true,
+    "highDpr": true
   },
-  "reducedMotionElapsedMs": 289,
-  "evidenceDirectory": "E:\\One_File_Universe\\docs\\experiments\\spatial-continuum\\evidence"
+  "accessibility": {
+    "skipLink": true,
+    "canvasFocus": true,
+    "keyboardLandmarkTravel": true,
+    "keyboardBodySelection": true,
+    "zoom200": true,
+    "forcedColors": true
+  },
+  "reducedMotionElapsedMs": 456,
+  "evidenceDirectory": "reports/local/spatial-continuum"
 }

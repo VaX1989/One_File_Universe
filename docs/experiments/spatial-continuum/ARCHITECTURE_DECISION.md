@@ -1,120 +1,144 @@
-# ADR: Spatial Continuum proving kernel
+# ADR: Spatial Continuum rendering and navigation kernel (R2)
 
-- Status: experiment accepted for implementation; production adoption not yet accepted
+- Status: architectural direction validated; expansion and production adoption not yet accepted
 - Date: 2026-09-13
 - Repository: `VaX1989/One_File_Universe`
-- Base: `5f3dbdcccc409c3bc29684e062ad7730ddea0c69` / tree `f84f05f9a12e110bb48f7605d8f577b0886dfe02`
+- Stable base: `5f3dbdcccc409c3bc29684e062ad7730ddea0c69` / tree `f84f05f9a12e110bb48f7605d8f577b0886dfe02`
+- R2 implementation measured: `8e2dd3f1944fab8898ce45cc8b54a9e37ea5fcac` / tree `3cb575fcf75706842944a929402ff63350afeeea`
 
 ## Decision
 
-Use Babylon.js `9.26.0` as the experiment's low-level scene/rendering kernel, with WebGL2 as the compatibility baseline. Keep OFU—not Babylon—as the authority for canonical identity, scientific/model data, continuous scale, camera intent, history, reference frames, representation activation, and epistemic labels.
+Continue with Babylon.js `9.26.0` as the low-level WebGL2 rendering kernel. OFU remains authoritative for canonical/model identity, scientific authority, the persistent spatial graph, hierarchical frames, focus, continuous scale, camera intent, history, deterministic seeds, and representation policy. Babylon owns the GPU context, scene, meshes/materials, visibility, ray intersections, render instrumentation, and disposal.
 
-This is deliberately not a second semantic framework wrapped around the released V2 renderer. The experiment quiesces the legacy visual product after extracting one genuine canonical system, body, surface context, and local sample from the released V2 authority. One Babylon scene, one OFU camera authority, one persistent spatial graph, and one renderer-owned picking path then own the proving journey.
+R2 removes the proving slice's two most important fake-general abstractions:
 
-WebGPU is not required by this checkpoint. It remains a backend experiment below product semantics after WebGL2 behavior, direct-file use, and visual quality are stable.
+1. Camera Cartesian poses are no longer stage lookup values. A semantic profile declares desired projected coverage and cinematic direction, while target position, radius, reference frame, retained user yaw/pitch, surface tangent, and field of view derive the actual pose and travel distance.
+2. Reference frames no longer sit beside the renderer as documentation. System bodies, body-fixed surface target, local terrain, sample, picking, and camera render origins resolve through the same float64 frame registry and lowest-common-ancestor-relative float32 handoff.
 
-## Requirements that controlled the decision
+Semantic stages remain accessible landmarks and artistic constraints. They do not own scene lifetime or canonical identity.
 
-- One self-contained HTML artifact, direct-file capable, offline, with no runtime network.
-- One canonical identity from SYSTEM through HUMAN and one source sample through ATOMIC and back.
-- CPU-side hierarchical reference frames and camera-relative GPU coordinates.
-- One anchor/focus/aim camera authority and continuous scale coordinate.
-- Overlapping representations instead of destructive stage-owned scene replacement.
-- Scene-consistent picking, bounded resources, disposal, and context restoration.
-- Rich `PRESENTATION_ONLY` visuals without inventing canonical scientific facts.
-- An engine integration small enough to remove low-level obligations rather than recreate Deep3D behind wrappers.
+## Requirements
 
-## Implemented bake-off
+- One self-contained, deterministic HTML artifact; direct-file and offline operation; zero required runtime network.
+- One canonical focus and one camera authority.
+- Target-derived travel that survives target changes, user orbit/pitch, interruption, and reverse traversal.
+- A body-fixed model surface point and east/up/north local tangent frame.
+- Camera-relative GPU coordinates without subtracting universe-sized absolute float64 values.
+- Renderer-consistent picking and shared transforms.
+- Screen-space-driven, bounded terrain refinement.
+- Rich `PRESENTATION_ONLY` output without silently asserting scientific fact.
+- Bounded resources, explicit disposal, and functional context restoration.
+- A semantic keyboard/text layer over the same canonical state.
 
-The spike scripts are in `tools/experiments/spatial-continuum/` and bundle the minimum OFU-relevant imports through the same esbuild toolchain used by the experiment.
+## Kernel selection and bake-off
 
-| Candidate | Pinned/current evaluated version | Minimal spike, raw | gzip | brotli | Single-file/offline result | Finding |
-| --- | ---: | ---: | ---: | ---: | --- | --- |
-| Babylon.js | 9.26.0 | 1,675,582 B | 395,300 B | 302,647 B | Clean browser bundle; no Node worker reference | Selected |
-| PlayCanvas | 2.22.1 | 2,037,526 B | 529,117 B | 408,382 B | Required externalizing `node:worker_threads`; emitted bundle retained that reference | Rejected for this slice |
-| Released/custom OFU stack | repository checkpoint | 173,225 B across 19 Deep3D/WebGL/WebGPU files; 786,979 B across 76 rendering files | n/a | n/a | Already single-file | Rejected as the replacement kernel because OFU must continue owning scene graph, transforms, culling, lifecycle, materials, picking, instancing, LOD, context loss, and backend variance |
+The R1 spikes remain the engine decision basis. R2 profiling found no Babylon blocker and therefore did not repeat novelty-driven engine selection.
 
-The byte figures are comparative spike outputs, not the final artifact size. The final HTML also embeds the released V2 authority/data donor, UI, content, and the Babylon Apache license.
+| Candidate | Evaluated version | Minimal spike, raw | gzip | brotli | Result |
+| --- | ---: | ---: | ---: | ---: | --- |
+| Babylon.js | 9.26.0 | 1,675,582 B | 395,300 B | 302,647 B | Selected: clean modular browser bundle, mature scene/picking/resource ownership |
+| PlayCanvas | 2.22.1 | 2,037,526 B | 529,117 B | 408,382 B | Rejected for this slice: larger spike and retained `node:worker_threads` boundary in the tested bundle |
+| Existing/custom OFU renderer | repository checkpoint | 173,225 B in 19 Deep3D/WebGL/WebGPU files | n/a | n/a | Rejected as primary kernel: OFU would continue owning transforms, materials, culling, picking, lifecycle, LOD, context loss, and backend variance |
 
-## Capability evidence and borrowed concepts
+Babylon is Apache-2.0 and pinned exactly. Its complete license text is embedded in the generated artifact. No CDN, external shader, texture, font, worker, or runtime fetch is introduced.
 
-- Babylon: modular ES modules, WebGL2/WebGPU engine support, scene graph, PBR/material systems, instancing/thin instances, LOD facilities, scene ray picking, explicit disposal, and engine context restoration. Sources: [Babylon specifications](https://www.babylonjs.com/specifications/), [Babylon npm package](https://www.npmjs.com/package/%40babylonjs/core), [Babylon repository](https://github.com/BabylonJS/Babylon.js).
-- PlayCanvas: credible WebGL2/WebGPU scene engine and MIT licensing, but its tested bundle was larger and retained a worker-thread boundary in this toolchain. Sources: [PlayCanvas engine](https://github.com/playcanvas/engine), [2.22.1 release](https://github.com/playcanvas/engine/releases).
-- Cesium: screen-space-error refinement and camera/depth-consistent globe interaction informed `projectedSpanPixels`, `perceptualLod`, and renderer-owned selection. Sources: [selection algorithm details](https://cesium.com/learn/cesium-native/ref-doc/selection-algorithm-details.html), [camera and picking](https://cesium.com/learn/cesiumjs-learn/cesiumjs-camera/).
-- OpenSpace: anchor/focus/aim and target-aware flight informed the camera contract and reversible camera snapshots. Sources: [navigation](https://docs.openspaceproject.com/latest/using-openspace/toolbar/navigation/index.html), [NavigationState](https://docs.openspaceproject.com/latest/reference/asset-components/Other/NavigationState.html).
-- Mol* and MolViewSpec: source/context-preserving representation changes informed the microscopic bridge. Source: [Mol* display management](https://molstar.org/viewer-docs/managing-the-display/).
-
-## Architecture proven by the slice
+## R2 spatial model
 
 ```text
-released V2 authority/data donor
-             |
-             v
-persistent canonical spatial graph ---- hierarchical reference frames
-             |                                      |
-             +---------- one focus authority -------+
-                            |
-continuous scale coordinate + reversible history
-                            |
-anchor / focus / aim camera + representation handoff
-                            |
-one Babylon scene / renderer-owned ray picking
+V2 canonical/model authority donor
+               |
+               v
+persistent OFU spatial graph ---- float64 hierarchical frames
+               |                              |
+               +---- one canonical focus -----+
+                              |
+continuous scale + reversible camera/history context
+                              |
+target radius/transform + projected-size intent + retained orientation
+                              |
+LCA-relative, camera/rebased float32 render coordinates
+                              |
+one Babylon scene
+  +-- visual output
+  +-- ray picking
+  +-- screen-space LOD observation
+  +-- engine resource accounting/disposal
 ```
 
-Semantic stages are derived landmarks and accessible language. They do not own scene lifetime. Adjacent visual layers coexist during handoff. SYSTEM, planet, terrain, local sample, and contextual microscopic layers are allocated once and enabled/weighted by the continuous coordinate. Static high-cardinality content uses thin instances. The terrain's active refinement is chosen from projected screen size rather than the semantic stage alone.
+### Camera R2
 
-The same terrain height function and target are used for GLOBAL/REGIONAL/LOCAL/HUMAN. The micro journey changes explanatory representation honestly: canonical world and source sample stay fixed while geometry is labeled `MODEL_DERIVED` or `PRESENTATION_ONLY`.
+For a target bounding radius `r`, vertical field of view `fov`, and desired projected coverage `c`, camera distance is derived as `r / sin(fov * c / 2)`, clamped away from singular angles. The selected body's real model-derived radius changes the result. Switching to a visibly picked sibling changes focus, frame, radius, and pose without creating another scene or camera.
 
-## License and build implications
+Stage profiles retain coverage, FOV, and broad cinematic direction as art-direction inputs. They are not spatial truth: there are no authored Cartesian camera keys. User yaw/pitch and HUMAN local translation remain in the authoritative camera snapshot and influence later solutions. Reverse restores meaningful captured context rather than selecting a canned previous-stage pose.
 
-- `@babylonjs/core` is pinned exactly to `9.26.0` under Apache-2.0.
-- The complete upstream license text is embedded in the generated HTML as `#ofu-spatial-continuum-third-party-license` and recorded by SHA-256 in the build manifest.
-- No CDN, external shader, texture, font, worker, or runtime fetch is used.
-- esbuild tree-shakes the selected modules into one IIFE. The final HTML is byte-reproducible at one source revision in the local verification.
-- This dependency materially increases the artifact, but it replaces the obligation to build and maintain engine internals. Size remains a measured promotion risk, not a hidden cost.
+### Hierarchical frames and precision
 
-## Browser implications
+The registry now supplies point, direction, and orientation transforms. Relative coordinates are computed through the lowest common ancestor, then rotated into root axes, avoiding precision loss from subtracting two universe-sized absolute coordinates. A synthetic test places child frames below a `1e20 m` ancestor and preserves a `3 m` separation in GPU-facing output.
 
-- WebGL2 is the experiment baseline and was exercised in Chromium through both `file://` and localhost during manual review.
-- Direct-file startup is asynchronous because the genuine OFU donor first initializes; the experiment waits for canonical authority, captures it, and explicitly disposes the legacy product.
-- Babylon's modular shader readiness required an explicit ready-triggered redraw. The event-demand renderer otherwise does not repaint settled static scenes.
-- WebGPU, Safari, Firefox, physical touch hardware, and integrated/mobile GPUs remain unproven in this checkpoint.
+System bodies originate in `system-barycentric`; the selected body has body-centered and body-fixed frames; the surface target is a child of the body-fixed frame; sample and micro frames descend from the local tangent frame. Renderer positions, picking geometry, camera target, and displayed sample all consume those frames.
 
-## Rejected alternatives
+### Surface target contract
 
-### Preserve or incrementally prettify Deep3D
+Latitude/longitude from the genuine OFU model state are converted to a deterministic model-derived body-fixed point, outward normal, and east/up/north tangent quaternion. This is explicitly `MODEL_DERIVED`; `canonicalSurfaceGeodesy` remains false. Planet marker, terrain origin, local sample, and reverse history share the same `surfaceId` and transform chain. The renderer and frame authority also share one deterministic terrain height function, so the visible sample occupies its declared sample-frame point.
 
-Rejected. It would retain the exact stage-owned scene/camera/picking split implicated by the V2 product failure and keep OFU responsible for too many engine subsystems. Individual V2 authority/data components are retained, but the visual kernel is not.
+### Representation and LOD
 
-### PlayCanvas
+Adjacent layers coexist and are weighted by continuous scale. Terrain uses a fixed 16-mesh patch pool and a bounded screen-space refinement plan of 1, 4, or 16 active patches. Patch height and finite-difference normals sample one deterministic world field, including at shared boundaries, so refinement does not create independent maps or lighting seams. Static stars, rocks, material groups, micro grains, and atomic probability samples use thin instances.
 
-Rejected for this slice, not categorically. Its measured bundle was larger, and the tested build required a Node worker external. Resolving that boundary would consume experiment time without evidence of a product advantage over the clean Babylon bundle.
+This is the smallest architecture that demonstrates bounded spatial refinement. It is not yet a production planetary quadtree: refinement is uniform by level, with no per-patch frustum/horizon rejection, residency cache, or mixed-level seam stitching.
 
-### Cesium as the primary engine
+## Multi-world falsification
 
-Rejected. Cesium's globe precision and screen-space-error concepts are highly relevant, but a globe-first engine does not cover the system-to-atomic product span cleanly and carries a larger geospatial product model than this proving slice needs.
+R2 materializes three genuine terrestrial worlds from the real P3 system site `(46, 437, 400)` at orbit slots 0, 2, and 5, with distinct radii, orbital transforms, surface coordinates, `surfaceId`s, and sample identities. It exercises ROCK and ICE source samples through SYSTEM → ATOMIC → SYSTEM. A real Babylon ray pick selects a different rendered planet and rebinds camera focus/geometry.
 
-### Fully custom minimal renderer
+Unmaterialized sibling bodies may be selected at SYSTEM/ORBIT/APPROACH using a disclosed `PRESENTATION_ONLY` radius estimate. They cannot descend to a fake surface. A P5 `BULK_PRIOR`/unsupported physical world fails with an explicit capability error rather than receiving Earth-like terrain.
 
-Rejected. It offers smaller bytes but recreates the same unbounded ownership surface that made V2 fragile. A custom shader or specialized representation remains appropriate inside the selected engine when it directly serves a proven OFU need.
+This proves data variation, not universal surface support. Gas/volatile bodies, moons, dynamically materialized alternate surfaces, and broader system taxonomy remain open.
 
-### Literal geometric zoom through unknown microgeometry
+## Performance and resource decisions
 
-Rejected as scientifically dishonest. The sample remains the anchor, while contextual representations explicitly disclose their authority.
+- Event-demand rendering produces no renderer samples while settled and idle.
+- Babylon `SceneInstrumentation` supplies per-frame draw calls; no cumulative internal counter is used.
+- R2 headless Chromium reports renderer CPU median `1.0 ms`, p95 `2.0 ms`; update median `1.8 ms`, p95 `10.6 ms`; input-to-visible-response median `19.2 ms`.
+- Normalized resources are 54 meshes, 24 materials, 1 texture, 58,264 vertices, one scene, one camera, and a 16-patch terrain pool.
+- Ten complete forward/reverse loops preserve those counts, cap history at 64, and move forced-GC JS heap from 30,666,891 B to 29,042,409 B.
 
-## Known risks
+Headless requestAnimationFrame cadence remains poor (median 50 ms, p95 100 ms, p99 133.3 ms) and is not physical-GPU evidence. The low measured renderer CPU cost isolates environment/scheduling from scene CPU work but does not prove GPU frame pacing. Expansion remains blocked on physical-GPU measurements.
 
-- The proving slice covers 11 landmarks, not the four macro landmarks above SYSTEM.
-- The current low-poly presentation is deliberately authored but not final art; SYSTEM composition and terrain/material polish need further convergence against V1.
-- Chromium software-rendered p99 is materially below released V2's audit tail, but median/p95 are not yet better; this blocks production promotion.
-- Dynamic-resolution movement improves responsiveness but must be validated on physical GPUs for visual stability.
-- The experiment artifact contains both the donor and replacement code. A later migration should extract a smaller authority-only donor path.
-- One scene preallocates all proving representations. Expansion must preserve bounds rather than blindly preallocate all fifteen regimes.
+## Browser, mobile, and accessibility implications
 
-## Reversibility
+- Chromium 151 and Firefox 153 pass direct-file, offline WebGL2 traversal through ORBIT, HUMAN, ATOMIC, and reverse SYSTEM.
+- Playwright WebKit crashes at process startup in this Windows environment. Safari/WebKit is unproven, not failed by the product.
+- Chromium additionally passes real pointer selection, context loss/restore followed by render/pick/travel/HUMAN movement, 844×390 landscape pinch, 390×844 DPR2 portrait, tablet/DPR2, and orientation change.
+- A visible skip link, canvas focus, keyboard stage travel, keyboard body selection, focused controls, restrained live status, 200% CSS zoom, forced-colors rules, and reduced-motion identity-preserving travel are present.
 
-The experiment is isolated behind `npm run build:continuum` and produces a separate ignored artifact. Stable V2 remains unchanged apart from adding a real disposal seam to its living product. Removing `src/experiments/spatial-continuum`, its build/tests/docs, the pinned engine dependencies, and that seam returns the base architecture without data migration.
+This is automated evidence, not a physical mobile, assistive-technology, or Safari certification.
 
-## Promotion rule
+## Donor boundary
 
-Do not replace stable V2 or expand the architecture into the four upper macro regimes until the evidence report's unresolved performance and visual-comparison gates are closed on at least Chromium, Firefox, Safari, and a constrained physical/mobile GPU.
+The experiment still initializes released V2, captures genuine authority, then disposes the legacy visual product. Permanent convergence should extract an authority-only bootstrap containing P3/P5 canonical construction, runtime state/history, deterministic content authority, persistence, and epistemic metadata. It should omit Deep3D/Living composition, legacy canvas/UI, legacy camera, and legacy picking. R2 deliberately does not perform that extraction before the replacement kernel is sufficiently proven.
+
+## Rejected alternatives and borrowed concepts
+
+- Incrementally prettifying Deep3D remains rejected because it preserves split scene/camera/picking authority.
+- Cesium is not the primary engine; its screen-space-error selection, ENU frames, and relative-to-eye encoding inform OFU's LOD and precision model.
+- OpenSpace is not transplanted; anchor/focus/aim, target-oriented flight, and restorable target-relative state inform OFU's camera.
+- Literal zoom into unknown chemistry remains rejected. The sample is canonical/model context; lower-scale geometry is explicitly model-derived or presentation-only.
+
+Primary references: [Babylon optimization and instrumentation](https://github.com/BabylonJS/Documentation/blob/master/content/features/featuresDeepDive/scene/optimize_your_scene.md), [Babylon instances and thin instances](https://github.com/BabylonJS/Documentation/blob/master/content/features/featuresDeepDive/mesh/copies/instances.md), [Cesium selection algorithm](https://cesium.com/learn/cesium-native/ref-doc/selection-algorithm-details.html), [Cesium Camera](https://cesium.com/learn/cesiumjs/ref-doc/Camera.html?classFilter=entity), [Cesium relative-to-eye encoding](https://cesium.com/downloads/cesiumjs/releases/b18/Documentation/EncodedCartesian3.html), [OpenSpace navigation](https://docs.openspaceproject.com/latest/using-openspace/toolbar/navigation/index.html), and [OpenSpace NavigationState](https://docs.openspaceproject.com/latest/reference/asset-components/Other/NavigationState.html).
+
+## Known risks and reversibility
+
+- Physical-GPU frame pacing, Safari/WebKit, physical touch, and screen-reader workflows are unproven.
+- Terrain and system composition are still experiment-grade art; patch refinement is bounded but not planet-scale sparse refinement.
+- Alternate selected sibling bodies cannot yet be materialized in place for their own honest surface descent.
+- The full V2 donor inflates the artifact and startup.
+- The proving slice covers SYSTEM through ATOMIC. The four upper macro regimes are intentionally not migrated.
+
+The experiment remains isolated behind its build target and Draft PR. Stable V2 is unchanged. Removing the experiment modules, tests/docs, dependencies, and the legacy disposal seam returns the base without data migration.
+
+## Recommendation
+
+`CONTINUE_EXPERIMENT`
+
+R2 validates the target-derived camera, frame-to-render pipeline, geodetic target contract, multi-world binding, bounded LOD, and engine-owned resource model. It does not satisfy the R2 expansion gate because physical-GPU performance and WebKit/Safari remain unproven and alternate-world surface materialization plus scalable sparse terrain refinement remain incomplete.
