@@ -13,15 +13,15 @@ const orbitPosition=(id,orbitMeters,inclinationMilliDeg=0)=>{const angle=hash(id
 const sameKey=(a,b)=>!!a&&!!b&&['galaxyX','galaxyY','galaxyZ','sectorX','sectorY','sectorZ','siteX','siteY','siteZ','orbitSlot'].every(field=>String(a[field])===String(b[field]));
 const copyKey=key=>Object.freeze(Object.fromEntries(Object.entries(key).map(([name,value])=>[name,BigInt(value)])));
 
-export function captureGenuineOFUWorld(root=globalThis,{profile='origin',orbitSlot=null,latMicroDeg=null,lonMicroDeg=null,canonicalKey=null}={}) {
+export function captureGenuineOFUWorld(root=globalThis,{profile='origin',orbitSlot=null,latMicroDeg=null,lonMicroDeg=null,canonicalKey=null,runtime:providedRuntime=null,sampleId:selectedSampleId=null}={}) {
   const O=root.OFU, product=O?.v1LivingProduct, preview=root.__OFU_PLANET_PREVIEW__;
-  if (!O?.p3Astronomy || !product?.runtime || !preview?.chosen?.key) throw new Error('Released OFU canonical runtime is not ready');
-  const baseKey=preview.chosen.key,multi=String(profile).toLowerCase()==='multi',key=copyKey(canonicalKey||(multi?{...baseKey,siteX:46n,siteY:437n,siteZ:400n,orbitSlot:BigInt(orbitSlot??2)}:baseKey)),runtime=product.runtime;
+  if (!O?.p3Astronomy || !(providedRuntime||product?.runtime) || !preview?.chosen?.key) throw new Error('Released OFU canonical runtime is not ready');
+  const baseKey=preview.chosen.key,multi=String(profile).toLowerCase()==='multi',key=copyKey(canonicalKey||(multi?{...baseKey,siteX:46n,siteY:437n,siteZ:400n,orbitSlot:BigInt(orbitSlot??2)}:baseKey)),runtime=providedRuntime||product.runtime;
   runtime.enterKey(key);
   if(latMicroDeg!=null||lonMicroDeg!=null){const latitude=Number(latMicroDeg||0),longitude=Number(lonMicroDeg||0);if(!Number.isSafeInteger(latitude)||latitude < -90000000||latitude > 90000000||!Number.isSafeInteger(longitude))throw new Error('Invalid model-derived surface coordinates');runtime.at(latitude,longitude,{stage:'HUMAN'})}else runtime.scale('HUMAN');
   const state=runtime.snapshot(), graphSeed=runtime.graphForKey(key), body=graphSeed.body, system=graphSeed.system;
   if (!state.world || !state.local || !state.point || !body || !system) throw new Error('Genuine OFU world did not materialize');
-  const sample=state.local.objects.find(item=>item.kind==='ROCK') || state.local.objects.find(item=>['WATER','ICE','ARTIFACT','ORGANISM'].includes(item.kind));
+  const sample=state.local.objects.find(item=>item.entityId===String(selectedSampleId||'')) || state.local.objects.find(item=>item.kind==='ROCK') || state.local.objects.find(item=>['WATER','ICE','ARTIFACT','ORGANISM'].includes(item.kind));
   if (!sample) throw new Error('Genuine OFU local context has no inspectable sample');
   const source=runtime.query('v1.query.material-source',{...state.point,historyEpoch:state.world?.civilization?.epoch??0,objectId:sample.entityId});
   const microSession=O.v1MicroPipeline.createSession(source,{microFeatures:64,molecularUnits:24,atoms:96});
@@ -55,6 +55,10 @@ export function captureGenuineOFUWorld(root=globalThis,{profile='origin',orbitSl
   const spatialGraph=createSpatialGraph(nodes,{focusId:bodyId});
   const frames=createReferenceFrameRegistry([
     {id:'cosmic',metersPerUnit:1,parentId:null,transformAuthority:AUTHORITY.UNKNOWN,entityAuthority:AUTHORITY.UNKNOWN},
+    {id:'macro-universe',metersPerUnit:1e23,parentId:'cosmic',originInParent:[0,0,0],transformAuthority:AUTHORITY.PRESENTATION_ONLY,entityAuthority:AUTHORITY.CANONICAL},
+    {id:'macro-galaxy',metersPerUnit:1e20,parentId:'macro-universe',originInParent:[0,0,0],transformAuthority:AUTHORITY.PRESENTATION_ONLY,entityAuthority:AUTHORITY.CANONICAL},
+    {id:'macro-region',metersPerUnit:1e17,parentId:'macro-galaxy',originInParent:[0,0,0],transformAuthority:AUTHORITY.PRESENTATION_ONLY,entityAuthority:AUTHORITY.MODEL_DERIVED},
+    {id:'macro-neighborhood',metersPerUnit:1e15,parentId:'macro-region',originInParent:[0,0,0],transformAuthority:AUTHORITY.PRESENTATION_ONLY,entityAuthority:AUTHORITY.MODEL_DERIVED},
     {id:'system-barycentric',metersPerUnit:1,parentId:'cosmic',originInParent:[0,0,0],transformAuthority:AUTHORITY.PRESENTATION_ONLY,entityAuthority:AUTHORITY.CANONICAL},
     ...rawBodies.map(item=>({id:item.frameId,metersPerUnit:item.id===bodyId?physicalRadius:1,parentId:'system-barycentric',originInParent:item.positionM,transformAuthority:item.authority.position,entityAuthority:item.authority.entity,phaseAuthority:item.authority.phase})),
     {id:bodyFixedFrameId,metersPerUnit:physicalRadius,parentId:bodyFrameId,originInParent:[0,0,0],transformAuthority:AUTHORITY.MODEL_DERIVED,entityAuthority:AUTHORITY.CANONICAL,phaseAuthority:AUTHORITY.UNKNOWN},
@@ -65,6 +69,10 @@ export function captureGenuineOFUWorld(root=globalThis,{profile='origin',orbitSl
   const surfaceUp=frames.directionToRoot([0,1,0],localFrameId),surfaceFrame={surfaceFrameId:localFrameId,up:surfaceUp};
   const bodyTargets=Object.freeze(Object.fromEntries(rawBodies.filter(item=>item.kind==='planet').map(item=>[item.id,Object.freeze({id:item.id,frameId:item.frameId,point:[0,0,0],radiusM:item.radiusM,radiusAuthority:item.radiusAuthority,renderRadius:3,up:item.id===bodyId?surfaceUp:[0,1,0],surfaceFrameId:item.id===bodyId?localFrameId:null})])));
   const cameraTargets=Object.freeze({
+    universe:Object.freeze({id:'visible-universe',frameId:'macro-universe',point:[0,0,0],radiusM:3e24,renderRadius:28,up:[0,1,0]}),
+    galaxy:Object.freeze({id:'focused-galaxy',frameId:'macro-galaxy',point:[0,0,0],radiusM:9e20,renderRadius:23,up:[0,1,0]}),
+    region:Object.freeze({id:'focused-region',frameId:'macro-region',point:[0,0,0],radiusM:4e17,renderRadius:18,up:[0,1,0]}),
+    neighborhood:Object.freeze({id:'focused-neighborhood',frameId:'macro-neighborhood',point:[0,0,0],radiusM:7e15,renderRadius:16,up:[0,1,0]}),
     system:Object.freeze({id:systemId,frameId:'system-barycentric',point:[0,0,0],radiusM:systemRadiusM,renderRadius:15,up:[0,1,0],...surfaceFrame}),
     body:Object.freeze({id:bodyId,frameId:bodyFrameId,point:[0,0,0],radiusM:physicalRadius,renderRadius:3,up:surfaceUp,...surfaceFrame}),
     regional:Object.freeze({id:surfaceId,frameId:localFrameId,point:[0,0,0],radiusM:340000,renderRadius:17,up:surfaceUp,...surfaceFrame}),

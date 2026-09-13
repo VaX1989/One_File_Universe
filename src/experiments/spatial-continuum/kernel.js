@@ -2,7 +2,7 @@ import { CONTINUUM_STOPS, MAX_SCALE_COORDINATE, stageForCoordinate, stopForStage
 import { createTargetAwareCamera } from './camera.js';
 import { createContinuousScale } from './scale-model.js';
 
-export function createContinuumKernel({graph, frames, targets, initialStage='SYSTEM', reducedMotion=false, transitionDurationMs=1050} = {}) {
+export function createContinuumKernel({graph, frames, targets, initialStage='UNIVERSE', reducedMotion=false, transitionDurationMs=1050} = {}) {
   if (!graph || !frames || !targets) throw new TypeError('Spatial graph, reference frames, and camera targets are required');
   const scale=createContinuousScale({initial:initialStage,durationMs:transitionDurationMs,reducedMotion});
   let activeGraph=graph,activeFrames=frames,activeTargets=targets,camera=createTargetAwareCamera({anchorId:graph.focusId,focusId:graph.focusId,targets,frames});

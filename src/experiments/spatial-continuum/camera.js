@@ -7,6 +7,10 @@ const normalize=value=>{const length=Math.hypot(...value);return length>0?value.
 const logMix=(a,b,t)=>Math.exp(mix(Math.log(a),Math.log(b),t));
 
 const PROFILES=Object.freeze([
+  Object.freeze({target:'universe',coverage:.50,fov:.72,direction:'UNIVERSE'}),
+  Object.freeze({target:'galaxy',coverage:.62,fov:.68,direction:'GALAXY'}),
+  Object.freeze({target:'region',coverage:.72,fov:.66,direction:'REGION'}),
+  Object.freeze({target:'neighborhood',coverage:.58,fov:.66,direction:'NEIGHBORHOOD'}),
   Object.freeze({target:'system',coverage:.50,fov:.66,direction:'SYSTEM'}),
   Object.freeze({target:'body',coverage:.58,fov:.64,direction:'ORBIT'}),
   Object.freeze({target:'body',coverage:1.08,fov:.61,direction:'APPROACH'}),
@@ -29,7 +33,7 @@ export function distanceForProjectedCoverage(radius,fov,coverage){
 function directionFor(kind,target,yaw,pitch,frames){
   const surface=target.surfaceFrameId&&frames.get(target.surfaceFrameId)?target.surfaceFrameId:null;
   const east=surface?frames.directionToRoot([1,0,0],surface):[1,0,0], up=surface?frames.directionToRoot([0,1,0],surface):[0,1,0], north=surface?frames.directionToRoot([0,0,1],surface):[0,0,1];
-  let base=kind==='SYSTEM'?[.2,.26,1]:kind==='ORBIT'?mix3(up,mix3(east,north,.62),.46):kind==='APPROACH'?mix3(up,north,.24):kind==='SURFACE'?mix3(up,north,.08):kind==='LOCAL'?mix3(up,north,.62):kind==='CONTEXT'?mix3(up,north,.92):[0,0,1];
+  let base=kind==='UNIVERSE'?[.16,.18,1]:kind==='GALAXY'?[.1,.3,1]:kind==='REGION'?[.2,.18,1]:kind==='NEIGHBORHOOD'?[.08,.1,1]:kind==='SYSTEM'?[.2,.26,1]:kind==='ORBIT'?mix3(up,mix3(east,north,.62),.46):kind==='APPROACH'?mix3(up,north,.24):kind==='SURFACE'?mix3(up,north,.08):kind==='LOCAL'?mix3(up,north,.62):kind==='CONTEXT'?mix3(up,north,.92):[0,0,1];
   base=normalize(base);
   if(kind==='HUMAN')return base;
   const horizontal=normalize([base[0],0,base[2]]), angle=Math.atan2(horizontal[0],horizontal[2])+yaw, elevation=Math.asin(clamp(base[1],-1,1))+pitch*.45;

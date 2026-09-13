@@ -29,5 +29,5 @@ export function createSpatialAddress(segments=[]){
 
 export function addressFromNode(node,parentAddress=createSpatialAddress()){
   if(!node)throw new TypeError('Address node is required');
-  return parentAddress.append({id:node.entityId||node.id,kind:node.kind,authority:String(node.sourceAuthority||node.authority||AUTHORITY.UNKNOWN).includes('CANONICAL')?AUTHORITY.CANONICAL:String(node.sourceAuthority||node.authority||'').includes('MODEL')?AUTHORITY.MODEL_DERIVED:AUTHORITY.UNKNOWN,key:node.canonicalKey||node.metadata?.point||{},capabilities:[node.selectable&&'SELECT',node.navigable&&'TRAVEL'].filter(Boolean)});
+  return parentAddress.append({id:node.canonicalId||node.entityId||node.id,kind:node.kind,authority:String(node.sourceAuthority||node.authority||AUTHORITY.UNKNOWN).includes('CANONICAL')?AUTHORITY.CANONICAL:String(node.sourceAuthority||node.authority||'').includes('MODEL')?AUTHORITY.MODEL_DERIVED:AUTHORITY.UNKNOWN,key:node.canonicalKey||node.metadata?.point||{},capabilities:[node.selectable&&'SELECT',node.navigable&&'TRAVEL'].filter(Boolean)});
 }
