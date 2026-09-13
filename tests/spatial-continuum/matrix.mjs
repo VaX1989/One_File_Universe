@@ -6,7 +6,7 @@ import { pathToFileURL } from 'node:url';
 import { chromium, firefox, webkit } from 'playwright';
 import { selectFirstLocalSample, selectFirstSupportedWorld } from './open-journey-helper.mjs';
 
-const root=process.cwd(),artifact=path.join(root,'dist','One_File_Universe_Spatial_Continuum.html'),fileUrl=pathToFileURL(artifact).href,evidenceDir=path.resolve(process.env.OFU_CONTINUUM_EVIDENCE_DIR||path.join(root,'reports','local','spatial-continuum-r3'));
+const root=process.cwd(),artifact=path.join(root,'dist','One_File_Universe_Spatial_Continuum.html'),fileUrl=pathToFileURL(artifact).href,evidenceDir=path.resolve(process.env.OFU_CONTINUUM_EVIDENCE_DIR||path.join(root,'reports','local','spatial-continuum-r4'));
 fs.mkdirSync(evidenceDir,{recursive:true});
 const allEngines={chromium,firefox,webkit},requested=String(process.env.OFU_CONTINUUM_BROWSER||'').toLowerCase(),engines=requested?{[requested]:allEngines[requested]}:allEngines,results=[];
 if(Object.values(engines).some(value=>!value))throw new Error('Unknown OFU_CONTINUUM_BROWSER: '+requested);

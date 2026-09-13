@@ -106,6 +106,10 @@ jobs:
         env:
           OFU_CONTINUUM_EVIDENCE_DIR: reports/ci/chromium-convergence
         run: npm run test:continuum:accessibility-mobile
+      - name: Capture all-scale temporal visual evidence
+        env:
+          OFU_CONTINUUM_EVIDENCE_DIR: reports/ci/chromium-convergence/visual-sequence
+        run: npm run test:continuum:visual
       - name: Run performance and resource soak
         env:
           OFU_CONTINUUM_EVIDENCE_DIR: reports/ci/chromium-convergence
