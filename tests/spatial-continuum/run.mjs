@@ -12,8 +12,14 @@ import { createContinuousScale, representationHandoff } from '../../src/experime
 import { createSpatialGraph } from '../../src/experiments/spatial-continuum/spatial-graph.js';
 import { perceptualLod, projectedSpanPixels, sparseTerrainPatchPlan, terrainPatchPlan } from '../../src/experiments/spatial-continuum/lod.js';
 import { deterministicTerrainHeightMeters } from '../../src/experiments/spatial-continuum/terrain-field.js';
+import { createSpatialAddress } from '../../src/experiments/spatial-continuum/spatial-address.js';
+import { createMaterializationCache } from '../../src/experiments/spatial-continuum/materialization-cache.js';
 
 const root=process.cwd(),sha=value=>crypto.createHash('sha256').update(value).digest('hex');
+const universeAddress=createSpatialAddress([{id:'u',kind:'UNIVERSE',authority:AUTHORITY.CANONICAL,key:{seed:1n}}]),galaxyAddress=universeAddress.append({id:'g',kind:'GALAXY',authority:AUTHORITY.CANONICAL,key:{x:2n,y:-1n,z:9n}}),systemAddress=galaxyAddress.append({id:'s',kind:'SYSTEM',authority:AUTHORITY.CANONICAL});
+assert.equal(systemAddress.depth,3);assert.deepEqual(systemAddress.ids,['u','g','s']);assert.match(systemAddress.serialized,/universe:u\/galaxy:g\/system:s/);assert.equal(systemAddress.parent().leaf.id,'g');assert.equal(systemAddress.segments[1].key.x,'2');assert.throws(()=>createSpatialAddress([{id:'u',kind:'UNIVERSE'},{id:'bad',kind:'GALAXY',parentId:'other'}]),/parent mismatch/i);
+const disposed=[],cache=createMaterializationCache({maxEntries:3,onDispose:(value,meta)=>disposed.push([value.id,meta.reason])});
+const make=id=>({id});cache.materialize('u',()=>make('u'),{kind:'UNIVERSE',pin:true});cache.materialize('g:a',()=>make('a'),{kind:'GALAXY'});cache.materialize('g:b',()=>make('b'),{kind:'GALAXY'});assert.equal(cache.get('g:a').id,'a');cache.materialize('g:c',()=>make('c'),{kind:'GALAXY'});assert.equal(cache.has('g:b'),false,'least-recently-used unpinned context must be evicted');assert.equal(cache.has('u'),true,'active ancestry pin must survive eviction');cache.materialize('g:b',()=>make('b2'),{kind:'GALAXY'});assert.equal(cache.snapshot().metrics.rematerializations,1);assert.equal(cache.snapshot().bounded,true);cache.clear();assert.ok(disposed.length>=4);
 const graph=()=>createSpatialGraph([
   {id:'system',kind:'SYSTEM',frameId:'system',authority:AUTHORITY.CANONICAL},
   {id:'body',kind:'PLANET',parentId:'system',frameId:'body',authority:AUTHORITY.CANONICAL},
