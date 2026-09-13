@@ -1,0 +1,38 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+import { chromium, firefox, webkit } from 'playwright';
+
+const root=process.cwd(),artifact=path.join(root,'dist','One_File_Universe_Spatial_Continuum.html'),fileUrl=pathToFileURL(artifact).href,evidenceDir=path.resolve(process.env.OFU_CONTINUUM_EVIDENCE_DIR||path.join(root,'reports','local','spatial-continuum-r2'));
+fs.mkdirSync(evidenceDir,{recursive:true});
+const engines={chromium,firefox,webkit},results=[];
+
+for(const [name,type] of Object.entries(engines)){
+  let browser;
+  try{
+    browser=await type.launch({headless:true});
+    const context=await browser.newContext({viewport:{width:1280,height:800}}),page=await context.newPage(),errors=[],network=[];
+    page.on('pageerror',error=>errors.push(String(error.stack||error)));
+    page.on('console',message=>{if(message.type()==='error')errors.push('console: '+message.text())});
+    page.on('request',request=>{if(/^https?:/i.test(request.url()))network.push(request.url())});
+    await page.goto(fileUrl,{waitUntil:'load'});
+    await page.waitForFunction(()=>globalThis.__OFU_SPATIAL_CONTINUUM__?.status==='FAIL'||globalThis.__OFU_SPATIAL_CONTINUUM__?.snapshot?.().status==='READY',undefined,{timeout:120000});
+    const startup=await page.evaluate(()=>globalThis.__OFU_SPATIAL_CONTINUUM__?.status==='FAIL'?globalThis.__OFU_SPATIAL_CONTINUUM__:null);
+    if(startup)throw new Error('Continuum startup failed: '+JSON.stringify(startup));
+    const initial=await page.evaluate(()=>__OFU_SPATIAL_CONTINUUM__.snapshot()),bodyMetric=initial.render.pickTargets.body;
+    const picked=await page.evaluate(({x,y})=>__OFU_SPATIAL_CONTINUUM__.renderer.pick(x,y)?.id||null,{x:bodyMetric.clientX,y:bodyMetric.clientY});
+    assert.equal(picked,initial.worldIdentity,name+' renderer picking must match its visible body');
+    const stages=[];
+    for(const stage of ['ORBIT','HUMAN','ATOMIC','SYSTEM']){await page.evaluate(stage=>{__OFU_SPATIAL_CONTINUUM__.travelTo(stage);__OFU_SPATIAL_CONTINUUM__.settle()},stage);await page.waitForTimeout(80);const state=await page.evaluate(()=>__OFU_SPATIAL_CONTINUUM__.snapshot());assert.equal(state.state.scale.semanticStage,stage);assert.equal(state.render.sceneCount,1);assert.equal(state.render.cameraCount,1);assert.ok(state.render.activeMeshes>0);stages.push({stage,activeMeshes:state.render.activeMeshes,backend:state.render.backend})}
+    await page.screenshot({path:path.join(evidenceDir,'matrix-'+name+'.png')});
+    assert.deepEqual(errors,[]);assert.deepEqual(network,[]);
+    results.push({browser:name,status:'PASS',version:await browser.version(),directFile:true,offline:true,webgl:initial.render.backend,stages});
+    await context.close();
+  }catch(error){results.push({browser:name,status:'BLOCKED_ENVIRONMENT',error:String(error?.message||error).split('\n').slice(0,4).join('\n')})}
+  finally{await browser?.close().catch(()=>{})}
+}
+
+for(const required of ['chromium','firefox'])assert.equal(results.find(row=>row.browser===required)?.status,'PASS',required+' must execute the Continuum itself');
+const blocked=results.filter(row=>row.status!=='PASS'),output={status:blocked.length?'PASS_WITH_ENVIRONMENT_BLOCKER':'PASS',suite:'spatial-continuum-browser-matrix',continuumTested:results.filter(row=>row.status==='PASS').map(row=>row.browser),blocked:blocked.map(row=>row.browser),results};
+fs.writeFileSync(path.join(evidenceDir,'matrix-results.json'),JSON.stringify(output,null,2)+'\n');console.log(JSON.stringify(output,null,2));

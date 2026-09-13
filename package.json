@@ -13,7 +13,10 @@
     "test:frontier-docs": "node tools/validate-frontier-docs.mjs && node tests/governance/frontier-ratification.mjs",
     "build:continuum": "node tools/build-spatial-continuum.mjs",
     "test:continuum": "node tests/spatial-continuum/run.mjs",
-    "test:continuum:browser": "node tests/spatial-continuum/browser.mjs"
+    "test:continuum:browser": "node tests/spatial-continuum/browser.mjs",
+    "test:continuum:generalization": "node tests/spatial-continuum/generalization.mjs",
+    "test:continuum:matrix": "node tests/spatial-continuum/matrix.mjs",
+    "test:continuum:performance": "node tests/spatial-continuum/performance.mjs"
   },
   "dependencies": {
     "@babylonjs/core": "9.26.0"
