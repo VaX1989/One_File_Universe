@@ -53,6 +53,8 @@ The first representation adapter consumes existing P3/P5 authority rather than i
 
 The causal trace explicitly lists influences, non-influences, and unknowns. Terrain elevation, palettes, local scatter, molecular layout, and atomic layout remain `PRESENTATION_ONLY`; their conditioning by mass, radius, gravity, insolation, source location, and sample kind is not promoted into a physical measurement claim.
 
+Planetary presentation is downstream only from planet/system scientific state and the body's presentation seed. A selected local sample may condition material and microscopic grammar, but it cannot recolor or otherwise mutate its parent planet's visual identity.
+
 ## R5-04 bounded galaxy streaming
 
 The former eight-galaxy universe is now an eight-galaxy active window. The user can traverse positive or negative galaxy-field coordinates through visible controls or bracket keys. Window addresses use unbounded integer coordinates supplied to the existing P3 exploration authority; only one window and a bounded LRU working set are active.
@@ -66,3 +68,9 @@ A versioned bookmark serializes the open-universe address, active galaxy window,
 The active world lifecycle can be explicitly released before restoration. This makes exact revisit evidence prove reconstruction after disposal, and the JSON-safe bookmark can also cross a full document reload rather than relying on retained in-memory object identity.
 
 Continuum bootstrap and subsequent discovery now use the experiment's isolated read-only authority runtime. The released Living runtime is disposed after authority startup but is never driven through scale or selection as a data-query shortcut; this prevents an experimental inspection from contaminating V2's persisted semantic navigation state.
+
+## R5-06 cross-galaxy causal diversity
+
+A dedicated browser falsification traverses three independently selected galaxies through three regions, systems, supported solid bodies, surface contexts, local samples, and every material/microscopic landmark to `ATOMIC`, then performs the complete conceptual reverse for each. The sample records scientific and presentation state separately and requires diversity in physical inputs, terrain relief/frequency descriptors, planetary palettes, and microscopic layouts. Unsupported physical domains remain explicit blockers.
+
+The test found and removed an inverted dependency: local `sample.kind` had been allowed to choose the parent planet's palette. Planet appearance now derives only from planet/system scientific state plus the body's presentation stream; sample identity is confined to local material and microscopic grammar. Three audited worlds differ across radius, gravity, mass, insolation, terrain spectra, palettes, and microscopic layouts without promoting presentation geometry to scientific fact.
