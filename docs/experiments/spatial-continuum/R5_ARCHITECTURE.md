@@ -43,7 +43,7 @@ The three independent version axes are:
 
 - generator: `ofu-spatial-continuum-generator-r5-1`;
 - scientific model: `p3-astronomy-1+p5-planet-physical-1+ofu-v1-model-suite-1`;
-- representation: `ofu-spatial-continuum-representation-r5-2`.
+- representation: `ofu-spatial-continuum-representation-r5-3`.
 
 Changing representation input or version cannot mutate a scientific-state hash. A bounded 4,096-address collision and order audit is part of the rapid suite; it is useful falsification evidence, not a proof that SHA-256 can never collide.
 
@@ -111,7 +111,7 @@ One sampled sparse window returned fewer than the requested eight galaxies insid
 
 An adversarial surface-retarget test exposed that the original R5 representation seed included the selected surface identity. That made it possible for moving to another location on the same planet to change the parent planet palette and replace the global terrain seed. This violated both causal direction and landmark continuity.
 
-Representation contract `ofu-spatial-continuum-representation-r5-2` separates the streams:
+Representation contract `ofu-spatial-continuum-representation-r5-3` separates the streams:
 
 ```text
 body seed
@@ -123,3 +123,11 @@ body seed
 ```
 
 Changing the surface point now preserves the planet scientific hash, planet representation hash, palette, terrain profile, and terrain seed while changing the local stream. The browser regression performs an actual renderer-owned globe pick and fails if any parent-planet presentation mutates. Existing R5 bookmarks fail closed across the representation-version change instead of silently reconstructing a different visible planet.
+
+## R5-10 one planetary field, two coordinate views
+
+The terrain elevation address is now a normalized body-fixed direction plus the body-stable terrain seed. A continuous deterministic 3D value-noise field is sampled on that sphere; cube faces, LOD patches, camera state, and the selected landmark do not participate in the address. The local terrain sampler maps east/north metres through the retained tangent basis back to a body-fixed direction, then subtracts the exact target elevation. Therefore the local height is a view of the same planetary field rather than a freshly seeded map.
+
+The field adds no measured elevation claims. Its authority remains `PRESENTATION_ONLY`, while the surface target itself remains `MODEL_DERIVED`. Unit falsification now covers cube-face seam equivalence, exact local/global correspondence, target-relative zero, and non-repetition across two locations on one body. The real browser path proves the target contract survives renderer-owned surface retarget, HUMAN materialization, destructive reconstruction, and full document reload.
+
+Human review rejected the original solid-world output because a model-derived terrestrial body read as a striped gas giant. Representation R5-3 now conditions globe albedo on the bulk prior and separates subtle elevation tint from body-seeded albedo variation. The classification error is repaired, but orbital surface detail remains too smooth in software-rendered evidence. This checkpoint strengthens spatial causality; it does **not** satisfy the R5 visual-quality or complete cube-sphere geometry gate. Cube-sphere patch planning still does not own the rendered global mesh.
