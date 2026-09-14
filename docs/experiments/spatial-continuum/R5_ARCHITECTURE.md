@@ -90,3 +90,19 @@ The semantic working index is rebuilt from the active galaxy window and the curr
 - one bounded current semantic working index.
 
 The pointer/bounds browser falsification redirects galaxy, body, and surface travel twice, restores the root bookmark, then visits 70 unique galaxy windows. This is a correctness and retention test, not a latency pass. On software-rendered headless Chromium, the synchronous discovery/rebind loop is conspicuously slow. R5 therefore still requires event-demand/deferred visual rebinding and explicit field-navigation timing evidence before deterministic streaming can be considered product-ready.
+
+## R5-08 population diversity falsification
+
+The canonical diversity manifest samples 12 deterministic galaxy-field windows without rendering or deep world materialization. Sparse discovery produced 88 galaxies, 48 model regions, and 60 complete stellar-system descriptors. IDs are excluded from scientific descriptor hashes, so a unique hash requires distinct state rather than merely a different address.
+
+Observed results:
+
+- all 88 galaxy, 48 region, and 60 system identities were unique;
+- all corresponding scientific/model descriptor hashes were unique, with zero duplicate full-state hashes;
+- galaxy morphology distribution was 72 `DISK`, 12 `IRREGULAR`, and 4 `SPHEROID`;
+- system architecture distribution was 57 `PRIMARY_HOSTED` and 3 `CIRCUMBINARY`;
+- 60 systems produced 53 distinct structural shapes from star count, planet count, moon count, architecture, and body-class histogram;
+- replaying the same windows in reverse order reproduced the exact ordered galaxy lists;
+- runtime network requests remained zero.
+
+One sampled sparse window returned fewer than the requested eight galaxies inside the fixed 4,096-probe budget. The test records that density outcome instead of forcing every window to contain an identical count. This lightweight dossier demonstrates state diversity and catches template/hash collapse; it does not perform the required label-free human visual anti-sameness review. The pronounced synchronous sampling time remains a performance blocker rather than a correctness exception.
