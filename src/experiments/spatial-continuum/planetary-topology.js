@@ -27,6 +27,11 @@ export function cubeSphereTileCenter({face,level,x,y}){
   const side=2**Number(level),u=(Number(x)+.5)/side*2-1,v=(Number(y)+.5)/side*2-1;return cubeFaceUvToDirection(face,u,v);
 }
 
+export function cubeSphereTileUvBounds({face,level,x,y}){
+  const depth=Number(level),tileX=Number(x),tileY=Number(y),side=2**depth;if(!CUBE_FACES.includes(String(face).toUpperCase())||!Number.isInteger(depth)||depth<0||depth>26||!Number.isInteger(tileX)||!Number.isInteger(tileY)||tileX<0||tileY<0||tileX>=side||tileY>=side)throw new TypeError('Invalid cube-sphere tile address');
+  const span=2/side;return Object.freeze({face:String(face).toUpperCase(),level:depth,x:tileX,y:tileY,minU:-1+tileX*span,maxU:-1+(tileX+1)*span,minV:-1+tileY*span,maxV:-1+(tileY+1)*span});
+}
+
 export function modelCoordinatesFromDirection(direction){
   const [x,y,z]=normalize(direction),latitude=Math.asin(clamp(y,-1,1))*180/Math.PI,longitude=Math.atan2(z,x)*180/Math.PI;
   return Object.freeze({latMicroDeg:Math.round(latitude*1e6),lonMicroDeg:Math.round(longitude*1e6),bodyFixedUnit:Object.freeze([x,y,z]),authority:'MODEL_DERIVED',canonicalGeodesyClaim:false});

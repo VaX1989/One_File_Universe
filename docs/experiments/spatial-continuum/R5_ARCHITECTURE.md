@@ -43,7 +43,7 @@ The three independent version axes are:
 
 - generator: `ofu-spatial-continuum-generator-r5-1`;
 - scientific model: `p3-astronomy-1+p5-planet-physical-1+ofu-v1-model-suite-1`;
-- representation: `ofu-spatial-continuum-representation-r5-3`.
+- representation: `ofu-spatial-continuum-representation-r5-4`.
 
 Changing representation input or version cannot mutate a scientific-state hash. A bounded 4,096-address collision and order audit is part of the rapid suite; it is useful falsification evidence, not a proof that SHA-256 can never collide.
 
@@ -111,7 +111,7 @@ One sampled sparse window returned fewer than the requested eight galaxies insid
 
 An adversarial surface-retarget test exposed that the original R5 representation seed included the selected surface identity. That made it possible for moving to another location on the same planet to change the parent planet palette and replace the global terrain seed. This violated both causal direction and landmark continuity.
 
-Representation contract `ofu-spatial-continuum-representation-r5-3` separates the streams:
+Representation contract `ofu-spatial-continuum-representation-r5-4` separates the streams:
 
 ```text
 body seed
@@ -131,3 +131,15 @@ The terrain elevation address is now a normalized body-fixed direction plus the 
 The field adds no measured elevation claims. Its authority remains `PRESENTATION_ONLY`, while the surface target itself remains `MODEL_DERIVED`. Unit falsification now covers cube-face seam equivalence, exact local/global correspondence, target-relative zero, and non-repetition across two locations on one body. The real browser path proves the target contract survives renderer-owned surface retarget, HUMAN materialization, destructive reconstruction, and full document reload.
 
 Human review rejected the original solid-world output because a model-derived terrestrial body read as a striped gas giant. Representation R5-3 now conditions globe albedo on the bulk prior and separates subtle elevation tint from body-seeded albedo variation. The classification error is repaired, but orbital surface detail remains too smooth in software-rendered evidence. This checkpoint strengthens spatial causality; it does **not** satisfy the R5 visual-quality or complete cube-sphere geometry gate. Cube-sphere patch planning still does not own the rendered global mesh.
+
+## R5-11 rendered bounded cube-sphere
+
+Representation R5-4 makes the screen-space-error cube-sphere plan own rendered geometry during APPROACH and GLOBAL. Each active tile obtains its UV bounds from its stable face/level/x/y address, samples the shared body-fixed terrain field, and contributes to one aggregate Babylon mesh. The aggregate keeps the planetary surface to one draw-call-scale mesh instead of turning the 96-patch budget into 96 draw calls. A bounded 128-entry LRU geometry cache preserves nearby refinement work; cache entries and the active plan are exposed as renderer evidence.
+
+The planner now uses the actual camera position transformed into selected-body local coordinates rather than substituting the retained surface target as the camera direction. The underlying canonical sphere remains a seam backstop while mixed LOD is active. This is a deliberate proving compromise: it closes the gap between diagnostic LOD and real mesh ownership without claiming final crack-free neighbor stitching. Elevation remains `PRESENTATION_ONLY`; the visible radial displacement uses 6× presentation exaggeration and is disclosed in the renderer snapshot. The globe representation applies one stable body-scale Nyquist cutoff to the shared field so microscopic terrain bands do not alias into a wrinkled planet; the full field remains available to the local ENU view.
+
+Visual falsification rejected two intermediate implementations before this checkpoint. Per-patch computed normals exposed mixed LOD as large polygon facets. Sampling ridge/local frequency bands at global distance then produced a topologically clean but visibly wrinkled sphere. Shared radial normals and the body-scale cutoff remove both storage artifacts. The remaining result is coherent but generic and soft; it is an architectural improvement, not a claim that the R5 visual differential is satisfied.
+
+The exact software-rendered Chromium profile reports 10.5 ms median input response and renderer work of 1.3 ms median / 5.6 ms p95; GLOBAL itself measures 1.0 ms median / 1.3 ms p95. Headless animation cadence remains poor at 66.6 ms median / 133.3 ms p95, and the environment identifies SwiftShader rather than a physical GPU. Ten complete resource loops held meshes, materials, textures, vertices, scene count, and camera count exactly stable; sampled JS heap ended 3,429,452 bytes below its first sample. This is bounded-resource and CPU-cost evidence, not physical-GPU frame-pacing certification.
+
+The R5 browser convergence pass also repaired two accessibility defects exposed by the open-universe test adaptation: the dynamic destination selector now receives its accessible name from the visible label, and forced-colors mode gives explicit focus outlines to the canvas, selector, scale landmarks, and primary controls. The pass covers context-loss restore followed by render, pick, travel, and HUMAN movement, plus landscape phone, portrait high-DPR phone, orientation change, tablet, 200% zoom, and reduced motion.
