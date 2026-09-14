@@ -3,6 +3,7 @@ import { presentationOrbitAuthority, spatialAuthority } from './authority.js';
 import { deterministicModelCoordinates, surfaceTargetFromModel } from './geodesy.js';
 import { createReferenceFrameRegistry } from './reference-frames.js';
 import { createSpatialGraph } from './spatial-graph.js';
+import { createWorldScientificState } from './scientific-state.js';
 import { deterministicTerrainHeight } from './terrain-field.js';
 
 const idOf = node => node?.canonicalId || node?.entityId || node?.id || null;
@@ -48,6 +49,7 @@ export function captureGenuineOFUWorld(root=globalThis,{profile='origin',orbitSl
   const p3Snapshot=O.p3Astronomy.planetaryInputSnapshot(preview.ctx,key),adapted=O.p5Planetology.adaptP3PlanetaryInputSnapshot(p3Snapshot),physical=O.p5Planetology.realizePhysicalPlanet(preview.ctx,adapted);
   if(physical.status!=='SUPPORTED')throw new Error('Selected genuine world is outside the physical visualization domain: '+String(physical.reason));
   const physicalRadius=Number(physical.physical.meanRadiusM);
+  const generative=createWorldScientificState({runtime,system,body,physical,point:state.point,sample,source});
   const orbitMeters=Number(state.body?.metadata?.facts?.baselineSemiMajorAxisMicroAu || 1000000) * 149597.8707;
   const surfaceTarget=surfaceTargetFromModel({bodyId,locationIdentity:surfaceId,latMicroDeg:state.point.latMicroDeg,lonMicroDeg:state.point.lonMicroDeg,radiusM:physicalRadius,authority:AUTHORITY.MODEL_DERIVED});
   const rawBodies=Object.freeze([...graphSeed.children.stars,...graphSeed.children.planets].map((node,index)=>{
@@ -96,11 +98,11 @@ export function captureGenuineOFUWorld(root=globalThis,{profile='origin',orbitSl
     sourceRuntimeVersion:runtime.VERSION,
     canonicalKey:key,
     systemId,bodyId,surfaceId,sampleId,
-    planetIdentity:state.world.planetIdentity,
+    planetIdentity:state.world.planetIdentity,physical,generative,
     physicalRadiusM:physicalRadius,systemRadiusM,
     system,bodies:rawBodies,body,world:state.world,point:state.point,local:state.local,sample,sampleLocalPoint,source,representations,surfaceTarget,cameraTargets,
     graph:spatialGraph,frames,frameIds:Object.freeze({system:'system-barycentric',body:bodyFrameId,bodyFixed:bodyFixedFrameId,local:localFrameId,sample:sampleFrameId,micro:microFrameId}),
-    terrainTarget:Object.freeze({contract:'ofu-spatial-continuum-metric-terrain-target-1',bodyId,locationIdentity:surfaceId,frameId:localFrameId,horizontalCoordinates:'LOCAL_ENU_METRES',elevationUnit:'METRE',elevationAuthority:AUTHORITY.PRESENTATION_ONLY,seed:bodyId}),
+    terrainTarget:Object.freeze({contract:'ofu-spatial-continuum-metric-terrain-target-2',bodyId,locationIdentity:surfaceId,frameId:localFrameId,horizontalCoordinates:'LOCAL_ENU_METRES',elevationUnit:'METRE',elevationAuthority:AUTHORITY.PRESENTATION_ONLY,seed:generative.seeds.terrain,profile:generative.presentation.terrain,scientificStateHash:generative.scientificHashes.context,representationHash:generative.representationHash}),
     authority:Object.freeze({system:AUTHORITY.CANONICAL,body:AUTHORITY.CANONICAL,surface:AUTHORITY.MODEL_DERIVED,sample:AUTHORITY.MODEL_DERIVED,visuals:AUTHORITY.PRESENTATION_ONLY,orbitTransforms:AUTHORITY.PRESENTATION_ONLY,terrainElevation:AUTHORITY.PRESENTATION_ONLY}),
     authorityRecords:Object.freeze({
       body:spatialAuthority({entity:AUTHORITY.CANONICAL,position:AUTHORITY.PRESENTATION_ONLY,orientation:AUTHORITY.UNKNOWN,phase:AUTHORITY.PRESENTATION_ONLY,bounds:AUTHORITY.MODEL_DERIVED,geometry:AUTHORITY.PRESENTATION_ONLY,elevation:AUTHORITY.UNKNOWN}),
