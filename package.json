@@ -24,6 +24,8 @@
     "test:continuum:r6-causal": "node tests/spatial-continuum/r6-causal-regimes.mjs",
     "test:continuum:r6-causal-browser": "node tests/spatial-continuum/r6-causal-browser.mjs",
     "test:continuum:r6-local": "node tests/spatial-continuum/r6-local-environment.mjs",
+    "test:continuum:r6-material": "node tests/spatial-continuum/r6-contextual-material.mjs",
+    "test:continuum:r6-material-browser": "node tests/spatial-continuum/r6-contextual-material-browser.mjs",
     "test:continuum:generalization": "node tests/spatial-continuum/generalization.mjs",
     "test:continuum:open-generalization": "node tests/spatial-continuum/open-generalization.mjs",
     "test:continuum:accessibility-mobile": "node tests/spatial-continuum/open-accessibility-mobile.mjs",
