@@ -58,3 +58,11 @@ The causal trace explicitly lists influences, non-influences, and unknowns. Terr
 The former eight-galaxy universe is now an eight-galaxy active window. The user can traverse positive or negative galaxy-field coordinates through visible controls or bracket keys. Window addresses use unbounded integer coordinates supplied to the existing P3 exploration authority; only one window and a bounded LRU working set are active.
 
 Window revisit rematerializes the same identities independent of visit order. Checkpoints retain the galaxy-window coordinate so a branch can return across streamed fields. The working node index is rebuilt from the active window instead of accumulating every galaxy ever seen.
+
+## R5-05 durable deterministic bookmarks
+
+A versioned bookmark serializes the open-universe address, active galaxy window, body-fixed surface point, selected source sample, camera/scale state, and generator/science/representation integrity hashes. Restoration reconstructs through the same authority path and fails closed if any recorded version or hash differs.
+
+The active world lifecycle can be explicitly released before restoration. This makes exact revisit evidence prove reconstruction after disposal, and the JSON-safe bookmark can also cross a full document reload rather than relying on retained in-memory object identity.
+
+Continuum bootstrap and subsequent discovery now use the experiment's isolated read-only authority runtime. The released Living runtime is disposed after authority startup but is never driven through scale or selection as a data-query shortcut; this prevents an experimental inspection from contaminating V2's persisted semantic navigation state.
