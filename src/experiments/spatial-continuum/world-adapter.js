@@ -49,7 +49,7 @@ export function captureGenuineOFUWorld(root=globalThis,{profile='origin',orbitSl
   const p3Snapshot=O.p3Astronomy.planetaryInputSnapshot(preview.ctx,key),adapted=O.p5Planetology.adaptP3PlanetaryInputSnapshot(p3Snapshot),physical=O.p5Planetology.realizePhysicalPlanet(preview.ctx,adapted);
   if(physical.status!=='SUPPORTED')throw new Error('Selected genuine world is outside the physical visualization domain: '+String(physical.reason));
   const physicalRadius=Number(physical.physical.meanRadiusM);
-  const generative=createWorldScientificState({runtime,system,body,physical,point:state.point,sample,source});
+  const generative=createWorldScientificState({runtime,system,body,physical,modeledWorld:state.world,point:state.point,sample,source});
   const orbitMeters=Number(state.body?.metadata?.facts?.baselineSemiMajorAxisMicroAu || 1000000) * 149597.8707;
   const surfaceTarget=surfaceTargetFromModel({bodyId,locationIdentity:surfaceId,latMicroDeg:state.point.latMicroDeg,lonMicroDeg:state.point.lonMicroDeg,radiusM:physicalRadius,authority:AUTHORITY.MODEL_DERIVED});
   const rawBodies=Object.freeze([...graphSeed.children.stars,...graphSeed.children.planets].map((node,index)=>{

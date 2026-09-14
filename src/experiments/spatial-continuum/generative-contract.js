@@ -1,6 +1,6 @@
-export const GENERATOR_VERSION='ofu-spatial-continuum-generator-r5-1';
-export const SCIENTIFIC_MODEL_VERSION='p3-astronomy-1+p5-planet-physical-1+ofu-v1-model-suite-1';
-export const REPRESENTATION_VERSION='ofu-spatial-continuum-representation-r5-4';
+export const GENERATOR_VERSION='ofu-spatial-continuum-generator-r6-1';
+export const SCIENTIFIC_MODEL_VERSION='p3-astronomy-1+p5-planet-physical-1+ofu-v1-planetology-causal-1';
+export const REPRESENTATION_VERSION='ofu-spatial-continuum-representation-r6-1';
 
 const K=new Uint32Array([1116352408,1899447441,3049323471,3921009573,961987163,1508970993,2453635748,2870763221,3624381080,310598401,607225278,1426881987,1925078388,2162078206,2614888103,3248222580,3835390401,4022224774,264347078,604807628,770255983,1249150122,1555081692,1996064986,2554220882,2821834349,2952996808,3210313671,3336571891,3584528711,113926993,338241895,666307205,773529912,1294757372,1396182291,1695183700,1986661051,2177026350,2456956037,2730485921,2820302411,3259730800,3345764771,3516065817,3600352804,4094571909,275423344,430227734,506948616,659060556,883997877,958139571,1322822218,1537002063,1747873779,1955562222,2024104815,2227730452,2361852424,2428436474,2756734187,3204031479,3329325298]);
 const rotr=(value,bits)=>(value>>>bits)|(value<<(32-bits));
@@ -24,18 +24,18 @@ export function stableGenerativeString(value){return JSON.stringify(canonicalVal
 export function hashGenerativeState(namespace,value){return sha256Hex(stableGenerativeString({namespace:String(namespace),value}))}
 const seedText=(value,label)=>{const output=String(value??'').trim();if(!output)throw new TypeError(label+' is required');return output};
 
-export function rootSeed({masterSeed,universeId,generatorVersion=GENERATOR_VERSION}={}){return hashGenerativeState('OFU_R5_ROOT_SEED',{generatorVersion,masterSeed,universeId:seedText(universeId,'universeId')})}
-export function deriveChildSeed({parentSeed,canonicalAddress,domainTag,generatorVersion=GENERATOR_VERSION}={}){return hashGenerativeState('OFU_R5_CHILD_SEED',{generatorVersion,parentSeed:seedText(parentSeed,'parentSeed'),canonicalAddress:seedText(canonicalAddress,'canonicalAddress'),domainTag:seedText(domainTag,'domainTag')})}
+export function rootSeed({masterSeed,universeId,generatorVersion=GENERATOR_VERSION}={}){return hashGenerativeState('OFU_R6_ROOT_SEED',{generatorVersion,masterSeed,universeId:seedText(universeId,'universeId')})}
+export function deriveChildSeed({parentSeed,canonicalAddress,domainTag,generatorVersion=GENERATOR_VERSION}={}){return hashGenerativeState('OFU_R6_CHILD_SEED',{generatorVersion,parentSeed:seedText(parentSeed,'parentSeed'),canonicalAddress:seedText(canonicalAddress,'canonicalAddress'),domainTag:seedText(domainTag,'domainTag')})}
 export function deriveSeedLineage({root,segments,generatorVersion=GENERATOR_VERSION}={}){
   let parent=seedText(root,'root seed');const lineage=[];for(const segment of segments||[]){const canonicalAddress=seedText(segment.canonicalAddress||segment.address||segment.id,'canonicalAddress'),domainTag=seedText(segment.domainTag||segment.kind,'domainTag'),seed=deriveChildSeed({parentSeed:parent,canonicalAddress,domainTag,generatorVersion});lineage.push(Object.freeze({canonicalAddress,domainTag,parentSeed:parent,seed}));parent=seed}return Object.freeze(lineage);
 }
-export function scientificStateHash(scientificState,{scientificModelVersion=SCIENTIFIC_MODEL_VERSION}={}){return hashGenerativeState('OFU_R5_SCIENTIFIC_STATE',{scientificModelVersion,scientificState})}
-export function representationStateHash({scientificHash,representationState,representationVersion=REPRESENTATION_VERSION}={}){return hashGenerativeState('OFU_R5_REPRESENTATION_STATE',{representationVersion,scientificHash:seedText(scientificHash,'scientificHash'),representationState})}
+export function scientificStateHash(scientificState,{scientificModelVersion=SCIENTIFIC_MODEL_VERSION}={}){return hashGenerativeState('OFU_R6_SCIENTIFIC_STATE',{scientificModelVersion,scientificState})}
+export function representationStateHash({scientificHash,representationState,representationVersion=REPRESENTATION_VERSION}={}){return hashGenerativeState('OFU_R6_REPRESENTATION_STATE',{representationVersion,scientificHash:seedText(scientificHash,'scientificHash'),representationState})}
 export function deterministicRandom(seed,domainTag='random'){
   const initial=deriveChildSeed({parentSeed:seedText(seed,'random seed'),canonicalAddress:'stream',domainTag}),words=[0,8,16,24].map(offset=>parseInt(initial.slice(offset,offset+8),16)>>>0);let [a,b,c,d]=words;if(!(a|b|c|d))d=1;
   return()=>{const result=Math.imul(((a+d)>>>0),1)>>>0,t=(b<<9)>>>0;c^=a;d^=b;b^=c;a^=d;c^=t;d=(d<<11|d>>>21)>>>0;return result/4294967296};
 }
 export function entityProvenance({canonicalId,canonicalAddress,parentId=null,parentSeed,domainTag,scientificInputs,representationInputs=null,generatorVersion=GENERATOR_VERSION,scientificModelVersion=SCIENTIFIC_MODEL_VERSION,representationVersion=REPRESENTATION_VERSION}={}){
   const seed=deriveChildSeed({parentSeed,canonicalAddress,domainTag,generatorVersion}),scientificHash=scientificStateHash(scientificInputs,{scientificModelVersion}),representationSeed=deriveChildSeed({parentSeed:seed,canonicalAddress,domainTag:'representation',generatorVersion}),representationHash=representationInputs==null?null:representationStateHash({scientificHash,representationState:representationInputs,representationVersion});
-  return Object.freeze({contract:'ofu-r5-generative-provenance-1',canonicalId:seedText(canonicalId,'canonicalId'),canonicalAddress:seedText(canonicalAddress,'canonicalAddress'),parentId:parentId==null?null:String(parentId),versions:Object.freeze({generator:generatorVersion,scientificModel:scientificModelVersion,representation:representationVersion}),seedLineage:Object.freeze({parentSeed,domainTag,seed,representationSeed}),scientificInputHash:scientificHash,representationHash,orderIndependent:true});
+  return Object.freeze({contract:'ofu-r6-generative-provenance-1',canonicalId:seedText(canonicalId,'canonicalId'),canonicalAddress:seedText(canonicalAddress,'canonicalAddress'),parentId:parentId==null?null:String(parentId),versions:Object.freeze({generator:generatorVersion,scientificModel:scientificModelVersion,representation:representationVersion}),seedLineage:Object.freeze({parentSeed,domainTag,seed,representationSeed}),scientificInputHash:scientificHash,representationHash,orderIndependent:true});
 }
