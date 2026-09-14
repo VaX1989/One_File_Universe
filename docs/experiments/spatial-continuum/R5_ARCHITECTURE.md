@@ -43,7 +43,7 @@ The three independent version axes are:
 
 - generator: `ofu-spatial-continuum-generator-r5-1`;
 - scientific model: `p3-astronomy-1+p5-planet-physical-1+ofu-v1-model-suite-1`;
-- representation: `ofu-spatial-continuum-representation-r5-1`.
+- representation: `ofu-spatial-continuum-representation-r5-2`.
 
 Changing representation input or version cannot mutate a scientific-state hash. A bounded 4,096-address collision and order audit is part of the rapid suite; it is useful falsification evidence, not a proof that SHA-256 can never collide.
 
@@ -106,3 +106,20 @@ Observed results:
 - runtime network requests remained zero.
 
 One sampled sparse window returned fewer than the requested eight galaxies inside the fixed 4,096-probe budget. The test records that density outcome instead of forcing every window to contain an identical count. This lightweight dossier demonstrates state diversity and catches template/hash collapse; it does not perform the required label-free human visual anti-sameness review. The pronounced synchronous sampling time remains a performance blocker rather than a correctness exception.
+
+## R5-09 body-stable planetary presentation
+
+An adversarial surface-retarget test exposed that the original R5 representation seed included the selected surface identity. That made it possible for moving to another location on the same planet to change the parent planet palette and replace the global terrain seed. This violated both causal direction and landmark continuity.
+
+Representation contract `ofu-spatial-continuum-representation-r5-2` separates the streams:
+
+```text
+body seed
+  ├─ planet-presentation seed → planet palette, atmosphere, terrain spectrum
+  ├─ terrain seed             → one global field for the body
+  └─ surface-context seed
+       ├─ local seed          → location-dependent local distribution
+       └─ micro seed          → selected-sample contextual grammar
+```
+
+Changing the surface point now preserves the planet scientific hash, planet representation hash, palette, terrain profile, and terrain seed while changing the local stream. The browser regression performs an actual renderer-owned globe pick and fails if any parent-planet presentation mutates. Existing R5 bookmarks fail closed across the representation-version change instead of silently reconstructing a different visible planet.
