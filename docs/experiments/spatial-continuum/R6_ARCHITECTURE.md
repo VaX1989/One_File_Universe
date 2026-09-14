@@ -35,3 +35,9 @@ The authority snapshot reports pending target, cursor work, slice count, item co
 - the direct-file artifact makes no runtime network request.
 
 R6 intentionally does not expose partial galaxy sets yet. Atomic bounded-window replacement has stable interaction semantics; progressively changing pick targets during navigation does not. Progressive presentation remains a possible later optimization only if it can preserve deterministic ordering, focus, and renderer-owned selection.
+
+## R6-03 interactive seed bootstrap
+
+The initial universe no longer performs a full sparse-window scan before exposing the product. It starts from the already-authoritative seed galaxy, renders that honest canonical result, marks the experience `INTERACTIVE`, and hydrates the remainder of the seed window through the same cancellable scheduler. Existing readiness consumers still receive `READY` after that hydration settles.
+
+Input retains priority over bootstrap work. Moving to another cell, selecting the visible seed galaxy, navigating Back, or disposing the experience cancels hydration; no bootstrap completion can later overwrite the newer intent. In the Chromium software-rendered run used during development, interactive availability preceded a representative 3,501-probe neighbor result by roughly seven seconds. That does not make the underlying scan fast, but it removes the scan from the critical interaction path and makes the remaining latency measurable rather than frozen.

@@ -12,7 +12,7 @@ page.on('console',message=>{if(message.type()==='error')errors.push('console: '+
 
 try{
   await page.goto(pathToFileURL(artifact).href,{waitUntil:'load'});
-  await page.waitForFunction(()=>globalThis.__OFU_SPATIAL_CONTINUUM__?.snapshot?.().status==='READY',undefined,{timeout:120000});
+  await page.waitForFunction(()=>['INTERACTIVE','READY'].includes(globalThis.__OFU_SPATIAL_CONTINUUM__?.snapshot?.().status),undefined,{timeout:120000});
   const initial=await page.evaluate(()=>{const snapshot=__OFU_SPATIAL_CONTINUUM__.snapshot();globalThis.__R6_HEARTBEATS__=0;globalThis.__R6_HEARTBEAT_TIMER__=setInterval(()=>globalThis.__R6_HEARTBEATS__++,1);return{windowKey:snapshot.openUniverse.galaxyStreaming.activeWindowKey,ids:snapshot.openUniverse.catalogue.map(item=>item.id),revision:snapshot.openUniverse.revision,frameSamples:snapshot.performance.samples}});
   const [initialX,initialY,initialZ]=initial.windowKey.split(',').map(BigInt),firstWindowKey=`${initialX+1n},${initialY},${initialZ}`,latestWindowKey=`${initialX+1n},${initialY+1n},${initialZ}`;
 
