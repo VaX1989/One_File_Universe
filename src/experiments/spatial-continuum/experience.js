@@ -27,6 +27,9 @@ const DESCRIPTIONS=Object.freeze({
 const sleep=milliseconds=>new Promise(resolve=>setTimeout(resolve,milliseconds));
 const percentile=(values,p)=>{if(!values.length)return null;const sorted=[...values].sort((a,b)=>a-b);return sorted[Math.min(sorted.length-1,Math.floor((sorted.length-1)*p))]};
 const idOf=node=>String(node?.canonicalId||node?.entityId||node?.id||'');
+// A kilometre-scale tangent window keeps spherical sag sub-decimetre on an
+// Earth-radius body while allowing meaningful walking before a frame handoff.
+const HUMAN_REBASE_DISTANCE_M=1024;
 
 async function waitForReleasedRuntime(timeoutMs=12000){
   const started=performance.now();
@@ -174,7 +177,7 @@ export async function bootSpatialContinuum(){
     }
     function rebaseHumanTravel(state,now){
       if(state.scale.semanticStage!=='HUMAN'||!openUniverse.world)return state;
-      const local=state.camera.localPosition||[0,0,0],distance=Math.hypot(local[0],local[2]);if(distance<256)return state;
+      const local=state.camera.localPosition||[0,0,0],distance=Math.hypot(local[0],local[2]);if(distance<HUMAN_REBASE_DISTANCE_M)return state;
       if(!humanBranchCaptured){pushBranchCheckpoint({resetLocalPosition:true});humanBranchCaptured=true}
       const priorSurfaceId=world.surfaceId,direction=advanceSurfaceDirection(world.surfaceTarget.bodyFixedUnit,world.surfaceTarget.tangent.east,world.surfaceTarget.tangent.north,{eastM:local[0],northM:local[2],radiusM:world.physicalRadiusM}),coordinates=modelCoordinatesFromDirection(direction),materialized=openUniverse.materializeWorld(coordinates);sampleExplicitlySelected=false;rebind(materialized,now);kernel.select(materialized.surfaceId,now,{push:false});surfaceRebases++;transitionLog.push({type:'HUMAN_SURFACE_REBASE',bodyId:materialized.bodyId,fromSurfaceId:priorSurfaceId,toSurfaceId:materialized.surfaceId,eastM:local[0],northM:local[2],at:now});announce('Local travel continued across the same body-fixed surface');return kernel.snapshot(now)
     }
