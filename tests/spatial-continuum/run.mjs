@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import './r5-foundation.mjs';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import { execFileSync } from 'node:child_process';

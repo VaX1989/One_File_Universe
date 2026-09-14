@@ -24,8 +24,9 @@ export function captureGenuineOFUWorld(root=globalThis,{profile='origin',orbitSl
   const sample=state.local.objects.find(item=>item.entityId===String(selectedSampleId||'')) || state.local.objects.find(item=>item.kind==='ROCK') || state.local.objects.find(item=>['WATER','ICE','ARTIFACT','ORGANISM'].includes(item.kind));
   if (!sample) throw new Error('Genuine OFU local context has no inspectable sample');
   const source=runtime.query('v1.query.material-source',{...state.point,historyEpoch:state.world?.civilization?.epoch??0,objectId:sample.entityId});
-  let microSession=null;const representationCache=new Map(),representationMetrics={sessionCreations:0,materializations:0};
+  let microSession=null,disposed=false;const representationCache=new Map(),representationMetrics={sessionCreations:0,materializations:0};
   const representation=name=>{
+    if(disposed)throw new Error('Cannot materialize a representation from a disposed world context');
     if(representationCache.has(name))return representationCache.get(name);
     if(!microSession){microSession=O.v1MicroPipeline.createSession(source,{microFeatures:64,molecularUnits:24,atoms:96});representationMetrics.sessionCreations++}
     const value=microSession.materialize(name);representationCache.set(name,value);representationMetrics.materializations++;return value;
@@ -35,7 +36,7 @@ export function captureGenuineOFUWorld(root=globalThis,{profile='origin',orbitSl
     get microstructure(){return representation('microstructure')},
     get molecular(){return representation('molecular')},
     get atomic(){return representation('atomic')},
-    snapshot(){return Object.freeze({contract:'ofu-lazy-micro-representations-1',resident:Object.freeze([...representationCache.keys()]),sessionCreations:representationMetrics.sessionCreations,materializations:representationMetrics.materializations,bounded:representationCache.size<=4})}
+    snapshot(){return Object.freeze({contract:'ofu-lazy-micro-representations-2',resident:Object.freeze([...representationCache.keys()]),sessionCreations:representationMetrics.sessionCreations,materializations:representationMetrics.materializations,bounded:representationCache.size<=4,disposed})}
   });
   const systemId=idOf(system), bodyId=idOf(body), surfaceId=state.point.locationIdentity, sampleId=sample.entityId;
   const nodes=[
@@ -106,6 +107,12 @@ export function captureGenuineOFUWorld(root=globalThis,{profile='origin',orbitSl
       surface:spatialAuthority({entity:AUTHORITY.MODEL_DERIVED,position:AUTHORITY.MODEL_DERIVED,orientation:AUTHORITY.MODEL_DERIVED,phase:AUTHORITY.UNKNOWN,bounds:AUTHORITY.UNKNOWN,geometry:AUTHORITY.PRESENTATION_ONLY,elevation:AUTHORITY.PRESENTATION_ONLY})
     }),
     scientificClaims:Object.freeze({canonicalPlanetIdentity:true,canonicalSystemIdentity:true,canonicalSurfaceGeodesy:false,physicalTerrainElevation:false,exactMolecularArrangement:false,exactAtomicPosition:false}),
+    lifecycle:Object.freeze({snapshot:()=>Object.freeze({contract:'ofu-world-context-lifecycle-1',disposed,residentRepresentations:representationCache.size,microSessionActive:!!microSession})}),
+    dispose() {
+      if(disposed)return Object.freeze({disposed:false,resources:0,sessions:0,representations:0,reason:'ALREADY_DISPOSED'});
+      disposed=true;const representations=representationCache.size,sessions=microSession?1:0;representationCache.clear();try{microSession?.dispose?.()}finally{microSession=null}
+      return Object.freeze({disposed:true,resources:0,sessions,representations,reason:'WORLD_CONTEXT_DISPOSAL'});
+    },
     releaseLegacy() {
       for(const name of ['v2CinematicMacroDirector','v2CinematicExperience','v2CinematicDepth','planetSurfaceWebGL2','planetWebGL2','pxRenderBackend'])try{O[name]?.dispose?.()}catch{}
       try{product.dispose?.()}catch{}
