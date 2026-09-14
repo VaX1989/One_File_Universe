@@ -52,20 +52,30 @@ export function createTargetAwareCamera({anchorId,focusId,aimId=focusId,targets,
     if(!target)throw new Error('Missing camera target: '+profile.target);
     const metresPerRenderUnit=target.radiusM/target.renderRadius, renderDistance=distanceForProjectedCoverage(target.renderRadius,profile.fov,profile.coverage), direction=directionFor(profile.direction,target,yaw,pitch,frames);
     if(profile.direction==='HUMAN'){
-      const humanPitch=clamp(pitch-.18,-.82,.62),local=[localPosition[0],1.7+localPosition[1],3.2+localPosition[2]],localLook=normalize([Math.sin(yaw)*Math.cos(humanPitch),Math.sin(humanPitch),-Math.cos(yaw)*Math.cos(humanPitch)]),position=frames.directionToRoot(local,target.frameId).map(value=>value/metresPerRenderUnit),look=normalize(frames.directionToRoot(localLook,target.frameId)),targetPoint=position.map((value,axis)=>value+look[axis]*6);
-      return{profile,target,origin:origin(target),metresPerRenderUnit,renderDistance,position,targetPoint,up:target.up||[0,1,0],direction:look};
+      const humanPitch=clamp(pitch-.18,-.82,.62),local=[localPosition[0],1.7+localPosition[1],3.2+localPosition[2]],localLook=normalize([Math.sin(yaw)*Math.cos(humanPitch),Math.sin(humanPitch),-Math.cos(yaw)*Math.cos(humanPitch)]),frameMetresPerUnit=frames.get(target.frameId)?.metersPerUnit||1,positionOffsetMeters=frames.directionToRoot(local,target.frameId).map(value=>value*frameMetresPerUnit),look=normalize(frames.directionToRoot(localLook,target.frameId)),targetOffsetMeters=positionOffsetMeters.map((value,axis)=>value+look[axis]*6*metresPerRenderUnit);
+      return{profile,target,origin:origin(target),metresPerRenderUnit,renderDistance,positionOffsetMeters,targetOffsetMeters,up:target.up||[0,1,0],direction:look};
     }
-    const offset=profile.direction==='UNIVERSE'?macroPosition:[0,0,0];return{profile,target,origin:origin(target),metresPerRenderUnit,renderDistance,position:direction.map((value,index)=>value*renderDistance+offset[index]),targetPoint:[...offset],up:target.up||[0,1,0],direction};
+    const offset=profile.direction==='UNIVERSE'?macroPosition:[0,0,0],positionOffsetMeters=direction.map((value,index)=>(value*renderDistance+offset[index])*metresPerRenderUnit),targetOffsetMeters=offset.map(value=>value*metresPerRenderUnit);
+    return{profile,target,origin:origin(target),metresPerRenderUnit,renderDistance,positionOffsetMeters,targetOffsetMeters,up:target.up||[0,1,0],direction};
   }
 
   function pose(coordinate){
     const value=clamp(coordinate,0,PROFILES.length-1),lo=Math.floor(value),hi=Math.ceil(value),t=value-lo,a=solution(lo),b=solution(hi),metresPerRenderUnit=logMix(a.metresPerRenderUnit,b.metresPerRenderUnit,t),lowerStop=CONTINUUM_STOPS[lo],upperStop=CONTINUUM_STOPS[hi];
+    const renderOrigin=Object.freeze({from:a.origin,to:b.origin,progress:t});
+    const renderSolution=solution=>{
+      const targetOrigin=frames.renderRelativeToHandoffFloat32(solution.target.point||[0,0,0],solution.target.frameId,renderOrigin,metresPerRenderUnit);
+      return Object.freeze({
+        position:Object.freeze(targetOrigin.map((value,axis)=>value+solution.positionOffsetMeters[axis]/metresPerRenderUnit)),
+        target:Object.freeze(targetOrigin.map((value,axis)=>value+solution.targetOffsetMeters[axis]/metresPerRenderUnit))
+      });
+    };
+    const renderedA=renderSolution(a),renderedB=renderSolution(b);
     return Object.freeze({
-      contract:'ofu-spatial-continuum-camera-pose-2',anchorId:anchor,focusId:focus,aimId:aim,
+      contract:'ofu-spatial-continuum-camera-pose-3',anchorId:anchor,focusId:focus,aimId:aim,
       frameId:t<.5?a.origin.frameId:b.origin.frameId,
       frameHandoff:Object.freeze({from:a.origin.frameId,to:b.origin.frameId,progress:t}),
-      renderOrigin:Object.freeze({from:a.origin,to:b.origin,progress:t}),metresPerRenderUnit,
-      position:Object.freeze(mix3(a.position,b.position,t)),target:Object.freeze(mix3(a.targetPoint,b.targetPoint,t)),up:Object.freeze(normalize(mix3(a.up,b.up,t))),
+      renderOrigin,metresPerRenderUnit,
+      position:Object.freeze(mix3(renderedA.position,renderedB.position,t)),target:Object.freeze(mix3(renderedA.target,renderedB.target,t)),up:Object.freeze(normalize(mix3(a.up,b.up,t))),
       fov:mix(a.profile.fov,b.profile.fov,t),yaw,pitch,localPosition:Object.freeze([...localPosition]),macroPosition:Object.freeze([...macroPosition]),revision,
       targetRadiusM:mix(a.target.radiusM,b.target.radiusM,t),targetDerived:true,hardCodedCartesianPose:false,
       derivation:Object.freeze({fromTargetId:a.target.id,toTargetId:b.target.id,fromRadiusM:a.target.radiusM,toRadiusM:b.target.radiusM,projectedCoverage:mix(a.profile.coverage,b.profile.coverage,t),metresPerRenderUnit}),

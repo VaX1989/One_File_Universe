@@ -51,6 +51,13 @@ export function surfaceDirectionFromLocalMeters(surfaceTarget,eastM,northM,radiu
   return Object.freeze(normalize(up.map((value,index)=>value+(east*eastAxis[index]+north*northAxis[index])/radius)));
 }
 
+export function sphericalTangentCurvatureMeters(eastM,northM,radiusM){
+  const east=Number(eastM),north=Number(northM),radius=Number(radiusM),radialSquared=east*east+north*north;
+  if(!Number.isFinite(east)||!Number.isFinite(north)||!(radius>0)||!Number.isFinite(radius))throw new TypeError('Spherical tangent curvature requires finite local metres and a positive radius');
+  if(radialSquared>=radius*radius)return -radius;
+  return Math.sqrt(radius*radius-radialSquared)-radius;
+}
+
 export function deterministicSurfaceTerrainHeightMeters(eastM,northM,{surfaceTarget,radiusM,seed,minimumWavelengthM=0,profile=null,relativeToTarget=true}={}){
   return createSurfaceTerrainSampler({surfaceTarget,radiusM,seed,minimumWavelengthM,profile,relativeToTarget})(eastM,northM);
 }
