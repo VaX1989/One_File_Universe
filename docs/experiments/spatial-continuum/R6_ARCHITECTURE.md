@@ -18,4 +18,20 @@ The scheduler provides:
 - stale-work exclusion;
 - scheduling-independent concatenation of canonical discovery order.
 
-This first checkpoint proves the scheduling primitive in isolation. It does not yet claim the product discovery path is nonblocking; integration into open-universe authority and visible progressive materialization is the next dependency.
+## R6-02 product integration and atomic window commits
+
+Galaxy-window movement now uses the scheduler in the real direct-file product path. The previously committed field remains rendered and selectable while the next deterministic window is probed. A newer movement intent supersedes the prior request and composes from its pending spatial target, so rapid input still describes a continuous direction instead of repeatedly targeting the last settled cell.
+
+Discovered entities are accumulated privately. R6 commits a complete bounded window atomically only when its request is still the owner of `ACTIVE_GALAXY_WINDOW`; cancelled or stale partial work cannot enter the materialization cache, graph, renderer, history, or canonical focus. Selection, Back, synchronous restore, and disposal cancel obsolete discovery explicitly.
+
+The authority snapshot reports pending target, cursor work, slice count, item count, queue capacity, completions, cancellations, and stale-result attempts. The browser falsification test proves:
+
+- the active window and scene remain unchanged while work is pending;
+- browser timers and rendered frames advance between discovery slices;
+- latest-intent supersession cancels the earlier request;
+- only the composed latest target commits;
+- Back cancels without mutating the active field;
+- the scheduler and semantic working set remain bounded;
+- the direct-file artifact makes no runtime network request.
+
+R6 intentionally does not expose partial galaxy sets yet. Atomic bounded-window replacement has stable interaction semantics; progressively changing pick targets during navigation does not. Progressive presentation remains a possible later optimization only if it can preserve deterministic ordering, focus, and renderer-owned selection.
