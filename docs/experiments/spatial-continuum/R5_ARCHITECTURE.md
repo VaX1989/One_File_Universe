@@ -74,3 +74,19 @@ Continuum bootstrap and subsequent discovery now use the experiment's isolated r
 A dedicated browser falsification traverses three independently selected galaxies through three regions, systems, supported solid bodies, surface contexts, local samples, and every material/microscopic landmark to `ATOMIC`, then performs the complete conceptual reverse for each. The sample records scientific and presentation state separately and requires diversity in physical inputs, terrain relief/frequency descriptors, planetary palettes, and microscopic layouts. Unsupported physical domains remain explicit blockers.
 
 The test found and removed an inverted dependency: local `sample.kind` had been allowed to choose the parent planet's palette. Planet appearance now derives only from planet/system scientific state plus the body's presentation stream; sample identity is confined to local material and microscopic grammar. Three audited worlds differ across radius, gravity, mass, insolation, terrain spectra, palettes, and microscopic layouts without promoting presentation geometry to scientific fact.
+
+## R5-07 pointer-directed travel and bounded semantic memory
+
+Wheel travel now asks the Babylon scene what is visibly under the pointer before changing the continuous scale coordinate. A positive gesture may rebind the canonical focus to a visible galaxy or body, or derive a new body-fixed surface direction from the rendered globe. Surface retargeting is independent from the `GLOBAL_SURFACE` semantic landmark, so a second gesture can redirect an approach already in flight instead of inheriting a forced stage switch. Each gesture performs an immediate renderer update before accepting another hit; the second hit is therefore evaluated against the current rendered frame rather than stale screen coordinates.
+
+Branch checkpoints distinguish streamed galaxy windows as well as hierarchical addresses. This closes a root-level alias in which many galaxy fields all appeared to history as the same universe address. Root focus is now a valid graph operation, allowing a durable root bookmark to restore after deeper traversal.
+
+The semantic working index is rebuilt from the active galaxy window and the currently exposed region, system, and body choices. It explicitly does not retain the complete exploration history. The independent caps are:
+
+- 8 active galaxies;
+- 12 materialization-cache entries;
+- 64 visited galaxy-window keys;
+- 64 branch checkpoints;
+- one bounded current semantic working index.
+
+The pointer/bounds browser falsification redirects galaxy, body, and surface travel twice, restores the root bookmark, then visits 70 unique galaxy windows. This is a correctness and retention test, not a latency pass. On software-rendered headless Chromium, the synchronous discovery/rebind loop is conspicuously slow. R5 therefore still requires event-demand/deferred visual rebinding and explicit field-navigation timing evidence before deterministic streaming can be considered product-ready.
