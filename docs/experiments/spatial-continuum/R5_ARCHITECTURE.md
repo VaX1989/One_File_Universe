@@ -34,3 +34,15 @@ These are prerequisites for trustworthy revisit, collision, and resource-soak ev
 ## Acceptance state
 
 Current recommendation: `CONTINUE_EXPERIMENT`.
+
+## R5-02 versioned seed tree
+
+The experiment owns a small synchronous canonical hashing contract so seed derivation works identically in the offline browser artifact and in development tests. Values are type-tagged, object keys are sorted, non-finite numbers and cyclic/non-plain records fail closed, and SHA-256 is used for each domain boundary.
+
+The three independent version axes are:
+
+- generator: `ofu-spatial-continuum-generator-r5-1`;
+- scientific model: `p3-astronomy-1+p5-planet-physical-1+ofu-v1-model-suite-1`;
+- representation: `ofu-spatial-continuum-representation-r5-1`.
+
+Changing representation input or version cannot mutate a scientific-state hash. A bounded 4,096-address collision and order audit is part of the rapid suite; it is useful falsification evidence, not a proof that SHA-256 can never collide.
