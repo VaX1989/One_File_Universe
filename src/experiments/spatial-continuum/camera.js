@@ -45,7 +45,7 @@ function origin(target){return Object.freeze({frameId:target.frameId,point:Objec
 export function createTargetAwareCamera({anchorId,focusId,aimId=focusId,targets,frames}={}){
   if(!anchorId||!focusId)throw new TypeError('Camera anchor and focus are required');
   if(!targets||!frames)throw new TypeError('Camera spatial targets and reference frames are required');
-  let anchor=String(anchorId),focus=String(focusId),aim=String(aimId),yaw=0,pitch=0,localPosition=[0,0,0],revision=0;
+  let anchor=String(anchorId),focus=String(focusId),aim=String(aimId),yaw=0,pitch=0,localPosition=[0,0,0],macroPosition=[0,0,0],revision=0;
 
   function solution(index){
     const profile=PROFILES[index],target=profile.target==='body'?(targets.bodies?.[focus]||targets.body):targets[profile.target];
@@ -55,7 +55,7 @@ export function createTargetAwareCamera({anchorId,focusId,aimId=focusId,targets,
       const humanPitch=clamp(pitch-.18,-.82,.62),local=[localPosition[0],1.7+localPosition[1],3.2+localPosition[2]],localLook=normalize([Math.sin(yaw)*Math.cos(humanPitch),Math.sin(humanPitch),-Math.cos(yaw)*Math.cos(humanPitch)]),position=frames.directionToRoot(local,target.frameId).map(value=>value/metresPerRenderUnit),look=normalize(frames.directionToRoot(localLook,target.frameId)),targetPoint=position.map((value,axis)=>value+look[axis]*6);
       return{profile,target,origin:origin(target),metresPerRenderUnit,renderDistance,position,targetPoint,up:target.up||[0,1,0],direction:look};
     }
-    return{profile,target,origin:origin(target),metresPerRenderUnit,renderDistance,position:direction.map(value=>value*renderDistance),targetPoint:[0,0,0],up:target.up||[0,1,0],direction};
+    const offset=profile.direction==='UNIVERSE'?macroPosition:[0,0,0];return{profile,target,origin:origin(target),metresPerRenderUnit,renderDistance,position:direction.map((value,index)=>value*renderDistance+offset[index]),targetPoint:[...offset],up:target.up||[0,1,0],direction};
   }
 
   function pose(coordinate){
@@ -66,7 +66,7 @@ export function createTargetAwareCamera({anchorId,focusId,aimId=focusId,targets,
       frameHandoff:Object.freeze({from:a.origin.frameId,to:b.origin.frameId,progress:t}),
       renderOrigin:Object.freeze({from:a.origin,to:b.origin,progress:t}),metresPerRenderUnit,
       position:Object.freeze(mix3(a.position,b.position,t)),target:Object.freeze(mix3(a.targetPoint,b.targetPoint,t)),up:Object.freeze(normalize(mix3(a.up,b.up,t))),
-      fov:mix(a.profile.fov,b.profile.fov,t),yaw,pitch,localPosition:Object.freeze([...localPosition]),revision,
+      fov:mix(a.profile.fov,b.profile.fov,t),yaw,pitch,localPosition:Object.freeze([...localPosition]),macroPosition:Object.freeze([...macroPosition]),revision,
       targetRadiusM:mix(a.target.radiusM,b.target.radiusM,t),targetDerived:true,hardCodedCartesianPose:false,
       derivation:Object.freeze({fromTargetId:a.target.id,toTargetId:b.target.id,fromRadiusM:a.target.radiusM,toRadiusM:b.target.radiusM,projectedCoverage:mix(a.profile.coverage,b.profile.coverage,t),metresPerRenderUnit}),
       semanticHandoff:Object.freeze({from:lowerStop.stage,to:upperStop.stage,progress:t})
@@ -76,9 +76,12 @@ export function createTargetAwareCamera({anchorId,focusId,aimId=focusId,targets,
   return Object.freeze({
     pose,
     orbit(dx,dy){yaw+=Number(dx);pitch=clamp(pitch+Number(dy),-.72,.72);revision++;},
+    moveMacro(forward,right,vertical=0,dt=1){const amount=clamp(dt,0,.1)*26,fx=Math.sin(yaw),fz=-Math.cos(yaw),rx=Math.cos(yaw),rz=Math.sin(yaw);macroPosition=[macroPosition[0]+(fx*forward+rx*right)*amount,macroPosition[1]+Number(vertical)*amount,macroPosition[2]+(fz*forward+rz*right)*amount];revision++;return Object.freeze([...macroPosition])},
+    translateMacro(delta){if(!Array.isArray(delta)||delta.length!==3)throw new TypeError('Macro translation requires a three-axis render-space delta');macroPosition=macroPosition.map((value,index)=>value+Number(delta[index]));revision++;return Object.freeze([...macroPosition])},
+    rebaseMacro(delta){if(!Array.isArray(delta)||delta.length!==3)throw new TypeError('Macro rebase requires a three-axis render-space delta');macroPosition=macroPosition.map((value,index)=>value-Number(delta[index]));revision++;return Object.freeze([...macroPosition])},
     moveLocal(forward,right,dt=1){const amount=clamp(dt,0,.1)*5,fx=Math.sin(yaw),fz=-Math.cos(yaw),rx=Math.cos(yaw),rz=Math.sin(yaw);localPosition=[localPosition[0]+(fx*forward+rx*right)*amount,0,localPosition[2]+(fz*forward+rz*right)*amount];revision++;return Object.freeze([...localPosition]);},
     setFocus(id,{anchorId:nextAnchor=id,aimId:nextAim=id}={}){focus=String(id);anchor=String(nextAnchor);aim=String(nextAim);revision++;},
-    restore(snapshot){if(!snapshot)throw new TypeError('Camera snapshot is required');anchor=String(snapshot.anchorId);focus=String(snapshot.focusId);aim=String(snapshot.aimId);yaw=Number(snapshot.yaw)||0;pitch=Number(snapshot.pitch)||0;localPosition=[...(snapshot.localPosition||[0,0,0])];revision++;},
+    restore(snapshot){if(!snapshot)throw new TypeError('Camera snapshot is required');anchor=String(snapshot.anchorId);focus=String(snapshot.focusId);aim=String(snapshot.aimId);yaw=Number(snapshot.yaw)||0;pitch=Number(snapshot.pitch)||0;localPosition=[...(snapshot.localPosition||[0,0,0])];macroPosition=[...(snapshot.macroPosition||[0,0,0])];revision++;},
     snapshot(coordinate=0){return pose(coordinate);}
   });
 }
