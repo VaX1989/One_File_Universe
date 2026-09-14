@@ -3,7 +3,8 @@ import { presentationOrbitAuthority, spatialAuthority } from './authority.js';
 import { deterministicModelCoordinates, surfaceTargetFromModel } from './geodesy.js';
 import { createReferenceFrameRegistry } from './reference-frames.js';
 import { createSpatialGraph } from './spatial-graph.js';
-import { deterministicTerrainHeight } from './terrain-field.js';
+import { createWorldScientificState } from './scientific-state.js';
+import { deterministicSurfaceTerrainHeightMeters } from './terrain-field.js';
 
 const idOf = node => node?.canonicalId || node?.entityId || node?.id || null;
 const factsOf = node => node?.metadata?.facts || node?.facts || {};
@@ -24,8 +25,9 @@ export function captureGenuineOFUWorld(root=globalThis,{profile='origin',orbitSl
   const sample=state.local.objects.find(item=>item.entityId===String(selectedSampleId||'')) || state.local.objects.find(item=>item.kind==='ROCK') || state.local.objects.find(item=>['WATER','ICE','ARTIFACT','ORGANISM'].includes(item.kind));
   if (!sample) throw new Error('Genuine OFU local context has no inspectable sample');
   const source=runtime.query('v1.query.material-source',{...state.point,historyEpoch:state.world?.civilization?.epoch??0,objectId:sample.entityId});
-  let microSession=null;const representationCache=new Map(),representationMetrics={sessionCreations:0,materializations:0};
+  let microSession=null,disposed=false;const representationCache=new Map(),representationMetrics={sessionCreations:0,materializations:0};
   const representation=name=>{
+    if(disposed)throw new Error('Cannot materialize a representation from a disposed world context');
     if(representationCache.has(name))return representationCache.get(name);
     if(!microSession){microSession=O.v1MicroPipeline.createSession(source,{microFeatures:64,molecularUnits:24,atoms:96});representationMetrics.sessionCreations++}
     const value=microSession.materialize(name);representationCache.set(name,value);representationMetrics.materializations++;return value;
@@ -35,7 +37,7 @@ export function captureGenuineOFUWorld(root=globalThis,{profile='origin',orbitSl
     get microstructure(){return representation('microstructure')},
     get molecular(){return representation('molecular')},
     get atomic(){return representation('atomic')},
-    snapshot(){return Object.freeze({contract:'ofu-lazy-micro-representations-1',resident:Object.freeze([...representationCache.keys()]),sessionCreations:representationMetrics.sessionCreations,materializations:representationMetrics.materializations,bounded:representationCache.size<=4})}
+    snapshot(){return Object.freeze({contract:'ofu-lazy-micro-representations-2',resident:Object.freeze([...representationCache.keys()]),sessionCreations:representationMetrics.sessionCreations,materializations:representationMetrics.materializations,bounded:representationCache.size<=4,disposed})}
   });
   const systemId=idOf(system), bodyId=idOf(body), surfaceId=state.point.locationIdentity, sampleId=sample.entityId;
   const nodes=[
@@ -47,6 +49,7 @@ export function captureGenuineOFUWorld(root=globalThis,{profile='origin',orbitSl
   const p3Snapshot=O.p3Astronomy.planetaryInputSnapshot(preview.ctx,key),adapted=O.p5Planetology.adaptP3PlanetaryInputSnapshot(p3Snapshot),physical=O.p5Planetology.realizePhysicalPlanet(preview.ctx,adapted);
   if(physical.status!=='SUPPORTED')throw new Error('Selected genuine world is outside the physical visualization domain: '+String(physical.reason));
   const physicalRadius=Number(physical.physical.meanRadiusM);
+  const generative=createWorldScientificState({runtime,system,body,physical,point:state.point,sample,source});
   const orbitMeters=Number(state.body?.metadata?.facts?.baselineSemiMajorAxisMicroAu || 1000000) * 149597.8707;
   const surfaceTarget=surfaceTargetFromModel({bodyId,locationIdentity:surfaceId,latMicroDeg:state.point.latMicroDeg,lonMicroDeg:state.point.lonMicroDeg,radiusM:physicalRadius,authority:AUTHORITY.MODEL_DERIVED});
   const rawBodies=Object.freeze([...graphSeed.children.stars,...graphSeed.children.planets].map((node,index)=>{
@@ -55,7 +58,7 @@ export function captureGenuineOFUWorld(root=globalThis,{profile='origin',orbitSl
     return Object.freeze({id,kind:node.kind,canonicalKey:node.canonicalKey,facts,index,selected:id===bodyId,frameId:'body:'+id,positionM:orbitPosition(id,bodyOrbitM,facts.baselineInclinationMilliDeg||0),radiusM:id===bodyId?physicalRadius:planet?physicalRadius*Math.max(.28,Math.min(2.6,Math.cbrt(Number(facts.baselineMassMilliEarth||1000)/7491))):physicalRadius*3.5,radiusAuthority,authority:presentationOrbitAuthority(AUTHORITY.CANONICAL,{bounds:radiusAuthority})});
   }));
   const systemRadiusM=Math.max(orbitMeters*1.24,...rawBodies.filter(item=>item.kind==='planet').map(item=>Math.hypot(...item.positionM)*1.18));
-  const bodyFrameId='body:'+bodyId,bodyFixedFrameId='body-fixed:'+bodyId,localFrameId='surface:'+surfaceId,sampleFrameId='sample:'+sampleId,microFrameId='sample-micro:'+sampleId,sampleLocalPoint=Object.freeze([0,deterministicTerrainHeight(0,-2,bodyId)+.16,-2]);
+  const bodyFrameId='body:'+bodyId,bodyFixedFrameId='body-fixed:'+bodyId,localFrameId='surface:'+surfaceId,sampleFrameId='sample:'+sampleId,microFrameId='sample-micro:'+sampleId,sampleLocalPoint=Object.freeze([0,deterministicSurfaceTerrainHeightMeters(0,-2,{surfaceTarget,radiusM:physicalRadius,seed:generative.seeds.terrain,profile:generative.presentation.terrain})+.16,-2]);
   nodes[1]={...nodes[1],frameId:bodyFrameId};nodes[2]={...nodes[2],frameId:bodyFixedFrameId};nodes[3]={...nodes[3],frameId:sampleFrameId};
   for(const item of rawBodies)if(!nodes.some(node=>node.id===item.id))nodes.push({id:item.id,kind:item.kind==='planet'?'PLANET':'STAR',parentId:systemId,frameId:item.frameId,authority:AUTHORITY.CANONICAL,representations:['SYSTEM','ORBIT','APPROACH'],metadata:{facts:item.facts,canonicalKey:item.canonicalKey}});
   const spatialGraph=createSpatialGraph(nodes,{focusId:bodyId});
@@ -95,17 +98,23 @@ export function captureGenuineOFUWorld(root=globalThis,{profile='origin',orbitSl
     sourceRuntimeVersion:runtime.VERSION,
     canonicalKey:key,
     systemId,bodyId,surfaceId,sampleId,
-    planetIdentity:state.world.planetIdentity,
+    planetIdentity:state.world.planetIdentity,physical,generative,
     physicalRadiusM:physicalRadius,systemRadiusM,
     system,bodies:rawBodies,body,world:state.world,point:state.point,local:state.local,sample,sampleLocalPoint,source,representations,surfaceTarget,cameraTargets,
     graph:spatialGraph,frames,frameIds:Object.freeze({system:'system-barycentric',body:bodyFrameId,bodyFixed:bodyFixedFrameId,local:localFrameId,sample:sampleFrameId,micro:microFrameId}),
-    terrainTarget:Object.freeze({contract:'ofu-spatial-continuum-metric-terrain-target-1',bodyId,locationIdentity:surfaceId,frameId:localFrameId,horizontalCoordinates:'LOCAL_ENU_METRES',elevationUnit:'METRE',elevationAuthority:AUTHORITY.PRESENTATION_ONLY,seed:bodyId}),
+    terrainTarget:Object.freeze({contract:'ofu-spatial-continuum-metric-terrain-target-3',fieldContract:'BODY_FIXED_DIRECTIONAL_FIELD_1',bodyId,locationIdentity:surfaceId,frameId:localFrameId,horizontalCoordinates:'LOCAL_ENU_METRES',planetaryCoordinates:'BODY_FIXED_UNIT_VECTOR',bodyFixedUnit:surfaceTarget.bodyFixedUnit,tangent:surfaceTarget.tangent,radiusM:physicalRadius,elevationUnit:'METRE',elevationAuthority:AUTHORITY.PRESENTATION_ONLY,seed:generative.seeds.terrain,profile:generative.presentation.terrain,scientificStateHash:generative.scientificHashes.context,planetRepresentationHash:generative.planetRepresentationHash,representationHash:generative.representationHash}),
     authority:Object.freeze({system:AUTHORITY.CANONICAL,body:AUTHORITY.CANONICAL,surface:AUTHORITY.MODEL_DERIVED,sample:AUTHORITY.MODEL_DERIVED,visuals:AUTHORITY.PRESENTATION_ONLY,orbitTransforms:AUTHORITY.PRESENTATION_ONLY,terrainElevation:AUTHORITY.PRESENTATION_ONLY}),
     authorityRecords:Object.freeze({
       body:spatialAuthority({entity:AUTHORITY.CANONICAL,position:AUTHORITY.PRESENTATION_ONLY,orientation:AUTHORITY.UNKNOWN,phase:AUTHORITY.PRESENTATION_ONLY,bounds:AUTHORITY.MODEL_DERIVED,geometry:AUTHORITY.PRESENTATION_ONLY,elevation:AUTHORITY.UNKNOWN}),
       surface:spatialAuthority({entity:AUTHORITY.MODEL_DERIVED,position:AUTHORITY.MODEL_DERIVED,orientation:AUTHORITY.MODEL_DERIVED,phase:AUTHORITY.UNKNOWN,bounds:AUTHORITY.UNKNOWN,geometry:AUTHORITY.PRESENTATION_ONLY,elevation:AUTHORITY.PRESENTATION_ONLY})
     }),
     scientificClaims:Object.freeze({canonicalPlanetIdentity:true,canonicalSystemIdentity:true,canonicalSurfaceGeodesy:false,physicalTerrainElevation:false,exactMolecularArrangement:false,exactAtomicPosition:false}),
+    lifecycle:Object.freeze({snapshot:()=>Object.freeze({contract:'ofu-world-context-lifecycle-1',disposed,residentRepresentations:representationCache.size,microSessionActive:!!microSession})}),
+    dispose() {
+      if(disposed)return Object.freeze({disposed:false,resources:0,sessions:0,representations:0,reason:'ALREADY_DISPOSED'});
+      disposed=true;const representations=representationCache.size,sessions=microSession?1:0;representationCache.clear();try{microSession?.dispose?.()}finally{microSession=null}
+      return Object.freeze({disposed:true,resources:0,sessions,representations,reason:'WORLD_CONTEXT_DISPOSAL'});
+    },
     releaseLegacy() {
       for(const name of ['v2CinematicMacroDirector','v2CinematicExperience','v2CinematicDepth','planetSurfaceWebGL2','planetWebGL2','pxRenderBackend'])try{O[name]?.dispose?.()}catch{}
       try{product.dispose?.()}catch{}
