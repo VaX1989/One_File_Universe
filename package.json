@@ -18,6 +18,7 @@
     "test:continuum:r5-generative": "node tests/spatial-continuum/r5-generative-universe.mjs",
     "test:continuum:r5-interaction": "node tests/spatial-continuum/r5-interaction-bounds.mjs",
     "test:continuum:r5-diversity": "node tests/spatial-continuum/r5-population-diversity.mjs",
+    "test:continuum:r6-discovery": "node tests/spatial-continuum/r6-discovery-scheduler.mjs",
     "test:continuum:generalization": "node tests/spatial-continuum/generalization.mjs",
     "test:continuum:open-generalization": "node tests/spatial-continuum/open-generalization.mjs",
     "test:continuum:accessibility-mobile": "node tests/spatial-continuum/open-accessibility-mobile.mjs",
