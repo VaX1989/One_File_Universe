@@ -52,3 +52,9 @@ Changing representation input or version cannot mutate a scientific-state hash. 
 The first representation adapter consumes existing P3/P5 authority rather than introducing a second planet model. Canonical astronomy and P5 physical values are normalized into a versioned scientific state. Separate planet, surface, sample, and complete-context hashes are retained. Planet texture, atmosphere, terrain wavelengths/amplitudes/palette, local density, and contextual microscopic seed then derive from a separate presentation stream.
 
 The causal trace explicitly lists influences, non-influences, and unknowns. Terrain elevation, palettes, local scatter, molecular layout, and atomic layout remain `PRESENTATION_ONLY`; their conditioning by mass, radius, gravity, insolation, source location, and sample kind is not promoted into a physical measurement claim.
+
+## R5-04 bounded galaxy streaming
+
+The former eight-galaxy universe is now an eight-galaxy active window. The user can traverse positive or negative galaxy-field coordinates through visible controls or bracket keys. Window addresses use unbounded integer coordinates supplied to the existing P3 exploration authority; only one window and a bounded LRU working set are active.
+
+Window revisit rematerializes the same identities independent of visit order. Checkpoints retain the galaxy-window coordinate so a branch can return across streamed fields. The working node index is rebuilt from the active window instead of accumulating every galaxy ever seen.
