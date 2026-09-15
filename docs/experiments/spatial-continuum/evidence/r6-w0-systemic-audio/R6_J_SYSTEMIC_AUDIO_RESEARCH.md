@@ -143,7 +143,7 @@ Command:
 node docs/experiments/spatial-continuum/evidence/r6-w0-systemic-audio/prototype/systemic-audio-research.test.mjs
 ```
 
-Observed before commit from byte-equivalent local prototype:
+Post-commit verification of the exact prototype/test blobs committed at `e51daebd5d37d5a8c62125643ec66ebe7bcce8be` (fetched from GitHub and executed after commit):
 
 - status: `PASS`;
 - cases: `13`;
@@ -160,6 +160,8 @@ Observed before commit from byte-equivalent local prototype:
 - unsupported audio fails to silence: PASS;
 - no network/import dependency: PASS;
 - environmental cues never claim literal physical evidence: PASS.
+
+The subsequent evidence-only wording update does not modify either prototype/test blob.
 
 Physical-device acoustic quality: `NOT_VERIFIED`.
 Browser-policy matrix: `NOT_VERIFIED`.
