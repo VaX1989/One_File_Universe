@@ -43,16 +43,7 @@ build=replaceOnce(build,"charset:'utf8',plugins:[phase2ProductIntegration]","cha
 build=replaceOnce(build,"phase2NavigationAuthorityAdded:false}","phase2NavigationAuthorityAdded:false,semanticBuildTransforms:false,sourceTruth:'DIRECT_CHECKED_IN',macroRendererOwner:'PHASE2_PROGRESSIVE',lowerScaleRendererOwner:'PHASE2_EPISTEMIC'}",'build architecture evidence');
 write('tools/build-spatial-continuum.mjs',build);
 
-let workflow=read('.github/workflows/spatial-continuum-experiment.yml');
-workflow=workflow.replace('permissions: {contents: write}','permissions: {contents: read}').replaceAll('persist-credentials: true','persist-credentials: false');
-const materializeBlock="      - name: Materialize certified Phase-2 runtime source for one-time hardening migration\n        run: node tools/spatial-continuum/materialize-phase2-source.mjs\n      - name: Upload materialized Phase-2 source\n        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f\n        with: {name: 'spatial-continuum-phase2-source-${{ env.OFU_SOURCE_SHA }}', path: reports/ci/phase2-materialized-source, if-no-files-found: error}\n";
-workflow=replaceOnce(workflow,materializeBlock,'','remove materializer workflow');
-const begin='      # BEGIN R6_W0_ONE_SHOT_SOURCE_PROMOTION\n',end='      # END R6_W0_ONE_SHOT_SOURCE_PROMOTION\n';
-const start=workflow.indexOf(begin),finish=workflow.indexOf(end);
-if(start<0||finish<start)throw new Error('one-shot workflow markers missing');
-workflow=workflow.slice(0,start)+workflow.slice(finish+end.length);
-write('.github/workflows/spatial-continuum-experiment.yml',workflow);
-
+fs.rmSync(p('reports/ci/phase2-materialized-source'),{recursive:true,force:true});
 for(const relative of ['tools/spatial-continuum/materialize-phase2-source.mjs','tools/spatial-continuum/promote-phase2-source.mjs'])if(fs.existsSync(p(relative)))fs.rmSync(p(relative));
 
 const assertions=[
