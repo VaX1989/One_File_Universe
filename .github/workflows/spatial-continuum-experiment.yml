@@ -16,7 +16,7 @@ concurrency:
   group: spatial-continuum-${{ github.event.pull_request.head.ref || github.ref_name }}
   cancel-in-progress: true
 
-permissions: {contents: read}
+permissions: {contents: write}
 env: {OFU_SOURCE_SHA: '${{ github.event.pull_request.head.sha || github.sha }}'}
 
 jobs:
@@ -25,7 +25,7 @@ jobs:
     steps:
       - name: Checkout exact source
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
-        with: {ref: '${{ env.OFU_SOURCE_SHA }}', persist-credentials: false}
+        with: {ref: '${{ env.OFU_SOURCE_SHA }}', persist-credentials: true}
       - name: Setup Node
         uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with: {node-version: '24.20.0', cache: npm}
@@ -36,6 +36,17 @@ jobs:
       - name: Upload materialized Phase-2 source
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with: {name: 'spatial-continuum-phase2-source-${{ env.OFU_SOURCE_SHA }}', path: reports/ci/phase2-materialized-source, if-no-files-found: error}
+      # BEGIN R6_W0_ONE_SHOT_SOURCE_PROMOTION
+      - name: Promote certified Phase-2 runtime into checked-in source truth
+        run: node tools/spatial-continuum/promote-phase2-source.mjs
+      - name: Commit source-truth hardening transaction
+        run: |
+          git config user.name "VaX1989"
+          git config user.email "Pietrocorona89@gmail.com"
+          git add -A
+          git commit -m "R6/W0 finalization: make Phase-2 source architecture explicit"
+          git push origin HEAD:integration/spatial-continuum-r6-w0-continuous-reality-2026-09-15
+      # END R6_W0_ONE_SHOT_SOURCE_PROMOTION
       - run: npm run test:continuum
       - name: Run R6/W0 convergence contract tests
         env: {OFU_CONTINUUM_EVIDENCE_DIR: reports/ci/quality-observatory}
@@ -48,7 +59,7 @@ jobs:
     steps:
       - name: Checkout exact source
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
-        with: {ref: '${{ env.OFU_SOURCE_SHA }}', persist-credentials: false}
+        with: {ref: '${{ env.OFU_SOURCE_SHA }}', persist-credentials: true}
       - name: Setup Node
         uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with: {node-version: '24.20.0', cache: npm}
@@ -70,7 +81,7 @@ jobs:
     steps:
       - name: Checkout exact source
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
-        with: {ref: '${{ env.OFU_SOURCE_SHA }}', persist-credentials: false}
+        with: {ref: '${{ env.OFU_SOURCE_SHA }}', persist-credentials: true}
       - name: Setup Node
         uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with: {node-version: '24.20.0', cache: npm}
