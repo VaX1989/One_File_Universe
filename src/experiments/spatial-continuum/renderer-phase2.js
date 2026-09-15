@@ -6,8 +6,13 @@ import { createHumanRendererConvergence } from './human-renderer-convergence.js'
 import { createCausalRendererConvergence } from './causal-renderer-convergence.js';
 import { createEpistemicRendererConvergence } from './epistemic-renderer-convergence.js';
 
-const suppressBaseMacro=openUniverse=>new Proxy(openUniverse,{get(target,property){if(property==='catalogueFor')return()=>Object.freeze([]);const value=Reflect.get(target,property,target);return typeof value==='function'?value.bind(target):value}});
-const suppressWorld=world=>({...world,openUniverse:suppressBaseMacro(world.openUniverse)});
+export const createMacroSuppressedOpenUniverse=openUniverse=>{
+  if(!openUniverse||typeof openUniverse!=='object')throw new TypeError('An open-universe authority is required');
+  const descriptors=Object.getOwnPropertyDescriptors(openUniverse);
+  descriptors.catalogueFor={value:()=>Object.freeze([]),enumerable:true,writable:false,configurable:false};
+  return Object.freeze(Object.defineProperties({},descriptors));
+};
+const suppressWorld=world=>({...world,openUniverse:createMacroSuppressedOpenUniverse(world.openUniverse)});
 
 export function createContinuumRenderer(canvas,world,options={}){
   let activeWorld=world,lastSnapshot=null,disposed=false,macroFrameScheduled=false,macroFrameSamples=0,surfaceDirectRenders=0;
