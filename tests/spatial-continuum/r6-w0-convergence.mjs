@@ -6,8 +6,8 @@ import './r6-w0-surface-renderer-integration.mjs';
 import './r6-w0-human-sense-of-place.mjs';
 import './r6-w0-human-renderer-integration.mjs';
 import './r6-w0-causal-visual-consequences.mjs';
+import './r6-w0-causal-renderer-integration.mjs';
 import './r6-w0-epistemic-scale-presentation.mjs';
 import './r6-w0-orientation-scale-ux.mjs';
 import './r6-w0-quality-observatory.mjs';
-
-console.log(JSON.stringify({status:'PASS',suite:'spatial-continuum-r6-w0-convergence-contracts',phase2:['CONV-A','CONV-BD','CONV-C'],lanes:['R6-A','R6-B','R6-D','R6-C','R6-E','R6-F','R6-I','R6-G']},null,2));
+console.log(JSON.stringify({status:'PASS',suite:'spatial-continuum-r6-w0-convergence-contracts',phase2:['CONV-A','CONV-BD','CONV-C','CONV-E'],lanes:['R6-A','R6-B','R6-D','R6-C','R6-E','R6-F','R6-I','R6-G']},null,2));

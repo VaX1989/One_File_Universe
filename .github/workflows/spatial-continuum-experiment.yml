@@ -16,11 +16,8 @@ concurrency:
   group: spatial-continuum-${{ github.event.pull_request.head.ref || github.ref_name }}
   cancel-in-progress: true
 
-permissions:
-  contents: read
-
-env:
-  OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+permissions: {contents: read}
+env: {OFU_SOURCE_SHA: '${{ github.event.pull_request.head.sha || github.sha }}'}
 
 jobs:
   development:
@@ -42,9 +39,7 @@ jobs:
   continuum-browser:
     needs: development
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix: {browser: [chromium, firefox, webkit]}
+    strategy: {fail-fast: false, matrix: {browser: [chromium, firefox, webkit]}}
     steps:
       - name: Checkout exact source
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
@@ -90,6 +85,9 @@ jobs:
       - name: Run Phase-2 HUMAN product falsification
         env: {OFU_CONTINUUM_EVIDENCE_DIR: reports/ci/chromium-convergence/phase2-human}
         run: node tests/spatial-continuum/r6-w0-human-browser.mjs
+      - name: Run Phase-2 causal product falsification
+        env: {OFU_CONTINUUM_EVIDENCE_DIR: reports/ci/chromium-convergence/phase2-causal}
+        run: node tests/spatial-continuum/r6-w0-causal-browser.mjs
       - name: Run browser product path
         env: {OFU_CONTINUUM_EVIDENCE_DIR: reports/ci/chromium-convergence}
         run: npm run test:continuum:open
