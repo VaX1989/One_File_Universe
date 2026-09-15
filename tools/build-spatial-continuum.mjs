@@ -11,6 +11,7 @@ const normalize=value=>value.replace(/\r\n?/g,'\n');
 const read=relative=>normalize(fs.readFileSync(path.join(root,relative),'utf8'));
 const sha=value=>crypto.createHash('sha256').update(value).digest('hex');
 const git=ref=>execFileSync('git',['rev-parse',ref],{cwd:root,encoding:'utf8'}).trim();
+const phase2RendererAlias={name:'r6-w0-phase2-renderer',setup(context){context.onResolve({filter:/^\.\/renderer\.js$/},args=>path.basename(args.importer)==='experience.js'?{path:path.join(root,'src','experiments','spatial-continuum','renderer-phase2.js')}:null)}};
 
 fs.mkdirSync(dist,{recursive:true});
 execFileSync(process.execPath,['tools/build-ofu-rendering-v09.mjs'],{cwd:root,env:process.env,stdio:['ignore','ignore','inherit']});
@@ -26,7 +27,8 @@ const bundle=await build({
   minify:true,
   legalComments:'none',
   treeShaking:true,
-  charset:'utf8'
+  charset:'utf8',
+  plugins:[phase2RendererAlias]
 });
 const javascript=normalize(bundle.outputFiles[0].text).replaceAll('</script','<\\/script');
 const css=read('src/experiments/spatial-continuum/experience.css').replaceAll('</style','<\\/style');
@@ -51,7 +53,7 @@ const manifest={
   base:{repository:'VaX1989/One_File_Universe',sha:'5f3dbdcccc409c3bc29684e062ad7730ddea0c69',tree:'f84f05f9a12e110bb48f7605d8f577b0886dfe02'},
   source:{commit:git('HEAD'),tree:git('HEAD^{tree}')},
   engine:{name:'Babylon.js',package:'@babylonjs/core',version:'9.26.0',license:'Apache-2.0',licenseSha256:sha(Buffer.from(engineLicense,'utf8')),licenseEmbedded:true,backendBaseline:'WebGL2',webgpuRequired:false},
-  architecture:{canonicalFocusAuthorities:1,cameraAuthorities:1,sceneAuthorities:1,picking:'BABYLON_SCENE_RAY_PICK',continuousScale:true,hierarchicalReferenceFrames:true,overlappingRepresentations:true,dynamicWorldRebinding:true,terrainCoordinates:'BODY_FIXED_DIRECTIONAL_FIELD_WITH_LOCAL_ENU_VIEW',terrainLod:'BOUNDED_RENDERED_CUBE_SPHERE_PLUS_LOCAL_SPARSE_QUADTREE',terrainElevationAuthority:'PRESENTATION_ONLY',orbitPositionAuthority:'PRESENTATION_ONLY'},
+  architecture:{canonicalFocusAuthorities:1,cameraAuthorities:1,sceneAuthorities:1,picking:'BABYLON_SCENE_RAY_PICK',continuousScale:true,hierarchicalReferenceFrames:true,overlappingRepresentations:true,dynamicWorldRebinding:true,terrainCoordinates:'BODY_FIXED_DIRECTIONAL_FIELD_WITH_LOCAL_ENU_VIEW',terrainLod:'BOUNDED_RENDERED_CUBE_SPHERE_PLUS_LOCAL_SPARSE_QUADTREE',terrainElevationAuthority:'PRESENTATION_ONLY',orbitPositionAuthority:'PRESENTATION_ONLY',phase2Renderer:'PROGRESSIVE_MACRO_FACADE'},
   runtime:{singleFile:true,directFile:true,offline:true,networkRequired:false,externalRuntimeDependencies:false,cspConnect:'none'},
   inputs:{packageLockSha256:sha(lock),sources:sourceFiles.map(file=>({file,sha256:sha(Buffer.from(read(file),'utf8'))}))},
   artifact:{file:path.basename(artifactPath),bytes:artifact.length,sha256:sha(artifact)},
