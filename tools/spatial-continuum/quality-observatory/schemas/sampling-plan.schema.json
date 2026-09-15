@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://one-file-universe.invalid/schemas/r6-quality-observatory-sampling-plan-v1.json",
+  "title": "OFU R6 Quality Observatory Sampling Plan",
+  "type": "object",
+  "required": ["contract", "campaignId", "campaignSeed", "candidateCount", "selectedCount", "selectionMethod", "orderIndependent", "selected", "planHash"],
+  "properties": {
+    "contract": {"const": "ofu.r6.quality-observatory.sampling-plan.v1"},
+    "campaignId": {"type": "string"},
+    "campaignSeed": {"type": "string"},
+    "candidateCount": {"type": "integer", "minimum": 1},
+    "selectedCount": {"type": "integer", "minimum": 0},
+    "selectionMethod": {"const": "SHA256_RANK_OVER_CANONICAL_CROSS_PRODUCT"},
+    "orderIndependent": {"const": true},
+    "selected": {"type": "array", "items": {"type": "object", "required": ["index", "rank", "witness"], "properties": {"index": {"type": "integer", "minimum": 0}, "rank": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "witness": {"type": "object", "required": ["address", "seed", "modelVersion", "stage"]}}}},
+    "planHash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "additionalProperties": false
+}
