@@ -76,6 +76,9 @@ jobs:
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with: {name: 'spatial-continuum-app-${{ env.OFU_SOURCE_SHA }}', path: dist/One_File_Universe_Spatial_Continuum.html, if-no-files-found: error}
       - run: npx playwright install --with-deps chromium
+      - name: Run Phase-2 boot diagnostic
+        env: {OFU_CONTINUUM_EVIDENCE_DIR: reports/ci/chromium-convergence/phase2-boot}
+        run: node tests/spatial-continuum/r6-w0-boot-diagnostic.mjs
       - name: Run Phase-2 progressive macro product falsification
         env: {OFU_CONTINUUM_EVIDENCE_DIR: reports/ci/chromium-convergence/phase2-macro}
         run: node tests/spatial-continuum/r6-w0-macro-renderer-browser.mjs
