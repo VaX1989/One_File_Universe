@@ -112,8 +112,10 @@ function createPlanetaryPatchLayer(scene,world,selected,{maxPatches=96,maxCached
 
 function createTerrainPatchLayer(scene,terrainTarget,{maxPatches=48,segments=16,palette=null,rootExtentM=1048576}={}){
   const {profile}=terrainTarget,radiusM=Number(terrainTarget.radiusM),heightAt=createSurfaceTerrainSampler({surfaceTarget:terrainTarget,radiusM,seed:terrainTarget.seed,profile}),curvatureAt=(x,z)=>sphericalTangentCurvatureMeters(x,z,radiusM);
-  const root=new TransformNode('terrain-patches-root',scene),material=alphaMaterial(scene,'terrain-patches-material','#ffffff');material.useVertexColors=true;material.specularColor=new Color3(.04,.055,.05);material.emissiveColor=new Color3(.11,.135,.105);material.backFaceCulling=false;
-  const pool=Array.from({length:maxPatches},(_,index)=>{const mesh=terrainPatchMesh(scene,'terrain-patch-'+index,segments);mesh.material=material;mesh.parent=root;mesh.isPickable=false;mesh.hasVertexAlpha=true;mesh.metadata.patchId=null;mesh.metadata.lastUsed=0;mesh.setEnabled(false);return mesh}),resident=new Map();let epoch=0,generations=0,evictions=0;
+  const root=new TransformNode('terrain-patches-root',scene),material=alphaMaterial(scene,'terrain-patches-material','#ffffff'),backstopMaterial=alphaMaterial(scene,'terrain-backstop-material','#ffffff');for(const surfaceMaterial of [material,backstopMaterial]){surfaceMaterial.useVertexColors=true;surfaceMaterial.specularColor=new Color3(.04,.055,.05);surfaceMaterial.emissiveColor=new Color3(.11,.135,.105);surfaceMaterial.backFaceCulling=false}
+  // Keep one complete displayed plan while the next bounded plan is constructed
+  // offscreen. At most two plans can coexist; no partial new plan exposes holes.
+  const pool=Array.from({length:maxPatches*2+1},(_,index)=>{const mesh=terrainPatchMesh(scene,'terrain-patch-'+index,segments);mesh.material=material;mesh.parent=root;mesh.isPickable=false;mesh.hasVertexAlpha=true;mesh.metadata.patchId=null;mesh.metadata.lastUsed=0;mesh.setEnabled(false);return mesh}),resident=new Map();let epoch=0,generations=0,evictions=0,signature='COARSE_BACKSTOP',committedIds=new Set(['COARSE_BACKSTOP']),pendingCount=0,buildsLastApply=0,handoffs=0,fading=false,fadeStarted=0,fadeCompletions=0;
   const updateMesh=(mesh,patch)=>{
     if(mesh.metadata.patchId===patch.id)return;
     const base=mesh.metadata.base,positions=Float32Array.from(base),colors=new Float32Array(base.length/3*4),normals=new Float32Array(base.length),surface=mesh.metadata.surfaceVertexCount,row=segments+1,spacing=patch.sizeM/segments,skirtDepth=Math.max(3,spacing*.18),surfaceHeights=new Float64Array(surface),relief=Math.max(40,Number(profile?.macroAmplitudeM)||820),low=palette?.low||[.28,.38,.29],green=palette?.mid||[.34,.58,.35],rock=palette?.high||[.76,.68,.57];
@@ -130,7 +132,32 @@ function createTerrainPatchLayer(scene,terrainTarget,{maxPatches=48,segments=16,
     }
     mesh.updateVerticesData(VertexBuffer.PositionKind,positions);mesh.updateVerticesData(VertexBuffer.NormalKind,normals);mesh.updateVerticesData(VertexBuffer.ColorKind,colors);mesh.metadata.patchId=patch.id;mesh.metadata.level=patch.level;mesh.metadata.minimumWavelengthM=0;mesh.metadata.curvatureModel='SPHERICAL_TANGENT_FRAME';mesh.refreshBoundingInfo();
   };
-  return{root,mesh:pool[0],materials:[material],pool,maxPatches,segments,rootExtentM,resident,heightAt,activeCount:0,get generations(){return generations},get evictions(){return evictions},apply(plan){if(plan.activePatchCount>pool.length)throw new Error('Terrain patch plan exceeded its pool');epoch++;const activeIds=new Set(plan.patches.map(item=>item.id));for(const mesh of pool)mesh.setEnabled(false);for(const patch of plan.patches){let mesh=resident.get(patch.id);if(!mesh){mesh=pool.find(item=>item.metadata.patchId==null)||pool.filter(item=>!activeIds.has(item.metadata.patchId)).sort((a,b)=>a.metadata.lastUsed-b.metadata.lastUsed)[0];if(!mesh)throw new Error('Terrain residency pool cannot satisfy active patch plan');if(mesh.metadata.patchId!=null){resident.delete(mesh.metadata.patchId);evictions++}updateMesh(mesh,patch);resident.set(patch.id,mesh);generations++}mesh.metadata.lastUsed=epoch;mesh.setEnabled(true)}this.activeCount=plan.activePatchCount;return this.activeCount;}};
+  // A planet-sized tangent quad undersamples its own center and can sit below
+  // the regional camera. The temporary parent covers the retained target's
+  // local visual footprint; the full bounded quadtree takes over once ready.
+  const backstop=pool[0];backstop.material=backstopMaterial;updateMesh(backstop,{id:'COARSE_BACKSTOP',level:0,centerEastM:0,centerNorthM:0,sizeM:Math.min(rootExtentM,262144)});backstop.position.y=.5;backstop.setEnabled(true);resident.set('COARSE_BACKSTOP',backstop);generations++;
+  return{
+    root,mesh:backstop,materials:[material,backstopMaterial],pool,maxPatches,segments,rootExtentM,resident,heightAt,activeCount:1,maxBuildsPerApply:2,
+    get generations(){return generations},get evictions(){return evictions},get pendingCount(){return pendingCount},get buildsLastApply(){return buildsLastApply},get handoffs(){return handoffs},get fading(){return fading},get fadeCompletions(){return fadeCompletions},get signature(){return signature},
+    suspend(){pendingCount=buildsLastApply=0;if(fading){fading=false;material.alpha=1;fadeCompletions++}if(signature!=='COARSE_BACKSTOP')backstop.setEnabled(false)},
+    advanceFade(now,weight){if(!fading)return false;const fraction=Math.min(1,Math.max(0,(now-fadeStarted)/240)),eased=fraction*fraction*(3-2*fraction),alpha=clamp01(weight);material.alpha=alpha*eased;backstopMaterial.alpha=alpha*(1-eased);if(fraction>=1){fading=false;backstop.setEnabled(false);fadeCompletions++}return fading},
+    apply(plan){
+      if(plan.activePatchCount>maxPatches)throw new Error('Terrain patch plan exceeded its active-patch budget');
+      const nextSignature=plan.patches.map(item=>item.id).join('|');if(nextSignature===signature){pendingCount=buildsLastApply=0;return this.activeCount}
+      epoch++;fading=false;const desiredIds=new Set(plan.patches.map(item=>item.id));buildsLastApply=0;
+      for(const patch of plan.patches){
+        if(resident.has(patch.id))continue;if(buildsLastApply>=this.maxBuildsPerApply)break;
+        const mesh=pool.find(item=>item.metadata.patchId==null)||pool.filter(item=>item!==backstop&&!committedIds.has(item.metadata.patchId)&&!desiredIds.has(item.metadata.patchId)).sort((a,b)=>a.metadata.lastUsed-b.metadata.lastUsed)[0];
+        if(!mesh)throw new Error('Bounded terrain handoff has no disposable residency slot');
+        if(mesh.metadata.patchId!=null){resident.delete(mesh.metadata.patchId);evictions++}
+        mesh.setEnabled(false);updateMesh(mesh,patch);resident.set(patch.id,mesh);mesh.metadata.lastUsed=epoch;generations++;buildsLastApply++;
+      }
+      pendingCount=plan.patches.filter(item=>!resident.has(item.id)).length;
+      if(pendingCount===0){for(const mesh of pool)mesh.setEnabled(desiredIds.has(mesh.metadata.patchId));backstop.setEnabled(true);committedIds=desiredIds;signature=nextSignature;this.activeCount=plan.activePatchCount;handoffs++;fading=true;fadeStarted=performance.now()}
+      else backstop.setEnabled(true);
+      return this.activeCount;
+    }
+  };
 }
 
 function createSystem(scene,world){
@@ -235,7 +262,7 @@ export function createContinuumRenderer(canvas,world,{onContextChange=()=>{}}={}
   const disposeLayer=layer=>{for(const materialItem of layer?.materials||[])materialItem.dispose(true,true);layer?.root?.dispose(false,true)};
   function disposeWorldLayers(){if(system?.light)system.light.dispose();for(const layer of [starfield,planetary,terrain,local,material,micro,molecular,atomic,system])disposeLayer(layer)}
   buildWorldLayers(world);
-  let disposed=false,lastSnapshot=null,lastRenderKey=null,lastLod=null,lastPlanetaryLod=null,hovered=null,contextLosses=0,contextRestores=0,lastResize=[0,0],lastScaling=0,readinessScheduled=false,readyResolved=false,resolveReady;const ready=new Promise(resolve=>{resolveReady=resolve}),finishReady=()=>{if(!readyResolved){readyResolved=true;resolveReady(true)}},timings=[],stageTimings=new Map();
+  let disposed=false,lastSnapshot=null,lastRenderKey=null,lastLod=null,lastPlanetaryLod=null,hovered=null,contextLosses=0,contextRestores=0,lastResize=[0,0],lastScaling=0,readinessScheduled=false,terrainRefinementScheduled=false,readyResolved=false,resolveReady;const ready=new Promise(resolve=>{resolveReady=resolve}),finishReady=()=>{if(!readyResolved){readyResolved=true;resolveReady(true)}},timings=[],stageTimings=new Map();
   const onLost=()=>{contextLosses++;gpuQueries.length=0;lastRenderKey=null;onContextChange('lost')},onRestored=()=>{contextRestores++;lastRenderKey=null;onContextChange('restored')};canvas.addEventListener('webglcontextlost',onLost);canvas.addEventListener('webglcontextrestored',onRestored);
   const pollGpuTimers=()=>{if(!timerExtension)return;for(let index=gpuQueries.length-1;index>=0;index--){const query=gpuQueries[index];if(!gl.getQueryParameter(query,gl.QUERY_RESULT_AVAILABLE))continue;gpuQueries.splice(index,1);const disjoint=gl.getParameter(timerExtension.GPU_DISJOINT_EXT);if(disjoint)gpuDisjoint.count++;else{gpuTimings.push(gl.getQueryParameter(query,gl.QUERY_RESULT)/1e6);if(gpuTimings.length>600)gpuTimings.shift()}gl.deleteQuery(query)}};
 
@@ -260,13 +287,14 @@ export function createContinuumRenderer(canvas,world,{onContextChange=()=>{}}={}
     for(const layer of [material,micro,molecular,atomic].filter(Boolean)){const position=renderPoint([0,0,0],coordinate<11.5?activeWorld.frameIds.sample:activeWorld.frameIds.micro);layer.root.position.set(...position);layer.root.rotationQuaternion=Quaternion.FromArray(activeWorld.frames.orientationToRoot(activeWorld.frameIds.sample));}
     const terrainWeight=regionalWeight+localWeight+humanWeight,terrainDistanceM=terrain?Math.max(.1,Vector3.Distance(camera.position,terrain.root.position)*pose.metresPerRenderUnit):null,terrainErrorPx=coordinate<7.5?18:coordinate<8.5?10:coordinate<9.5?5:3;
     let terrainPlanMs=0,terrainApplyMs=0,localEnvironmentMs=0;
-    if(terrain&&terrainWeight>.001){const planStarted=performance.now();lastLod=sparseTerrainPatchPlan({cameraEastM:pose.localPosition?.[0]||0,cameraNorthM:pose.localPosition?.[2]||0,cameraAltitudeM:terrainDistanceM,verticalFovRadians:camera.fov,viewportHeightPx:Math.max(1,size[1]),viewportWidthPx:Math.max(1,size[0]),rootExtentM:terrain.rootExtentM,targetErrorPx:terrainErrorPx,baseSegments:terrain.segments,maxPatches:terrain.maxPatches});terrainPlanMs=performance.now()-planStarted;const applyStarted=performance.now();terrain.apply(lastLod);terrainApplyMs=performance.now()-applyStarted}
+    if(terrain&&terrainWeight>.001){const planStarted=performance.now();lastLod=sparseTerrainPatchPlan({cameraEastM:pose.localPosition?.[0]||0,cameraNorthM:pose.localPosition?.[2]||0,cameraAltitudeM:terrainDistanceM,verticalFovRadians:camera.fov,viewportHeightPx:Math.max(1,size[1]),viewportWidthPx:Math.max(1,size[0]),rootExtentM:terrain.rootExtentM,targetErrorPx:terrainErrorPx,baseSegments:terrain.segments,maxPatches:terrain.maxPatches});terrainPlanMs=performance.now()-planStarted;const applyStarted=performance.now();terrain.apply(lastLod);terrainApplyMs=performance.now()-applyStarted}else terrain?.suspend();
     if(local&&(localWeight+humanWeight)>.001){const started=performance.now();local.updateEnvironment(pose.localPosition?.[0]||0,pose.localPosition?.[2]||0);localEnvironmentMs=performance.now()-started}
-    setLayer(terrain,terrainWeight);setLayer(local,localWeight*.45+humanWeight);
+    setLayer(terrain,terrainWeight);terrain?.advanceFade(performance.now(),terrainWeight);setLayer(local,localWeight*.45+humanWeight);
     if(local)for(const mesh of local.selectableMeshes){const presentationScale=1+Math.max(0,localWeight-humanWeight)*7,selectedScale=mesh.metadata.sample?1.35:1;mesh.scaling.setAll(presentationScale*selectedScale)}
     setLayer(material,materialWeight);setLayer(micro,microWeight);setLayer(molecular,molecularWeight);setLayer(atomic,atomicWeight);
     const spaceAlpha=1-smooth(clamp01((coordinate-6.7)/1.2));setLayer(starfield,spaceAlpha);const surfaceSky=smooth(clamp01((coordinate-7.1)/.8))*(1-smooth(clamp01((coordinate-10.25)/.55)));scene.clearColor.set(mix(.002,.025,surfaceSky),mix(.006,.075,surfaceSky),mix(.018,.12,surfaceSky),1);
     pollGpuTimers();let gpuQuery=null;if(timerExtension&&gpuQueries.length<16){gpuQuery=gl.createQuery();gl.beginQuery(timerExtension.TIME_ELAPSED_EXT,gpuQuery)}const renderStarted=performance.now();try{scene.render()}finally{if(gpuQuery){gl.endQuery(timerExtension.TIME_ELAPSED_EXT);gpuQueries.push(gpuQuery)}}const renderMs=performance.now()-renderStarted,totalMs=performance.now()-updateStarted,record={stage:snapshot.scale.semanticStage,renderMs,totalMs,macroMs,planetaryPlanMs,planetaryApplyMs,terrainPlanMs,terrainApplyMs,localEnvironmentMs,drawCalls:instrumentation.drawCallsCounter.current,activeMeshes:scene.getActiveMeshes().length};timings.push(record);if(timings.length>600)timings.shift();const stageRows=stageTimings.get(record.stage)||[];stageRows.push(record);if(stageRows.length>120)stageRows.shift();stageTimings.set(record.stage,stageRows);if(scene.isReady())finishReady();else if(!readinessScheduled){readinessScheduled=true;scene.executeWhenReady(()=>{readinessScheduled=false;lastRenderKey=null;if(lastSnapshot&&!disposed)update(lastSnapshot);finishReady()})}
+    if(terrain&&terrainWeight>.001&&(terrain.pendingCount>0||terrain.fading)&&!snapshot.scale.moving&&!terrainRefinementScheduled){terrainRefinementScheduled=true;requestAnimationFrame(()=>{terrainRefinementScheduled=false;lastRenderKey=null;if(!disposed&&lastSnapshot)update(lastSnapshot)})}
   }
 
   function pick(clientX,clientY){
@@ -291,5 +319,5 @@ export function createContinuumRenderer(canvas,world,{onContextChange=()=>{}}={}
   function refreshLocalDestinations(catalogue){if(disposed||!local||!catalogue?.nodes)return false;const signature=catalogue.nodes.slice(0,16).map(node=>`${node.id||node.entityId}:${node.eastM||0}:${node.northM||0}`).join('|');if(signature===local.catalogueSignature)return false;const changed=materialize('local-refresh',()=>({changed:local.updateDestinations(catalogue),buildProfile:local.buildProfile})).changed;if(!changed)return false;lastRenderKey=null;if(lastSnapshot)update(lastSnapshot);return true}
   function rebind(nextWorld){if(disposed)throw new Error('Cannot rebind a disposed renderer');if(!nextWorld?.bodyId)throw new TypeError('A materialized OFU world is required');hovered=null;disposeWorldLayers();buildWorldLayers(nextWorld);lastSnapshot=null;lastRenderKey=null;lastLod=null;lastPlanetaryLod=null;return Object.freeze({bodyId:nextWorld.bodyId,sceneCount:1,cameraCount:scene.cameras.length})}
   function dispose(){if(disposed)return false;disposed=true;canvas.removeEventListener('webglcontextlost',onLost);canvas.removeEventListener('webglcontextrestored',onRestored);for(const query of gpuQueries)try{gl.deleteQuery(query)}catch{}macro.root.dispose(false,true);for(const materialItem of macro.materials)materialItem.dispose(true,true);instrumentation.dispose();scene.dispose();engine.dispose();return true}
-  return Object.freeze({update,pick,pickSurface,hover,snapshot,refreshLocalDestinations,rebind,dispose,ready,engine,scene,camera});
+  return Object.freeze({update,pick,pickSurface,hover,snapshot,refreshLocalDestinations,rebind,dispose,ready,engine,scene,camera,get terrainRefinement(){return terrain?Object.freeze({pendingCount:terrain.pendingCount,buildsLastApply:terrain.buildsLastApply,maxBuildsPerApply:terrain.maxBuildsPerApply,handoffs:terrain.handoffs,fading:terrain.fading,fadeCompletions:terrain.fadeCompletions,signature:terrain.signature,activeCount:terrain.activeCount,resident:terrain.resident.size,capacity:terrain.pool.length,bounded:terrain.resident.size<=terrain.pool.length}):null}});
 }
