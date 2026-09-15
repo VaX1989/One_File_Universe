@@ -93,6 +93,12 @@ jobs:
       - run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
       - run: npm ci
       - run: npm run build:continuum
+      - name: Upload direct-file application
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6 / Node 24 runtime
+        with:
+          name: spatial-continuum-app-${{ env.OFU_SOURCE_SHA }}
+          path: dist/One_File_Universe_Spatial_Continuum.html
+          if-no-files-found: error
       - run: npx playwright install --with-deps chromium
       - name: Run browser product path
         env:
