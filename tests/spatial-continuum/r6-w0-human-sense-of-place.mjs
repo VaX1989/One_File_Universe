@@ -24,6 +24,19 @@ assert.equal(new Set(Object.values(review).map(item=>item.skyline)).size,familie
 assert.ok(new Set(Object.values(review).map(item=>JSON.stringify(item.samplePositions))).size>=4,'world families must differ spatially, not by palette alone');
 assert.ok(review.ANGULAR_ICE_FRACTURE_FIELD.meanHeight>review.ROUNDED_SEDIMENT_FIELD.meanHeight*2.2,'ice and sediment destinations must differ materially in scale distribution');
 
+// Read-only audit regression: depth bands/scales must be relative to the current embodied window, not the global origin.
+const farGenerator=make('MIXED_LITHIC_FIELD','r6-c-far-window'),far=farGenerator.windowFor(10000,10000),farRepeat=make('MIXED_LITHIC_FIELD','r6-c-far-window').windowFor(10000,10000),centerEast=(far.centerCell[0]+.5)*far.cellSizeM,centerNorth=(far.centerCell[1]+.5)*far.cellSizeM;
+assert.deepEqual(farRepeat,far,'far-address reconstruction must remain deterministic');
+for(const item of far.instances){
+  const expected=classifyHumanDepth({eastM:item.eastM,northM:item.northM,centerEastM:centerEast,centerNorthM:centerNorth,cellSizeM:far.cellSizeM});
+  assert.equal(item.depthBand,expected,`depthBand must be window-relative for ${item.id}`);
+  const depthScale=expected==='NEAR'?far.placeGrammar.scaleBands.near:expected==='MID'?far.placeGrammar.scaleBands.mid:far.placeGrammar.scaleBands.far;
+  assert.deepEqual(item.scale,item.baseScale.map(value=>value*depthScale),`depthScale must be recomputed for ${item.id}`);
+}
+assert.ok((far.depthCounts.NEAR||0)>0,'far traversal must still establish a local NEAR band');
+assert.ok((far.depthCounts.MID||0)>0,'far traversal must still establish a local MID band');
+assert.ok((far.depthCounts.FAR||0)<far.instanceCount,'far traversal must not collapse every instance into FAR because of global coordinates');
+
 const place=createHumanPlaceGrammar({seed:'camera-calibration',terrainSampler:terrain,regime:{localGrammar:'MIXED_LITHIC_FIELD'},cellSizeM:32});assert.ok(place.camera.eyeHeightM>=1.55&&place.camera.eyeHeightM<=1.8);assert.equal(classifyHumanDepth({eastM:4,northM:3,cellSizeM:32}),'NEAR');assert.equal(classifyHumanDepth({eastM:70,northM:0,cellSizeM:32}),'MID');assert.equal(classifyHumanDepth({eastM:160,northM:0,cellSizeM:32}),'FAR');
 
-console.log(JSON.stringify({status:'PASS',suite:'spatial-continuum-r6-w0-human-sense-of-place',contract:'OFU_R6_W0_LANE_PACKET::R6-C',review,camera:place.camera,aerialPerspective:place.aerialPerspective,budgets:place.budgets,authority:place.authority},null,2));
+console.log(JSON.stringify({status:'PASS',suite:'spatial-continuum-r6-w0-human-sense-of-place',contract:'OFU_R6_W0_LANE_PACKET::R6-C',review,farTraversal:{centerCell:far.centerCell,depthCounts:far.depthCounts,instanceCount:far.instanceCount,windowRelativeProjection:true},camera:place.camera,aerialPerspective:place.aerialPerspective,budgets:place.budgets,authority:place.authority},null,2));
