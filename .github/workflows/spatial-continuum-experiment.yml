@@ -31,6 +31,11 @@ jobs:
         with: {node-version: '24.20.0', cache: npm}
       - run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
       - run: npm ci
+      - name: Materialize certified Phase-2 runtime source for one-time hardening migration
+        run: node tools/spatial-continuum/materialize-phase2-source.mjs
+      - name: Upload materialized Phase-2 source
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with: {name: 'spatial-continuum-phase2-source-${{ env.OFU_SOURCE_SHA }}', path: reports/ci/phase2-materialized-source, if-no-files-found: error}
       - run: npm run test:continuum
       - name: Run R6/W0 convergence contract tests
         env: {OFU_CONTINUUM_EVIDENCE_DIR: reports/ci/quality-observatory}
