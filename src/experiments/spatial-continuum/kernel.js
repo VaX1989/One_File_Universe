@@ -66,6 +66,9 @@ export function createContinuumKernel({graph, frames, targets, initialStage='UNI
     },
     orbit(dx,dy){camera.orbit(dx,dy);revision++;},
     moveLocal(forward,right,dt){camera.moveLocal(forward,right,dt);revision++;},
+    moveMacro(forward,right,vertical,dt){camera.moveMacro(forward,right,vertical,dt);revision++;},
+    translateMacro(delta){camera.translateMacro(delta);revision++;},
+    rebaseMacro(delta){camera.rebaseMacro(delta);revision++;},
     settle(now=0){scale.settle(now);return snapshot(now);},
     stages:CONTINUUM_STOPS
   });

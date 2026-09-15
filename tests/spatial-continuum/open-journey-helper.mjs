@@ -7,5 +7,5 @@ export async function selectFirstSupportedWorld(page){
 }
 
 export async function selectFirstLocalSample(page){
-  await page.evaluate(()=>{__OFU_SPATIAL_CONTINUUM__.travelTo('HUMAN');__OFU_SPATIAL_CONTINUUM__.settle()});const sampleId=await page.evaluate(()=>__OFU_SPATIAL_CONTINUUM__.openUniverse.localDestinations().nodes[0]?.id||null);if(!sampleId)throw new Error('No local sample destination is available');await page.evaluate(id=>__OFU_SPATIAL_CONTINUUM__.chooseSample(id),sampleId);return sampleId;
+  await page.evaluate(()=>{__OFU_SPATIAL_CONTINUUM__.travelTo('HUMAN');__OFU_SPATIAL_CONTINUUM__.settle()});await page.evaluate(()=>__OFU_SPATIAL_CONTINUUM__.discoverLocalDestinations());const sampleId=await page.evaluate(()=>__OFU_SPATIAL_CONTINUUM__.openUniverse.localDestinationsSnapshot().nodes[0]?.id||null);if(!sampleId)throw new Error('No local sample destination is available');await page.evaluate(id=>__OFU_SPATIAL_CONTINUUM__.chooseSample(id),sampleId);return sampleId;
 }

@@ -47,7 +47,7 @@ try{
           const visited=['SYSTEM','ORBIT'];
           for(const stage of ['APPROACH','GLOBAL_SURFACE','REGIONAL_SURFACE','LOCAL_SURFACE','HUMAN']){await settle(stage);visited.push(stage)}
           await screenshot(`galaxy-${descents.length+1}-human.png`);
-          const local=await evaluate(()=>__OFU_SPATIAL_CONTINUUM__.openUniverse.localDestinations().nodes.map(item=>({id:item.id,kind:item.kind})));
+          await evaluate(()=>__OFU_SPATIAL_CONTINUUM__.discoverLocalDestinations());const local=await evaluate(()=>__OFU_SPATIAL_CONTINUUM__.openUniverse.localDestinationsSnapshot().nodes.map(item=>({id:item.id,kind:item.kind})));
           assert.ok(local.length,'a supported descent must expose a genuine inspectable local source');
           await page.evaluate(id=>__OFU_SPATIAL_CONTINUUM__.chooseSample(id),local[0].id);
           for(const stage of ['MATERIAL','MICROSTRUCTURE','MOLECULAR','ATOMIC']){await settle(stage);visited.push(stage);if(stage==='MOLECULAR')await screenshot(`galaxy-${descents.length+1}-molecular.png`)}
