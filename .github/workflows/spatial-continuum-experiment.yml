@@ -88,6 +88,9 @@ jobs:
       - name: Run Phase-2 causal product falsification
         env: {OFU_CONTINUUM_EVIDENCE_DIR: reports/ci/chromium-convergence/phase2-causal}
         run: node tests/spatial-continuum/r6-w0-causal-browser.mjs
+      - name: Run Phase-2 epistemic lower-scale falsification
+        env: {OFU_CONTINUUM_EVIDENCE_DIR: reports/ci/chromium-convergence/phase2-epistemic}
+        run: node tests/spatial-continuum/r6-w0-epistemic-renderer-browser.mjs
       - name: Run browser product path
         env: {OFU_CONTINUUM_EVIDENCE_DIR: reports/ci/chromium-convergence}
         run: npm run test:continuum:open
