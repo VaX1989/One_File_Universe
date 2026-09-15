@@ -87,6 +87,9 @@ jobs:
       - name: Run Phase-2 surface handoff and rendered LOD falsification
         env: {OFU_CONTINUUM_EVIDENCE_DIR: reports/ci/chromium-convergence/phase2-surface}
         run: node tests/spatial-continuum/r6-w0-surface-handoff-browser.mjs
+      - name: Run Phase-2 HUMAN product falsification
+        env: {OFU_CONTINUUM_EVIDENCE_DIR: reports/ci/chromium-convergence/phase2-human}
+        run: node tests/spatial-continuum/r6-w0-human-browser.mjs
       - name: Run browser product path
         env: {OFU_CONTINUUM_EVIDENCE_DIR: reports/ci/chromium-convergence}
         run: npm run test:continuum:open
