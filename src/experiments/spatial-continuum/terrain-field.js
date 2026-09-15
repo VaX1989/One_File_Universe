@@ -63,8 +63,16 @@ export function deterministicSurfaceTerrainHeightMeters(eastM,northM,{surfaceTar
 }
 
 export function createSurfaceTerrainSampler({surfaceTarget,radiusM,seed,minimumWavelengthM=0,profile=null,relativeToTarget=true}={}){
-  const samplePlanet=createPlanetaryTerrainSampler({radiusM,seed,minimumWavelengthM,profile}),anchor=relativeToTarget?samplePlanet(surfaceTarget?.bodyFixedUnit):0;
-  return (eastM,northM)=>samplePlanet(surfaceDirectionFromLocalMeters(surfaceTarget,eastM,northM,radiusM))-anchor;
+  const radius=Number(radiusM),up=normalize(surfaceTarget?.bodyFixedUnit||surfaceTarget?.tangent?.up||[]),eastAxis=normalize(surfaceTarget?.tangent?.east||[]),northAxis=normalize(surfaceTarget?.tangent?.north||[]),samplePlanet=createPlanetaryTerrainSampler({radiusM:radius,seed,minimumWavelengthM,profile}),anchor=relativeToTarget?samplePlanet(up):0;
+  if(!(radius>0)||!Number.isFinite(radius))throw new TypeError('Surface terrain coordinates require a positive radius');
+  return (eastM,northM)=>{
+    const east=Number(eastM),north=Number(northM);if(!Number.isFinite(east)||!Number.isFinite(north))throw new TypeError('Surface terrain coordinates require finite local metres');
+    // The tangent basis belongs to the sampler rather than to an individual
+    // query. Reusing it removes three normalizations and their allocations per
+    // terrain sample while retaining the exact body-fixed addressing contract.
+    const x=up[0]+(east*eastAxis[0]+north*northAxis[0])/radius,y=up[1]+(east*eastAxis[1]+north*northAxis[1])/radius,z=up[2]+(east*eastAxis[2]+north*northAxis[2])/radius,length=Math.hypot(x,y,z);
+    return samplePlanet([x/length,y/length,z/length])-anchor;
+  };
 }
 
 // Presentation-only terrain sampled in a stable local east/north metre domain.
