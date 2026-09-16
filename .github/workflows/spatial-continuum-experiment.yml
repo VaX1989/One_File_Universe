@@ -37,6 +37,27 @@ jobs:
         env: {OFU_CONTINUUM_EVIDENCE_DIR: reports/ci/quality-observatory}
         run: npm run test:continuum:r6-w0
 
+  clean-room-certification:
+    needs: development
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with: {ref: '${{ env.OFU_SOURCE_SHA }}', persist-credentials: false}
+      - name: Setup Node
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with: {node-version: '24.20.0', cache: npm}
+      - run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Run exact-SHA clean-room deterministic certification
+        env: {OFU_CONTINUUM_EVIDENCE_DIR: reports/ci/clean-room}
+        run: node tests/spatial-continuum/r6-w0-clean-room-certification.mjs
+      - name: Upload clean-room evidence
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with: {name: 'spatial-continuum-clean-room-${{ env.OFU_SOURCE_SHA }}', path: reports/ci/clean-room, if-no-files-found: error}
+
   continuum-browser:
     needs: development
     runs-on: ubuntu-latest
