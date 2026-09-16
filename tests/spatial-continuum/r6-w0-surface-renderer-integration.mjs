@@ -1,0 +1,9 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+
+const read=relative=>fs.readFileSync(new URL('../../'+relative,import.meta.url),'utf8'),surface=read('src/experiments/spatial-continuum/surface-renderer-convergence.js'),facade=read('src/experiments/spatial-continuum/renderer-phase2.js'),base=read('src/experiments/spatial-continuum/renderer.js'),build=read('tools/build-spatial-continuum.mjs');
+assert.match(surface,/createRepresentationHandoffController/);assert.match(surface,/buildPlanetarySeamTopology/);assert.match(surface,/createPlanetaryLodTransitionController/);assert.match(surface,/FINE_TO_COARSE_STITCH/);assert.match(surface,/updateVerticesData\(VertexBuffer\.PositionKind/);assert.match(surface,/COARSE_BACKSTOP/);assert.match(surface,/planetaryCache\.size<=2&&terrainCache\.size<=2/);
+assert.match(facade,/createSurfaceRendererConvergence/);assert.match(facade,/surface\.update\(snapshot\)/);assert.match(facade,/sceneCount:1/);assert.match(facade,/cameraCount:base\.scene\.cameras\.length/);assert.match(facade,/rendererOwnedPicking:true/);
+assert.match(base,/cameraForwardBodyFixedUnit:\[bodyForward\.x,bodyForward\.y,bodyForward\.z\]/);assert.match(base,/viewportWidthPx:Math\.max\(1,size\[0\]\)/);assert.match(base,/previousPatchIds:lastPlanetaryLod\?\.patches\?\.map\(item=>item\.id\)\|\|\[\]/);assert.match(base,/semanticSurfaceKey:activeWorld\.surfaceId/);
+assert.match(build,/semanticBuildTransforms:false/);assert.doesNotMatch(build,/transformPhase2Renderer|phase2-renderer-transform/);
+console.log(JSON.stringify({status:'PASS',suite:'r6-w0-phase2-surface-renderer-integration',representationHandoff:true,renderedSeamStitching:true,lodTransition:true,cameraForwardCulling:true,hysteresis:true,semanticSurfaceKey:true,boundedTransitionResidency:true,sourceTruthDirect:true,sceneAuthorities:1,cameraAuthorities:1},null,2));

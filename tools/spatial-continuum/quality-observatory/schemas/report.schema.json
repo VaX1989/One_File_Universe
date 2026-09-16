@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://one-file-universe.invalid/schemas/r6-quality-observatory-report-v1.json",
+  "title": "OFU R6 Quality Observatory Report",
+  "type": "object",
+  "required": ["contract", "campaignId", "status", "sampleCount", "witnessSetHash", "issueCount", "issueCounts", "issues", "performance", "resourceGrowth", "provenance", "methodology", "reportHash"],
+  "properties": {
+    "contract": {"const": "ofu.r6.quality-observatory.report.v1"},
+    "campaignId": {"type": "string"},
+    "status": {"enum": ["FALSIFIED", "NO_FAILURE_WITNESSED"]},
+    "sampleCount": {"type": "integer", "minimum": 1},
+    "witnessSetHash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "issueCount": {"type": "integer", "minimum": 0},
+    "issueCounts": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}},
+    "issues": {"type": "array", "items": {"type": "object", "required": ["category", "witness", "detail"], "properties": {"category": {"type": "string"}, "witness": {"type": "object", "required": ["address", "seed", "modelVersion"]}, "detail": {"type": "object"}}}},
+    "diversity": {"type": ["object", "null"]},
+    "performance": {"type": "object"},
+    "resourceGrowth": {"type": "array"},
+    "provenance": {"type": "object"},
+    "accessibility": {"type": "object"},
+    "offlineDirectFile": {"type": "object"},
+    "methodology": {"type": "object"},
+    "reportHash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "additionalProperties": true
+}

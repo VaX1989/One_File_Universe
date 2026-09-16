@@ -6,124 +6,102 @@ on:
     paths:
       - 'src/experiments/spatial-continuum/**'
       - 'tests/spatial-continuum/**'
+      - 'tools/spatial-continuum/**'
       - 'tools/build-spatial-continuum.mjs'
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/spatial-continuum-experiment.yml'
 
 concurrency:
-  # The Draft PR is the authoritative automatic lane; workflow_dispatch covers
-  # deliberate branch-only runs without attaching duplicate checks to the PR SHA.
   group: spatial-continuum-${{ github.event.pull_request.head.ref || github.ref_name }}
   cancel-in-progress: true
 
-permissions:
-  contents: read
-
-env:
-  OFU_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+permissions: {contents: read}
+env: {OFU_SOURCE_SHA: '${{ github.event.pull_request.head.sha || github.sha }}'}
 
 jobs:
   development:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout exact source
-        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5 / Node 24 runtime
-        with:
-          ref: ${{ env.OFU_SOURCE_SHA }}
-          persist-credentials: false
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with: {ref: '${{ env.OFU_SOURCE_SHA }}', persist-credentials: false}
       - name: Setup Node
-        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5 / Node 24 runtime
-        with:
-          node-version: '24.20.0'
-          cache: npm
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with: {node-version: '24.20.0', cache: npm}
       - run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
       - run: npm ci
+      - run: npm run build:continuum
       - run: npm run test:continuum
+      - name: Run R6/W0 convergence contract tests
+        env: {OFU_CONTINUUM_EVIDENCE_DIR: reports/ci/quality-observatory}
+        run: npm run test:continuum:r6-w0
+
+  clean-room-certification:
+    needs: development
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with: {ref: '${{ env.OFU_SOURCE_SHA }}', persist-credentials: false}
+      - name: Setup Node
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with: {node-version: '24.20.0', cache: npm}
+      - run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Run exact-SHA clean-room deterministic certification
+        env: {OFU_CONTINUUM_EVIDENCE_DIR: reports/ci/clean-room}
+        run: node tests/spatial-continuum/r6-w0-clean-room-certification.mjs
+      - name: Upload clean-room evidence
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with: {name: 'spatial-continuum-clean-room-${{ env.OFU_SOURCE_SHA }}', path: reports/ci/clean-room, if-no-files-found: error}
 
   continuum-browser:
     needs: development
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        browser: [chromium, firefox, webkit]
+    strategy: {fail-fast: false, matrix: {browser: [chromium, firefox, webkit]}}
     steps:
       - name: Checkout exact source
-        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5 / Node 24 runtime
-        with:
-          ref: ${{ env.OFU_SOURCE_SHA }}
-          persist-credentials: false
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with: {ref: '${{ env.OFU_SOURCE_SHA }}', persist-credentials: false}
       - name: Setup Node
-        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5 / Node 24 runtime
-        with:
-          node-version: '24.20.0'
-          cache: npm
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with: {node-version: '24.20.0', cache: npm}
       - run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
       - run: npm ci
       - run: npm run build:continuum
       - run: npx playwright install --with-deps ${{ matrix.browser }}
       - name: Run Continuum in ${{ matrix.browser }}
-        env:
-          OFU_CONTINUUM_BROWSER: ${{ matrix.browser }}
-          OFU_CONTINUUM_EVIDENCE_DIR: reports/ci/${{ matrix.browser }}
+        env: {OFU_CONTINUUM_BROWSER: '${{ matrix.browser }}', OFU_CONTINUUM_EVIDENCE_DIR: 'reports/ci/${{ matrix.browser }}'}
         run: npm run test:continuum:matrix
       - name: Upload browser evidence
         if: always()
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6 / Node 24 runtime
-        with:
-          name: spatial-continuum-${{ matrix.browser }}-${{ env.OFU_SOURCE_SHA }}
-          path: reports/ci/${{ matrix.browser }}
-          if-no-files-found: error
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with: {name: 'spatial-continuum-${{ matrix.browser }}-${{ env.OFU_SOURCE_SHA }}', path: 'reports/ci/${{ matrix.browser }}', if-no-files-found: error}
 
   chromium-convergence:
     needs: development
     runs-on: ubuntu-latest
     steps:
       - name: Checkout exact source
-        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5 / Node 24 runtime
-        with:
-          ref: ${{ env.OFU_SOURCE_SHA }}
-          persist-credentials: false
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with: {ref: '${{ env.OFU_SOURCE_SHA }}', persist-credentials: false}
       - name: Setup Node
-        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5 / Node 24 runtime
-        with:
-          node-version: '24.20.0'
-          cache: npm
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with: {node-version: '24.20.0', cache: npm}
       - run: test "$(git rev-parse HEAD)" = "$OFU_SOURCE_SHA"
       - run: npm ci
       - run: npm run build:continuum
       - name: Upload direct-file application
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6 / Node 24 runtime
-        with:
-          name: spatial-continuum-app-${{ env.OFU_SOURCE_SHA }}
-          path: dist/One_File_Universe_Spatial_Continuum.html
-          if-no-files-found: error
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with: {name: 'spatial-continuum-app-${{ env.OFU_SOURCE_SHA }}', path: dist/One_File_Universe_Spatial_Continuum.html, if-no-files-found: error}
       - run: npx playwright install --with-deps chromium
-      - name: Run browser product path
-        env:
-          OFU_CONTINUUM_EVIDENCE_DIR: reports/ci/chromium-convergence
-        run: npm run test:continuum:open
-      - name: Run multi-world falsification
-        env:
-          OFU_CONTINUUM_EVIDENCE_DIR: reports/ci/chromium-convergence
-        run: npm run test:continuum:open-generalization
-      - name: Run accessibility, mobile and context recovery
-        env:
-          OFU_CONTINUUM_EVIDENCE_DIR: reports/ci/chromium-convergence
-        run: npm run test:continuum:accessibility-mobile
-      - name: Capture all-scale temporal visual evidence
-        env:
-          OFU_CONTINUUM_EVIDENCE_DIR: reports/ci/chromium-convergence/visual-sequence
-        run: npm run test:continuum:visual
-      - name: Run performance and resource soak
-        env:
-          OFU_CONTINUUM_EVIDENCE_DIR: reports/ci/chromium-convergence
-        run: npm run test:continuum:performance
+      - name: Run every mandatory convergence gate without fail-fast hiding
+        env: {OFU_CONTINUUM_EVIDENCE_DIR: reports/ci/chromium-convergence}
+        run: node tests/spatial-continuum/r6-w0-phase2-convergence-runner.mjs
       - name: Upload convergence evidence
         if: always()
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6 / Node 24 runtime
-        with:
-          name: spatial-continuum-convergence-${{ env.OFU_SOURCE_SHA }}
-          path: reports/ci/chromium-convergence
-          if-no-files-found: error
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with: {name: 'spatial-continuum-convergence-${{ env.OFU_SOURCE_SHA }}', path: reports/ci/chromium-convergence, if-no-files-found: error}

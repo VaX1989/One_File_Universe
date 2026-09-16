@@ -1,0 +1,16 @@
+import './r6-w0-source-architecture.mjs';
+import './r6-w0-progressive-macro-materialization.mjs';
+import './r6-w0-macro-renderer-integration.mjs';
+import './r6-w0-representation-handoff.mjs';
+import './r6-w0-planetary-lod-continuity.mjs';
+import './r6-w0-surface-renderer-integration.mjs';
+import './r6-w0-human-sense-of-place.mjs';
+import './r6-w0-human-renderer-integration.mjs';
+import './r6-w0-causal-visual-consequences.mjs';
+import './r6-w0-causal-renderer-integration.mjs';
+import './r6-w0-epistemic-scale-presentation.mjs';
+import './r6-w0-epistemic-renderer-integration.mjs';
+import './r6-w0-orientation-scale-ux.mjs';
+import './r6-w0-orientation-shell-integration.mjs';
+import './r6-w0-quality-observatory.mjs';
+console.log(JSON.stringify({status:'PASS',suite:'spatial-continuum-r6-w0-convergence-contracts',phase2:['CONV-A','CONV-BD','CONV-C','CONV-E','CONV-F','CONV-I'],lanes:['R6-A','R6-B','R6-D','R6-C','R6-E','R6-F','R6-I','R6-G'],phase2Corrections:['EXPLICIT_RENDERER_OWNERSHIP','DIRECT_CHECKED_IN_SOURCE_TRUTH','READ_ONLY_EXACT_HEAD_CI']},null,2));
