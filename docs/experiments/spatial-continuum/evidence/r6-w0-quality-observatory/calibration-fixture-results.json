@@ -1,0 +1,44 @@
+{
+  "status": "PASS",
+  "suite": "spatial-continuum-r6-w0-quality-observatory",
+  "calibration": {
+    "calibratedDimensions": ["silhouetteTopography","horizonLandformProfile","spatialFrequencyRoughness","atmosphereSkyRegime","materialFamily","objectDensityClustering","scaleDistribution","palette","causalFingerprint","microstructureTopology"],
+    "aggregateBaseline": {
+      "collapseThreshold": 0.0027027027027027094,
+      "distinctFloor": 0.5315315315315314,
+      "separated": true,
+      "repetitive": {"samples": 28, "min": 0, "p50": 1.3091849989510027e-18, "p95": 0.0027027027027027094, "p99": 0.0033603603603603667, "max": 0.0036036036036036084},
+      "distinct": {"samples": 28, "min": 0.5315315315315314, "p50": 1, "p95": 1, "p99": 1, "max": 1}
+    },
+    "baselineFingerprint": "fc137488ee12acefbb112f5c5047428494218b03acf1aeb66663704c2cdb69d9"
+  },
+  "knownPopulations": {
+    "repetitive": {"populationSpread": 0, "nearestNeighborDistinctness": 0, "templateCollapseRate": 1, "descriptorCoverage": 1},
+    "distinct": {"populationSpread": 0.7657657657657659, "nearestNeighborDistinctness": 0.5315315315315314, "templateCollapseRate": 0, "descriptorCoverage": 1},
+    "paletteOnly": {"populationSpread": 0.1, "nearestNeighborDistinctness": 0.06089967518538947, "templateCollapseRate": 0, "descriptorCoverage": 1}
+  },
+  "sampling": {"candidateCount": 24, "selectedCount": 7, "planHash": "56ee97c667f7b8405e4d90e23ea5f1e55584c788a2f7b1fa74470c04fec145e2"},
+  "falsification": {
+    "issueCount": 18,
+    "issueCounts": {
+      "accessibility_journey_failure": 1,
+      "blank_representation": 1,
+      "cancellation_failure": 1,
+      "degenerate_representation": 1,
+      "determinism_violation": 1,
+      "direct_file_violation": 1,
+      "generation_invariant_failure": 2,
+      "human_scale_density_horizon_anomaly": 1,
+      "lighting_exposure_outlier": 1,
+      "lod_transition_failure": 3,
+      "offline_violation": 1,
+      "provenance_coverage_failure": 1,
+      "resource_growth_violation": 1,
+      "stale_result_violation": 1,
+      "transition_continuity_failure": 1
+    },
+    "reportHash": "617d37dcfc6668f91eb52e2890d760ef3ea60156195b6178f767d2de43269b9b",
+    "exactWitnesses": true
+  },
+  "boundaries": {"productionSourceWrites": false, "centralRunnerModified": false, "workflowModified": false, "packageModified": false, "imageSimilarityAuthority": false, "diversityScalarMagicScore": false}
+}
