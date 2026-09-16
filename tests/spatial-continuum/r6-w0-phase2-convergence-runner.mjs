@@ -7,6 +7,7 @@ const evidenceRoot=path.resolve(process.env.OFU_CONTINUUM_EVIDENCE_DIR||path.joi
 fs.mkdirSync(evidenceRoot,{recursive:true});
 const node=process.execPath,npm=process.platform==='win32'?'npm.cmd':'npm';
 const suites=[
+  {name:'multi-world',command:npm,args:['run','test:continuum:open-generalization']},
   {name:'phase2-boot',command:node,args:['tests/spatial-continuum/r6-w0-boot-diagnostic.mjs']},
   {name:'phase2-macro',command:node,args:['tests/spatial-continuum/r6-w0-macro-renderer-browser.mjs']},
   {name:'phase2-surface',command:node,args:['tests/spatial-continuum/r6-w0-surface-handoff-browser.mjs']},
@@ -15,7 +16,6 @@ const suites=[
   {name:'phase2-epistemic',command:node,args:['tests/spatial-continuum/r6-w0-epistemic-renderer-browser.mjs']},
   {name:'phase2-orientation',command:node,args:['tests/spatial-continuum/r6-w0-orientation-browser.mjs']},
   {name:'open-product',command:npm,args:['run','test:continuum:open']},
-  {name:'multi-world',command:npm,args:['run','test:continuum:open-generalization']},
   {name:'accessibility-mobile-context',command:npm,args:['run','test:continuum:accessibility-mobile']},
   {name:'visual-sequence',command:npm,args:['run','test:continuum:visual']},
   {name:'performance-resource',command:npm,args:['run','test:continuum:performance']}
