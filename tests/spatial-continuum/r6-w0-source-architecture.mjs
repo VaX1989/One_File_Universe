@@ -47,7 +47,7 @@ assert.equal(fs.existsSync(url('tools/spatial-continuum/materialize-phase2-sourc
 assert.equal(fs.existsSync(url('tools/spatial-continuum/promote-phase2-source.mjs')),false,'one-shot promoter must not remain');
 
 assert.match(workflow,/permissions: \{contents: read\}/);
-assert.equal(count(workflow,/persist-credentials: false/g),3,'every normal Spatial Continuum checkout must drop push credentials');
+const checkoutCount=count(workflow,/uses:\s*actions\/checkout@/g),credentialDropCount=count(workflow,/persist-credentials:\s*false/g);assert.ok(checkoutCount>0,'normal Spatial Continuum CI must perform at least one exact-source checkout');assert.equal(credentialDropCount,checkoutCount,'every normal Spatial Continuum checkout must drop push credentials');
 assert.doesNotMatch(workflow,/contents: write|persist-credentials: true|git\s+push|git\s+commit|R6_W0_ONE_SHOT_SOURCE_PROMOTION|materialize-phase2-source|promote-phase2-source/,'normal experiment CI must be strictly read-only');
 
-console.log(JSON.stringify({status:'PASS',suite:'r6-w0-source-truth-architecture',sourceTruthEqualsRuntimeTruth:true,semanticBuildTransforms:'NONE',ciSourceMutation:'NONE',workflowContentPermission:'READ',workflowPersistCredentials:false,macroRendererOwner:'PHASE2_PROGRESSIVE',lowerScaleRendererOwner:'PHASE2_EPISTEMIC',sceneAuthorities:1,cameraAuthorities:1,focusNavigationAuthorities:1,rendererOwnedPicking:true},null,2));
+console.log(JSON.stringify({status:'PASS',suite:'r6-w0-source-truth-architecture',sourceTruthEqualsRuntimeTruth:true,semanticBuildTransforms:'NONE',ciSourceMutation:'NONE',workflowContentPermission:'READ',workflowPersistCredentials:false,workflowCheckouts:checkoutCount,macroRendererOwner:'PHASE2_PROGRESSIVE',lowerScaleRendererOwner:'PHASE2_EPISTEMIC',sceneAuthorities:1,cameraAuthorities:1,focusNavigationAuthorities:1,rendererOwnedPicking:true},null,2));
