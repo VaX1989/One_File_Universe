@@ -168,7 +168,7 @@ prompts:
     activation:
       state: READY_AFTER_REGISTRY_ACCEPTANCE
       requires:
-        - planning PR #286 contains this registry and the post-M0 plan/DAG
+        - "planning PR #286 contains this registry and the post-M0 plan/DAG"
     default_write_scope:
       - docs/industrialization/control/**
     protected_from_lane_writers:
