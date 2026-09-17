@@ -1,0 +1,283 @@
+{
+  "schemaVersion": 1,
+  "authority": "PLANNING_METADATA_ONLY",
+  "programId": "OFU-POST-M0-INDUSTRIALIZATION-2026-09-16",
+  "status": "ACTIVE_FORWARD_PLANNING",
+  "repository": "VaX1989/One_File_Universe",
+  "planningBase": {
+    "branch": "experiment/spatial-continuum-r6-causal-universe-2026-09-14",
+    "sha": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+    "tree": "3704247247940fa8c5f08291cd80ec9e24e7d49d",
+    "stableMainSha": "5f3dbdcccc409c3bc29684e062ad7730ddea0c69",
+    "stableMainTree": "f84f05f9a12e110bb48f7605d8f577b0886dfe02",
+    "m0CertifiedCandidateSha": "5a8774826dd5514b97f649669ba06dfaba9b91ff",
+    "m0CertifiedTree": "3704247247940fa8c5f08291cd80ec9e24e7d49d",
+    "m0MergeCommit": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+    "historicalFreeze": "OFU-R6-W0-2026-09-15-27657AB9"
+  },
+  "governance": {
+    "singleConvergenceOwnerPerWave": true,
+    "evidenceGated": true,
+    "calendarGated": false,
+    "mergeR6Pr274Authorized": false,
+    "mergeToMainAuthorized": false,
+    "releaseAuthorized": false,
+    "standard1_0Authorized": false,
+    "principle": "preserve product authority while extracting reusable deterministic contracts through differential conformance"
+  },
+  "programs": [
+    {
+      "id": "PRODUCT",
+      "name": "OFU reference product evolution",
+      "purpose": "continue causal multiscale universe, scientific interrogation, time, exploration, analysis, immersion and later living/history capabilities"
+    },
+    {
+      "id": "INDUSTRIALIZATION",
+      "name": "OFU Core Runtime SDK and open-standard extraction",
+      "purpose": "turn canonical identity, derivation, authority, temporal state, cross-scale reconciliation and bounded materialization into reusable middleware"
+    }
+  ],
+  "globalInvariants": [
+    "canonical identity never derives from renderer or host-engine object identity",
+    "canonical results are invariant to scheduling and resource pressure when admitted",
+    "unsupported and unknown states fail closed",
+    "determinism does not imply scientific truth",
+    "authority and provenance remain explicit",
+    "presentation quality may vary without changing canonical truth",
+    "working sets remain bounded independently of universe size",
+    "stale work is cancellable and rejected",
+    "single-file direct-file offline reference profile remains supported during migration",
+    "no big-bang rewrite",
+    "new implementation paths require differential parity before authority transfer"
+  ],
+  "industrializationWaves": [
+    {
+      "id": "IW0",
+      "name": "Specification harvest and feasibility",
+      "maxRecommendedConcurrentWriters": 6,
+      "entryGate": "planning overlay accepted",
+      "exitGate": "normative inventory, conformance manifest, native-core feasibility, security threat model, licensing dossier and product bridge map exist without production semantic changes"
+    },
+    {
+      "id": "IW1",
+      "name": "Native Core candidate",
+      "dependsOn": ["IW0"],
+      "exitGate": "JS Python native parity for normative Core vectors plus C ABI v0 and WASM feasibility"
+    },
+    {
+      "id": "IW2",
+      "name": "Headless Runtime",
+      "dependsOn": ["IW1"],
+      "exitGate": "headless runtime opens universe and answers bounded queries with provider registry scheduling resource accounting cancellation and no rendering dependency"
+    },
+    {
+      "id": "IW3",
+      "name": "Persistence and provider SDK",
+      "dependsOn": ["IW2"],
+      "exitGate": "durable replay/checkpoint/archive recovery and first domain behind public provider ABI without canonical drift"
+    },
+    {
+      "id": "IW4",
+      "name": "Host integrations",
+      "dependsOn": ["IW3"],
+      "exitGate": "at least Unreal plus browser/WASM reproduce headless canonical digests; Unity/Godot may follow on same ABI"
+    },
+    {
+      "id": "IW5",
+      "name": "Open draft and external conformance",
+      "dependsOn": ["IW1", "IW2", "IW3"],
+      "exitGate": "third party can implement draft from specification and vectors without source archaeology"
+    },
+    {
+      "id": "IW6",
+      "name": "Commercial SDK beta",
+      "dependsOn": ["IW4", "IW5"],
+      "exitGate": "versioned ABI, security baseline, license clarity, docs, packaging, tooling and supported platform matrix"
+    },
+    {
+      "id": "IW7",
+      "name": "SDK and standard 1.0 readiness",
+      "dependsOn": ["IW6"],
+      "exitGate": "stable migration policy plus at least two materially independent conforming implementations"
+    }
+  ],
+  "lanes": [
+    {
+      "id": "IND-GOV",
+      "wave": "IW0",
+      "class": "SPEC_GOVERNANCE",
+      "priority": "P0",
+      "mission": "harvest P2 P4 PX and cross-scale normative contracts; define versioning compatibility deprecation extension and error policies",
+      "owns": ["spec planning docs", "ADRs", "protocol inventory"],
+      "mustNotOwn": ["product renderer", "scientific promotion", "release metadata"],
+      "exitEvidence": ["every canonical dependency has named versioned contract", "normative vs informative map complete"]
+    },
+    {
+      "id": "IND-CONF",
+      "wave": "IW0",
+      "class": "CONFORMANCE",
+      "priority": "P0",
+      "mission": "expand golden malformed and rejection vectors and independent oracle coverage",
+      "owns": ["additive conformance corpus", "oracles", "conformance manifest"],
+      "mustNotOwn": ["production semantics"],
+      "exitEvidence": ["reproducible corpus digest", "cross-language expected outputs", "rejection behavior specified"]
+    },
+    {
+      "id": "IND-NATIVE",
+      "wave": "IW0_IW1",
+      "class": "NATIVE_CORE_EXPERIMENT",
+      "priority": "P0",
+      "mission": "implement smallest independent native Core slice and prove byte parity",
+      "owns": ["isolated native experiment paths"],
+      "dependencies": ["IND-CONF frozen slice", "IND-GOV numeric/canonical contract slice"],
+      "exitEvidence": ["bit-exact vectors", "stable error behavior", "C ABI feasibility", "WASM feasibility"]
+    },
+    {
+      "id": "IND-SEC",
+      "wave": "IW0",
+      "class": "SECURITY",
+      "priority": "P0",
+      "mission": "threat model canonical parsers archives providers budgets and future network boundaries",
+      "owns": ["security docs", "fuzz plans", "additive hostile-input tests"],
+      "dependencies": ["IND-GOV inventory"],
+      "exitEvidence": ["attack-surface inventory", "parser/resource-limit policy", "fuzz corpus plan"]
+    },
+    {
+      "id": "IND-LIC",
+      "wave": "IW0",
+      "class": "LEGAL_IP_PLANNING",
+      "priority": "P0_BUSINESS_BLOCKER",
+      "mission": "resolve code specification vector trademark contributor and third-party licensing/IP boundary",
+      "owns": ["license/IP decision dossier"],
+      "exitEvidence": ["founder/legal decision points explicit", "redistribution obligations inventoried"]
+    },
+    {
+      "id": "IND-BRIDGE",
+      "wave": "IW0_IW2",
+      "class": "ARCHITECTURE_BRIDGE",
+      "priority": "P0",
+      "mission": "map browser globals and product seams to future headless runtime API and define differential migration strategy",
+      "owns": ["bridge design", "additive differential tests before source migration"],
+      "mustNotOwn": ["renderer semantic authority"],
+      "exitEvidence": ["host-neutral query lifecycle map", "legacy/new differential test plan", "migration rollback rules"]
+    },
+    {
+      "id": "IND-RUNTIME",
+      "wave": "IW2",
+      "class": "HEADLESS_RUNTIME",
+      "priority": "P0",
+      "dependencies": ["IND-NATIVE", "IND-BRIDGE", "IND-GOV"],
+      "mission": "implement runtime lifecycle provider registry async jobs deterministic admission budgets cache materialization cancellation observability",
+      "exitEvidence": ["headless CLI meaningful query", "query-order and worker-order invariance", "bounded resources"]
+    },
+    {
+      "id": "IND-PERSIST",
+      "wave": "IW3",
+      "class": "DURABLE_STATE",
+      "priority": "P0_P1",
+      "dependencies": ["IND-RUNTIME", "P4 contract freeze"],
+      "mission": "provide crash-safe event durability checkpoint archive migration and deterministic recovery",
+      "exitEvidence": ["crash restart replay equivalence", "checkpoint equivalence", "archive round trip", "migration rejection cases"]
+    },
+    {
+      "id": "IND-PROVIDER",
+      "wave": "IW3",
+      "class": "PLUGIN_ABI",
+      "priority": "P0_P1",
+      "dependencies": ["IND-RUNTIME", "IND-GOV authority schema"],
+      "mission": "define provider descriptors capabilities dependencies authority schemas fidelity costs and query/refine/project/reconcile hooks",
+      "exitEvidence": ["one domain behind public ABI", "no canonical drift", "dependency-cycle and authority-escalation rejection"]
+    },
+    {
+      "id": "IND-UE",
+      "wave": "IW4",
+      "class": "ENGINE_ADAPTER",
+      "priority": "P1",
+      "dependencies": ["stable targeted C ABI", "IND-RUNTIME"],
+      "mission": "Unreal adapter with host objects as views only",
+      "exitEvidence": ["same canonical digest in native CLI browser/WASM and Unreal", "lifecycle threading disposal tests"]
+    },
+    {
+      "id": "IND-WASM",
+      "wave": "IW4",
+      "class": "WEB_ADAPTER",
+      "priority": "P1",
+      "dependencies": ["IND-NATIVE", "IND-RUNTIME"],
+      "mission": "shared Web/WASM runtime path compatible with offline reference-product requirements",
+      "exitEvidence": ["canonical parity", "acceptable size/startup", "direct-file/offline compatibility strategy"]
+    },
+    {
+      "id": "IND-UNITY",
+      "wave": "IW4",
+      "class": "ENGINE_ADAPTER",
+      "priority": "P1_P2",
+      "dependencies": ["stable targeted C ABI", "IND-UE lessons"],
+      "mission": "Unity C# binding over same runtime",
+      "exitEvidence": ["canonical digest parity", "domain reload and lifecycle correctness"]
+    },
+    {
+      "id": "IND-GODOT",
+      "wave": "IW4",
+      "class": "ENGINE_ADAPTER",
+      "priority": "P1_P2",
+      "dependencies": ["stable targeted C ABI", "IND-UE lessons"],
+      "mission": "Godot GDExtension binding over same runtime",
+      "exitEvidence": ["canonical digest parity", "extension lifecycle correctness"]
+    },
+    {
+      "id": "IND-STD",
+      "wave": "IW5_IW7",
+      "class": "OPEN_STANDARD",
+      "priority": "P1_P2",
+      "dependencies": ["IND-GOV", "IND-CONF", "IND-NATIVE", "IND-RUNTIME", "IND-PROVIDER"],
+      "mission": "publish implementable OMDRS working drafts and later stable standard",
+      "exitEvidence": ["spec can be implemented without source internals", "two materially independent conforming implementations before 1.0"]
+    },
+    {
+      "id": "IND-SDK",
+      "wave": "IW3_IW6",
+      "class": "DEVELOPER_EXPERIENCE",
+      "priority": "P1",
+      "dependencies": ["IND-RUNTIME"],
+      "mission": "headers bindings CLI inspector conformance runner profiler examples API reference and integration guides",
+      "exitEvidence": ["15-minute headless query path", "provider example", "temporal replay example", "diagnosable conformance failures"]
+    }
+  ],
+  "productMilestones": [
+    {"id":"P-M1","name":"Perceptually vast causal universe","dependsOn":["M0_CLOSED"]},
+    {"id":"P-M2","name":"Scientific interrogation","dependsOn":["P-M1"]},
+    {"id":"P-M3","name":"Temporal and persistent exploration","dependsOn":["P-M2"]},
+    {"id":"P-M4","name":"Intelligent exploration","dependsOn":["P-M2","P-M3"]},
+    {"id":"P-M5","name":"Analytical universe","dependsOn":["P-M2","P-M4"]},
+    {"id":"P-M6","name":"Immersive and directable universe","dependsOn":["P-M1","P-M3"]},
+    {"id":"P-M7","name":"Self-observing quality system","dependsOn":["M0_CLOSED"]},
+    {"id":"P-M8","name":"Living and historical universe","dependsOn":["P-M2","P-M3","P-M7"]}
+  ],
+  "industrializationGates": [
+    {"id":"G0","name":"Protocol harvest accepted"},
+    {"id":"G1","name":"Independent Core parity","dependsOn":["G0"]},
+    {"id":"G2","name":"Headless runtime proof","dependsOn":["G1"]},
+    {"id":"G3","name":"Product shadow parity","dependsOn":["G2"]},
+    {"id":"G4","name":"Durable state proof","dependsOn":["G2"]},
+    {"id":"G5","name":"Provider ABI proof","dependsOn":["G2"]},
+    {"id":"G6","name":"External engine proof","dependsOn":["G3","G5"]},
+    {"id":"G7","name":"Open draft implementability","dependsOn":["G1","G2","G5"]},
+    {"id":"G8","name":"Commercial beta","dependsOn":["G4","G6","G7"]},
+    {"id":"G9","name":"SDK and standard 1.0 readiness","dependsOn":["G8"]}
+  ],
+  "initialConvergenceOrder": [
+    "normative inventory and ADRs",
+    "conformance corpus freeze",
+    "native Core shadow implementation",
+    "security and licensing decisions",
+    "headless runtime seam",
+    "product shadow-mode parity",
+    "durable persistence",
+    "provider ABI",
+    "Unreal and Web/WASM proofs",
+    "Unity and Godot adapters",
+    "open-draft external implementation",
+    "commercial beta evidence",
+    "1.0 decision"
+  ]
+}
