@@ -1,17 +1,32 @@
 {
-  "prompt_id": "IND-BRIDGE-A",
-  "master_schema_version": 4,
-  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
-  "base_sha": "fa88f7cec101a52d07916a0fdd3927c482a6f188",
-  "base_tree": "784e12501a7e0ba9e281787513bddbb6eed1c6bf",
-  "dependency_shas": {
-    "M0_HISTORICAL": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
-    "CTRL_WAVE0": "fa88f7cec101a52d07916a0fdd3927c482a6f188",
-    "SOURCE_MASTER_V4": "c2cab6d6e914b918432432fdc69825e0a1000509"
+  "PROMPT_ID": "IND-BRIDGE-A",
+  "FINAL_STATUS": "COMPLETE_RESEARCH_PACKET",
+  "BASE_SHA": "fa88f7cec101a52d07916a0fdd3927c482a6f188",
+  "BASE_TREE": "784e12501a7e0ba9e281787513bddbb6eed1c6bf",
+  "FINAL_SHA": "EXTERNALLY_BOUND_BY_DRAFT_PR_HEAD",
+  "FINAL_TREE": "EXTERNALLY_BOUND_BY_DRAFT_PR_HEAD_TREE",
+  "BRANCH": "work/post-m0/ind-bridge-a-ofu-post-m0-dual-track-wave0-2026-09-18-61f43071",
+  "PR": 294,
+  "DEPENDENCIES_RESOLVED": {
+    "M0_HISTORICAL": {
+      "status": "PASS",
+      "sha": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+      "tree": "3704247247940fa8c5f08291cd80ec9e24e7d49d"
+    },
+    "CTRL_WAVE0": {
+      "status": "ACTIVE",
+      "sha": "fa88f7cec101a52d07916a0fdd3927c482a6f188",
+      "tree": "784e12501a7e0ba9e281787513bddbb6eed1c6bf",
+      "pr": 290
+    },
+    "SOURCE_MASTER_V4": {
+      "status": "PASS",
+      "sha": "c2cab6d6e914b918432432fdc69825e0a1000509",
+      "tree": "bfba77ff4def48ba54fb1084240821be3f8f3dc9",
+      "pr": 287
+    }
   },
-  "final_sha": "EXTERNALLY_BOUND_BY_DRAFT_PR_HEAD",
-  "final_tree": "EXTERNALLY_BOUND_BY_DRAFT_PR_HEAD_TREE",
-  "changed_paths": [
+  "FILES_CHANGED": [
     "docs/industrialization/iw0/ind-bridge/HEADLESS_BRIDGE_DISCOVERY.md",
     "docs/industrialization/iw0/ind-bridge/HEADLESS_API_CANDIDATE.md",
     "docs/industrialization/iw0/ind-bridge/COUPLING_MAP.json",
@@ -20,76 +35,69 @@
     "docs/frontier/execution/parallel/IND-BRIDGE-A_EXECUTION_STATE.json",
     "docs/industrialization/iw0/ind-bridge/IND-BRIDGE-A_TERMINAL_HANDOFF.json"
   ],
-  "ownership_result": {
-    "status": "PASS",
-    "owned_surface": "HEADLESS_BRIDGE_DESIGN",
-    "production_source_modified": false,
-    "canonical_kernel_modified": false,
-    "runtime_authority_modified": false,
-    "renderer_modified": false,
-    "public_api_implemented": false,
-    "workflow_or_package_modified": false
-  },
-  "tests": [
+  "TESTS": [
     {
+      "name": "headless seam characterization",
       "command": "node tests/industrialization/bridge/headless-seam-characterization.mjs",
-      "purpose": "Pin the exact coupling boundary and fail if product/runtime leakage is silently misclassified.",
-      "status": "ADDITIVE_TEST_AUTHORED"
+      "status": "AUTHORED_NOT_LOCALLY_EXECUTED"
     },
     {
+      "name": "renderer-free external consumer characterization",
       "command": "node tests/industrialization/bridge/external-consumer-probe.mjs",
-      "purpose": "Renderer-free P2/P4 seed+manifest+address+property+archive eviction/restore witness.",
-      "status": "ADDITIVE_TEST_AUTHORED"
+      "status": "AUTHORED_NOT_LOCALLY_EXECUTED"
     },
     {
-      "command": "existing pull-request foundation/P2/P4 workflows",
-      "purpose": "Guard unchanged canonical/temporal behavior on the exact lane head.",
-      "status": "PENDING_PR_EVIDENCE"
+      "name": "repository exact-head PR regressions",
+      "status": "RUNNING_ON_PR_294",
+      "workflows": [
+        "Foundation Integrity",
+        "P1 Conformance",
+        "P1-P4 Canonical Baseline",
+        "P2 Conformance",
+        "P3 Conformance",
+        "P4 Conformance",
+        "P5 Controlled Promotion",
+        "P5 Environment v2 Canonical Promotion",
+        "P6 v1 Conformance"
+      ]
     }
   ],
-  "deterministic_witnesses": [
-    "Golden Universe Corpus semanticManifestHash 15115d3be206083d795b9492af46693253979709a5fb9cd2f9b3e2321fcd4778",
-    "Golden Universe Corpus universeIdentity 29d93cd168d16a6763ad6687005e6af6eddbb5b7fef5cf8a919b49f0b0fd4f41",
-    "Golden address fixture 0 bytes 4f46554101010105617374726f",
-    "Golden derive fixture 0 bytes 186531376069e9734644130f5ff081633aac5fcb011eaf8292a2ea6140ed9c32",
-    "external probe requires identical P4 replay/archive witness after namespace eviction and restore"
-  ],
-  "security_classification": {
-    "status": "NO_NEW_SECURITY_AUTHORITY",
-    "notes": [
-      "No network, storage credential, workflow, privileged action or executable package surface added.",
-      "Probe consumes bounded existing P2/P4 inputs only."
-    ]
+  "EVIDENCE": {
+    "coupling_map": "docs/industrialization/iw0/ind-bridge/COUPLING_MAP.json",
+    "discovery_packet": "docs/industrialization/iw0/ind-bridge/HEADLESS_BRIDGE_DISCOVERY.md",
+    "candidate_api": "docs/industrialization/iw0/ind-bridge/HEADLESS_API_CANDIDATE.md",
+    "deterministic_witnesses": [
+      "Golden Universe Corpus semanticManifestHash 15115d3be206083d795b9492af46693253979709a5fb9cd2f9b3e2321fcd4778",
+      "Golden Universe Corpus universeIdentity 29d93cd168d16a6763ad6687005e6af6eddbb5b7fef5cf8a919b49f0b0fd4f41",
+      "Golden address fixture 0 bytes 4f46554101010105617374726f",
+      "Golden derive fixture 0 bytes 186531376069e9734644130f5ff081633aac5fcb011eaf8292a2ea6140ed9c32"
+    ],
+    "findings": [
+      "P2 canonical identity/address/derivation and P4 replay/archive/digests form the smallest justified G0A candidate seam.",
+      "Current PX/V1 provider invocation is not yet consumer-independent because request selection and product/preview context are still embedded.",
+      "RENDER_PREP, visible, selected, materialization residency, worker choice and resource telemetry remain private runtime policy.",
+      "DOM, Babylon/WebGL, camera, viewport state, implicit UI selection and product globals are forbidden from the public semantic seam.",
+      "Generic provider query is intentionally unfrozen until IND-JS-HEADLESS proves explicit selection-free context."
+    ],
+    "ownership": {
+      "status": "PASS",
+      "semantic_surface": "HEADLESS_BRIDGE_DESIGN",
+      "production_source_modified": false,
+      "canonical_kernel_modified": false,
+      "runtime_authority_modified": false,
+      "renderer_modified": false,
+      "public_api_implemented": false,
+      "package_or_workflow_modified": false,
+      "integration_patch_requests": []
+    }
   },
-  "authority_science_classification": {
-    "status": "NO_AUTHORITY_TRANSFER",
-    "notes": [
-      "P2/P4 remain the existing canonical/temporal authorities.",
-      "Runtime telemetry remains MEASURED_RUNTIME_EVIDENCE.",
-      "Presentation/camera/selection state is explicitly excluded from the candidate semantic seam."
-    ]
-  },
-  "performance_resource_evidence": {
-    "status": "NOT_A_PERFORMANCE_LANE",
-    "notes": [
-      "No production runtime is modified.",
-      "P2/P4 existing bounds are inherited; V2X resource/materialization policy remains private."
-    ]
-  },
-  "limitations": [
-    "G0A only: no public facade/package is implemented.",
-    "The characterization consumer still reads checked-in source directly; G0B requires a real external seam with no source-internal bypass.",
-    "Generic provider query extraction is intentionally unfrozen because current PX/V1 invocation is selection/product coupled.",
-    "No native/C ABI/runtime extraction claim is made."
+  "FAILURE_FINGERPRINT": null,
+  "RESIDUAL_DEBT": [
+    "No public headless facade/package exists yet; direct-source characterization is not G0B external seam proof.",
+    "Selection-free provider/query extraction remains for IND-JS-HEADLESS after G0A.",
+    "The two lane-specific additive probes were authored but cannot be locally executed in this environment because a private-repository checkout is unavailable; protected package/workflow surfaces were not modified to manufacture execution.",
+    "PR #294 exact-head regression workflows must be read as repository regression evidence, not as execution evidence for the two new lane-specific probes."
   ],
-  "falsification_attempts": [
-    "Tested whether current PX request can serve as the public seam: rejected because selection is mandatory.",
-    "Tested whether pxProduct/V1 bindings can serve as headless query seam: rejected because they capture/verify product selection and preview context.",
-    "Tested whether V2X materialization runtime should be exported: rejected because it contains RENDER_PREP/visible/selected/context/resource policy and explicitly denies central semantic/product authority.",
-    "Tested whether the R6 continuum kernel/open product path is semantic core: rejected because it includes camera/navigation/product-runtime capture.",
-    "Kept only P2/P4 primitives with existing Node evidence as the G0A candidate."
-  ],
-  "rollback_abandon_condition": "If IND-JS-HEADLESS cannot implement the documented facade without product globals, source-internal bypass, semantic reinterpretation or shipping-product migration, abandon the extraction as PLATFORM_EXTRACTION_PREMATURE.",
-  "integration_patch_requests": [],
-  "disposition": "READY_FOR_CONTROL_CONVERGENCE"
+  "NEXT_GATE": "GATE-G0A-AUDIT -> G0A_MINIMUM_NORMATIVE_SLICE",
+  "MERGE_RECOMMENDATION": "CONTROL_OWNER_REVIEW_AND_CONVERGE_ONLY_AFTER_G0A_AUDIT; lane must not self-merge."
 }
