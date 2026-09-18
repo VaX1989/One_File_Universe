@@ -1,0 +1,46 @@
+{
+  "prompt_id": "IND-LIC-A",
+  "master_schema_version": 4,
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "status": "IN_PROGRESS",
+  "hypothesis": "The current no-project-license state blocks public reuse, open SDK/spec/vector distribution, external contribution intake policy, and certification/trademark programs, but does not by itself block bounded internal middleware feasibility work. The repository can stage the decision without selecting legal terms.",
+  "failure_fingerprint": null,
+  "failure_count": 0,
+  "alternate_strategy": null,
+  "last_action": "Reauthenticated repository, resolved v4 master and both immutable IND-LIC-A source prompts, verified active control epoch/head/ownership and exact repository licensing/package/third-party state, then created the lane branch from the exact control head.",
+  "next_action": "Materialize the licensing/IP decision dossier, third-party inventory, staged blocker matrix, integration patch request, and terminal handoff without selecting a license or mutating protected/shared surfaces.",
+  "dependencies": {
+    "M0_HISTORICAL": {
+      "status": "PASS",
+      "sha": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+      "tree": "3704247247940fa8c5f08291cd80ec9e24e7d49d"
+    },
+    "CONTROL_EPOCH": {
+      "status": "PASS",
+      "pr": 290,
+      "sha": "fa88f7cec101a52d07916a0fdd3927c482a6f188",
+      "tree": "784e12501a7e0ba9e281787513bddbb6eed1c6bf"
+    },
+    "PR287_V4_MASTER": {
+      "status": "PASS",
+      "sha": "c2cab6d6e914b918432432fdc69825e0a1000509"
+    },
+    "PR287_V3_SOURCE": {
+      "status": "PASS",
+      "sha": "6494c3a43596c2d16c43237c052d404d5b1a7e74"
+    },
+    "PR286_SOURCE": {
+      "status": "PASS",
+      "sha": "3d28ec0720f611278b7717da02713c9eda96e642"
+    }
+  },
+  "evidence_debt": [
+    "Founder/legal policy choices remain intentionally unresolved; this lane may structure them but may not choose them.",
+    "Upstream package NOTICE/patent/trademark details beyond repository-captured metadata must be re-verified at the point of public distribution.",
+    "Repository-wide authorship/provenance is not equivalent to a legal chain-of-title determination."
+  ],
+  "branch": "work/post-m0/ind-lic-a-OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "pr": null,
+  "completion_sha": null,
+  "completion_tree": null
+}
