@@ -1,14 +1,12 @@
 {
   "prompt_id": "IND-BRIDGE-A",
-  "master_schema_version": 4,
-  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
-  "hypothesis": "The smallest useful JS headless seam is an additive facade over the already headless P2/P4 canonical and temporal primitives; current PX provider invocation and V2X materialization/runtime policy should not be exported wholesale because they still encode product selection/presentation/runtime concerns.",
-  "failure_fingerprint": null,
-  "failure_count": 0,
-  "alternate_strategy": "If a real JS facade cannot reproduce the characterized P2/P4 witness without product globals or semantic reinterpretation, stop extraction and disposition PLATFORM_EXTRACTION_PREMATURE instead of broadening the public API.",
-  "last_action": "Mapped exact control-head coupling, defined a minimal non-normative P2/P4 facade candidate, and added additive coupling plus external-consumer characterization probes without modifying production source.",
-  "next_action": "Submit this Draft lane PR to GATE-G0A-AUDIT. Only after G0A may IND-JS-HEADLESS implement an additive facade and rerun the external consumer through it.",
-  "dependencies": {
+  "planning_epoch": "OFU-POST-M0-ASYMMETRIC-DUAL-TRACK-2026-09-17-V4",
+  "status": "COMPLETE_RESEARCH_PACKET",
+  "base_sha": "fa88f7cec101a52d07916a0fdd3927c482a6f188",
+  "base_tree": "784e12501a7e0ba9e281787513bddbb6eed1c6bf",
+  "branch": "work/post-m0/ind-bridge-a-ofu-post-m0-dual-track-wave0-2026-09-18-61f43071",
+  "pr": 294,
+  "dependencies_resolved": {
     "M0_HISTORICAL": {
       "status": "PASS",
       "sha": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
@@ -27,14 +25,58 @@
       "pr": 287
     }
   },
-  "evidence_debt": [
-    "No public headless package/facade exists yet; the external-consumer probe intentionally loads checked-in P2/P4 source through Node vm and therefore is G0A characterization rather than G0B external seam proof.",
-    "Current PX/V1 query invocation still carries product selection and preview context; a selection-free domain/provider request schema remains to be proven by IND-JS-HEADLESS.",
-    "Lane-specific tests require exact-repository Node execution; the pull-request workflows provide unchanged-foundation regression evidence but do not own this lane's additive test wiring."
+  "write_scope": [
+    "bridge architecture docs",
+    "dependency/coupling maps",
+    "additive seam characterization tests",
+    "docs/frontier/execution/parallel/IND-BRIDGE-A_EXECUTION_STATE.json"
   ],
-  "branch": "work/post-m0/ind-bridge-a-ofu-post-m0-dual-track-wave0-2026-09-18-61f43071",
-  "pr": "EXTERNALLY_BOUND_BY_DRAFT_PR",
+  "tests_run": [
+    {
+      "command": "node tests/industrialization/bridge/headless-seam-characterization.mjs",
+      "status": "AUTHORED_NOT_LOCALLY_EXECUTED",
+      "reason": "This execution environment cannot obtain a repository checkout from github.com; workflow/package surfaces are convergence-owned and were not modified merely to execute the additive lane test."
+    },
+    {
+      "command": "node tests/industrialization/bridge/external-consumer-probe.mjs",
+      "status": "AUTHORED_NOT_LOCALLY_EXECUTED",
+      "reason": "Same repository-checkout limitation; this is explicitly G0A characterization, not G0B proof."
+    },
+    {
+      "command": "pull-request exact-head regression workflows",
+      "status": "RUNNING_ON_PR_294",
+      "workflows": [
+        "Foundation Integrity",
+        "P1 Conformance",
+        "P1-P4 Canonical Baseline",
+        "P2 Conformance",
+        "P3 Conformance",
+        "P4 Conformance",
+        "P5 Controlled Promotion",
+        "P5 Environment v2 Canonical Promotion",
+        "P6 v1 Conformance"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "docs/industrialization/iw0/ind-bridge/HEADLESS_BRIDGE_DISCOVERY.md",
+    "docs/industrialization/iw0/ind-bridge/HEADLESS_API_CANDIDATE.md",
+    "docs/industrialization/iw0/ind-bridge/COUPLING_MAP.json",
+    "tests/industrialization/bridge/headless-seam-characterization.mjs",
+    "tests/industrialization/bridge/external-consumer-probe.mjs",
+    "PR #294"
+  ],
+  "failure_fingerprint": null,
+  "failure_count": 0,
+  "current_hypothesis": "The smallest useful JS headless seam is an additive facade over already headless P2/P4 canonical and temporal primitives; current PX provider invocation and V2X materialization/runtime policy should not be exported wholesale because they still encode product selection/presentation/runtime concerns.",
+  "last_action": "Opened Draft PR #294 from the exact control head after materializing the G0A bridge discovery packet, candidate seam, coupling map, and additive characterization probes.",
+  "next_action": "GATE-G0A-AUDIT should evaluate this packet with IND-GOV-A and IND-CONF-A. Only after G0A may IND-JS-HEADLESS implement an additive facade and rerun the consumer through a real external seam.",
+  "alternate_strategy": "If IND-JS-HEADLESS cannot reproduce the characterized P2/P4 witness without product globals, source-internal bypass, semantic reinterpretation or shipping-product migration, stop extraction as PLATFORM_EXTRACTION_PREMATURE instead of broadening the public API.",
+  "external_evidence_debt": [
+    "No public headless package/facade exists yet; the consumer probe deliberately loads checked-in P2/P4 source through Node vm, so this packet is G0A input and not G0B external seam proof.",
+    "Current PX/V1 query invocation remains selection/product coupled; a selection-free domain/provider request contract is intentionally unfrozen.",
+    "The two lane-specific additive probes are authored but not locally executed because this runtime cannot obtain a repository checkout; PR regression workflows are separately tracked and no protected workflow/package surface was modified to bypass that limitation."
+  ],
   "completion_sha": "EXTERNALLY_BOUND_BY_DRAFT_PR_HEAD",
-  "completion_tree": "EXTERNALLY_BOUND_BY_DRAFT_PR_HEAD_TREE",
-  "disposition": "READY_FOR_CONTROL_CONVERGENCE"
+  "completion_tree": "EXTERNALLY_BOUND_BY_DRAFT_PR_HEAD_TREE"
 }
