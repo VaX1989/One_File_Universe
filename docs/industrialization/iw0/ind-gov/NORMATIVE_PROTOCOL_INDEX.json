@@ -1,0 +1,721 @@
+{
+  "schema": "ofu.ind-gov-a.normative-protocol-index.v1",
+  "prompt_id": "IND-GOV-A",
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "authority": "INDUSTRIALIZATION_SPEC_CANDIDATE_NO_SEMANTIC_AUTHORITY_TRANSFER",
+  "base": {
+    "control_branch": "integration/post-m0-dual-track-wave0-2026-09-17",
+    "control_head": "fa88f7cec101a52d07916a0fdd3927c482a6f188",
+    "control_tree": "784e12501a7e0ba9e281787513bddbb6eed1c6bf",
+    "frozen_r6_sha": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+    "frozen_r6_tree": "3704247247940fa8c5f08291cd80ec9e24e7d49d",
+    "planning_master_sha": "c2cab6d6e914b918432432fdc69825e0a1000509"
+  },
+  "classification_vocabulary": [
+    "READY_TO_SPECIFY",
+    "DRAFT_ONLY",
+    "KEEP_PRIVATE_FOR_NOW",
+    "REQUIRES_MORE_CONSUMERS",
+    "REQUIRES_MORE_PRODUCT_EVIDENCE"
+  ],
+  "decision_rule": [
+    "READY_TO_SPECIFY requires an implementation-independent invariant already expressed by owning specifications/source and backed by executable evidence or frozen vectors.",
+    "This index harvests existing semantics only. It does not create new canonical behavior or transfer source authority.",
+    "Exact JavaScript object shapes, callback identities, method names, error strings, runtime budgets, renderer vocabulary, cache policy and storage backends are not normative unless an owning frozen contract already makes them semantic.",
+    "Unknown or unsupported semantic versions remain fail-closed; future version negotiation is not invented here."
+  ],
+  "evidence_catalog": {
+    "p2_protocol": {
+      "path": "docs/P2_PROTOCOL.md",
+      "blob": "0367efba89feed014e510f940927d64abb2d54bf"
+    },
+    "p2_architecture": {
+      "path": "docs/P2_ARCHITECTURE.md",
+      "blob": "b6bbf1110607b7f1aa984cd755c08e99169a81a4"
+    },
+    "determinism": {
+      "path": "docs/DETERMINISM.md",
+      "blob": "8d60c02be6c7e73e79299908b9c19ea798f425c9"
+    },
+    "p4_contract": {
+      "path": "docs/P4_TEMPORAL_CONTRACT.md",
+      "blob": "933361b0e6232ae869e21742f8674a159460755d"
+    },
+    "multiscale_architecture": {
+      "path": "docs/MULTISCALE_REALITY.md",
+      "blob": "054e852f0f246c767935b12cece1cc5e49b7f16b"
+    },
+    "p2_source": {
+      "path": "src/kernel/p2-canonical.js",
+      "blob": "3c995a95d88ebfc30fcde025f3beea196506d74c"
+    },
+    "p2_address_guard": {
+      "path": "src/kernel/p2-address-parser.js",
+      "blob": "7bc3570772f4633efc635cefcfadb26f03b3df8b"
+    },
+    "p2_unicode": {
+      "path": "src/kernel/p2-unicode.js",
+      "blob": "c5a16928ad49978a2a203111ae95afe5c9939822"
+    },
+    "p4_source": {
+      "path": "src/temporal/p4-temporal.js",
+      "blob": "7e6d7d07d34609b194382a24c5e3cdf0a4ccae24"
+    },
+    "px_contracts": {
+      "path": "src/extensions/contracts.js",
+      "blob": "034949f5cca2a15c85c2b0f4cb4c808a70d98c6f"
+    },
+    "px_registry": {
+      "path": "src/extensions/registry.js",
+      "blob": "b3da9bdab4bb7fbe5a74afece0c67ef4776864cf"
+    },
+    "px_cross_scale": {
+      "path": "src/extensions/cross-scale.js",
+      "blob": "d463af6879775b6ca8de4e4c0dd8598fe20f47f4"
+    },
+    "runtime_contracts": {
+      "path": "src/runtime/v2x-01-contracts.js",
+      "blob": "31b9a07cc6e9b8c80d7efa67e32c1d37fa4d9877"
+    },
+    "legacy_save": {
+      "path": "src/persistence/save.js",
+      "blob": "e3d97e7f9057472b5fea2da7a72c87c3bf8e93cd"
+    },
+    "p2_vectors": {
+      "path": "tests/vectors/golden-universe-corpus-v1.json",
+      "blob": "68dd331bae06a03e8233a0a8b3b2e06cc499f0b8"
+    },
+    "p2_tests": {
+      "path": "tests/p2/run-p2-tests.mjs",
+      "blob": "bbe22aa106326902b8adaaf6fe33efce6e7160be"
+    },
+    "p2_oracle": {
+      "path": "tools/p2_oracle.py",
+      "blob": "2b6cbe4b158b8eab49472e60ac8059f8d2f1564c"
+    },
+    "p4_tests": {
+      "path": "tests/p4/run-p4-tests.mjs",
+      "blob": "56bda51483b70a54e928cde57a8c4aed39cb24f2"
+    },
+    "p4_semantic_closure": {
+      "path": "tests/p4/semantic-closure-tests.mjs",
+      "blob": "32ce5683766168564d68cb9284f1be4c4cb2d924"
+    },
+    "p4_checkpoint_tests": {
+      "path": "tests/p4/checkpoint-authority-tests.mjs",
+      "blob": "0da2f867930aeb85ac897241956ebb8e8c9d64ee"
+    },
+    "p4_archive_tests": {
+      "path": "tests/p4/archive-lineage-tests.mjs",
+      "blob": "b72e46cc153a9966ffc778642437a1c517addff7"
+    },
+    "p2_p4_integration": {
+      "path": "tests/integration/p2-p4-contract-tests.mjs",
+      "blob": "a352fb43aa125bd98fcf6bd0143d55eee33cd157"
+    },
+    "p2_security_conformance": {
+      "path": "docs/P2_SECURITY_CONFORMANCE.md",
+      "blob": "ef570b96923db52e60ad32c6eba7b493f3f45ae9"
+    },
+    "integration_matrix": {
+      "path": "docs/INTEGRATION_MATRIX.md",
+      "blob": "f4b8feab3616146d32d750b351d36956d75cc813"
+    }
+  },
+  "normative_candidates": [
+    {
+      "id": "P2.CBV1.DOMAIN_AND_BYTES",
+      "classification": "READY_TO_SPECIFY",
+      "source_authority": "P2_FROZEN_AUTHORITY",
+      "change_control_owner": "P2_FROZEN_AUTHORITY",
+      "requirements": [
+        "Admitted values are null, booleans, u64 [0,2^64-1], negative i64 [-2^63,-1], bounded byte strings, frozen-profile canonical text, dense canonical arrays and canonical text-key maps.",
+        "Tags are 00 null, 01 false, 02 true, 10 negative signed integer, 11 unsigned integer, 20 byte string, 21 text, 30 array and 31 map.",
+        "Lengths and integer payloads use minimal unsigned LEB128 restricted to u64; overlong, overflowing, truncated and non-minimal encodings are rejected.",
+        "Negative integers encode the odd ZigZag image (-x*2)-1; every admitted integer has one representation.",
+        "Map entries order by complete encoded canonical key bytes; duplicate normalized keys and non-strict encoded-key order are rejected.",
+        "decode(encode(v)) equals normalized(v), and encode(decode(b)) equals b for accepted canonical bytes."
+      ],
+      "bounds": {
+        "input_bytes": 1048576,
+        "byte_string_bytes": 1048572,
+        "text_utf8_bytes": 262144,
+        "collection_items": 65536,
+        "traversal_nodes": 100000,
+        "nesting_depth": 32
+      },
+      "evidence": [
+        "p2_protocol",
+        "p2_source",
+        "p2_vectors",
+        "p2_tests",
+        "p2_oracle",
+        "p2_security_conformance"
+      ],
+      "implementation_independence": "JS live-value descriptor/prototype checks are host-bound input guards; the portable normative boundary is the admitted mathematical value domain and canonical bytes."
+    },
+    {
+      "id": "P2.UNICODE.15_1_V1",
+      "classification": "READY_TO_SPECIFY",
+      "source_authority": "P2_FROZEN_AUTHORITY",
+      "change_control_owner": "P2_FROZEN_AUTHORITY",
+      "requirements": [
+        "Profile identifier is ofu-unicode-15.1.0-v1.",
+        "Admitted repertoire is the frozen Unicode 15.1 assigned scalar repertoire represented by 707 sorted ranges excluding surrogates.",
+        "Normative range encoding SHA-256 is d92c96676b97eae626d3f0bd9419ec0a7dcc8c22373c1455f21015d737b47412.",
+        "Wire text is strict UTF-8, already NFC and inside the frozen repertoire; malformed UTF-8, non-NFC text and out-of-profile scalars are rejected.",
+        "A future host Unicode release must not silently expand the admitted repertoire."
+      ],
+      "evidence": [
+        "p2_protocol",
+        "p2_unicode",
+        "p2_vectors",
+        "p2_tests",
+        "p2_security_conformance"
+      ],
+      "implementation_independence": "Host NFC implementation choice is not normative; conformance is against the frozen profile and normalization corpus."
+    },
+    {
+      "id": "P2.ADDRESS.V1",
+      "classification": "READY_TO_SPECIFY",
+      "source_authority": "P2_FROZEN_AUTHORITY",
+      "change_control_owner": "P2_FROZEN_AUTHORITY",
+      "requirements": [
+        "Wire prefix is ASCII OFUA followed by version 0x01 and a minimal-ULEB segment count in [1,64].",
+        "Segment tags are 01 namespace text, 02 exact 8-byte u64 big-endian, 03 exact 8-byte i64 two's-complement big-endian and 04 bounded bytes.",
+        "Namespace payload is at most 1024 UTF-8 bytes, byte-segment payload at most 4096 bytes and complete address at most 65536 bytes.",
+        "Unsupported versions, unknown tags, non-minimal lengths, invalid/non-NFC text, range failures and trailing bytes are rejected.",
+        "Derivation accepts only address bytes that parse and rebuild identically."
+      ],
+      "evidence": [
+        "p2_protocol",
+        "p2_source",
+        "p2_address_guard",
+        "p2_vectors",
+        "p2_tests",
+        "p2_oracle"
+      ]
+    },
+    {
+      "id": "P2.SEMANTIC_MANIFEST.V1",
+      "classification": "READY_TO_SPECIFY",
+      "source_authority": "P2_FROZEN_AUTHORITY",
+      "change_control_owner": "P2_FROZEN_AUTHORITY",
+      "requirements": [
+        "Semantic Generator Manifest v1 has an exact fail-closed top-level schema for protocol/address/Unicode/numeric versions, generator suite/version, subsystem/domain/dependency maps, law profile and genesis.",
+        "Canonical manifest bytes are OFU-CBV-1(manifest) and SemanticManifestHash is SHA-256 of those bytes.",
+        "Browser, OS, CPU, renderer, benchmark, CI, build timestamps, source commit and implementation bytes are excluded from semantic identity."
+      ],
+      "evidence": [
+        "p2_protocol",
+        "p2_source",
+        "p2_tests",
+        "determinism"
+      ]
+    },
+    {
+      "id": "P2.IDENTITY.UNIVERSE_AND_ENTITY_V1",
+      "classification": "READY_TO_SPECIFY",
+      "source_authority": "P2_FROZEN_AUTHORITY",
+      "change_control_owner": "P2_FROZEN_AUTHORITY",
+      "requirements": [
+        "UniverseIdentity = SHA-256(UTF8('OFU-UNIVERSE-v1\\0') || OFU-CBV-1({canonicalProtocolVersion,masterSeed,semanticManifestHash})); seed and semanticManifestHash are exactly 32 bytes.",
+        "CanonicalEntityIdentity = SHA-256(UTF8('OFU-ENTITY-v1\\0') || OFU-CBV-1({universeIdentity,namespace,stableKey})); universeIdentity is 32 bytes and namespace is non-empty canonical text.",
+        "Location, containment, ownership, QueryContext and ModelRegime do not implicitly rename an entity."
+      ],
+      "evidence": [
+        "p2_protocol",
+        "p2_source",
+        "p2_vectors",
+        "p2_tests",
+        "p2_oracle",
+        "determinism"
+      ]
+    },
+    {
+      "id": "P2.DERIVATION.HMAC_SHA256_V1",
+      "classification": "READY_TO_SPECIFY",
+      "source_authority": "P2_FROZEN_AUTHORITY",
+      "change_control_owner": "P2_FROZEN_AUTHORITY",
+      "requirements": [
+        "Arguments are exactly masterSeed32, semanticManifestHash32, non-empty canonical domain, validated Canonical Address v1 bytes, non-empty canonical property and u64 counter.",
+        "Message is OFU-CBV-1(['OFU-DERIVE-v1',semanticManifestHash,domain,addressBytes,property,counter]).",
+        "Output is HMAC-SHA-256(masterSeed,message); domain/property/address/manifest/counter separation is semantic.",
+        "No global RNG call order participates in canonical derivation."
+      ],
+      "evidence": [
+        "p2_protocol",
+        "p2_source",
+        "p2_vectors",
+        "p2_tests",
+        "p2_oracle",
+        "determinism"
+      ]
+    },
+    {
+      "id": "P2.NUMERIC.V1",
+      "classification": "READY_TO_SPECIFY",
+      "source_authority": "P2_FROZEN_AUTHORITY",
+      "change_control_owner": "P2_FROZEN_AUTHORITY",
+      "requirements": [
+        "Checked i64 addition rejects overflow.",
+        "Fixed multiplication uses exact integer intermediate, positive u64 scale, nearest rounding with ties-to-even and checked i64 output.",
+        "u64 integer square root returns floor(sqrt(n)) exactly.",
+        "Canonical floating point and transcendental functions are outside v1."
+      ],
+      "evidence": [
+        "p2_protocol",
+        "p2_source",
+        "p2_vectors",
+        "p2_tests",
+        "p2_oracle",
+        "determinism"
+      ]
+    },
+    {
+      "id": "P4.TIME_EVENT_ORDER_V1",
+      "classification": "READY_TO_SPECIFY",
+      "source_authority": "P4_FROZEN_AUTHORITY",
+      "change_control_owner": "P4_FROZEN_AUTHORITY",
+      "requirements": [
+        "Canonical time is Universe Genesis T0 plus {seconds:u64,micros:u64 in [0,999999]}; wall clock, animation time and worker scheduling are non-canonical.",
+        "A canonical event commits Universe Identity, lineage, canonical time, non-empty type, positive version, operationKey, canonical target IDs, payload, bounded causes and optional preconditionStateDigest.",
+        "EventId is the domain-separated SHA-256 commitment tagged OFU-P4-EVENT-v1 over the canonical event descriptor.",
+        "Total order is (time.seconds,time.micros,EventId bytes); arrival order and random UUID order never break ties."
+      ],
+      "evidence": [
+        "p4_contract",
+        "p4_source",
+        "p4_tests",
+        "p4_semantic_closure",
+        "p2_p4_integration",
+        "integration_matrix"
+      ]
+    },
+    {
+      "id": "P4.LINEAGE_AND_LIVE_FRONTIER_V1",
+      "classification": "READY_TO_SPECIFY",
+      "source_authority": "P4_FROZEN_AUTHORITY",
+      "change_control_owner": "P4_FROZEN_AUTHORITY",
+      "requirements": [
+        "Historical reconstruction may canonical-sort and deduplicate an already-known bounded event set delivered in arbitrary order.",
+        "Live admission is monotonic: a new event must strictly advance the accepted frontier; exact retry of the current frontier EventId is an idempotent duplicate no-op; an older event is not an implicit history edit.",
+        "Retroactive history revision requires a separate future explicit operation and is not P4 v1 commit semantics.",
+        "Causes are provenance/reference links only; operationKey is EventId semantic material, not a separate global idempotency key."
+      ],
+      "evidence": [
+        "p4_contract",
+        "p4_source",
+        "p4_tests",
+        "p4_semantic_closure",
+        "p2_p4_integration",
+        "integration_matrix"
+      ]
+    },
+    {
+      "id": "P4.TRANSITION_BINDING_EXACT_V1",
+      "classification": "READY_TO_SPECIFY",
+      "source_authority": "P4_FROZEN_AUTHORITY",
+      "change_control_owner": "P4_FROZEN_AUTHORITY",
+      "requirements": [
+        "Persistent interpretation is bound to a transition descriptor containing schema version, contractId, SemVer core semanticVersion, compatibility and eventFamilies.",
+        "P4 v1 compatibility is exact only; missing, mismatched or unsupported transition contracts fail closed.",
+        "The built-in diagnostic transition contract is ofu.p4.core-transition version 1.0.0; downstream physical/domain semantics remain owned by their domains."
+      ],
+      "evidence": [
+        "p4_contract",
+        "p4_source",
+        "p4_tests",
+        "p4_semantic_closure",
+        "integration_matrix"
+      ]
+    },
+    {
+      "id": "P4.CHECKPOINT_COMPACTION_INVARIANTS_V2",
+      "classification": "READY_TO_SPECIFY",
+      "source_authority": "P4_FROZEN_AUTHORITY",
+      "change_control_owner": "P4_FROZEN_AUTHORITY",
+      "requirements": [
+        "A checkpoint is an authority-preserving replay accelerator and commitment to discarded-prefix result, not a second world truth.",
+        "Checkpoint v2 binds universe, lineage, transition descriptor, covered event count/root, accepted frontier, canonical state and state digest.",
+        "Checkpoint advancement accepts only suffix events strictly after its frontier and extends history root/count/state deterministically.",
+        "Repeated deterministic compaction must preserve Replay(full accepted history) == ReplayLiveWorld(checkpoint + bounded tail)."
+      ],
+      "evidence": [
+        "p4_contract",
+        "p4_source",
+        "p4_semantic_closure",
+        "p4_checkpoint_tests",
+        "p2_p4_integration",
+        "integration_matrix"
+      ],
+      "boundary": "The invariants are ready; storage backend, public persistence provider API and generic save UX are not."
+    },
+    {
+      "id": "P4.ARCHIVE_INTEGRITY_INVARIANTS_V2",
+      "classification": "READY_TO_SPECIFY",
+      "source_authority": "P4_FROZEN_AUTHORITY",
+      "change_control_owner": "P4_FROZEN_AUTHORITY",
+      "requirements": [
+        "Portable temporal archive payload is canonical and binds live representation: universe/lineage, exact transition descriptor, baseline, compaction policy, optional verified checkpoint and bounded ordered suffix.",
+        "Import must verify integrity, schema versions, transition compatibility, checkpoint authority, baseline/universe/lineage equality and suffix ordering before constructing a live world.",
+        "Browser IndexedDB/localStorage are caches only and do not define temporal authority."
+      ],
+      "evidence": [
+        "p4_contract",
+        "p4_source",
+        "p4_archive_tests",
+        "p4_checkpoint_tests",
+        "integration_matrix"
+      ],
+      "boundary": "Only P4 archive integrity/authority invariants are harvested. No generic persistence/provider/transport API is standardized."
+    }
+  ],
+  "non_standardized_surfaces": [
+    {
+      "id": "PX.AUTHORITY_PROVENANCE_ENVELOPE",
+      "classification": "DRAFT_ONLY",
+      "reason": "The authority separation (canonical/derived/model-derived/presentation/measured) is architecturally valuable, but current descriptors are JSON/JS-shaped, product-facing and include evidence/lifecycle vocabulary not proven across independent consumers.",
+      "evidence": [
+        "px_contracts",
+        "px_registry",
+        "multiscale_architecture"
+      ],
+      "next_evidence": "At least one external/headless consumer plus product contract usage without copying current JS record shape."
+    },
+    {
+      "id": "QUERY_AND_PROVIDER_API",
+      "classification": "REQUIRES_MORE_CONSUMERS",
+      "reason": "Provider/request/envelope/discovery and registry binding methods expose current JS API and implementation lifecycle choices. No implementation-independent public query protocol is yet proven.",
+      "evidence": [
+        "px_contracts",
+        "px_registry"
+      ],
+      "next_evidence": "IND-JS-HEADLESS and IND-EXT-CONSUMER must establish a host-neutral seam before any freeze."
+    },
+    {
+      "id": "RUNTIME_RESOURCE_AND_SCHEDULER_POLICY",
+      "classification": "KEEP_PRIVATE_FOR_NOW",
+      "reason": "COLD/WARM/HOT/IMMEDIATE tiers, queue/cache/materialization ceilings, class weights and adaptive relevance thresholds are runtime policy. Resource pressure may change timing/fidelity/materialization but must not alter admitted canonical truth.",
+      "evidence": [
+        "runtime_contracts",
+        "p4_contract",
+        "determinism"
+      ],
+      "next_evidence": "G1 headless/runtime proof and measured multi-consumer resource behavior."
+    },
+    {
+      "id": "GENERIC_PERSISTENCE_PROVIDER_API",
+      "classification": "REQUIRES_MORE_CONSUMERS",
+      "reason": "P4 supplies stable temporal checkpoint/archive authority invariants, but a generic persistence interface, storage lifecycle, migration API and provider ABI are not proven across consumers.",
+      "evidence": [
+        "p4_contract",
+        "p4_source",
+        "legacy_save"
+      ],
+      "next_evidence": "Persistence architecture/audit plus later durability proof after G1."
+    },
+    {
+      "id": "LEGACY_P1_PORTABLE_SAVE_JSON",
+      "classification": "KEEP_PRIVATE_FOR_NOW",
+      "reason": "save.js uses ofu-canonical-v1 JSON-era semantics, generatorManifestHash terminology, safe-number-only event data and sequential {seq,type,data}; it is not the P2 OFU-CBV-1/P4 archive semantic model and must not be mistaken for a future standard.",
+      "evidence": [
+        "legacy_save",
+        "p2_security_conformance"
+      ],
+      "next_evidence": "Treat as compatibility/legacy surface only; any migration into P4 must be explicit and differential."
+    },
+    {
+      "id": "MULTISCALE_REFINE_PROJECT_RECONCILE_API",
+      "classification": "REQUIRES_MORE_PRODUCT_EVIDENCE",
+      "reason": "REFINE/PROJECT/RECONCILE are accepted architectural operations, but the current cross-scale implementation fixes particular 3-axis spatial, matter, observable and JS descriptor shapes. Those are examples, not universal multiscale semantics.",
+      "evidence": [
+        "multiscale_architecture",
+        "px_cross_scale",
+        "px_contracts"
+      ],
+      "next_evidence": "Multiple scientific/domain regimes and external consumers must demonstrate a common minimal contract."
+    },
+    {
+      "id": "EXTENSION_REGISTRY_AND_CLAIM_NAMESPACE",
+      "classification": "REQUIRES_MORE_CONSUMERS",
+      "reason": "Current claim prefixes, owner-prefix rules, registry sealing/binding and implementation method whitelist are governance/runtime mechanisms rather than proven portable protocol semantics.",
+      "evidence": [
+        "px_registry",
+        "px_contracts"
+      ],
+      "next_evidence": "External consumer and stable public seam evidence."
+    },
+    {
+      "id": "SCIENTIFIC_EVIDENCE_CLASS_VOCABULARY",
+      "classification": "DRAFT_ONLY",
+      "reason": "Evidence/authority separation must be preserved, but freezing the current PX labels as an open protocol would couple product governance vocabulary to canonical wire semantics.",
+      "evidence": [
+        "px_contracts",
+        "multiscale_architecture"
+      ],
+      "next_evidence": "Product contracts and Quality Observatory should exercise provenance without making presentation or measurements canonical."
+    }
+  ],
+  "compatibility_matrix": [
+    {
+      "surface": "OFU-CBV-1",
+      "current": "ofu-cbv-1",
+      "policy": "EXACT_VERSION_FAIL_CLOSED",
+      "classification": "READY_TO_SPECIFY"
+    },
+    {
+      "surface": "Unicode profile",
+      "current": "ofu-unicode-15.1.0-v1",
+      "policy": "EXACT_PROFILE_FAIL_CLOSED",
+      "classification": "READY_TO_SPECIFY"
+    },
+    {
+      "surface": "Canonical Address",
+      "current": "v1 / 0x01",
+      "policy": "UNKNOWN_VERSION_REJECT",
+      "classification": "READY_TO_SPECIFY"
+    },
+    {
+      "surface": "Semantic Manifest",
+      "current": "v1",
+      "policy": "EXACT_SCHEMA_UNKNOWN_FIELDS_REJECT",
+      "classification": "READY_TO_SPECIFY"
+    },
+    {
+      "surface": "P4 temporal protocol",
+      "current": "ofu-p4-temporal-v1",
+      "policy": "EXACT_PROTOCOL_FAIL_CLOSED",
+      "classification": "READY_TO_SPECIFY"
+    },
+    {
+      "surface": "P4 transition descriptor",
+      "current": "schema 1 / compatibility exact",
+      "policy": "EXACT_CONTRACT_DESCRIPTOR_ONLY",
+      "classification": "READY_TO_SPECIFY"
+    },
+    {
+      "surface": "P4 checkpoint",
+      "current": "schema 2",
+      "policy": "EXACT_SCHEMA_AND_TRANSITION_MATCH",
+      "classification": "READY_TO_SPECIFY"
+    },
+    {
+      "surface": "P4 archive",
+      "current": "schema 2",
+      "policy": "EXACT_SCHEMA_INTEGRITY_AND_TRANSITION_MATCH",
+      "classification": "READY_TO_SPECIFY"
+    },
+    {
+      "surface": "PX provider/query registry",
+      "current": "ofu-px-contracts-1 / ofu-px-registry-1",
+      "policy": "NO_PUBLIC_COMPATIBILITY_PROMISE",
+      "classification": "REQUIRES_MORE_CONSUMERS"
+    },
+    {
+      "surface": "V2X runtime policy",
+      "current": "ofu-v2x01-runtime-contracts-4",
+      "policy": "IMPLEMENTATION_POLICY_NOT_PROTOCOL",
+      "classification": "KEEP_PRIVATE_FOR_NOW"
+    },
+    {
+      "surface": "legacy portable save",
+      "current": "schema 1 / ofu-canonical-v1",
+      "policy": "LEGACY_EXACT_IMPORT_ONLY_NOT_FUTURE_STANDARD",
+      "classification": "KEEP_PRIVATE_FOR_NOW"
+    }
+  ],
+  "rejection_taxonomy": {
+    "normative_rule": "Conforming implementations must agree on ACCEPT versus REJECT for normative inputs. Current JavaScript exception text is informative and is not frozen as a cross-language ABI.",
+    "classes": [
+      {
+        "id": "REJECT_DOMAIN_OR_TYPE",
+        "applies_to": [
+          "P2"
+        ],
+        "examples": [
+          "unsupported value type",
+          "non-canonical container/live-value boundary"
+        ]
+      },
+      {
+        "id": "REJECT_RANGE_OR_OVERFLOW",
+        "applies_to": [
+          "P2",
+          "P4"
+        ],
+        "examples": [
+          "u64/i64 range",
+          "varint overflow",
+          "time micros range",
+          "numeric overflow"
+        ]
+      },
+      {
+        "id": "REJECT_NON_MINIMAL_OR_ALIAS",
+        "applies_to": [
+          "P2"
+        ],
+        "examples": [
+          "non-minimal ULEB",
+          "even signed alias",
+          "duplicate normalized map key",
+          "non-strict map-key ordering"
+        ]
+      },
+      {
+        "id": "REJECT_TRUNCATED_OR_TRAILING",
+        "applies_to": [
+          "P2"
+        ],
+        "examples": [
+          "truncated canonical/address data",
+          "trailing bytes"
+        ]
+      },
+      {
+        "id": "REJECT_TEXT_PROFILE",
+        "applies_to": [
+          "P2"
+        ],
+        "examples": [
+          "invalid UTF-8",
+          "malformed UTF-16 live input",
+          "non-NFC wire text",
+          "code point outside frozen repertoire"
+        ]
+      },
+      {
+        "id": "REJECT_UNKNOWN_VERSION_TAG_OR_FIELD",
+        "applies_to": [
+          "P2",
+          "P4"
+        ],
+        "examples": [
+          "unknown CBV/address tag",
+          "unsupported version",
+          "unknown/missing exact-schema field",
+          "unsupported temporal/archive/checkpoint schema"
+        ]
+      },
+      {
+        "id": "REJECT_RESOURCE_LIMIT",
+        "applies_to": [
+          "P2",
+          "P4"
+        ],
+        "examples": [
+          "bytes/items/nodes/depth/address/event-tail bounds"
+        ]
+      },
+      {
+        "id": "REJECT_IDENTITY_OR_LINEAGE_MISMATCH",
+        "applies_to": [
+          "P4"
+        ],
+        "examples": [
+          "event/checkpoint/archive universe or lineage mismatch"
+        ]
+      },
+      {
+        "id": "REJECT_ORDER_OR_FRONTIER",
+        "applies_to": [
+          "P4"
+        ],
+        "examples": [
+          "live event does not advance frontier",
+          "archive/checkpoint suffix out of order"
+        ]
+      },
+      {
+        "id": "REJECT_TRANSITION_MISMATCH",
+        "applies_to": [
+          "P4"
+        ],
+        "examples": [
+          "missing/mismatched exact transition descriptor or reducer family"
+        ]
+      },
+      {
+        "id": "REJECT_INTEGRITY_OR_PRECONDITION",
+        "applies_to": [
+          "P4"
+        ],
+        "examples": [
+          "event/checkpoint/archive digest mismatch",
+          "new-event precondition failure"
+        ]
+      }
+    ],
+    "deferred_cross_language_codes": "DRAFT_ONLY"
+  },
+  "version_negotiation": {
+    "classification": "DRAFT_ONLY",
+    "frozen_fact": "P2/P4 current contracts use explicit exact identifiers and fail closed on unsupported versions; P4 transition compatibility supports exact only.",
+    "not_standardized": [
+      "capability handshake",
+      "version range negotiation",
+      "downgrade negotiation",
+      "migration negotiation",
+      "extension negotiation"
+    ],
+    "rule": "No negotiation protocol is invented by IND-GOV-A."
+  },
+  "extension_namespace_policy": {
+    "classification": "DRAFT_ONLY",
+    "frozen_fact": "Existing core domain-separation tags and protocol identifiers are semantically bound where named by P2/P4.",
+    "not_frozen": "PX owner prefixes, claim prefixes, registry allocation process and public extension negotiation.",
+    "safety_rule": "An extension must not reuse a core semantic identifier to claim incompatible meaning and must not acquire canonical authority solely through registry presence.",
+    "change_control_owner": "UNASSIGNED_FOR_PUBLIC_STANDARD_PENDING_G0A_AND_EXTERNAL_CONSUMER_EVIDENCE"
+  },
+  "deprecation_and_evolution": {
+    "ready_rules": [
+      "No silent semantic reinterpretation under an existing frozen identifier.",
+      "Canonical-output-changing P2 evolution requires explicit protocol/profile/manifest evolution so Universe Identity changes where required.",
+      "P4 persisted interpretation remains bound to exact transition descriptor; unsupported/mismatched semantics fail closed.",
+      "Presentation/runtime-only changes must not manufacture new canonical identity."
+    ],
+    "deferred_rules": [
+      "Cross-version migration negotiation",
+      "public deprecation grace periods",
+      "extension registry lifecycle",
+      "generic persistence migration ABI"
+    ]
+  },
+  "adjudication_items": [
+    {
+      "id": "ADJ-001-LEGACY-SAVE-NAMING-AND-MODEL",
+      "conflict": "src/persistence/save.js uses generatorManifestHash and ofu-canonical-v1 JSON-era event semantics while P2 frozen terminology is semanticManifestHash / OFU-CBV-1 and P4 owns canonical history/archive.",
+      "disposition": "PRESERVE_AS_LEGACY_EVIDENCE_DO_NOT_STANDARDIZE",
+      "owner_needed": "future persistence/migration lane after relevant gates"
+    },
+    {
+      "id": "ADJ-002-P4-ARCHIVE-PUBLIC-SURFACE",
+      "conflict": "P4 archive v2 semantics are frozen internally, but no evidence yet proves that its current JS API/container exposure should become the generic public persistence API.",
+      "disposition": "HARVEST_INTEGRITY_AND_AUTHORITY_INVARIANTS_ONLY",
+      "owner_needed": "persistence architecture + G1/G2 durability program"
+    },
+    {
+      "id": "ADJ-003-PX-AUTHORITY-VOCABULARY",
+      "conflict": "Current PX authority/evidence labels enforce useful non-promotion rules, but their exact record schema and labels are product/governance vocabulary rather than proven cross-implementation protocol.",
+      "disposition": "DRAFT_ONLY_KEEP_AUTHORITY_BOUNDARY_NOT_WIRE_SHAPE",
+      "owner_needed": "product contracts / Quality Observatory / later standardization gate"
+    },
+    {
+      "id": "ADJ-004-CROSS-SCALE-SHAPE",
+      "conflict": "Architecture reserves REFINE/PROJECT/RECONCILE but current implementation assumes specific spatial/matter/observable structures.",
+      "disposition": "DO_NOT_FREEZE_OPERATION_PAYLOADS",
+      "owner_needed": "future multi-domain consumers"
+    }
+  ],
+  "source_to_spec_summary": {
+    "p2": "All READY_TO_SPECIFY P2 entries trace to docs/P2_PROTOCOL.md plus src/kernel/p2-* and independent oracle/golden corpus evidence.",
+    "p4": "Only time/event/order/lineage/frontier/transition-binding/checkpoint-compaction/archive-integrity invariants are harvested; JavaScript callback/reducer/API layout is excluded.",
+    "excluded": "PX query/provider, runtime policy, generic persistence/provider API, legacy P1 save format and concrete multiscale payloads are explicitly non-standardized."
+  },
+  "exit_gate": {
+    "statement": "A second implementation can implement the READY_TO_SPECIFY slice from this index without copying incidental JavaScript object/API shapes; every broader surface is explicitly classified as non-frozen.",
+    "status": "MET_FOR_IND_GOV_A_LANE_PENDING_IND_CONF_A_IND_BRIDGE_A_AND_G0A_AUDIT",
+    "next_gate": "G0A_MINIMUM_NORMATIVE_SLICE"
+  }
+}
