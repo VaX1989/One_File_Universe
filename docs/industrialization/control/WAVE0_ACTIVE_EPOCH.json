@@ -1,0 +1,113 @@
+{
+  "schema": "ofu.post-m0.wave0.active-epoch.v1",
+  "authority": "PLANNING_METADATA_ONLY",
+  "prompt_id": "CTRL-WAVE0",
+  "epoch_id": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "status": "ACTIVE_CONTROL_EPOCH",
+  "created_date": "2026-09-18",
+  "master": {
+    "schema_version": 4,
+    "pr": 287,
+    "branch": "planning/post-m0-parallel-development-prompt-master-2026-09-17",
+    "head_sha": "c2cab6d6e914b918432432fdc69825e0a1000509",
+    "head_tree": "bfba77ff4def48ba54fb1084240821be3f8f3dc9",
+    "path": "docs/frontier/prompts/OFU_POST_M0_PARALLEL_DEVELOPMENT_PROMPT_MASTER_2026-09-17.json",
+    "authority": "EXECUTION_ORCHESTRATION_PLANNING_ONLY"
+  },
+  "source_prompt_refs": [
+    {
+      "source": "PR286_REGISTRY",
+      "prompt_id": "CTRL-IW0-EPOCH",
+      "ref": "3d28ec0720f611278b7717da02713c9eda96e642",
+      "path": "docs/frontier/OFU_PARALLEL_DEVELOPMENT_PROMPT_REGISTRY_2026-09-17.yaml"
+    },
+    {
+      "source": "PR287_V3_MASTER",
+      "prompt_id": "CTRL-WAVE0",
+      "ref": "6494c3a43596c2d16c43237c052d404d5b1a7e74",
+      "path": "docs/frontier/prompts/OFU_POST_M0_PARALLEL_DEVELOPMENT_PROMPT_MASTER_2026-09-17.json"
+    }
+  ],
+  "frozen_base": {
+    "branch": "experiment/spatial-continuum-r6-causal-universe-2026-09-14",
+    "sha": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+    "tree": "3704247247940fa8c5f08291cd80ec9e24e7d49d",
+    "classification": "EXACT_VERIFIED_ACTIVE_R6_POST_M0",
+    "m0_gate": "M0_HISTORICAL",
+    "m0_convergence_pr": 276,
+    "m0_certified_candidate": "5a8774826dd5514b97f649669ba06dfaba9b91ff"
+  },
+  "control": {
+    "branch": "integration/post-m0-dual-track-wave0-2026-09-17",
+    "branch_parent_sha": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+    "branch_parent_tree": "3704247247940fa8c5f08291cd80ec9e24e7d49d",
+    "head_binding": "EXTERNALLY_BOUND_BY_DRAFT_CONTROL_PR",
+    "pr_binding": "EXTERNALLY_BOUND_BY_DRAFT_CONTROL_PR",
+    "implementation_writer_slots": 0
+  },
+  "ownership": {
+    "path": "docs/industrialization/control/WAVE0_OWNERSHIP.json",
+    "blob_sha": "a049532deeb982905e2ed5acbaab71d72445b29d",
+    "ownership_version": "ofu.post-m0.wave0.ownership.v1"
+  },
+  "dependencies": {
+    "M0_HISTORICAL": {
+      "status": "PASS",
+      "sha": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+      "tree": "3704247247940fa8c5f08291cd80ec9e24e7d49d"
+    },
+    "planning_master_v4": {
+      "status": "PASS",
+      "sha": "c2cab6d6e914b918432432fdc69825e0a1000509"
+    }
+  },
+  "gates": {
+    "G_PRODUCT_CONTRACTS": "OPEN_REQUIRES_PROD-W1-CONTRACTS",
+    "G0A_MINIMUM_NORMATIVE_SLICE": "OPEN_REQUIRES_IND-GOV-A_IND-CONF-A_IND-BRIDGE-A_GATE-G0A-AUDIT",
+    "G0B_EXTERNAL_CONSUMER_SEAM_PROOF": "BLOCKED_BEHIND_G0A_AND_JS_HEADLESS_EXTERNAL_CONSUMER",
+    "G1_MINIMUM_PLATFORM_PROOF": "BLOCKED_BEHIND_G0B_NATIVE_CABI_AND_AUDIT",
+    "G1_PASS_CONTINUE": "MANUAL_OUTCOME_NOT_REACHED"
+  },
+  "runnable_queue": {
+    "writers": [
+      "PROD-W1-CONTRACTS",
+      "QOBS-CROSS-PROGRAM",
+      "IND-GOV-A",
+      "IND-CONF-A",
+      "IND-LIC-A",
+      "IND-BRIDGE-A"
+    ],
+    "readonly_audits": [
+      "ARCH-PERSIST",
+      "ARCH-PROVIDER",
+      "ARCH-RUNTIME",
+      "ARCH-UE",
+      "ARCH-WASM",
+      "AUDIT-ABI",
+      "AUDIT-AUTHORITY",
+      "AUDIT-DETERMINISM",
+      "AUDIT-PERFORMANCE",
+      "AUDIT-PERSISTENCE",
+      "AUDIT-PORTABILITY",
+      "AUDIT-PRODUCT",
+      "AUDIT-SCIENCE",
+      "AUDIT-SECURITY",
+      "IND-SEC-A"
+    ],
+    "blocked_count_from_master": 74,
+    "rule": "Only listed READY lanes may start; every child writer branches from this control PR's externally bound exact head after activation and targets this control branch."
+  },
+  "forbidden_actions": [
+    "merge #274",
+    "merge #275",
+    "merge #287",
+    "mutate main",
+    "tag",
+    "release",
+    "start R7",
+    "control owner implementing child lanes",
+    "force-push",
+    "destructive reset"
+  ],
+  "next_control_action": "Monitor child lane handoffs/PR heads and invoke gate audits/convergence only when declared prerequisites are evidence-complete."
+}
