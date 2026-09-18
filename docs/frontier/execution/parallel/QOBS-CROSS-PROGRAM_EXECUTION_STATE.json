@@ -1,0 +1,68 @@
+{
+  "prompt_id": "QOBS-CROSS-PROGRAM",
+  "master_schema_version": 4,
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "hypothesis": "The existing R6 Quality Observatory can be extended additively into cross-program falsification infrastructure by gating every new metric behind explicit capability presence, preserving exact replay witnesses and evidence classification, while never acquiring scientific, semantic, product-renderer, native-runtime, or release authority.",
+  "failure_fingerprint": null,
+  "failure_count": 0,
+  "alternate_strategy": "If a desired metric requires an unavailable or out-of-scope API, record it as staged evidence behind explicit capability presence or emit an INTEGRATION_PATCH_REQUEST rather than inventing an interface or mutating another lane's surface.",
+  "last_action": "Reauthenticated repository; resolved all QOBS-CROSS-PROGRAM source prompt refs; verified active control epoch/head/tree/ownership; confirmed prior W0 Observatory artifacts are already present in the active control head; created the lane branch from the exact control head.",
+  "next_action": "Implement additive cross-program metric analysis and schemas on the Quality Observatory surface, with deterministic witness-preserving tests and capability-gated platform feasibility metrics.",
+  "dependencies": {
+    "M0_HISTORICAL": {
+      "status": "PASS",
+      "sha": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+      "tree": "3704247247940fa8c5f08291cd80ec9e24e7d49d"
+    },
+    "CTRL_WAVE0": {
+      "status": "PASS_ACTIVE",
+      "pr": 290,
+      "sha": "fa88f7cec101a52d07916a0fdd3927c482a6f188",
+      "tree": "784e12501a7e0ba9e281787513bddbb6eed1c6bf"
+    },
+    "MASTER_V4": {
+      "status": "PASS",
+      "pr": 287,
+      "sha": "c2cab6d6e914b918432432fdc69825e0a1000509"
+    },
+    "SOURCE_PR286": {
+      "sha": "3d28ec0720f611278b7717da02713c9eda96e642",
+      "prompt_id": "PRODUCT-QUALITY"
+    },
+    "SOURCE_PR287_V3": {
+      "sha": "6494c3a43596c2d16c43237c052d404d5b1a7e74",
+      "prompt_id": "QOBS-CROSS-PROGRAM"
+    },
+    "SOURCE_PR275": {
+      "sha": "86e19cae0e8c393661d6696617c5a5e49eb78983",
+      "prompt_id": "R6-W1-QOBS"
+    }
+  },
+  "evidence_debt": [
+    "No live post-G0A/G0B middleware interfaces are assumed; platform metrics must remain capability-gated synthetic/test infrastructure until those capabilities are explicitly present.",
+    "Physical GPU/device evidence remains external release-grade debt and is not promoted by this lane."
+  ],
+  "branch": "work/post-m0/qobs-cross-program-ofu-post-m0-dual-track-wave0-2026-09-18-61f43071",
+  "pr": null,
+  "completion_sha": null,
+  "completion_tree": null,
+  "ownership": {
+    "version": "ofu.post-m0.wave0.ownership.v1",
+    "semantic_surface": "QUALITY_OBSERVATORY",
+    "allowed": [
+      "Quality Observatory shared surface",
+      "additive metric schemas",
+      "deterministic witness/report tooling",
+      "docs/frontier/execution/parallel/QOBS-CROSS-PROGRAM_EXECUTION_STATE.json"
+    ],
+    "forbidden": [
+      "canonical science",
+      "release policy",
+      "product renderer",
+      "native semantic authority",
+      "control-plane files",
+      "package.json",
+      ".github/workflows/**"
+    ]
+  }
+}
