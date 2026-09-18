@@ -1,0 +1,65 @@
+{
+  "schema": "ofu.post-m0.terminal-handoff.v1",
+  "prompt_id": "IND-GOV-A",
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "disposition": "READY_FOR_CONTROL_CONVERGENCE",
+  "base_binding": {
+    "branch": "integration/post-m0-dual-track-wave0-2026-09-17",
+    "sha": "fa88f7cec101a52d07916a0fdd3927c482a6f188",
+    "tree": "784e12501a7e0ba9e281787513bddbb6eed1c6bf"
+  },
+  "lane_branch": "work/post-m0/ind-gov-a-ofu-post-m0-dual-track-wave0-2026-09-18-61f43071",
+  "pr": "EXTERNALLY_BOUND_BY_DRAFT_PR",
+  "head_sha": "EXTERNALLY_BOUND_BY_DRAFT_PR_HEAD",
+  "head_tree": "EXTERNALLY_BOUND_BY_DRAFT_PR_HEAD_TREE",
+  "mission_result": {
+    "summary": "Harvested the minimum implementation-independent specification slice from proven P2/P4 invariants without changing frozen semantics or promoting runtime/product policy into protocol authority.",
+    "exit_gate": "MET_FOR_IND_GOV_A",
+    "g0a_gate": "NOT_YET_PASSED",
+    "ready_to_specify_count": 12,
+    "nonstandardized_surface_count": 8,
+    "adjudication_item_count": 4
+  },
+  "deliverables": [
+    "docs/industrialization/iw0/ind-gov/NORMATIVE_PROTOCOL_INDEX.json",
+    "docs/industrialization/iw0/ind-gov/README.md",
+    "docs/industrialization/iw0/ind-gov/ADRS.md",
+    "docs/frontier/execution/parallel/IND-GOV-A_EXECUTION_STATE.json",
+    "docs/industrialization/iw0/ind-gov/TERMINAL_HANDOFF.json"
+  ],
+  "key_decisions": [
+    "Freeze bytes and behavioral invariants before APIs.",
+    "P2 byte/identity substrate is ready to specify independently of JavaScript.",
+    "Only the narrow proven P4 time/order/lineage/transition/checkpoint/archive invariants are harvested.",
+    "Do not freeze PX provider/query record shapes, runtime policies, generic persistence/provider APIs, legacy P1 save JSON, concrete multiscale payloads, extension-registry mechanics or current evidence-label vocabulary.",
+    "Cross-language conformance should freeze accept/reject outcomes before freezing error-code ABI.",
+    "Current version evolution remains exact/fail-closed; no negotiation mechanism is invented."
+  ],
+  "unresolved_by_design": [
+    "Language-independent conformance vectors are owned by IND-CONF-A.",
+    "External/headless consumer seam is owned by IND-BRIDGE-A.",
+    "Generic persistence API and durability are gated downstream.",
+    "Public extension namespace governance needs consumer evidence.",
+    "Multiscale operation payloads need multiple domain/product consumers.",
+    "GATE-G0A-AUDIT must adjudicate the combined sibling outputs."
+  ],
+  "integration_patch_requests": [],
+  "prohibited_actions_confirmed": [
+    "main not modified",
+    "PR #274 not merged or modified by this lane",
+    "PR #275 not merged or modified by this lane",
+    "PR #287 not merged or modified by this lane",
+    "no tags",
+    "no releases",
+    "no R7",
+    "no child-lane implementation"
+  ],
+  "validation": {
+    "source_blob_pins": "RECORDED_IN_NORMATIVE_PROTOCOL_INDEX",
+    "executable_source_changed": false,
+    "local_test_execution": "NOT_REQUIRED_FOR_DOCS_ONLY_DIFF_AND_NOT_AVAILABLE_VIA_CONTAINER_NETWORK",
+    "final_json_parse": "PENDING_POST_WRITE_REFETCH",
+    "final_diff_scope": "PENDING_POST_WRITE_COMPARE"
+  },
+  "next_control_action": "Review/merge this Draft PR into the Wave-0 control branch only after control-plane convergence policy permits; then combine IND-GOV-A with IND-CONF-A and IND-BRIDGE-A for GATE-G0A-AUDIT."
+}
