@@ -6,8 +6,8 @@
   "failure_fingerprint": null,
   "failure_count": 0,
   "alternate_strategy": "If a desired metric requires an unavailable or out-of-scope API, record it as staged evidence behind explicit capability presence or emit an INTEGRATION_PATCH_REQUEST rather than inventing an interface or mutating another lane's surface.",
-  "last_action": "Reauthenticated repository; resolved all QOBS-CROSS-PROGRAM source prompt refs; verified active control epoch/head/tree/ownership; confirmed prior W0 Observatory artifacts are already present in the active control head; created the lane branch from the exact control head.",
-  "next_action": "Implement additive cross-program metric analysis and schemas on the Quality Observatory surface, with deterministic witness-preserving tests and capability-gated platform feasibility metrics.",
+  "last_action": "Implemented and falsified capability-gated cross-program Quality Observatory evidence; recorded deterministic fixture evidence; emitted convergence-owned central-test INTEGRATION_PATCH_REQUEST; opened Draft PR #292 against the exact active control branch.",
+  "next_action": "CTRL-WAVE0/CTRL-CONVERGENCE should review the evidence-complete Draft PR, apply or decline the optional central-test integration patch, and integrate only if cumulative convergence checks remain green.",
   "dependencies": {
     "M0_HISTORICAL": {
       "status": "PASS",
@@ -39,13 +39,14 @@
     }
   },
   "evidence_debt": [
-    "No live post-G0A/G0B middleware interfaces are assumed; platform metrics must remain capability-gated synthetic/test infrastructure until those capabilities are explicitly present.",
+    "No live post-G0A/G0B middleware interfaces are assumed; platform metrics remain capability-gated until those capabilities are explicitly present.",
+    "The execution container could not clone GitHub over the network; focused Node verification used connector-fetched source material and full-repository central registration is delegated to convergence.",
     "Physical GPU/device evidence remains external release-grade debt and is not promoted by this lane."
   ],
   "branch": "work/post-m0/qobs-cross-program-ofu-post-m0-dual-track-wave0-2026-09-18-61f43071",
-  "pr": null,
-  "completion_sha": null,
-  "completion_tree": null,
+  "pr": 292,
+  "completion_sha": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD",
+  "completion_tree": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD_TREE",
   "ownership": {
     "version": "ofu.post-m0.wave0.ownership.v1",
     "semantic_surface": "QUALITY_OBSERVATORY",
@@ -64,5 +65,13 @@
       "package.json",
       ".github/workflows/**"
     ]
-  }
+  },
+  "evidence_refs": [
+    "docs/experiments/spatial-continuum/evidence/qobs-cross-program/cross-program-fixture-results.json",
+    "docs/experiments/spatial-continuum/evidence/qobs-cross-program/README.md",
+    "docs/experiments/spatial-continuum/evidence/qobs-cross-program/INTEGRATION_PATCH_REQUEST.json",
+    "tests/spatial-continuum/qobs-cross-program.mjs",
+    "tools/spatial-continuum/quality-observatory/cross-program.mjs"
+  ],
+  "disposition": "READY_FOR_CONTROL_CONVERGENCE"
 }
