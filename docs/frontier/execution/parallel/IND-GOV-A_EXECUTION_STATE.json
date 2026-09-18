@@ -1,0 +1,113 @@
+{
+  "prompt_id": "IND-GOV-A",
+  "master_schema_version": 4,
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "status": "READY_FOR_CONTROL_CONVERGENCE",
+  "mode": "WRITE",
+  "semantic_surface": "INDUSTRIALIZATION_SPEC",
+  "hypothesis": "The smallest safe implementation-independent industrialization slice is P2 deterministic bytes/identity plus only selected proven P4 temporal invariants; runtime, generic persistence/provider APIs, provenance wire shapes and multiscale payloads must remain unfrozen.",
+  "failure_fingerprint": null,
+  "failure_count": 0,
+  "alternate_strategy": "If G0A audit finds a candidate requirement coupled to JavaScript or product/runtime policy, demote that item to DRAFT_ONLY or REQUIRES_MORE_CONSUMERS rather than broadening normative scope.",
+  "activation": {
+    "control_branch": "integration/post-m0-dual-track-wave0-2026-09-17",
+    "exact_control_head": "fa88f7cec101a52d07916a0fdd3927c482a6f188",
+    "exact_control_tree": "784e12501a7e0ba9e281787513bddbb6eed1c6bf",
+    "frozen_r6_base_sha": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+    "frozen_r6_base_tree": "3704247247940fa8c5f08291cd80ec9e24e7d49d",
+    "master_v4_sha": "c2cab6d6e914b918432432fdc69825e0a1000509"
+  },
+  "source_prompt_refs": [
+    {
+      "source": "PR286_REGISTRY",
+      "source_prompt_id": "IND-GOV",
+      "ref": "3d28ec0720f611278b7717da02713c9eda96e642",
+      "path": "docs/frontier/OFU_PARALLEL_DEVELOPMENT_PROMPT_REGISTRY_2026-09-17.yaml"
+    },
+    {
+      "source": "PR287_V3_MASTER",
+      "source_prompt_id": "IND-GOV-A",
+      "ref": "6494c3a43596c2d16c43237c052d404d5b1a7e74",
+      "path": "docs/frontier/prompts/OFU_POST_M0_PARALLEL_DEVELOPMENT_PROMPT_MASTER_2026-09-17.json"
+    }
+  ],
+  "dependencies": {
+    "M0_HISTORICAL": {
+      "status": "PASS",
+      "sha": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+      "tree": "3704247247940fa8c5f08291cd80ec9e24e7d49d"
+    },
+    "CTRL_WAVE0": {
+      "status": "PASS_ACTIVE",
+      "pr": 290,
+      "head": "fa88f7cec101a52d07916a0fdd3927c482a6f188"
+    },
+    "G0A_MINIMUM_NORMATIVE_SLICE": {
+      "status": "NOT_PASSED_REQUIRES_SIBLINGS_AND_AUDIT"
+    }
+  },
+  "ownership": {
+    "allowed": [
+      "docs/industrialization/iw0/ind-gov/**",
+      "docs/frontier/execution/parallel/IND-GOV-A_EXECUTION_STATE.json"
+    ],
+    "protected_not_modified": [
+      "production P2/P4 semantics",
+      "product renderer",
+      "runtime implementation",
+      "release metadata",
+      "docs/industrialization/control/**",
+      "main"
+    ],
+    "integration_patch_requests": []
+  },
+  "completed_tasks": [
+    "reauthenticated repository and verified live R6/control-plane state",
+    "resolved IND-GOV legacy alias and loaded both immutable source prompt bodies",
+    "loaded inherited execution/ownership/state/handoff contracts",
+    "verified no existing IND-GOV-A branch or PR before activation",
+    "branched from the exact externally-bound Wave-0 control head",
+    "read P2/P4 owning specifications, production implementations, vectors/oracle/tests and integration registry",
+    "read PX/runtime/legacy persistence/multiscale surfaces for non-freeze classification",
+    "materialized machine-auditable normative protocol index",
+    "materialized human-readable minimum-slice rationale and explicit non-freezes",
+    "materialized industrialization ADR set"
+  ],
+  "outputs": [
+    "docs/industrialization/iw0/ind-gov/NORMATIVE_PROTOCOL_INDEX.json",
+    "docs/industrialization/iw0/ind-gov/README.md",
+    "docs/industrialization/iw0/ind-gov/ADRS.md",
+    "docs/frontier/execution/parallel/IND-GOV-A_EXECUTION_STATE.json",
+    "docs/industrialization/iw0/ind-gov/TERMINAL_HANDOFF.json"
+  ],
+  "normative_summary": {
+    "ready_to_specify_count": 12,
+    "ready_to_specify_families": [
+      "P2 deterministic byte/identity substrate",
+      "selected P4 temporal/order/lineage/transition/checkpoint/archive invariants"
+    ],
+    "explicitly_nonstandardized_count": 8,
+    "rejection_model": "ACCEPT_REJECT_CLASSES_NORMATIVE_EXCEPTION_STRINGS_NON_NORMATIVE",
+    "compatibility_model": "EXACT_FAIL_CLOSED_NO_NEGOTIATION_INVENTED",
+    "adjudication_items": 4
+  },
+  "verification": {
+    "executable_test_suite": "NOT_EXECUTED_LOCAL_ENVIRONMENT_HAS_NO_GITHUB_DNS_AND_LANE_DOES_NOT_MODIFY_EXECUTABLE_SOURCE",
+    "static_source_evidence": "PASS_EXACT_BLOB_SHA_REFERENCES_CAPTURED",
+    "machine_index_json_parse": "PENDING_FINAL_REFETCH",
+    "lane_diff_scope": "PENDING_FINAL_COMPARE",
+    "production_semantic_mutation": "NONE_INTENDED_PENDING_FINAL_COMPARE"
+  },
+  "evidence_debt": [
+    "IND-CONF-A must provide frozen language-independent positive/malformed/rejection corpus for G0A.",
+    "IND-BRIDGE-A must establish the smallest host-neutral external consumer seam for G0A.",
+    "GATE-G0A-AUDIT must independently adjudicate the combined normative slice.",
+    "No cross-language numeric error-code ABI is frozen by this lane.",
+    "No version/capability negotiation protocol is frozen by this lane."
+  ],
+  "last_action": "Recorded industrialization ADRs after producing the normative protocol index and non-freeze map.",
+  "next_action": "Finalize terminal handoff, validate exact branch diff/JSON, open Draft PR against Wave-0 control branch, and hand off to control convergence without self-merging.",
+  "completion_sha": "EXTERNALLY_BOUND_BY_DRAFT_PR_HEAD",
+  "completion_tree": "EXTERNALLY_BOUND_BY_DRAFT_PR_HEAD_TREE",
+  "disposition": "READY_FOR_CONTROL_CONVERGENCE"
+}
