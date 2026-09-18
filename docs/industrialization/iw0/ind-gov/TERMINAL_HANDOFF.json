@@ -58,8 +58,9 @@
     "source_blob_pins": "RECORDED_IN_NORMATIVE_PROTOCOL_INDEX",
     "executable_source_changed": false,
     "local_test_execution": "NOT_REQUIRED_FOR_DOCS_ONLY_DIFF_AND_NOT_AVAILABLE_VIA_CONTAINER_NETWORK",
-    "final_json_parse": "PENDING_POST_WRITE_REFETCH",
-    "final_diff_scope": "PENDING_POST_WRITE_COMPARE"
+    "final_json_parse": "PASS_POST_WRITE_REFETCH",
+    "final_diff_scope": "PASS_5_ADDED_FILES_ONLY_ALL_WITHIN_OWNED_PATHS_AT_PRE_PR_SEAL",
+    "production_semantic_mutation": "NONE_COMPARE_CONFIRMED"
   },
   "next_control_action": "Review/merge this Draft PR into the Wave-0 control branch only after control-plane convergence policy permits; then combine IND-GOV-A with IND-CONF-A and IND-BRIDGE-A for GATE-G0A-AUDIT."
 }
