@@ -1,18 +1,19 @@
 {
   "prompt_id": "IND-CONF-A",
   "planning_epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
-  "status": "EXECUTING",
+  "status": "EXTERNAL_EVIDENCE_LIMITATION",
+  "terminal_state": "EXTERNAL_EVIDENCE_LIMITATION",
   "base_sha": "fa88f7cec101a52d07916a0fdd3927c482a6f188",
   "base_tree": "784e12501a7e0ba9e281787513bddbb6eed1c6bf",
   "branch": "work/post-m0/ind-conf-a-ofu-post-m0-dual-track-wave0-2026-09-18-61f43071",
-  "pr": null,
+  "pr": 296,
   "hypothesis": "A small frozen P2-first corpus plus a deliberately narrow explicit-P4 slice can provide byte/digest and rejection/behavior expectations consumable by JS, Python and future native implementations without changing production semantics or making source similarity the oracle.",
-  "current_hypothesis": "Freeze exact P2 bytes/digests and language-independent rejection classes; freeze only P4 lineage/event/order/transition digests plus already-explicit temporal behavioral invariants.",
-  "failure_fingerprint": null,
-  "failure_count": 0,
-  "alternate_strategy": "If any P4 candidate invariant cannot be independently traced to the explicit P4 contract/tests, remove it from the frozen slice rather than widening temporal authority; if current runtime lacks structured error codes, freeze vector-level classes while keeping exception text non-normative.",
-  "last_action": "Created the lane from the exact control head and materialized frozen P2/P4 vectors, manifest/digest, JS authority runner, independent Python oracle and combined direct test.",
-  "next_action": "Open/update the Draft lane PR, execute all directly available corpus and upstream P2/P4 tests, record exact evidence, then publish an immutable terminal handoff.",
+  "current_hypothesis": "SUPPORTED_BY_MATERIALIZED_CORPUS_AND_UPSTREAM_EXACT_HEAD_REGRESSION_EVIDENCE",
+  "failure_fingerprint": "DIRECT_NEW_CORPUS_RUNNERS_NOT_EXECUTABLE_WITH_AVAILABLE_GITHUB_CONNECTOR_WITHOUT_OUT_OF_SCOPE_SHARED_CI_OR_PACKAGE_CHANGES",
+  "failure_count": 1,
+  "alternate_strategy": "Preserve the direct runners and exact commands as lane-owned artifacts. Require a capable checkout or control-plane audit to execute them. Do not modify package.json or shared workflows merely to manufacture evidence.",
+  "last_action": "Reauthenticated, revalidated the active epoch/ownership, confirmed all PR-head upstream P2/P4/foundation/baseline workflows green, and classified the remaining direct-runner execution debt as an external evidence limitation.",
+  "next_action": "Control/G0A audit must check out completion_sha and execute the three direct corpus commands. On PASS, supersede this evidence limitation and advance IND-CONF-A to control convergence; on failure, reopen this same lane/PR with the observed fingerprint.",
   "dependencies": {
     "M0_HISTORICAL": {
       "status": "PASS",
@@ -23,7 +24,7 @@
       "status": "PASS",
       "sha": "c2cab6d6e914b918432432fdc69825e0a1000509"
     },
-    "control_head": {
+    "control_head_at_lane_start": {
       "status": "PASS",
       "sha": "fa88f7cec101a52d07916a0fdd3927c482a6f188",
       "tree": "784e12501a7e0ba9e281787513bddbb6eed1c6bf"
@@ -44,8 +45,10 @@
     "tests/industrialization/ind-conf/**",
     "tools/industrialization/ind-conf/**",
     "docs/industrialization/iw0/ind-conf/**",
-    "docs/frontier/execution/parallel/IND-CONF-A_EXECUTION_STATE.json"
+    "docs/frontier/execution/parallel/IND-CONF-A_EXECUTION_STATE.json",
+    "docs/industrialization/handoffs/IND-CONF-A.json"
   ],
+  "corpus_digest": "2b13e4c47c254e418543410806ec5aaed7650b60e2e653c75b602b9c0735b65b",
   "tests_run": [
     {
       "command": "node --check tools/industrialization/ind-conf/run-js-authority.mjs",
@@ -58,17 +61,56 @@
     {
       "command": "node --check tests/industrialization/ind-conf/conformance-corpus-tests.mjs",
       "status": "PASS_STATIC_LOCAL_STAGING"
+    },
+    {
+      "evidence": "GitHub Actions Foundation Integrity",
+      "run_id": 35388104976,
+      "status": "PASS",
+      "exact_head": "de0060fc2a0b6743b4ad6c6e2337bd80c6a8a612"
+    },
+    {
+      "evidence": "GitHub Actions P2 Conformance",
+      "run_id": 35388105022,
+      "status": "PASS",
+      "exact_head": "de0060fc2a0b6743b4ad6c6e2337bd80c6a8a612"
+    },
+    {
+      "evidence": "GitHub Actions P4 Conformance",
+      "run_id": 35388105055,
+      "status": "PASS",
+      "exact_head": "de0060fc2a0b6743b4ad6c6e2337bd80c6a8a612"
+    },
+    {
+      "evidence": "GitHub Actions P1-P4 Canonical Baseline",
+      "run_id": 35388105025,
+      "status": "PASS",
+      "exact_head": "de0060fc2a0b6743b4ad6c6e2337bd80c6a8a612"
     }
   ],
   "evidence_refs": [
     "conformance/iw0/manifest.json",
     "conformance/iw0/CORPUS.sha256",
-    "docs/industrialization/iw0/ind-conf/IND-CONF-A_CORPUS_SPEC.md"
+    "docs/industrialization/iw0/ind-conf/IND-CONF-A_CORPUS_SPEC.md",
+    "PR #296",
+    "workflow:35388104976",
+    "workflow:35388105022",
+    "workflow:35388105055",
+    "workflow:35388105025"
   ],
   "evidence_debt": [
-    "Execute the runners and upstream P2/P4 suites on the committed lane head."
+    "node tools/industrialization/ind-conf/run-js-authority.mjs",
+    "python3 tools/industrialization/ind-conf/run-python-oracle.py",
+    "node tests/industrialization/ind-conf/conformance-corpus-tests.mjs"
   ],
-  "external_evidence_debt": [],
-  "completion_sha": null,
-  "completion_tree": null
+  "external_evidence_debt": [
+    {
+      "limitation": "Available GitHub connector exposes repository mutation and workflow observation but no arbitrary command execution/workflow dispatch for lane-owned direct commands; container has no authenticated GitHub checkout/network path.",
+      "prohibited_workaround": "Do not edit package.json or shared workflows solely to force execution because those surfaces are outside IND-CONF-A ownership.",
+      "resolution": "Execute the committed direct commands from an exact checkout of completion_sha in a capable control/audit environment."
+    }
+  ],
+  "completion_sha": "de0060fc2a0b6743b4ad6c6e2337bd80c6a8a612",
+  "completion_tree": "52a60ada00c51554c27b4c78b8cfb71b64c3685c",
+  "forbidden_surfaces_touched": [],
+  "integration_patch_requests": []
 }
