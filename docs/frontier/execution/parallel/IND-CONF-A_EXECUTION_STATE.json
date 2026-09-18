@@ -1,0 +1,74 @@
+{
+  "prompt_id": "IND-CONF-A",
+  "planning_epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "status": "EXECUTING",
+  "base_sha": "fa88f7cec101a52d07916a0fdd3927c482a6f188",
+  "base_tree": "784e12501a7e0ba9e281787513bddbb6eed1c6bf",
+  "branch": "work/post-m0/ind-conf-a-ofu-post-m0-dual-track-wave0-2026-09-18-61f43071",
+  "pr": null,
+  "hypothesis": "A small frozen P2-first corpus plus a deliberately narrow explicit-P4 slice can provide byte/digest and rejection/behavior expectations consumable by JS, Python and future native implementations without changing production semantics or making source similarity the oracle.",
+  "current_hypothesis": "Freeze exact P2 bytes/digests and language-independent rejection classes; freeze only P4 lineage/event/order/transition digests plus already-explicit temporal behavioral invariants.",
+  "failure_fingerprint": null,
+  "failure_count": 0,
+  "alternate_strategy": "If any P4 candidate invariant cannot be independently traced to the explicit P4 contract/tests, remove it from the frozen slice rather than widening temporal authority; if current runtime lacks structured error codes, freeze vector-level classes while keeping exception text non-normative.",
+  "last_action": "Created the lane from the exact control head and materialized frozen P2/P4 vectors, manifest/digest, JS authority runner, independent Python oracle and combined direct test.",
+  "next_action": "Open/update the Draft lane PR, execute all directly available corpus and upstream P2/P4 tests, record exact evidence, then publish an immutable terminal handoff.",
+  "dependencies": {
+    "M0_HISTORICAL": {
+      "status": "PASS",
+      "sha": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+      "tree": "3704247247940fa8c5f08291cd80ec9e24e7d49d"
+    },
+    "planning_master_v4": {
+      "status": "PASS",
+      "sha": "c2cab6d6e914b918432432fdc69825e0a1000509"
+    },
+    "control_head": {
+      "status": "PASS",
+      "sha": "fa88f7cec101a52d07916a0fdd3927c482a6f188",
+      "tree": "784e12501a7e0ba9e281787513bddbb6eed1c6bf"
+    },
+    "ownership": {
+      "status": "PASS",
+      "version": "ofu.post-m0.wave0.ownership.v1",
+      "blob_sha": "a049532deeb982905e2ed5acbaab71d72445b29d"
+    }
+  },
+  "dependencies_resolved": [
+    "M0_HISTORICAL@61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+    "PR287_V4@c2cab6d6e914b918432432fdc69825e0a1000509",
+    "CTRL-WAVE0@fa88f7cec101a52d07916a0fdd3927c482a6f188"
+  ],
+  "write_scope": [
+    "conformance/iw0/**",
+    "tests/industrialization/ind-conf/**",
+    "tools/industrialization/ind-conf/**",
+    "docs/industrialization/iw0/ind-conf/**",
+    "docs/frontier/execution/parallel/IND-CONF-A_EXECUTION_STATE.json"
+  ],
+  "tests_run": [
+    {
+      "command": "node --check tools/industrialization/ind-conf/run-js-authority.mjs",
+      "status": "PASS_STATIC_LOCAL_STAGING"
+    },
+    {
+      "command": "python3 -m py_compile tools/industrialization/ind-conf/run-python-oracle.py",
+      "status": "PASS_STATIC_LOCAL_STAGING"
+    },
+    {
+      "command": "node --check tests/industrialization/ind-conf/conformance-corpus-tests.mjs",
+      "status": "PASS_STATIC_LOCAL_STAGING"
+    }
+  ],
+  "evidence_refs": [
+    "conformance/iw0/manifest.json",
+    "conformance/iw0/CORPUS.sha256",
+    "docs/industrialization/iw0/ind-conf/IND-CONF-A_CORPUS_SPEC.md"
+  ],
+  "evidence_debt": [
+    "Execute the runners and upstream P2/P4 suites on the committed lane head."
+  ],
+  "external_evidence_debt": [],
+  "completion_sha": null,
+  "completion_tree": null
+}

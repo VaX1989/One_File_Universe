@@ -1,0 +1,318 @@
+{
+  "behavioral_invariants": [
+    {
+      "expectation": "same_state_digest_for_permutations",
+      "id": "historical-permutation-invariant",
+      "operation": "replay"
+    },
+    {
+      "expectation": "duplicate_event_id_collapses",
+      "id": "historical-exact-event-dedup",
+      "operation": "sortEvents"
+    },
+    {
+      "expectation": "same_state_digest_as_full_replay",
+      "id": "checkpoint-suffix-equivalence",
+      "operation": "replayFromCheckpoint"
+    },
+    {
+      "expectation": "reexport_bytes_equal_original",
+      "id": "archive-roundtrip-byte-exact",
+      "operation": "exportArchive/importArchive"
+    },
+    {
+      "expectation": "reject",
+      "expected_rejection": "NON_CANONICAL_ORDER",
+      "id": "live-frontier-rejects-retroactive",
+      "operation": "commit"
+    },
+    {
+      "expectation": "duplicate_noop",
+      "id": "frontier-exact-retry-idempotent",
+      "operation": "commit"
+    },
+    {
+      "expectation": "reject",
+      "expected_rejection": "NON_CANONICAL_ORDER",
+      "id": "archive-reordered-tail-rejects",
+      "operation": "importArchive"
+    },
+    {
+      "expectation": "reject",
+      "expected_rejection": "DUPLICATE_EVENT",
+      "id": "archive-duplicate-tail-rejects",
+      "operation": "importArchive"
+    },
+    {
+      "expectation": "reject",
+      "expected_rejection": "AUTHORITY_MISMATCH",
+      "id": "checkpoint-forged-state-lineage-rejects",
+      "operation": "verifyCheckpoint"
+    },
+    {
+      "expectation": "reject",
+      "expected_rejection": "AUTHORITY_MISMATCH",
+      "id": "archive-baseline-mismatch-rejects",
+      "operation": "exportArchive"
+    },
+    {
+      "expectation": "reject",
+      "expected_rejection": "PRECONDITION_FAILED",
+      "id": "live-precondition-failure-rejects",
+      "operation": "commit"
+    }
+  ],
+  "entities": {
+    "A": "391c3620749d7383d36e361c2e24d274655c524a82669295623dc9b37e02d98a",
+    "B": "62eae136996fd1b2a84f9a562ab2a7622a30735cc46a454c9bba1c6360d2818b",
+    "C": "62a27c27b42de060935c817bc762128ac923c8216a528b6825032bf387b7d386"
+  },
+  "events": [
+    {
+      "descriptor": {
+        "causes": [],
+        "eventSchemaVersion": {
+          "$int": "1"
+        },
+        "lineageId": {
+          "$bytes": "2d3174dd1c1997a91c56de736596a1d8bfdb25f8907d9999688d4e0df1d18e24"
+        },
+        "operationKey": "b-name",
+        "payload": {
+          "field": "name",
+          "value": "Beta"
+        },
+        "preconditionStateDigest": null,
+        "targets": [
+          {
+            "$bytes": "62eae136996fd1b2a84f9a562ab2a7622a30735cc46a454c9bba1c6360d2818b"
+          }
+        ],
+        "temporalProtocolVersion": "ofu-p4-temporal-v1",
+        "time": {
+          "micros": {
+            "$int": "0"
+          },
+          "seconds": {
+            "$int": "12"
+          }
+        },
+        "type": "core.field.set",
+        "universeIdentity": {
+          "$bytes": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20"
+        },
+        "version": {
+          "$int": "1"
+        }
+      },
+      "expected_event_id": "732cfc1ab4b81b70aa1bbc6ad2ad7fac4085dcc485a955734ac3014c160d8e13",
+      "label": "e4"
+    },
+    {
+      "descriptor": {
+        "causes": [],
+        "eventSchemaVersion": {
+          "$int": "1"
+        },
+        "lineageId": {
+          "$bytes": "2d3174dd1c1997a91c56de736596a1d8bfdb25f8907d9999688d4e0df1d18e24"
+        },
+        "operationKey": "a-count",
+        "payload": {
+          "counter": "visits",
+          "delta": {
+            "$int": "2"
+          }
+        },
+        "preconditionStateDigest": null,
+        "targets": [
+          {
+            "$bytes": "391c3620749d7383d36e361c2e24d274655c524a82669295623dc9b37e02d98a"
+          }
+        ],
+        "temporalProtocolVersion": "ofu-p4-temporal-v1",
+        "time": {
+          "micros": {
+            "$int": "0"
+          },
+          "seconds": {
+            "$int": "10"
+          }
+        },
+        "type": "core.counter.add",
+        "universeIdentity": {
+          "$bytes": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20"
+        },
+        "version": {
+          "$int": "1"
+        }
+      },
+      "expected_event_id": "ab054e6fd18e3d224887d384c603a70b1ed236cf47f68ed1c1c0b010e4a9423e",
+      "label": "e2"
+    },
+    {
+      "descriptor": {
+        "causes": [],
+        "eventSchemaVersion": {
+          "$int": "1"
+        },
+        "lineageId": {
+          "$bytes": "2d3174dd1c1997a91c56de736596a1d8bfdb25f8907d9999688d4e0df1d18e24"
+        },
+        "operationKey": "a-name",
+        "payload": {
+          "field": "name",
+          "value": "Alpha"
+        },
+        "preconditionStateDigest": null,
+        "targets": [
+          {
+            "$bytes": "391c3620749d7383d36e361c2e24d274655c524a82669295623dc9b37e02d98a"
+          }
+        ],
+        "temporalProtocolVersion": "ofu-p4-temporal-v1",
+        "time": {
+          "micros": {
+            "$int": "0"
+          },
+          "seconds": {
+            "$int": "10"
+          }
+        },
+        "type": "core.field.set",
+        "universeIdentity": {
+          "$bytes": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20"
+        },
+        "version": {
+          "$int": "1"
+        }
+      },
+      "expected_event_id": "9bc8f9b8215fd4f0ae3f8e1e860e564af9c00749570934b7aad473b7485c996b",
+      "label": "e1"
+    },
+    {
+      "descriptor": {
+        "causes": [
+          {
+            "$bytes": "9bc8f9b8215fd4f0ae3f8e1e860e564af9c00749570934b7aad473b7485c996b"
+          }
+        ],
+        "eventSchemaVersion": {
+          "$int": "1"
+        },
+        "lineageId": {
+          "$bytes": "2d3174dd1c1997a91c56de736596a1d8bfdb25f8907d9999688d4e0df1d18e24"
+        },
+        "operationKey": "a-link",
+        "payload": {
+          "relation": "peer",
+          "target": {
+            "$bytes": "62eae136996fd1b2a84f9a562ab2a7622a30735cc46a454c9bba1c6360d2818b"
+          }
+        },
+        "preconditionStateDigest": null,
+        "targets": [
+          {
+            "$bytes": "391c3620749d7383d36e361c2e24d274655c524a82669295623dc9b37e02d98a"
+          }
+        ],
+        "temporalProtocolVersion": "ofu-p4-temporal-v1",
+        "time": {
+          "micros": {
+            "$int": "0"
+          },
+          "seconds": {
+            "$int": "11"
+          }
+        },
+        "type": "core.relation.set",
+        "universeIdentity": {
+          "$bytes": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20"
+        },
+        "version": {
+          "$int": "1"
+        }
+      },
+      "expected_event_id": "fc7bf143c5dd4e23a82a83e9a7d9a4df05b979d3b323964de180583f669b1755",
+      "label": "e3"
+    }
+  ],
+  "expected_canonical_order": [
+    "e1",
+    "e2",
+    "e3",
+    "e4"
+  ],
+  "input_order": [
+    "e4",
+    "e2",
+    "e1",
+    "e3"
+  ],
+  "lineage": {
+    "branch_key": "canonical",
+    "expected_lineage_id": "2d3174dd1c1997a91c56de736596a1d8bfdb25f8907d9999688d4e0df1d18e24",
+    "parent_checkpoint_id": null
+  },
+  "malformed_inputs": [
+    {
+      "expected_rejection": "OUT_OF_DOMAIN",
+      "id": "time-micros-one-million",
+      "input": {
+        "micros": "1000000",
+        "seconds": "0"
+      },
+      "operation": "canonicalTime"
+    },
+    {
+      "expected_rejection": "OUT_OF_DOMAIN",
+      "id": "event-version-zero",
+      "mutation": {
+        "event": "e1",
+        "field": "version",
+        "value": "0"
+      },
+      "operation": "canonicalEvent"
+    },
+    {
+      "expected_rejection": "DUPLICATE_KEY",
+      "id": "event-duplicate-target",
+      "mutation": {
+        "event": "e1",
+        "field": "targets",
+        "value": "duplicate-first"
+      },
+      "operation": "canonicalEvent"
+    }
+  ],
+  "normativity": {
+    "checkpoint_archive_semantics": "FROZEN_BEHAVIORAL_EXPECTATION",
+    "full_p4_state_schema": "NOT_FROZEN_BY_THIS_LANE",
+    "implementation_exception_text": "NON_NORMATIVE",
+    "lineage_event_ids_order_transition_digest": "FROZEN_EXPECTATION"
+  },
+  "protocol": "ofu-p4-temporal-v1",
+  "rejection_profile": "ofu-ind-conf-rejection-class-v1",
+  "schema": "ofu-ind-conf-p4-corpus-v1",
+  "scope": "NARROW_EXPLICIT_P4_ONLY",
+  "transition_contract": {
+    "descriptor": {
+      "compatibility": "exact",
+      "contractId": "ofu.p4.core-transition",
+      "eventFamilies": [
+        "core.counter.add@1",
+        "core.field.set@1",
+        "core.relation.set@1",
+        "core.set.add@1",
+        "core.set.remove@1",
+        "core.tombstone.set@1"
+      ],
+      "semanticVersion": "1.0.0",
+      "transitionContractSchemaVersion": {
+        "$int": "1"
+      }
+    },
+    "expected_digest": "a0b5856f6b1c12fbc3899f30858b99fb91de683168b41de60fb44d5f92a1c538"
+  },
+  "universe_identity": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20"
+}
