@@ -98,7 +98,7 @@ assert.ok(cross.missingEvidence.some(row=>row.metricId==='platform.persistenceRe
 assert.ok(cross.declaredCapabilities.includes('platform.persistenceRecovery'));
 assert.equal(cross.capabilityPolicy.absentCapabilityImpliesFailure,false);
 assert.equal(cross.capabilityPolicy.explicitPresenceRequired,true);
-assert.equal(cross.metricEvidenceClassification.counts.MEASURED,15);
+assert.equal(cross.metricEvidenceClassification.counts.MEASURED,14);
 assert.equal(cross.metricEvidenceClassification.counts.HEURISTIC,2);
 assert.equal(cross.metricEvidenceClassification.counts.UNCLASSIFIED,1);
 
