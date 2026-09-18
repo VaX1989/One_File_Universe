@@ -94,9 +94,9 @@
   "verification": {
     "executable_test_suite": "NOT_EXECUTED_LOCAL_ENVIRONMENT_HAS_NO_GITHUB_DNS_AND_LANE_DOES_NOT_MODIFY_EXECUTABLE_SOURCE",
     "static_source_evidence": "PASS_EXACT_BLOB_SHA_REFERENCES_CAPTURED",
-    "machine_index_json_parse": "PENDING_FINAL_REFETCH",
-    "lane_diff_scope": "PENDING_FINAL_COMPARE",
-    "production_semantic_mutation": "NONE_INTENDED_PENDING_FINAL_COMPARE"
+    "machine_index_json_parse": "PASS_POST_WRITE_REFETCH",
+    "lane_diff_scope": "PASS_5_ADDED_FILES_ONLY_ALL_WITHIN_OWNED_PATHS",
+    "production_semantic_mutation": "NONE_COMPARE_CONFIRMED"
   },
   "evidence_debt": [
     "IND-CONF-A must provide frozen language-independent positive/malformed/rejection corpus for G0A.",
@@ -105,8 +105,8 @@
     "No cross-language numeric error-code ABI is frozen by this lane.",
     "No version/capability negotiation protocol is frozen by this lane."
   ],
-  "last_action": "Recorded industrialization ADRs after producing the normative protocol index and non-freeze map.",
-  "next_action": "Finalize terminal handoff, validate exact branch diff/JSON, open Draft PR against Wave-0 control branch, and hand off to control convergence without self-merging.",
+  "last_action": "Validated all machine JSON by refetch/parse and compared the lane to the exact control head: five added files, all within owned paths, no executable or production semantic mutation.",
+  "next_action": "Open Draft PR against the Wave-0 control branch and bind the exact PR head/tree in the external terminal packet.",
   "completion_sha": "EXTERNALLY_BOUND_BY_DRAFT_PR_HEAD",
   "completion_tree": "EXTERNALLY_BOUND_BY_DRAFT_PR_HEAD_TREE",
   "disposition": "READY_FOR_CONTROL_CONVERGENCE"
