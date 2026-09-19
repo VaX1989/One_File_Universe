@@ -2,14 +2,14 @@
   "prompt_id": "PROD-W1-ATLAS-CORE",
   "master_schema_version": 4,
   "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
-  "status": "REPAIR_IN_PROGRESS_REQUIRES_FRESH_EXECUTABLE_EVIDENCE",
-  "terminal_state": "NOT_TERMINAL",
+  "status": "READY_FOR_CONTROL_CONVERGENCE",
+  "terminal_state": "READY_FOR_CONTROL_CONVERGENCE",
   "hypothesis": "A bounded Personal Atlas can persist places, observations, snapshots and routes as exact W1/P4 semantic references while keeping renderer/camera objects and persistence-backend choices outside the product authority boundary.",
   "failure_fingerprint": "ATLAS_DEFAULT_SEARCH_LIMIT_EXCEEDS_INSTANCE_CAPACITY",
   "failure_count": 1,
   "alternate_strategy": "If the repaired default still violates bounded-resource behavior or another focused failure appears, keep PR #308 unmerged and repair the specific lane-local fingerprint rather than widening limits or weakening validation.",
-  "last_action": "Verification-only PR #309 failed only in the Atlas focused test because find() defaulted to 32 while the test instance maxEntries was 8; upstream npm/P2/P4 work before the focused test passed.",
-  "next_action": "Verify the capacity-aware default search repair from a new exact lane head; do not reuse #309 evidence as PASS.",
+  "last_action": "Verification-only PR #310 executed the repaired Atlas focused test from exact lane subject 1fc22ad1850583eb8de9a4dcdb6feb1e212e98fa; Foundation Integrity run 35460062442 logged explicit PASS. Prior #309 failure was retained and repaired forward.",
+  "next_action": "CTRL-CONVERGENCE should validate PR #308 ownership/diff, confirm #309/#310 remain unmerged, require final-head regression CI green, then merge #308 forward into Wave-0 control.",
   "dependencies": {
     "M0_HISTORICAL": {
       "status": "PASS",
@@ -33,11 +33,11 @@
     }
   },
   "evidence_debt": [
-    "Fresh execution of tests/product/prod-w1-atlas-core.mjs is required; no PASS is claimed from static construction.",
-    "Persistence backend integration is intentionally deferred; this lane freezes no public storage/provider ABI."
+    "Final PR #308 exact-head regression CI must be green before control convergence.",
+    "The Atlas internal bundle is product-local state, not a public persistence/provider ABI or authenticated historical archive."
   ],
   "branch": "work/post-m0/prod-w1-atlas-core-2026-09-19",
-  "pr": "PENDING",
+  "pr": 308,
   "base_sha": "816a9b35dab81368361c4e343dc1217278e07929",
   "base_tree": "f6b62c0b5476540687cef575be873c8c0c1c46c7",
   "ownership": {
@@ -62,14 +62,30 @@
       "verification_pr": 309,
       "run_id": 35459946456,
       "failure_fingerprint": "ATLAS_DEFAULT_SEARCH_LIMIT_EXCEEDS_INSTANCE_CAPACITY",
-      "detail": "find() implicit limit 32 exceeded configured maxEntries=8 before search assertions."
+      "detail": "Implicit search limit 32 exceeded configured maxEntries=8."
     },
     {
       "command": "node tests/product/prod-w1-atlas-core.mjs",
-      "status": "PENDING_REPAIR_VERIFICATION"
+      "status": "PASS_CONTROL_VERIFICATION",
+      "verification_pr": 310,
+      "verification_head": "a854fcd733f3ccaaeea5f58ec08286f13b8272ff",
+      "verification_tree": "917a7d42f2daa706ad2a7340758122f6bc21f3e8",
+      "exact_lane_subject": "1fc22ad1850583eb8de9a4dcdb6feb1e212e98fa",
+      "exact_lane_tree": "305b861a110d907c82af76d83115bb7276d91937",
+      "run_id": 35460062442,
+      "witness": {
+        "schema": "ofu-prod-w1-atlas-core-test-v1",
+        "status": "PASS",
+        "entryCount": 2,
+        "routeCount": 1,
+        "snapshotEntryId": "obs-d1f3e420e92378e5",
+        "routeId": "route-50ca7b35ce59338a",
+        "exportedBytes": 2662,
+        "exactTemporalReference": "0000000000000000000000000000000000000000000000000000000000000004"
+      }
     }
   ],
   "completion_sha": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD",
   "completion_tree": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD_TREE",
-  "current_hypothesis": "The Atlas semantics are intact; the focused verification exposed a local resource-bound bug where default search limit 32 exceeded a smaller configured maxEntries. Default search should derive from instance capacity while explicit out-of-range limits remain fail-closed."
+  "current_hypothesis": "SUPPORTED_BY_REPAIRED_FOCUSED_EXECUTABLE_EVIDENCE"
 }
