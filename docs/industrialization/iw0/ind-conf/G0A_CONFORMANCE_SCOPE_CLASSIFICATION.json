@@ -61,9 +61,30 @@
       "corpus_digest": "2b13e4c47c254e418543410806ec5aaed7650b60e2e653c75b602b9c0735b65b"
     },
     "revised_corpus_verification": {
-      "status": "REQUIRES_FRESH_CONTROL_VERIFICATION",
+      "status": "PASS",
+      "verification_pr": 305,
+      "verification_head": "f95cac5db7a3b0a6e4ea304e6d9cb3c28bd0c9f6",
+      "verification_tree": "72d25e733ce5f902f06a619c13e43e712590db91",
+      "exact_repair_subject": "612c789ba44f20ea35f4a18db990004eafe19238",
+      "exact_repair_subject_tree": "b1ded95e819f51b647f787980e6f8b58219533d8",
+      "foundation_run": 35439953703,
+      "result": "PASS",
       "corpus_digest": "d92b43afb8a7deeaed4b0c3ee13b73bad344b196132c35433b66360c0b0772fc",
-      "note": "No PASS is claimed until revised v2 P4 corpus and both runners execute from the repair subject."
+      "js": {
+        "positive": 54,
+        "rejection": 48,
+        "live_frontier_scenarios": 6,
+        "live_frontier_rejections": 2
+      },
+      "python": {
+        "positive": 54,
+        "rejection": 40,
+        "live_frontier_scenarios": 6,
+        "live_frontier_rejections": 2,
+        "frontier_model": "INDEPENDENT_MINIMAL_ORDER_KEY_STATE_MACHINE"
+      },
+      "combined_test": "ofu-ind-conf-a-combined-test-v2 PASS",
+      "note": "Verification-only package registration delta is excluded from repair merge; PR #305 must close without merge."
     }
   },
   "g0a_rule": "Only independent_g0a_conformance_evidence may support implementation-independent G0A claims. current_authority_regression_only remains useful regression evidence but is outside the independent minimum.",
