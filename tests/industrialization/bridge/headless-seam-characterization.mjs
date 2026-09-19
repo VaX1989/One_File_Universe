@@ -59,6 +59,12 @@ const worldAdapter=read('src/experiments/spatial-continuum/world-adapter.js');
 present(worldAdapter,/__OFU_PLANET_PREVIEW__/,'R6 world adapter still captures product preview state');
 present(worldAdapter,/runtime\.enterKey/,'R6 world adapter still drives released product runtime');
 
+const candidate=read('docs/industrialization/iw0/ind-bridge/HEADLESS_API_CANDIDATE.md');
+present(candidate,/POST_G0A_PRIVATE_CANDIDATE/,'archive persistence must be explicitly post-G0A private');
+present(candidate,/No \`archiveBytes\` input and no public \`exportArchive\(\)\` method belong to the G0A candidate/,'G0A facade must explicitly exclude archive input/export');
+const g0aSection=candidate.split('## POST_G0A_PRIVATE_CANDIDATE')[0];
+absent(g0aSection,/archiveBytes|exportArchive\s*\(/,'G0A minimum facade must not expose archive input/export');
+
 const save=read('src/persistence/save.js');
 absent(save,/localStorage|sessionStorage|indexedDB/,'portable save codec itself must not be confused with browser storage');
 
