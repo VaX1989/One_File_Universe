@@ -22,10 +22,9 @@ The minimum slice ready to be specified independently of JavaScript consists of:
 8. **P4 canonical time and event ordering**.
 9. **P4 lineage and monotonic live frontier semantics**, keeping historical reconstruction distinct from live admission.
 10. **Exact P4 transition-contract binding**.
-11. **P4 checkpoint/compaction invariants**, not a generic persistence API.
-12. **P4 archive integrity/authority invariants**, not a generic persistence/provider ABI.
+Checkpoint/compaction and archive integrity are **not** part of this G0A minimum. They are retained as `DRAFT_ONLY` current-authority material because structural integrity and replay self-consistency do not authenticate historical origin/freshness or establish full semantic trust in imported state.
 
-A future second implementation can implement those semantics without copying the current JavaScript object model, callbacks, runtime method names, cache policy, renderer vocabulary or storage backends.
+A future second implementation can implement the ten minimum semantics without copying the current JavaScript object model, callbacks, runtime method names, cache policy, renderer vocabulary or storage backends.
 
 ## Explicit non-freezes
 
@@ -36,7 +35,9 @@ The following are not mature enough to freeze:
 | PX authority/provenance envelope schema | DRAFT_ONLY | Authority separation is valuable, but the exact JSON/JS record and evidence vocabulary are not proven across independent consumers. |
 | Query/provider API and registry | REQUIRES_MORE_CONSUMERS | Current request/envelope/bind/invoke shapes are implementation-facing JS APIs. |
 | Runtime budgets and adaptive scheduler | KEEP_PRIVATE_FOR_NOW | Queue/cache/materialization ceilings and HOT/WARM/COLD policy are runtime/resource policy. |
-| Generic persistence/provider interface | REQUIRES_MORE_CONSUMERS | P4 freezes temporal authority invariants, not a host-neutral persistence ABI. |
+| P4 checkpoint/compaction public trust claim | DRAFT_ONLY | Current checks establish integrity/self-consistency, not authenticated historical provenance/freshness or full semantic trust. |
+| P4 archive public trust/import-export claim | DRAFT_ONLY | Canonical integrity does not authenticate origin/freshness; archive import/export is excluded from the G0A public minimum. |
+| Generic persistence/provider interface | REQUIRES_MORE_CONSUMERS | P4 temporal authority is not a host-neutral persistence ABI. |
 | P1 portable-save JSON | KEEP_PRIVATE_FOR_NOW | Legacy `ofu-canonical-v1`/JSON model predates P2/P4 semantics and must not become the future standard accidentally. |
 | REFINE/PROJECT/RECONCILE payload schemas | REQUIRES_MORE_PRODUCT_EVIDENCE | The operations are architectural; current spatial/matter/observable payloads are one implementation. |
 | PX claim/extension namespace allocation | REQUIRES_MORE_CONSUMERS | Current prefix ownership and binding lifecycle are registry mechanisms, not a proven public protocol. |
@@ -99,7 +100,7 @@ Public deprecation windows, registry lifecycle and generic migration ABI remain 
 
 P4 archive v2 semantics are internally frozen, but that does not prove the current JS API/container should become a universal persistence interface.
 
-**Disposition:** harvest archive integrity and authority invariants only.
+**Disposition:** retain checkpoint/archive integrity invariants as `DRAFT_ONLY` current-authority evidence; exclude them from the G0A minimum public/normative slice until later trust/authentication/provenance evidence exists.
 
 ### ADJ-003 — PX authority vocabulary
 
@@ -123,6 +124,6 @@ The machine index records exact blob SHAs for the source evidence. The core chai
 
 ## Gate result
 
-**IND-GOV-A exit gate: MET.**
+**IND-GOV-A repair disposition: READY_FOR_CONTROL_CONVERGENCE.**
 
 The lane now identifies exactly what a second implementation may reproduce from behavior/bytes and exactly what must remain unfrozen. This does **not** pass G0A by itself. G0A still requires the declared sibling evidence from `IND-CONF-A` and `IND-BRIDGE-A`, followed by `GATE-G0A-AUDIT`.
