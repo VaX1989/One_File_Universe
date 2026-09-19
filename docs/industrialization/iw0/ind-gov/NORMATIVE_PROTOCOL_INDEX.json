@@ -5,8 +5,8 @@
   "authority": "INDUSTRIALIZATION_SPEC_CANDIDATE_NO_SEMANTIC_AUTHORITY_TRANSFER",
   "base": {
     "control_branch": "integration/post-m0-dual-track-wave0-2026-09-17",
-    "control_head": "fa88f7cec101a52d07916a0fdd3927c482a6f188",
-    "control_tree": "784e12501a7e0ba9e281787513bddbb6eed1c6bf",
+    "control_head": "37e6744f1d8f711278ae8b14ddaf84b9176b5a6b",
+    "control_tree": "fb5be853362a9266f0f6d64f23338d2827f358e0",
     "frozen_r6_sha": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
     "frozen_r6_tree": "3704247247940fa8c5f08291cd80ec9e24e7d49d",
     "planning_master_sha": "c2cab6d6e914b918432432fdc69825e0a1000509"
@@ -152,7 +152,8 @@
         "p2_oracle",
         "p2_security_conformance"
       ],
-      "implementation_independence": "JS live-value descriptor/prototype checks are host-bound input guards; the portable normative boundary is the admitted mathematical value domain and canonical bytes."
+      "implementation_independence": "JS live-value descriptor/prototype checks are host-bound input guards; the portable normative boundary is the admitted mathematical value domain and canonical bytes.",
+      "g0a_minimum": true
     },
     {
       "id": "P2.UNICODE.15_1_V1",
@@ -173,7 +174,8 @@
         "p2_tests",
         "p2_security_conformance"
       ],
-      "implementation_independence": "Host NFC implementation choice is not normative; conformance is against the frozen profile and normalization corpus."
+      "implementation_independence": "Host NFC implementation choice is not normative; conformance is against the frozen profile and normalization corpus.",
+      "g0a_minimum": true
     },
     {
       "id": "P2.ADDRESS.V1",
@@ -194,7 +196,8 @@
         "p2_vectors",
         "p2_tests",
         "p2_oracle"
-      ]
+      ],
+      "g0a_minimum": true
     },
     {
       "id": "P2.SEMANTIC_MANIFEST.V1",
@@ -211,7 +214,8 @@
         "p2_source",
         "p2_tests",
         "determinism"
-      ]
+      ],
+      "g0a_minimum": true
     },
     {
       "id": "P2.IDENTITY.UNIVERSE_AND_ENTITY_V1",
@@ -230,7 +234,8 @@
         "p2_tests",
         "p2_oracle",
         "determinism"
-      ]
+      ],
+      "g0a_minimum": true
     },
     {
       "id": "P2.DERIVATION.HMAC_SHA256_V1",
@@ -250,7 +255,8 @@
         "p2_tests",
         "p2_oracle",
         "determinism"
-      ]
+      ],
+      "g0a_minimum": true
     },
     {
       "id": "P2.NUMERIC.V1",
@@ -270,7 +276,8 @@
         "p2_tests",
         "p2_oracle",
         "determinism"
-      ]
+      ],
+      "g0a_minimum": true
     },
     {
       "id": "P4.TIME_EVENT_ORDER_V1",
@@ -290,7 +297,8 @@
         "p4_semantic_closure",
         "p2_p4_integration",
         "integration_matrix"
-      ]
+      ],
+      "g0a_minimum": true
     },
     {
       "id": "P4.LINEAGE_AND_LIVE_FRONTIER_V1",
@@ -310,7 +318,8 @@
         "p4_semantic_closure",
         "p2_p4_integration",
         "integration_matrix"
-      ]
+      ],
+      "g0a_minimum": true
     },
     {
       "id": "P4.TRANSITION_BINDING_EXACT_V1",
@@ -328,11 +337,12 @@
         "p4_tests",
         "p4_semantic_closure",
         "integration_matrix"
-      ]
+      ],
+      "g0a_minimum": true
     },
     {
       "id": "P4.CHECKPOINT_COMPACTION_INVARIANTS_V2",
-      "classification": "READY_TO_SPECIFY",
+      "classification": "DRAFT_ONLY",
       "source_authority": "P4_FROZEN_AUTHORITY",
       "change_control_owner": "P4_FROZEN_AUTHORITY",
       "requirements": [
@@ -349,11 +359,13 @@
         "p2_p4_integration",
         "integration_matrix"
       ],
-      "boundary": "The invariants are ready; storage backend, public persistence provider API and generic save UX are not."
+      "boundary": "Excluded from G0A minimum normative/public trust claims. Retained as DRAFT_ONLY current-authority material for later persistence/security work.",
+      "g0a_minimum": false,
+      "trust_limitation": "Checkpoint verification proves bounded structural/integrity and replay self-consistency properties under current P4 authority; it does not authenticate historical origin/freshness or independently establish semantic trust in imported state."
     },
     {
       "id": "P4.ARCHIVE_INTEGRITY_INVARIANTS_V2",
-      "classification": "READY_TO_SPECIFY",
+      "classification": "DRAFT_ONLY",
       "source_authority": "P4_FROZEN_AUTHORITY",
       "change_control_owner": "P4_FROZEN_AUTHORITY",
       "requirements": [
@@ -368,7 +380,9 @@
         "p4_checkpoint_tests",
         "integration_matrix"
       ],
-      "boundary": "Only P4 archive integrity/authority invariants are harvested. No generic persistence/provider/transport API is standardized."
+      "boundary": "Excluded from G0A minimum normative/public trust claims and external-consumer minimum seam. Retained as DRAFT_ONLY current-authority material for later persistence/security work.",
+      "g0a_minimum": false,
+      "trust_limitation": "Archive integrity and canonical re-verification do not authenticate origin/freshness and do not by themselves establish that imported state is semantically trusted historical provenance."
     }
   ],
   "non_standardized_surfaces": [
@@ -710,12 +724,19 @@
   ],
   "source_to_spec_summary": {
     "p2": "All READY_TO_SPECIFY P2 entries trace to docs/P2_PROTOCOL.md plus src/kernel/p2-* and independent oracle/golden corpus evidence.",
-    "p4": "Only time/event/order/lineage/frontier/transition-binding/checkpoint-compaction/archive-integrity invariants are harvested; JavaScript callback/reducer/API layout is excluded.",
+    "p4": "G0A READY_TO_SPECIFY is limited to canonical time/event total order, lineage/live-frontier semantics, and exact transition binding. Checkpoint/compaction and archive integrity are DRAFT_ONLY because integrity/self-consistency does not authenticate provenance/freshness or establish full semantic trust.",
     "excluded": "PX query/provider, runtime policy, generic persistence/provider API, legacy P1 save format and concrete multiscale payloads are explicitly non-standardized."
   },
   "exit_gate": {
-    "statement": "A second implementation can implement the READY_TO_SPECIFY slice from this index without copying incidental JavaScript object/API shapes; every broader surface is explicitly classified as non-frozen.",
-    "status": "MET_FOR_IND_GOV_A_LANE_PENDING_IND_CONF_A_IND_BRIDGE_A_AND_G0A_AUDIT",
+    "statement": "A second implementation can implement the ten READY_TO_SPECIFY G0A-minimum candidates without copying incidental JavaScript shapes; checkpoint/archive trust claims and every broader surface remain explicitly outside the minimum.",
+    "status": "REPAIRED_IND_GOV_A_READY_FOR_CONTROL_CONVERGENCE_PENDING_SIBLINGS_AND_INDEPENDENT_G0A_AUDIT",
     "next_gate": "G0A_MINIMUM_NORMATIVE_SLICE"
+  },
+  "repair_scope": {
+    "date": "2026-09-19",
+    "classification": "G0A_MINIMUM_SLICE_NARROWING",
+    "control_directive": "docs/industrialization/control/WAVE0_REPAIR_DIRECTIVE_2026-09-19.json",
+    "security_input": "AUDIT-SECURITY/SEC-01",
+    "rule": "Checkpoint/compaction and archive integrity remain valuable current P4 invariants, but integrity/self-consistency does not establish authenticated origin, freshness, or full semantic trust. They are excluded from the G0A minimum public/normative slice pending later trust/provenance evidence."
   }
 }
