@@ -129,13 +129,13 @@ export function createAtlasCore(options={}){
   function listEntries(){return Object.freeze([...entries.values()].sort((a,b)=>a.id.localeCompare(b.id)).map(entryView))}
   function listRoutes(){return Object.freeze([...routes.values()].sort((a,b)=>a.id.localeCompare(b.id)).map(routeView))}
 
-  function find({kind=null,subjectCanonicalId=null,labelContains=null,limit=32}={}){
+  function find({kind=null,subjectCanonicalId=null,labelContains=null,limit=null}={}){
     const normalizedKind=kind===null?null:text(kind,'search kind',{nullable:true,maxBytes:64}).toUpperCase();
     if(normalizedKind!==null&&!Object.values(W1_OBSERVATION_KIND).includes(normalizedKind))fail('search kind is unsupported');
     const subject=subjectCanonicalId===null?null:text(subjectCanonicalId,'search canonical id',{nullable:true,maxBytes:64}).toLowerCase();
     if(subject!==null&&!/^[0-9a-f]{64}$/.test(subject))fail('search canonical id must be a 32-byte digest');
     const needle=labelContains===null?null:text(labelContains,'search label',{nullable:true,maxBytes:128}).toLowerCase();
-    const max=boundedInteger(limit,'search limit',1,limits.maxEntries);
+    const max=limit===null?Math.min(32,limits.maxEntries):boundedInteger(limit,'search limit',1,limits.maxEntries);
     const result=[];
     for(const record of [...entries.values()].sort((a,b)=>a.id.localeCompare(b.id))){
       const observation=record.observation;
