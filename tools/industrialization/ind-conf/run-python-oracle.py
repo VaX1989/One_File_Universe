@@ -106,8 +106,24 @@ ids={}
 for rec in p4['events']:
     d=neutral(rec['descriptor']);eid=domain('OFU-P4-EVENT-v1',d);check(eid.hex()==rec['expected_event_id'],'P4 event '+rec['label']);ids[rec['label']]=(d,eid);positive+=1
 order=sorted(p4['input_order'],key=lambda x:(ids[x][0]['time']['seconds'],ids[x][0]['time']['micros'],ids[x][1]));check(order==p4['expected_canonical_order'],'P4 canonical order');positive+=1
+
+def frontier_order_key(label):
+    d,eid=ids[label]
+    return (d['time']['seconds'],d['time']['micros'],eid)
+def frontier_outcome(frontier_label,candidate_label):
+    if frontier_label is None: return 'ACCEPT'
+    frontier_id=ids[frontier_label][1];candidate_id=ids[candidate_label][1]
+    if candidate_id==frontier_id: return 'DUPLICATE_NOOP'
+    return 'ACCEPT' if frontier_order_key(candidate_label)>frontier_order_key(frontier_label) else 'REJECT_NON_CANONICAL_ORDER'
+frontier_rejections=0
+for scenario in p4['live_frontier_scenarios']:
+    actual=frontier_outcome(scenario['frontier_event'],scenario['candidate_event'])
+    check(actual==scenario['expected'],'P4 live frontier '+scenario['id'])
+    positive+=1
+    if actual=='REJECT_NON_CANONICAL_ORDER': frontier_rejections+=1;rejections+=1
+
 check(domain('OFU-P4-TRANSITION-CONTRACT-v1',neutral(p4['transition_contract']['descriptor'])).hex()==p4['transition_contract']['expected_digest'],'P4 transition digest');positive+=1
 
-evidence={'schema':'ofu-ind-conf-a-python-oracle-evidence-v1','status':'PASS','source_commit':os.environ.get('OFU_SOURCE_SHA','LOCAL-UNPINNED'),'corpus_digest':manifest['corpus_digest'],'positive_checks':positive,'rejection_checks':rejections,'p2_unicode_database':O.UNICODE_VERSION,'p4_scope':'identity/event/order/transition digest only; checkpoint/archive behavior remains JS authority evidence'}
+evidence={'schema':'ofu-ind-conf-a-python-oracle-evidence-v1','status':'PASS','source_commit':os.environ.get('OFU_SOURCE_SHA','LOCAL-UNPINNED'),'corpus_digest':manifest['corpus_digest'],'positive_checks':positive,'rejection_checks':rejections,'p2_unicode_database':O.UNICODE_VERSION,'p4_scope':'identity/event/order/transition/live-frontier admission; checkpoint/archive behavior remains JS authority evidence','p4_live_frontier_scenarios':len(p4['live_frontier_scenarios']),'p4_live_frontier_rejections':frontier_rejections,'p4_frontier_model':'INDEPENDENT_MINIMAL_ORDER_KEY_STATE_MACHINE'}
 out=ROOT/'dist/evidence/industrialization';out.mkdir(parents=True,exist_ok=True);(out/'ind-conf-a-python.json').write_text(json.dumps(evidence,indent=2,sort_keys=True)+'\n',encoding='utf-8')
 print(json.dumps(evidence,sort_keys=True))
