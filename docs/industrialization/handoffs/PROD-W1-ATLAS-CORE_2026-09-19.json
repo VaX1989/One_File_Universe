@@ -1,0 +1,85 @@
+{
+  "prompt_id": "PROD-W1-ATLAS-CORE",
+  "master_schema_version": 4,
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "base_sha": "816a9b35dab81368361c4e343dc1217278e07929",
+  "base_tree": "f6b62c0b5476540687cef575be873c8c0c1c46c7",
+  "dependency_shas": {
+    "M0_HISTORICAL": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+    "G_PRODUCT_CONTRACTS_CONTROL": "816a9b35dab81368361c4e343dc1217278e07929",
+    "PR287_V4_MASTER": "c2cab6d6e914b918432432fdc69825e0a1000509",
+    "W1_PRODUCT_CONTRACTS_BLOB": "ec32053fa03f07dd95121d815a8bcdbe06103b6b"
+  },
+  "final_sha": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD",
+  "final_tree": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD_TREE",
+  "changed_paths": [
+    "src/product/w1/atlas-core.js",
+    "tests/product/prod-w1-atlas-core.mjs",
+    "docs/product/atlas/README.md",
+    "docs/frontier/execution/parallel/PROD-W1-ATLAS-CORE_EXECUTION_STATE.json",
+    "docs/industrialization/handoffs/PROD-W1-ATLAS-CORE_2026-09-19.json"
+  ],
+  "ownership_result": "PASS_LANE_LOCAL_PRODUCT_MEMORY_NO_SHARED_RENDERER_P4_SCIENCE_OR_STORAGE_BACKEND_CHANGE",
+  "tests": [
+    {
+      "command": "node tests/product/prod-w1-atlas-core.mjs",
+      "result": "FAIL_THEN_REPAIRED",
+      "verification_pr": 309,
+      "run_id": 35459946456,
+      "fingerprint": "ATLAS_DEFAULT_SEARCH_LIMIT_EXCEEDS_INSTANCE_CAPACITY"
+    },
+    {
+      "command": "node tests/product/prod-w1-atlas-core.mjs",
+      "result": "PASS",
+      "verification_pr": 310,
+      "foundation_run": 35460062442,
+      "exact_lane_subject": "1fc22ad1850583eb8de9a4dcdb6feb1e212e98fa",
+      "verification_head": "a854fcd733f3ccaaeea5f58ec08286f13b8272ff"
+    }
+  ],
+  "deterministic_witnesses": [
+    {
+      "kind": "ATLAS_ENTRY",
+      "id": "obs-d1f3e420e92378e5",
+      "exact_p4_state_digest": "0000000000000000000000000000000000000000000000000000000000000004"
+    },
+    {
+      "kind": "ATLAS_ROUTE",
+      "id": "route-50ca7b35ce59338a",
+      "route_count": 1
+    },
+    {
+      "kind": "CANONICAL_INTERNAL_BUNDLE",
+      "bytes": 2662,
+      "entry_count": 2,
+      "route_count": 1
+    },
+    {
+      "kind": "RESOURCE_BOUND_REPAIR",
+      "failure": "ATLAS_DEFAULT_SEARCH_LIMIT_EXCEEDS_INSTANCE_CAPACITY",
+      "repair": "implicit search limit = min(32,maxEntries); explicit invalid limit still rejects"
+    }
+  ],
+  "security_classification": "BOUNDED_PRODUCT_LOCAL_STATE; exact schema/version/field checks; no filesystem/network/public persistence surface; content-key collision fails closed.",
+  "authority_science_classification": "SavedObservation/P4/fingerprint references are preserved by reference; no canonical/scientific authority promotion and no copied mutable world state.",
+  "performance_resource_evidence": "Default 256 entries / 64 routes / 64 stops / 512 KiB serialization; hard configurable ceilings and explicit capacity rejection.",
+  "limitations": [
+    "Internal Atlas content IDs are deterministic product-local keys, not cryptographic/canonical/scientific authority.",
+    "Storage backend is intentionally not selected or frozen.",
+    "Revisit plan returns references only and does not mutate world/selection/camera.",
+    "Final exact-head aggregate regression CI is still convergence-owned."
+  ],
+  "falsification_attempts": [
+    "Initial verification #309 found a real capacity bug; repair narrowed the default without widening bounds.",
+    "Future schema version rejected.",
+    "Unsupported renderer field rejected.",
+    "Entry ID/content tampering rejected.",
+    "Non-canonical bundle bytes rejected.",
+    "Unknown route reference rejected.",
+    "Entry deletion while route-referenced rejected.",
+    "Entry capacity exhaustion rejected."
+  ],
+  "rollback_abandon_condition": "If final-head CI fails materially or control review finds backend/renderer/P4 authority leakage, reject PR #308 and repair only within PROD-W1-ATLAS-CORE; do not weaken W1/P4 validation.",
+  "integration_patch_requests": [],
+  "disposition": "READY_FOR_CONTROL_CONVERGENCE"
+}
