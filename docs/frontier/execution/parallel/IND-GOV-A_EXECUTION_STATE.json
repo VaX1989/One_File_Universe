@@ -1,0 +1,119 @@
+{
+  "prompt_id": "IND-GOV-A",
+  "master_schema_version": 4,
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "status": "READY_FOR_CONTROL_CONVERGENCE",
+  "mode": "WRITE",
+  "semantic_surface": "INDUSTRIALIZATION_SPEC",
+  "hypothesis": "G0A can retain the ten source-backed P2/narrow-P4 candidates while excluding checkpoint/compaction and archive trust from the minimum; this resolves SEC-01 without changing P2/P4 production semantics or inventing authentication.",
+  "failure_fingerprint": "G0A_CHECKPOINT_ARCHIVE_TRUST_SCOPE_AND_V4_PACKET",
+  "failure_count": 1,
+  "alternate_strategy": "If independent G0A audit finds another candidate overclaims authority, demote that candidate rather than broadening trust or modifying frozen production semantics.",
+  "activation": {
+    "control_branch": "integration/post-m0-dual-track-wave0-2026-09-17",
+    "exact_control_head": "fa88f7cec101a52d07916a0fdd3927c482a6f188",
+    "exact_control_tree": "784e12501a7e0ba9e281787513bddbb6eed1c6bf",
+    "frozen_r6_base_sha": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+    "frozen_r6_base_tree": "3704247247940fa8c5f08291cd80ec9e24e7d49d",
+    "master_v4_sha": "c2cab6d6e914b918432432fdc69825e0a1000509"
+  },
+  "source_prompt_refs": [
+    {
+      "source": "PR286_REGISTRY",
+      "source_prompt_id": "IND-GOV",
+      "ref": "3d28ec0720f611278b7717da02713c9eda96e642",
+      "path": "docs/frontier/OFU_PARALLEL_DEVELOPMENT_PROMPT_REGISTRY_2026-09-17.yaml"
+    },
+    {
+      "source": "PR287_V3_MASTER",
+      "source_prompt_id": "IND-GOV-A",
+      "ref": "6494c3a43596c2d16c43237c052d404d5b1a7e74",
+      "path": "docs/frontier/prompts/OFU_POST_M0_PARALLEL_DEVELOPMENT_PROMPT_MASTER_2026-09-17.json"
+    }
+  ],
+  "dependencies": {
+    "M0_HISTORICAL": {
+      "status": "PASS",
+      "sha": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+      "tree": "3704247247940fa8c5f08291cd80ec9e24e7d49d"
+    },
+    "CTRL_WAVE0": {
+      "status": "PASS_ACTIVE_REPAIR_PHASE",
+      "pr": 290,
+      "head": "37e6744f1d8f711278ae8b14ddaf84b9176b5a6b",
+      "tree": "fb5be853362a9266f0f6d64f23338d2827f358e0"
+    },
+    "G0A_MINIMUM_NORMATIVE_SLICE": {
+      "status": "NOT_PASSED_REQUIRES_SIBLINGS_AND_AUDIT"
+    },
+    "SEC_01": {
+      "status": "ACTIVE_REPAIR_INPUT",
+      "source": "AUDIT-SECURITY",
+      "effect": "checkpoint/archive excluded from G0A minimum"
+    }
+  },
+  "ownership": {
+    "allowed": [
+      "docs/industrialization/iw0/ind-gov/**",
+      "docs/frontier/execution/parallel/IND-GOV-A_EXECUTION_STATE.json"
+    ],
+    "protected_not_modified": [
+      "production P2/P4 semantics",
+      "product renderer",
+      "runtime implementation",
+      "release metadata",
+      "docs/industrialization/control/**",
+      "main"
+    ],
+    "integration_patch_requests": []
+  },
+  "completed_tasks": [
+    "reauthenticated repository and verified live R6/control-plane state",
+    "resolved IND-GOV legacy alias and loaded both immutable source prompt bodies",
+    "loaded inherited execution/ownership/state/handoff contracts",
+    "verified no existing IND-GOV-A branch or PR before activation",
+    "branched from the exact externally-bound Wave-0 control head",
+    "read P2/P4 owning specifications, production implementations, vectors/oracle/tests and integration registry",
+    "read PX/runtime/legacy persistence/multiscale surfaces for non-freeze classification",
+    "materialized machine-auditable normative protocol index",
+    "materialized human-readable minimum-slice rationale and explicit non-freezes",
+    "materialized industrialization ADR set"
+  ],
+  "outputs": [
+    "docs/industrialization/iw0/ind-gov/NORMATIVE_PROTOCOL_INDEX.json",
+    "docs/industrialization/iw0/ind-gov/README.md",
+    "docs/industrialization/iw0/ind-gov/ADRS.md",
+    "docs/frontier/execution/parallel/IND-GOV-A_EXECUTION_STATE.json",
+    "docs/industrialization/iw0/ind-gov/TERMINAL_HANDOFF.json"
+  ],
+  "normative_summary": {
+    "ready_to_specify_count": 10,
+    "ready_to_specify_families": [
+      "P2 deterministic byte/identity substrate",
+      "P4 canonical time/event ordering, lineage/live-frontier, exact transition binding"
+    ],
+    "explicitly_nonstandardized_count": 8,
+    "rejection_model": "ACCEPT_REJECT_CLASSES_NORMATIVE_EXCEPTION_STRINGS_NON_NORMATIVE",
+    "compatibility_model": "EXACT_FAIL_CLOSED_NO_NEGOTIATION_INVENTED",
+    "adjudication_items": 4
+  },
+  "verification": {
+    "executable_test_suite": "NOT_EXECUTED_LOCAL_ENVIRONMENT_HAS_NO_GITHUB_DNS_AND_LANE_DOES_NOT_MODIFY_EXECUTABLE_SOURCE",
+    "static_source_evidence": "PASS_EXACT_BLOB_SHA_REFERENCES_CAPTURED",
+    "machine_index_json_parse": "PASS_POST_WRITE_REFETCH",
+    "lane_diff_scope": "PASS_5_ADDED_FILES_ONLY_ALL_WITHIN_OWNED_PATHS",
+    "production_semantic_mutation": "NONE_COMPARE_CONFIRMED"
+  },
+  "evidence_debt": [
+    "Independent GATE-G0A-AUDIT must verify the repaired minimum after IND-CONF-A and IND-BRIDGE-A repairs converge.",
+    "Checkpoint/archive authenticated provenance, freshness and full semantic trust remain deferred; this repair does not invent authentication.",
+    "No public query/provider/persistence ABI is frozen by this lane."
+  ],
+  "last_action": "Completed the G0A minimum-slice narrowing on Draft PR #299: checkpoint/compaction and archive integrity are DRAFT_ONLY and explicitly outside the G0A minimum; production semantics remain unchanged.",
+  "next_action": "CTRL-CONVERGENCE should validate PR #299 ownership, exact-head CI, machine-readable classification, and the immutable repair handoff before integration; independent GATE-G0A-AUDIT remains mandatory.",
+  "completion_sha": "EXTERNALLY_BOUND_BY_DRAFT_REPAIR_PR_HEAD",
+  "completion_tree": "EXTERNALLY_BOUND_BY_DRAFT_REPAIR_PR_HEAD_TREE",
+  "disposition": "READY_FOR_CONTROL_CONVERGENCE",
+  "branch": "work/post-m0/ind-gov-a-ofu-post-m0-dual-track-wave0-2026-09-18-61f43071-repair-2026-09-19",
+  "pr": 299
+}

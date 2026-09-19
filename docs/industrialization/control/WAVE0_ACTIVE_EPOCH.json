@@ -1,0 +1,161 @@
+{
+  "schema": "ofu.post-m0.wave0.active-epoch.v1",
+  "authority": "PLANNING_METADATA_ONLY",
+  "prompt_id": "CTRL-WAVE0",
+  "epoch_id": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "status": "ACTIVE_CONTROL_EPOCH_G0A_REAUDIT_READY",
+  "created_date": "2026-09-18",
+  "master": {
+    "schema_version": 4,
+    "pr": 287,
+    "branch": "planning/post-m0-parallel-development-prompt-master-2026-09-17",
+    "head_sha": "c2cab6d6e914b918432432fdc69825e0a1000509",
+    "head_tree": "bfba77ff4def48ba54fb1084240821be3f8f3dc9",
+    "path": "docs/frontier/prompts/OFU_POST_M0_PARALLEL_DEVELOPMENT_PROMPT_MASTER_2026-09-17.json",
+    "authority": "EXECUTION_ORCHESTRATION_PLANNING_ONLY"
+  },
+  "source_prompt_refs": [
+    {
+      "source": "PR286_REGISTRY",
+      "prompt_id": "CTRL-IW0-EPOCH",
+      "ref": "3d28ec0720f611278b7717da02713c9eda96e642",
+      "path": "docs/frontier/OFU_PARALLEL_DEVELOPMENT_PROMPT_REGISTRY_2026-09-17.yaml"
+    },
+    {
+      "source": "PR287_V3_MASTER",
+      "prompt_id": "CTRL-WAVE0",
+      "ref": "6494c3a43596c2d16c43237c052d404d5b1a7e74",
+      "path": "docs/frontier/prompts/OFU_POST_M0_PARALLEL_DEVELOPMENT_PROMPT_MASTER_2026-09-17.json"
+    }
+  ],
+  "frozen_base": {
+    "branch": "experiment/spatial-continuum-r6-causal-universe-2026-09-14",
+    "sha": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+    "tree": "3704247247940fa8c5f08291cd80ec9e24e7d49d",
+    "classification": "EXACT_VERIFIED_ACTIVE_R6_POST_M0",
+    "m0_gate": "M0_HISTORICAL",
+    "m0_convergence_pr": 276,
+    "m0_certified_candidate": "5a8774826dd5514b97f649669ba06dfaba9b91ff"
+  },
+  "control": {
+    "branch": "integration/post-m0-dual-track-wave0-2026-09-17",
+    "branch_parent_sha": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+    "branch_parent_tree": "3704247247940fa8c5f08291cd80ec9e24e7d49d",
+    "head_binding": "EXTERNALLY_BOUND_BY_DRAFT_CONTROL_PR",
+    "pr_binding": "EXTERNALLY_BOUND_BY_DRAFT_CONTROL_PR",
+    "implementation_writer_slots": 0
+  },
+  "ownership": {
+    "path": "docs/industrialization/control/WAVE0_OWNERSHIP.json",
+    "blob_sha": "a049532deeb982905e2ed5acbaab71d72445b29d",
+    "ownership_version": "ofu.post-m0.wave0.ownership.v1"
+  },
+  "dependencies": {
+    "M0_HISTORICAL": {
+      "status": "PASS",
+      "sha": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+      "tree": "3704247247940fa8c5f08291cd80ec9e24e7d49d"
+    },
+    "planning_master_v4": {
+      "status": "PASS",
+      "sha": "c2cab6d6e914b918432432fdc69825e0a1000509"
+    }
+  },
+  "gates": {
+    "G_PRODUCT_CONTRACTS": "PASS",
+    "G0A_MINIMUM_NORMATIVE_SLICE": "NOT_PASS_INDEPENDENT_REAUDIT_REQUIRED",
+    "G0B_EXTERNAL_CONSUMER_SEAM_PROOF": "BLOCKED_BEHIND_G0A",
+    "G1_MINIMUM_PLATFORM_PROOF": "BLOCKED_BEHIND_G0B",
+    "G1_PASS_CONTINUE": "MANUAL_OUTCOME_NOT_REACHED"
+  },
+  "runnable_queue": {
+    "writers": [
+      "PROD-W1-PRODUCT-DEPTH",
+      "PROD-W1-SCI-FP",
+      "PROD-W1-ATLAS-CORE",
+      "PRODUCT-MACRO",
+      "PRODUCT-HUMAN",
+      "PRODUCT-VISUAL-CONTINUITY",
+      "PRODUCT-AUDIO"
+    ],
+    "readonly_audits": [
+      "GATE-G0A-AUDIT"
+    ],
+    "mode": "PRODUCT_SUCCESSORS_UNLOCKED_G0A_REAUDIT_ONLY_FOR_INDUSTRIALIZATION",
+    "blocked_count_from_master": 74,
+    "rule": "G-PROD-CONTRACTS remains PASS. Product successors may run under canonical ownership. IND-CONF-A live-frontier repair #303 is merged and exact integrated CI is PASS 10/10, but industrialization remains stopped until a new independent GATE-G0A-AUDIT explicitly passes G0A."
+  },
+  "forbidden_actions": [
+    "merge #274",
+    "merge #275",
+    "merge #287",
+    "mutate main",
+    "tag",
+    "release",
+    "start R7",
+    "control owner implementing child lanes",
+    "force-push",
+    "destructive reset"
+  ],
+  "next_control_action": "Run PROMPT_ID=GATE-G0A-AUDIT in a new independent READ_ONLY_AUDIT session against exact control head e8965171944b9d5c604b19b745dacb79156816f4 / tree b769a54ce428083cdb629fc2fc9b3e1bacc970b6.",
+  "completed_initial_writers": [
+    "QOBS-CROSS-PROGRAM",
+    "IND-LIC-A"
+  ],
+  "integrated_initial_writers": [
+    "PROD-W1-CONTRACTS",
+    "QOBS-CROSS-PROGRAM",
+    "IND-GOV-A",
+    "IND-CONF-A",
+    "IND-LIC-A",
+    "IND-BRIDGE-A"
+  ],
+  "repair_directive": "docs/industrialization/control/WAVE0_REPAIR_DIRECTIVE_2026-09-19.json",
+  "convergence_record": "docs/industrialization/control/WAVE0_CONVERGENCE_RECORD_2026-09-19.json",
+  "audit_register": "docs/industrialization/control/WAVE0_READONLY_AUDIT_REGISTER_2026-09-19.json",
+  "completed_repairs": [
+    {
+      "prompt_id": "PROD-W1-CONTRACTS",
+      "pr": 298,
+      "repair_head": "5f8e6c95ff39c82ca079cdf1f7aeb227a867ddff",
+      "merge_commit": "d0b3112c0d403f4c50424eccda581870ce9b7050"
+    },
+    {
+      "prompt_id": "IND-GOV-A",
+      "pr": 299,
+      "repair_head": "a4675d7e265ee82bfaa7cc265dd2df87412064bd",
+      "merge_commit": "7947efea069f8f37d84b77745afc65330aac01db"
+    },
+    {
+      "prompt_id": "IND-CONF-A",
+      "pr": 300,
+      "repair_head": "58d9771dbb3c37a1bf261fdbf9d549c5a51877f4",
+      "merge_commit": "ea6911d94e62cc4d9a5f33e7d69a26b7254b1558"
+    },
+    {
+      "prompt_id": "IND-BRIDGE-A",
+      "pr": 301,
+      "repair_head": "23754c88581e658703fa1ac39515464204d3a814",
+      "merge_commit": "e1dd6d13aa08245084a1785ac8c17ea3dad8eb45"
+    },
+    {
+      "prompt_id": "IND-CONF-A",
+      "repair_kind": "G0A_LIVE_FRONTIER_INDEPENDENT_EVIDENCE",
+      "pr": 303,
+      "repair_head": "7a15ed574edbfe665af09fc09cd17eb257cd1378",
+      "repair_tree": "b769a54ce428083cdb629fc2fc9b3e1bacc970b6",
+      "merge_commit": "e8965171944b9d5c604b19b745dacb79156816f4",
+      "verification_pr": 305,
+      "verification_run": 35439953703
+    }
+  ],
+  "repair_convergence": {
+    "semantic_subject_sha": "e8965171944b9d5c604b19b745dacb79156816f4",
+    "semantic_subject_tree": "b769a54ce428083cdb629fc2fc9b3e1bacc970b6",
+    "cumulative_ci": "PASS_10_OF_10",
+    "product_gate": "PASS",
+    "g0a": "LIVE_FRONTIER_REPAIR_CONVERGED_READY_FOR_INDEPENDENT_REAUDIT_NOT_PASS"
+  },
+  "repair_convergence_adjudication": "docs/industrialization/control/WAVE0_REPAIR_CONVERGENCE_ADJUDICATION_2026-09-19.json",
+  "g0a_reaudit_ready_record": "docs/industrialization/control/WAVE0_G0A_LIVE_FRONTIER_REPAIR_CONVERGENCE_2026-09-19.json"
+}

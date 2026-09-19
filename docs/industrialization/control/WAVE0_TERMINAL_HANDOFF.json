@@ -1,0 +1,87 @@
+{
+  "prompt_id": "CTRL-WAVE0",
+  "master_schema_version": 4,
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "base_sha": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+  "base_tree": "3704247247940fa8c5f08291cd80ec9e24e7d49d",
+  "dependency_shas": {
+    "M0_HISTORICAL": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+    "PR275_PRODUCT_ROADMAP": "86e19cae0e8c393661d6696617c5a5e49eb78983",
+    "PR287_V4_MASTER": "c2cab6d6e914b918432432fdc69825e0a1000509",
+    "PR286_HARVESTED_SOURCE": "3d28ec0720f611278b7717da02713c9eda96e642",
+    "PR287_V3_SOURCE": "6494c3a43596c2d16c43237c052d404d5b1a7e74"
+  },
+  "final_sha": "EXTERNALLY_BOUND_BY_DRAFT_CONTROL_PR_HEAD",
+  "final_tree": "EXTERNALLY_BOUND_BY_DRAFT_CONTROL_PR_HEAD_TREE",
+  "changed_paths": [
+    "docs/industrialization/control/WAVE0_ACTIVE_EPOCH.json",
+    "docs/industrialization/control/WAVE0_OWNERSHIP.json",
+    "docs/industrialization/control/WAVE0_COORDINATION.md",
+    "docs/frontier/execution/POST_M0_DUAL_TRACK_WAVE0_CONTROL_STATE.json",
+    "docs/frontier/execution/parallel/CTRL-WAVE0_EXECUTION_STATE.json",
+    "docs/industrialization/control/WAVE0_TERMINAL_HANDOFF.json"
+  ],
+  "ownership_result": "PASS_CONTROL_ONLY_NO_CHILD_IMPLEMENTATION",
+  "tests": [
+    {
+      "check": "live active R6 head/tree reauthentication",
+      "result": "PASS"
+    },
+    {
+      "check": "M0 historical dependency",
+      "result": "PASS"
+    },
+    {
+      "check": "same-lane branch/PR collision search",
+      "result": "PASS_NONE_FOUND"
+    },
+    {
+      "check": "six writer semantic-surface collision review",
+      "result": "PASS_DISJOINT_BY_DECLARED_OWNERSHIP"
+    },
+    {
+      "check": "read-only audit write scope",
+      "result": "PASS_EMPTY"
+    },
+    {
+      "check": "IND-NATIVE alias/gate bypass prevention",
+      "result": "PASS_BLOCKED_BEFORE_G0B"
+    },
+    {
+      "check": "IND-RUNTIME gate bypass prevention",
+      "result": "PASS_BLOCKED_BEFORE_G1_PASS_CONTINUE"
+    },
+    {
+      "check": "forbidden action audit",
+      "result": "PASS"
+    }
+  ],
+  "deterministic_witnesses": [
+    {
+      "kind": "BASE_BINDING",
+      "sha": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+      "tree": "3704247247940fa8c5f08291cd80ec9e24e7d49d"
+    },
+    {
+      "kind": "OWNERSHIP_BLOB",
+      "sha": "a049532deeb982905e2ed5acbaab71d72445b29d"
+    }
+  ],
+  "security_classification": "CONTROL_METADATA_ONLY_NO_SECURITY_AUTHORITY_TRANSFER",
+  "authority_science_classification": "PLANNING_METADATA_ONLY_NO_CANONICAL_OR_SCIENTIFIC_PROMOTION",
+  "performance_resource_evidence": "NOT_APPLICABLE_CONTROL_PLANE; physical device debt remains external and separate",
+  "limitations": [
+    "No child implementation lane was executed by design.",
+    "G-PROD-CONTRACTS, G0A, G0B and G1 remain future evidence gates.",
+    "The final control head/tree are bound externally by the Draft PR to avoid self-referential hash claims."
+  ],
+  "falsification_attempts": [
+    "searched for existing Wave-0 control branches/PRs before creation",
+    "verified active R6 had not advanced past the recorded post-M0 SHA",
+    "checked source prompts for stronger/different control ownership",
+    "checked initial writers for declared semantic collision and gate bypass"
+  ],
+  "rollback_abandon_condition": "If active R6 advances incompatibly before child activation, freeze this epoch as superseded and create a successor control epoch after BASE_AUTHORITY_CONFLICT analysis; never rewrite this published epoch.",
+  "integration_patch_requests": [],
+  "disposition": "READY_FOR_CONTROL_CONVERGENCE"
+}

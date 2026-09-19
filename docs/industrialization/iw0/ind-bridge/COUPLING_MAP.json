@@ -1,0 +1,268 @@
+{
+  "schema": "ofu.ind-bridge-a.coupling-map.v1",
+  "authority": "HEADLESS_BRIDGE_DESIGN",
+  "prompt_id": "IND-BRIDGE-A",
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "control_head": "37e6744f1d8f711278ae8b14ddaf84b9176b5a6b",
+  "control_tree": "fb5be853362a9266f0f6d64f23338d2827f358e0",
+  "candidate_core": [
+    {
+      "path": "src/kernel/sha256.js",
+      "sha": "8016cbceef787b2df1b2faa25f2512bffd48ae03",
+      "coupling": [
+        "TextEncoder",
+        "global namespace"
+      ],
+      "decision": "CANDIDATE_CORE"
+    },
+    {
+      "path": "src/kernel/p2-unicode.js",
+      "sha": "c5a16928ad49978a2a203111ae95afe5c9939822",
+      "coupling": [
+        "String NFC",
+        "global namespace"
+      ],
+      "decision": "CANDIDATE_CORE"
+    },
+    {
+      "path": "src/kernel/p2-canonical.js",
+      "sha": "3c995a95d88ebfc30fcde025f3beea196506d74c",
+      "coupling": [
+        "TextEncoder",
+        "TextDecoder",
+        "p2Unicode",
+        "global namespace"
+      ],
+      "decision": "CANDIDATE_CORE"
+    },
+    {
+      "path": "src/kernel/p2-address-parser.js",
+      "sha": "7bc3570772f4633efc635cefcfadb26f03b3df8b",
+      "coupling": [
+        "p2",
+        "global namespace"
+      ],
+      "decision": "CANDIDATE_CORE"
+    },
+    {
+      "path": "src/temporal/p4-temporal.js",
+      "sha": "7e6d7d07d34609b194382a24c5e3cdf0a4ccae24",
+      "coupling": [
+        "p2",
+        "TextEncoder",
+        "global namespace"
+      ],
+      "decision": "CANDIDATE_CORE"
+    }
+  ],
+  "mixed_query_surfaces": [
+    {
+      "path": "src/extensions/contracts.js",
+      "sha": "034949f5cca2a15c85c2b0f4cb4c808a70d98c6f",
+      "coupling": [
+        "request.selection"
+      ],
+      "decision": "DO_NOT_FREEZE_WHOLE_SURFACE"
+    },
+    {
+      "path": "src/extensions/registry.js",
+      "sha": "b3da9bdab4bb7fbe5a74afece0c67ef4776864cf",
+      "coupling": [
+        "binding methods include camera/render/dispose/probe"
+      ],
+      "decision": "CHARACTERIZE_ONLY"
+    },
+    {
+      "path": "src/extensions/product-bindings.js",
+      "sha": "939d46451a01a5f0257a1f6db9531fadaa86becc",
+      "coupling": [
+        "pxProduct captured selection",
+        "scale runtime",
+        "surface camera",
+        "DOM readiness",
+        "render backends"
+      ],
+      "decision": "PRODUCT_ADAPTER"
+    },
+    {
+      "path": "src/domains/v1/bindings.js",
+      "sha": "a7b76aae07a7361fbcd0a6abc4498e417f9b1a9b",
+      "coupling": [
+        "pxProduct",
+        "selection",
+        "__OFU_PLANET_PREVIEW__"
+      ],
+      "decision": "EXTRACT_EXPLICIT_CONTEXT_LATER"
+    }
+  ],
+  "runtime_private": [
+    {
+      "path": "src/runtime/v2x-01-contracts.js",
+      "sha": "31b9a07cc6e9b8c80d7efa67e32c1d37fa4d9877",
+      "private_concepts": [
+        "RENDER_PREP",
+        "INTERACTION",
+        "visible",
+        "selected",
+        "scaleRelevancePpm",
+        "causalRelevancePpm"
+      ]
+    },
+    {
+      "path": "src/runtime/scheduling/adaptive-scheduler.js",
+      "sha": "db074ebaa0b7e4210adf3e73fe61e8635c18d497",
+      "private_concepts": [
+        "priority",
+        "queue",
+        "admission",
+        "preemption"
+      ]
+    },
+    {
+      "path": "src/runtime/resources/resource-ledger.js",
+      "sha": "4746128275849a80ac29a189e409aa358685abfa",
+      "private_concepts": [
+        "performance.memory",
+        "GPU estimate",
+        "resource budget"
+      ]
+    },
+    {
+      "path": "src/runtime/workers/worker-executor.js",
+      "sha": "ea774db786825d8f8a260084ab2869934eaeea00",
+      "private_concepts": [
+        "Worker",
+        "Blob",
+        "URL",
+        "timeout",
+        "direct fallback"
+      ]
+    },
+    {
+      "path": "src/simulation/materialization/materialization-runtime.js",
+      "sha": "ccdfe00e267e8f62bb4ccfa94ffa6e21a19ab2f2",
+      "private_concepts": [
+        "presentation",
+        "materialization state",
+        "context loss",
+        "cache",
+        "worker choice"
+      ],
+      "central_authority_claims": {
+        "selection": false,
+        "semanticScale": false,
+        "travelDistance": false,
+        "cameraSpatialFrame": false,
+        "sceneComposition": false,
+        "primaryRenderer": false,
+        "inputRouter": false,
+        "persistenceReplay": false
+      }
+    }
+  ],
+  "product_adapters": [
+    {
+      "path": "src/bootstrap/app.js",
+      "sha": "364151c877c029ed72e464e9e2efe91ed27b1c70",
+      "coupling": [
+        "document",
+        "DOMContentLoaded",
+        "performance",
+        "location",
+        "renderer probe"
+      ]
+    },
+    {
+      "path": "src/experiments/spatial-continuum/experience.js",
+      "sha": "2a3065811facfb435b6ec1d448898d3857db826a",
+      "coupling": [
+        "document",
+        "window",
+        "performance",
+        "location",
+        "requestAnimationFrame",
+        "renderer",
+        "orientation UX"
+      ]
+    },
+    {
+      "path": "src/experiments/spatial-continuum/renderer.js",
+      "sha": "d0a7fd5047e2cfa9a367c6bfb82c8d05a1051f55",
+      "coupling": [
+        "Babylon",
+        "camera",
+        "frame timing"
+      ]
+    },
+    {
+      "path": "src/experiments/spatial-continuum/renderer-phase2.js",
+      "sha": "cda49ddcb8129dcac4101c510570efbd883e0f9f",
+      "coupling": [
+        "Babylon math",
+        "renderer convergence"
+      ]
+    },
+    {
+      "path": "src/experiments/spatial-continuum/kernel.js",
+      "sha": "5585433f456ea6d35d09ac2cd30a7b89a67d094c",
+      "coupling": [
+        "target-aware camera",
+        "continuous presentation scale"
+      ]
+    },
+    {
+      "path": "src/experiments/spatial-continuum/world-adapter.js",
+      "sha": "1d10c1212c203f1c73e71f22855a172c0272eea6",
+      "coupling": [
+        "released OFU runtime",
+        "__OFU_PLANET_PREVIEW__",
+        "runtime enterKey/scale/at/query",
+        "cameraTargets"
+      ]
+    }
+  ],
+  "persistence": [
+    {
+      "path": "src/persistence/save.js",
+      "sha": "e3d97e7f9057472b5fea2da7a72c87c3bf8e93cd",
+      "browser_storage_dependency": false,
+      "decision": "PORTABLE_BUT_SEPARATE_P1_SCHEMA"
+    },
+    {
+      "path": "src/temporal/p4-temporal.js",
+      "sha": "7e6d7d07d34609b194382a24c5e3cdf0a4ccae24",
+      "decision": "POST_G0A_PRIVATE_CANDIDATE_EXCLUDED_FROM_G0A_MINIMUM"
+    }
+  ],
+  "forbidden_public_leakage": [
+    "DOM",
+    "Babylon/WebGL objects",
+    "camera pose/FOV/controllers",
+    "viewport visibility",
+    "implicit UI selection",
+    "input events",
+    "frame clocks",
+    "materialization residency/tier",
+    "worker handles",
+    "browser storage keys",
+    "product globals",
+    "pxProduct captured state"
+  ],
+  "gate_result": "G0A_REPAIRED_CANDIDATE_READY_FOR_CONTROL_CONVERGENCE_THEN_INDEPENDENT_AUDIT",
+  "generic_query_surface": "INTENTIONALLY_UNFROZEN_UNTIL_SELECTION_FREE_EXTRACTION",
+  "g0a_minimum": {
+    "archive_input": false,
+    "public_export_archive": false,
+    "checkpoint_compaction": false,
+    "allowed": [
+      "P2 canonical bytes/Unicode/address/manifest/identity/derivation/exact numeric subset",
+      "P4 canonical time/event total order",
+      "P4 lineage/live-frontier semantics",
+      "P4 exact transition binding"
+    ],
+    "post_g0a_private_candidate": [
+      "P4 checkpoint/compaction",
+      "P4 archive import/export"
+    ]
+  }
+}

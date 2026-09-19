@@ -1,0 +1,800 @@
+{
+  "canonical_address_version": 1,
+  "derivation_separation": [
+    {
+      "address_ref": "namespace-astro",
+      "counter": "0",
+      "domain": "domain-0",
+      "expected_hex": "186531376069e9734644130f5ff081633aac5fcb011eaf8292a2ea6140ed9c32",
+      "id": "baseline",
+      "property": "property-0"
+    },
+    {
+      "address_ref": "namespace-astro",
+      "counter": "0",
+      "domain": "domain-x",
+      "expected_hex": "915075041c11613a14166ae0dcfb5e96c5273ecbb31428e8bc4fa0a534a327a3",
+      "id": "domain-change",
+      "property": "property-0"
+    },
+    {
+      "address_ref": "namespace-astro",
+      "counter": "0",
+      "domain": "domain-0",
+      "expected_hex": "721f3233be9e92dd3d1eee9b0ea86670cbe71e13d7875f4f176d0b0a8245b0c0",
+      "id": "property-change",
+      "property": "property-x"
+    },
+    {
+      "address_ref": "namespace-astro",
+      "counter": "1",
+      "domain": "domain-0",
+      "expected_hex": "08b9bd2a60950f29f31405137e08ba9183568a731019597ede1d6f93c52de22d",
+      "id": "counter-change",
+      "property": "property-0"
+    }
+  ],
+  "generated_rejections": [
+    {
+      "expected_rejection": "DUPLICATE_NORMALIZED_KEY",
+      "id": "duplicate-normalized-map-key",
+      "operation": "encode",
+      "pattern": {
+        "keys": [
+          "é",
+          "é"
+        ],
+        "kind": "map-normalization-collision"
+      }
+    },
+    {
+      "expected_rejection": "OUT_OF_DOMAIN",
+      "id": "u64-plus-one",
+      "operation": "encode",
+      "pattern": {
+        "decimal": "18446744073709551616",
+        "kind": "integer"
+      }
+    },
+    {
+      "expected_rejection": "OUT_OF_DOMAIN",
+      "id": "i64-minus-one-below-min",
+      "operation": "encode",
+      "pattern": {
+        "decimal": "-9223372036854775809",
+        "kind": "integer"
+      }
+    },
+    {
+      "expected_rejection": "LIMIT_EXCEEDED",
+      "id": "depth-33",
+      "operation": "encode",
+      "pattern": {
+        "depth": 33,
+        "kind": "nested-array-depth"
+      }
+    },
+    {
+      "expected_rejection": "LIMIT_EXCEEDED",
+      "id": "node-limit-map",
+      "operation": "encode",
+      "pattern": {
+        "kind": "map-null-pairs",
+        "pairs": 50000
+      }
+    },
+    {
+      "expected_rejection": "LIMIT_EXCEEDED",
+      "id": "byte-string-limit-plus-one",
+      "operation": "encode",
+      "pattern": {
+        "kind": "zero-bytes",
+        "length": 1048573
+      }
+    },
+    {
+      "expected_rejection": "LIMIT_EXCEEDED",
+      "id": "text-byte-limit-plus-one",
+      "operation": "encode",
+      "pattern": {
+        "kind": "ascii-text",
+        "length": 262145
+      }
+    },
+    {
+      "expected_rejection": "LIMIT_EXCEEDED",
+      "id": "array-item-limit-plus-one",
+      "operation": "encode",
+      "pattern": {
+        "kind": "null-array",
+        "length": 65537
+      }
+    },
+    {
+      "expected_rejection": "LIMIT_EXCEEDED",
+      "id": "address-namespace-limit-plus-one",
+      "operation": "address",
+      "pattern": {
+        "kind": "namespace",
+        "length": 1025
+      }
+    },
+    {
+      "expected_rejection": "LIMIT_EXCEEDED",
+      "id": "address-byte-segment-limit-plus-one",
+      "operation": "address",
+      "pattern": {
+        "kind": "bytes",
+        "length": 4097
+      }
+    },
+    {
+      "expected_rejection": "SCHEMA_VIOLATION",
+      "id": "manifest-unknown-field",
+      "operation": "semanticManifestHash",
+      "pattern": {
+        "kind": "manifest-mutation",
+        "mutation": "add-unknown-field"
+      }
+    },
+    {
+      "expected_rejection": "SCHEMA_VIOLATION",
+      "id": "manifest-missing-field",
+      "operation": "semanticManifestHash",
+      "pattern": {
+        "kind": "manifest-mutation",
+        "mutation": "delete-domains"
+      }
+    },
+    {
+      "expected_rejection": "UNSUPPORTED_VERSION",
+      "id": "manifest-version-change",
+      "operation": "semanticManifestHash",
+      "pattern": {
+        "kind": "manifest-mutation",
+        "mutation": "semantic-version-2"
+      }
+    }
+  ],
+  "identity_cases": [
+    {
+      "expected_entity_identity": "16bc07b1c60bd118e2a4691fa026594a25a579f46c899fc6472b220c9e4d8cad",
+      "id": "baseline",
+      "namespace": "person",
+      "stable_key": {
+        "entries": [
+          {
+            "key": "stableId",
+            "value": {
+              "kind": "text",
+              "value": "alpha"
+            }
+          }
+        ],
+        "kind": "map"
+      },
+      "universe_identity": "29d93cd168d16a6763ad6687005e6af6eddbb5b7fef5cf8a919b49f0b0fd4f41"
+    },
+    {
+      "expected_entity_identity": "a261ccb3bdd1d09e1d02f7724964760a125295e250727106a713bcfbd6d6b613",
+      "id": "namespace-change",
+      "namespace": "organization",
+      "stable_key": {
+        "entries": [
+          {
+            "key": "stableId",
+            "value": {
+              "kind": "text",
+              "value": "alpha"
+            }
+          }
+        ],
+        "kind": "map"
+      },
+      "universe_identity": "29d93cd168d16a6763ad6687005e6af6eddbb5b7fef5cf8a919b49f0b0fd4f41"
+    },
+    {
+      "expected_entity_identity": "166ac8fa1851697ccfaed2dc50a984df2005d884c7a889a41badde0885b4b6fa",
+      "id": "universe-change",
+      "namespace": "person",
+      "stable_key": {
+        "entries": [
+          {
+            "key": "stableId",
+            "value": {
+              "kind": "text",
+              "value": "alpha"
+            }
+          }
+        ],
+        "kind": "map"
+      },
+      "universe_identity": "52899626864c9ec9006bb6fe2b5517f72672bcacb00f262f0be1b2603ac0bef7"
+    },
+    {
+      "expected_entity_identity": "5204f02d692ce166861b54ade21203281268e331d4d0c8198390e2798429de49",
+      "id": "stable-key-change",
+      "namespace": "person",
+      "stable_key": {
+        "entries": [
+          {
+            "key": "stableId",
+            "value": {
+              "kind": "text",
+              "value": "beta"
+            }
+          }
+        ],
+        "kind": "map"
+      },
+      "universe_identity": "29d93cd168d16a6763ad6687005e6af6eddbb5b7fef5cf8a919b49f0b0fd4f41"
+    }
+  ],
+  "limits": {
+    "address_bytes": 65536,
+    "address_namespace_bytes": 1024,
+    "address_segment_bytes": 4096,
+    "address_segments": 64,
+    "byte_string_bytes": 1048572,
+    "depth": 32,
+    "input_bytes": 1048576,
+    "items": 65536,
+    "nodes": 100000,
+    "text_bytes": 262144
+  },
+  "malformed_addresses": [
+    {
+      "expected_rejection": "TRUNCATED",
+      "id": "empty",
+      "input_hex": ""
+    },
+    {
+      "expected_rejection": "TRUNCATED",
+      "id": "truncated",
+      "input_hex": "4f46554101"
+    },
+    {
+      "expected_rejection": "NON_CANONICAL",
+      "id": "bad-magic",
+      "input_hex": "004655410101010178"
+    },
+    {
+      "expected_rejection": "UNSUPPORTED_VERSION",
+      "id": "unsupported-version",
+      "input_hex": "4f4655410201010178"
+    },
+    {
+      "expected_rejection": "OUT_OF_DOMAIN",
+      "id": "zero-segments",
+      "input_hex": "4f4655410100"
+    },
+    {
+      "expected_rejection": "LIMIT_EXCEEDED",
+      "id": "too-many-segments",
+      "input_hex": "4f4655410141"
+    },
+    {
+      "expected_rejection": "UNKNOWN_TAG",
+      "id": "unknown-segment",
+      "input_hex": "4f4655410101ff"
+    },
+    {
+      "expected_rejection": "NON_MINIMAL",
+      "id": "nonminimal-count",
+      "input_hex": "4f46554101810001"
+    },
+    {
+      "expected_rejection": "LIMIT_EXCEEDED",
+      "id": "bytes-length-limit-plus-one",
+      "input_hex": "4f4655410101048120"
+    },
+    {
+      "expected_rejection": "LIMIT_EXCEEDED",
+      "id": "namespace-length-limit-plus-one",
+      "input_hex": "4f4655410101018108"
+    },
+    {
+      "expected_rejection": "INVALID_UTF8",
+      "id": "invalid-utf8-namespace",
+      "input_hex": "4f46554101010102c328"
+    },
+    {
+      "expected_rejection": "TRAILING_BYTES",
+      "id": "trailing-address-data",
+      "input_hex": "4f46554101010105617374726f00"
+    }
+  ],
+  "malformed_canonical_bytes": [
+    {
+      "expected_rejection": "TRUNCATED",
+      "id": "truncated-uint",
+      "input_hex": "11"
+    },
+    {
+      "expected_rejection": "NON_MINIMAL",
+      "id": "nonminimal-uint-zero",
+      "input_hex": "118000"
+    },
+    {
+      "expected_rejection": "NON_CANONICAL",
+      "id": "sint-even-alias",
+      "input_hex": "1000"
+    },
+    {
+      "expected_rejection": "NON_CANONICAL",
+      "id": "sint-even-positive-alias",
+      "input_hex": "1002"
+    },
+    {
+      "expected_rejection": "OVERFLOW",
+      "id": "uleb-overflow",
+      "input_hex": "11ffffffffffffffffff02"
+    },
+    {
+      "expected_rejection": "OVERFLOW",
+      "id": "uleb-too-long",
+      "input_hex": "118080808080808080808000"
+    },
+    {
+      "expected_rejection": "INVALID_UTF8",
+      "id": "invalid-utf8",
+      "input_hex": "2102c328"
+    },
+    {
+      "expected_rejection": "NON_NFC",
+      "id": "non-nfc-text",
+      "input_hex": "210365cc81"
+    },
+    {
+      "expected_rejection": "NON_CANONICAL_ORDER",
+      "id": "map-key-order-reversed",
+      "input_hex": "310221016211022101611101"
+    },
+    {
+      "expected_rejection": "DUPLICATE_KEY",
+      "id": "map-duplicate-key",
+      "input_hex": "310221016111012101611102"
+    },
+    {
+      "expected_rejection": "NON_NFC",
+      "id": "map-non-nfc-key",
+      "input_hex": "3101210365cc811101"
+    },
+    {
+      "expected_rejection": "TRAILING_BYTES",
+      "id": "trailing-data",
+      "input_hex": "0000"
+    },
+    {
+      "expected_rejection": "UNKNOWN_TAG",
+      "id": "unknown-tag",
+      "input_hex": "ff"
+    }
+  ],
+  "normativity": {
+    "current_js_error_code_api": "ABSENT_REJECTION_BEHAVIOR_ONLY",
+    "expected_bytes_and_digests": "FROZEN_EXPECTATION",
+    "expected_rejection_class": "FROZEN_EXPECTATION",
+    "implementation_exception_text": "NON_NORMATIVE"
+  },
+  "positive_addresses": [
+    {
+      "derive": {
+        "counter": "0",
+        "domain": "domain-0",
+        "expected_hex": "186531376069e9734644130f5ff081633aac5fcb011eaf8292a2ea6140ed9c32",
+        "property": "property-0"
+      },
+      "expected_hex": "4f46554101010105617374726f",
+      "id": "namespace-astro",
+      "segments": [
+        {
+          "kind": "namespace",
+          "value": "astro"
+        }
+      ]
+    },
+    {
+      "derive": {
+        "counter": "1",
+        "domain": "domain-1",
+        "expected_hex": "561a01840e94d96dd15c6f8916ed6e4b111a55c61d32ed5cc4971c0e09b49a2f",
+        "property": "property-1"
+      },
+      "expected_hex": "4f4655410101020000000000000000",
+      "id": "u64-zero",
+      "segments": [
+        {
+          "kind": "u64",
+          "value": "0"
+        }
+      ]
+    },
+    {
+      "derive": {
+        "counter": "2",
+        "domain": "domain-2",
+        "expected_hex": "f59c9e395f796c2ef4bd7b34045552c4e130244f3534543fceb2f65040ebf162",
+        "property": "property-2"
+      },
+      "expected_hex": "4f465541010102ffffffffffffffff",
+      "id": "u64-max",
+      "segments": [
+        {
+          "kind": "u64",
+          "value": "18446744073709551615"
+        }
+      ]
+    },
+    {
+      "derive": {
+        "counter": "3",
+        "domain": "domain-3",
+        "expected_hex": "02646d56604f424c71f3575a689237d947783d7dcb2192286fac7aa5281c701a",
+        "property": "property-3"
+      },
+      "expected_hex": "4f4655410101038000000000000000",
+      "id": "i64-min",
+      "segments": [
+        {
+          "kind": "i64",
+          "value": "-9223372036854775808"
+        }
+      ]
+    },
+    {
+      "derive": {
+        "counter": "4",
+        "domain": "domain-4",
+        "expected_hex": "779e0f3e4c6ae3d8555b0d03e2f7915c3efd7f9cbac9a57403c042e1e080b71b",
+        "property": "property-4"
+      },
+      "expected_hex": "4f4655410101037fffffffffffffff",
+      "id": "i64-max",
+      "segments": [
+        {
+          "kind": "i64",
+          "value": "9223372036854775807"
+        }
+      ]
+    },
+    {
+      "derive": {
+        "counter": "5",
+        "domain": "domain-5",
+        "expected_hex": "6cb10d5d779638b5ef5122ad387ca465a0b53afff3afe919f13988857272db1b",
+        "property": "property-5"
+      },
+      "expected_hex": "4f46554101010400",
+      "id": "bytes-empty",
+      "segments": [
+        {
+          "kind": "bytes",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "derive": {
+        "counter": "6",
+        "domain": "domain-6",
+        "expected_hex": "512c24e6d2a4967b26170e8c8d49f2ce19d11dd1fb5f5aeb2bf16fe952b5bd85",
+        "property": "property-6"
+      },
+      "expected_hex": "4f46554101040106656e746974790404000102ff03ffffffffffffffff02ffffffffffffffff",
+      "id": "mixed",
+      "segments": [
+        {
+          "kind": "namespace",
+          "value": "entity"
+        },
+        {
+          "kind": "bytes",
+          "value": "000102ff"
+        },
+        {
+          "kind": "i64",
+          "value": "-1"
+        },
+        {
+          "kind": "u64",
+          "value": "18446744073709551615"
+        }
+      ]
+    }
+  ],
+  "positive_canonical_values": [
+    {
+      "expected_hex": "00",
+      "id": "null",
+      "input": {
+        "kind": "null"
+      }
+    },
+    {
+      "expected_hex": "01",
+      "id": "false",
+      "input": {
+        "kind": "bool",
+        "value": false
+      }
+    },
+    {
+      "expected_hex": "02",
+      "id": "true",
+      "input": {
+        "kind": "bool",
+        "value": true
+      }
+    },
+    {
+      "expected_hex": "1100",
+      "id": "u64-zero",
+      "input": {
+        "decimal": "0",
+        "kind": "int"
+      }
+    },
+    {
+      "expected_hex": "117f",
+      "id": "u64-127",
+      "input": {
+        "decimal": "127",
+        "kind": "int"
+      }
+    },
+    {
+      "expected_hex": "118001",
+      "id": "u64-128",
+      "input": {
+        "decimal": "128",
+        "kind": "int"
+      }
+    },
+    {
+      "expected_hex": "11ffffffffffffffffff01",
+      "id": "u64-max",
+      "input": {
+        "decimal": "18446744073709551615",
+        "kind": "int"
+      }
+    },
+    {
+      "expected_hex": "1001",
+      "id": "i64-minus-one",
+      "input": {
+        "decimal": "-1",
+        "kind": "int"
+      }
+    },
+    {
+      "expected_hex": "1003",
+      "id": "i64-minus-two",
+      "input": {
+        "decimal": "-2",
+        "kind": "int"
+      }
+    },
+    {
+      "expected_hex": "10ffffffffffffffffff01",
+      "id": "i64-min",
+      "input": {
+        "decimal": "-9223372036854775808",
+        "kind": "int"
+      }
+    },
+    {
+      "expected_hex": "11ffffffffffffff0f",
+      "id": "safe-int-max",
+      "input": {
+        "decimal": "9007199254740991",
+        "kind": "int"
+      }
+    },
+    {
+      "expected_hex": "118080808080808010",
+      "id": "safe-int-plus-one-math-int",
+      "input": {
+        "decimal": "9007199254740992",
+        "kind": "int"
+      }
+    },
+    {
+      "expected_hex": "118180808080808010",
+      "id": "safe-int-plus-two-math-int",
+      "input": {
+        "decimal": "9007199254740993",
+        "kind": "int"
+      }
+    },
+    {
+      "expected_hex": "2000",
+      "id": "bytes-empty",
+      "input": {
+        "hex": "",
+        "kind": "bytes"
+      }
+    },
+    {
+      "expected_hex": "200200ff",
+      "id": "bytes-00ff",
+      "input": {
+        "hex": "00ff",
+        "kind": "bytes"
+      }
+    },
+    {
+      "expected_hex": "2102c3a9",
+      "id": "text-e-acute",
+      "input": {
+        "kind": "text",
+        "value": "é"
+      }
+    },
+    {
+      "expected_hex": "2102c3a9",
+      "id": "text-nfd-normalizes",
+      "input": {
+        "kind": "text",
+        "value": "é"
+      }
+    },
+    {
+      "expected_hex": "210100",
+      "id": "text-nul",
+      "input": {
+        "kind": "text",
+        "value": "\u0000"
+      }
+    },
+    {
+      "expected_hex": "2103e2808b",
+      "id": "text-zwsp",
+      "input": {
+        "kind": "text",
+        "value": "​"
+      }
+    },
+    {
+      "expected_hex": "2104f09f9880",
+      "id": "text-emoji",
+      "input": {
+        "kind": "text",
+        "value": "😀"
+      }
+    },
+    {
+      "expected_hex": "300311012102c3a900",
+      "id": "array-mixed",
+      "input": {
+        "items": [
+          {
+            "decimal": "1",
+            "kind": "int"
+          },
+          {
+            "kind": "text",
+            "value": "é"
+          },
+          {
+            "kind": "null"
+          }
+        ],
+        "kind": "array"
+      }
+    },
+    {
+      "expected_hex": "3000",
+      "id": "array-empty",
+      "input": {
+        "items": [],
+        "kind": "array"
+      }
+    },
+    {
+      "expected_hex": "310221016111012101621102",
+      "id": "map-canonical-key-order",
+      "input": {
+        "entries": [
+          {
+            "key": "b",
+            "value": {
+              "decimal": "2",
+              "kind": "int"
+            }
+          },
+          {
+            "key": "a",
+            "value": {
+              "decimal": "1",
+              "kind": "int"
+            }
+          }
+        ],
+        "kind": "map"
+      }
+    },
+    {
+      "expected_hex": "310121066e657374656430021100310121017a2102c3a9",
+      "id": "map-nested",
+      "input": {
+        "entries": [
+          {
+            "key": "nested",
+            "value": {
+              "items": [
+                {
+                  "decimal": "0",
+                  "kind": "int"
+                },
+                {
+                  "entries": [
+                    {
+                      "key": "z",
+                      "value": {
+                        "kind": "text",
+                        "value": "é"
+                      }
+                    }
+                  ],
+                  "kind": "map"
+                }
+              ],
+              "kind": "array"
+            }
+          }
+        ],
+        "kind": "map"
+      }
+    }
+  ],
+  "protocol": "ofu-cbv-1",
+  "rejection_classes": [
+    "TRUNCATED",
+    "NON_MINIMAL",
+    "OVERFLOW",
+    "INVALID_UTF8",
+    "NON_NFC",
+    "NON_CANONICAL",
+    "NON_CANONICAL_ORDER",
+    "DUPLICATE_KEY",
+    "DUPLICATE_NORMALIZED_KEY",
+    "UNKNOWN_TAG",
+    "TRAILING_BYTES",
+    "UNSUPPORTED_VERSION",
+    "LIMIT_EXCEEDED",
+    "OUT_OF_DOMAIN",
+    "SCHEMA_VIOLATION",
+    "AUTHORITY_MISMATCH",
+    "DUPLICATE_EVENT",
+    "PRECONDITION_FAILED"
+  ],
+  "rejection_profile": "ofu-ind-conf-rejection-class-v1",
+  "schema": "ofu-ind-conf-p2-corpus-v1",
+  "seed_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+  "semantic_manifest": {
+    "canonicalAddressVersion": 1,
+    "canonicalProtocolVersion": "ofu-cbv-1",
+    "dependencies": {},
+    "domains": {
+      "kernel": 1
+    },
+    "generatorSuite": "ofu-p2-reference",
+    "generatorSuiteVersion": 1,
+    "genesis": {
+      "parameters": {}
+    },
+    "lawProfile": "baseline",
+    "numericContractVersion": 1,
+    "semanticManifestVersion": 1,
+    "subsystems": {
+      "identity": 1,
+      "test-substrate": 1
+    },
+    "unicodeProfileVersion": "ofu-unicode-15.1.0-v1"
+  },
+  "semantic_manifest_hash": "15115d3be206083d795b9492af46693253979709a5fb9cd2f9b3e2321fcd4778",
+  "unicode_profile": "ofu-unicode-15.1.0-v1",
+  "universe_descriptor_hex": "3103210a6d6173746572536565642020000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f211473656d616e7469634d616e696665737448617368202015115d3be206083d795b9492af46693253979709a5fb9cd2f9b3e2321fcd4778211863616e6f6e6963616c50726f746f636f6c56657273696f6e21096f66752d6362762d31",
+  "universe_identity": "29d93cd168d16a6763ad6687005e6af6eddbb5b7fef5cf8a919b49f0b0fd4f41"
+}
