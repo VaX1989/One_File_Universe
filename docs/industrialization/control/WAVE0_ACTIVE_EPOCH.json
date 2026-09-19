@@ -3,7 +3,7 @@
   "authority": "PLANNING_METADATA_ONLY",
   "prompt_id": "CTRL-WAVE0",
   "epoch_id": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
-  "status": "ACTIVE_CONTROL_EPOCH_POST_REPAIR_GATE_BOUNDARY",
+  "status": "ACTIVE_CONTROL_EPOCH_G0A_REAUDIT_READY",
   "created_date": "2026-09-18",
   "master": {
     "schema_version": 4,
@@ -63,7 +63,7 @@
   },
   "gates": {
     "G_PRODUCT_CONTRACTS": "PASS",
-    "G0A_MINIMUM_NORMATIVE_SLICE": "NOT_PASS_INDEPENDENT_GATE_AUDIT_REQUIRED",
+    "G0A_MINIMUM_NORMATIVE_SLICE": "NOT_PASS_INDEPENDENT_REAUDIT_REQUIRED",
     "G0B_EXTERNAL_CONSUMER_SEAM_PROOF": "BLOCKED_BEHIND_G0A",
     "G1_MINIMUM_PLATFORM_PROOF": "BLOCKED_BEHIND_G0B",
     "G1_PASS_CONTINUE": "MANUAL_OUTCOME_NOT_REACHED"
@@ -81,9 +81,9 @@
     "readonly_audits": [
       "GATE-G0A-AUDIT"
     ],
-    "mode": "PRODUCT_SUCCESSORS_UNLOCKED_G0A_AUDIT_ONLY_FOR_INDUSTRIALIZATION",
+    "mode": "PRODUCT_SUCCESSORS_UNLOCKED_G0A_REAUDIT_ONLY_FOR_INDUSTRIALIZATION",
     "blocked_count_from_master": 74,
-    "rule": "G-PROD-CONTRACTS is PASS. Product successors may run under their canonical ownership. Industrialization is stopped at the independent GATE-G0A-AUDIT boundary; IND-JS-HEADLESS and IND-SEC-B remain blocked until explicit G0A PASS."
+    "rule": "G-PROD-CONTRACTS remains PASS. Product successors may run under canonical ownership. IND-CONF-A live-frontier repair #303 is merged and exact integrated CI is PASS 10/10, but industrialization remains stopped until a new independent GATE-G0A-AUDIT explicitly passes G0A."
   },
   "forbidden_actions": [
     "merge #274",
@@ -97,7 +97,7 @@
     "force-push",
     "destructive reset"
   ],
-  "next_control_action": "Run PROMPT_ID=GATE-G0A-AUDIT in an independent READ_ONLY_AUDIT session against the final live control head. The audit must verify checkpoint/archive exclusion and implementation independence before G0A may pass.",
+  "next_control_action": "Run PROMPT_ID=GATE-G0A-AUDIT in a new independent READ_ONLY_AUDIT session against exact control head e8965171944b9d5c604b19b745dacb79156816f4 / tree b769a54ce428083cdb629fc2fc9b3e1bacc970b6.",
   "completed_initial_writers": [
     "QOBS-CROSS-PROGRAM",
     "IND-LIC-A"
@@ -137,14 +137,25 @@
       "pr": 301,
       "repair_head": "23754c88581e658703fa1ac39515464204d3a814",
       "merge_commit": "e1dd6d13aa08245084a1785ac8c17ea3dad8eb45"
+    },
+    {
+      "prompt_id": "IND-CONF-A",
+      "repair_kind": "G0A_LIVE_FRONTIER_INDEPENDENT_EVIDENCE",
+      "pr": 303,
+      "repair_head": "7a15ed574edbfe665af09fc09cd17eb257cd1378",
+      "repair_tree": "b769a54ce428083cdb629fc2fc9b3e1bacc970b6",
+      "merge_commit": "e8965171944b9d5c604b19b745dacb79156816f4",
+      "verification_pr": 305,
+      "verification_run": 35439953703
     }
   ],
   "repair_convergence": {
-    "semantic_subject_sha": "e1dd6d13aa08245084a1785ac8c17ea3dad8eb45",
-    "semantic_subject_tree": "d3e0705c0cbb44372ae4fbc0c04aa8737a681f54",
+    "semantic_subject_sha": "e8965171944b9d5c604b19b745dacb79156816f4",
+    "semantic_subject_tree": "b769a54ce428083cdb629fc2fc9b3e1bacc970b6",
     "cumulative_ci": "PASS_10_OF_10",
     "product_gate": "PASS",
-    "g0a": "READY_FOR_INDEPENDENT_AUDIT_NOT_PASS"
+    "g0a": "LIVE_FRONTIER_REPAIR_CONVERGED_READY_FOR_INDEPENDENT_REAUDIT_NOT_PASS"
   },
-  "repair_convergence_adjudication": "docs/industrialization/control/WAVE0_REPAIR_CONVERGENCE_ADJUDICATION_2026-09-19.json"
+  "repair_convergence_adjudication": "docs/industrialization/control/WAVE0_REPAIR_CONVERGENCE_ADJUDICATION_2026-09-19.json",
+  "g0a_reaudit_ready_record": "docs/industrialization/control/WAVE0_G0A_LIVE_FRONTIER_REPAIR_CONVERGENCE_2026-09-19.json"
 }
