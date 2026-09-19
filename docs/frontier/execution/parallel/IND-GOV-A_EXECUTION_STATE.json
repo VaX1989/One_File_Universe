@@ -2,7 +2,7 @@
   "prompt_id": "IND-GOV-A",
   "master_schema_version": 4,
   "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
-  "status": "REPAIR_IN_PROGRESS",
+  "status": "READY_FOR_CONTROL_CONVERGENCE",
   "mode": "WRITE",
   "semantic_surface": "INDUSTRIALIZATION_SPEC",
   "hypothesis": "G0A can retain the ten source-backed P2/narrow-P4 candidates while excluding checkpoint/compaction and archive trust from the minimum; this resolves SEC-01 without changing P2/P4 production semantics or inventing authentication.",
@@ -109,11 +109,11 @@
     "Checkpoint/archive authenticated provenance, freshness and full semantic trust remain deferred; this repair does not invent authentication.",
     "No public query/provider/persistence ABI is frozen by this lane."
   ],
-  "last_action": "Demoted P4 checkpoint/compaction and archive integrity candidates from READY_TO_SPECIFY to DRAFT_ONLY and excluded them from the G0A minimum, preserving all production semantics.",
-  "next_action": "Open and bind the Draft repair PR, publish a new immutable v4 repair handoff, then return to CTRL-CONVERGENCE.",
+  "last_action": "Completed the G0A minimum-slice narrowing on Draft PR #299: checkpoint/compaction and archive integrity are DRAFT_ONLY and explicitly outside the G0A minimum; production semantics remain unchanged.",
+  "next_action": "CTRL-CONVERGENCE should validate PR #299 ownership, exact-head CI, machine-readable classification, and the immutable repair handoff before integration; independent GATE-G0A-AUDIT remains mandatory.",
   "completion_sha": "EXTERNALLY_BOUND_BY_DRAFT_REPAIR_PR_HEAD",
   "completion_tree": "EXTERNALLY_BOUND_BY_DRAFT_REPAIR_PR_HEAD_TREE",
   "disposition": "READY_FOR_CONTROL_CONVERGENCE",
   "branch": "work/post-m0/ind-gov-a-ofu-post-m0-dual-track-wave0-2026-09-18-61f43071-repair-2026-09-19",
-  "pr": "PENDING_DRAFT_PR_BINDING"
+  "pr": 299
 }
