@@ -1,0 +1,64 @@
+{
+  "prompt_id": "PROD-W1-SCI-FP",
+  "master_schema_version": 4,
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "status": "REQUIRES_FRESH_EXECUTABLE_EVIDENCE",
+  "terminal_state": "NOT_TERMINAL",
+  "hypothesis": "A compact deterministic W1 Scientific Fingerprint can project existing governed R6 scientific/model state and causal provenance without creating a second canonical science authority or depending on renderer/UI state.",
+  "failure_fingerprint": null,
+  "failure_count": 0,
+  "alternate_strategy": "If the frozen W1 fingerprint contract cannot express a required scientific distinction without authority loss, stop and request a versioned PRODUCT_CONTRACTS successor rather than extending the contract ad hoc in this lane.",
+  "last_action": "Created an additive read-only Scientific Fingerprint provider and focused authority/determinism tests from the exact post-repair Wave-0 control head.",
+  "next_action": "Obtain fresh exact-head executable evidence for tests/product/prod-w1-sci-fp.mjs, then materialize immutable terminal handoff for control convergence.",
+  "dependencies": {
+    "M0_HISTORICAL": {
+      "status": "PASS",
+      "sha": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+      "tree": "3704247247940fa8c5f08291cd80ec9e24e7d49d"
+    },
+    "G_PRODUCT_CONTRACTS": {
+      "status": "PASS",
+      "control_pr": 290,
+      "control_head": "816a9b35dab81368361c4e343dc1217278e07929",
+      "control_tree": "f6b62c0b5476540687cef575be873c8c0c1c46c7"
+    },
+    "PROD_W1_CONTRACTS": {
+      "status": "PASS_INTEGRATED",
+      "contract_source": "src/product/contracts/w1-observation-contracts.js"
+    },
+    "MASTER_V4": {
+      "status": "PASS",
+      "pr": 287,
+      "sha": "c2cab6d6e914b918432432fdc69825e0a1000509"
+    }
+  },
+  "evidence_debt": [
+    "Fresh execution of tests/product/prod-w1-sci-fp.mjs is required; no PASS is claimed from static construction.",
+    "Aggregate control CI is regression evidence only and is not represented as execution of the new unregistered focused test."
+  ],
+  "branch": "work/post-m0/prod-w1-sci-fp-2026-09-19",
+  "pr": "PENDING",
+  "base_sha": "816a9b35dab81368361c4e343dc1217278e07929",
+  "base_tree": "f6b62c0b5476540687cef575be873c8c0c1c46c7",
+  "ownership": {
+    "semantic_surface": "LANE_LOCAL:PROD-W1-SCI-FP",
+    "mode": "WRITE_PRODUCT",
+    "shared_renderer_modified": false,
+    "canonical_science_modified": false,
+    "product_contracts_modified": false
+  },
+  "changed_paths": [
+    "src/product/w1/scientific-fingerprint.js",
+    "tests/product/prod-w1-sci-fp.mjs",
+    "docs/product/scientific-fingerprint/README.md",
+    "docs/frontier/execution/parallel/PROD-W1-SCI-FP_EXECUTION_STATE.json"
+  ],
+  "tests_run": [
+    {
+      "command": "node tests/product/prod-w1-sci-fp.mjs",
+      "status": "PENDING_FRESH_EXECUTION"
+    }
+  ],
+  "completion_sha": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD",
+  "completion_tree": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD_TREE"
+}
