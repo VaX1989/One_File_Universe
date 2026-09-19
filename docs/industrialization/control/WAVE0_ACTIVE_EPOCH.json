@@ -3,7 +3,7 @@
   "authority": "PLANNING_METADATA_ONLY",
   "prompt_id": "CTRL-WAVE0",
   "epoch_id": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
-  "status": "ACTIVE_CONTROL_EPOCH_REPAIR_PHASE",
+  "status": "ACTIVE_CONTROL_EPOCH_POST_REPAIR_GATE_BOUNDARY",
   "created_date": "2026-09-18",
   "master": {
     "schema_version": 4,
@@ -62,23 +62,28 @@
     }
   },
   "gates": {
-    "G_PRODUCT_CONTRACTS": "NOT_PASS_V4_TERMINAL_CONTRACT_REPAIR_REQUIRED",
-    "G0A_MINIMUM_NORMATIVE_SLICE": "NOT_PASS_REPAIR_REQUIRED_THEN_INDEPENDENT_GATE_AUDIT",
+    "G_PRODUCT_CONTRACTS": "PASS",
+    "G0A_MINIMUM_NORMATIVE_SLICE": "NOT_PASS_INDEPENDENT_GATE_AUDIT_REQUIRED",
     "G0B_EXTERNAL_CONSUMER_SEAM_PROOF": "BLOCKED_BEHIND_G0A",
     "G1_MINIMUM_PLATFORM_PROOF": "BLOCKED_BEHIND_G0B",
     "G1_PASS_CONTINUE": "MANUAL_OUTCOME_NOT_REACHED"
   },
   "runnable_queue": {
     "writers": [
-      "PROD-W1-CONTRACTS",
-      "IND-GOV-A",
-      "IND-CONF-A",
-      "IND-BRIDGE-A"
+      "PROD-W1-PRODUCT-DEPTH",
+      "PROD-W1-SCI-FP",
+      "PROD-W1-ATLAS-CORE",
+      "PRODUCT-MACRO",
+      "PRODUCT-HUMAN",
+      "PRODUCT-VISUAL-CONTINUITY",
+      "PRODUCT-AUDIO"
     ],
-    "readonly_audits": [],
-    "mode": "CONTROL_ISSUED_REPAIR_CONTINUATIONS",
+    "readonly_audits": [
+      "GATE-G0A-AUDIT"
+    ],
+    "mode": "PRODUCT_SUCCESSORS_UNLOCKED_G0A_AUDIT_ONLY_FOR_INDUSTRIALIZATION",
     "blocked_count_from_master": 74,
-    "rule": "Only the four listed canonical lanes may continue in repair mode. No new downstream implementation lane is activated."
+    "rule": "G-PROD-CONTRACTS is PASS. Product successors may run under their canonical ownership. Industrialization is stopped at the independent GATE-G0A-AUDIT boundary; IND-JS-HEADLESS and IND-SEC-B remain blocked until explicit G0A PASS."
   },
   "forbidden_actions": [
     "merge #274",
@@ -92,7 +97,7 @@
     "force-push",
     "destructive reset"
   ],
-  "next_control_action": "Converge the four repair continuations; then adjudicate G-PROD-CONTRACTS and run independent GATE-G0A-AUDIT.",
+  "next_control_action": "Run PROMPT_ID=GATE-G0A-AUDIT in an independent READ_ONLY_AUDIT session against the final live control head. The audit must verify checkpoint/archive exclusion and implementation independence before G0A may pass.",
   "completed_initial_writers": [
     "QOBS-CROSS-PROGRAM",
     "IND-LIC-A"
@@ -107,5 +112,39 @@
   ],
   "repair_directive": "docs/industrialization/control/WAVE0_REPAIR_DIRECTIVE_2026-09-19.json",
   "convergence_record": "docs/industrialization/control/WAVE0_CONVERGENCE_RECORD_2026-09-19.json",
-  "audit_register": "docs/industrialization/control/WAVE0_READONLY_AUDIT_REGISTER_2026-09-19.json"
+  "audit_register": "docs/industrialization/control/WAVE0_READONLY_AUDIT_REGISTER_2026-09-19.json",
+  "completed_repairs": [
+    {
+      "prompt_id": "PROD-W1-CONTRACTS",
+      "pr": 298,
+      "repair_head": "5f8e6c95ff39c82ca079cdf1f7aeb227a867ddff",
+      "merge_commit": "d0b3112c0d403f4c50424eccda581870ce9b7050"
+    },
+    {
+      "prompt_id": "IND-GOV-A",
+      "pr": 299,
+      "repair_head": "a4675d7e265ee82bfaa7cc265dd2df87412064bd",
+      "merge_commit": "7947efea069f8f37d84b77745afc65330aac01db"
+    },
+    {
+      "prompt_id": "IND-CONF-A",
+      "pr": 300,
+      "repair_head": "58d9771dbb3c37a1bf261fdbf9d549c5a51877f4",
+      "merge_commit": "ea6911d94e62cc4d9a5f33e7d69a26b7254b1558"
+    },
+    {
+      "prompt_id": "IND-BRIDGE-A",
+      "pr": 301,
+      "repair_head": "23754c88581e658703fa1ac39515464204d3a814",
+      "merge_commit": "e1dd6d13aa08245084a1785ac8c17ea3dad8eb45"
+    }
+  ],
+  "repair_convergence": {
+    "semantic_subject_sha": "e1dd6d13aa08245084a1785ac8c17ea3dad8eb45",
+    "semantic_subject_tree": "d3e0705c0cbb44372ae4fbc0c04aa8737a681f54",
+    "cumulative_ci": "PASS_10_OF_10",
+    "product_gate": "PASS",
+    "g0a": "READY_FOR_INDEPENDENT_AUDIT_NOT_PASS"
+  },
+  "repair_convergence_adjudication": "docs/industrialization/control/WAVE0_REPAIR_CONVERGENCE_ADJUDICATION_2026-09-19.json"
 }
