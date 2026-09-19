@@ -1,0 +1,81 @@
+{
+  "prompt_id": "PROD-W1-SCI-FP",
+  "master_schema_version": 4,
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "base_sha": "816a9b35dab81368361c4e343dc1217278e07929",
+  "base_tree": "f6b62c0b5476540687cef575be873c8c0c1c46c7",
+  "dependency_shas": {
+    "M0_HISTORICAL": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+    "G_PRODUCT_CONTRACTS_CONTROL": "816a9b35dab81368361c4e343dc1217278e07929",
+    "PR287_V4_MASTER": "c2cab6d6e914b918432432fdc69825e0a1000509",
+    "W1_PRODUCT_CONTRACTS_BLOB": "ec32053fa03f07dd95121d815a8bcdbe06103b6b",
+    "R6_SCIENTIFIC_STATE_BLOB": "93c9b4b1ea40aa500802a878d9040520412c2d38"
+  },
+  "final_sha": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD",
+  "final_tree": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD_TREE",
+  "changed_paths": [
+    "src/product/w1/scientific-fingerprint.js",
+    "tests/product/prod-w1-sci-fp.mjs",
+    "docs/product/scientific-fingerprint/README.md",
+    "docs/frontier/execution/parallel/PROD-W1-SCI-FP_EXECUTION_STATE.json",
+    "docs/industrialization/handoffs/PROD-W1-SCI-FP_2026-09-19.json"
+  ],
+  "ownership_result": "PASS_LANE_LOCAL_PRODUCT_PROJECTION_NO_SHARED_RENDERER_OR_CANONICAL_SCIENCE_CHANGE",
+  "tests": [
+    {
+      "command": "node tests/product/prod-w1-sci-fp.mjs",
+      "result": "PASS",
+      "verification_pr": 307,
+      "foundation_run": 35459767863,
+      "exact_lane_subject": "b6f7c6e2d30f1bd107967b1bd69497e82e32b2bf",
+      "verification_head": "ab4e0e5db105c49c45977956adf6f88173aafdf9"
+    }
+  ],
+  "deterministic_witnesses": [
+    {
+      "kind": "SCIENTIFIC_CONTEXT_HASH",
+      "sha256": "999c8b5da5e2b4dc3dbd34b46d6363fc722d749c451ddea46d3f6e19e9056476"
+    },
+    {
+      "kind": "CANONICAL_FINGERPRINT_BYTES",
+      "bytes": 1602
+    },
+    {
+      "kind": "CAUSAL_PROVENANCE_PROJECTION",
+      "edges": 5,
+      "unknown": 5,
+      "authority": "ANALYSIS_ONLY"
+    },
+    {
+      "kind": "AUTHORITY_PRESERVATION",
+      "domains": {
+        "astronomy": "CANONICAL",
+        "environment": "MODEL_DERIVED",
+        "identity": "CANONICAL",
+        "physicalPlanet": "MODEL_DERIVED",
+        "sample": "MODEL_DERIVED",
+        "surface": "MODEL_DERIVED"
+      }
+    }
+  ],
+  "security_classification": "READ_ONLY_PRODUCT_PROJECTION; no parser/persistence/network/public-provider authority introduced.",
+  "authority_science_classification": "ANALYSIS_ONLY projection over governed existing scientific/model state; deterministic hashes are identity witnesses, not promotion to canonical science.",
+  "performance_resource_evidence": "Focused fixture is bounded; output is one W1 fingerprint plus bounded provenance projection. No renderer/runtime resources acquired.",
+  "limitations": [
+    "No source-backed citation/evidence graph is invented where upstream source data does not provide one.",
+    "UNKNOWN scientific state produces null scientific hashes and no fingerprint reference.",
+    "Presentation/representation-only changes are explicitly excluded from scientific fingerprint identity.",
+    "Final exact-head aggregate regression CI is still convergence-owned."
+  ],
+  "falsification_attempts": [
+    "Changed presentation and representation hashes while holding scientific state fixed; fingerprint and fingerprint reference remained identical.",
+    "Wrong canonical subject identity rejected.",
+    "Wrong universe binding rejected.",
+    "Unsupported world-state contract rejected.",
+    "Scientific model version mismatch rejected.",
+    "UNKNOWN state verified to contain no scientific hashes or fingerprint reference."
+  ],
+  "rollback_abandon_condition": "If final-head CI fails materially or control review finds any authority promotion/canonical-science mutation, reject PR #306 and repair only within PROD-W1-SCI-FP ownership; do not weaken the frozen W1 contracts.",
+  "integration_patch_requests": [],
+  "disposition": "READY_FOR_CONTROL_CONVERGENCE"
+}
