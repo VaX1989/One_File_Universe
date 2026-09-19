@@ -12,8 +12,7 @@ Define the smallest facade that an external JavaScript host could use without im
 
     HeadlessKernel.open({
       masterSeed,
-      semanticManifest,
-      archiveBytes?
+      semanticManifest
     }) -> session
 
     session.identity() -> {
@@ -21,9 +20,7 @@ Define the smallest facade that an external JavaScript host could use without im
       universeIdentity,
       p2Protocol,
       p4Protocol,
-      transitionContractDigest,
-      historyStateDigest,
-      eventRoot
+      transitionContractDigest
     }
 
     session.address(segments) -> Uint8Array
@@ -35,12 +32,11 @@ Define the smallest facade that an external JavaScript host could use without im
       counter
     }) -> Uint8Array
 
-    session.history() -> {
-      stateDigest,
-      eventRoot
-    }
+    session.canonicalEvent(eventInput) -> CanonicalEvent
 
-    session.exportArchive() -> Uint8Array
+    session.compareEvents(a, b) -> -1 | 0 | 1
+
+    session.lineageId(parentLineageId, branchReason) -> Uint8Array
 
     session.close() -> void
 
@@ -54,12 +50,14 @@ Names are candidate facade names only. The semantic operations map to existing P
 | identity manifest/universe | P2 |
 | address | P2 address + strict address guard |
 | derive | P2 derive |
-| open archive | P4 importArchive |
-| history state digest | P4 replayLiveWorld / state digest |
-| event root | P4 eventRoot |
-| export archive | P4 exportArchive |
+| canonical event / total order | P4 canonicalEvent + canonical comparator |
+| lineage/live-frontier inputs | P4 lineageId + live admission semantics |
 | transition contract provenance | P4 transitionContractDigest |
 | close | facade/runtime lifecycle only; no semantic effect |
+
+## POST_G0A_PRIVATE_CANDIDATE — archive/persistence
+
+P4 archive import/export and checkpoint/compaction remain useful private implementation candidates, but they are **excluded from the G0A minimum facade and from the G0A/external-consumer proof**. No `archiveBytes` input and no public `exportArchive()` method belong to the G0A candidate. Any later exposure requires separate trust/authentication/provenance and persistence evidence; current integrity/self-consistency is not treated as authenticated history.
 
 ## Deliberately absent from v0
 
@@ -86,9 +84,9 @@ Also absent:
 
 ## Opaque state boundary
 
-The session may cache decoded manifest/archive state, but cache/materialization is not part of identity.
+The session may cache decoded manifest state, but cache/materialization is not part of identity.
 
-The caller may discard the session at any time. Reopening from the same master seed, semantic manifest and archive must reproduce the same canonical address bytes, P2 derived bytes, P4 state digest and P4 event root.
+The caller may discard the session at any time. Reopening from the same master seed and semantic manifest must reproduce the same canonical address bytes, P2 derived bytes, canonical P4 event identity/order, lineage and transition-contract digest.
 
 The facade must not expose globalThis.OFU as its state model. Packaging may initially adapt the current IIFEs internally, but the public contract is explicit arguments/results only.
 
@@ -103,7 +101,7 @@ The minimum provenance witness should be derivable without product state:
 - domain/property/counter used for derivation;
 - P4 temporal protocol version;
 - P4 transition contract digest;
-- P4 state digest/event root when history exists.
+- canonical P4 event identity/order and lineage/live-frontier witness where exercised.
 
 Authority metadata must describe the operation that produced a value. Runtime measurements are not scientific provenance.
 
@@ -112,7 +110,6 @@ Authority metadata must describe the operation that produced a value. Runtime me
 G0A freezes behavior, not a new error taxonomy:
 - invalid input fails closed;
 - unsupported version fails closed;
-- archive integrity/lineage mismatch fails closed;
 - no partial result is promoted;
 - closing a session invalidates that session only and changes no semantic bytes.
 
@@ -137,12 +134,11 @@ A tiny consumer must be able to:
 2. obtain the pinned manifest hash and universe identity;
 3. encode Golden Universe Corpus address case 0;
 4. derive its pinned property bytes using the existing domain/property/counter fixture;
-5. create or restore a P4 history and obtain state/event digests;
-6. export archive bytes;
-7. destroy all facade state;
-8. reopen from the same semantic inputs/archive;
-9. reproduce the exact P2 address/property bytes and P4 digests;
-10. do all of the above with no DOM, Babylon, renderer, camera or UI selection.
+5. create canonical P4 events and verify deterministic total order, lineage identity and exact transition binding;
+6. destroy all facade state;
+7. reopen from the same semantic inputs;
+8. reproduce the exact P2 address/property bytes and narrow P4 witnesses;
+9. do all of the above with no DOM, Babylon, renderer, camera or UI selection.
 
 The current additive probe performs the same behavior by direct source loading. IND-JS-HEADLESS must make it pass through the public facade without source-internal bypass before G0B can be considered.
 
