@@ -1,19 +1,19 @@
 {
   "prompt_id": "IND-CONF-A",
   "planning_epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
-  "status": "REPAIR_IN_PROGRESS_REQUIRES_FRESH_EXECUTABLE_EVIDENCE",
-  "terminal_state": "NOT_TERMINAL",
+  "status": "READY_FOR_CONTROL_CONVERGENCE",
+  "terminal_state": "READY_FOR_CONTROL_CONVERGENCE",
   "base_sha": "7f8e320eba8cbe042a223e18a5862b77f4936e93",
   "base_tree": "80aed3f7820b642407cd1995f153ce9b93eec5c5",
   "branch": "work/post-m0/ind-conf-a-g0a-live-frontier-repair-2026-09-19",
-  "pr": "PENDING",
+  "pr": 303,
   "hypothesis": "A versioned language-neutral live-frontier scenario set plus an independent minimal Python order-key/frontier state machine can close the G0A conformance-evidence gap without changing production P4 semantics or promoting checkpoint/archive trust.",
-  "current_hypothesis": "MATERIALIZED_REPAIR_PENDING_FRESH_EXECUTION",
+  "current_hypothesis": "SUPPORTED_BY_CORPUS_V2_AND_FRESH_CROSS_RUNNER_EXECUTABLE_EVIDENCE",
   "failure_fingerprint": "G0A-LIVE-FRONTIER-INDEPENDENT-EVIDENCE-GAP",
   "failure_count": 1,
   "alternate_strategy": "If the independent minimal frontier oracle disagrees with current authority or the subsequent independent G0A audit rejects the evidence model, keep G0A NOT_PASS and refine only CONFORMANCE_CORPUS evidence; do not narrow GOV or alter production P4 merely to satisfy the gate.",
-  "last_action": "Created corpus revision 2 with six self-contained live-frontier scenarios, updated JS differential and independent Python oracle, and rebound the corpus digest.",
-  "next_action": "Obtain fresh exact-repair-head execution of JS authority, independent Python oracle, and combined corpus test; then publish immutable repair handoff for CTRL-CONVERGENCE.",
+  "last_action": "Verification-only PR #305 executed the revised JS authority runner, independent Python oracle and combined corpus v2 test on the exact repair subject; all direct commands passed in Foundation Integrity run 35439953703.",
+  "next_action": "CTRL-CONVERGENCE should validate PR #303 ownership/diff, confirm PR #305 remains unmerged, require exact-head regression CI green, merge PR #303 forward, then rerun independent GATE-G0A-AUDIT.",
   "dependencies": {
     "M0_HISTORICAL": {
       "status": "PASS",
@@ -87,15 +87,43 @@
     },
     {
       "command": "node tools/industrialization/ind-conf/run-js-authority.mjs",
-      "status": "PENDING_FRESH_EXECUTION"
+      "status": "PASS_CONTROL_VERIFICATION",
+      "verification_pr": 305,
+      "run_id": 35439953703,
+      "verification_head": "f95cac5db7a3b0a6e4ea304e6d9cb3c28bd0c9f6",
+      "exact_repair_subject": "612c789ba44f20ea35f4a18db990004eafe19238",
+      "result": {
+        "positive": 54,
+        "rejection": 48,
+        "live_frontier_scenarios": 6,
+        "live_frontier_rejections": 2,
+        "corpus_digest": "d92b43afb8a7deeaed4b0c3ee13b73bad344b196132c35433b66360c0b0772fc"
+      }
     },
     {
       "command": "python3 tools/industrialization/ind-conf/run-python-oracle.py",
-      "status": "PENDING_FRESH_EXECUTION"
+      "status": "PASS_CONTROL_VERIFICATION",
+      "verification_pr": 305,
+      "run_id": 35439953703,
+      "verification_head": "f95cac5db7a3b0a6e4ea304e6d9cb3c28bd0c9f6",
+      "exact_repair_subject": "612c789ba44f20ea35f4a18db990004eafe19238",
+      "result": {
+        "positive": 54,
+        "rejection": 40,
+        "live_frontier_scenarios": 6,
+        "live_frontier_rejections": 2,
+        "frontier_model": "INDEPENDENT_MINIMAL_ORDER_KEY_STATE_MACHINE",
+        "corpus_digest": "d92b43afb8a7deeaed4b0c3ee13b73bad344b196132c35433b66360c0b0772fc"
+      }
     },
     {
       "command": "node tests/industrialization/ind-conf/conformance-corpus-tests.mjs",
-      "status": "PENDING_FRESH_EXECUTION"
+      "status": "PASS_CONTROL_VERIFICATION",
+      "verification_pr": 305,
+      "run_id": 35439953703,
+      "verification_head": "f95cac5db7a3b0a6e4ea304e6d9cb3c28bd0c9f6",
+      "exact_repair_subject": "612c789ba44f20ea35f4a18db990004eafe19238",
+      "result": "ofu-ind-conf-a-combined-test-v2 PASS"
     }
   ],
   "evidence_refs": [
@@ -109,17 +137,11 @@
     "workflow:35388105025"
   ],
   "evidence_debt": [
-    "Fresh executable evidence for corpus revision 2 is required; prior PR #297 evidence applies only to superseded corpus digest 2b13e4c47c254e418543410806ec5aaed7650b60e2e653c75b602b9c0735b65b.",
-    "Independent GATE-G0A-AUDIT must be rerun after convergence; this repair cannot self-certify G0A.",
-    "Checkpoint/archive remain CURRENT_AUTHORITY_REGRESSION_ONLY and are excluded from independent G0A evidence."
+    "Independent GATE-G0A-AUDIT must be rerun after repair convergence; this repair cannot self-certify G0A.",
+    "Checkpoint/archive remain CURRENT_AUTHORITY_REGRESSION_ONLY; no independent temporal reducer or trust proof is claimed.",
+    "Verification-only PR #305 carries the package registration delta and must remain unmerged."
   ],
-  "external_evidence_debt": [
-    {
-      "limitation": "Current chat has GitHub repository/API access but no authenticated working checkout command runner for exact branch execution.",
-      "prohibited_workaround": "Do not alter shared package/workflow surfaces from IND-CONF-A merely to force execution.",
-      "resolution": "Use a control-owned verification-only PR if needed, close it without merge after exact-head executable evidence is captured."
-    }
-  ],
+  "external_evidence_debt": [],
   "completion_sha": "EXTERNALLY_BOUND_BY_DRAFT_REPAIR_PR_HEAD",
   "completion_tree": "EXTERNALLY_BOUND_BY_DRAFT_REPAIR_PR_HEAD_TREE",
   "forbidden_surfaces_touched": [],
