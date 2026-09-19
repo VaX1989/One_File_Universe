@@ -1,11 +1,11 @@
 {
   "prompt_id": "IND-BRIDGE-A",
   "planning_epoch": "OFU-POST-M0-ASYMMETRIC-DUAL-TRACK-2026-09-17-V4",
-  "status": "REPAIR_IN_PROGRESS",
+  "status": "READY_FOR_CONTROL_CONVERGENCE_PENDING_DIRECT_PROBE_VERIFICATION",
   "base_sha": "37e6744f1d8f711278ae8b14ddaf84b9176b5a6b",
   "base_tree": "fb5be853362a9266f0f6d64f23338d2827f358e0",
   "branch": "work/post-m0/ind-bridge-a-ofu-post-m0-dual-track-wave0-2026-09-18-61f43071-repair-2026-09-19",
-  "pr": "PENDING_DRAFT_PR_BINDING",
+  "pr": 301,
   "dependencies_resolved": {
     "M0_HISTORICAL": {
       "status": "PASS",
@@ -69,8 +69,8 @@
   "failure_fingerprint": "G0A_HEADLESS_SEAM_ARCHIVE_OVERBREADTH_AND_V4_PACKET",
   "failure_count": 1,
   "current_hypothesis": "The smallest useful JS headless seam is an additive facade over already headless P2/P4 canonical and temporal primitives; current PX provider invocation and V2X materialization/runtime policy should not be exported wholesale because they still encode product selection/presentation/runtime concerns.",
-  "last_action": "Removed archiveBytes/public exportArchive from the G0A candidate, reclassified archive/checkpoint as POST_G0A_PRIVATE_CANDIDATE, and updated both characterization probes to the narrowed seam.",
-  "next_action": "Open/bind the Draft repair PR, publish a new immutable v4 repair handoff, then let CTRL-CONVERGENCE obtain exact executable probe evidence through a control-owned verification hook if needed.",
+  "last_action": "Completed the semantic narrowing and v4 execution-state repair on Draft PR #301; the two lane probes are updated but their executable PASS remains pending control-owned verification.",
+  "next_action": "CTRL-CONVERGENCE should execute the two repaired probes through a verification-only shared test hook, then validate the immutable repair handoff before merging PR #301.",
   "alternate_strategy": "If the independent G0A audit still finds the seam too broad, narrow further to the source-backed primitive subset rather than exporting product/runtime or persistence surfaces.",
   "external_evidence_debt": [
     "No public headless package/facade exists yet; the consumer probe deliberately loads checked-in P2/P4 source through Node vm, so this packet is G0A input and not G0B external seam proof.",
