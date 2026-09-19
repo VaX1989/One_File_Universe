@@ -1,0 +1,61 @@
+{
+  "schema": "ofu.ind-conf-a.g0a-scope-classification.v1",
+  "prompt_id": "IND-CONF-A",
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "repair_base": {
+    "sha": "37e6744f1d8f711278ae8b14ddaf84b9176b5a6b",
+    "tree": "fb5be853362a9266f0f6d64f23338d2827f358e0"
+  },
+  "frozen_corpus": {
+    "manifest": "conformance/iw0/manifest.json",
+    "digest": "2b13e4c47c254e418543410806ec5aaed7650b60e2e653c75b602b9c0735b65b",
+    "vector_bytes_changed": false
+  },
+  "independent_g0a_conformance_evidence": {
+    "classification": "INDEPENDENT_G0A_CONFORMANCE_EVIDENCE",
+    "scope": [
+      "P2 canonical value bytes/rejections",
+      "P2 frozen Unicode/NFC/profile boundaries",
+      "Canonical Address v1 bytes/rejections",
+      "P2 semantic manifest hash",
+      "Universe/Entity identity",
+      "addressed derivation/domain separation",
+      "P2 exact numeric subset",
+      "P4 lineage ID",
+      "P4 Event IDs and total order",
+      "P4 exact transition-contract digest"
+    ],
+    "oracle_roles": {
+      "javascript": "CURRENT_AUTHORITY_DIFFERENTIAL",
+      "python": "INDEPENDENT_P2_ORACLE_PLUS_P4_IDENTITY_ORDER_TRANSITION_ORACLE"
+    }
+  },
+  "current_authority_regression_only": {
+    "classification": "CURRENT_AUTHORITY_REGRESSION_ONLY",
+    "scope": [
+      "P4 checkpoint/suffix equivalence",
+      "P4 checkpoint authority behavior",
+      "P4 archive round-trip/integrity/order/duplication behavior",
+      "P4 archive/checkpoint import trust behavior"
+    ],
+    "independent_cross_language_proof": false,
+    "reason": "The Python oracle is not an independent temporal reducer for checkpoint/archive semantics. Passing JS and narrow Python checks must not be represented as independent cross-language proof of checkpoint/archive trust."
+  },
+  "control_verification": {
+    "verification_pr": 297,
+    "verification_head": "95b81237f8cfeaba5a1df300a4fc8c82f042470b",
+    "foundation_run": 35433206372,
+    "result": "PASS",
+    "js": {
+      "positive": 48,
+      "rejection": 47
+    },
+    "python": {
+      "positive": 48,
+      "rejection": 38
+    },
+    "corpus_digest": "2b13e4c47c254e418543410806ec5aaed7650b60e2e653c75b602b9c0735b65b",
+    "note": "Verification closes direct execution debt for the unchanged frozen corpus; it does not promote checkpoint/archive behavior into independent G0A proof."
+  },
+  "g0a_rule": "Only independent_g0a_conformance_evidence may support implementation-independent G0A claims. current_authority_regression_only remains useful regression evidence but is outside the independent minimum."
+}
