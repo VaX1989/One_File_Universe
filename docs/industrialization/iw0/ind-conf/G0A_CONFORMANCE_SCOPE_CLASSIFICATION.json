@@ -1,15 +1,19 @@
 {
-  "schema": "ofu.ind-conf-a.g0a-scope-classification.v1",
+  "schema": "ofu.ind-conf-a.g0a-scope-classification.v2",
   "prompt_id": "IND-CONF-A",
   "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
   "repair_base": {
-    "sha": "37e6744f1d8f711278ae8b14ddaf84b9176b5a6b",
-    "tree": "fb5be853362a9266f0f6d64f23338d2827f358e0"
+    "sha": "7f8e320eba8cbe042a223e18a5862b77f4936e93",
+    "tree": "80aed3f7820b642407cd1995f153ce9b93eec5c5"
   },
   "frozen_corpus": {
     "manifest": "conformance/iw0/manifest.json",
-    "digest": "2b13e4c47c254e418543410806ec5aaed7650b60e2e653c75b602b9c0735b65b",
-    "vector_bytes_changed": false
+    "digest": "d92b43afb8a7deeaed4b0c3ee13b73bad344b196132c35433b66360c0b0772fc",
+    "supersedes_digest": "2b13e4c47c254e418543410806ec5aaed7650b60e2e653c75b602b9c0735b65b",
+    "corpus_revision": 2,
+    "p4_vector_schema": "ofu-ind-conf-p4-corpus-v2",
+    "vector_bytes_changed": true,
+    "change_reason": "Independent G0A audit failure G0A-LIVE-FRONTIER-INDEPENDENT-EVIDENCE-GAP requires self-contained language-neutral P4 live-frontier admission scenarios."
   },
   "independent_g0a_conformance_evidence": {
     "classification": "INDEPENDENT_G0A_CONFORMANCE_EVIDENCE",
@@ -23,11 +27,18 @@
       "P2 exact numeric subset",
       "P4 lineage ID",
       "P4 Event IDs and total order",
-      "P4 exact transition-contract digest"
+      "P4 exact transition-contract digest",
+      "P4 live-frontier admission semantics: strict advance, exact frontier retry duplicate/no-op, older/same-time-lower rejection, same-time-higher EventId admission"
     ],
     "oracle_roles": {
       "javascript": "CURRENT_AUTHORITY_DIFFERENTIAL",
-      "python": "INDEPENDENT_P2_ORACLE_PLUS_P4_IDENTITY_ORDER_TRANSITION_ORACLE"
+      "python": "INDEPENDENT_P2_ORACLE_PLUS_P4_IDENTITY_ORDER_TRANSITION_FRONTIER_ORACLE"
+    },
+    "live_frontier": {
+      "corpus_path": "conformance/iw0/p4-vectors.json",
+      "scenario_count": 6,
+      "oracle_model": "INDEPENDENT_MINIMAL_ORDER_KEY_STATE_MACHINE",
+      "production_source_imported_by_python": false
     }
   },
   "current_authority_regression_only": {
@@ -42,20 +53,19 @@
     "reason": "The Python oracle is not an independent temporal reducer for checkpoint/archive semantics. Passing JS and narrow Python checks must not be represented as independent cross-language proof of checkpoint/archive trust."
   },
   "control_verification": {
-    "verification_pr": 297,
-    "verification_head": "95b81237f8cfeaba5a1df300a4fc8c82f042470b",
-    "foundation_run": 35433206372,
-    "result": "PASS",
-    "js": {
-      "positive": 48,
-      "rejection": 47
+    "previous_corpus_verification": {
+      "verification_pr": 297,
+      "verification_head": "95b81237f8cfeaba5a1df300a4fc8c82f042470b",
+      "foundation_run": 35433206372,
+      "result": "PASS",
+      "corpus_digest": "2b13e4c47c254e418543410806ec5aaed7650b60e2e653c75b602b9c0735b65b"
     },
-    "python": {
-      "positive": 48,
-      "rejection": 38
-    },
-    "corpus_digest": "2b13e4c47c254e418543410806ec5aaed7650b60e2e653c75b602b9c0735b65b",
-    "note": "Verification closes direct execution debt for the unchanged frozen corpus; it does not promote checkpoint/archive behavior into independent G0A proof."
+    "revised_corpus_verification": {
+      "status": "REQUIRES_FRESH_CONTROL_VERIFICATION",
+      "corpus_digest": "d92b43afb8a7deeaed4b0c3ee13b73bad344b196132c35433b66360c0b0772fc",
+      "note": "No PASS is claimed until revised v2 P4 corpus and both runners execute from the repair subject."
+    }
   },
-  "g0a_rule": "Only independent_g0a_conformance_evidence may support implementation-independent G0A claims. current_authority_regression_only remains useful regression evidence but is outside the independent minimum."
+  "g0a_rule": "Only independent_g0a_conformance_evidence may support implementation-independent G0A claims. current_authority_regression_only remains useful regression evidence but is outside the independent minimum.",
+  "audit_failure_repaired": "G0A-LIVE-FRONTIER-INDEPENDENT-EVIDENCE-GAP"
 }
