@@ -3,7 +3,7 @@
   "authority": "PLANNING_METADATA_ONLY",
   "prompt_id": "CTRL-WAVE0",
   "epoch_id": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
-  "status": "REPAIR_REQUIRED_BEFORE_GATE_ADVANCE",
+  "status": "WAVE0_REPAIRS_CONVERGED_PRODUCT_GATE_PASS_G0A_READY_FOR_INDEPENDENT_AUDIT",
   "planning_epoch": "OFU-POST-M0-ASYMMETRIC-DUAL-TRACK-2026-09-17-V4",
   "freeze_id": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
   "base_sha": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
@@ -13,18 +13,27 @@
   "ownership_map": "docs/industrialization/control/WAVE0_OWNERSHIP.json",
   "ownership_blob_sha": "a049532deeb982905e2ed5acbaab71d72445b29d",
   "runnable_queue": [
-    "PROD-W1-CONTRACTS",
-    "IND-GOV-A",
-    "IND-CONF-A",
-    "IND-BRIDGE-A"
+    "PROD-W1-PRODUCT-DEPTH",
+    "PROD-W1-SCI-FP",
+    "PROD-W1-ATLAS-CORE",
+    "PRODUCT-MACRO",
+    "PRODUCT-HUMAN",
+    "PRODUCT-VISUAL-CONTINUITY",
+    "PRODUCT-AUDIO",
+    "GATE-G0A-AUDIT"
   ],
   "writer_queue": [
-    "PROD-W1-CONTRACTS",
-    "IND-GOV-A",
-    "IND-CONF-A",
-    "IND-BRIDGE-A"
+    "PROD-W1-PRODUCT-DEPTH",
+    "PROD-W1-SCI-FP",
+    "PROD-W1-ATLAS-CORE",
+    "PRODUCT-MACRO",
+    "PRODUCT-HUMAN",
+    "PRODUCT-VISUAL-CONTINUITY",
+    "PRODUCT-AUDIO"
   ],
-  "readonly_queue": [],
+  "readonly_queue": [
+    "GATE-G0A-AUDIT"
+  ],
   "completed_tasks": [
     "reauthenticated repository as VaX1989 with push/admin permission",
     "resolved CTRL-WAVE0 source refs and inherited contracts",
@@ -39,29 +48,36 @@
     "registered QOBS cross-program test through the accepted control-owned integration patch request",
     "validated writer terminal artifacts against v4 EXECUTION_STATE_CONTRACT and TERMINAL_HANDOFF_CONTRACT",
     "preserved fifteen independent read-only/audit terminal outcomes in a control evidence register",
-    "revalidated the G0A checkpoint/archive trust concern on the integrated subject head"
+    "revalidated the G0A checkpoint/archive trust concern on the integrated subject head",
+    "converged and merged forward repair PR #298 for PROD-W1-CONTRACTS",
+    "converged and merged forward repair PR #299 for IND-GOV-A",
+    "converged and merged forward repair PR #300 for IND-CONF-A",
+    "converged and merged forward repair PR #301 for IND-BRIDGE-A",
+    "closed verification-only PR #302 without merge after direct PROD/BRIDGE probes passed in Foundation Integrity run 35435461161",
+    "validated all ten cumulative workflows PASS on exact integrated semantic subject e1dd6d13aa08245084a1785ac8c17ea3dad8eb45",
+    "adjudicated G-PROD-CONTRACTS PASS on v4 packet completeness, focused executable evidence, ownership-clean repair and cumulative exact-head CI"
   ],
   "unresolved_tasks": [
-    "PROD-W1-CONTRACTS v4 execution-state and immutable terminal-handoff artifacts missing",
-    "IND-GOV-A v4 packet repair and G0A checkpoint/archive normative-scope narrowing required",
-    "IND-CONF-A v4 repair handoff and independent-vs-current-authority conformance-scope classification required",
-    "IND-BRIDGE-A v4 packet repair, narrowed G0A facade and exact direct probe execution required",
-    "G-PROD-CONTRACTS is not passed until PROD-W1-CONTRACTS repair converges",
-    "G0A is not passed until three industrialization repairs converge and independent GATE-G0A-AUDIT passes",
-    "G0B/G1 remain blocked"
+    "Run PROMPT_ID=GATE-G0A-AUDIT as an independent READ_ONLY_AUDIT against the final live control head.",
+    "G0A remains NOT_PASS until the independent audit verifies the repaired source-backed minimum and checkpoint/archive exclusion.",
+    "IND-JS-HEADLESS and IND-SEC-B remain blocked pending explicit G0A PASS.",
+    "G0B and G1 remain blocked by the mandatory industrialization sequence.",
+    "G-LICENSING-DISTRIBUTION-DECISION remains a manual outcome not reached.",
+    "AUTH-01/AUTH-02, AS-001..AS-003 and DET-01/DET-02 remain downstream authority/science/determinism constraints."
   ],
   "dependency_status": {
     "M0_HISTORICAL": "PASS",
     "CTRL_WAVE0": "ACTIVE",
-    "PROD_W1_CONTRACTS": "INTEGRATED_REPAIR_REQUIRED_BEFORE_G_PRODUCT_CONTRACTS",
+    "PROD_W1_CONTRACTS": "REPAIR_CONVERGED_G_PRODUCT_CONTRACTS_PASS",
     "QOBS_CROSS_PROGRAM": "INTEGRATED_ACCEPTED",
-    "IND_GOV_A": "INTEGRATED_REPAIR_REQUIRED",
-    "IND_CONF_A": "INTEGRATED_CONTROL_EXECUTION_VERIFIED_REPAIR_REQUIRED",
+    "IND_GOV_A": "REPAIR_CONVERGED_READY_FOR_INDEPENDENT_G0A_AUDIT",
+    "IND_CONF_A": "REPAIR_CONVERGED_CONTROL_VERIFIED_READY_FOR_INDEPENDENT_G0A_AUDIT",
     "IND_LIC_A": "INTEGRATED_ACCEPTED_MANUAL_LICENSE_DECISION_OPEN",
-    "IND_BRIDGE_A": "INTEGRATED_REPAIR_REQUIRED",
+    "IND_BRIDGE_A": "REPAIR_CONVERGED_DIRECT_PROBES_PASS_READY_FOR_INDEPENDENT_G0A_AUDIT",
     "IND_SEC_A": "READY_READONLY_AUDIT",
     "IND_NATIVE_P2": "BLOCKED_BY_G0B",
-    "IND_RUNTIME": "BLOCKED_BY_G1_PASS_CONTINUE"
+    "IND_RUNTIME": "BLOCKED_BY_G1_PASS_CONTINUE",
+    "GATE_G0A_AUDIT": "READY_READONLY_AUDIT_INDEPENDENT_EXECUTION_REQUIRED"
   },
   "safe_merge_order": [
     "independent READY writer lanes may develop in parallel from the exact control head",
@@ -71,11 +87,11 @@
     "IND-NATIVE-P2 -> IND-CABI-MICROHOST -> GATE-G1-AUDIT -> G1_MINIMUM_PLATFORM_PROOF",
     "only explicit G1_PASS_CONTINUE may unlock IND-RUNTIME"
   ],
-  "failure_fingerprint": "WAVE0_V4_PACKET_COMPLIANCE_AND_G0A_MINIMUM_SLICE_SCOPE",
-  "failure_count": 1,
-  "current_hypothesis": "A minimal control-only epoch can safely unlock the six declared initial writers and fifteen read-only auditors without transferring product/scientific authority or allowing gate bypass.",
-  "last_action": "Integrated all six initial writer PRs, control-verified IND-CONF-A direct corpus evidence, applied QOBS central-test IPR, and performed v4 terminal-contract plus G0A pre-audit convergence review.",
-  "next_action": "Run four control-issued repair continuations in parallel: PROD-W1-CONTRACTS, IND-GOV-A, IND-CONF-A, IND-BRIDGE-A.",
+  "failure_fingerprint": "NONE_ACTIVE_AT_REPAIR_CONVERGENCE_BOUNDARY",
+  "failure_count": 0,
+  "current_hypothesis": "The four Wave-0 repairs have closed the identified product packet and G0A scope defects without changing frozen P2/P4 semantics; product successors are now unlocked, while industrialization must remain at the independent G0A audit boundary.",
+  "last_action": "Merged all four evidence-complete repair continuations, obtained direct PROD/BRIDGE executable verification without merging the temporary hook, completed 10/10 exact-head cumulative CI on e1dd6d13aa08245084a1785ac8c17ea3dad8eb45, and adjudicated G-PROD-CONTRACTS PASS.",
+  "next_action": "Execute PROMPT_ID=GATE-G0A-AUDIT as an independent READ_ONLY_AUDIT against the final live control head; only evidence from that independent audit may adjudicate G0A.",
   "alternate_strategy": "Do not revert evidence-valid additive work. Preserve forward history, repair metadata/scope in owning lanes, and keep downstream gates closed until exact integrated evidence passes.",
   "evidence_refs": [
     "PR #276 M0 certified convergence",
@@ -90,7 +106,14 @@
     "docs/industrialization/control/WAVE0_CONVERGENCE_RECORD_2026-09-19.json",
     "docs/industrialization/control/WAVE0_READONLY_AUDIT_REGISTER_2026-09-19.json",
     "docs/industrialization/control/WAVE0_REPAIR_DIRECTIVE_2026-09-19.json",
-    "docs/industrialization/control/WAVE0_G0A_PREAUDIT_ADJUDICATION_2026-09-19.json"
+    "docs/industrialization/control/WAVE0_G0A_PREAUDIT_ADJUDICATION_2026-09-19.json",
+    "PR #298 PROD-W1-CONTRACTS v4 repair",
+    "PR #299 IND-GOV-A G0A minimum narrowing repair",
+    "PR #300 IND-CONF-A independent-vs-current-authority classification repair",
+    "PR #301 IND-BRIDGE-A headless-seam narrowing repair",
+    "PR #302 verification-only direct PROD/BRIDGE probes (closed without merge)",
+    "docs/industrialization/control/WAVE0_REPAIR_CONVERGENCE_ADJUDICATION_2026-09-19.json",
+    "GitHub Actions exact semantic subject e1dd6d13aa08245084a1785ac8c17ea3dad8eb45: all ten workflows PASS"
   ],
   "external_evidence_debt": [
     "physical GPU/device evidence remains separate release-grade debt and does not block this control epoch"
@@ -98,14 +121,15 @@
   "completion_sha": "EXTERNALLY_BOUND_BY_DRAFT_CONTROL_PR_HEAD",
   "completion_tree": "EXTERNALLY_BOUND_BY_DRAFT_CONTROL_PR_HEAD_TREE",
   "gates": {
-    "G_PRODUCT_CONTRACTS": "NOT_PASS_V4_TERMINAL_CONTRACT_REPAIR_REQUIRED",
-    "G0A_MINIMUM_NORMATIVE_SLICE": "NOT_PASS_REPAIR_REQUIRED_THEN_INDEPENDENT_GATE_AUDIT",
-    "G0B_EXTERNAL_CONSUMER_SEAM_PROOF": "BLOCKED",
-    "G1_MINIMUM_PLATFORM_PROOF": "BLOCKED",
+    "G_PRODUCT_CONTRACTS": "PASS",
+    "G0A_MINIMUM_NORMATIVE_SLICE": "NOT_PASS_INDEPENDENT_GATE_AUDIT_REQUIRED",
+    "G0B_EXTERNAL_CONSUMER_SEAM_PROOF": "BLOCKED_BEHIND_G0A",
+    "G1_MINIMUM_PLATFORM_PROOF": "BLOCKED_BEHIND_G0B",
     "G1_PASS_CONTINUE": "MANUAL_OUTCOME_NOT_REACHED"
   },
   "repair_directive": "docs/industrialization/control/WAVE0_REPAIR_DIRECTIVE_2026-09-19.json",
   "convergence_record": "docs/industrialization/control/WAVE0_CONVERGENCE_RECORD_2026-09-19.json",
   "audit_register": "docs/industrialization/control/WAVE0_READONLY_AUDIT_REGISTER_2026-09-19.json",
-  "g0a_preaudit": "docs/industrialization/control/WAVE0_G0A_PREAUDIT_ADJUDICATION_2026-09-19.json"
+  "g0a_preaudit": "docs/industrialization/control/WAVE0_G0A_PREAUDIT_ADJUDICATION_2026-09-19.json",
+  "repair_convergence_adjudication": "docs/industrialization/control/WAVE0_REPAIR_CONVERGENCE_ADJUDICATION_2026-09-19.json"
 }
