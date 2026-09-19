@@ -1,0 +1,51 @@
+{
+  "prompt_id": "PROD-W1-CONTRACTS",
+  "master_schema_version": 4,
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "status": "REPAIR_IN_PROGRESS",
+  "hypothesis": "The already-integrated W1 product contract implementation is semantically sufficient for G-PROD-CONTRACTS; the remaining blocker is v4 execution/terminal packet completeness, so the repair can close the gate debt without changing product contract semantics.",
+  "failure_fingerprint": "WAVE0_V4_PACKET_COMPLIANCE_PROD_W1_CONTRACTS",
+  "failure_count": 1,
+  "alternate_strategy": "If exact evidence reveals a semantic defect in the integrated contract family, stop the metadata-only repair and open a separately evidenced semantic repair within PRODUCT_CONTRACTS ownership rather than weakening the gate.",
+  "last_action": "Started the forward v4 repair continuation from live Wave-0 control head 37e6744f1d8f711278ae8b14ddaf84b9176b5a6b; no product contract semantics changed.",
+  "next_action": "Bind the Draft repair PR, materialize the immutable v4 repair handoff, then return the evidence-complete packet to CTRL-CONVERGENCE.",
+  "dependencies": {
+    "M0_HISTORICAL": {
+      "status": "PASS",
+      "sha": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+      "tree": "3704247247940fa8c5f08291cd80ec9e24e7d49d"
+    },
+    "CTRL_WAVE0_REPAIR_PHASE": {
+      "status": "PASS_ACTIVE",
+      "pr": 290,
+      "sha": "37e6744f1d8f711278ae8b14ddaf84b9176b5a6b",
+      "tree": "fb5be853362a9266f0f6d64f23338d2827f358e0"
+    },
+    "ORIGINAL_LANE": {
+      "status": "INTEGRATED_REPAIR_PACKET_REQUIRED",
+      "pr": 293,
+      "sha": "65d3c03fbb4745d71c189aba1d7260b030badc20",
+      "tree": "48fb9fa07508b66ad4d8964a4c7f2188c06d9d70"
+    },
+    "MASTER_V4": {
+      "status": "PASS",
+      "pr": 287,
+      "sha": "c2cab6d6e914b918432432fdc69825e0a1000509"
+    }
+  },
+  "evidence_debt": [
+    "The current execution environment cannot perform a fresh repository checkout, so no new local run is claimed.",
+    "The original lane executed node tests/product/prod-w1-contracts.mjs three consecutive times with PASS and deterministic saved-observation SHA-256 6846656dfe2bab0e53623bf315d51d71a2005d7c55cf40e2cb86127ffdbd7e5e.",
+    "The live control head has fully green cumulative GitHub Actions, but those aggregate workflows are not misrepresented as a fresh execution of the unregistered focused product-contract test."
+  ],
+  "branch": "work/post-m0/prod-w1-contracts-ofu-post-m0-dual-track-wave0-2026-09-18-61f43071-repair-2026-09-19",
+  "pr": "PENDING_DRAFT_PR_BINDING",
+  "completion_sha": "EXTERNALLY_BOUND_BY_DRAFT_REPAIR_PR_HEAD",
+  "completion_tree": "EXTERNALLY_BOUND_BY_DRAFT_REPAIR_PR_HEAD_TREE",
+  "ownership": {
+    "version": "ofu.post-m0.wave0.ownership.v1",
+    "semantic_surface": "PRODUCT_CONTRACTS",
+    "repair_classification": "V4_TERMINAL_CONTRACT_COMPLETION",
+    "semantic_changes": false
+  }
+}
