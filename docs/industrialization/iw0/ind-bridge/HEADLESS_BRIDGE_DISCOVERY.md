@@ -20,7 +20,7 @@ The V2X-01 materialization runtime is also not the public semantic seam. It owns
 
 Therefore G0A should freeze a candidate boundary, not migrate product source:
 
-1. Core candidate now: P2 identity/canonical address/derivation and P4 replay/archive/digest.
+1. G0A core candidate now: P2 identity/canonical address/derivation plus narrow P4 canonical time/event order, lineage/live-frontier and exact transition binding. Checkpoint/archive are POST_G0A_PRIVATE_CANDIDATE only.
 2. Query extraction later: selection-free domain/provider invocation must be proven by IND-JS-HEADLESS.
 3. Runtime later: scheduler/materialization/worker/resource policy remains private until the semantic seam is independently useful.
 4. Product adapters remain product: DOM bootstrap, renderer, camera, UI selection, viewport visibility, WebGL/Babylon, product lifecycle and convenience storage.
@@ -137,15 +137,16 @@ Not yet consumer-independent:
 
 ### What is the minimum useful consumer-independent lifecycle?
 
-For G0A, explicit P2/P4 primitives behind one opaque session are enough:
-1. open from master seed + semantic manifest and optionally P4 archive bytes;
+For G0A, explicit P2 plus narrow-P4 primitives behind one opaque session are enough:
+1. open from master seed + semantic manifest;
 2. obtain identity/provenance metadata;
 3. canonicalize an address;
 4. derive a deterministic property witness from explicit domain/property/counter;
-5. obtain P4 replay/state/history witness;
-6. export P4 archive bytes;
-7. close/evict all materialized process state;
-8. reopen from the same semantic inputs/archive and require byte/digest equality.
+5. construct canonical P4 event/order and lineage/transition witnesses;
+6. close/evict all materialized process state;
+7. reopen from the same semantic inputs and require identical P2/narrow-P4 witnesses.
+
+P4 checkpoint/compaction and archive import/export are POST_G0A_PRIVATE_CANDIDATE only and are excluded from the G0A/external-consumer proof.
 
 A generic provider query method is intentionally not frozen at G0A.
 
@@ -187,7 +188,7 @@ The additive probe tests/industrialization/bridge/external-consumer-probe.mjs de
 - loads the current P2/P4 source only;
 - uses the committed Golden Universe Corpus seed/manifest/address fixture;
 - resolves the existing exact canonical address and property derivation;
-- creates deterministic P4 history, exports an archive, discards the OFU namespace, reloads the kernels, imports/replays, and requires the same witness.
+- constructs deterministic narrow P4 event/order/lineage/transition witnesses, discards the OFU namespace, reloads the kernels, and requires the same witness without archive persistence.
 
 This is a G0A characterization probe, not G0B proof. It still loads checked-in source files directly. That limitation is intentional and prevents this lane from falsely claiming an external package/API exists before IND-JS-HEADLESS.
 
@@ -230,7 +231,7 @@ Rollback:
 
 The platform thesis should be paused/killed if any of these occur during the next lane:
 - the facade needs DOM, Babylon, camera, pxProduct or __OFU_PLANET_PREVIEW__;
-- canonical results differ after cache/materialization eviction or P4 archive restore;
+- canonical results differ after session discard/reopen from the same semantic inputs;
 - a public query needs visible/selected/RENDER_PREP to define semantic output;
 - provider extraction requires changing P2/P4 meaning instead of adapting explicit context;
 - shipping product changes repeatedly force semantic API churn;
