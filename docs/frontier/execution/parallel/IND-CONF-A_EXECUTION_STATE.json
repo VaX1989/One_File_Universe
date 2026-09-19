@@ -1,19 +1,19 @@
 {
   "prompt_id": "IND-CONF-A",
   "planning_epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
-  "status": "EXTERNAL_EVIDENCE_LIMITATION",
-  "terminal_state": "EXTERNAL_EVIDENCE_LIMITATION",
-  "base_sha": "fa88f7cec101a52d07916a0fdd3927c482a6f188",
-  "base_tree": "784e12501a7e0ba9e281787513bddbb6eed1c6bf",
-  "branch": "work/post-m0/ind-conf-a-ofu-post-m0-dual-track-wave0-2026-09-18-61f43071",
-  "pr": 296,
-  "hypothesis": "A small frozen P2-first corpus plus a deliberately narrow explicit-P4 slice can provide byte/digest and rejection/behavior expectations consumable by JS, Python and future native implementations without changing production semantics or making source similarity the oracle.",
+  "status": "REPAIR_IN_PROGRESS",
+  "terminal_state": "REPAIR_IN_PROGRESS",
+  "base_sha": "37e6744f1d8f711278ae8b14ddaf84b9176b5a6b",
+  "base_tree": "fb5be853362a9266f0f6d64f23338d2827f358e0",
+  "branch": "work/post-m0/ind-conf-a-ofu-post-m0-dual-track-wave0-2026-09-18-61f43071-repair-2026-09-19",
+  "pr": "PENDING_DRAFT_PR_BINDING",
+  "hypothesis": "The frozen corpus can remain byte-for-byte unchanged while machine-readable metadata separates truly independent G0A conformance evidence from checkpoint/archive behavior that is only current-authority regression evidence.",
   "current_hypothesis": "SUPPORTED_BY_MATERIALIZED_CORPUS_AND_UPSTREAM_EXACT_HEAD_REGRESSION_EVIDENCE",
-  "failure_fingerprint": "DIRECT_NEW_CORPUS_RUNNERS_NOT_EXECUTABLE_WITH_AVAILABLE_GITHUB_CONNECTOR_WITHOUT_OUT_OF_SCOPE_SHARED_CI_OR_PACKAGE_CHANGES",
+  "failure_fingerprint": "G0A_CONFORMANCE_SCOPE_CLASSIFICATION_AND_V4_PACKET",
   "failure_count": 1,
-  "alternate_strategy": "Preserve the direct runners and exact commands as lane-owned artifacts. Require a capable checkout or control-plane audit to execute them. Do not modify package.json or shared workflows merely to manufacture evidence.",
-  "last_action": "Reauthenticated, revalidated the active epoch/ownership, confirmed all PR-head upstream P2/P4/foundation/baseline workflows green, and classified the remaining direct-runner execution debt as an external evidence limitation.",
-  "next_action": "Control/G0A audit must check out completion_sha and execute the three direct corpus commands. On PASS, supersede this evidence limitation and advance IND-CONF-A to control convergence; on failure, reopen this same lane/PR with the observed fingerprint.",
+  "alternate_strategy": "If independent G0A audit finds the narrow Python P4 oracle insufficient for any listed independent claim, narrow the independent scope further rather than extending checkpoint/archive authority or changing frozen vectors without a versioned corpus change.",
+  "last_action": "Added machine-readable G0A evidence-scope classification and documented that checkpoint/archive are CURRENT_AUTHORITY_REGRESSION_ONLY; frozen vector bytes and corpus digest remain unchanged.",
+  "next_action": "Open/bind the Draft repair PR, publish a new immutable v4 repair handoff incorporating control verification #297, then return to CTRL-CONVERGENCE.",
   "dependencies": {
     "M0_HISTORICAL": {
       "status": "PASS",
@@ -33,6 +33,17 @@
       "status": "PASS",
       "version": "ofu.post-m0.wave0.ownership.v1",
       "blob_sha": "a049532deeb982905e2ed5acbaab71d72445b29d"
+    },
+    "control_head_at_repair": {
+      "status": "PASS_ACTIVE",
+      "sha": "37e6744f1d8f711278ae8b14ddaf84b9176b5a6b",
+      "tree": "fb5be853362a9266f0f6d64f23338d2827f358e0",
+      "pr": 290
+    },
+    "control_verification_297": {
+      "status": "PASS",
+      "verification_head": "95b81237f8cfeaba5a1df300a4fc8c82f042470b",
+      "run_id": 35433206372
     }
   },
   "dependencies_resolved": [
@@ -98,9 +109,9 @@
     "workflow:35388105025"
   ],
   "evidence_debt": [
-    "node tools/industrialization/ind-conf/run-js-authority.mjs",
-    "python3 tools/industrialization/ind-conf/run-python-oracle.py",
-    "node tests/industrialization/ind-conf/conformance-corpus-tests.mjs"
+    "Independent GATE-G0A-AUDIT must verify that only the explicitly classified independent scope is used for G0A.",
+    "Checkpoint/archive remain CURRENT_AUTHORITY_REGRESSION_ONLY; no independent temporal reducer proof is claimed.",
+    "Frozen corpus digest remains unchanged; any future vector semantic change requires a versioned corpus change."
   ],
   "external_evidence_debt": [
     {
@@ -109,8 +120,10 @@
       "resolution": "Execute the committed direct commands from an exact checkout of completion_sha in a capable control/audit environment."
     }
   ],
-  "completion_sha": "de0060fc2a0b6743b4ad6c6e2337bd80c6a8a612",
-  "completion_tree": "52a60ada00c51554c27b4c78b8cfb71b64c3685c",
+  "completion_sha": "EXTERNALLY_BOUND_BY_DRAFT_REPAIR_PR_HEAD",
+  "completion_tree": "EXTERNALLY_BOUND_BY_DRAFT_REPAIR_PR_HEAD_TREE",
   "forbidden_surfaces_touched": [],
-  "integration_patch_requests": []
+  "integration_patch_requests": [],
+  "master_schema_version": 4,
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071"
 }
