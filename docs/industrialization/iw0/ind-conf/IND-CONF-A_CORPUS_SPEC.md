@@ -15,8 +15,9 @@ This packet freezes the smallest implementation-independent corpus that can be c
 - Semantic Generator Manifest hash, Universe Identity and universe-scoped Entity Identity vectors;
 - addressed derivation exact outputs and domain/property/counter separation;
 - P2 integer, Unicode/NFC, collection, depth/node/byte and schema boundary rejection patterns;
-- a deliberately narrow P4 slice: lineage ID, Event IDs, total order and core transition-contract digest as exact byte/digest expectations;
-- P4 replay permutation, deduplication, checkpoint-suffix equivalence, archive round-trip, live frontier, checkpoint authority, archive ordering/duplication and precondition behavior as behavioral expectations.
+- a deliberately narrow P4 slice: lineage ID, Event IDs, total order, self-contained live-frontier admission scenarios and core transition-contract digest as exact implementation-independent expectations;
+- P4 live-frontier admission is frozen through explicit language-neutral scenarios covering initial/strict advance, same-time higher EventId admission, exact-frontier duplicate/no-op, same-time lower EventId rejection and older-event rejection.
+- P4 replay permutation, deduplication, checkpoint-suffix equivalence, archive round-trip, checkpoint authority, archive ordering/duplication and precondition behavior remain behavioral expectations; checkpoint/archive evidence remains current-authority regression only.
 
 It intentionally does **not** freeze JavaScript object mechanics as a public cross-language API, implementation exception strings, renderer/product behavior, scientific truth, full P4 persistence/state representation, provider/runtime semantics, or a C/native ABI.
 
@@ -44,9 +45,9 @@ Three distinct evidence types are kept separate:
 
 1. **Frozen corpus facts** — committed inputs, expected bytes/digests, expected rejection classes and behavioral invariants.
 2. **JS authority differential** — `tools/industrialization/ind-conf/run-js-authority.mjs` executes the current P2/P4 implementation against the frozen corpus and narrow P4 behavioral invariants.
-3. **Independent Python oracle** — `tools/industrialization/ind-conf/run-python-oracle.py` consumes the same files through the pre-existing independent P2 oracle and independently recomputes the narrow P4 lineage/Event/order/transition digest slice from P2 canonical bytes plus `hashlib`.
+3. **Independent Python oracle** — `tools/industrialization/ind-conf/run-python-oracle.py` consumes the same files through the pre-existing independent P2 oracle, independently recomputes P4 lineage/Event/order/transition digests, and applies a minimal independent frontier-admission state machine using only the language-neutral order key `(seconds, micros, EventId bytes)`. It does not import or execute the JavaScript P4 implementation.
 
-Agreement of the JS runner with itself is therefore not represented as cross-language proof. The machine-readable split is recorded in `G0A_CONFORMANCE_SCOPE_CLASSIFICATION.json`: P2 plus narrow P4 lineage/Event/order/transition evidence is eligible as independent G0A conformance evidence, while checkpoint/archive behavior is explicitly `CURRENT_AUTHORITY_REGRESSION_ONLY`. The Python oracle does not pretend to be an independent temporal reducer, and checkpoint/archive PASS results do not establish independent cross-language trust.
+Agreement of the JS runner with itself is therefore not represented as cross-language proof. The machine-readable split is recorded in `G0A_CONFORMANCE_SCOPE_CLASSIFICATION.json`: P2 plus narrow P4 lineage/Event/order/transition/live-frontier-admission evidence is eligible as independent G0A conformance evidence, while checkpoint/archive behavior is explicitly `CURRENT_AUTHORITY_REGRESSION_ONLY`. The Python oracle implements only the minimal order-key/frontier admission model needed for G0A; it is not a checkpoint/archive or full temporal-state reducer.
 
 ## Direct commands
 
@@ -68,4 +69,4 @@ The manifest records exact source blobs from the active Wave-0 control head. Tho
 
 ## Wave-0 repair classification
 
-The frozen vector payloads and corpus digest are unchanged by the repair. Control verification PR #297 executed the direct corpus commands successfully (Foundation Integrity run `35433206372`), with 48/47 JS positive/rejection checks and 48/38 Python positive/rejection checks. That closes execution debt for the unchanged corpus but does not elevate checkpoint/archive behavior beyond `CURRENT_AUTHORITY_REGRESSION_ONLY`.
+Independent audit failure `G0A-LIVE-FRONTIER-INDEPENDENT-EVIDENCE-GAP` requires a versioned corpus revision. P4 vectors are revised to `ofu-ind-conf-p4-corpus-v2`; the previous corpus digest `2b13e4c47c254e418543410806ec5aaed7650b60e2e653c75b602b9c0735b65b` is superseded by `d92b43afb8a7deeaed4b0c3ee13b73bad344b196132c35433b66360c0b0772fc`. Fresh exact-subject execution is required before this repair can be converged. Checkpoint/archive behavior remains `CURRENT_AUTHORITY_REGRESSION_ONLY`.
