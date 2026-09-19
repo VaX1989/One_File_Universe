@@ -2,14 +2,14 @@
   "prompt_id": "PROD-W1-ATLAS-CORE",
   "master_schema_version": 4,
   "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
-  "status": "REQUIRES_FRESH_EXECUTABLE_EVIDENCE",
+  "status": "REPAIR_IN_PROGRESS_REQUIRES_FRESH_EXECUTABLE_EVIDENCE",
   "terminal_state": "NOT_TERMINAL",
   "hypothesis": "A bounded Personal Atlas can persist places, observations, snapshots and routes as exact W1/P4 semantic references while keeping renderer/camera objects and persistence-backend choices outside the product authority boundary.",
-  "failure_fingerprint": null,
-  "failure_count": 0,
-  "alternate_strategy": "If Atlas requires information not representable by the frozen W1 SavedObservation/P4 reference family, request a versioned PRODUCT_CONTRACTS successor rather than embedding renderer/runtime objects or a competing snapshot format.",
-  "last_action": "Created an additive bounded Atlas core, internal deterministic bundle format, exact revisit plans and focused fail-closed tests from the exact Wave-0 control head.",
-  "next_action": "Obtain fresh exact-head execution of tests/product/prod-w1-atlas-core.mjs, then materialize immutable terminal handoff for control convergence.",
+  "failure_fingerprint": "ATLAS_DEFAULT_SEARCH_LIMIT_EXCEEDS_INSTANCE_CAPACITY",
+  "failure_count": 1,
+  "alternate_strategy": "If the repaired default still violates bounded-resource behavior or another focused failure appears, keep PR #308 unmerged and repair the specific lane-local fingerprint rather than widening limits or weakening validation.",
+  "last_action": "Verification-only PR #309 failed only in the Atlas focused test because find() defaulted to 32 while the test instance maxEntries was 8; upstream npm/P2/P4 work before the focused test passed.",
+  "next_action": "Verify the capacity-aware default search repair from a new exact lane head; do not reuse #309 evidence as PASS.",
   "dependencies": {
     "M0_HISTORICAL": {
       "status": "PASS",
@@ -58,9 +58,18 @@
   "tests_run": [
     {
       "command": "node tests/product/prod-w1-atlas-core.mjs",
-      "status": "PENDING_FRESH_EXECUTION"
+      "status": "FAIL_CONTROL_VERIFICATION",
+      "verification_pr": 309,
+      "run_id": 35459946456,
+      "failure_fingerprint": "ATLAS_DEFAULT_SEARCH_LIMIT_EXCEEDS_INSTANCE_CAPACITY",
+      "detail": "find() implicit limit 32 exceeded configured maxEntries=8 before search assertions."
+    },
+    {
+      "command": "node tests/product/prod-w1-atlas-core.mjs",
+      "status": "PENDING_REPAIR_VERIFICATION"
     }
   ],
   "completion_sha": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD",
-  "completion_tree": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD_TREE"
+  "completion_tree": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD_TREE",
+  "current_hypothesis": "The Atlas semantics are intact; the focused verification exposed a local resource-bound bug where default search limit 32 exceeded a smaller configured maxEntries. Default search should derive from instance capacity while explicit out-of-range limits remain fail-closed."
 }
