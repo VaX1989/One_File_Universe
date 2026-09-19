@@ -46,7 +46,7 @@ Three distinct evidence types are kept separate:
 2. **JS authority differential** — `tools/industrialization/ind-conf/run-js-authority.mjs` executes the current P2/P4 implementation against the frozen corpus and narrow P4 behavioral invariants.
 3. **Independent Python oracle** — `tools/industrialization/ind-conf/run-python-oracle.py` consumes the same files through the pre-existing independent P2 oracle and independently recomputes the narrow P4 lineage/Event/order/transition digest slice from P2 canonical bytes plus `hashlib`.
 
-Agreement of the JS runner with itself is therefore not represented as cross-language proof. P4 checkpoint/archive behaviors remain current-authority evidence in this lane; the Python oracle does not pretend to be an independent temporal reducer.
+Agreement of the JS runner with itself is therefore not represented as cross-language proof. The machine-readable split is recorded in `G0A_CONFORMANCE_SCOPE_CLASSIFICATION.json`: P2 plus narrow P4 lineage/Event/order/transition evidence is eligible as independent G0A conformance evidence, while checkpoint/archive behavior is explicitly `CURRENT_AUTHORITY_REGRESSION_ONLY`. The Python oracle does not pretend to be an independent temporal reducer, and checkpoint/archive PASS results do not establish independent cross-language trust.
 
 ## Direct commands
 
@@ -65,3 +65,7 @@ The combined industrialization test invokes both corpus runners directly and che
 ## Provenance boundary
 
 The manifest records exact source blobs from the active Wave-0 control head. Those references establish what was harvested; they do not transfer technical authority to this corpus. If later `IND-GOV-A` adjudication determines that a candidate semantic is not mature enough to freeze, the control plane must supersede the affected vector set rather than silently reinterpret an existing digest.
+
+## Wave-0 repair classification
+
+The frozen vector payloads and corpus digest are unchanged by the repair. Control verification PR #297 executed the direct corpus commands successfully (Foundation Integrity run `35433206372`), with 48/47 JS positive/rejection checks and 48/38 Python positive/rejection checks. That closes execution debt for the unchanged corpus but does not elevate checkpoint/archive behavior beyond `CURRENT_AUTHORITY_REGRESSION_ONLY`.
