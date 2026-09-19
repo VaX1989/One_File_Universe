@@ -3,8 +3,8 @@
   "authority": "HEADLESS_BRIDGE_DESIGN",
   "prompt_id": "IND-BRIDGE-A",
   "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
-  "control_head": "fa88f7cec101a52d07916a0fdd3927c482a6f188",
-  "control_tree": "784e12501a7e0ba9e281787513bddbb6eed1c6bf",
+  "control_head": "37e6744f1d8f711278ae8b14ddaf84b9176b5a6b",
+  "control_tree": "fb5be853362a9266f0f6d64f23338d2827f358e0",
   "candidate_core": [
     {
       "path": "src/kernel/sha256.js",
@@ -231,7 +231,7 @@
     {
       "path": "src/temporal/p4-temporal.js",
       "sha": "7e6d7d07d34609b194382a24c5e3cdf0a4ccae24",
-      "decision": "HEADLESS_ARCHIVE_CANDIDATE"
+      "decision": "POST_G0A_PRIVATE_CANDIDATE_EXCLUDED_FROM_G0A_MINIMUM"
     }
   ],
   "forbidden_public_leakage": [
@@ -248,6 +248,21 @@
     "product globals",
     "pxProduct captured state"
   ],
-  "gate_result": "G0A_CANDIDATE_READY_FOR_AUDIT",
-  "generic_query_surface": "INTENTIONALLY_UNFROZEN_UNTIL_SELECTION_FREE_EXTRACTION"
+  "gate_result": "G0A_REPAIRED_CANDIDATE_READY_FOR_CONTROL_CONVERGENCE_THEN_INDEPENDENT_AUDIT",
+  "generic_query_surface": "INTENTIONALLY_UNFROZEN_UNTIL_SELECTION_FREE_EXTRACTION",
+  "g0a_minimum": {
+    "archive_input": false,
+    "public_export_archive": false,
+    "checkpoint_compaction": false,
+    "allowed": [
+      "P2 canonical bytes/Unicode/address/manifest/identity/derivation/exact numeric subset",
+      "P4 canonical time/event total order",
+      "P4 lineage/live-frontier semantics",
+      "P4 exact transition binding"
+    ],
+    "post_g0a_private_candidate": [
+      "P4 checkpoint/compaction",
+      "P4 archive import/export"
+    ]
+  }
 }
