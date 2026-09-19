@@ -50,7 +50,7 @@ function run(){
     universeIdentity,lineageId:lineage,time:{seconds:1n,micros:1n},
     type:'core.field.set',version:1n,operationKey:'golden-address-0-b',
     targets:[entity],payload:{field:'propertyDigest',value:P.hex(property)},
-    causes:[eventA.eventId],preconditionStateDigest:null
+    causes:[eventA.id],preconditionStateDigest:null
   });
   assert.ok(T.compareEvents(eventA,eventB)<0,'canonical P4 total order must advance');
   return Object.freeze({
@@ -59,8 +59,8 @@ function run(){
     addressHex:P.hex(address),
     propertyDigest:P.hex(property),
     lineageId:P.hex(lineage),
-    eventA:P.hex(eventA.eventId),
-    eventB:P.hex(eventB.eventId),
+    eventA:P.hex(eventA.id),
+    eventB:P.hex(eventB.id),
     p4Version:T.VERSION,
     transitionContractDigest:P.hex(T.transitionContractDigest(T.CORE_TRANSITION_DESCRIPTOR))
   });
