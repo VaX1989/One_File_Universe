@@ -2,13 +2,13 @@
   "prompt_id": "IND-GOV-A",
   "master_schema_version": 4,
   "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
-  "status": "READY_FOR_CONTROL_CONVERGENCE",
+  "status": "REPAIR_IN_PROGRESS",
   "mode": "WRITE",
   "semantic_surface": "INDUSTRIALIZATION_SPEC",
-  "hypothesis": "The smallest safe implementation-independent industrialization slice is P2 deterministic bytes/identity plus only selected proven P4 temporal invariants; runtime, generic persistence/provider APIs, provenance wire shapes and multiscale payloads must remain unfrozen.",
-  "failure_fingerprint": null,
-  "failure_count": 0,
-  "alternate_strategy": "If G0A audit finds a candidate requirement coupled to JavaScript or product/runtime policy, demote that item to DRAFT_ONLY or REQUIRES_MORE_CONSUMERS rather than broadening normative scope.",
+  "hypothesis": "G0A can retain the ten source-backed P2/narrow-P4 candidates while excluding checkpoint/compaction and archive trust from the minimum; this resolves SEC-01 without changing P2/P4 production semantics or inventing authentication.",
+  "failure_fingerprint": "G0A_CHECKPOINT_ARCHIVE_TRUST_SCOPE_AND_V4_PACKET",
+  "failure_count": 1,
+  "alternate_strategy": "If independent G0A audit finds another candidate overclaims authority, demote that candidate rather than broadening trust or modifying frozen production semantics.",
   "activation": {
     "control_branch": "integration/post-m0-dual-track-wave0-2026-09-17",
     "exact_control_head": "fa88f7cec101a52d07916a0fdd3927c482a6f188",
@@ -38,12 +38,18 @@
       "tree": "3704247247940fa8c5f08291cd80ec9e24e7d49d"
     },
     "CTRL_WAVE0": {
-      "status": "PASS_ACTIVE",
+      "status": "PASS_ACTIVE_REPAIR_PHASE",
       "pr": 290,
-      "head": "fa88f7cec101a52d07916a0fdd3927c482a6f188"
+      "head": "37e6744f1d8f711278ae8b14ddaf84b9176b5a6b",
+      "tree": "fb5be853362a9266f0f6d64f23338d2827f358e0"
     },
     "G0A_MINIMUM_NORMATIVE_SLICE": {
       "status": "NOT_PASSED_REQUIRES_SIBLINGS_AND_AUDIT"
+    },
+    "SEC_01": {
+      "status": "ACTIVE_REPAIR_INPUT",
+      "source": "AUDIT-SECURITY",
+      "effect": "checkpoint/archive excluded from G0A minimum"
     }
   },
   "ownership": {
@@ -81,10 +87,10 @@
     "docs/industrialization/iw0/ind-gov/TERMINAL_HANDOFF.json"
   ],
   "normative_summary": {
-    "ready_to_specify_count": 12,
+    "ready_to_specify_count": 10,
     "ready_to_specify_families": [
       "P2 deterministic byte/identity substrate",
-      "selected P4 temporal/order/lineage/transition/checkpoint/archive invariants"
+      "P4 canonical time/event ordering, lineage/live-frontier, exact transition binding"
     ],
     "explicitly_nonstandardized_count": 8,
     "rejection_model": "ACCEPT_REJECT_CLASSES_NORMATIVE_EXCEPTION_STRINGS_NON_NORMATIVE",
@@ -99,15 +105,15 @@
     "production_semantic_mutation": "NONE_COMPARE_CONFIRMED"
   },
   "evidence_debt": [
-    "IND-CONF-A must provide frozen language-independent positive/malformed/rejection corpus for G0A.",
-    "IND-BRIDGE-A must establish the smallest host-neutral external consumer seam for G0A.",
-    "GATE-G0A-AUDIT must independently adjudicate the combined normative slice.",
-    "No cross-language numeric error-code ABI is frozen by this lane.",
-    "No version/capability negotiation protocol is frozen by this lane."
+    "Independent GATE-G0A-AUDIT must verify the repaired minimum after IND-CONF-A and IND-BRIDGE-A repairs converge.",
+    "Checkpoint/archive authenticated provenance, freshness and full semantic trust remain deferred; this repair does not invent authentication.",
+    "No public query/provider/persistence ABI is frozen by this lane."
   ],
-  "last_action": "Validated all machine JSON by refetch/parse and compared the lane to the exact control head: five added files, all within owned paths, no executable or production semantic mutation.",
-  "next_action": "Open Draft PR against the Wave-0 control branch and bind the exact PR head/tree in the external terminal packet.",
-  "completion_sha": "EXTERNALLY_BOUND_BY_DRAFT_PR_HEAD",
-  "completion_tree": "EXTERNALLY_BOUND_BY_DRAFT_PR_HEAD_TREE",
-  "disposition": "READY_FOR_CONTROL_CONVERGENCE"
+  "last_action": "Demoted P4 checkpoint/compaction and archive integrity candidates from READY_TO_SPECIFY to DRAFT_ONLY and excluded them from the G0A minimum, preserving all production semantics.",
+  "next_action": "Open and bind the Draft repair PR, publish a new immutable v4 repair handoff, then return to CTRL-CONVERGENCE.",
+  "completion_sha": "EXTERNALLY_BOUND_BY_DRAFT_REPAIR_PR_HEAD",
+  "completion_tree": "EXTERNALLY_BOUND_BY_DRAFT_REPAIR_PR_HEAD_TREE",
+  "disposition": "READY_FOR_CONTROL_CONVERGENCE",
+  "branch": "work/post-m0/ind-gov-a-ofu-post-m0-dual-track-wave0-2026-09-18-61f43071-repair-2026-09-19",
+  "pr": "PENDING_DRAFT_PR_BINDING"
 }
