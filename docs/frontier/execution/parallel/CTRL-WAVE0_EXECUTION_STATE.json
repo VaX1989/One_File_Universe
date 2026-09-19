@@ -2,12 +2,12 @@
   "prompt_id": "CTRL-WAVE0",
   "master_schema_version": 4,
   "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
-  "hypothesis": "A minimal control-only epoch can safely unlock the six declared initial writers and fifteen read-only auditors without transferring product/scientific authority or allowing gate bypass.",
+  "hypothesis": "Control can preserve the exact Wave-0 gate sequence while integrating only evidence-complete owner repairs and refusing self-certification at independent audit boundaries.",
   "failure_fingerprint": null,
   "failure_count": 0,
-  "alternate_strategy": "If a lane proves a semantic-surface collision, pause that lane and issue an INTEGRATION_PATCH_REQUEST or serialize it behind the current owner; never broaden control ownership into child implementation.",
-  "last_action": "Materialized Wave-0 control epoch and immutable semantic ownership from the exact active R6 post-M0 base.",
-  "next_action": "Create/bind the Draft control PR, then allow only master-declared READY lanes to branch from its exact head.",
+  "alternate_strategy": "If the new independent G0A re-audit fails, issue only the exact forward repair to the canonical semantic owner; do not weaken G0A, bypass G0B/G1, or broaden CTRL-WAVE0 into child implementation.",
+  "last_action": "Converged IND-CONF-A live-frontier repair #303 into the control branch; verification-only #305 proved JS/Python/combined corpus v2 PASS; exact integrated head e8965171944b9d5c604b19b745dacb79156816f4 has 10/10 workflows PASS.",
+  "next_action": "Execute GATE-G0A-AUDIT independently against e8965171944b9d5c604b19b745dacb79156816f4 / b769a54ce428083cdb629fc2fc9b3e1bacc970b6; if and only if PASS, record G0A PASS and unlock IND-JS-HEADLESS plus IND-SEC-B.",
   "dependencies": {
     "M0_HISTORICAL": {
       "status": "PASS",
@@ -20,11 +20,12 @@
     }
   },
   "evidence_debt": [
-    "physical GPU/device evidence remains separate release-grade debt and does not block this control epoch"
+    "G0A requires a genuinely independent re-audit after repair #303; this control session cannot self-certify it.",
+    "Physical GPU/device evidence remains separate release-grade debt and does not block this control epoch."
   ],
   "branch": "integration/post-m0-dual-track-wave0-2026-09-17",
   "pr": "EXTERNALLY_BOUND_BY_DRAFT_CONTROL_PR",
   "completion_sha": "EXTERNALLY_BOUND_BY_DRAFT_CONTROL_PR_HEAD",
   "completion_tree": "EXTERNALLY_BOUND_BY_DRAFT_CONTROL_PR_HEAD_TREE",
-  "disposition": "READY_FOR_CONTROL_CONVERGENCE"
+  "disposition": "G0A_REAUDIT_READY_CONTROL_BOUNDARY"
 }
