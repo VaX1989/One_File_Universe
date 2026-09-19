@@ -289,12 +289,13 @@
     "checkpoint_archive_semantics": "FROZEN_BEHAVIORAL_EXPECTATION",
     "full_p4_state_schema": "NOT_FROZEN_BY_THIS_LANE",
     "implementation_exception_text": "NON_NORMATIVE",
-    "lineage_event_ids_order_transition_digest": "FROZEN_EXPECTATION"
+    "lineage_event_ids_order_transition_digest": "FROZEN_EXPECTATION",
+    "live_frontier_admission": "FROZEN_INDEPENDENT_G0A_EXPECTATION"
   },
   "protocol": "ofu-p4-temporal-v1",
   "rejection_profile": "ofu-ind-conf-rejection-class-v1",
-  "schema": "ofu-ind-conf-p4-corpus-v1",
-  "scope": "NARROW_EXPLICIT_P4_ONLY",
+  "schema": "ofu-ind-conf-p4-corpus-v2",
+  "scope": "NARROW_EXPLICIT_P4_G0A_FRONTIER",
   "transition_contract": {
     "descriptor": {
       "compatibility": "exact",
@@ -314,5 +315,53 @@
     },
     "expected_digest": "a0b5856f6b1c12fbc3899f30858b99fb91de683168b41de60fb44d5f92a1c538"
   },
-  "universe_identity": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20"
+  "universe_identity": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+  "live_frontier_model": {
+    "order_key": [
+      "time.seconds",
+      "time.micros",
+      "EventId bytes"
+    ],
+    "exact_retry": "candidate EventId equals current frontier EventId -> DUPLICATE_NOOP",
+    "advance": "candidate order key is strictly greater than current frontier -> ACCEPT",
+    "non_advance": "candidate order key is lower than or equal to current frontier -> REJECT_NON_CANONICAL_ORDER except exact retry"
+  },
+  "live_frontier_scenarios": [
+    {
+      "id": "initial-frontier-accept",
+      "frontier_event": null,
+      "candidate_event": "e1",
+      "expected": "ACCEPT"
+    },
+    {
+      "id": "same-time-higher-event-id-accept",
+      "frontier_event": "e1",
+      "candidate_event": "e2",
+      "expected": "ACCEPT"
+    },
+    {
+      "id": "exact-current-frontier-retry",
+      "frontier_event": "e1",
+      "candidate_event": "e1",
+      "expected": "DUPLICATE_NOOP"
+    },
+    {
+      "id": "same-time-lower-event-id-reject",
+      "frontier_event": "e2",
+      "candidate_event": "e1",
+      "expected": "REJECT_NON_CANONICAL_ORDER"
+    },
+    {
+      "id": "older-time-reject",
+      "frontier_event": "e3",
+      "candidate_event": "e2",
+      "expected": "REJECT_NON_CANONICAL_ORDER"
+    },
+    {
+      "id": "later-time-strict-advance",
+      "frontier_event": "e2",
+      "candidate_event": "e3",
+      "expected": "ACCEPT"
+    }
+  ]
 }
