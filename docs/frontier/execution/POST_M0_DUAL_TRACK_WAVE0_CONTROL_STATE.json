@@ -3,7 +3,7 @@
   "authority": "PLANNING_METADATA_ONLY",
   "prompt_id": "CTRL-WAVE0",
   "epoch_id": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
-  "status": "READY_FOR_CONTROL_CONVERGENCE",
+  "status": "REPAIR_REQUIRED_BEFORE_GATE_ADVANCE",
   "planning_epoch": "OFU-POST-M0-ASYMMETRIC-DUAL-TRACK-2026-09-17-V4",
   "freeze_id": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
   "base_sha": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
@@ -14,52 +14,17 @@
   "ownership_blob_sha": "a049532deeb982905e2ed5acbaab71d72445b29d",
   "runnable_queue": [
     "PROD-W1-CONTRACTS",
-    "QOBS-CROSS-PROGRAM",
     "IND-GOV-A",
     "IND-CONF-A",
-    "IND-LIC-A",
-    "IND-BRIDGE-A",
-    "ARCH-PERSIST",
-    "ARCH-PROVIDER",
-    "ARCH-RUNTIME",
-    "ARCH-UE",
-    "ARCH-WASM",
-    "AUDIT-ABI",
-    "AUDIT-AUTHORITY",
-    "AUDIT-DETERMINISM",
-    "AUDIT-PERFORMANCE",
-    "AUDIT-PERSISTENCE",
-    "AUDIT-PORTABILITY",
-    "AUDIT-PRODUCT",
-    "AUDIT-SCIENCE",
-    "AUDIT-SECURITY",
-    "IND-SEC-A"
+    "IND-BRIDGE-A"
   ],
   "writer_queue": [
     "PROD-W1-CONTRACTS",
-    "QOBS-CROSS-PROGRAM",
     "IND-GOV-A",
     "IND-CONF-A",
-    "IND-LIC-A",
     "IND-BRIDGE-A"
   ],
-  "readonly_queue": [
-    "ARCH-PERSIST",
-    "ARCH-PROVIDER",
-    "ARCH-RUNTIME",
-    "ARCH-UE",
-    "ARCH-WASM",
-    "AUDIT-ABI",
-    "AUDIT-AUTHORITY",
-    "AUDIT-DETERMINISM",
-    "AUDIT-PERFORMANCE",
-    "AUDIT-PERSISTENCE",
-    "AUDIT-PORTABILITY",
-    "AUDIT-PRODUCT",
-    "AUDIT-SCIENCE",
-    "AUDIT-SECURITY",
-    "IND-SEC-A"
-  ],
+  "readonly_queue": [],
   "completed_tasks": [
     "reauthenticated repository as VaX1989 with push/admin permission",
     "resolved CTRL-WAVE0 source refs and inherited contracts",
@@ -68,22 +33,32 @@
     "verified no pre-existing Wave-0 control branch/PR",
     "loaded P2/P4/PX/runtime required reads",
     "froze disjoint initial semantic ownership",
-    "froze gate-dependent blocked lanes and safe merge ordering"
+    "froze gate-dependent blocked lanes and safe merge ordering",
+    "integrated initial writer PRs #291-#296 into the Wave-0 control branch with forward merge history",
+    "closed IND-CONF-A external execution debt via control verification PR #297 without merging verification-only delta",
+    "registered QOBS cross-program test through the accepted control-owned integration patch request",
+    "validated writer terminal artifacts against v4 EXECUTION_STATE_CONTRACT and TERMINAL_HANDOFF_CONTRACT",
+    "preserved fifteen independent read-only/audit terminal outcomes in a control evidence register",
+    "revalidated the G0A checkpoint/archive trust concern on the integrated subject head"
   ],
   "unresolved_tasks": [
-    "child implementation lanes have not started by design",
-    "G-PROD-CONTRACTS not yet passed",
-    "G0A/G0B/G1 not yet passed"
+    "PROD-W1-CONTRACTS v4 execution-state and immutable terminal-handoff artifacts missing",
+    "IND-GOV-A v4 packet repair and G0A checkpoint/archive normative-scope narrowing required",
+    "IND-CONF-A v4 repair handoff and independent-vs-current-authority conformance-scope classification required",
+    "IND-BRIDGE-A v4 packet repair, narrowed G0A facade and exact direct probe execution required",
+    "G-PROD-CONTRACTS is not passed until PROD-W1-CONTRACTS repair converges",
+    "G0A is not passed until three industrialization repairs converge and independent GATE-G0A-AUDIT passes",
+    "G0B/G1 remain blocked"
   ],
   "dependency_status": {
     "M0_HISTORICAL": "PASS",
     "CTRL_WAVE0": "ACTIVE",
-    "PROD_W1_CONTRACTS": "READY",
-    "QOBS_CROSS_PROGRAM": "READY",
-    "IND_GOV_A": "READY",
-    "IND_CONF_A": "READY",
-    "IND_LIC_A": "READY",
-    "IND_BRIDGE_A": "READY",
+    "PROD_W1_CONTRACTS": "INTEGRATED_REPAIR_REQUIRED_BEFORE_G_PRODUCT_CONTRACTS",
+    "QOBS_CROSS_PROGRAM": "INTEGRATED_ACCEPTED",
+    "IND_GOV_A": "INTEGRATED_REPAIR_REQUIRED",
+    "IND_CONF_A": "INTEGRATED_CONTROL_EXECUTION_VERIFIED_REPAIR_REQUIRED",
+    "IND_LIC_A": "INTEGRATED_ACCEPTED_MANUAL_LICENSE_DECISION_OPEN",
+    "IND_BRIDGE_A": "INTEGRATED_REPAIR_REQUIRED",
     "IND_SEC_A": "READY_READONLY_AUDIT",
     "IND_NATIVE_P2": "BLOCKED_BY_G0B",
     "IND_RUNTIME": "BLOCKED_BY_G1_PASS_CONTINUE"
@@ -96,12 +71,12 @@
     "IND-NATIVE-P2 -> IND-CABI-MICROHOST -> GATE-G1-AUDIT -> G1_MINIMUM_PLATFORM_PROOF",
     "only explicit G1_PASS_CONTINUE may unlock IND-RUNTIME"
   ],
-  "failure_fingerprint": null,
-  "failure_count": 0,
+  "failure_fingerprint": "WAVE0_V4_PACKET_COMPLIANCE_AND_G0A_MINIMUM_SLICE_SCOPE",
+  "failure_count": 1,
   "current_hypothesis": "A minimal control-only epoch can safely unlock the six declared initial writers and fifteen read-only auditors without transferring product/scientific authority or allowing gate bypass.",
-  "last_action": "Materialized Wave-0 control epoch and immutable semantic ownership from the exact active R6 post-M0 base.",
-  "next_action": "Create/bind the Draft control PR, then allow only master-declared READY lanes to branch from its exact head.",
-  "alternate_strategy": "If a lane proves a semantic-surface collision, pause that lane and issue an INTEGRATION_PATCH_REQUEST or serialize it behind the current owner; never broaden control ownership into child implementation.",
+  "last_action": "Integrated all six initial writer PRs, control-verified IND-CONF-A direct corpus evidence, applied QOBS central-test IPR, and performed v4 terminal-contract plus G0A pre-audit convergence review.",
+  "next_action": "Run four control-issued repair continuations in parallel: PROD-W1-CONTRACTS, IND-GOV-A, IND-CONF-A, IND-BRIDGE-A.",
+  "alternate_strategy": "Do not revert evidence-valid additive work. Preserve forward history, repair metadata/scope in owning lanes, and keep downstream gates closed until exact integrated evidence passes.",
   "evidence_refs": [
     "PR #276 M0 certified convergence",
     "PR #275 post-W0 product roadmap",
@@ -111,11 +86,26 @@
     "src/extensions/contracts.js",
     "src/extensions/registry.js",
     "src/extensions/cross-scale.js",
-    "src/runtime/v2x-01-contracts.js"
+    "src/runtime/v2x-01-contracts.js",
+    "docs/industrialization/control/WAVE0_CONVERGENCE_RECORD_2026-09-19.json",
+    "docs/industrialization/control/WAVE0_READONLY_AUDIT_REGISTER_2026-09-19.json",
+    "docs/industrialization/control/WAVE0_REPAIR_DIRECTIVE_2026-09-19.json",
+    "docs/industrialization/control/WAVE0_G0A_PREAUDIT_ADJUDICATION_2026-09-19.json"
   ],
   "external_evidence_debt": [
     "physical GPU/device evidence remains separate release-grade debt and does not block this control epoch"
   ],
   "completion_sha": "EXTERNALLY_BOUND_BY_DRAFT_CONTROL_PR_HEAD",
-  "completion_tree": "EXTERNALLY_BOUND_BY_DRAFT_CONTROL_PR_HEAD_TREE"
+  "completion_tree": "EXTERNALLY_BOUND_BY_DRAFT_CONTROL_PR_HEAD_TREE",
+  "gates": {
+    "G_PRODUCT_CONTRACTS": "NOT_PASS_V4_TERMINAL_CONTRACT_REPAIR_REQUIRED",
+    "G0A_MINIMUM_NORMATIVE_SLICE": "NOT_PASS_REPAIR_REQUIRED_THEN_INDEPENDENT_GATE_AUDIT",
+    "G0B_EXTERNAL_CONSUMER_SEAM_PROOF": "BLOCKED",
+    "G1_MINIMUM_PLATFORM_PROOF": "BLOCKED",
+    "G1_PASS_CONTINUE": "MANUAL_OUTCOME_NOT_REACHED"
+  },
+  "repair_directive": "docs/industrialization/control/WAVE0_REPAIR_DIRECTIVE_2026-09-19.json",
+  "convergence_record": "docs/industrialization/control/WAVE0_CONVERGENCE_RECORD_2026-09-19.json",
+  "audit_register": "docs/industrialization/control/WAVE0_READONLY_AUDIT_REGISTER_2026-09-19.json",
+  "g0a_preaudit": "docs/industrialization/control/WAVE0_G0A_PREAUDIT_ADJUDICATION_2026-09-19.json"
 }

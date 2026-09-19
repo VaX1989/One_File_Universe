@@ -3,7 +3,7 @@
   "authority": "PLANNING_METADATA_ONLY",
   "prompt_id": "CTRL-WAVE0",
   "epoch_id": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
-  "status": "ACTIVE_CONTROL_EPOCH",
+  "status": "ACTIVE_CONTROL_EPOCH_REPAIR_PHASE",
   "created_date": "2026-09-18",
   "master": {
     "schema_version": 4,
@@ -62,40 +62,23 @@
     }
   },
   "gates": {
-    "G_PRODUCT_CONTRACTS": "OPEN_REQUIRES_PROD-W1-CONTRACTS",
-    "G0A_MINIMUM_NORMATIVE_SLICE": "OPEN_REQUIRES_IND-GOV-A_IND-CONF-A_IND-BRIDGE-A_GATE-G0A-AUDIT",
-    "G0B_EXTERNAL_CONSUMER_SEAM_PROOF": "BLOCKED_BEHIND_G0A_AND_JS_HEADLESS_EXTERNAL_CONSUMER",
-    "G1_MINIMUM_PLATFORM_PROOF": "BLOCKED_BEHIND_G0B_NATIVE_CABI_AND_AUDIT",
+    "G_PRODUCT_CONTRACTS": "NOT_PASS_V4_TERMINAL_CONTRACT_REPAIR_REQUIRED",
+    "G0A_MINIMUM_NORMATIVE_SLICE": "NOT_PASS_REPAIR_REQUIRED_THEN_INDEPENDENT_GATE_AUDIT",
+    "G0B_EXTERNAL_CONSUMER_SEAM_PROOF": "BLOCKED_BEHIND_G0A",
+    "G1_MINIMUM_PLATFORM_PROOF": "BLOCKED_BEHIND_G0B",
     "G1_PASS_CONTINUE": "MANUAL_OUTCOME_NOT_REACHED"
   },
   "runnable_queue": {
     "writers": [
       "PROD-W1-CONTRACTS",
-      "QOBS-CROSS-PROGRAM",
       "IND-GOV-A",
       "IND-CONF-A",
-      "IND-LIC-A",
       "IND-BRIDGE-A"
     ],
-    "readonly_audits": [
-      "ARCH-PERSIST",
-      "ARCH-PROVIDER",
-      "ARCH-RUNTIME",
-      "ARCH-UE",
-      "ARCH-WASM",
-      "AUDIT-ABI",
-      "AUDIT-AUTHORITY",
-      "AUDIT-DETERMINISM",
-      "AUDIT-PERFORMANCE",
-      "AUDIT-PERSISTENCE",
-      "AUDIT-PORTABILITY",
-      "AUDIT-PRODUCT",
-      "AUDIT-SCIENCE",
-      "AUDIT-SECURITY",
-      "IND-SEC-A"
-    ],
+    "readonly_audits": [],
+    "mode": "CONTROL_ISSUED_REPAIR_CONTINUATIONS",
     "blocked_count_from_master": 74,
-    "rule": "Only listed READY lanes may start; every child writer branches from this control PR's externally bound exact head after activation and targets this control branch."
+    "rule": "Only the four listed canonical lanes may continue in repair mode. No new downstream implementation lane is activated."
   },
   "forbidden_actions": [
     "merge #274",
@@ -109,5 +92,20 @@
     "force-push",
     "destructive reset"
   ],
-  "next_control_action": "Monitor child lane handoffs/PR heads and invoke gate audits/convergence only when declared prerequisites are evidence-complete."
+  "next_control_action": "Converge the four repair continuations; then adjudicate G-PROD-CONTRACTS and run independent GATE-G0A-AUDIT.",
+  "completed_initial_writers": [
+    "QOBS-CROSS-PROGRAM",
+    "IND-LIC-A"
+  ],
+  "integrated_initial_writers": [
+    "PROD-W1-CONTRACTS",
+    "QOBS-CROSS-PROGRAM",
+    "IND-GOV-A",
+    "IND-CONF-A",
+    "IND-LIC-A",
+    "IND-BRIDGE-A"
+  ],
+  "repair_directive": "docs/industrialization/control/WAVE0_REPAIR_DIRECTIVE_2026-09-19.json",
+  "convergence_record": "docs/industrialization/control/WAVE0_CONVERGENCE_RECORD_2026-09-19.json",
+  "audit_register": "docs/industrialization/control/WAVE0_READONLY_AUDIT_REGISTER_2026-09-19.json"
 }

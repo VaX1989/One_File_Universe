@@ -1,0 +1,205 @@
+{
+  "schema": "ofu.post-m0.wave0.convergence-record.v1",
+  "authority": "CTRL_CONVERGENCE_CONTROL_RECORD_NO_TECHNICAL_OR_SCIENTIFIC_AUTHORITY_PROMOTION",
+  "prompt_id": "CTRL-CONVERGENCE",
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "frozen_base_sha": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+  "frozen_base_tree": "3704247247940fa8c5f08291cd80ec9e24e7d49d",
+  "observed_initial_control_head": "fa88f7cec101a52d07916a0fdd3927c482a6f188",
+  "convergence_subject_head": "ef13db638acbb9c5ccb24a6ceb56f0b9ea4802e4",
+  "convergence_subject_tree": "803cbc8823f6adce4594dea5be20bc578640858b",
+  "status": "INITIAL_WRITERS_INTEGRATED_REPAIR_REQUIRED_BEFORE_GATE_ADVANCE",
+  "integrated_lanes": [
+    {
+      "prompt_id": "PROD-W1-CONTRACTS",
+      "pr": 293,
+      "lane_head": "65d3c03fbb4745d71c189aba1d7260b030badc20",
+      "merge_commit": "f1ae3d5da4eaa133a6542cf0e2b1d8f031d15bf6",
+      "disposition": "INTEGRATED_GATE_WITHHELD_V4_PACKET_REPAIR_REQUIRED"
+    },
+    {
+      "prompt_id": "QOBS-CROSS-PROGRAM",
+      "pr": 292,
+      "lane_head": "f33442843b3ecfb14630b71067b175ec5559cef5",
+      "merge_commit": "83fd971a51036133201086bdc95f879c6898d1b1",
+      "disposition": "INTEGRATED_ACCEPTED"
+    },
+    {
+      "prompt_id": "IND-GOV-A",
+      "pr": 295,
+      "lane_head": "580544b616c6ed532ab420746ccb5bc9548b8f65",
+      "merge_commit": "4c915d8024c9d95797325194532d2c81b6ff8ab5",
+      "disposition": "INTEGRATED_REPAIR_REQUIRED"
+    },
+    {
+      "prompt_id": "IND-BRIDGE-A",
+      "pr": 294,
+      "lane_head": "c1415616bf9b0a1d1cc41869477348c2bf8e57c3",
+      "merge_commit": "8e9e5dc6ed1ad6b253d76e77937912c56333d772",
+      "disposition": "INTEGRATED_REPAIR_REQUIRED"
+    },
+    {
+      "prompt_id": "IND-LIC-A",
+      "pr": 291,
+      "lane_head": "2d4fbd495d4b3948d5d7e385e2cf610a0ea73c39",
+      "merge_commit": "12d99afef64ead0a9c796aa6cfb3d8a26256b853",
+      "disposition": "INTEGRATED_ACCEPTED_MANUAL_LICENSE_DECISION_STILL_OPEN"
+    },
+    {
+      "prompt_id": "IND-CONF-A",
+      "pr": 296,
+      "lane_head": "3a18c2a7bb4f273ac182ee44787de4e5850982a7",
+      "merge_commit": "bc5cf39bb7f82a49c6396d19aebadb42dd2c8832",
+      "disposition": "INTEGRATED_AFTER_CONTROL_DIRECT_TEST_PASS_REPAIR_PACKET_AND_SCOPE_REQUIRED"
+    }
+  ],
+  "control_verifications": [
+    {
+      "kind": "IND_CONF_A_DIRECT_CORPUS",
+      "verification_pr": 297,
+      "merged": false,
+      "head": "95b81237f8cfeaba5a1df300a4fc8c82f042470b",
+      "workflow": "Foundation Integrity",
+      "run_id": 35433206372,
+      "result": "PASS",
+      "corpus_digest": "2b13e4c47c254e418543410806ec5aaed7650b60e2e653c75b602b9c0735b65b",
+      "js_checks": "48 positive / 47 rejection",
+      "python_checks": "48 positive / 38 rejection"
+    },
+    {
+      "kind": "QOBS_CENTRAL_TEST_REGISTRATION",
+      "commit": "ef13db638acbb9c5ccb24a6ceb56f0b9ea4802e4",
+      "path": "tests/spatial-continuum/run.mjs",
+      "development_job": 105872456710,
+      "result": "PASS",
+      "cross_program_hash": "2923d437786f9d98f7308d4b7072ab7956b4b96e84e5d561e1b547cd6295315c"
+    }
+  ],
+  "cumulative_ci_at_record_time": {
+    "subject_head": "ef13db638acbb9c5ccb24a6ceb56f0b9ea4802e4",
+    "completed_success": [
+      {
+        "workflow": "Foundation Integrity",
+        "run_id": 35433602230
+      },
+      {
+        "workflow": "P1 Conformance",
+        "run_id": 35433602208
+      },
+      {
+        "workflow": "P1-P4 Canonical Baseline",
+        "run_id": 35433602220
+      },
+      {
+        "workflow": "P2 Conformance",
+        "run_id": 35433602242
+      },
+      {
+        "workflow": "P3 Conformance",
+        "run_id": 35433602219
+      },
+      {
+        "workflow": "P4 Conformance",
+        "run_id": 35433602196
+      },
+      {
+        "workflow": "P5 Controlled Promotion",
+        "run_id": 35433602199
+      },
+      {
+        "workflow": "P5 Environment v2 Canonical Promotion",
+        "run_id": 35433602241
+      },
+      {
+        "workflow": "P6 v1 Conformance",
+        "run_id": 35433602216
+      }
+    ],
+    "product_shadow": {
+      "workflow": "Spatial Continuum Experiment",
+      "run_id": 35433602228,
+      "status": "IN_PROGRESS_AT_RECORD_TIME",
+      "development_qobs": "PASS",
+      "browser_subjobs_observed": "PASS_OR_IN_PROGRESS"
+    },
+    "interpretation": "Sufficient to authorize control repair continuations only. No downstream gate is promoted by this record."
+  },
+  "terminal_contract_validation": {
+    "fully_compliant": [
+      "QOBS-CROSS-PROGRAM",
+      "IND-LIC-A"
+    ],
+    "repair_required": {
+      "PROD-W1-CONTRACTS": [
+        "missing canonical mutable execution-state artifact",
+        "missing immutable terminal-handoff artifact"
+      ],
+      "IND-GOV-A": [
+        "execution state missing branch/pr",
+        "historical handoff lacks multiple exact v4 required top-level fields"
+      ],
+      "IND-BRIDGE-A": [
+        "execution state missing hypothesis/dependencies/evidence_debt",
+        "historical handoff uses non-v4 field shape and lacks required fields"
+      ],
+      "IND-CONF-A": [
+        "historical handoff lacks required v4 top-level fields; original terminal state was EXTERNAL_EVIDENCE_LIMITATION, later control verification closed execution debt"
+      ]
+    },
+    "rule": "Merged additive work is preserved; gate acceptance is withheld until forward repair. Published immutable handoffs are not rewritten."
+  },
+  "gate_status": {
+    "G-PROD-CONTRACTS": "NOT_PASS_V4_TERMINAL_CONTRACT_REPAIR_REQUIRED",
+    "G0A_MINIMUM_NORMATIVE_SLICE": "NOT_PASS_REPAIR_REQUIRED_THEN_INDEPENDENT_GATE_AUDIT",
+    "G0B_EXTERNAL_CONSUMER_SEAM_PROOF": "BLOCKED",
+    "G1_MINIMUM_PLATFORM_PROOF": "BLOCKED",
+    "G1_PASS_CONTINUE": "NOT_REACHED",
+    "G-LICENSING-DISTRIBUTION-DECISION": "MANUAL_OUTCOME_NOT_REACHED"
+  },
+  "integration_patch_requests": {
+    "qobs_central_registration": "APPLIED_AT_ef13db638acbb9c5ccb24a6ceb56f0b9ea4802e4",
+    "licensing_external_conformance_guard": "RECORDED_FOR_FUTURE_MASTER_OR_CONTROL_ADJUDICATION_BEFORE_PUBLIC_EXTERNAL_CONFORMANCE",
+    "audit_authority": [
+      "AUTH-001",
+      "AUTH-002"
+    ],
+    "audit_security": [
+      "IPR-SEC-01",
+      "IPR-SEC-02",
+      "IPR-SEC-03"
+    ],
+    "audit_science": [
+      "provenance/version envelope",
+      "conservation fail-closed/UNKNOWN handling",
+      "causal certification coverage"
+    ],
+    "audit_persistence": [
+      "durable committed-head/event-log/checkpoint design",
+      "deterministic crash campaign"
+    ]
+  },
+  "repair_batch": {
+    "directive": "docs/industrialization/control/WAVE0_REPAIR_DIRECTIVE_2026-09-19.json",
+    "prompt_ids": [
+      "PROD-W1-CONTRACTS",
+      "IND-GOV-A",
+      "IND-CONF-A",
+      "IND-BRIDGE-A"
+    ],
+    "parallel_safe": true
+  },
+  "audit_register": "docs/industrialization/control/WAVE0_READONLY_AUDIT_REGISTER_2026-09-19.json",
+  "g0a_preaudit": "docs/industrialization/control/WAVE0_G0A_PREAUDIT_ADJUDICATION_2026-09-19.json",
+  "forbidden_actions_confirmed": {
+    "main_mutated": false,
+    "pr274_merged": false,
+    "pr275_merged": false,
+    "pr287_merged": false,
+    "pr290_merged": false,
+    "tag_created": false,
+    "release_created": false,
+    "r7_started": false,
+    "force_push": false
+  },
+  "next_control_action": "Launch the four repair continuations in parallel. After they finish, CTRL-CONVERGENCE must validate/merge them, re-run cumulative exact-head evidence, adjudicate G-PROD-CONTRACTS, and only then run independent GATE-G0A-AUDIT on the repaired integrated head."
+}
