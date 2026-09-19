@@ -1,0 +1,97 @@
+{
+  "prompt_id": "IND-BRIDGE-A",
+  "master_schema_version": 4,
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "base_sha": "37e6744f1d8f711278ae8b14ddaf84b9176b5a6b",
+  "base_tree": "fb5be853362a9266f0f6d64f23338d2827f358e0",
+  "dependency_shas": {
+    "M0_HISTORICAL": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+    "CTRL_WAVE0_REPAIR_PHASE": "37e6744f1d8f711278ae8b14ddaf84b9176b5a6b",
+    "ORIGINAL_IND_BRIDGE_A_LANE": "c1415616bf9b0a1d1cc41869477348c2bf8e57c3",
+    "CONTROL_VERIFICATION_302": "6405346253a858606dee9353c92abbfed59280b3",
+    "PR287_V4_MASTER": "c2cab6d6e914b918432432fdc69825e0a1000509"
+  },
+  "final_sha": "EXTERNALLY_BOUND_BY_DRAFT_REPAIR_PR_HEAD",
+  "final_tree": "EXTERNALLY_BOUND_BY_DRAFT_REPAIR_PR_HEAD_TREE",
+  "changed_paths": [
+    "docs/industrialization/iw0/ind-bridge/HEADLESS_API_CANDIDATE.md",
+    "docs/industrialization/iw0/ind-bridge/HEADLESS_BRIDGE_DISCOVERY.md",
+    "docs/industrialization/iw0/ind-bridge/COUPLING_MAP.json",
+    "tests/industrialization/bridge/headless-seam-characterization.mjs",
+    "tests/industrialization/bridge/external-consumer-probe.mjs",
+    "docs/frontier/execution/parallel/IND-BRIDGE-A_EXECUTION_STATE.json",
+    "docs/industrialization/handoffs/IND-BRIDGE-A_REPAIR_2026-09-19.json",
+    "docs/industrialization/handoffs/IND-BRIDGE-A_REPAIR_VERIFIED_2026-09-19.json"
+  ],
+  "ownership_result": "PASS_HEADLESS_BRIDGE_DESIGN_ONLY; CONTROL_VERIFICATION_PACKAGE_DELTA_CLOSED_WITHOUT_MERGE",
+  "tests": [
+    {
+      "check": "headless seam characterization",
+      "command": "node tests/industrialization/bridge/headless-seam-characterization.mjs",
+      "result": "PASS",
+      "verification_pr": 302,
+      "verification_head": "6405346253a858606dee9353c92abbfed59280b3",
+      "run_id": 35435461161,
+      "node": "v24.20.0"
+    },
+    {
+      "check": "narrowed external consumer characterization",
+      "command": "node tests/industrialization/bridge/external-consumer-probe.mjs",
+      "result": "PASS",
+      "verification_pr": 302,
+      "verification_head": "6405346253a858606dee9353c92abbfed59280b3",
+      "run_id": 35435461161,
+      "node": "v24.20.0"
+    },
+    {
+      "check": "verification-only shared registration",
+      "result": "CLOSED_WITHOUT_MERGE",
+      "pr": 302,
+      "delta": "package.json npm test registration only"
+    }
+  ],
+  "deterministic_witnesses": [
+    {
+      "kind": "G0A_SEAM_BOUNDARY",
+      "archiveBytes": false,
+      "publicExportArchive": false,
+      "genericProviderQuery": false
+    },
+    {
+      "kind": "EXTERNAL_CONSUMER_WITNESS",
+      "semanticManifestHash": "15115d3be206083d795b9492af46693253979709a5fb9cd2f9b3e2321fcd4778",
+      "universeIdentity": "29d93cd168d16a6763ad6687005e6af6eddbb5b7fef5cf8a919b49f0b0fd4f41",
+      "addressHex": "4f46554101010105617374726f",
+      "propertyDigest": "186531376069e9734644130f5ff081633aac5fcb011eaf8292a2ea6140ed9c32",
+      "lineageId": "f9109d350683c46822dfd413469ca550e3884a6b77450145c75b47b952eee3a4",
+      "eventA": "87978958c0cb31b51c1493852e327310a26d919b89e3b3927b3e0cfcb7847b7c",
+      "eventB": "3db2cb4e4c7220202e52d1853a81b2d4778e16f851cba001f22d4b8a59920d4c",
+      "transitionContractDigest": "a0b5856f6b1c12fbc3899f30858b99fb91de683168b41de60fb44d5f92a1c538"
+    },
+    {
+      "kind": "CONTROL_VERIFICATION",
+      "pr": 302,
+      "head": "6405346253a858606dee9353c92abbfed59280b3",
+      "run_id": 35435461161,
+      "result": "PASS"
+    }
+  ],
+  "security_classification": "SEC_01_ALIGNED; checkpoint/archive trust is excluded from G0A public seam; verification proves narrowed probes only, not authenticated persistence.",
+  "authority_science_classification": "HEADLESS_BRIDGE_DESIGN_ONLY; no canonical/scientific/product authority promotion.",
+  "performance_resource_evidence": "NOT_APPLICABLE_TO_G0A_SEAM_DESIGN; verification used Foundation Integrity regression execution.",
+  "limitations": [
+    "No public headless facade/package exists yet; direct-source characterization is not G0B external seam proof.",
+    "Generic provider/query remains intentionally unfrozen.",
+    "Archive/checkpoint remain POST_G0A_PRIVATE_CANDIDATE pending separate trust/persistence evidence.",
+    "Verification PR #302 added package registration only and was intentionally closed without merge."
+  ],
+  "falsification_attempts": [
+    "Executed both narrowed probes under repository CI rather than inferring PASS from static source.",
+    "Verified the pre-POST_G0A candidate section excludes archiveBytes/exportArchive.",
+    "Discarded and reopened direct-source state without archive persistence and required identical P2/narrow-P4 witness.",
+    "Kept all product/runtime/browser leakage exclusions active."
+  ],
+  "rollback_abandon_condition": "If independent G0A audit shows the narrowed seam still freezes product/runtime accidents or depends on unsupported authority, issue a forward IND-BRIDGE-A repair or classify PLATFORM_EXTRACTION_PREMATURE rather than weakening G0A.",
+  "integration_patch_requests": [],
+  "disposition": "READY_FOR_CONTROL_CONVERGENCE"
+}
