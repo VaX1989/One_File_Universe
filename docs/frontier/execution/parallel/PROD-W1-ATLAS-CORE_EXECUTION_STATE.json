@@ -1,0 +1,66 @@
+{
+  "prompt_id": "PROD-W1-ATLAS-CORE",
+  "master_schema_version": 4,
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "status": "REQUIRES_FRESH_EXECUTABLE_EVIDENCE",
+  "terminal_state": "NOT_TERMINAL",
+  "hypothesis": "A bounded Personal Atlas can persist places, observations, snapshots and routes as exact W1/P4 semantic references while keeping renderer/camera objects and persistence-backend choices outside the product authority boundary.",
+  "failure_fingerprint": null,
+  "failure_count": 0,
+  "alternate_strategy": "If Atlas requires information not representable by the frozen W1 SavedObservation/P4 reference family, request a versioned PRODUCT_CONTRACTS successor rather than embedding renderer/runtime objects or a competing snapshot format.",
+  "last_action": "Created an additive bounded Atlas core, internal deterministic bundle format, exact revisit plans and focused fail-closed tests from the exact Wave-0 control head.",
+  "next_action": "Obtain fresh exact-head execution of tests/product/prod-w1-atlas-core.mjs, then materialize immutable terminal handoff for control convergence.",
+  "dependencies": {
+    "M0_HISTORICAL": {
+      "status": "PASS",
+      "sha": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+      "tree": "3704247247940fa8c5f08291cd80ec9e24e7d49d"
+    },
+    "G_PRODUCT_CONTRACTS": {
+      "status": "PASS",
+      "control_pr": 290,
+      "control_head": "816a9b35dab81368361c4e343dc1217278e07929",
+      "control_tree": "f6b62c0b5476540687cef575be873c8c0c1c46c7"
+    },
+    "PROD_W1_CONTRACTS": {
+      "status": "PASS_INTEGRATED",
+      "contract_source": "src/product/contracts/w1-observation-contracts.js"
+    },
+    "MASTER_V4": {
+      "status": "PASS",
+      "pr": 287,
+      "sha": "c2cab6d6e914b918432432fdc69825e0a1000509"
+    }
+  },
+  "evidence_debt": [
+    "Fresh execution of tests/product/prod-w1-atlas-core.mjs is required; no PASS is claimed from static construction.",
+    "Persistence backend integration is intentionally deferred; this lane freezes no public storage/provider ABI."
+  ],
+  "branch": "work/post-m0/prod-w1-atlas-core-2026-09-19",
+  "pr": "PENDING",
+  "base_sha": "816a9b35dab81368361c4e343dc1217278e07929",
+  "base_tree": "f6b62c0b5476540687cef575be873c8c0c1c46c7",
+  "ownership": {
+    "semantic_surface": "LANE_LOCAL:PROD-W1-ATLAS-CORE",
+    "mode": "WRITE_PRODUCT",
+    "shared_renderer_modified": false,
+    "canonical_science_modified": false,
+    "p4_semantics_modified": false,
+    "product_contracts_modified": false,
+    "storage_backend_frozen": false
+  },
+  "changed_paths": [
+    "src/product/w1/atlas-core.js",
+    "tests/product/prod-w1-atlas-core.mjs",
+    "docs/product/atlas/README.md",
+    "docs/frontier/execution/parallel/PROD-W1-ATLAS-CORE_EXECUTION_STATE.json"
+  ],
+  "tests_run": [
+    {
+      "command": "node tests/product/prod-w1-atlas-core.mjs",
+      "status": "PENDING_FRESH_EXECUTION"
+    }
+  ],
+  "completion_sha": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD",
+  "completion_tree": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD_TREE"
+}
