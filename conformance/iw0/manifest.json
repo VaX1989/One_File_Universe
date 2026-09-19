@@ -1,7 +1,7 @@
 {
-  "control_head_sha": "fa88f7cec101a52d07916a0fdd3927c482a6f188",
-  "control_head_tree": "784e12501a7e0ba9e281787513bddbb6eed1c6bf",
-  "corpus_digest": "2b13e4c47c254e418543410806ec5aaed7650b60e2e653c75b602b9c0735b65b",
+  "control_head_sha": "7f8e320eba8cbe042a223e18a5862b77f4936e93",
+  "control_head_tree": "80aed3f7820b642407cd1995f153ce9b93eec5c5",
+  "corpus_digest": "d92b43afb8a7deeaed4b0c3ee13b73bad344b196132c35433b66360c0b0772fc",
   "digest_algorithm": "sha256(concat(utf8(path),0x00,file_bytes,0x00) in lexical path order)",
   "epoch_id": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
   "explicitly_not_frozen": [
@@ -19,9 +19,9 @@
       "sha256": "6e4adb27b3ac8c0e0b03435cd852d43e29bae4e4a68be28efd06ddc7f96958e6"
     },
     {
-      "bytes": 8837,
+      "bytes": 10291,
       "path": "conformance/iw0/p4-vectors.json",
-      "sha256": "5ec0ca06ca1a49ec77989a0b5e66399f79c7bd93f5b3572784f275d8b5a418eb"
+      "sha256": "e85aae02d81917bd6dbf9404c5b275bc2ad91af6743f58c27ef5e7d294f1c6ed"
     }
   ],
   "frozen_base_sha": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
@@ -34,14 +34,14 @@
     "Universe/Entity identity",
     "addressed derivation/domain separation",
     "P2 resource-limit rejection patterns",
-    "P4 lineage ID",
+    "P4 lineage ID and live-frontier admission scenarios/outcomes",
     "P4 event IDs and total order",
     "P4 transition contract digest",
-    "narrow P4 checkpoint/archive/live-admission behavioral invariants"
+    "narrow P4 checkpoint/archive behavioral invariants retained as current-authority regression evidence"
   ],
   "independence": {
     "js_runner_role": "CURRENT_AUTHORITY_DIFFERENTIAL",
-    "python_runner_role": "INDEPENDENT_P2_ORACLE_PLUS_P4_IDENTITY_ORDER_ORACLE",
+    "python_runner_role": "INDEPENDENT_P2_ORACLE_PLUS_P4_IDENTITY_ORDER_TRANSITION_FRONTIER_ORACLE",
     "self_consistency_is_not_cross_language_agreement": true
   },
   "prompt_id": "IND-CONF-A",
@@ -103,5 +103,7 @@
         "path": "tests/p4/checkpoint-authority-tests.mjs"
       }
     ]
-  }
+  },
+  "supersedes_corpus_digest": "2b13e4c47c254e418543410806ec5aaed7650b60e2e653c75b602b9c0735b65b",
+  "corpus_revision": 2
 }
