@@ -18,6 +18,7 @@ const suites=[
   {name:'open-product',command:npm,args:['run','test:continuum:open']},
   {name:'accessibility-mobile-context',command:npm,args:['run','test:continuum:accessibility-mobile']},
   {name:'visual-sequence',command:npm,args:['run','test:continuum:visual']},
+  {name:'product-visual-continuity',command:node,args:['tests/spatial-continuum/product-visual-continuity.mjs']},
   {name:'performance-resource',command:npm,args:['run','test:continuum:performance']}
 ];
 
