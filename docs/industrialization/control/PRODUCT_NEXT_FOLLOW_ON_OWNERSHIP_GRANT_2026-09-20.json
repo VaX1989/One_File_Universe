@@ -157,5 +157,12 @@
   },
   "cross_track_rule": "Do not merge #312 into #290, merge #290 into #312, or resolve package.json divergence by blind merge/rebase in this task.",
   "ci_requirement": "FRESH_EXACT_HEAD_CONTROL_CI_REQUIRED_AFTER_MATERIAL_CONTROL_RECORD_CHANGES",
-  "disposition": "AUTHORIZED_TWO_ADDITIVE_WRITERS_MACRO_EXCLUSIVE_SHARED_RENDERER_PRESERVED"
+  "disposition": "AUTHORIZED_TWO_ADDITIVE_WRITERS_MACRO_EXCLUSIVE_SHARED_RENDERER_PRESERVED",
+  "verification_strategy": {
+    "reason": "PR #312 cannot currently synthesize a pull_request merge ref because Wave0 advanced independently and the cross-track branches now conflict. Blind merge/rebase is forbidden by this task.",
+    "method": "Use a verification-only base branch fixed at the pre-grant product-control head and a verification-only head branch pointing to the exact final control SHA. Add only semantic-no-op JSON whitespace to control-owned package.json as the final control commit so the Spatial Continuum path-filtered workflow also runs.",
+    "exact_head_requirement": true,
+    "verification_pr_disposition": "CLOSE_WITHOUT_MERGE_AFTER_EXACT_HEAD_CI",
+    "no_cross_track_reconciliation": true
+  }
 }
