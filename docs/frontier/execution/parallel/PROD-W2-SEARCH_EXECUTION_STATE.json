@@ -1,0 +1,49 @@
+{
+  "prompt_id": "PROD-W2-SEARCH",
+  "master_schema_version": 4,
+  "planning_epoch": "OFU-POST-M0-PRODUCT-NEXT-2026-09-20-296565BB",
+  "status": "IN_PROGRESS",
+  "base_sha": "de06cc7f8e4b74e57aad583a8764ac756b06b9da",
+  "base_tree": "92ea93742177879dcf7f3fd94560439d0149b43d",
+  "ownership_version": "ofu.post-m0.product-next.ownership.v1",
+  "hypothesis": "A useful vast-universe discovery seam can remain deterministic, authority-aware and resource-bounded by ranking only sparse provider candidates with exact semantic references, versioned fixed-point similarity/interestingness models, explicit UNKNOWN/UNSUPPORTED state, and no global index or canonical mutation.",
+  "failure_fingerprint": null,
+  "failure_count": 0,
+  "alternate_strategy": "If generic multi-provider ranking proves too coupled or resource-ambiguous, narrow to deterministic local-neighborhood and Atlas-backed providers while preserving the same exact-reference result contract; never introduce exhaustive indexing or renderer/camera ownership.",
+  "last_action": "Reauthenticated the live repository, product control PR #312, exact activation SHA/tree, canonical v4 contracts, immutable source prompts, dependencies, ownership, current CI, existing sparse discovery APIs, Scientific Fingerprint and Atlas APIs; confirmed no existing PROD-W2-SEARCH lane/PR.",
+  "next_action": "Implement the additive bounded search engine, Atlas adapter and stale-result controller; add focused adversarial tests and product-boundary documentation; then request control-owned central test registration instead of editing package/workflow surfaces.",
+  "dependencies": {
+    "CTRL-WAVE-EPOCH": {
+      "status": "PASS_ACTIVE",
+      "pr": 312,
+      "sha": "de06cc7f8e4b74e57aad583a8764ac756b06b9da",
+      "tree": "92ea93742177879dcf7f3fd94560439d0149b43d"
+    },
+    "PROD-W1-SCI-FP": {
+      "status": "PASS_MERGED",
+      "merge_sha": "454c55a49f73254d0370bbdfb01d778998235326"
+    },
+    "PROD-W1-ATLAS-CORE": {
+      "status": "PASS_MERGED",
+      "merge_sha": "36b5cc5d038f23bb7498e3a341f8d368f9fdd039"
+    }
+  },
+  "dependencies_resolved": true,
+  "write_scope": [
+    "src/product/exploration/search/**",
+    "tests/product/prod-w2-search*.mjs",
+    "docs/product/search/**",
+    "docs/frontier/execution/parallel/PROD-W2-SEARCH_EXECUTION_STATE.json",
+    "docs/industrialization/handoffs/PROD-W2-SEARCH_*.json"
+  ],
+  "tests_run": [],
+  "evidence_refs": [],
+  "evidence_debt": [
+    "Focused PROD-W2-SEARCH test is not centrally registered because package.json and workflows are control-owned protected surfaces.",
+    "Exact-head hosted regression and focused verification remain to be captured after implementation."
+  ],
+  "branch": "work/post-m0/prod-w2-search-ofu-post-m0-product-next-2026-09-20-296565bb",
+  "pr": "PENDING_DRAFT_PR",
+  "completion_sha": null,
+  "completion_tree": null
+}
