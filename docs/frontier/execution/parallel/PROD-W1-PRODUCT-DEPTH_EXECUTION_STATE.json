@@ -6,10 +6,10 @@
   "terminal_state": "NOT_TERMINAL",
   "hypothesis": "Founder-visible depth can improve materially by making already-governed HUMAN place, atmosphere and causal presentation signals perceptible, while preserving stable world-space scale, scientific authority, single-scene/camera ownership, bounded resources and direct-file/offline behavior.",
   "failure_fingerprint": "PROD_DEPTH_VISUAL_EVIDENCE_GAPS",
-  "failure_count": 2,
+  "failure_count": 3,
   "alternate_strategy": "If governed depth cues cause scale ambiguity, resource growth, visual regressions or browser instability, revert the specific presentation mapping and retain only evidence-oracle/mobile fixes; do not widen scientific authority or add unbounded geometry.",
-  "last_action": "Exact-head PR #311 CI at f068f5e5b3948321a942dcf9650e7794ae85f68b passed all 10 repository workflows, but direct artifact inspection falsified terminal readiness: representative HUMAN captures could remain too dark/empty and 390 px portrait composition visibly overlapped/crowded despite overflow assertions. Repaired forward with the same bounded HUMAN far-field, portrait composition geometry checks, canonical live-world QOBS scoring, and exact product-depth replay.",
-  "next_action": "Run fresh exact-head cumulative CI and Spatial Continuum convergence on the repaired head, inspect the new HUMAN and phone-portrait artifacts directly, and repair only any new concrete failure fingerprint before terminalization.",
+  "last_action": "Fresh exact-head Spatial Continuum run 35495963664 failed in development because r6-w0-human-renderer-integration.mjs still asserted the superseded literal ring radii [180,420,860,1600]. Classified as a stale harness expectation, not a semantic renderer failure. Updated the integration assertion to the governed [72,240,720,1600] physical near/mid/far composition and explicit compositionPolicy.",
+  "next_action": "Run fresh exact-head CI once on the repaired harness subject. If green, inspect new convergence/mobile/HUMAN artifacts directly before terminalization.",
   "dependencies": {
     "M0_HISTORICAL": {
       "status": "PASS",
@@ -98,7 +98,7 @@
     "bounded": true
   },
   "evidence_debt": [
-    "PR #311 exact-head f068f5e5b3948321a942dcf9650e7794ae85f68b passed cumulative CI 10/10, but direct visual inspection falsified terminal product readiness and is therefore superseded as terminal evidence by this forward repair.",
+    "The f77e128817b11a46adfc5516ff723fed725318ec Spatial Continuum run failed on a stale source-literal integration assertion and is not PASS evidence; a fresh repaired exact-head run is required.",
     "The repaired visual/QOBS/mobile/replay subject still requires fresh exact-head CI and direct artifact inspection before PASS may be claimed.",
     "Physical GPU/device evidence remains release-grade debt and is not promoted by this lane.",
     "G0A remains NOT_PASS_INDEPENDENT_REAUDIT_REQUIRED and is a separate industrialization boundary."
@@ -128,12 +128,21 @@
         "PROD_DEPTH_HUMAN_FAR_FIELD_VISIBILITY_GAP",
         "PROD_DEPTH_PORTRAIT_LAYOUT_OVERLAP"
       ]
+    },
+    {
+      "subject_sha": "f77e128817b11a46adfc5516ff723fed725318ec",
+      "workflow": "Spatial Continuum Experiment",
+      "run_id": 35495963664,
+      "result": "FAIL",
+      "failure_fingerprint": "PROD_DEPTH_STALE_HUMAN_RING_LITERAL_ASSERTION",
+      "classification": "TEST_HARNESS_STALE_EXPECTATION"
     }
   ],
   "completion_sha": "PENDING_REPAIRED_EXACT_HEAD_EVIDENCE",
   "completion_tree": "PENDING_REPAIRED_EXACT_HEAD_EVIDENCE",
   "failure_fingerprints": [
     "PROD_DEPTH_HUMAN_FAR_FIELD_VISIBILITY_GAP",
-    "PROD_DEPTH_PORTRAIT_LAYOUT_OVERLAP"
+    "PROD_DEPTH_PORTRAIT_LAYOUT_OVERLAP",
+    "PROD_DEPTH_STALE_HUMAN_RING_LITERAL_ASSERTION"
   ]
 }
