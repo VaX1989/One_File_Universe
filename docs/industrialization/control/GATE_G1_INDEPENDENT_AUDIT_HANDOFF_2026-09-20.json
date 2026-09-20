@@ -1,0 +1,134 @@
+{
+  "schema": "ofu.gate-g1.independent-audit-handoff.v1",
+  "prompt_id": "GATE-G1-AUDIT",
+  "mission_date": "2026-09-20",
+  "final_status": "INDEPENDENT_AUDIT_REQUIRED",
+  "independence_requirement": "A genuinely independent READ_ONLY_AUDIT context that did not author or converge the audited Platform Proof Capsule must make the G1 decision.",
+  "audit_subject": {
+    "control_pr": 290,
+    "branch": "integration/post-m0-dual-track-wave0-2026-09-17",
+    "sha": "7c413efb051994c42c52c3642aeacddad8716485",
+    "tree": "NOT_EXPOSED_BY_AVAILABLE_GITHUB_CONNECTOR",
+    "tree_limitation": "The connected GitHub commit reader exposes the authoritative commit SHA but not the git tree SHA. No tree value is fabricated.",
+    "exact_head_ci": "PASS_10_OF_10",
+    "workflow_runs": {
+      "P5 Controlled Promotion": 35537883843,
+      "P1-P4 Canonical Baseline": 35537883810,
+      "P5 Environment v2 Canonical Promotion": 35537883852,
+      "P6 v1 Conformance": 35537883767,
+      "Foundation Integrity": 35537883782,
+      "P2 Conformance": 35537883822,
+      "P4 Conformance": 35537883826,
+      "P1 Conformance": 35537883882,
+      "P3 Conformance": 35537883917,
+      "Spatial Continuum Experiment": 35537883857
+    },
+    "package_json_blob": "267e26d9ec38cd5214ef664a0da898a849c0ecd0",
+    "root_test_command_count": 40,
+    "spatial_runner_blob": "e93450bad7f9140a0cabfc298b1b8b20a8576bff",
+    "spatial_suite_count": 15,
+    "spatial_run": 35537883857
+  },
+  "canonical_dependencies": {
+    "IND-NATIVE-P2": "COMPLETE",
+    "IND-CABI-MICROHOST": "COMPLETE",
+    "IND-JS-HEADLESS": "COMPLETE",
+    "IND-EXT-CONSUMER": "COMPLETE",
+    "IND-CONF-A": "COMPLETE"
+  },
+  "evidence": {
+    "native_p2": {
+      "handoff": "docs/industrialization/handoffs/IND-NATIVE-P2_2026-09-20.json",
+      "convergence": "docs/industrialization/control/CTRL_CONVERGENCE_POST_NATIVE_P2_2026-09-20.json",
+      "verification_pr": 332,
+      "verification_head": "b0aa0808dba6646d21b90c0011ba4d810d0d8d2e",
+      "foundation_run": 35524220956,
+      "positive_checks": 42,
+      "rejection_checks": 45,
+      "numeric_checks": 14,
+      "compilers": [
+        "g++",
+        "clang++"
+      ],
+      "cross_compiler_transcript_equal": true,
+      "corpus_digest": "d92b43afb8a7deeaed4b0c3ee13b73bad344b196132c35433b66360c0b0772fc"
+    },
+    "cabi_microhost": {
+      "handoff": "docs/industrialization/handoffs/IND-CABI-MICROHOST_2026-09-20.json",
+      "completion": "docs/industrialization/control/IND_CABI_MICROHOST_COMPLETION_2026-09-20.json",
+      "exact_integrated_subject": "0111e06d6c12ec03bdcdd64eeba8898c82239376",
+      "verification_pr": 344,
+      "verification_head": "0eded91d5d104e2f32a5e1f18e2bc88161102a54",
+      "foundation_run": 35527644242,
+      "spatial_run": 35527644262,
+      "commands_total": 139,
+      "successes": 94,
+      "rejections": 45,
+      "abi_version": 1,
+      "caller_owned_output_buffers": true,
+      "no_heap_ownership_crossing": true,
+      "structured_rejection_enum": true,
+      "exception_containment": true,
+      "corpus_digest": "d92b43afb8a7deeaed4b0c3ee13b73bad344b196132c35433b66360c0b0772fc"
+    },
+    "js_headless": {
+      "handoff": "docs/industrialization/handoffs/IND-JS-HEADLESS_2026-09-20.json",
+      "exact_public_seam_subject": "40ffb2f25412caa35ca001753dbd766d2821d874",
+      "executable_checks": 28,
+      "cumulative_subject": "758d9405ec8d03a27682487eb4bb4bb0dc301bc9"
+    },
+    "external_consumer": {
+      "handoff": "docs/industrialization/handoffs/IND-EXT-CONSUMER_2026-09-20.json",
+      "g0b_audit": "docs/industrialization/handoffs/GATE-G0B-AUDIT_2026-09-20.json",
+      "g0b_adjudication": "docs/industrialization/control/WAVE0_G0B_PASS_ADJUDICATION_2026-09-20.json"
+    },
+    "conformance": {
+      "handoff": "docs/industrialization/handoffs/IND-CONF-A_LIVE_FRONTIER_REPAIR_2026-09-19.json",
+      "verification_pr": 305,
+      "verification_run": 35439953703,
+      "js_positive": 54,
+      "js_rejection": 48,
+      "python_positive": 54,
+      "python_rejection": 40,
+      "live_frontier_scenarios": 6,
+      "frontier_rejections": 2,
+      "independent_python_model": "INDEPENDENT_MINIMAL_ORDER_KEY_STATE_MACHINE",
+      "corpus_digest": "d92b43afb8a7deeaed4b0c3ee13b73bad344b196132c35433b66360c0b0772fc"
+    },
+    "security": {
+      "post_g0a_handoff": "docs/industrialization/handoffs/IND-SEC-B_2026-09-20.json",
+      "readonly_register": "docs/industrialization/control/WAVE0_READONLY_AUDIT_REGISTER_2026-09-19.json"
+    }
+  },
+  "hard_nonclaims": {
+    "runtime_ported": false,
+    "broad_runtime_provider_abi_frozen": false,
+    "canonical_p2_p4_mutated_for_native_parity": false,
+    "product_authority_promoted": false,
+    "scientific_authority_promoted": false,
+    "licensing_distribution_decided": false,
+    "physical_device_gpu_verified": false
+  },
+  "known_debt": [
+    "checkpoint/archive provenance, freshness and authenticated-history semantics remain downstream debt",
+    "durable WAL/fsync/atomic-root/crash recovery remains unimplemented behind later gates",
+    "provider hostile-code sandbox/resource enforcement remains downstream work",
+    "physical GPU/device evidence remains external",
+    "licensing/distribution decisions remain manual"
+  ],
+  "audit_questions": [
+    "Does the Platform Proof Capsule demonstrate genuine independent consumer value without source-internal bypass?",
+    "Is cross-language P2 parity exact for canonical bytes, digests and rejection classes?",
+    "Is the C ABI intentionally contained and safe in ownership, buffers, version negotiation and exception/error boundaries?",
+    "Is the maintenance cost of the duplicate native/C ABI proof proportionate to the platform value demonstrated?",
+    "Has any product, presentation or scientific authority leaked into the proposed platform seam?",
+    "Do current security/resource limitations require repair before platform extraction can continue?"
+  ],
+  "allowed_outputs": [
+    "G1_PASS_CONTINUE",
+    "G1_FAIL_REPAIRABLE",
+    "PLATFORM_EXTRACTION_PREMATURE_PAUSE",
+    "KILL_PLATFORM_PROGRAM"
+  ],
+  "control_rule": "This handoff does not select any G1 outcome. Even a future independent PASS does not self-grant manual G1_PASS_CONTINUE."
+}
