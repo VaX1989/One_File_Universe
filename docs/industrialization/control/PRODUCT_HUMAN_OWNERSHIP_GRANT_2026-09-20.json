@@ -1,0 +1,89 @@
+{
+  "schema": "ofu.product.ownership-grant.v1",
+  "prompt_id": "CTRL-WAVE-EPOCH",
+  "mission_date": "2026-09-20",
+  "control": {
+    "pr": 290,
+    "branch": "integration/post-m0-dual-track-wave0-2026-09-17",
+    "base_sha": "d1be8b9c8ba5ecca43352640036cf8ccfe576296"
+  },
+  "epoch": "OFU-POST-M0-PRODUCT-COMPLETION-2026-09-20",
+  "reauthentication": {
+    "PRODUCT-VISUAL-CONTINUITY": {
+      "status": "ACTIVE",
+      "pr": 334,
+      "owned_surface": "transition_presentation_continuity"
+    },
+    "PRODUCT-AUDIO": {
+      "status": "MERGED_PENDING_CONTROL_OWNED_TEST_REGISTRATION",
+      "pr": 339,
+      "overlap": false,
+      "merge_sha": "d1be8b9c8ba5ecca43352640036cf8ccfe576296"
+    },
+    "existing_human_evidence": [
+      "tests/spatial-continuum/r6-w0-human-browser.mjs",
+      "tests/spatial-continuum/open-generalization.mjs",
+      "tests/v1x-06-surface-human-rendering/surface-human-rendering.mjs"
+    ],
+    "disjointness_proof": {
+      "certification_lane_scope": "LANE_LOCAL_TESTS_EVIDENCE_AND_DOCS_ONLY",
+      "renderer_or_transition_write": false,
+      "camera_write": false,
+      "picking_write": false,
+      "canonical_state_write": false,
+      "scientific_authority_write": false,
+      "overlap_with_visual_transition_owner": false,
+      "production_repair_policy": "DEFER_ANY_RENDERER_OR_TRANSITION_REPAIR_UNTIL_PRODUCT_VISUAL_CONTINUITY_TERMINAL"
+    }
+  },
+  "grant": {
+    "prompt_id": "PRODUCT-HUMAN",
+    "status": "AUTHORIZED_PARALLEL_CERTIFICATION_ONLY",
+    "semantic_ownership": [
+      "product_human_place_certification",
+      "human_sense_of_place_falsification"
+    ],
+    "exclusive_surfaces": [
+      "PRODUCT-HUMAN lane-local tests",
+      "PRODUCT-HUMAN evidence",
+      "PRODUCT-HUMAN handoff/docs"
+    ],
+    "must_not_modify_while_visual_active": [
+      "cross-scale transition presentation",
+      "committed visual state handoff",
+      "camera authority",
+      "renderer picking authority",
+      "production HUMAN renderer/materialization modules",
+      "canonical P2/P4 semantics",
+      "scientific authority",
+      "package.json",
+      "workflows",
+      "central test runners"
+    ],
+    "acceptance": [
+      "physical near/mid/far composition without mutating world scale",
+      "horizon, atmosphere, lighting and embodied depth cues remain presentation-only where unsupported",
+      "landmark/contextual density comes from existing governed local context rather than fabricated canonical facts",
+      "continuous world/surface identity and exact source ancestry",
+      "at least three genuine materialized worlds differ across multiple non-palette dimensions",
+      "causal/product-depth differences remain explainable and non-authoritative where appropriate",
+      "bounded cache/streaming with real eviction, disposal and deterministic rematerialization",
+      "single scene, single camera, renderer-owned picking, zero mandatory runtime network",
+      "reversible HUMAN presentation and bounded resources",
+      "physical-device evidence must remain explicitly NOT_VERIFIED when unavailable"
+    ]
+  },
+  "falsification_rule": {
+    "if_lane_local_certification_fails": "record exact fingerprint and distinguish test defect from product defect",
+    "if_product_repair_requires_visual_owned_surface": "BLOCK_REPAIR_UNTIL_VISUAL_TERMINAL",
+    "if_product_repair_is_provably_disjoint": "request a narrower control ownership grant before mutation"
+  },
+  "interaction_with_industrialization": {
+    "IND-CABI-MICROHOST": "PARALLEL_DISJOINT_AFTER_NATIVE_EXACT_HEAD_GATE",
+    "shared_surface_overlap": false
+  },
+  "still_deferred": {
+    "PROD-W2-DIRECTOR": "STACKED_ONLY_BLOCKED_WHILE_PRODUCT_VISUAL_CONTINUITY_ACTIVE"
+  },
+  "disposition": "PRODUCT_HUMAN_CERTIFICATION_ONLY_AUTHORIZED_IN_PARALLEL"
+}

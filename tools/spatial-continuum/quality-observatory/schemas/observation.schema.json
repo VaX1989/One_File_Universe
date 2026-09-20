@@ -3,15 +3,149 @@
   "$id": "https://one-file-universe.invalid/schemas/r6-quality-observatory-observation-v1.json",
   "title": "OFU R6 Quality Observatory Observation",
   "type": "object",
-  "required": ["contract", "witness"],
+  "required": [
+    "contract",
+    "witness"
+  ],
   "properties": {
-    "contract": {"const": "ofu.r6.quality-observatory.observation.v1"},
-    "witness": {"type": "object", "required": ["address", "seed", "modelVersion"], "properties": {"address": {"type": "string", "minLength": 1}, "seed": {"type": "string", "minLength": 1}, "modelVersion": {"type": "string", "minLength": 1}, "stage": {"type": "string"}, "sampleId": {"type": "string"}}, "additionalProperties": true},
-    "descriptors": {"type": "object", "description": "Harness-normalized perceptual descriptor groups.", "properties": {"silhouetteTopography": {}, "horizonLandformProfile": {}, "spatialFrequencyRoughness": {}, "atmosphereSkyRegime": {}, "materialFamily": {}, "objectDensityClustering": {}, "scaleDistribution": {}, "palette": {}, "causalFingerprint": {}, "microstructureTopology": {}}, "additionalProperties": true},
-    "checks": {"type": "object", "additionalProperties": {"type": "boolean"}},
-    "failures": {"type": "array"}, "representation": {"type": "object"}, "visual": {"type": "object"}, "human": {"type": "object"}, "transition": {"type": "object"}, "performance": {"type": "object"}, "resources": {"type": "object"}, "queue": {"type": "object"}, "runtime": {"type": "object"}, "provenance": {"type": "object"}, "accessibility": {"type": "object"},
-    "imageEvidence": {"type": "object", "description": "Supporting visual similarity evidence only; not diversity-score authority."},
-    "outputFingerprint": {"type": "string"}, "journeyKey": {"type": "string"}, "sequence": {"type": "number"}
+    "contract": {
+      "const": "ofu.r6.quality-observatory.observation.v1"
+    },
+    "witness": {
+      "type": "object",
+      "required": [
+        "address",
+        "seed",
+        "modelVersion"
+      ],
+      "properties": {
+        "address": {
+          "type": "string",
+          "minLength": 1
+        },
+        "seed": {
+          "type": "string",
+          "minLength": 1
+        },
+        "modelVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "stage": {
+          "type": "string"
+        },
+        "sampleId": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "descriptors": {
+      "type": "object",
+      "description": "Harness-normalized perceptual descriptor groups.",
+      "properties": {
+        "silhouetteTopography": {},
+        "horizonLandformProfile": {},
+        "spatialFrequencyRoughness": {},
+        "atmosphereSkyRegime": {},
+        "materialFamily": {},
+        "objectDensityClustering": {},
+        "scaleDistribution": {},
+        "palette": {},
+        "causalFingerprint": {},
+        "microstructureTopology": {}
+      },
+      "additionalProperties": true
+    },
+    "checks": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "boolean"
+      }
+    },
+    "failures": {
+      "type": "array"
+    },
+    "representation": {
+      "type": "object"
+    },
+    "visual": {
+      "type": "object"
+    },
+    "human": {
+      "type": "object"
+    },
+    "transition": {
+      "type": "object"
+    },
+    "performance": {
+      "type": "object"
+    },
+    "resources": {
+      "type": "object"
+    },
+    "queue": {
+      "type": "object"
+    },
+    "runtime": {
+      "type": "object"
+    },
+    "provenance": {
+      "type": "object"
+    },
+    "accessibility": {
+      "type": "object"
+    },
+    "imageEvidence": {
+      "type": "object",
+      "description": "Supporting visual similarity evidence only; not diversity-score authority."
+    },
+    "outputFingerprint": {
+      "type": "string"
+    },
+    "journeyKey": {
+      "type": "string"
+    },
+    "sequence": {
+      "type": "number"
+    },
+    "crossProgram": {
+      "type": "object",
+      "description": "Capability-gated product/platform evidence. Observatory-only; does not promote scientific or release authority.",
+      "properties": {
+        "capabilityPresence": {
+          "type": "object",
+          "properties": {
+            "product": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "boolean"
+              }
+            },
+            "platform": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "boolean"
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "product": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "platform": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
   },
   "additionalProperties": true
 }

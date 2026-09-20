@@ -1,0 +1,71 @@
+{
+  "prompt_id": "CTRL-WAVE-EPOCH",
+  "master_schema_version": 4,
+  "epoch": "OFU-POST-M0-PRODUCT-NEXT-2026-09-20-296565BB",
+  "hypothesis": "The existing product epoch can safely add INSTRUMENTS and COMPARE in parallel with the continuing PRODUCT-MACRO lane because both new writers are constrained to additive product surfaces that do not overlap Macro's exclusive shared renderer/product-composition ownership.",
+  "failure_fingerprint": null,
+  "failure_count": 0,
+  "alternate_strategy": "If either child needs a protected shared surface, do not widen its grant. Keep that mutation control-owned through INTEGRATION_PATCH_REQUEST or defer the lane; never rebase published evidence or race Macro.",
+  "last_action": "Reauthenticated live PR #312/#313, merged SCI-WHY #314, SEARCH #317 and TIME #319, searched for existing INSTRUMENTS/COMPARE branches and PRs, inspected the product tree and Macro changed paths, and granted two narrow additive writers while preserving Macro's sole shared renderer ownership and the separate Wave0 track.",
+  "next_action": "After fresh exact-head control CI passes, launch PROD-W1-INSTRUMENTS and PROD-W2-COMPARE only from the externally bound final #312 head; continue PRODUCT-MACRO only in PR #313. Keep HUMAN, VISUAL-CONTINUITY, DIRECTOR and AUDIO deferred. Use INTEGRATION_PATCH_REQUEST for package/workflow/central registration or any shared surface.",
+  "dependencies": {
+    "MASTER_V4": {
+      "status": "PASS",
+      "sha": "c2cab6d6e914b918432432fdc69825e0a1000509"
+    },
+    "PRODUCT_CONTROL_PR": {
+      "status": "ACTIVE",
+      "pr": 312,
+      "pre_grant_sha": "92ae51b193d3e9a545c9760df3e6f0922728b3d0",
+      "pre_grant_tree": "2b8f210772609a22cf3c24affe4a636ae025b62a",
+      "pre_grant_ci": "PASS_10_OF_10"
+    },
+    "PROD-W1-SCI-WHY": {
+      "status": "PASS_MERGED",
+      "pr": 314,
+      "merge_commit": "72ea01f2d24897c9532519207dc512b9374b6d1f"
+    },
+    "PROD-W1-ATLAS-CORE": {
+      "status": "PASS_MERGED",
+      "merge_commit": "36b5cc5d038f23bb7498e3a341f8d368f9fdd039"
+    },
+    "PROD-W2-SEARCH": {
+      "status": "PASS_MERGED",
+      "pr": 317,
+      "merge_commit": "fecae5a2e3ec4334b449a56cfd4141c998622d36"
+    },
+    "PROD-W2-TIME": {
+      "status": "PASS_MERGED",
+      "pr": 319,
+      "merge_commit": "07f63e111d573ca025bf28cad44d1b9032f55e68"
+    },
+    "PRODUCT-MACRO": {
+      "status": "IN_PROGRESS",
+      "pr": 313,
+      "head_sha": "79d4fee113ff6e556cbf19c179b6945cbefd7274",
+      "failure_fingerprint": "PRODUCT_MACRO_REVERSAL_HARNESS_COMMITTED_STATE_TIMING_RACE"
+    },
+    "PROD-W1-INSTRUMENTS": {
+      "status": "AUTHORIZED_DEPENDENCY_READY"
+    },
+    "PROD-W2-COMPARE": {
+      "status": "AUTHORIZED_DEPENDENCY_READY"
+    },
+    "G0A_MINIMUM_NORMATIVE_SLICE": {
+      "status": "PASS_SEPARATE_WAVE0_TRACK",
+      "wave0_head_sha": "951946411b5aa5fb8685f066360099cabbdbb26e"
+    }
+  },
+  "evidence_debt": [
+    "Fresh exact-head CI is required after the follow-on control-record mutations.",
+    "PRODUCT-MACRO remains non-terminal and must repair its isolated reversal-harness timing race in PR #313.",
+    "Product and Wave0 tracks contain independent package.json registration changes; cross-track union remains a later control-convergence task.",
+    "Physical GPU/device evidence remains separate release-grade debt.",
+    "The new writer grants authorize implementation work only; they do not pre-certify child evidence."
+  ],
+  "branch": "control/post-m0-product-next-2026-09-20",
+  "pr": 312,
+  "completion_sha": "EXTERNALLY_BOUND_BY_PR312_FOLLOW_ON_GRANT_COMMENT_AFTER_FINAL_CONTROL_MUTATION",
+  "completion_tree": "EXTERNALLY_BOUND_BY_PR312_FOLLOW_ON_GRANT_COMMENT_AFTER_FINAL_CONTROL_MUTATION",
+  "disposition": "READY_FOR_CONTROL_CONVERGENCE"
+}

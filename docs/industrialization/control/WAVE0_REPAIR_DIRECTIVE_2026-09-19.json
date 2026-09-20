@@ -1,0 +1,94 @@
+{
+  "schema": "ofu.post-m0.wave0.control-repair-directive.v1",
+  "authority": "CTRL_CONVERGENCE_CONTROL_DIRECTIVE",
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "frozen_base_sha": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+  "frozen_base_tree": "3704247247940fa8c5f08291cd80ec9e24e7d49d",
+  "observed_initial_control_head": "fa88f7cec101a52d07916a0fdd3927c482a6f188",
+  "convergence_subject_head": "ef13db638acbb9c5ccb24a6ceb56f0b9ea4802e4",
+  "convergence_subject_tree": "803cbc8823f6adce4594dea5be20bc578640858b",
+  "status": "RUNNABLE_REPAIR_BATCH",
+  "parallel_safe": true,
+  "target_branch": "integration/post-m0-dual-track-wave0-2026-09-17",
+  "rules": [
+    "Continue the canonical PROMPT_ID; do not invent new roadmap IDs.",
+    "Successor repair branches must start from the exact live Wave-0 control head and target the Wave-0 control branch.",
+    "Historical immutable terminal handoffs are never rewritten; create a new immutable repair handoff.",
+    "Mutable execution-state files may be advanced.",
+    "No child repair may modify another semantic surface; shared changes require INTEGRATION_PATCH_REQUEST.",
+    "No main/#274/#275/#287/#290 merge, tag, release or R7."
+  ],
+  "repairs": [
+    {
+      "prompt_id": "PROD-W1-CONTRACTS",
+      "original_pr": 293,
+      "classification": "V4_TERMINAL_CONTRACT_COMPLETION",
+      "reason": "Contract implementation/tests are integrated, but no canonical execution-state file or immutable terminal-handoff artifact was materialized.",
+      "required": [
+        "Materialize docs/frontier/execution/parallel/PROD-W1-CONTRACTS_EXECUTION_STATE.json with every EXECUTION_STATE_CONTRACT required field.",
+        "Create a new immutable v4 terminal handoff with every TERMINAL_HANDOFF_CONTRACT required field; bind original lane head 65d3c03fbb4745d71c189aba1d7260b030badc20 and tree 48fb9fa07508b66ad4d8964a4c7f2188c06d9d70 plus the live control dependency.",
+        "Do not alter product contract semantics unless exact focused evidence proves a defect.",
+        "Re-run tests/product/prod-w1-contracts.mjs when executable evidence is available and never fabricate a run."
+      ],
+      "gate_effect": "G-PROD-CONTRACTS remains NOT_PASS until repair converges."
+    },
+    {
+      "prompt_id": "IND-GOV-A",
+      "original_pr": 295,
+      "classification": "G0A_MINIMUM_SLICE_NARROWING_PLUS_V4_PACKET_COMPLETION",
+      "required": [
+        "Keep P2 and narrow P4 time/event/order/lineage/live-frontier/exact-transition-binding source-backed candidates.",
+        "Remove P4.CHECKPOINT_COMPACTION_INVARIANTS_V2 and P4.ARCHIVE_INTEGRITY_INVARIANTS_V2 from the G0A READY_TO_SPECIFY minimum; classify them DRAFT_ONLY or stricter with explicit trust/authentication limitation.",
+        "Do not modify P2/P4 production semantics or invent authentication.",
+        "Update mutable IND-GOV-A execution state with missing branch/pr fields.",
+        "Create a new immutable repair terminal handoff containing every v4 required field; do not rewrite the historical handoff."
+      ],
+      "gate_effect": "G0A cannot pass until repaired output and siblings pass independent GATE-G0A-AUDIT."
+    },
+    {
+      "prompt_id": "IND-CONF-A",
+      "original_pr": 296,
+      "classification": "G0A_CONFORMANCE_SCOPE_CLASSIFICATION_PLUS_V4_PACKET_COMPLETION",
+      "control_verification": {
+        "pr": 297,
+        "merged": false,
+        "verification_head": "95b81237f8cfeaba5a1df300a4fc8c82f042470b",
+        "foundation_run": 35433206372,
+        "corpus_digest": "2b13e4c47c254e418543410806ec5aaed7650b60e2e653c75b602b9c0735b65b",
+        "js_positive": 48,
+        "js_rejection": 47,
+        "python_positive": 48,
+        "python_rejection": 38,
+        "result": "PASS"
+      },
+      "required": [
+        "Preserve frozen P2/narrow-P4 corpus unless a real defect requires a versioned change.",
+        "Make machine-readable scope distinguish independent G0A conformance from CURRENT_AUTHORITY_REGRESSION_ONLY checkpoint/archive behavior.",
+        "Do not count checkpoint/archive behavior as independent cross-language proof merely because JS and the narrow Python oracle pass.",
+        "Do not rewrite the historical handoff; create a new immutable v4-compliant repair handoff that incorporates the control verification evidence."
+      ],
+      "gate_effect": "G0A cannot pass until scope is repaired and independent gate audit succeeds."
+    },
+    {
+      "prompt_id": "IND-BRIDGE-A",
+      "original_pr": 294,
+      "classification": "G0A_HEADLESS_SEAM_NARROWING_PLUS_V4_PACKET_COMPLETION",
+      "required": [
+        "Remove archiveBytes/public exportArchive from the G0A minimum facade, or move them into an explicit POST_G0A_PRIVATE_CANDIDATE excluded from G0A/external-consumer proof.",
+        "Keep generic provider query unfrozen and DOM/Babylon/camera/selection/viewport/scheduler/storage/product globals out of the semantic seam.",
+        "Update the two characterization probes to the narrowed minimum and execute them on the exact repair head when possible; never fabricate PASS.",
+        "Update mutable IND-BRIDGE-A execution state with missing v4 fields including hypothesis/dependencies/evidence_debt.",
+        "Create a new immutable v4-compliant repair terminal handoff; do not rewrite the historical handoff.",
+        "Do not implement a public headless API before G0A."
+      ],
+      "gate_effect": "G0A cannot pass until repaired seam and evidence pass independent gate audit."
+    }
+  ],
+  "post_repair_sequence": [
+    "CTRL-CONVERGENCE validates/merges all four repair PRs",
+    "run cumulative exact-head conformance/product-shadow evidence",
+    "if PROD-W1-CONTRACTS repair is compliant, adjudicate G-PROD-CONTRACTS",
+    "run independent GATE-G0A-AUDIT on repaired integrated head",
+    "only G0A PASS may unlock IND-JS-HEADLESS and IND-SEC-B"
+  ]
+}

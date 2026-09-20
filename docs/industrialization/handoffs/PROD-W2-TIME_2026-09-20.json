@@ -1,0 +1,186 @@
+{
+  "prompt_id": "PROD-W2-TIME",
+  "master_schema_version": 4,
+  "epoch": "OFU-POST-M0-PRODUCT-NEXT-2026-09-20-296565BB",
+  "base_sha": "de06cc7f8e4b74e57aad583a8764ac756b06b9da",
+  "base_tree": "92ea93742177879dcf7f3fd94560439d0149b43d",
+  "dependency_shas": {
+    "product_control_activation": "de06cc7f8e4b74e57aad583a8764ac756b06b9da",
+    "prod_w1_atlas_core_merge": "36b5cc5d038f23bb7498e3a341f8d368f9fdd039",
+    "canonical_v4_master": "c2cab6d6e914b918432432fdc69825e0a1000509",
+    "w1_observation_contracts_blob": "ec32053fa03f07dd95121d815a8bcdbe06103b6b",
+    "atlas_core_blob": "e231780810aa980de80b549184faf9b28bc8e575"
+  },
+  "final_sha": "d4879de2273a0b2b59144a3b44ce6fac08df3b0a",
+  "final_tree": "72b52dc46a176d24c4bd13ad5b65dbcee13c6e42",
+  "changed_paths": [
+    "src/product/exploration/time/governed-time-explorer.js",
+    "tests/product/prod-w2-time.mjs",
+    "docs/product/time/README.md",
+    "docs/frontier/execution/parallel/PROD-W2-TIME_EXECUTION_STATE.json"
+  ],
+  "ownership_result": {
+    "granted_surface": "PRODUCT_TIME_ATLAS_PROJECTION",
+    "complied": true,
+    "shared_renderer_modified": false,
+    "product_composition_modified": false,
+    "p4_semantics_modified": false,
+    "atlas_core_modified": false,
+    "camera_or_picking_modified": false,
+    "packages_or_workflows_modified": false,
+    "main_modified": false,
+    "release_or_tag_created": false
+  },
+  "tests": [
+    {
+      "id": "PROD_W2_TIME_FOCUSED",
+      "command": "node tests/product/prod-w2-time.mjs",
+      "result": "PASS",
+      "witnesses": {
+        "timeAuthority": "CANONICAL_P4",
+        "cacheBound": 2,
+        "eviction_rematerialization": "BYTE_STABLE_TEMPORAL_REFERENCE",
+        "stale_materialization": "DROPPED",
+        "cancellation": "CANCELLED_NOT_ADMITTED",
+        "model_version_mismatch": "REJECTED",
+        "unsupported_history": "REJECTED",
+        "atlas_snapshot_product_context": "BINDS_NEW_ATLAS_ENTRY",
+        "network_calls": 0,
+        "cameraMutation": false,
+        "timelineAuthorityCreated": false
+      },
+      "blobs": {
+        "implementation": "ec0624edc2d29882a01f04ba29b1bea8c9d227a4",
+        "test": "d0a88bc9ba846ba800abf2018d7a4e38ff984f14",
+        "w1_contracts": "ec32053fa03f07dd95121d815a8bcdbe06103b6b",
+        "atlas_core": "e231780810aa980de80b549184faf9b28bc8e575"
+      }
+    },
+    {
+      "id": "FOUNDATION_INTEGRITY",
+      "run_id": 35504426050,
+      "head_sha": "d4879de2273a0b2b59144a3b44ce6fac08df3b0a",
+      "result": "PASS",
+      "exact_source_checkout": true
+    },
+    {
+      "id": "P1_P4_CANONICAL_BASELINE",
+      "run_id": 35504425951,
+      "head_sha": "d4879de2273a0b2b59144a3b44ce6fac08df3b0a",
+      "result": "PASS",
+      "exact_head": true,
+      "reproducible_build": true,
+      "direct_file_matrix": {
+        "linux/chromium": "PASS",
+        "linux/firefox": "PASS",
+        "linux/webkit": "PASS",
+        "windows/chromium": "PASS",
+        "macos/webkit": "PASS"
+      }
+    }
+  ],
+  "deterministic_witnesses": {
+    "source_time": {
+      "seconds": "100",
+      "micros": "0"
+    },
+    "reverse_time": {
+      "seconds": "50",
+      "micros": "0"
+    },
+    "rematerialized_state_digest": "000000000000000000000000000000000000000000000000000000000000041a",
+    "serialized_reference_roundtrip": "BYTE_STABLE",
+    "exact_snapshot_roundtrip_through_atlas": "PASS",
+    "cache_eviction_rematerialization": "PASS",
+    "exact_build_reproduction": "PASS"
+  },
+  "security_classification": {
+    "network_access_added": false,
+    "direct_file_capability_regressed": false,
+    "browser_global_dependency_added": false,
+    "executable_dynamic_code_added": false,
+    "p4_history_mutation_surface_added": false,
+    "unbounded_materialization_added": false,
+    "result": "NO_NEW_SECURITY_AUTHORITY_SURFACE_IN_GRANTED_LANE"
+  },
+  "authority_science_classification": {
+    "canonical_time_authority": "P4_ONLY",
+    "animation_clock_authority": "PRESENTATION_ONLY",
+    "temporal_plan_authority": "REFERENCE_ONLY",
+    "domain_model_authorities": [
+      "CANONICAL",
+      "MODEL_DERIVED"
+    ],
+    "unsupported_history_policy": "FAIL_CLOSED",
+    "scientific_fingerprint_preservation": "W1_REFERENCE_VALIDATED",
+    "model_version_binding": "EXACT_FAIL_CLOSED",
+    "canonical_history_mutation": false,
+    "second_camera_authority": false,
+    "second_timeline_authority": false
+  },
+  "performance_resource_evidence": {
+    "materialization_storage": "BOUNDED_COMPACT_REFERENCES_ONLY",
+    "default_max_materialized_references": 16,
+    "tested_max_materialized_references": 2,
+    "default_max_serialized_reference_bytes": 65536,
+    "whole_universe_history_storage_required": false,
+    "stale_async_results_cached": false,
+    "cancelled_async_results_cached": false
+  },
+  "limitations": [
+    "The lane exposes productProjection authority labels but intentionally does not wire shared renderer/UI composition because PRODUCT-MACRO owns that shared surface.",
+    "Historical navigation is available only through explicitly registered, versioned governed domain resolvers; unsupported intervals and unsupported instants fail closed.",
+    "Presentation playback rate is not a canonical P4 clock and by design does not advance canonical history.",
+    "The Time Explorer retains compact P4/Atlas references, not mutable world copies or a full temporal archive."
+  ],
+  "falsification_attempts": [
+    {
+      "case": "outside declared historical interval",
+      "result": "REJECTED"
+    },
+    {
+      "case": "resolver reports unsupported instant inside declared interval",
+      "result": "UNSUPPORTED_FAIL_CLOSED"
+    },
+    {
+      "case": "Atlas reference bound to wrong requested model version",
+      "result": "REJECTED"
+    },
+    {
+      "case": "saved temporal reference imported under newer model version",
+      "result": "REJECTED"
+    },
+    {
+      "case": "resolver returns wrong model version",
+      "result": "REJECTED"
+    },
+    {
+      "case": "resolver returns wrong target time",
+      "result": "REJECTED"
+    },
+    {
+      "case": "in-flight request superseded",
+      "result": "STALE_DROPPED"
+    },
+    {
+      "case": "in-flight request aborted",
+      "result": "CANCELLED"
+    },
+    {
+      "case": "reference evicted then rematerialized",
+      "result": "DETERMINISTIC_MATCH"
+    },
+    {
+      "case": "network/browser/renderer dependency scan",
+      "result": "NONE_FOUND"
+    },
+    {
+      "case": "Atlas saved snapshot product-context identity",
+      "result": "INITIAL_DEFECT_FOUND_AND_REPAIRED",
+      "fingerprint": "TIME_ATLAS_SNAPSHOT_CONTEXT_SOURCE_ID_LEAK"
+    }
+  ],
+  "rollback_abandon_condition": "Abandon shared product integration and preserve the module as read-only reference/planning infrastructure if control integration would require changing P4 canonical history semantics, treating animation time as canonical, weakening model-version checks, storing mutable world copies, introducing unbounded history, or taking shared renderer/camera/picking ownership.",
+  "integration_patch_requests": [],
+  "disposition": "READY_FOR_CONTROL_CONVERGENCE"
+}

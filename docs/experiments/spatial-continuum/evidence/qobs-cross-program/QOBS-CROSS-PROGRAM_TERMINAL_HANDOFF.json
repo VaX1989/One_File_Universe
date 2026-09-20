@@ -1,0 +1,142 @@
+{
+  "prompt_id": "QOBS-CROSS-PROGRAM",
+  "master_schema_version": 4,
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "base_sha": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+  "base_tree": "3704247247940fa8c5f08291cd80ec9e24e7d49d",
+  "dependency_shas": {
+    "M0_HISTORICAL": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+    "CTRL_WAVE0": "fa88f7cec101a52d07916a0fdd3927c482a6f188",
+    "PR287_V4_MASTER": "c2cab6d6e914b918432432fdc69825e0a1000509",
+    "PR286_PRODUCT_QUALITY_SOURCE": "3d28ec0720f611278b7717da02713c9eda96e642",
+    "PR287_V3_QOBS_SOURCE": "6494c3a43596c2d16c43237c052d404d5b1a7e74",
+    "PR275_R6_W1_QOBS_SOURCE": "86e19cae0e8c393661d6696617c5a5e49eb78983"
+  },
+  "final_sha": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD",
+  "final_tree": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD_TREE",
+  "draft_pr": 292,
+  "changed_paths": [
+    "docs/experiments/spatial-continuum/evidence/qobs-cross-program/INTEGRATION_PATCH_REQUEST.json",
+    "docs/experiments/spatial-continuum/evidence/qobs-cross-program/QOBS-CROSS-PROGRAM_TERMINAL_HANDOFF.json",
+    "docs/experiments/spatial-continuum/evidence/qobs-cross-program/README.md",
+    "docs/experiments/spatial-continuum/evidence/qobs-cross-program/cross-program-fixture-results.json",
+    "docs/frontier/execution/parallel/QOBS-CROSS-PROGRAM_EXECUTION_STATE.json",
+    "tests/spatial-continuum/qobs-cross-program.mjs",
+    "tools/spatial-continuum/quality-observatory/README.md",
+    "tools/spatial-continuum/quality-observatory/cross-program.mjs",
+    "tools/spatial-continuum/quality-observatory/index.mjs",
+    "tools/spatial-continuum/quality-observatory/observatory.mjs",
+    "tools/spatial-continuum/quality-observatory/schemas/cross-program.schema.json",
+    "tools/spatial-continuum/quality-observatory/schemas/observation.schema.json",
+    "tools/spatial-continuum/quality-observatory/schemas/report.schema.json",
+    "tools/spatial-continuum/quality-observatory/summary.mjs"
+  ],
+  "ownership_result": "PASS_QUALITY_OBSERVATORY_ONLY_WITH_OUT_OF_SCOPE_SHARED_REGISTRATION_EMITTED_AS_INTEGRATION_PATCH_REQUEST",
+  "tests": [
+    {
+      "check": "active control epoch/head/tree reauthentication immediately before terminalization",
+      "result": "PASS",
+      "witness": {
+        "control_pr": 290,
+        "control_head": "fa88f7cec101a52d07916a0fdd3927c482a6f188",
+        "control_tree": "784e12501a7e0ba9e281787513bddbb6eed1c6bf"
+      }
+    },
+    {
+      "check": "lane ancestry vs exact control head",
+      "result": "PASS_AHEAD_14_BEHIND_0_BEFORE_TERMINALIZATION"
+    },
+    {
+      "check": "JSON parse of observation/report/cross-program schemas and execution state",
+      "result": "PASS"
+    },
+    {
+      "check": "isolated Node v22.16.0 cross-program fixture",
+      "result": "PASS",
+      "witness_hash": "2923d437786f9d98f7308d4b7072ab7956b4b96e84e5d561e1b547cd6295315c"
+    },
+    {
+      "check": "observation-order invariance",
+      "result": "PASS_SAME_CROSS_PROGRAM_HASH"
+    },
+    {
+      "check": "undeclared capability evidence cannot create failure",
+      "result": "PASS_STAGED_ONLY"
+    },
+    {
+      "check": "declared capability without evidence is visible debt and not silent PASS",
+      "result": "PASS"
+    },
+    {
+      "check": "authority non-promotion assertions",
+      "result": "PASS"
+    },
+    {
+      "check": "legacy observations without crossProgram",
+      "result": "PASS_ZERO_NEW_CROSS_PROGRAM_ISSUES_BY_CONSTRUCTION"
+    },
+    {
+      "check": "protected-path ownership audit",
+      "result": "PASS_NO_PACKAGE_WORKFLOW_MAIN_RENDERER_KERNEL_SCIENCE_OR_CONTROL_PLANE_WRITES"
+    }
+  ],
+  "deterministic_witnesses": [
+    {
+      "kind": "CONTROL_BASE_BINDING",
+      "sha": "fa88f7cec101a52d07916a0fdd3927c482a6f188",
+      "tree": "784e12501a7e0ba9e281787513bddbb6eed1c6bf"
+    },
+    {
+      "kind": "CROSS_PROGRAM_FIXTURE_HASH",
+      "sha256": "2923d437786f9d98f7308d4b7072ab7956b4b96e84e5d561e1b547cd6295315c",
+      "order_independent": true
+    },
+    {
+      "kind": "EXACT_FAILURE_WITNESS_POLICY",
+      "required_fields": [
+        "address",
+        "seed",
+        "modelVersion"
+      ],
+      "result": "PASS"
+    }
+  ],
+  "security_classification": "OBSERVATION_ONLY_SECURITY_FUZZ_EVIDENCE_CAPABILITY_GATED_NO_SECURITY_AUTHORITY_TRANSFER",
+  "authority_science_classification": "TEST_ANALYSIS_GOVERNANCE_FALSIFICATION_ONLY_NO_CANONICAL_SCIENCE_SEMANTIC_OR_RELEASE_AUTHORITY",
+  "performance_resource_evidence": {
+    "classification": "OBSERVATORY_MEASUREMENT_INFRASTRUCTURE_ONLY",
+    "available": [
+      "existing CPU update/render distribution aggregation",
+      "verified-GPU samples only when harness marks gpuVerified=true",
+      "resource growth against caller-declared budgets",
+      "capability-gated query latency and cache/materialization evidence"
+    ],
+    "release_claim": false,
+    "physical_device_evidence": "DEFERRED_EXTERNAL_EVIDENCE"
+  },
+  "limitations": [
+    "No post-G0A/G0B middleware API is assumed to exist. Platform evidence families remain inert until capability presence is explicitly declared.",
+    "The execution container had no outbound GitHub network access, preventing a fresh full-repository clone/test run; focused Node verification was performed from connector-fetched source and central test registration is delegated to convergence.",
+    "Atlas exact-return evidence is available only when the owning product contract/capability is present; this lane does not invent snapshot semantics.",
+    "Metric failures falsify configured quality expectations only; they do not independently block or authorize a release.",
+    "Physical GPU/device evidence remains separate external debt."
+  ],
+  "falsification_attempts": [
+    "reversed observation input order and required identical cross-program digest",
+    "supplied failing evidence for undeclared browser/device and provider capabilities and required staged-not-failed behavior",
+    "declared persistence/recovery capability without evidence and required visible evidence debt rather than silent PASS",
+    "supplied unclassified metric evidence and required explicit classification failure witness",
+    "exercised product continuity, causal coverage, Atlas exact-return, cross-language parity, and latency failures while preserving exact witnesses",
+    "rechecked lane diff against exact control parent for ownership/protected-path violations"
+  ],
+  "rollback_abandon_condition": "If convergence shows that Quality Observatory metrics require semantic reinterpretation, mutate product/scientific state, imply APIs that are not explicitly present, or acquire release/science authority, reject or revert the affected QOBS changes rather than broadening this lane's ownership.",
+  "integration_patch_requests": [
+    {
+      "path": "docs/experiments/spatial-continuum/evidence/qobs-cross-program/INTEGRATION_PATCH_REQUEST.json",
+      "target_surface": "CENTRAL_TEST_REGISTRATION",
+      "owner": "CTRL-WAVE0/CTRL-CONVERGENCE",
+      "mandatory_for_lane_semantics": false
+    }
+  ],
+  "disposition": "READY_FOR_CONTROL_CONVERGENCE"
+}

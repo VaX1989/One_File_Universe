@@ -1,0 +1,91 @@
+{
+  "prompt_id": "PROD-W1-ATLAS-CORE",
+  "master_schema_version": 4,
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "status": "READY_FOR_CONTROL_CONVERGENCE",
+  "terminal_state": "READY_FOR_CONTROL_CONVERGENCE",
+  "hypothesis": "A bounded Personal Atlas can persist places, observations, snapshots and routes as exact W1/P4 semantic references while keeping renderer/camera objects and persistence-backend choices outside the product authority boundary.",
+  "failure_fingerprint": "ATLAS_DEFAULT_SEARCH_LIMIT_EXCEEDS_INSTANCE_CAPACITY",
+  "failure_count": 1,
+  "alternate_strategy": "If the repaired default still violates bounded-resource behavior or another focused failure appears, keep PR #308 unmerged and repair the specific lane-local fingerprint rather than widening limits or weakening validation.",
+  "last_action": "Verification-only PR #310 executed the repaired Atlas focused test from exact lane subject 1fc22ad1850583eb8de9a4dcdb6feb1e212e98fa; Foundation Integrity run 35460062442 logged explicit PASS. Prior #309 failure was retained and repaired forward.",
+  "next_action": "CTRL-CONVERGENCE should validate PR #308 ownership/diff, confirm #309/#310 remain unmerged, require final-head regression CI green, then merge #308 forward into Wave-0 control.",
+  "dependencies": {
+    "M0_HISTORICAL": {
+      "status": "PASS",
+      "sha": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+      "tree": "3704247247940fa8c5f08291cd80ec9e24e7d49d"
+    },
+    "G_PRODUCT_CONTRACTS": {
+      "status": "PASS",
+      "control_pr": 290,
+      "control_head": "816a9b35dab81368361c4e343dc1217278e07929",
+      "control_tree": "f6b62c0b5476540687cef575be873c8c0c1c46c7"
+    },
+    "PROD_W1_CONTRACTS": {
+      "status": "PASS_INTEGRATED",
+      "contract_source": "src/product/contracts/w1-observation-contracts.js"
+    },
+    "MASTER_V4": {
+      "status": "PASS",
+      "pr": 287,
+      "sha": "c2cab6d6e914b918432432fdc69825e0a1000509"
+    }
+  },
+  "evidence_debt": [
+    "Final PR #308 exact-head regression CI must be green before control convergence.",
+    "The Atlas internal bundle is product-local state, not a public persistence/provider ABI or authenticated historical archive."
+  ],
+  "branch": "work/post-m0/prod-w1-atlas-core-2026-09-19",
+  "pr": 308,
+  "base_sha": "816a9b35dab81368361c4e343dc1217278e07929",
+  "base_tree": "f6b62c0b5476540687cef575be873c8c0c1c46c7",
+  "ownership": {
+    "semantic_surface": "LANE_LOCAL:PROD-W1-ATLAS-CORE",
+    "mode": "WRITE_PRODUCT",
+    "shared_renderer_modified": false,
+    "canonical_science_modified": false,
+    "p4_semantics_modified": false,
+    "product_contracts_modified": false,
+    "storage_backend_frozen": false
+  },
+  "changed_paths": [
+    "src/product/w1/atlas-core.js",
+    "tests/product/prod-w1-atlas-core.mjs",
+    "docs/product/atlas/README.md",
+    "docs/frontier/execution/parallel/PROD-W1-ATLAS-CORE_EXECUTION_STATE.json"
+  ],
+  "tests_run": [
+    {
+      "command": "node tests/product/prod-w1-atlas-core.mjs",
+      "status": "FAIL_CONTROL_VERIFICATION",
+      "verification_pr": 309,
+      "run_id": 35459946456,
+      "failure_fingerprint": "ATLAS_DEFAULT_SEARCH_LIMIT_EXCEEDS_INSTANCE_CAPACITY",
+      "detail": "Implicit search limit 32 exceeded configured maxEntries=8."
+    },
+    {
+      "command": "node tests/product/prod-w1-atlas-core.mjs",
+      "status": "PASS_CONTROL_VERIFICATION",
+      "verification_pr": 310,
+      "verification_head": "a854fcd733f3ccaaeea5f58ec08286f13b8272ff",
+      "verification_tree": "917a7d42f2daa706ad2a7340758122f6bc21f3e8",
+      "exact_lane_subject": "1fc22ad1850583eb8de9a4dcdb6feb1e212e98fa",
+      "exact_lane_tree": "305b861a110d907c82af76d83115bb7276d91937",
+      "run_id": 35460062442,
+      "witness": {
+        "schema": "ofu-prod-w1-atlas-core-test-v1",
+        "status": "PASS",
+        "entryCount": 2,
+        "routeCount": 1,
+        "snapshotEntryId": "obs-d1f3e420e92378e5",
+        "routeId": "route-50ca7b35ce59338a",
+        "exportedBytes": 2662,
+        "exactTemporalReference": "0000000000000000000000000000000000000000000000000000000000000004"
+      }
+    }
+  ],
+  "completion_sha": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD",
+  "completion_tree": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD_TREE",
+  "current_hypothesis": "SUPPORTED_BY_REPAIRED_FOCUSED_EXECUTABLE_EVIDENCE"
+}

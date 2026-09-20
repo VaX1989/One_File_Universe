@@ -1,0 +1,180 @@
+{
+  "schema": "ofu.ind-lic-a.decision-matrix.v1",
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "decisions": [
+    {
+      "id": "D1",
+      "surface": "OFU source code",
+      "status": "FOUNDER_LEGAL_DECISION_REQUIRED_BEFORE_PUBLIC_REUSE_GRANT",
+      "internal_feasibility": "MAY_CONTINUE",
+      "candidate_policy_families": [
+        "permissive open source",
+        "reciprocal/copyleft",
+        "source-available/custom",
+        "proprietary",
+        "dual license"
+      ],
+      "required_artifacts_after_decision": [
+        "LICENSE",
+        "NOTICE if applicable",
+        "package license metadata",
+        "release redistribution policy"
+      ]
+    },
+    {
+      "id": "D2",
+      "surface": "specification text and implementation rights",
+      "status": "DECISION_REQUIRED_BEFORE_PUBLIC_IMPLEMENTER_RELIANCE",
+      "internal_feasibility": "MAY_DRAFT",
+      "candidate_policy_families": [
+        "open specification license",
+        "copyright-only publication plus explicit implementation grant",
+        "controlled/proprietary specification"
+      ],
+      "required_artifacts_after_decision": [
+        "specification license header",
+        "implementation-rights statement",
+        "patent policy if applicable",
+        "fork/version naming rules"
+      ]
+    },
+    {
+      "id": "D3",
+      "surface": "conformance vectors",
+      "status": "DECISION_REQUIRED_BEFORE_PUBLIC_REUSE",
+      "internal_feasibility": "MAY_DEVELOP",
+      "candidate_policy_families": [
+        "same as code",
+        "separate permissive data/vector license",
+        "controlled corpus"
+      ],
+      "required_artifacts_after_decision": [
+        "vector license/policy",
+        "derivative-vector claim rules",
+        "commercial embedding rules"
+      ]
+    },
+    {
+      "id": "D4",
+      "surface": "reference implementation",
+      "status": "DECISION_REQUIRED_BEFORE_PUBLIC_DISTRIBUTION",
+      "internal_feasibility": "MAY_DEVELOP_WHEN_TECHNICALLY_GATED",
+      "candidate_policy_families": [
+        "same as project code",
+        "more permissive interoperability layer",
+        "examples-only terms",
+        "dual-license"
+      ],
+      "required_artifacts_after_decision": [
+        "reference implementation license header",
+        "distribution notice bundle"
+      ]
+    },
+    {
+      "id": "D5",
+      "surface": "commercial runtime and SDK",
+      "status": "GATED_BY_G-LICENSING-DISTRIBUTION-DECISION",
+      "internal_feasibility": "MAY_DEVELOP_ONLY_WHEN_TECHNICAL_GATES_ALLOW",
+      "candidate_policy_families": [
+        "open SDK plus commercial runtime",
+        "proprietary SDK/runtime",
+        "dual-license"
+      ],
+      "required_artifacts_after_decision": [
+        "SDK terms",
+        "runtime redistribution terms",
+        "third-party notices",
+        "support/disclaimer policy"
+      ]
+    },
+    {
+      "id": "D6",
+      "surface": "external contributions",
+      "status": "DECISION_REQUIRED_BEFORE_MATURE_INTAKE",
+      "internal_feasibility": "NOT_APPLICABLE",
+      "candidate_policy_families": [
+        "inbound=outbound",
+        "DCO",
+        "CLA",
+        "assignment",
+        "restricted/no external code contributions"
+      ],
+      "required_artifacts_after_decision": [
+        "updated CONTRIBUTING.md",
+        "DCO/CLA process if selected",
+        "provenance process"
+      ]
+    },
+    {
+      "id": "D7",
+      "surface": "names and marks",
+      "status": "DECISION_REQUIRED_BEFORE_BRAND_LICENSING_OR_CERTIFICATION",
+      "internal_feasibility": "MAY_USE_PROJECT_NAME_INTERNALLY",
+      "candidate_policy_families": [
+        "controlled trademark policy",
+        "nominative-use policy",
+        "open compatibility naming with controlled certification mark"
+      ],
+      "required_artifacts_after_decision": [
+        "TRADEMARKS.md or equivalent",
+        "compatibility naming policy",
+        "mark usage rules"
+      ]
+    },
+    {
+      "id": "D8",
+      "surface": "external certification",
+      "status": "DECISION_REQUIRED_BEFORE_PROGRAM_LAUNCH",
+      "internal_feasibility": "MAY_DESIGN_TESTS",
+      "candidate_policy_families": [
+        "self-declared conformance",
+        "central certification",
+        "hybrid"
+      ],
+      "required_artifacts_after_decision": [
+        "certification policy",
+        "test-version binding",
+        "evidence retention rules",
+        "mark/revocation rules"
+      ]
+    }
+  ],
+  "staged_blockers": [
+    {
+      "stage": "internal architectural research",
+      "license_gate": "NO"
+    },
+    {
+      "stage": "G0A/G0B/G1 internal feasibility",
+      "license_gate": "NO"
+    },
+    {
+      "stage": "internal standard drafting",
+      "license_gate": "NO"
+    },
+    {
+      "stage": "public open specification implementation rights",
+      "license_gate": "YES"
+    },
+    {
+      "stage": "public reusable conformance vectors",
+      "license_gate": "YES"
+    },
+    {
+      "stage": "external SDK beta/distribution",
+      "license_gate": "YES"
+    },
+    {
+      "stage": "external contribution program",
+      "license_gate": "YES"
+    },
+    {
+      "stage": "trademark/certification program",
+      "license_gate": "YES"
+    },
+    {
+      "stage": "commercial runtime redistribution",
+      "license_gate": "YES"
+    }
+  ]
+}

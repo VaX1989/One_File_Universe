@@ -1,0 +1,63 @@
+{
+  "schema": "ofu.post-m0.ctrl-convergence.prod-w2-director.v1",
+  "prompt_id": "CTRL-CONVERGENCE",
+  "converged_prompt_id": "PROD-W2-DIRECTOR",
+  "mission_date": "2026-09-20",
+  "control_pr": 290,
+  "source_lane": {
+    "pr": 348,
+    "terminal_head": "2648dece805dde3c28577cb65e52fc0e94f48dcb",
+    "exact_executable_subject": "b8e3e72ae02d547965d7905c9780c32c83a2b4a7",
+    "merge_commit": "1f32c8b717e3f8c1840009d397eaa0c7c158ff0d"
+  },
+  "verification": {
+    "pr": 349,
+    "disposition": "CLOSED_WITHOUT_MERGE",
+    "head": "5f7366d02f920ad03c9272930e2a6ba31f25c82c",
+    "workflow_matrix": "PASS_10_OF_10",
+    "foundation_run": 35536730707,
+    "spatial_run": 35536730694,
+    "focused_descriptor_id": "journey-7ceabbb1421666fe",
+    "browser_descriptor_id": "journey-00840c2d5a3240c8",
+    "browser_world_identity": "23faa22e1955a3afc1361a11d9e5d1deb46c02d67d21fbadc6955a4c8c966e55",
+    "browser_result": {
+      "status": "PASS",
+      "route_stops": 3,
+      "start_stage": "ORBIT",
+      "final_stage": "APPROACH",
+      "restored_stage": "ORBIT",
+      "captures": 3,
+      "reduced_motion": true,
+      "scene_count": 1,
+      "camera_count": 1,
+      "renderer_owned_picking": true,
+      "runtime_network_resources": 0,
+      "direct_file": true,
+      "network_requests": 0
+    },
+    "spatial_suites": 15,
+    "performance_resource_suite": "PASS"
+  },
+  "control_registration": {
+    "package_commit": "417ff9d9193a19674ee7bb3c984a7af38561e7ff",
+    "package_blob": "267e26d9ec38cd5214ef664a0da898a849c0ecd0",
+    "package_command": "node tests/product/prod-w2-director.mjs",
+    "spatial_commit": "a6f7ba38559641f6b291dd26dd890033be2c6790",
+    "spatial_runner_blob": "e93450bad7f9140a0cabfc298b1b8b20a8576bff",
+    "spatial_suite": "product-director-browser",
+    "verification_blob_identity": true,
+    "existing_regression_union_preserved": true
+  },
+  "authority": {
+    "canonical_p2_p4_changed": false,
+    "scientific_authority_changed": false,
+    "second_camera_created": false,
+    "second_renderer_created": false,
+    "second_picking_authority_created": false,
+    "semantic_timeline_authority_created": false,
+    "mandatory_network_added": false,
+    "director_authority": "PRESENTATION_ONLY"
+  },
+  "required_post_condition": "FRESH_EXACT_HEAD_10_OF_10_PASS_INCLUDING_SPATIAL_CONTINUUM",
+  "final_status_before_post_condition": "READY_FOR_CONTROL_EXACT_HEAD_VERIFICATION"
+}

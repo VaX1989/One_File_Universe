@@ -45,6 +45,20 @@ Calibration quality is itself visible: the report records baseline separation fo
 
 Every observation must preserve the selected witness. Every failure emitted by the analyzer carries that exact witness so a pathological world is directly replayable.
 
+## Cross-program evidence (W1 / middleware feasibility)
+
+The Observatory can also consume additive `crossProgram` evidence without assuming that a product or platform API exists. Each metric is **capability-gated per observation**: evidence for an undeclared capability is staged and reported but cannot fail the campaign or imply an API contract.
+
+Every active cross-program metric must classify its evidence as one of:
+
+- `MEASURED` — directly measured by a harness;
+- `HEURISTIC` — derived/estimated evidence that may falsify an explicit expectation but is not truth;
+- `PRESENTATION_ONLY` — visual/presentation evidence that cannot promote scientific authority.
+
+Current product-facing evidence families cover all-scale continuity, causal-consequence coverage, Atlas exact-return (when that contract exists), and browser/device evidence. Platform-facing families are staged for explicit capability presence and cover cross-language byte/digest/rejection parity, ABI/version regression, query latency distributions, cache/materialization bounds, provider conformance, persistence/recovery and security/fuzz witnesses.
+
+The cross-program report writes an explicit authority boundary: **observation/falsification only**; no scientific truth, semantic, renderer, native-runtime or release authority is acquired. A missing capability is not a failure. A declared capability with missing evidence is reported as evidence debt rather than silently treated as PASS.
+
 ## CLI
 
 ```sh

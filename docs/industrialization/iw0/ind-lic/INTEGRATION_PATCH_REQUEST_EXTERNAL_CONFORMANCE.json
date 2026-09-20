@@ -1,0 +1,21 @@
+{
+  "requesting_prompt_id": "IND-LIC-A",
+  "target_surface": "POST_M0_V4_GATE_MODEL_EXTERNAL_CONFORMANCE",
+  "target_path": "docs/frontier/prompts/OFU_POST_M0_PARALLEL_DEVELOPMENT_PROMPT_MASTER_2026-09-17.json",
+  "expected_authority": "CTRL-WAVE0 / CTRL-CONVERGENCE; PR287 v4 execution-orchestration authority",
+  "intended_change": "Ensure STD-EXTERNAL-CONFORMANCE or any equivalent public external-conformance activation cannot bypass an explicit licensing/publication-rights decision. Preserve internal IND-STD drafting before the decision. An acceptable implementation could require G-LICENSING-DISTRIBUTION-DECISION directly or introduce a narrower specification/vector/publication-rights gate adjudicated before external conformance.",
+  "rationale": "External conformance can imply third-party implementation rights, public vector reuse, naming/certification claims, and redistribution expectations. The current v4 model gates IND-SDK behind the licensing decision but gates STD-EXTERNAL-CONFORMANCE only behind G4_STANDARD_DRAFT_READY.",
+  "invariants": [
+    "Do not block internal standard/spec drafting solely because the project currently has no license.",
+    "Do not weaken existing technical gates.",
+    "Do not select a legal license or policy family inside the control plane.",
+    "Do not make passing public tests equivalent to trademark/certification authority.",
+    "Aliases must not weaken the new publication-rights guard."
+  ],
+  "tests": [
+    "Validator proves STD-EXTERNAL-CONFORMANCE has an explicit path through the licensing/publication-rights decision.",
+    "IND-STD remains able to proceed when its technical dependencies are met even if the licensing decision is unresolved.",
+    "IND-SDK remains gated by G-LICENSING-DISTRIBUTION-DECISION.",
+    "No new dependency cycle is introduced."
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "schema": "ofu.ind-lic-a.third-party-inventory.v1",
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "source_head": "fa88f7cec101a52d07916a0fdd3927c482a6f188",
+  "repository_license_state": {
+    "root_license_file": false,
+    "readme_statement": "No project license has been selected yet. Until a license is explicitly added, do not assume permission beyond applicable copyright law.",
+    "package_private": true,
+    "package_license_field": null,
+    "package_publish_config": null
+  },
+  "direct_dependencies": [
+    {
+      "name": "@babylonjs/core",
+      "version": "9.26.0",
+      "role": "runtime",
+      "license": "Apache-2.0",
+      "redistribution_evidence": "Full license text embedded by tools/build-spatial-continuum.mjs; dedicated repository notice exists.",
+      "distribution_attention": "Re-verify exact upstream license/NOTICE obligations for exact release artifact before public redistribution."
+    },
+    {
+      "name": "esbuild",
+      "version": "0.25.9",
+      "role": "development/build",
+      "license": "MIT",
+      "redistribution_evidence": "Lockfile declaration; no intentional runtime distribution identified.",
+      "distribution_attention": "Reclassify if output ever embeds tool code."
+    },
+    {
+      "name": "playwright",
+      "version": "1.62.1",
+      "role": "development/test",
+      "license": "Apache-2.0",
+      "redistribution_evidence": "Lockfile declaration; test tooling only.",
+      "distribution_attention": "Do not imply certification by Playwright."
+    },
+    {
+      "name": "playwright-core",
+      "version": "1.62.1",
+      "role": "development/test",
+      "license": "Apache-2.0",
+      "redistribution_evidence": "Lockfile declaration; test tooling only.",
+      "distribution_attention": "Do not imply certification by Playwright."
+    }
+  ],
+  "lockfile_census": {
+    "non_root_packages": 31,
+    "license_counts": {
+      "MIT": 28,
+      "Apache-2.0": 3
+    },
+    "undeclared_license_entries": 0
+  },
+  "additional_lockfile_components": {
+    "esbuild_platform_packages": {
+      "license": "MIT",
+      "role": "optional development/build platform binaries"
+    },
+    "fsevents": {
+      "version": "2.3.2",
+      "license": "MIT",
+      "role": "optional development dependency"
+    }
+  },
+  "repository_notice_paths": [
+    "docs/experiments/spatial-continuum/THIRD_PARTY_NOTICES.md"
+  ],
+  "root_notice_paths": [],
+  "asset_policy_state": "NO_SEPARATE_ROOT_ASSET_LICENSE_POLICY_FOUND",
+  "contributor_ip_policy_state": {
+    "contributing_file": true,
+    "cla": false,
+    "dco": false,
+    "copyright_assignment": false,
+    "explicit_inbound_equals_outbound": false
+  },
+  "claim_limits": [
+    "Inventory is repository-grounded planning evidence, not a legal opinion.",
+    "Lockfile license metadata does not replace reading exact upstream license/NOTICE texts at distribution time.",
+    "No representation is made that every historical contribution has independently verified chain-of-title."
+  ]
+}

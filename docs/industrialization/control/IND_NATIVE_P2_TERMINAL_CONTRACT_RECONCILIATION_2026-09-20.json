@@ -1,0 +1,108 @@
+{
+  "schema": "ofu.terminal-handoff-contract-reconciliation.v1",
+  "prompt_id": "IND-NATIVE-P2",
+  "master_schema_version": 4,
+  "mission_date": "2026-09-20",
+  "purpose": "Reconcile v4 TERMINAL_HANDOFF_CONTRACT fields omitted by the already-immutable original handoff without rewriting that historical artifact.",
+  "original_handoff": "docs/industrialization/handoffs/IND-NATIVE-P2_2026-09-20.json",
+  "original_handoff_immutable": true,
+  "epoch": "OFU-POST-M0-WAVE0-INDUSTRIALIZATION-2026-09-20",
+  "base_sha": "3eff4822b063b0ee2f81a218ebc5cc3f7fe13269",
+  "base_tree": "EXTERNALLY_BOUND_BY_GIT_TREE_OF_3eff4822b063b0ee2f81a218ebc5cc3f7fe13269",
+  "dependency_shas": {
+    "PR287_V4_MASTER": "c2cab6d6e914b918432432fdc69825e0a1000509",
+    "G0B_AUDIT_SUBJECT": "83e98f5332e4e828fae87d4a4672c9c81cac17a4",
+    "G0B_AUDIT_SUBJECT_TREE": "fe52618d62ff02d763158689ce6f37f9ac324b68",
+    "G0B_EXTERNAL_CONSUMER_SEAM_PROOF": "PASS"
+  },
+  "final_sha": "8b876db103f3aafef7b1b1ff0d7567addcf0bbcd",
+  "final_tree": "EXTERNALLY_BOUND_BY_PR_331_TERMINAL_HEAD_TREE",
+  "changed_paths": [
+    "native/p2-core/ofu_p2_native.cpp",
+    "tests/industrialization/native-p2/native-parity.mjs",
+    "docs/frontier/execution/parallel/IND-NATIVE-P2_EXECUTION_STATE.json",
+    "docs/frontier/execution/parallel/IND-NATIVE-P2_INTEGRATION_PATCH_REQUEST.json",
+    "docs/industrialization/handoffs/IND-NATIVE-P2_2026-09-20.json"
+  ],
+  "ownership_result": {
+    "status": "PASS",
+    "scope": "NATIVE_P2_EXPERIMENT_ONLY",
+    "authoritative_js_p2_modified": false,
+    "p4_modified": false,
+    "runtime_modified": false,
+    "product_modified": false,
+    "broad_abi_frozen": false
+  },
+  "tests": [
+    {
+      "verification_pr": 332,
+      "verification_head": "b0aa0808dba6646d21b90c0011ba4d810d0d8d2e",
+      "foundation_run": 35524220956,
+      "result": "PASS"
+    },
+    {
+      "control_head": "9311307326adc4bc5a72fe74030b8eb038524fb9",
+      "foundation_run": 35526925325,
+      "spatial_run": 35526925306,
+      "result": "10/10_PASS"
+    }
+  ],
+  "deterministic_witnesses": {
+    "corpus_revision": 2,
+    "corpus_digest": "d92b43afb8a7deeaed4b0c3ee13b73bad344b196132c35433b66360c0b0772fc",
+    "positive_checks": 42,
+    "rejection_checks": 45,
+    "numeric_checks": 14,
+    "compilers": ["g++", "clang++"],
+    "cross_compiler_transcript_equal": true,
+    "implementation_blob": "2954f8259ebd8ebace429f887637232a5ea6b198",
+    "focused_test_blob": "6070b9a6e504a933d625d2960489ab543efa3ecb"
+  },
+  "security_classification": {
+    "result": "PASS_WITHIN_FROZEN_P2_EXPERIMENT_SCOPE",
+    "malformed_inputs_fail_closed": true,
+    "explicit_resource_bounds": true,
+    "js_runtime_fallback": false,
+    "python_runtime_fallback": false
+  },
+  "authority_science_classification": {
+    "result": "PASS",
+    "authority": "FROZEN_P2_CORPUS_PARITY_EXPERIMENT_ONLY",
+    "semantic_reinterpretation": false,
+    "scientific_claims_added": false
+  },
+  "performance_resource_evidence": {
+    "max_depth": 32,
+    "max_nodes": 100000,
+    "max_input_bytes": 1048576,
+    "max_canonical_bytes": 1048572,
+    "max_text_bytes": 262144,
+    "max_items": 65536,
+    "max_address_bytes": 65536,
+    "max_address_segments": 64
+  },
+  "limitations": [
+    "This is the smallest frozen P2/Core feasibility slice, not Runtime.",
+    "Unicode evidence is bounded to the frozen corpus/profile witnesses proven by the lane and must not be generalized into a broader platform claim.",
+    "Stable C ABI was not claimed by this lane; it is evaluated separately by IND-CABI-MICROHOST.",
+    "Cross-platform compiler/OS portability beyond the governed GCC/Clang evidence remains downstream audit evidence."
+  ],
+  "falsification_attempts": [
+    "positive canonical CBV values",
+    "malformed canonical encodings and stable rejection classes",
+    "address encode/parse and malformed address rejection",
+    "manifest mutation rejection",
+    "universe/entity identity parity",
+    "HMAC derivation separation",
+    "integer overflow and fixed-point ties-to-even",
+    "integer square root bounds",
+    "frozen Unicode normalization/invalid/unassigned witnesses",
+    "GCC versus Clang transcript identity"
+  ],
+  "rollback_abandon_condition": "Abandon or repair the native experiment if parity requires JS/P2 semantic change, undefined behavior, hidden runtime fallback, unbounded inputs, or expansion beyond the minimum frozen proof.",
+  "integration_patch_requests": [
+    "docs/frontier/execution/parallel/IND-NATIVE-P2_INTEGRATION_PATCH_REQUEST.json"
+  ],
+  "disposition": "RECONCILED_COMPLETE_GATE_MET",
+  "original_handoff_modified": false
+}

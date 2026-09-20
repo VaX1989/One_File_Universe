@@ -1,0 +1,67 @@
+{
+  "schema": "ofu.execution-state.v1",
+  "prompt_id": "IND-NATIVE-P2",
+  "mode": "WRITE",
+  "mission_date": "2026-09-20",
+  "status": "READY_FOR_CONTROL_CONVERGENCE",
+  "hypothesis": "A deliberately small standard-library-only native implementation can reproduce the frozen P2/Core corpus bytes, digests, rejection classes and numeric behavior without changing authoritative JS semantics or porting Runtime.",
+  "failure_fingerprint": null,
+  "failure_count": 0,
+  "alternate_strategy": "If any frozen corpus case requires semantic reinterpretation, terminate the experiment rather than changing P2. If compiler behavior diverges, reduce the implementation to defined integer/byte operations before reconsidering the language.",
+  "last_action": "Verification-only PR #332 executed the focused native parity test on an overlay whose native implementation and focused-test blobs are byte-identical to PR #331. Foundation run 35524220956 returned PASS: 42 positive, 45 rejection, 14 numeric checks, GCC and Clang transcripts identical, no JS/Python fallback.",
+  "next_action": "CTRL-CONVERGENCE should merge PR #331, apply the control-owned package.json registration request, run fresh exact-head cumulative CI including Spatial Continuum, and register IND-NATIVE-P2 COMPLETE only if the integrated subject remains green.",
+  "dependencies": {
+    "G0B_EXTERNAL_CONSUMER_SEAM_PROOF": {
+      "status": "PASS",
+      "audit_subject_sha": "83e98f5332e4e828fae87d4a4672c9c81cac17a4",
+      "audit_subject_tree": "fe52618d62ff02d763158689ce6f37f9ac324b68"
+    },
+    "CONTROL_BASE_AT_LANE_START": {
+      "status": "PASS",
+      "sha": "3eff4822b063b0ee2f81a218ebc5cc3f7fe13269"
+    },
+    "MASTER_V4": {
+      "status": "PASS",
+      "sha": "c2cab6d6e914b918432432fdc69825e0a1000509"
+    }
+  },
+  "evidence": {
+    "lane_pr": 331,
+    "implementation_head_before_terminal_docs": "4a42ec7062c42139a60b122b4e27cc030c695cb6",
+    "implementation_blob": "2954f8259ebd8ebace429f887637232a5ea6b198",
+    "focused_test_blob": "6070b9a6e504a933d625d2960489ab543efa3ecb",
+    "verification_pr": 332,
+    "verification_head": "b0aa0808dba6646d21b90c0011ba4d810d0d8d2e",
+    "verification_foundation_run": 35524220956,
+    "verification_foundation_job": 106113455217,
+    "focused_result": "PASS",
+    "corpus_revision": 2,
+    "corpus_digest": "d92b43afb8a7deeaed4b0c3ee13b73bad344b196132c35433b66360c0b0772fc",
+    "positive_checks": 42,
+    "rejection_checks": 45,
+    "numeric_checks": 14,
+    "compilers": ["g++", "clang++"],
+    "cross_compiler_transcript_equal": true,
+    "runtime_ported": false,
+    "js_fallback": false,
+    "python_fallback": false
+  },
+  "scope": {
+    "owned": ["native/p2-core/ofu_p2_native.cpp", "tests/industrialization/native-p2/native-parity.mjs"],
+    "authoritative_js_p2_modified": false,
+    "p4_modified": false,
+    "runtime_modified": false,
+    "product_modified": false,
+    "package_json_modified_by_lane": false
+  },
+  "evidence_debt": [
+    "Permanent root npm-test registration remains control-owned.",
+    "Native portability beyond the governed GCC/Clang Linux verification remains downstream G1 evidence.",
+    "No C ABI or microhost stability claim is made by this lane."
+  ],
+  "branch": "work/post-m0/ind-native-p2-g0b-pass-2026-09-20",
+  "pr": 331,
+  "completion_sha": "EXTERNALLY_BOUND_BY_PR331_FINAL_HEAD",
+  "completion_tree": "EXTERNALLY_BOUND_BY_PR331_FINAL_HEAD_TREE",
+  "disposition": "READY_FOR_CONTROL_CONVERGENCE"
+}

@@ -1,0 +1,129 @@
+{
+  "prompt_id": "IND-BRIDGE-A",
+  "planning_epoch": "OFU-POST-M0-ASYMMETRIC-DUAL-TRACK-2026-09-17-V4",
+  "status": "READY_FOR_CONTROL_CONVERGENCE",
+  "base_sha": "37e6744f1d8f711278ae8b14ddaf84b9176b5a6b",
+  "base_tree": "fb5be853362a9266f0f6d64f23338d2827f358e0",
+  "branch": "work/post-m0/ind-bridge-a-ofu-post-m0-dual-track-wave0-2026-09-18-61f43071-repair-2026-09-19",
+  "pr": 301,
+  "dependencies_resolved": {
+    "M0_HISTORICAL": {
+      "status": "PASS",
+      "sha": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+      "tree": "3704247247940fa8c5f08291cd80ec9e24e7d49d"
+    },
+    "CTRL_WAVE0": {
+      "status": "ACTIVE",
+      "sha": "fa88f7cec101a52d07916a0fdd3927c482a6f188",
+      "tree": "784e12501a7e0ba9e281787513bddbb6eed1c6bf",
+      "pr": 290
+    },
+    "SOURCE_MASTER_V4": {
+      "status": "PASS",
+      "sha": "c2cab6d6e914b918432432fdc69825e0a1000509",
+      "tree": "bfba77ff4def48ba54fb1084240821be3f8f3dc9",
+      "pr": 287
+    }
+  },
+  "write_scope": [
+    "bridge architecture docs",
+    "dependency/coupling maps",
+    "additive seam characterization tests",
+    "docs/frontier/execution/parallel/IND-BRIDGE-A_EXECUTION_STATE.json"
+  ],
+  "tests_run": [
+    {
+      "command": "node tests/industrialization/bridge/headless-seam-characterization.mjs",
+      "status": "AUTHORED_NOT_LOCALLY_EXECUTED",
+      "reason": "This execution environment cannot obtain a repository checkout from github.com; workflow/package surfaces are convergence-owned and were not modified merely to execute the additive lane test."
+    },
+    {
+      "command": "node tests/industrialization/bridge/external-consumer-probe.mjs",
+      "status": "AUTHORED_NOT_LOCALLY_EXECUTED",
+      "reason": "Same repository-checkout limitation; this is explicitly G0A characterization, not G0B proof."
+    },
+    {
+      "command": "pull-request exact-head regression workflows",
+      "status": "RUNNING_ON_PR_294",
+      "workflows": [
+        "Foundation Integrity",
+        "P1 Conformance",
+        "P1-P4 Canonical Baseline",
+        "P2 Conformance",
+        "P3 Conformance",
+        "P4 Conformance",
+        "P5 Controlled Promotion",
+        "P5 Environment v2 Canonical Promotion",
+        "P6 v1 Conformance"
+      ]
+    },
+    {
+      "command": "node tests/industrialization/bridge/headless-seam-characterization.mjs",
+      "status": "PASS_CONTROL_VERIFICATION",
+      "verification_pr": 302,
+      "run_id": 35435461161,
+      "verification_head": "6405346253a858606dee9353c92abbfed59280b3",
+      "node": "v24.20.0"
+    },
+    {
+      "command": "node tests/industrialization/bridge/external-consumer-probe.mjs",
+      "status": "PASS_CONTROL_VERIFICATION",
+      "verification_pr": 302,
+      "run_id": 35435461161,
+      "verification_head": "6405346253a858606dee9353c92abbfed59280b3",
+      "node": "v24.20.0"
+    }
+  ],
+  "evidence_refs": [
+    "docs/industrialization/iw0/ind-bridge/HEADLESS_BRIDGE_DISCOVERY.md",
+    "docs/industrialization/iw0/ind-bridge/HEADLESS_API_CANDIDATE.md",
+    "docs/industrialization/iw0/ind-bridge/COUPLING_MAP.json",
+    "tests/industrialization/bridge/headless-seam-characterization.mjs",
+    "tests/industrialization/bridge/external-consumer-probe.mjs",
+    "PR #294"
+  ],
+  "failure_fingerprint": "G0A_HEADLESS_SEAM_ARCHIVE_OVERBREADTH_AND_V4_PACKET",
+  "failure_count": 1,
+  "current_hypothesis": "The smallest useful JS headless seam is an additive facade over already headless P2/P4 canonical and temporal primitives; current PX provider invocation and V2X materialization/runtime policy should not be exported wholesale because they still encode product selection/presentation/runtime concerns.",
+  "last_action": "Control verification-only PR #302 executed the repaired PROD focused test and both narrowed BRIDGE probes under Node v24.20.0; Foundation Integrity run 35435461161 passed. PR #302 was closed without merge.",
+  "next_action": "CTRL-CONVERGENCE should validate the verified immutable repair handoff and exact-head regression CI, then merge PR #301 if evidence remains green.",
+  "alternate_strategy": "If the independent G0A audit still finds the seam too broad, narrow further to the source-backed primitive subset rather than exporting product/runtime or persistence surfaces.",
+  "external_evidence_debt": [
+    "No public headless package/facade exists yet; the consumer probe deliberately loads checked-in P2/P4 source through Node vm, so this packet is G0A input and not G0B external seam proof.",
+    "Current PX/V1 query invocation remains selection/product coupled; a selection-free domain/provider request contract is intentionally unfrozen.",
+    "The two lane-specific additive probes are authored but not locally executed because this runtime cannot obtain a repository checkout; PR regression workflows are separately tracked and no protected workflow/package surface was modified to bypass that limitation."
+  ],
+  "completion_sha": "EXTERNALLY_BOUND_BY_DRAFT_REPAIR_PR_HEAD",
+  "completion_tree": "EXTERNALLY_BOUND_BY_DRAFT_REPAIR_PR_HEAD_TREE",
+  "master_schema_version": 4,
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "hypothesis": "The useful G0A headless seam does not require archive persistence: P2 canonical identity/address/derivation plus narrow P4 event/order/lineage/transition witnesses are sufficient, while archive/checkpoint functionality can remain POST_G0A_PRIVATE_CANDIDATE.",
+  "dependencies": {
+    "M0_HISTORICAL": {
+      "status": "PASS",
+      "sha": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+      "tree": "3704247247940fa8c5f08291cd80ec9e24e7d49d"
+    },
+    "CTRL_WAVE0_REPAIR_PHASE": {
+      "status": "PASS_ACTIVE",
+      "pr": 290,
+      "sha": "37e6744f1d8f711278ae8b14ddaf84b9176b5a6b",
+      "tree": "fb5be853362a9266f0f6d64f23338d2827f358e0"
+    },
+    "ORIGINAL_LANE": {
+      "status": "INTEGRATED_REPAIR_REQUIRED",
+      "pr": 294,
+      "sha": "c1415616bf9b0a1d1cc41869477348c2bf8e57c3"
+    },
+    "MASTER_V4": {
+      "status": "PASS",
+      "pr": 287,
+      "sha": "c2cab6d6e914b918432432fdc69825e0a1000509"
+    }
+  },
+  "evidence_debt": [
+    "Direct probe execution debt closed by verification-only PR #302 / Foundation Integrity run 35435461161; the package registration delta was not merged.",
+    "G0A remains subject to independent GATE-G0A-AUDIT after repair convergence.",
+    "Generic provider/query remains intentionally unfrozen and archive/checkpoint remain POST_G0A_PRIVATE_CANDIDATE."
+  ]
+}
