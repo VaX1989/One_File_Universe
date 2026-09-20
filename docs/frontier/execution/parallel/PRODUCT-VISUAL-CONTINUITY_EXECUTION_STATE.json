@@ -3,7 +3,7 @@
   "prompt_id": "PRODUCT-VISUAL-CONTINUITY",
   "mode": "WRITE_PRODUCT",
   "mission_date": "2026-09-20",
-  "status": "VERIFYING_FIXED_ORACLE",
+  "status": "READY_FOR_CONTROL_CONVERGENCE",
   "hypothesis": "The existing single-scene/single-camera Spatial Continuum can prove perceptually continuous cross-scale handoffs through a temporal falsifier without creating a second camera, picking, canonical or scientific authority.",
   "failure_fingerprint": "PRODUCT_VISUAL_CONTINUITY_TERMINAL_EVIDENCE_REMOVED_SURFACE_ID_VARIABLE",
   "failure_count": 2,
@@ -23,12 +23,19 @@
     }
   ],
   "alternate_strategy": "If the fixed temporal oracle exposes an actual product defect rather than a falsifier defect, minimize the first failing representation handoff and repair only the existing transition presentation authority; do not create another camera/picking/scale authority.",
-  "last_action": "Fixed the terminal evidence report after verification PR #338 demonstrated that the full product path reached report generation but referenced a removed variable. Verification-only PR #341 registers the fixed oracle on the exact lane subject.",
-  "next_action": "Require PR #341 Spatial convergence to PASS with the product-visual-continuity suite explicitly green. Then emit immutable terminal handoff and control-owned runner registration request.",
+  "last_action": "Verification-only PR #341 completed 10/10 workflow PASS on exact head 7e6d21d6af706334424f4fd77b1f039bffe0193a. Spatial run 35526963054 executed PRODUCT-VISUAL-CONTINUITY PASS across UNIVERSE→ATOMIC and reverse, interruption/reversal, identity continuity, one scene/camera, renderer-owned picking, offline direct-file, plus performance-resource PASS.",
+  "next_action": "CTRL-CONVERGENCE must integrate the lane on the current unified control head, register the product-visual-continuity suite in the control-owned Spatial runner without dropping accepted suites, run fresh 10/10 exact-head CI, then release transition ownership before PROD-W2-DIRECTOR.",
   "dependencies": {
-    "G-PROD-CONTRACTS": {"status": "PASS"},
-    "PRODUCT_VISUAL_CONTINUITY_OWNERSHIP": {"status": "PASS", "control_pr": 333},
-    "SINGLE_CAMERA_PICKING_AUTHORITY": {"status": "PRESERVED"}
+    "G-PROD-CONTRACTS": {
+      "status": "PASS"
+    },
+    "PRODUCT_VISUAL_CONTINUITY_OWNERSHIP": {
+      "status": "PASS",
+      "control_pr": 333
+    },
+    "SINGLE_CAMERA_PICKING_AUTHORITY": {
+      "status": "PRESERVED"
+    }
   },
   "evidence_debt": [
     "Verification PR #341 is still running and must not be replaced by the lane-only green status.",
@@ -39,5 +46,43 @@
   "pr": 334,
   "completion_sha": null,
   "completion_tree": null,
-  "disposition": "VERIFICATION_PENDING"
+  "disposition": "READY_FOR_CONTROL_CONVERGENCE",
+  "evidence": {
+    "verification_pr": 341,
+    "verification_head": "7e6d21d6af706334424f4fd77b1f039bffe0193a",
+    "spatial_run": 35526963054,
+    "result": "PASS",
+    "workflow_matrix": "10/10_PASS",
+    "test_blob": "0f566a6644a284c4ed845f8e01ea5a0973d4b970",
+    "path": [
+      "UNIVERSE",
+      "GALAXY",
+      "REGION",
+      "NEIGHBORHOOD",
+      "SYSTEM",
+      "ORBIT",
+      "APPROACH",
+      "GLOBAL_SURFACE",
+      "REGIONAL_SURFACE",
+      "LOCAL_SURFACE",
+      "HUMAN",
+      "MATERIAL",
+      "MICROSTRUCTURE",
+      "MOLECULAR",
+      "ATOMIC"
+    ],
+    "reverse_verified": true,
+    "interruption_verified": true,
+    "one_scene": true,
+    "one_camera": true,
+    "renderer_owned_picking": true,
+    "offline_direct_file": true,
+    "authority": "PRESENTATION_ONLY",
+    "physical_gpu_evidence": false,
+    "world_identity": "23faa22e1955a3afc1361a11d9e5d1deb46c02d67d21fbadc6955a4c8c966e55",
+    "coarse_surface_identity": "cd1d3f40b442f95685515dd69d0615e62beaab6c49812879d541e2d65ed32c15",
+    "refined_surface_identity": "20047b0d7794a7199aeae2aa5eebab8bc865dc22b0dc8630fe93e2a10dcf801c",
+    "source_sample_identity": "2f74f290afd19ec48928461f294b266090165adb80eda8bdf9c8db607b66d6ea",
+    "performance_resource_suite": "PASS"
+  }
 }
