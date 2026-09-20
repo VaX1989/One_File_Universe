@@ -1,0 +1,18 @@
+{
+  "requesting_prompt_id": "PROD-W1-INSTRUMENTS",
+  "target_surface": "CENTRAL_PRODUCT_TEST_REGISTRATION",
+  "target_path": "package.json",
+  "expected_authority": "CTRL-WAVE-EPOCH/CTRL-CONVERGENCE",
+  "intended_change": "Append `node tests/product/prod-w1-instruments.mjs` to the existing npm `test` command without changing dependencies, workflow semantics, or any other script behavior.",
+  "rationale": "The focused instrument test is lane-owned, but package.json and central test registration are explicitly control-owned in the active product epoch.",
+  "invariants": [
+    "No dependency or engine version changes.",
+    "No .github/workflows changes.",
+    "No canonical P2/P4, scientific-authority, renderer/composition, camera, or picking changes.",
+    "The registration must execute the exact lane-owned focused test after its upstream SCI-FP and SCI-WHY dependencies are present."
+  ],
+  "tests": [
+    "node tests/product/prod-w1-instruments.mjs",
+    "npm test"
+  ]
+}
