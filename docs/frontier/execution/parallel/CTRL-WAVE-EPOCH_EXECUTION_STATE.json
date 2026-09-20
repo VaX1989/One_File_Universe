@@ -1,0 +1,49 @@
+{
+  "prompt_id": "CTRL-WAVE-EPOCH",
+  "master_schema_version": 4,
+  "epoch": "OFU-POST-M0-PRODUCT-NEXT-2026-09-20-296565BB",
+  "hypothesis": "A product-only successor epoch can safely run PRODUCT-MACRO, SCI-WHY, SEARCH and TIME in parallel from one exact green control base while Wave0 G0A remains independently open, provided shared renderer/camera ownership is explicit and all other product writers remain deferred.",
+  "failure_fingerprint": null,
+  "failure_count": 0,
+  "alternate_strategy": "If live state or a child request reveals a semantic collision, keep the affected lane deferred and require an INTEGRATION_PATCH_REQUEST or successor control epoch; do not broaden ownership, move G0A, or rebase published lane evidence.",
+  "last_action": "Reauthenticated PR #290 and its exact head; resolved CTRL-WAVE-EPOCH from the canonical v4 master and PR286 source; loaded all eight inherited contracts; proved the product-successor exception in WAVE0_ACTIVE_EPOCH; verified SCI-FP/Atlas ancestry, PRODUCT-DEPTH convergence, 10/10 exact-parent CI, zero exact target branch/PR collisions, and explicit shared-surface ownership.",
+  "next_action": "Child writers may start only from the exact Draft product-control PR head externally bound after this activation. Run PRODUCT-MACRO, PROD-W1-SCI-WHY, PROD-W2-SEARCH and PROD-W2-TIME as separate Draft lane PRs targeting the product-control branch; keep HUMAN, VISUAL-CONTINUITY, DIRECTOR and AUDIO deferred.",
+  "dependencies": {
+    "CTRL-WAVE0": {
+      "status": "ACTIVE_SEPARATE_INDUSTRIALIZATION_TRACK",
+      "pr": 290,
+      "head_sha": "296565bb2a6842159a994a45094ddc1d27d4fd1d",
+      "head_tree": "6b266ec7b4c2f003e029658fcfe2a735291ecd47"
+    },
+    "G-PROD-CONTRACTS": {
+      "status": "PASS"
+    },
+    "PROD-W1-SCI-FP": {
+      "status": "PASS_MERGED",
+      "merge_commit": "454c55a49f73254d0370bbdfb01d778998235326"
+    },
+    "PROD-W1-ATLAS-CORE": {
+      "status": "PASS_MERGED",
+      "merge_commit": "36b5cc5d038f23bb7498e3a341f8d368f9fdd039"
+    },
+    "PROD-W1-PRODUCT-DEPTH": {
+      "status": "PASS_MERGED",
+      "merge_commit": "296565bb2a6842159a994a45094ddc1d27d4fd1d"
+    },
+    "G0A_MINIMUM_NORMATIVE_SLICE": {
+      "status": "NOT_PASS_INDEPENDENT_REAUDIT_REQUIRED",
+      "classification": "SEPARATE_NON_BLOCKING_PRODUCT_BOUNDARY"
+    }
+  },
+  "evidence_debt": [
+    "The independent G0A re-audit is still required for industrialization and is not adjudicated by this product epoch.",
+    "Physical device/GPU evidence remains release-grade debt.",
+    "Deferred product writers require a later ownership re-adjudication after PRODUCT-MACRO convergence or explicit disjointness proof.",
+    "Child lane exact-head tests and product evidence do not exist yet; this control activation proves only entry conditions and ownership."
+  ],
+  "branch": "control/post-m0-product-next-2026-09-20",
+  "pr": "EXTERNALLY_BOUND_BY_DRAFT_PRODUCT_CONTROL_PR",
+  "completion_sha": "EXTERNALLY_BOUND_BY_DRAFT_PRODUCT_CONTROL_PR_HEAD",
+  "completion_tree": "EXTERNALLY_BOUND_BY_DRAFT_PRODUCT_CONTROL_PR_HEAD_TREE",
+  "disposition": "READY_FOR_CONTROL_CONVERGENCE"
+}

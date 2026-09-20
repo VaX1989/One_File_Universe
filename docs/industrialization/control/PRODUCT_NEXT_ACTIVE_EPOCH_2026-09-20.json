@@ -1,0 +1,216 @@
+{
+  "schema": "ofu.post-m0.product-next.active-epoch.v1",
+  "authority": "PLANNING_METADATA_ONLY_CONTROL_PLANE_NO_TECHNICAL_OR_SCIENTIFIC_AUTHORITY_PROMOTION",
+  "prompt_id": "CTRL-WAVE-EPOCH",
+  "target_wave": "POST-M0-PRODUCT-NEXT-2026-09-20",
+  "epoch_id": "OFU-POST-M0-PRODUCT-NEXT-2026-09-20-296565BB",
+  "status": "ACTIVE_PRODUCT_CONTROL_EPOCH_WRITERS_READY_G0A_UNCHANGED",
+  "created_date": "2026-09-20",
+  "canonical_master": {
+    "schema_version": 4,
+    "pr": 287,
+    "branch": "planning/post-m0-parallel-development-prompt-master-2026-09-17",
+    "head_sha": "c2cab6d6e914b918432432fdc69825e0a1000509",
+    "head_tree": "bfba77ff4def48ba54fb1084240821be3f8f3dc9",
+    "path": "docs/frontier/prompts/OFU_POST_M0_PARALLEL_DEVELOPMENT_PROMPT_MASTER_2026-09-17.json",
+    "source_prompt": {
+      "source": "PR286_REGISTRY",
+      "prompt_id": "CTRL-WAVE-EPOCH",
+      "ref": "3d28ec0720f611278b7717da02713c9eda96e642",
+      "path": "docs/frontier/OFU_PARALLEL_DEVELOPMENT_PROMPT_REGISTRY_2026-09-17.yaml"
+    },
+    "inherited_contracts": [
+      "GLOBAL_EXECUTION_CONTRACT",
+      "ACTIVE_EPOCH_CONTRACT",
+      "SEMANTIC_OWNERSHIP_CONTRACT",
+      "EXECUTION_STATE_CONTRACT",
+      "TERMINAL_HANDOFF_CONTRACT",
+      "INTEGRATION_PATCH_REQUEST_CONTRACT",
+      "ANTI_LOOP_CONTRACT",
+      "KILL_PAUSE_CONTRACT"
+    ]
+  },
+  "predecessor": {
+    "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+    "control_branch": "integration/post-m0-dual-track-wave0-2026-09-17",
+    "control_pr": 290,
+    "convergence_record": "docs/industrialization/control/WAVE0_CONVERGENCE_RECORD_2026-09-19.json",
+    "active_epoch_record": "docs/industrialization/control/WAVE0_ACTIVE_EPOCH.json",
+    "status": "ACTIVE_CONTROL_EPOCH_G0A_REAUDIT_READY"
+  },
+  "frozen_product_base": {
+    "branch": "integration/post-m0-dual-track-wave0-2026-09-17",
+    "sha": "296565bb2a6842159a994a45094ddc1d27d4fd1d",
+    "tree": "6b266ec7b4c2f003e029658fcfe2a735291ecd47",
+    "classification": "EXACT_GREEN_POST_SCI_FP_ATLAS_PRODUCT_DEPTH_CONTROL_HEAD",
+    "ci": {
+      "result": "PASS_10_OF_10",
+      "workflows": [
+        [
+          "Spatial Continuum Experiment",
+          35498878069
+        ],
+        [
+          "Foundation Integrity",
+          35498878000
+        ],
+        [
+          "P5 Controlled Promotion",
+          35498877979
+        ],
+        [
+          "P4 Conformance",
+          35498877994
+        ],
+        [
+          "P1 Conformance",
+          35498878011
+        ],
+        [
+          "P1-P4 Canonical Baseline",
+          35498877985
+        ],
+        [
+          "P5 Environment v2 Canonical Promotion",
+          35498878001
+        ],
+        [
+          "P2 Conformance",
+          35498878003
+        ],
+        [
+          "P3 Conformance",
+          35498877990
+        ],
+        [
+          "P6 v1 Conformance",
+          35498878035
+        ]
+      ]
+    }
+  },
+  "control": {
+    "branch": "control/post-m0-product-next-2026-09-20",
+    "pr_base": "integration/post-m0-dual-track-wave0-2026-09-17",
+    "head_binding": "EXTERNALLY_BOUND_BY_DRAFT_PRODUCT_CONTROL_PR",
+    "writer_base_binding": "EXACT_DRAFT_PRODUCT_CONTROL_PR_HEAD_AFTER_ACTIVATION",
+    "implementation_writer_slots": 0,
+    "child_lane_code_by_control_owner": false
+  },
+  "entry_proofs": {
+    "G-PROD-CONTRACTS": {
+      "status": "PASS"
+    },
+    "PROD-W1-SCI-FP": {
+      "status": "MERGED_ANCESTOR_OF_FROZEN_BASE",
+      "merge_commit": "454c55a49f73254d0370bbdfb01d778998235326",
+      "ancestry": "ahead_by_27_behind_by_0_at_activation"
+    },
+    "PROD-W1-ATLAS-CORE": {
+      "status": "MERGED_ANCESTOR_OF_FROZEN_BASE",
+      "merge_commit": "36b5cc5d038f23bb7498e3a341f8d368f9fdd039",
+      "ancestry": "ahead_by_18_behind_by_0_at_activation"
+    },
+    "PROD-W1-PRODUCT-DEPTH": {
+      "status": "MERGED_IN_FROZEN_BASE",
+      "merge_commit": "296565bb2a6842159a994a45094ddc1d27d4fd1d"
+    }
+  },
+  "independent_wave0_boundary": {
+    "gate": "G0A_MINIMUM_NORMATIVE_SLICE",
+    "status": "NOT_PASS_INDEPENDENT_REAUDIT_REQUIRED",
+    "audit_subject_sha": "e8965171944b9d5c604b19b745dacb79156816f4",
+    "audit_subject_tree": "b769a54ce428083cdb629fc2fc9b3e1bacc970b6",
+    "concurrent_prompt": "GATE-G0A-AUDIT",
+    "rule": "This product epoch neither closes, weakens, supersedes nor rebinds G0A. Industrialization successors remain blocked by their existing gates."
+  },
+  "runnable_queue": [
+    {
+      "prompt_id": "PRODUCT-MACRO",
+      "mode": "WRITE_PRODUCT",
+      "ownership": "PRODUCT_MACRO_RENDERER_COMPOSITION",
+      "dependency_status": "PASS"
+    },
+    {
+      "prompt_id": "PROD-W1-SCI-WHY",
+      "mode": "WRITE_PRODUCT",
+      "ownership": "SCIENTIST_CAUSAL_ANCESTRY_UNCERTAINTY_PROJECTION",
+      "dependency_status": "PASS"
+    },
+    {
+      "prompt_id": "PROD-W2-SEARCH",
+      "mode": "WRITE_PRODUCT",
+      "ownership": "BOUNDED_SEARCH_SIMILARITY_INTERESTINGNESS",
+      "dependency_status": "PASS"
+    },
+    {
+      "prompt_id": "PROD-W2-TIME",
+      "mode": "WRITE_PRODUCT",
+      "ownership": "PRODUCT_TIME_ATLAS_PROJECTION",
+      "dependency_status": "PASS"
+    }
+  ],
+  "deferred_queue": [
+    {
+      "prompt_id": "PRODUCT-HUMAN",
+      "reason": "SHARED_HUMAN_RENDERER_AND_PRODUCT_COMPOSITION_MAY_RACE_PRODUCT_MACRO",
+      "release_condition": "PRODUCT-MACRO converged or later control decision proves disjoint ownership"
+    },
+    {
+      "prompt_id": "PRODUCT-VISUAL-CONTINUITY",
+      "reason": "TRANSITION_RENDERER_HANDOFF_SURFACES_OVERLAP_SHARED_PRODUCT_COMPOSITION",
+      "release_condition": "PRODUCT-MACRO converged or later control decision proves disjoint ownership"
+    },
+    {
+      "prompt_id": "PROD-W2-DIRECTOR",
+      "reason": "DEPENDENCY_READY_BUT_COORDINATED_CAMERA_PATH_SURFACES_MUST_NOT_RACE_SHARED_RENDERER_OWNER",
+      "release_condition": "PRODUCT-MACRO converged or later control decision proves disjoint ownership"
+    },
+    {
+      "prompt_id": "PRODUCT-AUDIO",
+      "reason": "DEFERRED_BY_CONTROL_POLICY_PENDING_MACRO_CONVERGENCE_OR_EXPLICIT_DISJOINTNESS_PROOF",
+      "release_condition": "PRODUCT-MACRO converged or later control decision proves disjoint ownership"
+    }
+  ],
+  "readonly_concurrency": {
+    "active_independent_audit": "GATE-G0A-AUDIT",
+    "existing_wave0_readonly_register": "docs/industrialization/control/WAVE0_READONLY_AUDIT_REGISTER_2026-09-19.json",
+    "production_write_ownership_granted": false
+  },
+  "convergence_policy": {
+    "parallel_execution_set": [
+      "PRODUCT-MACRO",
+      "PROD-W1-SCI-WHY",
+      "PROD-W2-SEARCH",
+      "PROD-W2-TIME"
+    ],
+    "child_pr_base": "control/post-m0-product-next-2026-09-20",
+    "child_pr_mode": "DRAFT_ONLY",
+    "child_base": "EXACT_DRAFT_PRODUCT_CONTROL_PR_HEAD_AFTER_ACTIVATION",
+    "merge_preference": [
+      "PROD-W1-SCI-WHY",
+      "PROD-W2-TIME",
+      "PROD-W2-SEARCH",
+      "PRODUCT-MACRO"
+    ],
+    "rule": "The four writers may execute in parallel because only PRODUCT-MACRO owns shared renderer/composition surfaces. Additive lanes must not touch protected shared paths. Control convergence integrates evidence-complete work and requires fresh exact-head CI after integration.",
+    "deferred_activation_is_automatic": false
+  },
+  "forbidden_actions": [
+    "mutate main",
+    "merge #274",
+    "merge #275",
+    "merge #287",
+    "merge #290 as part of this activation",
+    "create R7",
+    "create tag",
+    "create release",
+    "force-push",
+    "rewrite published evidence history",
+    "control owner implementing child lane code",
+    "weaken G0A",
+    "activate industrialization successors blocked by G0A/G0B/G1",
+    "create second scene/camera/picking authority",
+    "promote presentation/model output to canonical science"
+  ]
+}

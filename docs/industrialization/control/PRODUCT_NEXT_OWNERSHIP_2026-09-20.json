@@ -1,0 +1,274 @@
+{
+  "schema": "ofu.post-m0.product-next.ownership.v1",
+  "authority": "PLANNING_METADATA_ONLY",
+  "prompt_id": "CTRL-WAVE-EPOCH",
+  "epoch_id": "OFU-POST-M0-PRODUCT-NEXT-2026-09-20-296565BB",
+  "ownership_version": "ofu.post-m0.product-next.ownership.v1",
+  "frozen_base": {
+    "branch": "integration/post-m0-dual-track-wave0-2026-09-17",
+    "sha": "296565bb2a6842159a994a45094ddc1d27d4fd1d",
+    "tree": "6b266ec7b4c2f003e029658fcfe2a735291ecd47"
+  },
+  "control": {
+    "owner": "CTRL-WAVE-EPOCH",
+    "branch": "control/post-m0-product-next-2026-09-20",
+    "pr_base": "integration/post-m0-dual-track-wave0-2026-09-17",
+    "semantic_surface": "PRODUCT_WAVE_CONTROL_PLANE",
+    "implementation_writer_slots": 0,
+    "owned_paths": [
+      "docs/industrialization/control/PRODUCT_NEXT_*",
+      "docs/frontier/execution/parallel/CTRL-WAVE-EPOCH_EXECUTION_STATE.json",
+      "docs/industrialization/handoffs/CTRL-WAVE-EPOCH_POST-M0-PRODUCT-NEXT_2026-09-20.json"
+    ]
+  },
+  "global_rules": {
+    "one_writer_per_semantic_surface": true,
+    "semantic_ownership_stronger_than_file_ownership": true,
+    "writer_base": "EXACT_DRAFT_PRODUCT_CONTROL_PR_HEAD_AFTER_ACTIVATION",
+    "writer_pr_base": "control/post-m0-product-next-2026-09-20",
+    "writer_pr_mode": "DRAFT_ONLY",
+    "lane_branch_pattern": "work/post-m0/<lowercase-prompt-id>-ofu-post-m0-product-next-2026-09-20-296565bb",
+    "no_force_push": true,
+    "no_rebase_after_published_evidence": true,
+    "out_of_scope_shared_change": "INTEGRATION_PATCH_REQUEST",
+    "child_implementation_by_control_owner": false
+  },
+  "protected_shared_paths": [
+    "src/experiments/spatial-continuum/camera.js",
+    "src/experiments/spatial-continuum/representation-handoff.js",
+    "src/experiments/spatial-continuum/planetary-lod-transition.js",
+    "src/experiments/spatial-continuum/surface-renderer-convergence.js",
+    "src/experiments/spatial-continuum/human-renderer-convergence.js",
+    "src/experiments/spatial-continuum/human-place-grammar.js",
+    "src/experiments/spatial-continuum/local-environment.js",
+    "src/kernel/**",
+    "src/temporal/**",
+    "package.json",
+    ".github/workflows/**",
+    "tests/spatial-continuum/run.mjs",
+    "docs/industrialization/control/**",
+    "main",
+    "release/tag metadata"
+  ],
+  "active_writers": [
+    {
+      "prompt_id": "PRODUCT-MACRO",
+      "mode": "WRITE_PRODUCT",
+      "status": "READY_WRITER_ACTIVE_EXCLUSIVE_SHARED_RENDERER_OWNER",
+      "dependencies": [
+        "G-PROD-CONTRACTS"
+      ],
+      "semantic_surface": "PRODUCT_MACRO_RENDERER_COMPOSITION",
+      "source_prompt_refs": [
+        {
+          "source": "PR286_REGISTRY",
+          "prompt_id": "PRODUCT-MACRO",
+          "ref": "3d28ec0720f611278b7717da02713c9eda96e642"
+        }
+      ],
+      "write_authority": [
+        "src/experiments/spatial-continuum/macro-materialization.js",
+        "src/experiments/spatial-continuum/macro-renderer-residency.js",
+        "src/experiments/spatial-continuum/renderer.js",
+        "src/experiments/spatial-continuum/renderer-phase2.js",
+        "src/experiments/spatial-continuum/experience.js",
+        "src/experiments/spatial-continuum/experience.css",
+        "src/experiments/spatial-continuum/phase2-experience.css",
+        "additive PRODUCT-MACRO lane modules/tests/docs/state/handoff"
+      ],
+      "protected_invariants": [
+        "single scene authority",
+        "single camera authority",
+        "renderer-owned picking",
+        "stable world-space scale",
+        "authoritative identity/history",
+        "bounded residency/cancellation",
+        "direct-file/offline capability",
+        "no canonical P2/P4 mutation",
+        "no scientific authority promotion"
+      ],
+      "forbidden_without_control_patch": [
+        "camera.js",
+        "representation-handoff.js",
+        "planetary-lod-transition.js",
+        "surface-renderer-convergence.js",
+        "human-renderer-convergence.js",
+        "human-place-grammar.js",
+        "local-environment.js",
+        "canonical kernel/P2/P4",
+        "package.json",
+        ".github/workflows/**",
+        "central test runner"
+      ]
+    },
+    {
+      "prompt_id": "PROD-W1-SCI-WHY",
+      "mode": "WRITE_PRODUCT",
+      "status": "READY_WRITER",
+      "dependencies": [
+        "PROD-W1-SCI-FP"
+      ],
+      "semantic_surface": "SCIENTIST_CAUSAL_ANCESTRY_UNCERTAINTY_PROJECTION",
+      "source_prompt_refs": [
+        {
+          "source": "PR286_REGISTRY",
+          "prompt_id": "PRODUCT-SCIENTIST",
+          "ref": "3d28ec0720f611278b7717da02713c9eda96e642"
+        },
+        {
+          "source": "PR287_V3_MASTER",
+          "prompt_id": "PROD-W1-SCI-WHY",
+          "ref": "6494c3a43596c2d16c43237c052d404d5b1a7e74"
+        },
+        {
+          "source": "PR275_PRODUCT_DAG",
+          "prompt_id": "R6-W1-SCI-WHY",
+          "ref": "86e19cae0e8c393661d6696617c5a5e49eb78983"
+        }
+      ],
+      "write_authority": [
+        "additive src/product/w1 scientific-WHY/causal-ancestry modules",
+        "additive tests/product/prod-w1-sci-why*.mjs",
+        "additive docs/product/scientific-why/**",
+        "lane execution-state and terminal-handoff artifacts"
+      ],
+      "read_only_dependencies": [
+        "src/product/w1/scientific-fingerprint.js",
+        "governed scientific/authority state"
+      ],
+      "forbidden_without_control_patch": [
+        "shared renderer/composition",
+        "camera/picking",
+        "canonical P2/P4",
+        "canonical scientific truth",
+        "free-form prose as state authority"
+      ]
+    },
+    {
+      "prompt_id": "PROD-W2-SEARCH",
+      "mode": "WRITE_PRODUCT",
+      "status": "READY_WRITER",
+      "dependencies": [
+        "PROD-W1-SCI-FP",
+        "PROD-W1-ATLAS-CORE"
+      ],
+      "semantic_surface": "BOUNDED_SEARCH_SIMILARITY_INTERESTINGNESS",
+      "source_prompt_refs": [
+        {
+          "source": "PR287_V3_MASTER",
+          "prompt_id": "PROD-W2-SEARCH",
+          "ref": "6494c3a43596c2d16c43237c052d404d5b1a7e74"
+        },
+        {
+          "source": "PR275_PRODUCT_DAG",
+          "prompt_id": "R6-W2-SEARCH",
+          "ref": "86e19cae0e8c393661d6696617c5a5e49eb78983"
+        }
+      ],
+      "write_authority": [
+        "additive src/product/exploration/search/**",
+        "additive tests/product/prod-w2-search*.mjs",
+        "additive docs/product/search/**",
+        "lane execution-state and terminal-handoff artifacts"
+      ],
+      "read_only_dependencies": [
+        "src/product/w1/scientific-fingerprint.js",
+        "src/product/w1/atlas-core.js",
+        "existing sparse discovery APIs"
+      ],
+      "forbidden_without_control_patch": [
+        "canonical world mutation",
+        "exhaustive/unbounded universe indexing",
+        "shared renderer/composition",
+        "camera/picking",
+        "canonical P2/P4",
+        "package/workflow/central test runner"
+      ]
+    },
+    {
+      "prompt_id": "PROD-W2-TIME",
+      "mode": "WRITE_PRODUCT",
+      "status": "READY_WRITER",
+      "dependencies": [
+        "PROD-W1-ATLAS-CORE"
+      ],
+      "semantic_surface": "PRODUCT_TIME_ATLAS_PROJECTION",
+      "source_prompt_refs": [
+        {
+          "source": "PR286_REGISTRY",
+          "prompt_id": "PRODUCT-TIME",
+          "ref": "3d28ec0720f611278b7717da02713c9eda96e642"
+        },
+        {
+          "source": "PR287_V3_MASTER",
+          "prompt_id": "PROD-W2-TIME",
+          "ref": "6494c3a43596c2d16c43237c052d404d5b1a7e74"
+        },
+        {
+          "source": "PR275_PRODUCT_DAG",
+          "prompt_id": "R6-W2-TIME",
+          "ref": "86e19cae0e8c393661d6696617c5a5e49eb78983"
+        }
+      ],
+      "write_authority": [
+        "additive src/product/exploration/time/**",
+        "additive tests/product/prod-w2-time*.mjs",
+        "additive docs/product/time/**",
+        "lane execution-state and terminal-handoff artifacts"
+      ],
+      "read_only_dependencies": [
+        "P4 authority",
+        "src/product/w1/atlas-core.js",
+        "governed domain time models"
+      ],
+      "forbidden_without_control_patch": [
+        "new canonical time authority",
+        "animation clock as canonical time",
+        "P4 semantic mutation",
+        "shared renderer/composition",
+        "camera/picking",
+        "package/workflow/central test runner"
+      ]
+    }
+  ],
+  "deferred_writers": [
+    {
+      "prompt_id": "PRODUCT-HUMAN",
+      "semantic_surface": "PRODUCT_HUMAN_PLACE",
+      "status": "DEFERRED_SHARED_SURFACE",
+      "reason": "human renderer/place composition may overlap PRODUCT-MACRO shared composition"
+    },
+    {
+      "prompt_id": "PRODUCT-VISUAL-CONTINUITY",
+      "semantic_surface": "PRODUCT_VISUAL_HANDOFFS",
+      "status": "DEFERRED_SHARED_SURFACE",
+      "reason": "representation/transition renderer surfaces may overlap PRODUCT-MACRO"
+    },
+    {
+      "prompt_id": "PROD-W2-DIRECTOR",
+      "semantic_surface": "DIRECTOR_CAMERA_PATHS",
+      "status": "DEFERRED_COORDINATED_CAMERA_AUTHORITY",
+      "reason": "dependency-ready but must not race shared renderer/camera coordination"
+    },
+    {
+      "prompt_id": "PRODUCT-AUDIO",
+      "semantic_surface": "PRODUCT_AUDIO",
+      "status": "DEFERRED_BY_CONTROL",
+      "reason": "defer until PRODUCT-MACRO convergence or explicit control disjointness proof"
+    }
+  ],
+  "integration_patch_request": {
+    "required_for_out_of_scope_shared_change": true,
+    "required_fields": [
+      "requesting_prompt_id",
+      "target_surface",
+      "target_path",
+      "expected_authority",
+      "intended_change",
+      "rationale",
+      "invariants",
+      "tests"
+    ],
+    "applier": "CTRL-WAVE-EPOCH/CTRL-CONVERGENCE"
+  }
+}
