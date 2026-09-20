@@ -19,9 +19,10 @@ export function createNearbySystemSearchProvider({addressSpace,ctx,anchorSystem,
     id,version:SPARSE_ADDRESS_SEARCH_PROVIDER_VERSION,authority:'ANALYSIS_ONLY',
     async discover({limit,signal}={}){
       if(signal?.aborted)return Object.freeze([]);
-      const page=addressSpace.discoverNearbySystems({ctx,system:anchorSystem,cursor:0,limit,maxProbes,radiusSites});
+      const providerLimit=Math.min(limit,Number.isSafeInteger(addressSpace.MAX_RESULTS)?addressSpace.MAX_RESULTS:64);
+      const page=addressSpace.discoverNearbySystems({ctx,system:anchorSystem,cursor:0,limit:providerLimit,maxProbes,radiusSites});
       if(!page||page.bounded!==true||!Array.isArray(page.systems))fail('sparse discovery must return a bounded system page');
-      if(page.systems.length>limit)fail('sparse discovery exceeded requested limit');
+      if(page.systems.length>providerLimit)fail('sparse discovery exceeded requested limit');
       return Object.freeze(page.systems.map(node=>Object.freeze({
         identity:exactIdentity(node),
         properties:Object.freeze({
@@ -41,7 +42,9 @@ export function createNearbySystemSearchProvider({addressSpace,ctx,anchorSystem,
           radiusSites:Number(page.radiusSites||radiusSites),
           bounded:true,
           wholeUniverseEnumeration:false,
-          exactAddressReference:true
+          exactAddressReference:true,
+          providerWindowTruncated:page.nextCursor!==null,
+          nextCursorAvailable:page.nextCursor!==null
         }),
         atlasEntryId:null
       })));
