@@ -16,7 +16,7 @@ This lane makes the deterministic address space discoverable without constructin
 - Similarity metric: `ofu-prod-w2-search-metric-1`
 - Interestingness model: `ofu-prod-w2-interestingness-1`
 
-The default budget is finite: 128 candidates, 24 returned results, 262144 result-descriptor bytes and 16 provider calls. All limits are caller-overridable only inside hard maximum bounds.
+The generic engine budget is finite: 128 candidates, 24 returned results, 262144 result-descriptor bytes and 16 provider calls. All limits are caller-overridable only inside hard maximum bounds. Individual providers may impose a smaller contract limit; the V1 nearby-system adapter clamps requests to the address-space `MAX_RESULTS` export (currently 64) and exposes whether another provider window remains.
 
 ## Determinism
 
@@ -30,7 +30,7 @@ Interestingness is explicitly analytical and versioned. It consumes only declare
 
 ## Provider surfaces
 
-`createNearbySystemSearchProvider` wraps the pre-existing bounded `discoverNearbySystems` address-space API. It propagates exact system identity and bounded probe/radius provenance and marks `wholeUniverseEnumeration=false`.
+`createNearbySystemSearchProvider` wraps the pre-existing bounded `discoverNearbySystems` address-space API. It propagates exact system identity and bounded probe/radius provenance, clamps to the provider's declared result cap and marks `wholeUniverseEnumeration=false`. It does not claim that one bounded provider window exhausts the search space.
 
 `createAtlasSearchProvider` searches the Personal Atlas as product-local state. Atlas results carry the exact revisit plan. It can resolve a saved Scientific Fingerprint reference without promoting Atlas state to canonical science.
 
@@ -58,6 +58,6 @@ Search:
 
 ## Focused evidence
 
-`tests/product/prod-w2-search.mjs` covers repeated determinism, equivalent-order stability, deterministic similarity tie-breaking, bounded candidate/result/byte budgets, malformed and unsupported filters, UNKNOWN policy, Scientific-Fingerprint authority/model boundaries, Atlas exact revisit, bounded sparse address discovery, canonical-state non-mutation, cancellation, stale-generation rejection and a zero-network-resource source check.
+`tests/product/prod-w2-search.mjs` covers repeated determinism, equivalent-order stability, deterministic similarity tie-breaking, bounded candidate/result/byte budgets, malformed and unsupported filters, UNKNOWN policy, Scientific-Fingerprint authority/model boundaries, Atlas exact revisit, the real V1 sparse-address `MAX_RESULTS` boundary, canonical-state non-mutation, cancellation, stale-generation rejection and a zero-network-resource source check.
 
 The test is intentionally not registered in `package.json` by this writer because package/workflow/central-runner paths are protected by the active product epoch. A control-owned integration patch request is included beside this document.
