@@ -6,8 +6,8 @@
   "failure_fingerprint": null,
   "failure_count": 0,
   "alternate_strategy": "If the new independent G0A re-audit fails, issue only the exact forward repair to the canonical semantic owner; do not weaken G0A, bypass G0B/G1, or broaden CTRL-WAVE0 into child implementation.",
-  "last_action": "Converged IND-CONF-A live-frontier repair #303 into the control branch; verification-only #305 proved JS/Python/combined corpus v2 PASS; exact integrated head e8965171944b9d5c604b19b745dacb79156816f4 has 10/10 workflows PASS.",
-  "next_action": "Execute GATE-G0A-AUDIT independently against e8965171944b9d5c604b19b745dacb79156816f4 / b769a54ce428083cdb629fc2fc9b3e1bacc970b6; if and only if PASS, record G0A PASS and unlock IND-JS-HEADLESS plus IND-SEC-B.",
+  "last_action": "Accepted the independent terminal GATE-G0A-AUDIT PASS for exact subject 296565bb2a6842159a994a45094ddc1d27d4fd1d / tree 6b266ec7b4c2f003e029658fcfe2a735291ecd47. Controller reauthenticated PR #290/head and confirmed no dedicated IND-JS-HEADLESS or IND-SEC-B writer branch existed before authorization.",
+  "next_action": "Launch IND-JS-HEADLESS and IND-SEC-B as separate writer lanes from the exact externally-bound post-G0A control PR head. Keep IND-EXT-CONSUMER blocked until IND-JS-HEADLESS converges; keep G0B, native, C ABI and runtime gates unpromoted.",
   "dependencies": {
     "M0_HISTORICAL": {
       "status": "PASS",
@@ -17,15 +17,25 @@
     "source_master_v4": {
       "status": "PASS",
       "sha": "c2cab6d6e914b918432432fdc69825e0a1000509"
+    },
+    "G0A_MINIMUM_NORMATIVE_SLICE": {
+      "status": "PASS",
+      "audit_prompt_id": "GATE-G0A-AUDIT",
+      "audit_subject_sha": "296565bb2a6842159a994a45094ddc1d27d4fd1d",
+      "audit_subject_tree": "6b266ec7b4c2f003e029658fcfe2a735291ecd47",
+      "repair_semantic_ancestor": "e8965171944b9d5c604b19b745dacb79156816f4",
+      "corpus_revision": 2,
+      "corpus_digest": "d92b43afb8a7deeaed4b0c3ee13b73bad344b196132c35433b66360c0b0772fc"
     }
   },
   "evidence_debt": [
-    "G0A requires a genuinely independent re-audit after repair #303; this control session cannot self-certify it.",
-    "Physical GPU/device evidence remains separate release-grade debt and does not block this control epoch."
+    "G0B external consumer seam proof is not yet PASS and requires IND-JS-HEADLESS, IND-EXT-CONSUMER, IND-CONF-A and independent GATE-G0B-AUDIT.",
+    "Checkpoint/archive provenance, authentication and durable persistence remain outside G0A and unresolved downstream debt.",
+    "Native P2, C ABI microhost, Runtime, provider/durability, licensing/distribution and physical-device release evidence remain downstream."
   ],
   "branch": "integration/post-m0-dual-track-wave0-2026-09-17",
   "pr": "EXTERNALLY_BOUND_BY_DRAFT_CONTROL_PR",
-  "completion_sha": "EXTERNALLY_BOUND_BY_DRAFT_CONTROL_PR_HEAD",
-  "completion_tree": "EXTERNALLY_BOUND_BY_DRAFT_CONTROL_PR_HEAD_TREE",
-  "disposition": "G0A_REAUDIT_READY_CONTROL_BOUNDARY"
+  "completion_sha": "EXTERNALLY_BOUND_BY_DRAFT_CONTROL_PR_HEAD_AFTER_G0A_PASS",
+  "completion_tree": "EXTERNALLY_BOUND_BY_DRAFT_CONTROL_PR_HEAD_TREE_AFTER_G0A_PASS",
+  "disposition": "G0A_PASS_SUCCESSOR_WRITERS_AUTHORIZED"
 }

@@ -58,3 +58,26 @@ The control owner alone advances this branch by integrating evidence-complete la
 ## Non-actions
 
 No mutation of `main`; no merge of #274, #275, or #287; no tag/release; no R7; no force-push; no child implementation by CTRL-WAVE0.
+
+
+## G0A independent PASS — 2026-09-20
+
+Independent `GATE-G0A-AUDIT` returned `COMPLETE_GATE_MET` for exact subject
+`296565bb2a6842159a994a45094ddc1d27d4fd1d` / tree `6b266ec7b4c2f003e029658fcfe2a735291ecd47`.
+
+Control adjudication is recorded in:
+
+`docs/industrialization/control/WAVE0_G0A_PASS_ADJUDICATION_2026-09-20.json`
+
+### Newly authorized writers
+
+- `IND-JS-HEADLESS` — HEADLESS_PUBLIC_SEAM
+- `IND-SEC-B` — post-G0A hostile-input security
+
+They may run in parallel because their semantic ownership is disjoint. Each must branch from the exact externally-bound post-G0A control PR head and open a Draft PR targeting this control branch.
+
+### Still blocked
+
+`IND-EXT-CONSUMER` waits for `IND-JS-HEADLESS`. `GATE-G0B-AUDIT` and `G0B_EXTERNAL_CONSUMER_SEAM_PROOF` remain not reached. `IND-NATIVE-P2`, `IND-CABI-MICROHOST`, G1 and `IND-RUNTIME` remain blocked by the canonical v4 sequence.
+
+The G0A PASS does not promote checkpoint/archive trust, persistence durability, provider/runtime authority, licensing/distribution, scientific authority or release readiness.

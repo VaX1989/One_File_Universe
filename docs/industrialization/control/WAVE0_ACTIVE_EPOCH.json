@@ -3,7 +3,7 @@
   "authority": "PLANNING_METADATA_ONLY",
   "prompt_id": "CTRL-WAVE0",
   "epoch_id": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
-  "status": "ACTIVE_CONTROL_EPOCH_G0A_REAUDIT_READY",
+  "status": "ACTIVE_CONTROL_EPOCH_G0A_PASS_G0B_BUILD_READY",
   "created_date": "2026-09-18",
   "master": {
     "schema_version": 4,
@@ -63,8 +63,8 @@
   },
   "gates": {
     "G_PRODUCT_CONTRACTS": "PASS",
-    "G0A_MINIMUM_NORMATIVE_SLICE": "NOT_PASS_INDEPENDENT_REAUDIT_REQUIRED",
-    "G0B_EXTERNAL_CONSUMER_SEAM_PROOF": "BLOCKED_BEHIND_G0A",
+    "G0A_MINIMUM_NORMATIVE_SLICE": "PASS",
+    "G0B_EXTERNAL_CONSUMER_SEAM_PROOF": "NOT_PASS_PREREQUISITES_PENDING",
     "G1_MINIMUM_PLATFORM_PROOF": "BLOCKED_BEHIND_G0B",
     "G1_PASS_CONTINUE": "MANUAL_OUTCOME_NOT_REACHED"
   },
@@ -78,12 +78,14 @@
       "PRODUCT-VISUAL-CONTINUITY",
       "PRODUCT-AUDIO"
     ],
-    "readonly_audits": [
-      "GATE-G0A-AUDIT"
-    ],
-    "mode": "PRODUCT_SUCCESSORS_UNLOCKED_G0A_REAUDIT_ONLY_FOR_INDUSTRIALIZATION",
+    "readonly_audits": [],
+    "mode": "G0A_PASS_JS_HEADLESS_AND_SEC_B_AUTHORIZED_PRODUCT_SUCCESSORS_REMAIN_SEPARATE",
     "blocked_count_from_master": 74,
-    "rule": "G-PROD-CONTRACTS remains PASS. Product successors may run under canonical ownership. IND-CONF-A live-frontier repair #303 is merged and exact integrated CI is PASS 10/10, but industrialization remains stopped until a new independent GATE-G0A-AUDIT explicitly passes G0A."
+    "rule": "G0A is independently PASS on the exact audited subject. IND-JS-HEADLESS and IND-SEC-B are eligible for control authorization and may run in parallel on disjoint ownership. IND-EXT-CONSUMER remains blocked pending IND-JS-HEADLESS; G0B is not yet PASS; native/C ABI/runtime remain blocked by the canonical v4 gate sequence.",
+    "industrialization_writers": [
+      "IND-JS-HEADLESS",
+      "IND-SEC-B"
+    ]
   },
   "forbidden_actions": [
     "merge #274",
@@ -97,7 +99,7 @@
     "force-push",
     "destructive reset"
   ],
-  "next_control_action": "Run PROMPT_ID=GATE-G0A-AUDIT in a new independent READ_ONLY_AUDIT session against exact control head e8965171944b9d5c604b19b745dacb79156816f4 / tree b769a54ce428083cdb629fc2fc9b3e1bacc970b6.",
+  "next_control_action": "Authorize IND-JS-HEADLESS and IND-SEC-B from the exact externally-bound post-G0A control PR head. After IND-JS-HEADLESS converges, authorize IND-EXT-CONSUMER; only then may GATE-G0B-AUDIT adjudicate G0B.",
   "completed_initial_writers": [
     "QOBS-CROSS-PROGRAM",
     "IND-LIC-A"
@@ -154,8 +156,22 @@
     "semantic_subject_tree": "b769a54ce428083cdb629fc2fc9b3e1bacc970b6",
     "cumulative_ci": "PASS_10_OF_10",
     "product_gate": "PASS",
-    "g0a": "LIVE_FRONTIER_REPAIR_CONVERGED_READY_FOR_INDEPENDENT_REAUDIT_NOT_PASS"
+    "g0a": "PASS_INDEPENDENT_AUDIT_2026-09-20"
   },
   "repair_convergence_adjudication": "docs/industrialization/control/WAVE0_REPAIR_CONVERGENCE_ADJUDICATION_2026-09-19.json",
-  "g0a_reaudit_ready_record": "docs/industrialization/control/WAVE0_G0A_LIVE_FRONTIER_REPAIR_CONVERGENCE_2026-09-19.json"
+  "g0a_reaudit_ready_record": "docs/industrialization/control/WAVE0_G0A_LIVE_FRONTIER_REPAIR_CONVERGENCE_2026-09-19.json",
+  "g0a_pass": {
+    "adjudication": "docs/industrialization/control/WAVE0_G0A_PASS_ADJUDICATION_2026-09-20.json",
+    "audit_prompt_id": "GATE-G0A-AUDIT",
+    "result": "PASS",
+    "terminal_state": "COMPLETE_GATE_MET",
+    "audit_subject_sha": "296565bb2a6842159a994a45094ddc1d27d4fd1d",
+    "audit_subject_tree": "6b266ec7b4c2f003e029658fcfe2a735291ecd47",
+    "semantic_repair_ancestor": "e8965171944b9d5c604b19b745dacb79156816f4",
+    "corpus_revision": 2,
+    "corpus_digest": "d92b43afb8a7deeaed4b0c3ee13b73bad344b196132c35433b66360c0b0772fc",
+    "prior_failure": "G0A-LIVE-FRONTIER-INDEPENDENT-EVIDENCE-GAP",
+    "prior_failure_status": "CLOSED_VERIFIED",
+    "source_classification": "EXTERNAL_INDEPENDENT_READ_ONLY_AUDIT_REPORT_SUPPLIED_TO_CONTROLLER"
+  }
 }
