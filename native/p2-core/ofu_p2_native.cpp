@@ -54,7 +54,7 @@ Bytes hmac_sha256(const Bytes&key,const Bytes&msg){Bytes k=key;if(k.size()>64)k=
 
 struct Value{
   enum Kind{NUL,BOOL,INT,BYTES,TEXT,ARRAY,MAP}kind=NUL;bool b=false;bool neg=false;uint64_t mag=0;Bytes bytes;std::vector<Value> arr;std::vector<std::pair<std::string,Value>> map;
-  static Value i(const std::string&s){Value v;v.kind=INT;if(s.empty())fail("SCHEMA_VIOLATION","empty int");size_t p=0;if(s[0]=='-'){v.neg=true;p=1;}if(p==s.size())fail("SCHEMA_VIOLATION","bad int");unsigned __int128 n=0;for(;p<s.size();p++){if(!std::isdigit((unsigned char)s[p]))fail("SCHEMA_VIOLATION","bad int");n=n*10+(s[p]-'0');if(n>((unsigned __int128)U64_MAXV+1))fail("OUT_OF_DOMAIN","integer");}if(v.neg){if(n>=(unsigned __int128(1)<<63)+1)fail("OUT_OF_DOMAIN","i64");v.mag=(uint64_t)n;}else{if(n>U64_MAXV)fail("OUT_OF_DOMAIN","u64");v.mag=(uint64_t)n;}return v;}
+  static Value i(const std::string&s){Value v;v.kind=INT;if(s.empty())fail("SCHEMA_VIOLATION","empty int");size_t p=0;if(s[0]=='-'){v.neg=true;p=1;}if(p==s.size())fail("SCHEMA_VIOLATION","bad int");unsigned __int128 n=0;for(;p<s.size();p++){if(!std::isdigit((unsigned char)s[p]))fail("SCHEMA_VIOLATION","bad int");n=n*10+(s[p]-'0');if(n>((unsigned __int128)U64_MAXV+1))fail("OUT_OF_DOMAIN","integer");}if(v.neg){if(n>=(((unsigned __int128)1)<<63)+1)fail("OUT_OF_DOMAIN","i64");v.mag=(uint64_t)n;}else{if(n>U64_MAXV)fail("OUT_OF_DOMAIN","u64");v.mag=(uint64_t)n;}return v;}
 };
 struct WireParser{
   const std::string&s;size_t p=0;size_t nodes=0;
@@ -84,8 +84,8 @@ Bytes normalize_text(const Bytes&in){
 bool is_nfc(const Bytes&b){return normalize_text(b)==b;}
 
 struct Encoder{
-  size_t nodes=0,total=0;
-  Bytes emit(Bytes b){total+=b.size();if(total>MAX_INPUT)fail("LIMIT_EXCEEDED","encoded value too large");return b;}
+  size_t nodes=0;
+  Bytes emit(Bytes b){return b;}
   Bytes enc(const Value&v,size_t d=0){if(d>MAX_DEPTH)fail("LIMIT_EXCEEDED","depth");if(++nodes>MAX_NODES)fail("LIMIT_EXCEEDED","nodes");Bytes o;
     switch(v.kind){
       case Value::NUL:o={0};break;case Value::BOOL:o={(uint8_t)(v.b?2:1)};break;
@@ -98,7 +98,7 @@ struct Encoder{
     return emit(std::move(o));
   }
 };
-Bytes encode(const Value&v){Encoder e;return e.enc(v);}
+Bytes encode(const Value&v){Encoder e;Bytes out=e.enc(v);if(out.size()>MAX_INPUT)fail("LIMIT_EXCEEDED","encoded value too large");return out;}
 
 struct Decoder{
   const Bytes&b;size_t p=0,nodes=0;
@@ -164,7 +164,7 @@ uint64_t addr_vu(const Bytes&b,size_t&p){uint64_t x=0;int sh=0;for(int c=0;c<3;c
 void validate_address(const Bytes&b){if(b.size()>MAX_ADDRESS)fail("LIMIT_EXCEEDED","address");size_t p=0;auto rd=[&](){if(p>=b.size())fail("TRUNCATED","address");return b[p++];};if(b.size()<5)fail("TRUNCATED","address");if(rd()!='O'||rd()!='F'||rd()!='U'||rd()!='A')fail("NON_CANONICAL","magic");if(rd()!=1)fail("UNSUPPORTED_VERSION","address");uint64_t n=addr_vu(b,p);if(n<1)fail("OUT_OF_DOMAIN","zero segments");if(n>MAX_ADDR_SEGMENTS)fail("LIMIT_EXCEEDED","segments");for(uint64_t i=0;i<n;i++){uint8_t t=rd();if(t==1){uint64_t z=addr_vu(b,p);if(z>MAX_ADDR_NAMESPACE)fail("LIMIT_EXCEEDED","namespace");if(p+z>b.size())fail("TRUNCATED","namespace");Bytes q(b.begin()+p,b.begin()+p+z);p+=z;if(!is_nfc(q))fail("NON_NFC","namespace");}else if(t==2||t==3){if(p+8>b.size())fail("TRUNCATED","integer");p+=8;}else if(t==4){uint64_t z=addr_vu(b,p);if(z>MAX_ADDR_SEGMENT)fail("LIMIT_EXCEEDED","bytes");if(p+z>b.size())fail("TRUNCATED","bytes");p+=z;}else fail("UNKNOWN_TAG","address segment");}if(p!=b.size())fail("TRAILING_BYTES","address");}
 Bytes derive(const Bytes&seed,const Bytes&mh,const std::string&domain,const Bytes&addr,const std::string&prop,uint64_t counter){if(seed.size()!=32||mh.size()!=32||domain.empty()||prop.empty())fail("SCHEMA_VIOLATION","derive");validate_address(addr);Value q=ar({txt("OFU-DERIVE-v1"),byt(mh),txt(domain),byt(addr),txt(prop),ui(counter)});return hmac_sha256(seed,encode(q));}
 
-int64_t parse_i64(const std::string&s){if(s.empty())fail("SCHEMA_VIOLATION","i64");bool neg=s[0]=='-';size_t p=neg;unsigned __int128 n=0;for(;p<s.size();++p){if(!std::isdigit((unsigned char)s[p]))fail("SCHEMA_VIOLATION","i64");n=n*10+(s[p]-'0');}if(neg){if(n>(unsigned __int128(1)<<63))fail("OUT_OF_DOMAIN","i64");if(n==(unsigned __int128(1)<<63))return I64_MINV;return -(int64_t)n;}if(n>(unsigned __int128)I64_MAXV)fail("OUT_OF_DOMAIN","i64");return (int64_t)n;}
+int64_t parse_i64(const std::string&s){if(s.empty())fail("SCHEMA_VIOLATION","i64");bool neg=s[0]=='-';size_t p=neg;unsigned __int128 n=0;for(;p<s.size();++p){if(!std::isdigit((unsigned char)s[p]))fail("SCHEMA_VIOLATION","i64");n=n*10+(s[p]-'0');}if(neg){if(n>(((unsigned __int128)1)<<63))fail("OUT_OF_DOMAIN","i64");if(n==(((unsigned __int128)1)<<63))return I64_MINV;return -(int64_t)n;}if(n>(unsigned __int128)I64_MAXV)fail("OUT_OF_DOMAIN","i64");return (int64_t)n;}
 uint64_t parse_u64(const std::string&s){unsigned __int128 n=0;if(s.empty())fail("SCHEMA_VIOLATION","u64");for(char c:s){if(!std::isdigit((unsigned char)c))fail("SCHEMA_VIOLATION","u64");n=n*10+(c-'0');if(n>U64_MAXV)fail("OUT_OF_DOMAIN","u64");}return (uint64_t)n;}
 int64_t add_i64(int64_t a,int64_t b){__int128 r=(__int128)a+b;if(r<I64_MINV||r>I64_MAXV)fail("OVERFLOW","add");return (int64_t)r;}
 int64_t mul_fixed(int64_t a,int64_t b,uint64_t scale){if(!scale)fail("OUT_OF_DOMAIN","scale");__int128 p=(__int128)a*b;__int128 q=p/(int64_t)scale;__int128 r=p-q*(int64_t)scale;unsigned __int128 twice=(r<0?-r:r)*2;unsigned __int128 sc=scale;if(twice>sc||(twice==sc&&(q&1)))q+=p<0?-1:1;if(q<I64_MINV||q>I64_MAXV)fail("OVERFLOW","mul");return (int64_t)q;}
