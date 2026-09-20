@@ -2,13 +2,13 @@
   "prompt_id": "PROD-W2-TIME",
   "master_schema_version": 4,
   "epoch": "OFU-POST-M0-PRODUCT-NEXT-2026-09-20-296565BB",
-  "status": "IMPLEMENTATION_EXACT_HEAD_EVIDENCE_PENDING",
-  "hypothesis": "Existing P4/Atlas semantics can support useful forward, reverse, step and epoch product exploration through compact version-bound references and governed domain resolvers without creating a second time/history/camera authority or storing mutable world copies.",
-  "failure_fingerprint": "NONE_OBSERVED_IN_LANE_LOCAL_PROTOTYPE",
-  "failure_count": 0,
-  "alternate_strategy": "If exact repository evidence falsifies the integrated contract, keep the lane isolated and narrow it to read-only exact-reference navigation rather than weakening P4, Atlas, model-version or unsupported-history checks.",
-  "last_action": "Implemented and locally falsified the lane-local governed temporal exploration contract, including explicit Atlas model binding, exact W1 reference validation, bounded materialization, stale/cancel handling and unsupported-history rejection.",
-  "next_action": "Publish the isolated Draft PR against product control, execute exact-head focused and repository CI, repair any stable failure fingerprint forward, then write the terminal handoff only after exact-head evidence is green.",
+  "status": "READY_FOR_CONTROL_CONVERGENCE",
+  "hypothesis": "Existing P4/Atlas semantics support useful forward, reverse, step and epoch product exploration through compact version-bound references and governed domain resolvers without creating a second time/history/camera authority or storing mutable world copies.",
+  "failure_fingerprint": "TIME_ATLAS_SNAPSHOT_CONTEXT_SOURCE_ID_LEAK",
+  "failure_count": 1,
+  "alternate_strategy": "If future control integration cannot preserve the exact reference-only boundary, retain this lane as an isolated temporal reference/planning module and defer shared renderer/UI composition rather than weakening P4, Atlas, model-version or unsupported-history checks.",
+  "last_action": "Repaired the Atlas snapshot product-context identity leak forward; reran focused falsification successfully; exact code-head Foundation Integrity and P1-P4 Canonical Baseline including all file:// browser jobs passed.",
+  "next_action": "Control may review and converge Draft PR #319. Any shared renderer/UI composition hook must remain control-owned or arrive through an INTEGRATION_PATCH_REQUEST; this lane must not self-expand into shared renderer ownership.",
   "dependencies": {
     "PRODUCT_WAVE_CONTROL": {
       "status": "GRANTED",
@@ -20,7 +20,11 @@
     "PROD_W1_ATLAS_CORE": {
       "status": "PASS_INTEGRATED",
       "merge_sha": "36b5cc5d038f23bb7498e3a341f8d368f9fdd039",
-      "atlas_path": "src/product/w1/atlas-core.js"
+      "atlas_blob": "e231780810aa980de80b549184faf9b28bc8e575"
+    },
+    "W1_OBSERVATION_CONTRACTS": {
+      "status": "PASS_INTEGRATED",
+      "blob": "ec32053fa03f07dd95121d815a8bcdbe06103b6b"
     },
     "P4_TEMPORAL_AUTHORITY": {
       "status": "READ_ONLY_DEPENDENCY",
@@ -34,12 +38,11 @@
     }
   },
   "evidence_debt": [
-    "Exact repository-head focused test has not yet executed after publication.",
-    "Fresh exact-head aggregate CI is required before terminal convergence.",
-    "Domain-specific historical reconstruction remains available only where a separately governed domain adapter declares support."
+    "No shared renderer/product-composition UI hook was implemented because PRODUCT-MACRO owns that surface; productProjection exposes authority labels for a control-owned UI integration.",
+    "Domain-specific historical reconstruction remains intentionally unavailable unless a separately governed domain adapter explicitly declares exact support."
   ],
   "branch": "work/post-m0/prod-w2-time-2026-09-20",
-  "pr": null,
+  "pr": 319,
   "base_sha": "de06cc7f8e4b74e57aad583a8764ac756b06b9da",
   "base_tree": "92ea93742177879dcf7f3fd94560439d0149b43d",
   "ownership": {
@@ -61,12 +64,29 @@
   "tests_run": [
     {
       "command": "node tests/product/prod-w2-time.mjs",
-      "environment": "lane-local prototype with contract-compatible W1 stub before publication",
+      "environment": "Focused lane falsification against the repository W1 contract and Atlas Core semantics; published code/test/W1 blobs pinned.",
       "status": "PASS",
+      "exact_blobs": {
+        "time_core": "ec0624edc2d29882a01f04ba29b1bea8c9d227a4",
+        "focused_test": "d0a88bc9ba846ba800abf2018d7a4e38ff984f14",
+        "w1_contracts": "ec32053fa03f07dd95121d815a8bcdbe06103b6b",
+        "atlas_core": "e231780810aa980de80b549184faf9b28bc8e575"
+      },
       "witness": {
         "schema": "ofu-prod-w2-time-test-v1",
+        "status": "PASS",
         "timeAuthority": "CANONICAL_P4",
+        "sourceTime": {
+          "seconds": "100",
+          "micros": "0"
+        },
+        "reverseTime": {
+          "seconds": "50",
+          "micros": "0"
+        },
+        "rematerializedDigest": "000000000000000000000000000000000000000000000000000000000000041a",
         "cacheBound": 2,
+        "resolverCalls": 7,
         "staleCancellation": "PASS",
         "modelMismatch": "REJECTED",
         "unsupportedHistory": "REJECTED",
@@ -74,9 +94,45 @@
         "cameraMutation": false,
         "timelineAuthorityCreated": false
       }
+    },
+    {
+      "workflow": "Foundation Integrity",
+      "run_id": 35504426050,
+      "head_sha": "d4879de2273a0b2b59144a3b44ce6fac08df3b0a",
+      "status": "PASS",
+      "exact_source_checkout": true
+    },
+    {
+      "workflow": "P1-P4 Canonical Baseline",
+      "run_id": 35504425951,
+      "head_sha": "d4879de2273a0b2b59144a3b44ce6fac08df3b0a",
+      "status": "PASS",
+      "exact_head": true,
+      "reproducible_build": true,
+      "direct_file_matrix": [
+        "linux/chromium",
+        "linux/firefox",
+        "linux/webkit",
+        "windows/chromium",
+        "macos/webkit"
+      ],
+      "direct_file_status": "PASS"
     }
   ],
-  "completion_sha": null,
-  "completion_tree": null,
-  "current_hypothesis": "SUPPORTED_LOCALLY_PENDING_EXACT_REPOSITORY_FALSIFICATION"
+  "falsification_attempts": [
+    "Attempted unsupported interval navigation; rejected before resolver admission.",
+    "Attempted resolver-level unsupported instant inside a declared interval; failed closed as UNSUPPORTED.",
+    "Attempted Atlas source binding to a different time-model version; rejected.",
+    "Attempted serialized temporal-reference import under a different registered model version; rejected.",
+    "Attempted resolver output with a different model version; rejected.",
+    "Attempted resolver output for the wrong canonical target time; rejected.",
+    "Superseded an in-flight reverse/forward materialization; stale result was dropped.",
+    "Aborted an in-flight materialization; cancelled result was not admitted.",
+    "Evicted a compact temporal reference and rematerialized it; canonical serialization reproduced identically.",
+    "Static-scanned the time module for network/browser/renderer-clock dependencies; none admitted.",
+    "Adversarial review found TIME_ATLAS_SNAPSHOT_CONTEXT_SOURCE_ID_LEAK; repaired forward and pinned by a regression assertion."
+  ],
+  "completion_sha": "d4879de2273a0b2b59144a3b44ce6fac08df3b0a",
+  "completion_tree": "72b52dc46a176d24c4bd13ad5b65dbcee13c6e42",
+  "current_hypothesis": "SUPPORTED_AND_FALSIFIED_WITHIN_GRANTED_PRODUCT_TIME_SCOPE"
 }
