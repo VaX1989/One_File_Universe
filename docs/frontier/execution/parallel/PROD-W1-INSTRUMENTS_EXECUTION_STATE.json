@@ -1,0 +1,40 @@
+{
+  "prompt_id": "PROD-W1-INSTRUMENTS",
+  "status": "READY_FOR_CONTROL_CONVERGENCE",
+  "hypothesis": "A bounded source-path instrument catalog with exact decimal unit scaling can expose useful scientific measurements while preserving the upstream Scientific Fingerprint / SCI-WHY authority hierarchy and never promoting model-derived values into observations.",
+  "failure_fingerprint": null,
+  "failure_count": 0,
+  "alternate_strategy": "Reduce the catalog to the smallest source quantities whose units and authority are already explicit, rather than deriving additional quantities or consuming presentation state.",
+  "last_action": "Completed hosted verification through closed-unmerged PR #326: npm test PASS on Node 24.20.0 with the focused PROD-W1-INSTRUMENTS test registered only on the verification branch; control head remained unchanged.",
+  "next_action": "CTRL-CONVERGENCE should review PR #325, apply the control-owned package.json registration patch, rerun integrated product tests, and integrate only if authority/provenance/unit/resource invariants remain satisfied.",
+  "dependencies": {
+    "epoch": "OFU-POST-M0-PRODUCT-NEXT-2026-09-20-296565BB",
+    "control_pr": 312,
+    "control_base_sha": "ca64546915091f24111be7cf7b488c191eef82a5",
+    "control_base_tree": "5136517b678bc324f0d90b34cbd0379b785448e4",
+    "v4_master": "c2cab6d6e914b918432432fdc69825e0a1000509",
+    "sci_why_pr": 314,
+    "sci_why_lane_head": "0cfe30bc8e2292732e2bdf3918a62b3857445ba6",
+    "sci_why_merge": "72ea01f2d24897c9532519207dc512b9374b6d1f"
+  },
+  "evidence": {
+    "lane_pr": 325,
+    "implementation_sha": "3794c7722607c3a0d5716c6f2d4c186fb906ee6f",
+    "implementation_tree": "36cd1601862108eabfab83646913a8ac368aaf97",
+    "verification_pr": 326,
+    "verification_head": "e88acba3b3e0d4c0b5358513d8f2913d5631a187",
+    "verification_disposition": "CLOSED_UNMERGED",
+    "foundation_run": 35516370436,
+    "foundation_job": 106092895730,
+    "focused_test": "PASS",
+    "projection_hash": "2d62e417e4713d0d71c11b0d221a3308b01e6e8e329fd323837726ebe6d24a87",
+    "why_graph_hash": "2862766e114f41bf0eb518d15f8cc164d483009017153f6771a3ea3e378e4c89"
+  },
+  "evidence_debt": [
+    "Permanent package.json registration remains control-owned and is intentionally absent from PR #325."
+  ],
+  "branch": "work/post-m0/prod-w1-instruments-ofu-post-m0-product-next-2026-09-20-296565bb",
+  "pr": 325,
+  "completion_sha": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD",
+  "completion_tree": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD_TREE"
+}

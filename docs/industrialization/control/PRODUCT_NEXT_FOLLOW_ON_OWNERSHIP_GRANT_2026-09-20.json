@@ -1,0 +1,168 @@
+{
+  "schema": "ofu.post-m0.product-next.follow-on-ownership-grant.v1",
+  "authority": "PLANNING_METADATA_ONLY_CONTROL_PLANE_NO_TECHNICAL_OR_SCIENTIFIC_AUTHORITY_PROMOTION",
+  "prompt_id": "CTRL-WAVE-EPOCH",
+  "mode": "WRITE_CONTROL",
+  "mission_date": "2026-09-20",
+  "epoch": "OFU-POST-M0-PRODUCT-NEXT-2026-09-20-296565BB",
+  "decision": "GRANT_ADDITIVE_INSTRUMENTS_AND_COMPARE",
+  "control_before_grant": {
+    "pr": 312,
+    "branch": "control/post-m0-product-next-2026-09-20",
+    "sha": "92ae51b193d3e9a545c9760df3e6f0922728b3d0",
+    "tree": "2b8f210772609a22cf3c24affe4a636ae025b62a",
+    "ci": "PASS_10_OF_10"
+  },
+  "live_reauthentication": {
+    "product_macro": {
+      "pr": 313,
+      "state": "OPEN_DRAFT_IN_PROGRESS",
+      "head_sha": "79d4fee113ff6e556cbf19c179b6945cbefd7274",
+      "failure_fingerprint": "PRODUCT_MACRO_REVERSAL_HARNESS_COMMITTED_STATE_TIMING_RACE",
+      "shared_renderer_owner": true
+    },
+    "completed_lanes": [
+      {
+        "prompt_id": "PROD-W1-SCI-WHY",
+        "pr": 314,
+        "merge_commit": "72ea01f2d24897c9532519207dc512b9374b6d1f"
+      },
+      {
+        "prompt_id": "PROD-W2-SEARCH",
+        "pr": 317,
+        "merge_commit": "fecae5a2e3ec4334b449a56cfd4141c998622d36"
+      },
+      {
+        "prompt_id": "PROD-W2-TIME",
+        "pr": 319,
+        "merge_commit": "07f63e111d573ca025bf28cad44d1b9032f55e68"
+      }
+    ],
+    "collision_search": {
+      "instruments_branches": 0,
+      "instruments_prs": 0,
+      "compare_branches": 0,
+      "compare_prs": 0
+    },
+    "wave0": {
+      "pr": 290,
+      "live_head_sha": "951946411b5aa5fb8685f066360099cabbdbb26e",
+      "relative_to_frozen_product_base": {
+        "ahead_by": 20,
+        "behind_by": 0
+      },
+      "action": "NO_MERGE_NO_REBASE"
+    }
+  },
+  "dependency_adjudication": {
+    "PROD-W1-INSTRUMENTS": {
+      "requires": [
+        "PROD-W1-SCI-WHY"
+      ],
+      "result": "PASS"
+    },
+    "PROD-W2-COMPARE": {
+      "requires": [
+        "PROD-W1-ATLAS-CORE",
+        "PROD-W1-SCI-WHY"
+      ],
+      "result": "PASS"
+    }
+  },
+  "ownership_grants": [
+    {
+      "prompt_id": "PROD-W1-INSTRUMENTS",
+      "status": "AUTHORIZED",
+      "semantic_surface": "SCIENTIFIC_INSTRUMENT_MEASUREMENT_PROJECTION",
+      "write_scope": [
+        "src/product/w1/instruments/**",
+        "tests/product/prod-w1-instruments*.mjs",
+        "docs/product/instruments/**",
+        "lane execution-state and terminal-handoff artifacts"
+      ],
+      "forbidden": [
+        "shared renderer/composition",
+        "camera/picking",
+        "canonical P2/P4",
+        "canonical scientific authority promotion",
+        "package.json",
+        ".github/workflows/**",
+        "central test registration"
+      ]
+    },
+    {
+      "prompt_id": "PROD-W2-COMPARE",
+      "status": "AUTHORIZED",
+      "semantic_surface": "SYNCHRONIZED_EVIDENCE_TYPED_CAUSAL_DIVERGENCE",
+      "write_scope": [
+        "src/product/exploration/compare/**",
+        "tests/product/prod-w2-compare*.mjs",
+        "docs/product/compare/**",
+        "lane execution-state and terminal-handoff artifacts"
+      ],
+      "forbidden": [
+        "shared renderer/composition",
+        "shared camera/path coordination",
+        "camera/picking",
+        "canonical mutation",
+        "canonical P2/P4",
+        "canonical scientific authority promotion",
+        "package.json",
+        ".github/workflows/**",
+        "central test registration"
+      ]
+    }
+  ],
+  "shared_surface_reservation": {
+    "sole_owner": "PRODUCT-MACRO",
+    "pr": 313,
+    "still_deferred": [
+      "PRODUCT-HUMAN",
+      "PRODUCT-VISUAL-CONTINUITY",
+      "PROD-W2-DIRECTOR",
+      "PRODUCT-AUDIO"
+    ]
+  },
+  "child_base_rule": {
+    "base": "EXACT_PR312_HEAD_AFTER_ALL_FOLLOW_ON_CONTROL_RECORD_MUTATIONS_EXTERNALLY_BOUND_BY_PR_COMMENT",
+    "pr_base": "control/post-m0-product-next-2026-09-20",
+    "pr_mode": "DRAFT_ONLY",
+    "branches": {
+      "PROD-W1-INSTRUMENTS": "work/post-m0/prod-w1-instruments-ofu-post-m0-product-next-2026-09-20-296565bb",
+      "PROD-W2-COMPARE": "work/post-m0/prod-w2-compare-ofu-post-m0-product-next-2026-09-20-296565bb"
+    },
+    "no_rebase_after_published_evidence": true
+  },
+  "integration_patch_request": {
+    "required_for": [
+      "package.json",
+      ".github/workflows/**",
+      "central test runner/registration",
+      "shared renderer/composition",
+      "camera/picking",
+      "canonical P2/P4",
+      "canonical scientific authority"
+    ],
+    "required_fields": [
+      "requesting_prompt_id",
+      "target_surface",
+      "target_path",
+      "expected_authority",
+      "intended_change",
+      "rationale",
+      "invariants",
+      "tests"
+    ],
+    "applier": "CTRL-WAVE-EPOCH/CTRL-CONVERGENCE"
+  },
+  "cross_track_rule": "Do not merge #312 into #290, merge #290 into #312, or resolve package.json divergence by blind merge/rebase in this task.",
+  "ci_requirement": "FRESH_EXACT_HEAD_CONTROL_CI_REQUIRED_AFTER_MATERIAL_CONTROL_RECORD_CHANGES",
+  "disposition": "AUTHORIZED_TWO_ADDITIVE_WRITERS_MACRO_EXCLUSIVE_SHARED_RENDERER_PRESERVED",
+  "verification_strategy": {
+    "reason": "PR #312 cannot currently synthesize a pull_request merge ref because Wave0 advanced independently and the cross-track branches now conflict. Blind merge/rebase is forbidden by this task.",
+    "method": "Use a verification-only base branch fixed at the pre-grant product-control head and a verification-only head branch pointing to the exact final control SHA. Add only semantic-no-op JSON whitespace to control-owned package.json as the final control commit so the Spatial Continuum path-filtered workflow also runs.",
+    "exact_head_requirement": true,
+    "verification_pr_disposition": "CLOSE_WITHOUT_MERGE_AFTER_EXACT_HEAD_CI",
+    "no_cross_track_reconciliation": true
+  }
+}

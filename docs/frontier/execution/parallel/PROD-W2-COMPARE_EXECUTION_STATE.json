@@ -1,0 +1,94 @@
+{
+  "schema": "ofu.execution-state.v1",
+  "prompt_id": "PROD-W2-COMPARE",
+  "mode": "WRITE_PRODUCT",
+  "mission_date": "2026-09-20",
+  "epoch": "OFU-POST-M0-PRODUCT-NEXT-2026-09-20-296565BB",
+  "status": "READY_FOR_CONTROL_CONVERGENCE",
+  "hypothesis": "Saved Atlas observations can be compared deterministically and without mutation by aligning exact canonical identity, governed P4 references, presentation-only scale hints, Scientific Fingerprint context, and already-existing typed SCI-WHY evidence; mismatches and missing knowledge can remain explicit without inventing causal explanations or creating a second world/camera/renderer authority.",
+  "failure_fingerprint": "COMPARE_WHY_CLASSIFIER_IMPORT_OMISSION",
+  "failure_count": 1,
+  "alternate_strategy": "Repair-forward on the same authorized child branch without rebase: restore the missing SCIENTIFIC_WHY_EDGE_TYPE import, rerun the focused falsification corpus, preserve the exact control base and leave protected central registration to control ownership.",
+  "last_action": "Focused deterministic/negative COMPARE corpus passed after repair-forward on implementation head 7fa5b90bd910f25ecd868526b75c24e364edc190; terminal execution-state and handoff materialized as additive documentation only.",
+  "next_action": "CTRL-CONVERGENCE should inspect PR #327, apply or reject the central test-registration patch request under control ownership, rerun the focused test against the exact integration subject, and adjudicate integration without rebasing the lane.",
+  "dependencies": {
+    "canonical_v4": [
+      "PROD-W1-ATLAS-CORE",
+      "PROD-W1-SCI-WHY"
+    ],
+    "resolved_dependency_subjects": {
+      "PROD-W1-ATLAS-CORE": "1fc22ad1850583eb8de9a4dcdb6feb1e212e98fa",
+      "PROD-W1-SCI-WHY": "0cfe30bc8e2292732e2bdf3918a62b3857445ba6"
+    },
+    "integrated_control_subject": "ca64546915091f24111be7cf7b488c191eef82a5",
+    "legacy_instruments_dependency": "OVERRIDDEN_BY_CANONICAL_V4_NOT_REQUIRED"
+  },
+  "source_prompt_refs": [
+    {
+      "source": "PR287_V3_MASTER",
+      "sha": "6494c3a43596c2d16c43237c052d404d5b1a7e74",
+      "prompt_ref": "PROD-W2-COMPARE"
+    },
+    {
+      "source": "PR275_PRODUCT_DAG",
+      "sha": "86e19cae0e8c393661d6696617c5a5e49eb78983",
+      "prompt_ref": "R6-W2-COMPARE"
+    }
+  ],
+  "ownership_grant": {
+    "control_pr": 312,
+    "comment_id": 5750229376,
+    "authorized_base_sha": "ca64546915091f24111be7cf7b488c191eef82a5",
+    "authorized_base_tree": "5136517b678bc324f0d90b34cbd0379b785448e4",
+    "writer_scope": "ADDITIVE_SYNCHRONIZED_EVIDENCE_TYPED_CAUSAL_DIVERGENCE_ONLY"
+  },
+  "branch": "work/post-m0/prod-w2-compare-ofu-post-m0-product-next-2026-09-20-296565bb",
+  "pr": 327,
+  "implementation_subject": {
+    "sha": "7fa5b90bd910f25ecd868526b75c24e364edc190",
+    "tree": "e04df4c9c5f9915abff28b851baf9fe27421602f"
+  },
+  "completion_sha": "EXTERNALLY_BOUND_BY_PR_327_TERMINAL_COMMENT",
+  "completion_tree": "EXTERNALLY_BOUND_BY_PR_327_TERMINAL_COMMENT",
+  "focused_test": {
+    "command": "node tests/product/prod-w2-compare.mjs",
+    "status": "PASS",
+    "execution_note": "Executed in an isolated API-compatible harness assembled from the exact lane COMPARE files and dependency-compatible stubs because repository connector contents are not mounted into the container runtime.",
+    "witness": {
+      "descriptorId": "compare-desc-e9c35963f2228d8379f0399e",
+      "resultId": "compare-7001b7fd90621f3303847a1e",
+      "resultHash": "7001b7fd90621f3303847a1ed6613e7b0a12e9a6cb663f76ab81d440781c8d9a",
+      "comparisonState": "DIVERGENT",
+      "causalDifferences": 1,
+      "authorityDifferences": 1,
+      "provenanceDifferences": 1,
+      "uncertaintyDifferences": 1,
+      "presentationOnlyDifferences": 2,
+      "canonicalBytes": 12134,
+      "atlasUnchanged": true,
+      "cameraOwned": false,
+      "rendererOwned": false
+    }
+  },
+  "hosted_regression": {
+    "subject_sha": "7fa5b90bd910f25ecd868526b75c24e364edc190",
+    "state_at_terminal_record_creation": "IN_PROGRESS",
+    "foundation_integrity_run": 35516642273,
+    "foundation_integrity_result": "SUCCESS",
+    "note": "Other repository conformance workflows were still queued/in progress when this immutable state payload was authored; the PR terminal comment binds the later exact final-head status rather than falsifying a completed result here."
+  },
+  "evidence_debt": [
+    "Permanent central package.json registration of node tests/product/prod-w2-compare.mjs is control-owned and remains requested, not applied by this lane.",
+    "A control-owned exact integration-subject focused run is still required after registration; the lane does not mutate protected package/workflow surfaces to manufacture that evidence."
+  ],
+  "invariants": {
+    "mutates_world": false,
+    "mutates_atlas": false,
+    "owns_renderer": false,
+    "owns_camera": false,
+    "touches_canonical_p2_p4": false,
+    "promotes_scientific_authority": false,
+    "invents_causal_explanation": false,
+    "requires_network_at_runtime": false
+  }
+}
