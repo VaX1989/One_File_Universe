@@ -204,12 +204,41 @@ function normalizeAssumption(value,index,subjectCanonicalId,scientificModelVersi
     provenanceClass:text(value.provenanceClass,label+'.provenanceClass',{maxBytes:limits.maxTextBytes})
   });
 }
+function deepFrozenParameter(value,label,depth=0,state={nodes:0,seen:new WeakSet()}){
+  if(depth>24)fail(label+' exceeds nesting limit');
+  if(++state.nodes>2048)fail(label+' exceeds node limit');
+  if(value===null||typeof value==='string'||typeof value==='boolean')return value;
+  if(typeof value==='number'){
+    if(!Number.isFinite(value))fail(label+' numbers must be finite');
+    return Object.is(value,-0)?0:value;
+  }
+  if(typeof value==='bigint')return value.toString();
+  if(Array.isArray(value)){
+    if(state.seen.has(value))fail(label+' must be acyclic');
+    state.seen.add(value);
+    const out=Object.freeze(value.map((item,index)=>deepFrozenParameter(item,label+'['+index+']',depth+1,state)));
+    state.seen.delete(value);return out;
+  }
+  if(plain(value)){
+    if(state.seen.has(value))fail(label+' must be acyclic');
+    state.seen.add(value);
+    const out={};
+    for(const key of Object.keys(value).sort()){
+      const normalized=key.normalize('NFC');
+      if(normalized!==key)fail(label+' keys must already be NFC');
+      if(['__proto__','prototype','constructor'].includes(key))fail(label+' contains prototype-sensitive key');
+      out[key]=deepFrozenParameter(value[key],label+'.'+key,depth+1,state);
+    }
+    state.seen.delete(value);return Object.freeze(out);
+  }
+  fail(label+' contains unsupported parameter type');
+}
 function normalizeParameters(value,label,limits){
   if(!plain(value))fail(label+' must be a plain object');
   let canonical;
   try{canonical=stableGenerativeString(value)}catch(error){fail(label+' is not canonicalizable: '+error.message)}
   if(enc.encode(canonical).length>limits.maxParameterBytes)fail(label+' exceeds byte limit');
-  return Object.freeze(JSON.parse(JSON.stringify(value)));
+  return deepFrozenParameter(value,label);
 }
 function normalizeUncertainty(value,index,subjectCanonicalId,scientificModelVersion,limits){
   const label='uncertainties['+index+']';
@@ -584,8 +613,7 @@ export function projectScientificWhy({
 
   const causalEdges=[...edges.values()].filter(edge=>
     edge.edgeType===SCIENTIFIC_WHY_EDGE_TYPE.CAUSES&&
-    edge.causalClaim===true&&
-    edge.knowledgeStatus===SCIENTIFIC_WHY_STATUS.SUPPORTED
+    edge.causalClaim===true
   );
   const adjacency=new Map();
   for(const edge of causalEdges){
@@ -625,6 +653,15 @@ export function projectScientificWhy({
     scientificStateContract:fingerprint.scientificStateContract,
     scientificModelVersion,
     generatorVersion:fingerprint.generatorVersion,
+    applicability:Object.freeze({
+      scope:'EXACT_SUBJECT_MODEL_CONTEXT',
+      subjectCanonicalId,
+      universeId:fingerprint.subject.universeId,
+      scientificStateContract:fingerprint.scientificStateContract,
+      scientificModelVersion,
+      generatorVersion:fingerprint.generatorVersion,
+      fingerprintContextHash:fp.fingerprintRef?.contextHash??null
+    }),
     assumptionsState:normalizedAssumptions.length?'EXPLICIT_UPSTREAM_BOUND_INPUT':'NOT_DECLARED_UPSTREAM',
     uncertaintyState:normalizedUncertainties.length?'EXPLICIT_UPSTREAM_BOUND_INPUT':'NOT_DECLARED_UPSTREAM',
     nodes:nodeList,
