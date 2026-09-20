@@ -5,9 +5,9 @@
   "hypothesis": "Control can preserve the exact Wave-0 gate sequence while integrating only evidence-complete owner repairs and refusing self-certification at independent audit boundaries.",
   "failure_fingerprint": null,
   "failure_count": 0,
-  "alternate_strategy": "If IND-NATIVE-P2 falsifies byte/digest/rejection parity or requires semantic reinterpretation, keep G0B PASS intact, terminate the native lane with the exact failure fingerprint, and do not broaden the frozen P2 authority.",
-  "last_action": "Accepted the independent GATE-G0B-AUDIT PASS on exact semantic subject 83e98f5332e4e828fae87d4a4672c9c81cac17a4 / tree fe52618d62ff02d763158689ce6f37f9ac324b68 after verifying the native npm-pack clean-room proof executed in Foundation run 35516209089 and remained unchanged in the unified control head.",
-  "next_action": "Run IND-NATIVE-P2 from the exact post-G0B control head after this control-only registration converges. Keep IND-CABI-MICROHOST blocked until Native P2 terminalizes and preserve G1 independence.",
+  "alternate_strategy": "If IND-CABI-MICROHOST cannot contain errors, ownership or buffers without semantic reinterpretation, terminate that lane and keep the proven Native P2 slice as feasibility evidence; do not widen or freeze a broad ABI.",
+  "last_action": "Merged IND-NATIVE-P2 PR #331 after verification-only PR #332 proved frozen-corpus parity: 42 positive, 45 rejection and 14 numeric checks; GCC and Clang transcripts were identical; no JS/Python fallback. Control registered the focused test in the cumulative root test chain.",
+  "next_action": "Run fresh exact-head cumulative CI including Spatial Continuum. If green, treat IND-NATIVE-P2 as COMPLETE and authorize only IND-CABI-MICROHOST from the converged exact control head.",
   "dependencies": {
     "M0_HISTORICAL": {
       "status": "PASS",
@@ -33,17 +33,28 @@
       "audit_subject_sha": "83e98f5332e4e828fae87d4a4672c9c81cac17a4",
       "audit_subject_tree": "fe52618d62ff02d763158689ce6f37f9ac324b68",
       "foundation_run": 35516209089
+    },
+    "IND-NATIVE-P2": {
+      "status": "COMPLETE_PENDING_CONTROL_EXACT_HEAD_CI",
+      "lane_pr": 331,
+      "lane_terminal_head": "8b876db103f3aafef7b1b1ff0d7567addcf0bbcd",
+      "merge_commit": "8933c3ffc29fb72d5eebbe69320e2d33bc1e9ae4",
+      "verification_pr": 332,
+      "verification_head": "b0aa0808dba6646d21b90c0011ba4d810d0d8d2e",
+      "verification_foundation_run": 35524220956,
+      "corpus_revision": 2,
+      "corpus_digest": "d92b43afb8a7deeaed4b0c3ee13b73bad344b196132c35433b66360c0b0772fc"
     }
   },
   "evidence_debt": [
-    "IND-NATIVE-P2 and IND-CABI-MICROHOST remain downstream implementation work.",
-    "After this controller authors native/C ABI work, GATE-G1-AUDIT must be performed independently.",
-    "G1_PASS_CONTINUE remains an explicit manual outcome even after any G1 PASS.",
+    "IND-CABI-MICROHOST remains the next industrialization implementation lane after exact-head convergence.",
+    "After this execution context authors native/C ABI work, GATE-G1-AUDIT must be performed by a genuinely independent session.",
+    "G1_PASS_CONTINUE remains an explicit manual outcome even after a future G1 PASS.",
     "Checkpoint/archive provenance, durable persistence, licensing/distribution and physical-device evidence remain downstream."
   ],
   "branch": "integration/post-m0-dual-track-wave0-2026-09-17",
   "pr": "EXTERNALLY_BOUND_BY_DRAFT_CONTROL_PR",
-  "completion_sha": "EXTERNALLY_BOUND_BY_POST_G0B_CONTROL_PR_HEAD",
-  "completion_tree": "EXTERNALLY_BOUND_BY_POST_G0B_CONTROL_PR_HEAD_TREE",
-  "disposition": "G0B_PASS_IND_NATIVE_P2_AUTHORIZED"
+  "completion_sha": "EXTERNALLY_BOUND_BY_POST_NATIVE_P2_CONTROL_PR_HEAD",
+  "completion_tree": "EXTERNALLY_BOUND_BY_POST_NATIVE_P2_CONTROL_PR_HEAD_TREE",
+  "disposition": "IND_NATIVE_P2_CONVERGENCE_PENDING_EXACT_HEAD_CI"
 }
