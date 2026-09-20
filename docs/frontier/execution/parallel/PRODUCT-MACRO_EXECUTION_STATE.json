@@ -1,0 +1,59 @@
+{
+  "prompt_id": "PRODUCT-MACRO",
+  "master_schema_version": 4,
+  "epoch": "OFU-POST-M0-PRODUCT-NEXT-2026-09-20-296565BB",
+  "status": "IN_PROGRESS",
+  "terminal_state": null,
+  "hypothesis": "Perceived macro scale collapses because semantic stages reuse a largely uniform sphere/facet-plus-particle grammar. A bounded PRESENTATION_ONLY stage-aware composition can materially differentiate UNIVERSE, GALAXY, REGION, NEIGHBORHOOD and SYSTEM while preserving canonical identity, one scene/camera, renderer-owned picking, atomic progressive residency, cancellation and direct-file/offline behavior.",
+  "failure_fingerprint": "PRODUCT_MACRO_STAGE_GRAMMAR_COLLAPSE_GALAXY_REGION_SYSTEM",
+  "failure_count": 1,
+  "alternate_strategy": "If stage-aware geometry harms continuity, resource bounds or selection, retain existing entry meshes and restrict improvement to pooled depth-field composition plus deterministic presentation descriptors; never widen scientific authority or introduce a second scene/camera.",
+  "last_action": "Authenticated successor product control PR #312, proved sole PRODUCT-MACRO shared macro renderer/product-composition ownership, bound to exact activation SHA/tree, loaded v4 contracts and immutable PR286 source prompt, profiled current macro source/tests, and inspected prior exact-head visual evidence. Visual falsification confirms GALAXY/REGION near-parity and weak SYSTEM hierarchy before ORBIT.",
+  "next_action": "Implement bounded stage-aware macro presentation and evidence on this branch; preserve atomic last-complete-state residency and add executable macro diversity/continuity/reversal/cancellation/resource/offline witnesses.",
+  "dependencies": {
+    "MASTER_V4": {
+      "status": "PASS",
+      "sha": "c2cab6d6e914b918432432fdc69825e0a1000509"
+    },
+    "G_PRODUCT_CONTRACTS": {
+      "status": "PASS"
+    },
+    "PRODUCT_CONTROL_EPOCH": {
+      "status": "ACTIVE",
+      "pr": 312,
+      "sha": "de06cc7f8e4b74e57aad583a8764ac756b06b9da",
+      "tree": "92ea93742177879dcf7f3fd94560439d0149b43d"
+    },
+    "PRODUCT_DEPTH": {
+      "status": "MERGED_IN_BASE",
+      "merge_commit": "296565bb2a6842159a994a45094ddc1d27d4fd1d"
+    },
+    "G0A": {
+      "status": "SEPARATE_NOT_REQUIRED_FOR_PRODUCT_MACRO",
+      "state": "NOT_PASS_INDEPENDENT_REAUDIT_REQUIRED"
+    }
+  },
+  "evidence_debt": [
+    "Exact-head deterministic/unit evidence not yet executed on the lane.",
+    "Chromium/Firefox/WebKit macro journeys not yet executed on the lane.",
+    "Temporal visual evidence, multi-world macro QOBS, reversal/interruption, long-run resources and mobile/portrait evidence not yet executed on the lane.",
+    "Physical GPU/device evidence remains separate release-grade debt unless available."
+  ],
+  "branch": "work/post-m0/product-macro-2026-09-20",
+  "pr": null,
+  "base_sha": "de06cc7f8e4b74e57aad583a8764ac756b06b9da",
+  "base_tree": "92ea93742177879dcf7f3fd94560439d0149b43d",
+  "ownership": {
+    "semantic_surface": "product_macro_experience + shared macro renderer/product-composition",
+    "grant_pr": 312,
+    "sole_shared_owner": true,
+    "deferred_successors": [
+      "PRODUCT-HUMAN",
+      "PRODUCT-VISUAL-CONTINUITY",
+      "PROD-W2-DIRECTOR",
+      "PRODUCT-AUDIO"
+    ]
+  },
+  "completion_sha": null,
+  "completion_tree": null
+}
