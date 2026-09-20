@@ -53,6 +53,22 @@ export async function waitForSemanticStage(page, stage, { timeout = 15000 } = {}
   return snapshot(page);
 }
 
+export async function waitForMacroCommit(page, { timeout = 30000, diagnostics = null, label = 'macro-commit' } = {}) {
+  await page.waitForFunction(() => {
+    const state = globalThis.__OFU_SPATIAL_CONTINUUM__?.snapshot?.();
+    const macro = state?.render?.macro;
+    const targets = state?.render?.pickTargets?.macro || {};
+    const targetCount = Object.keys(targets).length;
+    return !!macro && macro.pending === 0 && macro.signature === macro.targetSignature && Number(macro.selectable) > 0 && targetCount > 0;
+  }, undefined, { timeout });
+  const state = diagnostics ? await diagnostics.record(label + ':settled') : await snapshot(page);
+  const macro = state?.render?.macro || {};
+  assert.equal(macro.pending, 0, 'macro commit must have no pending materialization');
+  assert.equal(macro.signature, macro.targetSignature, 'macro visible signature must match the committed target signature');
+  assert.ok(Object.keys(state?.render?.pickTargets?.macro || {}).length > 0, 'macro commit must expose renderer-owned pick targets');
+  return state;
+}
+
 export async function requestTravelAccepted(page, stage, { diagnostics = null, label = null } = {}) {
   const expected = String(stage).toUpperCase();
   if (diagnostics) await diagnostics.record((label || expected) + ':before-request');
@@ -99,7 +115,8 @@ async function chooseAndSettle(page, id, expectedStage, diagnostics, label, time
 }
 
 export async function enterSupportedOrbit(page, { diagnostics = null, timeout = 20000 } = {}) {
-  const ready = diagnostics ? await diagnostics.record('ready') : await snapshot(page);
+  if (diagnostics) await diagnostics.record('ready');
+  const ready = await waitForMacroCommit(page, { diagnostics, timeout, label: 'initial-macro' });
   const galaxyIds = Object.keys(ready.render?.pickTargets?.macro || {}).sort();
   if (diagnostics) await diagnostics.record('initial-macro-catalogue', { galaxyIds });
   assert.ok(galaxyIds.length, 'a selectable galaxy is required');
