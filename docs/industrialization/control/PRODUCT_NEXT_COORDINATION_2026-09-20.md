@@ -2,51 +2,74 @@
 
 **Authority:** PLANNING_METADATA_ONLY  
 **PROMPT_ID:** CTRL-WAVE-EPOCH  
-**Target wave:** `POST-M0-PRODUCT-NEXT-2026-09-20`  
 **Epoch:** `OFU-POST-M0-PRODUCT-NEXT-2026-09-20-296565BB`  
-**Frozen green parent:** `296565bb2a6842159a994a45094ddc1d27d4fd1d`  
-**Frozen parent tree:** `6b266ec7b4c2f003e029658fcfe2a735291ecd47`  
-**Control branch:** `control/post-m0-product-next-2026-09-20`  
-**Control PR base:** `integration/post-m0-dual-track-wave0-2026-09-17`
+**Control PR:** #312  
+**Control branch:** `control/post-m0-product-next-2026-09-20`
 
-## Entry decision
+## Follow-on ownership adjudication — 2026-09-20
 
-The product wave is authorized independently of the still-open industrialization G0A boundary. The current Wave0 record explicitly permits product successors after `G-PROD-CONTRACTS = PASS`; `G0A_MINIMUM_NORMATIVE_SLICE` remains `NOT_PASS_INDEPENDENT_REAUDIT_REQUIRED` and is neither closed nor weakened here.
+The product epoch is continued, not restarted. Before this follow-on grant, PR #312 was at `92ae51b193d3e9a545c9760df3e6f0922728b3d0`, tree `2b8f210772609a22cf3c24affe4a636ae025b62a`, with exact-head cumulative CI **10/10 SUCCESS** including Spatial Continuum.
 
-The frozen parent has exact cumulative CI **10/10 SUCCESS**. SCI-FP and Atlas merge commits are verified ancestors of the parent, and PRODUCT-DEPTH is converged in the parent itself.
+Already converged into #312:
+- `PROD-W1-SCI-WHY` — PR #314, merge `72ea01f2d24897c9532519207dc512b9374b6d1f`.
+- `PROD-W2-SEARCH` — PR #317, merge `fecae5a2e3ec4334b449a56cfd4141c998622d36`.
+- `PROD-W2-TIME` — PR #319, merge `07f63e111d573ca025bf28cad44d1b9032f55e68`.
 
-## Exact runnable queue
+`PRODUCT-MACRO` continues only in existing PR #313 at `79d4fee113ff6e556cbf19c179b6945cbefd7274`. It remains **IN_PROGRESS** with failure fingerprint `PRODUCT_MACRO_REVERSAL_HARNESS_COMMITTED_STATE_TIMING_RACE` and remains the sole owner of shared macro renderer/product-composition surfaces.
 
-- `PRODUCT-MACRO` — sole active owner of shared macro renderer/product-composition surfaces.
-- `PROD-W1-SCI-WHY` — typed causal ancestry, authority, assumptions and uncertainty projection; additive only.
-- `PROD-W2-SEARCH` — bounded fingerprint-aware search/similarity/interestingness; no canonical mutation.
-- `PROD-W2-TIME` — governed P4/Atlas product projection; no new canonical time authority.
+## Newly authorized additive writers
 
-All four may execute in parallel from the exact activation head externally bound by the Draft control PR. Their Draft PRs target this control branch.
+### PROD-W1-INSTRUMENTS
+- scientific instrument / measurement projection only;
+- additive write scope: `src/product/w1/instruments/**`, focused lane tests/docs/state/handoff;
+- read-only dependency on Scientific Fingerprint, SCI-WHY and governed scientific/authority state;
+- no renderer, camera, picking, canonical P2/P4 or scientific-authority promotion.
 
-## Explicit deferred queue
+### PROD-W2-COMPARE
+- synchronized evidence comparison and typed causal divergence only;
+- additive write scope: `src/product/exploration/compare/**`, focused lane tests/docs/state/handoff;
+- read-only dependency on Atlas Core, SCI-WHY and governed product projections;
+- no shared camera/render composition ownership, canonical mutation or scientific-authority promotion.
 
+No matching INSTRUMENTS or COMPARE branch or PR existed at grant time, and neither additive source surface existed in the current product tree.
+
+## Exact child-base rule
+
+Both new lanes must branch from the **exact final #312 head after all follow-on control-record mutations**, externally bound by the PR #312 control comment.
+
+Required branches:
+- `work/post-m0/prod-w1-instruments-ofu-post-m0-product-next-2026-09-20-296565bb`
+- `work/post-m0/prod-w2-compare-ofu-post-m0-product-next-2026-09-20-296565bb`
+
+Both Draft PRs target `control/post-m0-product-next-2026-09-20`. They must not branch from the original activation SHA `de06cc7f8e4b74e57aad583a8764ac756b06b9da`. Once lane evidence is published, no rebase: later control movement is handled by convergence.
+
+## Shared-surface reservation
+
+`PRODUCT-MACRO` remains the sole shared renderer/product-composition writer. These remain deferred and are not activated:
 - `PRODUCT-HUMAN`
 - `PRODUCT-VISUAL-CONTINUITY`
 - `PROD-W2-DIRECTOR`
 - `PRODUCT-AUDIO`
 
-None is runnable in this epoch until PRODUCT-MACRO converges or a later control decision proves the relevant ownership disjoint. DIRECTOR is dependency-ready but remains deferred because coordinated camera-path work must not race the shared renderer owner.
+Camera remains single-authority. Picking remains renderer-owned.
 
-## Shared-surface discipline
+## Control-owned integration surfaces
 
-PRODUCT-MACRO alone may edit the explicitly granted shared renderer/composition paths. SCI-WHY, SEARCH and TIME are additive product lanes and must not edit renderer, experience composition, camera, picking, P2/P4 or canonical scientific authority. Any required shared change becomes an `INTEGRATION_PATCH_REQUEST`.
+`package.json`, `.github/workflows/**`, central test registration, shared renderer/composition, camera/picking, canonical P2/P4 and canonical scientific authority remain protected/control-owned.
 
-Camera remains single-authority. Picking remains renderer-owned. The product remains direct-file/offline and resource-bounded. Presentation and model-derived outputs do not become canonical science.
+Any child need for those surfaces must become an `INTEGRATION_PATCH_REQUEST` with:
+`requesting_prompt_id`, `target_surface`, `target_path`, `expected_authority`, `intended_change`, `rationale`, `invariants`, `tests`.
 
-## Wave0/G0A separation
+## Wave0 separation
 
-`GATE-G0A-AUDIT` may run concurrently under the existing Wave0 read-only authority against its recorded audit subject. This product control branch does not change that audit subject, does not grant audit cells production write ownership and does not unlock IND-JS-HEADLESS, IND-SEC-B, native or runtime lanes.
+Wave0 PR #290 is independently ahead at `951946411b5aa5fb8685f066360099cabbdbb26e`; relative to the frozen product base it is 20 commits ahead and 0 behind. G0A is PASS on that separate industrialization track.
 
-## Convergence
+This task does not merge #312 into #290, merge #290 into #312, rebase either track, or resolve the shared `package.json` divergence by blind merge/rebase.
 
-The four writers may work concurrently. Control convergence should prefer integrating the additive lanes first, then PRODUCT-MACRO, with fresh exact-head executable evidence after each material integration and full cumulative/product evidence at the final macro-integrated head. Deferred lanes are re-adjudicated; they are not automatically activated.
+## CI rule
+
+Fresh exact-head cumulative CI is required after the follow-on control mutations before terminalizing this control action. The grant authorizes implementation work only after that exact final head is externally bound.
 
 ## Non-actions
 
-No mutation of `main`; no merge of #274/#275/#287/#290; no tag/release; no R7; no force-push; no child implementation by the control owner; no G0A self-certification.
+No mutation of `main`; no merge of #274/#275/#287/#290; no R7; no tag/release; no force-push; no canonical P2/P4 mutation; no scientific-authority promotion.
