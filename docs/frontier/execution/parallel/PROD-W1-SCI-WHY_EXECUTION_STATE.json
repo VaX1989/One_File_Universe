@@ -2,13 +2,13 @@
   "prompt_id": "PROD-W1-SCI-WHY",
   "master_schema_version": 4,
   "epoch": "OFU-POST-M0-PRODUCT-NEXT-2026-09-20-296565BB",
-  "status": "IMPLEMENTATION_AND_FALSIFICATION_AUTHORED_PENDING_HOSTED_EXACT_HEAD_EXECUTION",
+  "status": "READY_FOR_CONTROL_CONVERGENCE",
   "hypothesis": "A deterministic typed WHY projection can reuse the existing Scientific Fingerprint to expose explicit ancestry, authority, assumptions, limitations and upstream-supported uncertainty while failing closed on unknown/unsupported state and never promoting presentation/prose to scientific authority.",
   "failure_fingerprint": null,
   "failure_count": 0,
   "alternate_strategy": "If explicit scientific ancestry cannot be represented without inventing source authority, retain only fingerprint/provenance/authority/limitation inspection and mark the missing causal relationship UNKNOWN or UNSUPPORTED; if a frozen shared contract is insufficient, request a control-owned versioned successor instead of mutating it here.",
-  "last_action": "Created the additive scientific-why provider and focused falsification corpus on the exact product epoch base; hardened exact subject/model applicability binding, causal-cycle rejection, deterministic canonical graph hashing, uncertainty normalization, UNKNOWN/UNSUPPORTED propagation, mixed-authority downgrade and bounded presentation-only inspection.",
-  "next_action": "Open the Draft lane PR against the product-control branch, execute exact-lane-head focused evidence through a verification-only PR without merging protected package changes, repair any stable failure fingerprint forward, then seal terminal handoff with exact evidence.",
+  "last_action": "Verification-only PR #315 executed the complete npm test sequence including tests/product/prod-w1-sci-why.mjs against exact lane subject 650c2f6afe96e819e7a2646d2726f43505570c30; Foundation Integrity run 35503594107 completed SUCCESS and emitted the SCI-WHY deterministic witness.",
+  "next_action": "CTRL-CONVERGENCE should review PR #314 ownership/diff and immutable handoff, apply the package.json test-registration INTEGRATION_PATCH_REQUEST on the control integration head, require fresh aggregate CI, then converge the lane without rewriting its published evidence history.",
   "dependencies": {
     "PRODUCT_CONTROL_EPOCH": {
       "status": "PASS",
@@ -38,12 +38,33 @@
     }
   },
   "evidence_debt": [
-    "Focused test is authored but has not yet executed in hosted exact-head CI.",
-    "Permanent central npm test registration is control-owned and requested by INTEGRATION_PATCH_REQUEST.",
-    "No richer scientific causal genealogy can be asserted until an upstream scientific provider supplies explicit source-backed causal relations and/or uncertainty."
+    "Permanent central npm test registration remains control-owned and is captured by the lane INTEGRATION_PATCH_REQUEST.",
+    "No richer scientific causal genealogy is asserted until upstream scientific providers supply explicit source-backed causal relations and/or uncertainty.",
+    "Final Draft PR head/tree and post-handoff aggregate CI are externally bound by PR #314; the exact implementation subject already has hosted focused executable evidence."
   ],
   "branch": "work/post-m0/prod-w1-sci-why-ofu-post-m0-product-next-2026-09-20-296565bb",
-  "pr": "PENDING_DRAFT_PR",
-  "completion_sha": "PENDING_EXACT_HEAD_EVIDENCE",
-  "completion_tree": "PENDING_EXACT_HEAD_EVIDENCE"
+  "pr": 314,
+  "completion_sha": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD",
+  "completion_tree": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD_TREE",
+  "exact_tested_subject": {
+    "sha": "650c2f6afe96e819e7a2646d2726f43505570c30",
+    "verification_pr": 315,
+    "verification_head": "b1d514736828ac0b45744c3f6bb72e9791e784c8",
+    "foundation_run": 35503594107,
+    "result": "PASS",
+    "witness": {
+      "schema": "ofu-prod-w1-sci-why-test-v1",
+      "provider": "ofu.product.w1.scientific-why",
+      "graphHash": "0427304270010e1aa2f18de86d2cab9b10963de090ad94463772771dfc46a436",
+      "nodes": 44,
+      "edges": 30,
+      "unknownEdges": 10,
+      "unsupportedEdges": 1,
+      "assumptions": 1,
+      "uncertainties": 2,
+      "canonicalGraphBytes": 49358,
+      "boundedInspectionEdges": 2,
+      "boundedInspectionTruncated": true
+    }
+  }
 }
