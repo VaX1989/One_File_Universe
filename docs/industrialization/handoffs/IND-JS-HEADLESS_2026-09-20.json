@@ -46,7 +46,8 @@
     },
     {
       "name": "pull-request cumulative CI",
-      "result": "PENDING_FINAL_METADATA_HEAD"
+      "subject_sha": "758d9405ec8d03a27682487eb4bb4bb0dc301bc9",
+      "result": "PASS_9_OF_9"
     }
   ],
   "deterministic_witnesses": [
@@ -66,7 +67,8 @@
     "Checkpoint/archive persistence is intentionally not public.",
     "Native/C ABI/Runtime are not implemented.",
     "Native Node test requires control-owned harness registration before convergence.",
-    "This lane alone is not G0B external-consumer proof."
+    "This lane alone is not G0B external-consumer proof.",
+    "Final terminal-metadata-only commits occur after the 9/9 CI evidence subject; control convergence must revalidate the exact merged candidate head as usual."
   ],
   "falsification_attempts": [
     "unsupported API version",
@@ -84,5 +86,5 @@
   "integration_patch_requests": [
     "docs/frontier/execution/parallel/IND-JS-HEADLESS_INTEGRATION_PATCH_REQUEST.json"
   ],
-  "disposition": "READY_FOR_CONTROL_CONVERGENCE"
+  "disposition": "COMPLETE_GATE_MET"
 }
