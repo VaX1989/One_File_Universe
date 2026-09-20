@@ -1,0 +1,68 @@
+{
+  "schema": "ofu.product.ownership-grant.v1",
+  "prompt_id": "CTRL-WAVE-EPOCH",
+  "mission_date": "2026-09-20",
+  "control": {
+    "pr": 290,
+    "branch": "integration/post-m0-dual-track-wave0-2026-09-17",
+    "base_sha": "3eff4822b063b0ee2f81a218ebc5cc3f7fe13269"
+  },
+  "epoch": "OFU-POST-M0-PRODUCT-COMPLETION-2026-09-20",
+  "inherited_completed": [
+    "PROD-W1-CONTRACTS",
+    "QOBS-CROSS-PROGRAM",
+    "PROD-W1-PRODUCT-DEPTH",
+    "PROD-W1-SCI-FP",
+    "PROD-W1-ATLAS-CORE",
+    "PROD-W1-SCI-WHY",
+    "PROD-W1-INSTRUMENTS",
+    "PROD-W2-TIME",
+    "PROD-W2-SEARCH",
+    "PROD-W2-COMPARE",
+    "PRODUCT-MACRO"
+  ],
+  "grant": {
+    "prompt_id": "PRODUCT-VISUAL-CONTINUITY",
+    "status": "AUTHORIZED",
+    "semantic_ownership": [
+      "product_visual_handoffs",
+      "transition_presentation_continuity"
+    ],
+    "exclusive_shared_surfaces": [
+      "cross_scale_transition_presentation",
+      "committed_visual_state_handoff"
+    ],
+    "camera_rule": "MUST_REMAIN_SUBORDINATE_TO_EXISTING_SINGLE_CAMERA_AUTHORITY",
+    "picking_rule": "MUST_NOT_CREATE_OR_REPLACE_RENDERER_OWNED_PICKING_AUTHORITY",
+    "must_not_modify": [
+      "canonical P2/P4 semantics",
+      "scientific authority",
+      "world identity",
+      "second camera authority",
+      "second picking authority",
+      "package.json",
+      "workflows",
+      "central test runners"
+    ],
+    "acceptance": [
+      "forward and reverse UNIVERSE-to-ATOMIC journey continuity",
+      "same canonical identity/location across representation handoffs",
+      "last complete detailed coverage retained until replacement settles",
+      "reversal and interruption correctness",
+      "semantic visual settlement without giant arbitrary waits",
+      "mobile/portrait and reduced-motion correctness",
+      "bounded resources and direct-file/offline operation",
+      "temporal visual evidence, not still-only claims"
+    ]
+  },
+  "deferred": {
+    "PRODUCT-HUMAN": "DEFERRED_UNTIL_DISJOINTNESS_OR_VISUAL_CONTINUITY_TERMINAL",
+    "PRODUCT-AUDIO": "DEFERRED_PENDING_CONTEXT_SURFACE_REAUTHENTICATION",
+    "PROD-W2-DIRECTOR": "STACKED_ONLY_BLOCKED_WHILE_TRANSITION_OWNER_ACTIVE"
+  },
+  "interaction_with_industrialization": {
+    "IND-NATIVE-P2": "PARALLEL_DISJOINT_NATIVE_EXPERIMENT",
+    "shared_surface_overlap": false
+  },
+  "disposition": "PRODUCT_VISUAL_CONTINUITY_AUTHORIZED_ONLY"
+}
