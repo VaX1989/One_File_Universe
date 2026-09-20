@@ -1,0 +1,33 @@
+{
+  "schema": "ofu.execution-state.v1",
+  "prompt_id": "PRODUCT-HUMAN",
+  "mode": "WRITE_PRODUCT",
+  "mission_date": "2026-09-20",
+  "status": "CERTIFICATION_IMPLEMENTED_VERIFICATION_PENDING",
+  "hypothesis": "The shipping HUMAN substrate already satisfies the canonical sense-of-place requirements and can be certified without production mutation.",
+  "failure_fingerprint": null,
+  "failure_count": 0,
+  "alternate_strategy": "If certification exposes a real defect, minimize the failing invariant. Renderer/transition production repair remains blocked until PRODUCT-VISUAL-CONTINUITY is terminal and a narrow ownership grant is issued.",
+  "last_action": "Created a lane-local certification oracle that composes the existing HUMAN sense-of-place, shipping-browser and open-generalization proofs without modifying production surfaces.",
+  "next_action": "Verify the certification oracle through a disposable package-registration overlay, then emit immutable terminal handoff and converge through control-owned regression registration.",
+  "dependencies": {
+    "G-PROD-CONTRACTS": {
+      "status": "PASS"
+    },
+    "PRODUCT-HUMAN-OWNERSHIP": {
+      "status": "AUTHORIZED_PARALLEL_CERTIFICATION_ONLY",
+      "control_pr": 345,
+      "control_merge": "41b0f55c895adb20f5f38171194d15f670ceea00"
+    }
+  },
+  "evidence_debt": [
+    "Physical-device/GPU evidence remains NOT_VERIFIED.",
+    "Permanent root test registration remains control-owned.",
+    "Production repair on visual/renderer surfaces is not authorized while PRODUCT-VISUAL-CONTINUITY owns transition presentation."
+  ],
+  "branch": "work/post-m0/product-human-certification-2026-09-20",
+  "pr": null,
+  "completion_sha": null,
+  "completion_tree": null,
+  "disposition": "VERIFICATION_PENDING"
+}
