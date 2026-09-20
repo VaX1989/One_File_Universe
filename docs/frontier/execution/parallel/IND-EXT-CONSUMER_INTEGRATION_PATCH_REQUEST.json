@@ -1,0 +1,23 @@
+{
+  "schema": "ofu.integration-patch-request.v1",
+  "requesting_prompt_id": "IND-EXT-CONSUMER",
+  "target_surface": "CONTROL_OWNED_TEST_REGISTRATION",
+  "target_path": "package.json",
+  "expected_authority": "CTRL-WAVE0/CTRL-CONVERGENCE",
+  "intended_change": "Append node tests/industrialization/external-consumer/clean-room.mjs to the existing root test command on the exact control convergence head, preserving all existing tests and ordering constraints.",
+  "rationale": "The lane owns only the disposable external-consumer fixture and proof harness. Root package registration is control-owned. Registration is required so the actual npm-pack clean-room process runs under native Node in repository CI before GATE-G0B-AUDIT.",
+  "invariants": [
+    "Do not alter canonical P2/P4 semantics.",
+    "Do not broaden src/headless or sdk/reference-headless public API.",
+    "Do not add product renderer, DOM, Babylon, camera, selection, provider, persistence, native or Runtime dependencies.",
+    "Do not weaken or remove any existing test.",
+    "Keep G0B NOT_PASS until the independent GATE-G0B-AUDIT adjudicates the integrated evidence.",
+    "Keep IND-NATIVE-P2 blocked behind G0B."
+  ],
+  "tests": [
+    "node tests/industrialization/external-consumer/clean-room.mjs",
+    "node tests/industrialization/headless/public-seam.mjs",
+    "node tests/industrialization/security/post-g0a-hostile-inputs.mjs",
+    "existing root npm test / cumulative repository workflows"
+  ]
+}
