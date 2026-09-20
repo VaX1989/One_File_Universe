@@ -6,10 +6,10 @@
   "terminal_state": "NOT_TERMINAL",
   "hypothesis": "Founder-visible depth can improve materially by making already-governed HUMAN place, atmosphere and causal presentation signals perceptible, while preserving stable world-space scale, scientific authority, single-scene/camera ownership, bounded resources and direct-file/offline behavior.",
   "failure_fingerprint": "PROD_DEPTH_VISUAL_EVIDENCE_GAPS",
-  "failure_count": 3,
+  "failure_count": 4,
   "alternate_strategy": "If governed depth cues cause scale ambiguity, resource growth, visual regressions or browser instability, revert the specific presentation mapping and retain only evidence-oracle/mobile fixes; do not widen scientific authority or add unbounded geometry.",
-  "last_action": "Fresh exact-head Spatial Continuum run 35495963664 failed in development because r6-w0-human-renderer-integration.mjs still asserted the superseded literal ring radii [180,420,860,1600]. Classified as a stale harness expectation, not a semantic renderer failure. Updated the integration assertion to the governed [72,240,720,1600] physical near/mid/far composition and explicit compositionPolicy.",
-  "next_action": "Run fresh exact-head CI once on the repaired harness subject. If green, inspect new convergence/mobile/HUMAN artifacts directly before terminalization.",
+  "last_action": "Exact-head d6dd1157db271f334fc4d354a2602ce9521aaaaf passed repository CI 10/10 and all 12 convergence suites, and direct artifact inspection confirmed portrait and HUMAN-depth repair. The same artifact inspection exposed a residual 1.5–19 px orientation/deck overlap in phone-landscape/tablet. Repaired responsive orientation clearance and promoted geometric non-overlap assertions to every tested mobile/tablet viewport.",
+  "next_action": "Require fresh exact-head 10/10 CI after the non-portrait mobile clearance repair, then directly inspect portrait, landscape and tablet artifacts before terminal packet creation.",
   "dependencies": {
     "M0_HISTORICAL": {
       "status": "PASS",
@@ -98,8 +98,8 @@
     "bounded": true
   },
   "evidence_debt": [
-    "The f77e128817b11a46adfc5516ff723fed725318ec Spatial Continuum run failed on a stale source-literal integration assertion and is not PASS evidence; a fresh repaired exact-head run is required.",
-    "The repaired visual/QOBS/mobile/replay subject still requires fresh exact-head CI and direct artifact inspection before PASS may be claimed.",
+    "The d6dd1157db271f334fc4d354a2602ce9521aaaaf subject is green 10/10, but direct artifact inspection found a non-portrait mobile/tablet orientation/deck overlap and therefore it is not terminal product evidence.",
+    "The responsive-clearance repair requires fresh exact-head CI plus direct portrait/landscape/tablet artifact inspection before terminalization.",
     "Physical GPU/device evidence remains release-grade debt and is not promoted by this lane.",
     "G0A remains NOT_PASS_INDEPENDENT_REAUDIT_REQUIRED and is a separate industrialization boundary."
   ],
@@ -136,6 +136,16 @@
       "result": "FAIL",
       "failure_fingerprint": "PROD_DEPTH_STALE_HUMAN_RING_LITERAL_ASSERTION",
       "classification": "TEST_HARNESS_STALE_EXPECTATION"
+    },
+    {
+      "subject_sha": "d6dd1157db271f334fc4d354a2602ce9521aaaaf",
+      "workflow": "Repository cumulative generated workflows",
+      "result": "PASS_10_OF_10",
+      "spatial_run": 35496032546,
+      "convergence_status": "PASS_ALL_12_MANDATORY_SUITES",
+      "artifact_id": 10600921363,
+      "direct_artifact_inspection": "PASS_HUMAN_DEPTH_AND_PORTRAIT; FALSIFIED_NONPORTRAIT_ORIENTATION_CLEARANCE",
+      "failure_fingerprint": "PROD_DEPTH_MOBILE_ORIENTATION_DECK_OVERLAP_NONPORTRAIT"
     }
   ],
   "completion_sha": "PENDING_REPAIRED_EXACT_HEAD_EVIDENCE",
@@ -143,6 +153,7 @@
   "failure_fingerprints": [
     "PROD_DEPTH_HUMAN_FAR_FIELD_VISIBILITY_GAP",
     "PROD_DEPTH_PORTRAIT_LAYOUT_OVERLAP",
-    "PROD_DEPTH_STALE_HUMAN_RING_LITERAL_ASSERTION"
+    "PROD_DEPTH_STALE_HUMAN_RING_LITERAL_ASSERTION",
+    "PROD_DEPTH_MOBILE_ORIENTATION_DECK_OVERLAP_NONPORTRAIT"
   ]
 }
