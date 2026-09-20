@@ -1,0 +1,27 @@
+{
+  "prompt_id": "PROD-W1-INSTRUMENTS",
+  "hypothesis": "A bounded source-path instrument catalog with exact decimal unit scaling can expose useful scientific measurements while preserving the upstream Scientific Fingerprint / SCI-WHY authority hierarchy and never promoting model-derived values into observations.",
+  "failure_fingerprint": null,
+  "failure_count": 0,
+  "alternate_strategy": "Reduce the catalog to the smallest source quantities whose units and authority are already explicit, rather than deriving additional quantities or consuming presentation state.",
+  "last_action": "Reauthenticated the follow-on product control epoch, loaded all canonical/source prompt records, inspected integrated SCI-FP and SCI-WHY contracts, implemented the additive instrument provider and focused adversarial test, and passed local JavaScript syntax validation.",
+  "next_action": "Publish the exact-base Draft lane PR, obtain exact-head CI, and request control-owned focused-test registration for executable convergence evidence.",
+  "dependencies": {
+    "epoch": "OFU-POST-M0-PRODUCT-NEXT-2026-09-20-296565BB",
+    "control_pr": 312,
+    "control_base_sha": "ca64546915091f24111be7cf7b488c191eef82a5",
+    "control_base_tree": "5136517b678bc324f0d90b34cbd0379b785448e4",
+    "v4_master": "c2cab6d6e914b918432432fdc69825e0a1000509",
+    "sci_why_pr": 314,
+    "sci_why_lane_head": "0cfe30bc8e2292732e2bdf3918a62b3857445ba6",
+    "sci_why_merge": "72ea01f2d24897c9532519207dc512b9374b6d1f"
+  },
+  "evidence_debt": [
+    "Exact-head hosted regression CI has not yet run on the unpublished lane branch.",
+    "The focused test is not yet part of central npm test because package.json is control-owned; an INTEGRATION_PATCH_REQUEST is included."
+  ],
+  "branch": "work/post-m0/prod-w1-instruments-ofu-post-m0-product-next-2026-09-20-296565bb",
+  "pr": null,
+  "completion_sha": null,
+  "completion_tree": null
+}
