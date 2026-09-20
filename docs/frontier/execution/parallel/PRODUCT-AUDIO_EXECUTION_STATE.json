@@ -1,0 +1,54 @@
+{
+  "schema": "ofu.execution-state.v1",
+  "prompt_id": "PRODUCT-AUDIO",
+  "mode": "WRITE_PRODUCT",
+  "mission_date": "2026-09-20",
+  "status": "READY_FOR_CONTROL_CONVERGENCE",
+  "hypothesis": "The already-shipping V2X-14 systemic-audio layer can satisfy the canonical PRODUCT-AUDIO contract without a new production authority, network dependency, or canonical-state mutation.",
+  "failure_fingerprint": null,
+  "failure_count": 0,
+  "alternate_strategy": "If the focused or exact-artifact proof exposes a real product defect, repair only the existing presentation-only audio seam; do not create a second navigation, scale, camera, scientific or canonical-state authority.",
+  "last_action": "Verification-only PR #340 executed the PRODUCT-AUDIO focused oracle in Foundation and the exact-artifact direct-file browser oracle inside the Spatial convergence runner. Both passed on exact verification head 3d35dae666cf8c258003e747176e353e77b746e4.",
+  "next_action": "CTRL-CONVERGENCE should merge PR #339, preserve current control-owned root test and Spatial runner unions, register both PRODUCT-AUDIO oracles, then require fresh exact-head cumulative CI including Spatial Continuum.",
+  "dependencies": {
+    "G-PROD-CONTRACTS": {"status": "PASS"},
+    "PRODUCT_AUDIO_OWNERSHIP": {"status": "PASS", "control_pr": 337},
+    "EXISTING_V2X14_AUDIO": {"status": "PASS", "authority": "PRESENTATION_ONLY"}
+  },
+  "evidence": {
+    "lane_pr": 339,
+    "verification_pr": 340,
+    "verification_head": "3d35dae666cf8c258003e747176e353e77b746e4",
+    "foundation_run": 35525866258,
+    "spatial_run": 35525866294,
+    "focused_oracle": "PASS",
+    "browser_oracle": "PASS",
+    "direct_file": true,
+    "zero_mandatory_network": true,
+    "desktop_user_activation": true,
+    "mobile_user_activation": true,
+    "mute": true,
+    "reduced_motion": true,
+    "unsupported_audio_graceful": true,
+    "idle_polling": false,
+    "max_concurrent_poll_timers": 1,
+    "authority": "PRESENTATION_ONLY",
+    "physical_device_evidence": "NOT_VERIFIED"
+  },
+  "scope": {
+    "production_files_modified": false,
+    "canonical_state_modified": false,
+    "camera_authority_created": false,
+    "navigation_authority_created": false,
+    "network_dependency_added": false,
+    "shared_package_or_runner_modified_by_lane": false
+  },
+  "evidence_debt": [
+    "Physical-device audio evidence is external and remains NOT_VERIFIED.",
+    "Real assistive-technology evidence remains external to this lane.",
+    "Shared root-test and Spatial-runner registration remains control-owned."
+  ],
+  "branch": "work/post-m0/product-audio-2026-09-20",
+  "pr": 339,
+  "disposition": "READY_FOR_CONTROL_CONVERGENCE"
+}
