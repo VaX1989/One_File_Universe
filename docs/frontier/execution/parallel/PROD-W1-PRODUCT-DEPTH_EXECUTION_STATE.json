@@ -1,0 +1,107 @@
+{
+  "prompt_id": "PROD-W1-PRODUCT-DEPTH",
+  "master_schema_version": 4,
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "status": "REQUIRES_FRESH_EXECUTABLE_EVIDENCE",
+  "terminal_state": "NOT_TERMINAL",
+  "hypothesis": "Founder-visible depth can improve materially by making already-governed HUMAN place, atmosphere and causal presentation signals perceptible, while preserving stable world-space scale, scientific authority, single-scene/camera ownership, bounded resources and direct-file/offline behavior.",
+  "failure_fingerprint": null,
+  "failure_count": 0,
+  "alternate_strategy": "If governed depth cues cause scale ambiguity, resource growth, visual regressions or browser instability, revert the specific presentation mapping and retain only evidence-oracle/mobile fixes; do not widen scientific authority or add unbounded geometry.",
+  "last_action": "Created a PRESENTATION_ONLY product-depth profile; applied reversible HUMAN aerial perspective to existing far-field/materials; stabilized progressive macro evidence; added portrait label readability and multi-world non-palette depth assertions.",
+  "next_action": "Open Draft PR and obtain fresh exact-head Foundation, Spatial Continuum/browser, multi-world, mobile, visual, resource and cumulative regression evidence. Repair forward only from concrete failure fingerprints.",
+  "dependencies": {
+    "M0_HISTORICAL": {
+      "status": "PASS",
+      "sha": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+      "tree": "3704247247940fa8c5f08291cd80ec9e24e7d49d"
+    },
+    "G_PRODUCT_CONTRACTS": {
+      "status": "PASS"
+    },
+    "PRODUCT_FOUNDATION_CONTROL": {
+      "status": "PASS_10_OF_10",
+      "sha": "d26b65bffa3841126fcb37b1a2e442684c10edf5",
+      "tree": "5902bc58350f458dc5c2c9c9462073082d1385fd",
+      "spatial_run": 35493090200,
+      "foundation_run": 35493090242
+    },
+    "PROD_W1_SCI_FP": {
+      "status": "MERGED_AND_CENTRALLY_REGISTERED",
+      "merge_commit": "454c55a49f73254d0370bbdfb01d778998235326"
+    },
+    "PROD_W1_ATLAS_CORE": {
+      "status": "MERGED_AND_CENTRALLY_REGISTERED",
+      "merge_commit": "36b5cc5d038f23bb7498e3a341f8d368f9fdd039"
+    },
+    "MASTER_V4": {
+      "status": "PASS",
+      "sha": "c2cab6d6e914b918432432fdc69825e0a1000509"
+    }
+  },
+  "branch": "work/post-m0/prod-w1-product-depth-2026-09-20",
+  "pr": "PENDING",
+  "base_sha": "d26b65bffa3841126fcb37b1a2e442684c10edf5",
+  "base_tree": "5902bc58350f458dc5c2c9c9462073082d1385fd",
+  "ownership": {
+    "semantic_surface": "PRODUCT_RENDERER_COMPOSITION / HUMAN_PLACE_PRESENTATION",
+    "mode": "WRITE_PRODUCT",
+    "writer_slots": 1,
+    "stacked_only": true,
+    "competing_renderer_writer": false,
+    "canonical_science_modified": false,
+    "p2_p4_modified": false,
+    "selection_camera_authority_modified": false
+  },
+  "changed_paths": [
+    "src/experiments/spatial-continuum/product-depth-profile.js",
+    "src/experiments/spatial-continuum/human-renderer-convergence.js",
+    "src/experiments/spatial-continuum/experience.css",
+    "tests/spatial-continuum/r6-w0-human-sense-of-place.mjs",
+    "tests/spatial-continuum/r6-w0-phase2-product-path.mjs",
+    "tests/spatial-continuum/open-visual-evidence.mjs",
+    "tests/spatial-continuum/open-accessibility-mobile.mjs",
+    "tests/spatial-continuum/r6-w0-human-browser.mjs",
+    "tests/spatial-continuum/open-generalization.mjs",
+    "docs/product/product-depth/README.md",
+    "docs/frontier/execution/parallel/PROD-W1-PRODUCT-DEPTH_EXECUTION_STATE.json"
+  ],
+  "intended_evidence": [
+    "r6-w0-human-sense-of-place deterministic multidimensional profile",
+    "r6-w0-human-browser reversible depth and stable physical scale",
+    "open-generalization >=3 real materialized worlds with non-palette QOBS depth differential",
+    "open-visual-evidence committed macro residency screenshots",
+    "open-accessibility-mobile portrait non-ellipsis label contract",
+    "performance/resource and full browser matrix via Spatial Continuum workflow",
+    "repository cumulative workflows"
+  ],
+  "authority_boundaries": {
+    "output_authority": "PRESENTATION_ONLY",
+    "scientific_claims_added": false,
+    "actual_weather_invented": false,
+    "calibrated_atmosphere_spectrum_invented": false,
+    "ocean_geometry_invented": false,
+    "exact_mineralogy_invented": false,
+    "landform_placement_invented": false,
+    "surface_exposure_age_invented": false,
+    "physical_object_scale_mutated": false
+  },
+  "resource_boundary": {
+    "new_scenes": 0,
+    "new_cameras": 0,
+    "new_meshes": 0,
+    "new_textures": 0,
+    "new_workers": 0,
+    "new_caches": 0,
+    "existing_far_field_vertex_budget": 256,
+    "bounded": true
+  },
+  "evidence_debt": [
+    "No PASS is claimed until exact-head CI executes the modified suites.",
+    "Physical GPU/device evidence remains release-grade debt and is not promoted by this lane.",
+    "G0A remains a separate independent industrialization audit boundary."
+  ],
+  "tests_run": [],
+  "completion_sha": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD",
+  "completion_tree": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD_TREE"
+}
