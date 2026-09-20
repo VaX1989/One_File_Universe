@@ -24,7 +24,7 @@
   "global_rules": {
     "one_writer_per_semantic_surface": true,
     "semantic_ownership_stronger_than_file_ownership": true,
-    "writer_base": "EXACT_DRAFT_PRODUCT_CONTROL_PR_HEAD_AFTER_ACTIVATION",
+    "writer_base": "EXACT_PR312_HEAD_AFTER_ALL_FOLLOW_ON_CONTROL_RECORD_MUTATIONS_EXTERNALLY_BOUND_BY_PR_COMMENT",
     "writer_pr_base": "control/post-m0-product-next-2026-09-20",
     "writer_pr_mode": "DRAFT_ONLY",
     "lane_branch_pattern": "work/post-m0/<lowercase-prompt-id>-ofu-post-m0-product-next-2026-09-20-296565bb",
@@ -54,7 +54,7 @@
     {
       "prompt_id": "PRODUCT-MACRO",
       "mode": "WRITE_PRODUCT",
-      "status": "READY_WRITER_ACTIVE_EXCLUSIVE_SHARED_RENDERER_OWNER",
+      "status": "ACTIVE_IN_PROGRESS_EXCLUSIVE_SHARED_RENDERER_OWNER",
       "dependencies": [
         "G-PROD-CONTRACTS"
       ],
@@ -99,12 +99,15 @@
         "package.json",
         ".github/workflows/**",
         "central test runner"
-      ]
+      ],
+      "pr": 313,
+      "head_sha": "79d4fee113ff6e556cbf19c179b6945cbefd7274",
+      "failure_fingerprint": "PRODUCT_MACRO_REVERSAL_HARNESS_COMMITTED_STATE_TIMING_RACE"
     },
     {
       "prompt_id": "PROD-W1-SCI-WHY",
       "mode": "WRITE_PRODUCT",
-      "status": "READY_WRITER",
+      "status": "CONVERGED_ACCEPTED_NO_ACTIVE_WRITER_SLOT",
       "dependencies": [
         "PROD-W1-SCI-FP"
       ],
@@ -142,12 +145,13 @@
         "canonical P2/P4",
         "canonical scientific truth",
         "free-form prose as state authority"
-      ]
+      ],
+      "writer_slot_active": false
     },
     {
       "prompt_id": "PROD-W2-SEARCH",
       "mode": "WRITE_PRODUCT",
-      "status": "READY_WRITER",
+      "status": "CONVERGED_ACCEPTED_NO_ACTIVE_WRITER_SLOT",
       "dependencies": [
         "PROD-W1-SCI-FP",
         "PROD-W1-ATLAS-CORE"
@@ -183,12 +187,13 @@
         "camera/picking",
         "canonical P2/P4",
         "package/workflow/central test runner"
-      ]
+      ],
+      "writer_slot_active": false
     },
     {
       "prompt_id": "PROD-W2-TIME",
       "mode": "WRITE_PRODUCT",
-      "status": "READY_WRITER",
+      "status": "CONVERGED_ACCEPTED_NO_ACTIVE_WRITER_SLOT",
       "dependencies": [
         "PROD-W1-ATLAS-CORE"
       ],
@@ -228,7 +233,77 @@
         "shared renderer/composition",
         "camera/picking",
         "package/workflow/central test runner"
-      ]
+      ],
+      "writer_slot_active": false
+    },
+    {
+      "prompt_id": "PROD-W1-INSTRUMENTS",
+      "mode": "WRITE_PRODUCT",
+      "status": "READY_WRITER_AUTHORIZED",
+      "writer_slot_active": true,
+      "dependencies": [
+        "PROD-W1-SCI-WHY"
+      ],
+      "semantic_surface": "SCIENTIFIC_INSTRUMENT_MEASUREMENT_PROJECTION",
+      "write_authority": [
+        "additive src/product/w1/instruments/**",
+        "additive tests/product/prod-w1-instruments*.mjs",
+        "additive docs/product/instruments/**",
+        "lane execution-state and terminal-handoff artifacts"
+      ],
+      "read_only_dependencies": [
+        "src/product/w1/scientific-fingerprint.js",
+        "src/product/w1/scientific-why.js",
+        "governed scientific/authority state"
+      ],
+      "forbidden_without_control_patch": [
+        "shared renderer/composition",
+        "camera/picking",
+        "canonical P2/P4",
+        "canonical scientific authority or truth promotion",
+        "package.json",
+        ".github/workflows/**",
+        "central test runner/registration"
+      ],
+      "branch": "work/post-m0/prod-w1-instruments-ofu-post-m0-product-next-2026-09-20-296565bb",
+      "pr_base": "control/post-m0-product-next-2026-09-20",
+      "child_base": "EXACT_PR312_HEAD_AFTER_ALL_FOLLOW_ON_CONTROL_RECORD_MUTATIONS_EXTERNALLY_BOUND_BY_PR_COMMENT"
+    },
+    {
+      "prompt_id": "PROD-W2-COMPARE",
+      "mode": "WRITE_PRODUCT",
+      "status": "READY_WRITER_AUTHORIZED",
+      "writer_slot_active": true,
+      "dependencies": [
+        "PROD-W1-ATLAS-CORE",
+        "PROD-W1-SCI-WHY"
+      ],
+      "semantic_surface": "SYNCHRONIZED_EVIDENCE_TYPED_CAUSAL_DIVERGENCE",
+      "write_authority": [
+        "additive src/product/exploration/compare/**",
+        "additive tests/product/prod-w2-compare*.mjs",
+        "additive docs/product/compare/**",
+        "lane execution-state and terminal-handoff artifacts"
+      ],
+      "read_only_dependencies": [
+        "src/product/w1/atlas-core.js",
+        "src/product/w1/scientific-why.js",
+        "governed product projections as evidence inputs"
+      ],
+      "forbidden_without_control_patch": [
+        "shared renderer/composition",
+        "shared camera/path coordination",
+        "camera/picking",
+        "canonical world mutation",
+        "canonical P2/P4",
+        "canonical scientific authority or truth promotion",
+        "package.json",
+        ".github/workflows/**",
+        "central test runner/registration"
+      ],
+      "branch": "work/post-m0/prod-w2-compare-ofu-post-m0-product-next-2026-09-20-296565bb",
+      "pr_base": "control/post-m0-product-next-2026-09-20",
+      "child_base": "EXACT_PR312_HEAD_AFTER_ALL_FOLLOW_ON_CONTROL_RECORD_MUTATIONS_EXTERNALLY_BOUND_BY_PR_COMMENT"
     }
   ],
   "deferred_writers": [
@@ -269,6 +344,22 @@
       "invariants",
       "tests"
     ],
-    "applier": "CTRL-WAVE-EPOCH/CTRL-CONVERGENCE"
-  }
+    "applier": "CTRL-WAVE-EPOCH/CTRL-CONVERGENCE",
+    "central_control_owned_targets": [
+      "package.json",
+      ".github/workflows/**",
+      "central test runner/registration",
+      "shared renderer/composition",
+      "camera/picking",
+      "canonical P2/P4",
+      "canonical scientific authority"
+    ],
+    "protocol": "Lane emits a lane-local INTEGRATION_PATCH_REQUEST instead of editing a protected/shared target. Control applies any accepted patch only after ownership and cumulative evidence review."
+  },
+  "follow_on_grant_record": "docs/industrialization/control/PRODUCT_NEXT_FOLLOW_ON_OWNERSHIP_GRANT_2026-09-20.json",
+  "authorized_parallel_writers": [
+    "PRODUCT-MACRO",
+    "PROD-W1-INSTRUMENTS",
+    "PROD-W2-COMPARE"
+  ]
 }
