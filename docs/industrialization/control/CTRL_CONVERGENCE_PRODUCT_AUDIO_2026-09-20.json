@@ -1,0 +1,33 @@
+{
+  "schema": "ofu.post-m0.ctrl-convergence.product-audio.v1",
+  "prompt_id": "CTRL-CONVERGENCE",
+  "mission_date": "2026-09-20",
+  "control_pr": 290,
+  "pre_registration_control_head": "d1be8b9c8ba5ecca43352640036cf8ccfe576296",
+  "source_lane": {
+    "prompt_id": "PRODUCT-AUDIO",
+    "pr": 339,
+    "merge_commit": "d1be8b9c8ba5ecca43352640036cf8ccfe576296",
+    "terminal_state": "READY_FOR_CONTROL_CONVERGENCE"
+  },
+  "verification": {
+    "verification_pr": 340,
+    "closed_without_merge": true,
+    "head": "3d35dae666cf8c258003e747176e353e77b746e4",
+    "foundation_run": 35525866258,
+    "spatial_run": 35525866294,
+    "focused_result": "PASS",
+    "browser_result": "PASS",
+    "focused_blob": "f39a6ff828d537d00006545ef5066656226ac4e8",
+    "browser_blob": "f6c41ee3a9a50409c9dc99256fc4f8cc49100638"
+  },
+  "control_integration": {
+    "package_json": "APPEND_PRODUCT_AUDIO_FOCUSED_TEST_WITHOUT_REMOVAL",
+    "spatial_runner": "APPEND_PRODUCT_AUDIO_BROWSER_SUITE_WITHOUT_REMOVAL",
+    "production_semantics_changed_by_control": false,
+    "camera_transition_picking_changed": false,
+    "canonical_scientific_authority_changed": false
+  },
+  "required_post_condition": "FRESH_CUMULATIVE_CI_AND_SPATIAL_CONTINUUM_PASS_ON_THIS_CONTROL_INTEGRATION",
+  "disposition": "READY_FOR_CONTROL_EXACT_HEAD_VERIFICATION"
+}
