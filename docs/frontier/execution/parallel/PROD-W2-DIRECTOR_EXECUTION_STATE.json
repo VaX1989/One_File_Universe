@@ -1,0 +1,34 @@
+{
+  "prompt_id": "PROD-W2-DIRECTOR",
+  "master_schema_version": 4,
+  "mode": "WRITE_PRODUCT",
+  "mission_date": "2026-09-20",
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "branch": "work/post-m0/prod-w2-director-2026-09-20",
+  "base_sha": "f91eb3241064a8c6b1a9618a4a779ffe28aeb735",
+  "dependencies": {
+    "PROD-W1-ATLAS-CORE": "COMPLETE",
+    "PROD-W1-PRODUCT-DEPTH": "COMPLETE",
+    "PRODUCT-VISUAL-CONTINUITY": "COMPLETE",
+    "PRODUCT-HUMAN": "COMPLETE"
+  },
+  "hypothesis": "A thin bounded presentation orchestrator can compile Atlas routes into deterministic journey descriptors and delegate all actual travel/restoration to the existing navigation authority without creating a second camera or timeline authority.",
+  "failure_fingerprint": null,
+  "failure_count": 0,
+  "alternate_strategy": "If direct browser orchestration exposes missing bookmark/settle capability, retain descriptor compiler and narrow the runtime adapter to the minimum existing reversible navigation surface; do not create replacement camera or history authority.",
+  "last_action": "Implemented governed Director core plus focused and real Continuum browser falsification oracles.",
+  "next_action": "Run verification-only shared registration and exact-head cumulative CI including Spatial Continuum.",
+  "evidence_debt": [
+    "verification overlay CI",
+    "post-merge control exact-head CI",
+    "physical device/GPU remains external"
+  ],
+  "ownership": "DIRECTOR_PRESENTATION_ORCHESTRATION",
+  "source_prompt_refs": [
+    "PR287_V3_MASTER:PROD-W2-DIRECTOR",
+    "PR275_PRODUCT_DAG:R6-W2-DIRECTOR"
+  ],
+  "completion_sha": null,
+  "completion_tree": null,
+  "terminal_state": "IN_PROGRESS_VERIFICATION_PENDING"
+}
