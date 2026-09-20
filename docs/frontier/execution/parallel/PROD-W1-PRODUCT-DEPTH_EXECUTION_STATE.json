@@ -2,14 +2,14 @@
   "prompt_id": "PROD-W1-PRODUCT-DEPTH",
   "master_schema_version": 4,
   "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
-  "status": "REQUIRES_FRESH_EXECUTABLE_EVIDENCE",
+  "status": "REPAIRING_FALSIFIED_PRODUCT_VISUAL_GAPS",
   "terminal_state": "NOT_TERMINAL",
   "hypothesis": "Founder-visible depth can improve materially by making already-governed HUMAN place, atmosphere and causal presentation signals perceptible, while preserving stable world-space scale, scientific authority, single-scene/camera ownership, bounded resources and direct-file/offline behavior.",
-  "failure_fingerprint": null,
-  "failure_count": 0,
+  "failure_fingerprint": "PROD_DEPTH_VISUAL_EVIDENCE_GAPS",
+  "failure_count": 2,
   "alternate_strategy": "If governed depth cues cause scale ambiguity, resource growth, visual regressions or browser instability, revert the specific presentation mapping and retain only evidence-oracle/mobile fixes; do not widen scientific authority or add unbounded geometry.",
-  "last_action": "Created a PRESENTATION_ONLY product-depth profile; applied reversible HUMAN aerial perspective to existing far-field/materials; stabilized progressive macro evidence; added portrait label readability and multi-world non-palette depth assertions.",
-  "next_action": "Open Draft PR and obtain fresh exact-head Foundation, Spatial Continuum/browser, multi-world, mobile, visual, resource and cumulative regression evidence. Repair forward only from concrete failure fingerprints.",
+  "last_action": "Exact-head PR #311 CI at f068f5e5b3948321a942dcf9650e7794ae85f68b passed all 10 repository workflows, but direct artifact inspection falsified terminal readiness: representative HUMAN captures could remain too dark/empty and 390 px portrait composition visibly overlapped/crowded despite overflow assertions. Repaired forward with the same bounded HUMAN far-field, portrait composition geometry checks, canonical live-world QOBS scoring, and exact product-depth replay.",
+  "next_action": "Run fresh exact-head cumulative CI and Spatial Continuum convergence on the repaired head, inspect the new HUMAN and phone-portrait artifacts directly, and repair only any new concrete failure fingerprint before terminalization.",
   "dependencies": {
     "M0_HISTORICAL": {
       "status": "PASS",
@@ -40,7 +40,7 @@
     }
   },
   "branch": "work/post-m0/prod-w1-product-depth-2026-09-20",
-  "pr": "PENDING",
+  "pr": 311,
   "base_sha": "d26b65bffa3841126fcb37b1a2e442684c10edf5",
   "base_tree": "5902bc58350f458dc5c2c9c9462073082d1385fd",
   "ownership": {
@@ -57,6 +57,7 @@
     "src/experiments/spatial-continuum/product-depth-profile.js",
     "src/experiments/spatial-continuum/human-renderer-convergence.js",
     "src/experiments/spatial-continuum/experience.css",
+    "src/experiments/spatial-continuum/phase2-experience.css",
     "tests/spatial-continuum/r6-w0-human-sense-of-place.mjs",
     "tests/spatial-continuum/r6-w0-phase2-product-path.mjs",
     "tests/spatial-continuum/open-visual-evidence.mjs",
@@ -68,10 +69,10 @@
   ],
   "intended_evidence": [
     "r6-w0-human-sense-of-place deterministic multidimensional profile",
-    "r6-w0-human-browser reversible depth and stable physical scale",
-    "open-generalization >=3 real materialized worlds with non-palette QOBS depth differential",
-    "open-visual-evidence committed macro residency screenshots",
-    "open-accessibility-mobile portrait non-ellipsis label contract",
+    "r6-w0-human-browser reversible depth, bounded physical near/mid/far composition and stable world/object scale",
+    "open-generalization >=3 real materialized worlds with canonical QOBS live-world diversity scoring and exact depth-descriptor replay after eviction/rematerialization",
+    "open-visual-evidence committed macro residency screenshots inspected for founder-visible HUMAN depth",
+    "open-accessibility-mobile portrait label readability plus geometric non-overlap of orientation/topbar/command controls",
     "performance/resource and full browser matrix via Spatial Continuum workflow",
     "repository cumulative workflows"
   ],
@@ -97,11 +98,42 @@
     "bounded": true
   },
   "evidence_debt": [
-    "No PASS is claimed until exact-head CI executes the modified suites.",
+    "PR #311 exact-head f068f5e5b3948321a942dcf9650e7794ae85f68b passed cumulative CI 10/10, but direct visual inspection falsified terminal product readiness and is therefore superseded as terminal evidence by this forward repair.",
+    "The repaired visual/QOBS/mobile/replay subject still requires fresh exact-head CI and direct artifact inspection before PASS may be claimed.",
     "Physical GPU/device evidence remains release-grade debt and is not promoted by this lane.",
-    "G0A remains a separate independent industrialization audit boundary."
+    "G0A remains NOT_PASS_INDEPENDENT_REAUDIT_REQUIRED and is a separate industrialization boundary."
   ],
-  "tests_run": [],
-  "completion_sha": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD",
-  "completion_tree": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD_TREE"
+  "tests_run": [
+    {
+      "subject_sha": "f068f5e5b3948321a942dcf9650e7794ae85f68b",
+      "workflow": "Repository cumulative generated workflows",
+      "result": "PASS_10_OF_10"
+    },
+    {
+      "subject_sha": "f068f5e5b3948321a942dcf9650e7794ae85f68b",
+      "workflow": "Spatial Continuum Experiment",
+      "run_id": 35493771534,
+      "result": "PASS"
+    },
+    {
+      "subject_sha": "f068f5e5b3948321a942dcf9650e7794ae85f68b",
+      "suite": "spatial-continuum-r6-w0-quality-observatory",
+      "result": "PASS_FIXTURE_AND_FALSIFICATION_ORACLE"
+    },
+    {
+      "subject_sha": "f068f5e5b3948321a942dcf9650e7794ae85f68b",
+      "evidence": "direct workflow artifact inspection",
+      "result": "FALSIFIED_TERMINAL_VISUAL_READINESS",
+      "failure_fingerprints": [
+        "PROD_DEPTH_HUMAN_FAR_FIELD_VISIBILITY_GAP",
+        "PROD_DEPTH_PORTRAIT_LAYOUT_OVERLAP"
+      ]
+    }
+  ],
+  "completion_sha": "PENDING_REPAIRED_EXACT_HEAD_EVIDENCE",
+  "completion_tree": "PENDING_REPAIRED_EXACT_HEAD_EVIDENCE",
+  "failure_fingerprints": [
+    "PROD_DEPTH_HUMAN_FAR_FIELD_VISIBILITY_GAP",
+    "PROD_DEPTH_PORTRAIT_LAYOUT_OVERLAP"
+  ]
 }
