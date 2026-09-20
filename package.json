@@ -34,7 +34,8 @@
     "test:continuum:visual": "node tests/spatial-continuum/open-visual-evidence.mjs",
     "test:continuum:matrix": "node tests/spatial-continuum/matrix.mjs",
     "test:continuum:performance": "node tests/spatial-continuum/performance.mjs",
-    "evidence:continuum": "node tools/assemble-spatial-continuum-evidence.mjs"
+    "evidence:continuum": "node tools/assemble-spatial-continuum-evidence.mjs",
+    "test:product:follow-on": "node tests/product/prod-w1-instruments.mjs && node tests/product/prod-w2-compare.mjs"
   },
   "dependencies": {
     "@babylonjs/core": "9.26.0"
@@ -47,4 +48,3 @@
     "node": "24.20.x"
   }
 }
-
