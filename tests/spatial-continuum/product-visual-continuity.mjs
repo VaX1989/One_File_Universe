@@ -140,7 +140,7 @@ try{
     one_camera:true,
     renderer_owned_picking:true,
     world_identity:worldIdentity,
-    surface_identity:surfaceIdentity,
+    surface_identity:{coarse:coarseSurfaceIdentity,refined:refinedSurfaceIdentity},
     source_sample_identity:sourceSampleIdentity,
     offline_direct_file:true,
     authority:'PRESENTATION_ONLY',
