@@ -173,7 +173,10 @@ export function createGovernedTimeExplorer({atlas,domains,limits:limitInput={}}=
   function cancelActive(){generation++;return generation}
   function clearMaterializedReferences(){cache.clear()}
   function saveAtlasSnapshot({reference,label=null}={}){
-    const ref=normalizeReference(reference),d=domain(ref.domainId);assertModelBinding(ref,d);const saved=createSavedObservation({kind:W1_OBSERVATION_KIND.SNAPSHOT,subject:ref.subject,temporalRef:ref.p4StateRef,scientificFingerprintRef:ref.productContext.scientificFingerprintRef,returnRef:ref.productContext.returnRef,label});const entry=atlas.saveObservation(saved);return Object.freeze({entry,temporalReference:ref,serializedTemporalReference:serializeReference(ref)});
+    const ref=normalizeReference(reference),d=domain(ref.domainId);assertModelBinding(ref,d);
+    const saved=createSavedObservation({kind:W1_OBSERVATION_KIND.SNAPSHOT,subject:ref.subject,temporalRef:ref.p4StateRef,scientificFingerprintRef:ref.productContext.scientificFingerprintRef,returnRef:ref.productContext.returnRef,label}),entry=atlas.saveObservation(saved);
+    const temporalReference=buildReference({domain:d,subject:entry.observation.subject,p4StateRef:entry.observation.temporalRef,productContext:{atlasEntryId:entry.id,atlasKind:entry.observation.kind,returnRef:entry.observation.returnRef,scientificFingerprintRef:entry.observation.scientificFingerprintRef}});
+    return Object.freeze({entry,temporalReference,serializedTemporalReference:serializeReference(temporalReference)});
   }
   function snapshot(){return Object.freeze({version:TIME_EXPLORER_VERSION,authority:TIME_REFERENCE_AUTHORITY,timeAuthority:TIME_P4_AUTHORITY,domainCount:domainMap.size,materializedReferenceCount:cache.size,limits,generation})}
   return Object.freeze({version:TIME_EXPLORER_VERSION,authority:TIME_REFERENCE_AUTHORITY,timeAuthority:TIME_P4_AUTHORITY,limits,referenceFromAtlas,serializeReference,parseReference,planTo,planStep,planEpoch,playbackProjection,productProjection,materialize,cancelActive,clearMaterializedReferences,saveAtlasSnapshot,snapshot});
