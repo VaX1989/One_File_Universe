@@ -1,0 +1,66 @@
+{
+  "schema": "ofu.post-m0.wave0.g0b-pass-adjudication.v1",
+  "authority": "CTRL_WAVE0_CONTROL_ADJUDICATION_NO_TECHNICAL_OR_SCIENTIFIC_AUTHORITY_PROMOTION",
+  "prompt_id": "CTRL-WAVE0",
+  "source_audit_prompt_id": "GATE-G0B-AUDIT",
+  "date": "2026-09-20",
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "controller_reauthentication": {
+    "control_pr": 290,
+    "control_branch": "integration/post-m0-dual-track-wave0-2026-09-17",
+    "pre_registration_live_head_sha": "926b8b861300c2202243874e8de843936fb4d104",
+    "handoff_reported_live_tree": "a27f92ec7ea0fc126112a74ae9a67345de5efd11",
+    "pre_registration_ci": "PASS_10_OF_10",
+    "pre_registration_spatial_run": 35522342804,
+    "planning_master_v4": "c2cab6d6e914b918432432fdc69825e0a1000509"
+  },
+  "independent_audit": {
+    "prompt_id": "GATE-G0B-AUDIT",
+    "terminal_state": "COMPLETE_GATE_MET",
+    "audit_subject_sha": "83e98f5332e4e828fae87d4a4672c9c81cac17a4",
+    "audit_subject_tree": "fe52618d62ff02d763158689ce6f37f9ac324b68",
+    "audit_handoff": "docs/industrialization/handoffs/GATE-G0B-AUDIT_2026-09-20.json",
+    "independence": "SUCCESSOR_SESSION_DID_NOT_AUTHOR_AUDITED_IMPLEMENTATION",
+    "result": "PASS"
+  },
+  "gate_state": {
+    "G0A_MINIMUM_NORMATIVE_SLICE": "PASS_PRESERVED",
+    "G0B_EXTERNAL_CONSUMER_SEAM_PROOF": "PASS",
+    "IND_NATIVE_P2": "AUTHORIZED_AFTER_THIS_CONTROL_REGISTRATION",
+    "IND_CABI_MICROHOST": "BLOCKED_BEHIND_IND_NATIVE_P2",
+    "G1_MINIMUM_PLATFORM_PROOF": "NOT_REACHED",
+    "G1_PASS_CONTINUE": "NOT_REACHED",
+    "IND_RUNTIME": "BLOCKED_BEHIND_EXPLICIT_G1_PASS"
+  },
+  "authority_boundaries": [
+    "G0B certifies only the independent external JS/headless consumer seam proof.",
+    "No native, C ABI, Runtime, persistence, provider, scientific or product authority is promoted by this gate.",
+    "Canonical P2/P4 remain authoritative upstream implementations; the seam is a narrow projection.",
+    "Checkpoint/archive trust and durable persistence remain downstream debt."
+  ],
+  "authorization": {
+    "IND-NATIVE-P2": {
+      "status": "AUTHORIZED_TO_START_AFTER_THIS_CONTROL_REGISTRATION",
+      "semantic_surface": "NATIVE_P2_EXPERIMENT",
+      "scope": "SMALLEST_FROZEN_P2_CORE_NATIVE_PARITY_SLICE"
+    }
+  },
+  "residual_debt": [
+    "IND-NATIVE-P2 exact cross-language parity proof",
+    "IND-CABI-MICROHOST stable minimal boundary",
+    "independent GATE-G1-AUDIT after native/C ABI authorship",
+    "manual G1_PASS_CONTINUE if G1 passes",
+    "checkpoint/archive provenance and persistence durability",
+    "licensing/distribution manual gates",
+    "physical-device evidence"
+  ],
+  "forbidden_actions_preserved": {
+    "main_mutated": false,
+    "pr290_merged": false,
+    "r7_created": false,
+    "tags_created": false,
+    "releases_created": false,
+    "force_push": false
+  },
+  "disposition": "COMPLETE_GATE_MET_G0B_PASS_IND_NATIVE_P2_AUTHORIZED"
+}

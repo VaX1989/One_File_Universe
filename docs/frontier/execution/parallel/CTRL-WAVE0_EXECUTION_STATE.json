@@ -5,9 +5,9 @@
   "hypothesis": "Control can preserve the exact Wave-0 gate sequence while integrating only evidence-complete owner repairs and refusing self-certification at independent audit boundaries.",
   "failure_fingerprint": null,
   "failure_count": 0,
-  "alternate_strategy": "If the new independent G0A re-audit fails, issue only the exact forward repair to the canonical semantic owner; do not weaken G0A, bypass G0B/G1, or broaden CTRL-WAVE0 into child implementation.",
-  "last_action": "Accepted the independent terminal GATE-G0A-AUDIT PASS for exact subject 296565bb2a6842159a994a45094ddc1d27d4fd1d / tree 6b266ec7b4c2f003e029658fcfe2a735291ecd47. Controller reauthenticated PR #290/head and confirmed no dedicated IND-JS-HEADLESS or IND-SEC-B writer branch existed before authorization.",
-  "next_action": "Launch IND-JS-HEADLESS and IND-SEC-B as separate writer lanes from the exact externally-bound post-G0A control PR head. Keep IND-EXT-CONSUMER blocked until IND-JS-HEADLESS converges; keep G0B, native, C ABI and runtime gates unpromoted.",
+  "alternate_strategy": "If IND-NATIVE-P2 falsifies byte/digest/rejection parity or requires semantic reinterpretation, keep G0B PASS intact, terminate the native lane with the exact failure fingerprint, and do not broaden the frozen P2 authority.",
+  "last_action": "Accepted the independent GATE-G0B-AUDIT PASS on exact semantic subject 83e98f5332e4e828fae87d4a4672c9c81cac17a4 / tree fe52618d62ff02d763158689ce6f37f9ac324b68 after verifying the native npm-pack clean-room proof executed in Foundation run 35516209089 and remained unchanged in the unified control head.",
+  "next_action": "Run IND-NATIVE-P2 from the exact post-G0B control head after this control-only registration converges. Keep IND-CABI-MICROHOST blocked until Native P2 terminalizes and preserve G1 independence.",
   "dependencies": {
     "M0_HISTORICAL": {
       "status": "PASS",
@@ -26,16 +26,24 @@
       "repair_semantic_ancestor": "e8965171944b9d5c604b19b745dacb79156816f4",
       "corpus_revision": 2,
       "corpus_digest": "d92b43afb8a7deeaed4b0c3ee13b73bad344b196132c35433b66360c0b0772fc"
+    },
+    "G0B_EXTERNAL_CONSUMER_SEAM_PROOF": {
+      "status": "PASS",
+      "audit_prompt_id": "GATE-G0B-AUDIT",
+      "audit_subject_sha": "83e98f5332e4e828fae87d4a4672c9c81cac17a4",
+      "audit_subject_tree": "fe52618d62ff02d763158689ce6f37f9ac324b68",
+      "foundation_run": 35516209089
     }
   },
   "evidence_debt": [
-    "G0B external consumer seam proof is not yet PASS and requires IND-JS-HEADLESS, IND-EXT-CONSUMER, IND-CONF-A and independent GATE-G0B-AUDIT.",
-    "Checkpoint/archive provenance, authentication and durable persistence remain outside G0A and unresolved downstream debt.",
-    "Native P2, C ABI microhost, Runtime, provider/durability, licensing/distribution and physical-device release evidence remain downstream."
+    "IND-NATIVE-P2 and IND-CABI-MICROHOST remain downstream implementation work.",
+    "After this controller authors native/C ABI work, GATE-G1-AUDIT must be performed independently.",
+    "G1_PASS_CONTINUE remains an explicit manual outcome even after any G1 PASS.",
+    "Checkpoint/archive provenance, durable persistence, licensing/distribution and physical-device evidence remain downstream."
   ],
   "branch": "integration/post-m0-dual-track-wave0-2026-09-17",
   "pr": "EXTERNALLY_BOUND_BY_DRAFT_CONTROL_PR",
-  "completion_sha": "EXTERNALLY_BOUND_BY_DRAFT_CONTROL_PR_HEAD_AFTER_G0A_PASS",
-  "completion_tree": "EXTERNALLY_BOUND_BY_DRAFT_CONTROL_PR_HEAD_TREE_AFTER_G0A_PASS",
-  "disposition": "G0A_PASS_SUCCESSOR_WRITERS_AUTHORIZED"
+  "completion_sha": "EXTERNALLY_BOUND_BY_POST_G0B_CONTROL_PR_HEAD",
+  "completion_tree": "EXTERNALLY_BOUND_BY_POST_G0B_CONTROL_PR_HEAD_TREE",
+  "disposition": "G0B_PASS_IND_NATIVE_P2_AUTHORIZED"
 }
