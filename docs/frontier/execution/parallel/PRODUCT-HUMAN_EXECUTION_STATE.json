@@ -3,13 +3,13 @@
   "prompt_id": "PRODUCT-HUMAN",
   "mode": "WRITE_PRODUCT",
   "mission_date": "2026-09-20",
-  "status": "CERTIFICATION_IMPLEMENTED_VERIFICATION_PENDING",
+  "status": "READY_FOR_CONTROL_CONVERGENCE",
   "hypothesis": "The shipping HUMAN substrate already satisfies the canonical sense-of-place requirements and can be certified without production mutation.",
-  "failure_fingerprint": null,
-  "failure_count": 0,
+  "failure_fingerprint": "PRODUCT_HUMAN_FOUNDATION_PLAYWRIGHT_UNAVAILABLE_CLOSED_AS_ORACLE_ENVIRONMENT_DEFECT",
+  "failure_count": 1,
   "alternate_strategy": "If certification exposes a real defect, minimize the failing invariant. Renderer/transition production repair remains blocked until PRODUCT-VISUAL-CONTINUITY is terminal and a narrow ownership grant is issued.",
-  "last_action": "Created a lane-local certification oracle that composes the existing HUMAN sense-of-place, shipping-browser and open-generalization proofs without modifying production surfaces.",
-  "next_action": "Verify the certification oracle through a disposable package-registration overlay, then emit immutable terminal handoff and converge through control-owned regression registration.",
+  "last_action": "Verification PR #347 completed 10/10 PASS including Spatial on exact head f602f4964eb9bae01192359f57b5f494621f6a7c. The verified focused test blob 35aff529c989cda3d7751216757f65cc41570699 is byte-identical to the current lane. Added immutable terminal handoff and control-owned package registration request.",
+  "next_action": "Close verification PR #347 without merge, mark PR #346 ready, merge after current control checkpoint permits, append focused HUMAN regression through CTRL-CONVERGENCE, and require fresh exact-head cumulative CI including Spatial.",
   "dependencies": {
     "G-PROD-CONTRACTS": {
       "status": "PASS"
@@ -27,7 +27,7 @@
   ],
   "branch": "work/post-m0/product-human-certification-2026-09-20",
   "pr": null,
-  "completion_sha": null,
-  "completion_tree": null,
-  "disposition": "VERIFICATION_PENDING"
+  "completion_sha": "e17cbc75f24f408ff61867a9f487caf04f9ff5df",
+  "completion_tree": "EXTERNALLY_BOUND_BY_GIT_TREE_OF_COMPLETION_SHA",
+  "disposition": "READY_FOR_CONTROL_CONVERGENCE"
 }
