@@ -5,11 +5,11 @@
   "status": "IN_PROGRESS",
   "terminal_state": null,
   "hypothesis": "Perceived macro scale collapses because semantic stages reuse a largely uniform sphere/facet-plus-particle grammar. A bounded PRESENTATION_ONLY stage-aware composition can materially differentiate UNIVERSE, GALAXY, REGION, NEIGHBORHOOD and SYSTEM while preserving canonical identity, one scene/camera, renderer-owned picking, atomic progressive residency, cancellation and direct-file/offline behavior.",
-  "failure_fingerprint": "PRODUCT_MACRO_STAGE_GRAMMAR_COLLAPSE_GALAXY_REGION_SYSTEM",
-  "failure_count": 1,
+  "failure_fingerprint": "PRODUCT_MACRO_REVERSAL_HARNESS_COMMITTED_STATE_TIMING_RACE",
+  "failure_count": 2,
   "alternate_strategy": "If stage-aware geometry harms continuity, resource bounds or selection, retain existing entry meshes and restrict improvement to pooled depth-field composition plus deterministic presentation descriptors; never widen scientific authority or introduce a second scene/camera.",
-  "last_action": "Authenticated successor product control PR #312, proved sole PRODUCT-MACRO shared macro renderer/product-composition ownership, bound to exact activation SHA/tree, loaded v4 contracts and immutable PR286 source prompt, profiled current macro source/tests, and inspected prior exact-head visual evidence. Visual falsification confirms GALAXY/REGION near-parity and weak SYSTEM hierarchy before ORBIT.",
-  "next_action": "Implement bounded stage-aware macro presentation and evidence on this branch; preserve atomic last-complete-state residency and add executable macro diversity/continuity/reversal/cancellation/resource/offline witnesses.",
+  "last_action": "Exact-head 8ad4dbe3dd7cfe790abb77d81d42ab54c6c591b0 passed 9/10 repository workflows; Spatial Continuum development, clean-room, Chromium, Firefox and WebKit passed. Chromium convergence executed all 12 mandatory suites: 11 PASS and only phase2-macro FAIL. Multi-world macro QOBS, visual-sequence, mobile/accessibility and performance/resource all passed. The isolated failure is a test-harness timing race: the REGION pending witness performs settle() and then an extra renderer.update(), permitting more than the intended single progressive slice before asserting the last-complete GALAXY presentation.",
+  "next_action": "Repair the phase2-macro pending/reversal witness so chooseDestination + settle + snapshot execute in one browser turn with exactly one renderer slice; assert pending REGION work retains the committed GALAXY signature/profile, then rerun exact-head CI and inspect the convergence artifact before terminal handoff.",
   "dependencies": {
     "MASTER_V4": {
       "status": "PASS",
@@ -34,13 +34,13 @@
     }
   },
   "evidence_debt": [
-    "Exact-head deterministic/unit evidence not yet executed on the lane.",
-    "Chromium/Firefox/WebKit macro journeys not yet executed on the lane.",
-    "Temporal visual evidence, multi-world macro QOBS, reversal/interruption, long-run resources and mobile/portrait evidence not yet executed on the lane.",
-    "Physical GPU/device evidence remains separate release-grade debt unless available."
+    "Repair and re-run the isolated phase2-macro reversal harness on an exact head.",
+    "Re-inspect committed UNIVERSE/GALAXY/REGION/NEIGHBORHOOD/SYSTEM visual captures after the repaired exact-head convergence run.",
+    "Physical GPU/device evidence remains separate release-grade debt; current CI is headless/software-rendered.",
+    "G0A remains a separate industrialization gate and is not reclassified by this product lane."
   ],
   "branch": "work/post-m0/product-macro-2026-09-20",
-  "pr": null,
+  "pr": 313,
   "base_sha": "de06cc7f8e4b74e57aad583a8764ac756b06b9da",
   "base_tree": "92ea93742177879dcf7f3fd94560439d0149b43d",
   "ownership": {
