@@ -1,0 +1,87 @@
+{
+  "prompt_id": "IND-SEC-B",
+  "master_schema_version": 4,
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "final_status": "COMPLETE_GATE_MET",
+  "base_sha": "f183cd53bc008684531830a54aa0ed2cf8c018cc",
+  "base_tree": "6cd2c0f81310329458d2a68a4bf32952521a4f84",
+  "dependency_shas": {
+    "G0A_control_registration": "f183cd53bc008684531830a54aa0ed2cf8c018cc",
+    "G0A_audit_subject": "296565bb2a6842159a994a45094ddc1d27d4fd1d",
+    "G0A_repair_semantic_subject": "e8965171944b9d5c604b19b745dacb79156816f4",
+    "master_v4": "c2cab6d6e914b918432432fdc69825e0a1000509"
+  },
+  "final_sha": "EXTERNALLY_BOUND_BY_DRAFT_PR_HEAD",
+  "final_tree": "EXTERNALLY_BOUND_BY_DRAFT_PR_HEAD_TREE",
+  "branch": "work/post-m0/ind-sec-b-ofu-post-m0-dual-track-wave0-2026-09-18-61f43071",
+  "pr": 320,
+  "changed_paths": [
+    "security/iw0/ind-sec-b/hostile-input-corpus-v1.json",
+    "tests/industrialization/security/post-g0a-hostile-inputs.mjs",
+    "docs/industrialization/iw0/ind-sec/POST_G0A_THREAT_MODEL.md",
+    "docs/frontier/execution/parallel/IND-SEC-B_INTEGRATION_PATCH_REQUEST.json",
+    "docs/frontier/execution/parallel/IND-SEC-B_EXECUTION_STATE.json",
+    "docs/industrialization/handoffs/IND-SEC-B_2026-09-20.json"
+  ],
+  "ownership_result": {
+    "semantic_surface": "POST_G0A_HOSTILE_INPUT_SECURITY",
+    "result": "WITHIN_OWNERSHIP",
+    "production_semantics_modified": false,
+    "public_api_modified": false,
+    "protected_shared_surfaces_modified": false
+  },
+  "test_evidence": [
+    {
+      "name": "exact-source hostile-input falsification",
+      "subject_sha": "adef2416e812c177409e017450d5f4cd83a4c89b",
+      "result": "PASS",
+      "explicit_rejection_fingerprints": 40,
+      "cbv_mutations": 4096,
+      "address_mutations": 4096,
+      "p4_frontier_rounds": 512,
+      "failures": 0
+    },
+    {
+      "name": "native Node security runner",
+      "command": "node tests/industrialization/security/post-g0a-hostile-inputs.mjs",
+      "result": "AUTHORED_PENDING_CONTROL_REGISTRATION"
+    },
+    {
+      "name": "pull-request cumulative CI",
+      "result": "PENDING_FINAL_METADATA_HEAD"
+    }
+  ],
+  "security_corpus_sha256": "485efe0584139dc62e694d027ff9ff8b44b87879fa216bd40dbe42ff0920adc8",
+  "runner_sha256": "6be2b67a270cb8ab3801e467f8eff3bbcf6b1b0d1abf152cc0140ff8078cf969",
+  "security_classification": "G0A_FROZEN_SURFACES_GATING; POST_G0A_UNFROZEN_SURFACES_RECORDED_AS_NON_GATING_DEBT",
+  "authority_classification": "NO_SEMANTIC_AUTHORITY_TRANSFER",
+  "limitations": [
+    "Checkpoint/archive authenticity and freshness are not proven.",
+    "Generic provider/query cancellation, stale-result rejection and hard host resource isolation remain unfrozen.",
+    "P4.schedule and P2.unhex implementation-helper bounds remain non-G0A debt.",
+    "This lane does not constitute G0B external consumer proof.",
+    "Native Node runner must be registered/executed by control before convergence."
+  ],
+  "falsification_attempts": [
+    "malformed CBV tags/varints/signed aliases",
+    "byte/count/depth exhaustion",
+    "accessor and normalized-key hazards",
+    "invalid UTF-8/non-NFC/surrogate inputs",
+    "address version/tag/count/length/trailing attacks",
+    "manifest version/unknown fields",
+    "identity/derive length and range failures",
+    "numeric overflow",
+    "P4 time/event count/duplicate attacks",
+    "cross-universe/cross-lineage replay",
+    "retroactive live admission",
+    "false precondition admission",
+    "transition schema/SemVer/compatibility/duplicate-family attacks",
+    "deterministic CBV/address mutation fuzz",
+    "same-time P4 frontier adversarial rounds"
+  ],
+  "integration_patch_requests": [
+    "docs/frontier/execution/parallel/IND-SEC-B_INTEGRATION_PATCH_REQUEST.json"
+  ],
+  "merge_recommendation": "CONTROL_CONVERGE_ONLY_AFTER_NATIVE_NODE_SECURITY_RUNNER_AND_EXACT_HEAD_CI_PASS",
+  "disposition": "COMPLETE_GATE_MET"
+}
