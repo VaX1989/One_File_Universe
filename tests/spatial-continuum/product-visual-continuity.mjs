@@ -83,20 +83,34 @@ try{
 
   let state=await temporalTravel('APPROACH',{worldIdentity},'APPROACH');
   state=await temporalTravel('GLOBAL_SURFACE',{worldIdentity},'GLOBAL_SURFACE');
-  const surfaceIdentity=state.openUniverse?.surfaceIdentity||null;
-  state=await temporalTravel('REGIONAL_SURFACE',{worldIdentity,surfaceIdentity},'REGIONAL_SURFACE');
-  state=await temporalTravel('LOCAL_SURFACE',{worldIdentity,surfaceIdentity},'LOCAL_SURFACE');
+  const coarseSurfaceIdentity=state.openUniverse?.surfaceIdentity||null;
+  state=await temporalTravel('REGIONAL_SURFACE',{worldIdentity,surfaceIdentity:coarseSurfaceIdentity},'REGIONAL_SURFACE');
+  state=await temporalTravel('LOCAL_SURFACE',{worldIdentity,surfaceIdentity:coarseSurfaceIdentity},'LOCAL_SURFACE');
 
   const human=await enterHumanWithSelectedSample(page,{diagnostics,timeout:30000});
-  invariant(human.state,'HUMAN',{worldIdentity,surfaceIdentity});
+  // HUMAN arrival is a representation handoff and must preserve the selected coarse surface exactly.
+  invariant(human.human,'HUMAN:pre-sample',{worldIdentity,surfaceIdentity:coarseSurfaceIdentity});
   const sourceSampleIdentity=human.sampleId;
   assert.ok(sourceSampleIdentity,'HUMAN establishes exact source sample');
+  // Selecting a concrete ROCK is an intentional semantic refinement, not a representation teleport.
+  // It may refine SURFACE_LOCATION while the same planet ancestry and exact sample identity remain stable.
+  invariant(human.state,'HUMAN:sample-selected',{worldIdentity,sourceSampleIdentity});
+  assert.equal(human.state.openUniverse?.focusId,sourceSampleIdentity,'HUMAN selected sample remains the exact focus');
+  assert.equal(human.state.openUniverse?.focusKind,'ROCK','HUMAN selected source sample retains its governed kind');
+  const refinedSurfaceIdentity=human.state.openUniverse?.surfaceIdentity||null;
+  assert.ok(refinedSurfaceIdentity,'sample selection establishes an exact refined surface location');
+  const refinedAddress=String(human.state.openUniverse?.currentAddress?.serialized||human.state.openUniverse?.currentAddress||'');
+  assert.ok(refinedAddress.includes('/planet:'+worldIdentity+'/'),'refined sample address preserves exact planet ancestry');
+  assert.ok(refinedAddress.includes('/surface_location:'+refinedSurfaceIdentity+'/'),'refined sample address binds its exact local surface');
+  assert.ok(refinedAddress.endsWith('/rock:'+sourceSampleIdentity),'refined sample address terminates at the exact source sample');
 
   for(const stage of ['MATERIAL','MICROSTRUCTURE','MOLECULAR','ATOMIC'])
-    state=await temporalTravel(stage,{worldIdentity,surfaceIdentity,sourceSampleIdentity},stage);
+    state=await temporalTravel(stage,{worldIdentity,surfaceIdentity:refinedSurfaceIdentity,sourceSampleIdentity},stage);
 
-  for(const stage of ['MOLECULAR','MICROSTRUCTURE','MATERIAL','HUMAN','LOCAL_SURFACE','REGIONAL_SURFACE','GLOBAL_SURFACE','ORBIT'])
-    state=await temporalTravel(stage,{worldIdentity,surfaceIdentity,sourceSampleIdentity},'REVERSE_'+stage);
+  for(const stage of ['MOLECULAR','MICROSTRUCTURE','MATERIAL','HUMAN'])
+    state=await temporalTravel(stage,{worldIdentity,surfaceIdentity:refinedSurfaceIdentity,sourceSampleIdentity},'REVERSE_'+stage);
+  for(const stage of ['LOCAL_SURFACE','REGIONAL_SURFACE','GLOBAL_SURFACE','ORBIT'])
+    state=await temporalTravel(stage,{worldIdentity},'REVERSE_'+stage);
 
   // Interrupt a long inward flight and demand an outward SYSTEM recovery.
   await temporalTravel('UNIVERSE',{worldIdentity,sourceSampleIdentity},'REVERSE_UNIVERSE');
