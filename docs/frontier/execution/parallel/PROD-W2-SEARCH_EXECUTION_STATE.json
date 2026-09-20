@@ -1,17 +1,36 @@
 {
   "prompt_id": "PROD-W2-SEARCH",
   "master_schema_version": 4,
-  "planning_epoch": "OFU-POST-M0-PRODUCT-NEXT-2026-09-20-296565BB",
-  "status": "IN_PROGRESS",
+  "epoch": "OFU-POST-M0-PRODUCT-NEXT-2026-09-20-296565BB",
+  "status": "READY_FOR_CONTROL_CONVERGENCE",
   "base_sha": "de06cc7f8e4b74e57aad583a8764ac756b06b9da",
   "base_tree": "92ea93742177879dcf7f3fd94560439d0149b43d",
+  "branch": "work/post-m0/prod-w2-search-ofu-post-m0-product-next-2026-09-20-296565bb",
+  "pr": 317,
   "ownership_version": "ofu.post-m0.product-next.ownership.v1",
-  "hypothesis": "A useful vast-universe discovery seam can remain deterministic, authority-aware and resource-bounded by ranking only sparse provider candidates with exact semantic references, versioned fixed-point similarity/interestingness models, explicit UNKNOWN/UNSUPPORTED state, and no global index or canonical mutation.",
-  "failure_fingerprint": null,
-  "failure_count": 0,
-  "alternate_strategy": "If generic multi-provider ranking proves too coupled or resource-ambiguous, narrow to deterministic local-neighborhood and Atlas-backed providers while preserving the same exact-reference result contract; never introduce exhaustive indexing or renderer/camera ownership.",
-  "last_action": "Reauthenticated the live repository, product control PR #312, exact activation SHA/tree, canonical v4 contracts, immutable source prompts, dependencies, ownership, current CI, existing sparse discovery APIs, Scientific Fingerprint and Atlas APIs; confirmed no existing PROD-W2-SEARCH lane/PR.",
-  "next_action": "Implement the additive bounded search engine, Atlas adapter and stale-result controller; add focused adversarial tests and product-boundary documentation; then request control-owned central test registration instead of editing package/workflow surfaces.",
+  "hypothesis": "Bounded provider-driven discovery can make the deterministic address space searchable without an exhaustive index while preserving exact identity, scientific authority, explicit unknown states and resource ceilings.",
+  "failure_fingerprint": [
+    "SEARCH_SPARSE_PROVIDER_LIMIT_GT_V1_MAX_RESULTS",
+    "SEARCH_ATLAS_PUBLISHED_SYNTAX_DRIFT_FROM_TESTED_BLOB"
+  ],
+  "failure_count": 2,
+  "repair_policy": "REPAIRED_FORWARD_NO_FORCE_PUSH_NO_HISTORY_REWRITE",
+  "repairs": [
+    {
+      "fingerprint": "SEARCH_SPARSE_PROVIDER_LIMIT_GT_V1_MAX_RESULTS",
+      "finding": "The generic 128-candidate budget could exceed the existing V1 address-space MAX_RESULTS=64 when passed directly to discoverNearbySystems.",
+      "repair_commit": "e87cd38c2041cceab90d78456e4154892bea1330",
+      "verification_commit": "09553c1ffb580cd88736e3ebac602a10beb98399",
+      "disposition": "CLOSED_BY_PROVIDER_CAP_CLAMP_AND_REGRESSION_TEST"
+    },
+    {
+      "fingerprint": "SEARCH_ATLAS_PUBLISHED_SYNTAX_DRIFT_FROM_TESTED_BLOB",
+      "finding": "Byte-for-byte publication verification found a syntax typo in the Atlas provider blob on GitHub that was absent from the locally executed scratch copy.",
+      "repair_commit": "2af7faee2b360fdfd1ee2574fb248489fb236b5e",
+      "disposition": "CLOSED_BY_PUBLISHING_THE_EXACT_NODE_CHECKED_AND_FOCUSED_TESTED_BLOB"
+    }
+  ],
+  "alternate_strategy": "If future provider contracts cannot honor bounded candidate windows, keep them outside SEARCH or expose a provider-specific deterministic paging seam; never add exhaustive indexing, hidden sampling or canonical mutation.",
   "dependencies": {
     "CTRL-WAVE-EPOCH": {
       "status": "PASS_ACTIVE",
@@ -28,22 +47,82 @@
       "merge_sha": "36b5cc5d038f23bb7498e3a341f8d368f9fdd039"
     }
   },
-  "dependencies_resolved": true,
-  "write_scope": [
-    "src/product/exploration/search/**",
-    "tests/product/prod-w2-search*.mjs",
-    "docs/product/search/**",
+  "changed_paths": [
+    "src/product/exploration/search/bounded-search.js",
+    "src/product/exploration/search/atlas-search-provider.js",
+    "src/product/exploration/search/sparse-address-provider.js",
+    "tests/product/prod-w2-search.mjs",
+    "docs/product/search/PROD_W2_SEARCH_BOUNDARY.md",
+    "docs/product/search/INTEGRATION_PATCH_REQUEST_TEST_REGISTRATION.json",
     "docs/frontier/execution/parallel/PROD-W2-SEARCH_EXECUTION_STATE.json",
-    "docs/industrialization/handoffs/PROD-W2-SEARCH_*.json"
+    "docs/industrialization/handoffs/PROD-W2-SEARCH_HANDOFF_2026-09-20.json"
   ],
-  "tests_run": [],
-  "evidence_refs": [],
+  "executable_blob_witnesses": {
+    "bounded-search.js": "8f499c71924ffe6739ffc48a10875622c217e73a",
+    "atlas-search-provider.js": "cf03c999cf8728bc3430e95d2d7894aa1e3ccd10",
+    "sparse-address-provider.js": "71520058ceb8604875ca7fff79a4cfbb5ba12c39",
+    "prod-w2-search.mjs": "4e70da1bb08cca14a67a9aa406ba821375e28c30"
+  },
+  "tests_run": [
+    {
+      "command": "node --check src/product/exploration/search/bounded-search.js",
+      "result": "PASS"
+    },
+    {
+      "command": "node --check src/product/exploration/search/atlas-search-provider.js",
+      "result": "PASS"
+    },
+    {
+      "command": "node --check src/product/exploration/search/sparse-address-provider.js",
+      "result": "PASS"
+    },
+    {
+      "command": "node --check tests/product/prod-w2-search.mjs",
+      "result": "PASS"
+    },
+    {
+      "command": "node tests/product/prod-w2-search.mjs",
+      "result": "PASS",
+      "witness": {
+        "schema": "ofu-prod-w2-search-test-v1",
+        "results": 3,
+        "candidateBudget": 4,
+        "resultBudget": 2,
+        "networkResources": 0,
+        "canonicalMutation": false
+      }
+    },
+    {
+      "check": "exact published executable blob identity versus locally executed files",
+      "result": "PASS"
+    }
+  ],
+  "requirements_evidence": {
+    "repeated_search_determinism": "PASS",
+    "equivalent_order_stability": "PASS",
+    "budget_exhaustion_and_truncation": "PASS",
+    "malformed_unsupported_filters": "PASS",
+    "similarity_ties_and_deterministic_tiebreak": "PASS",
+    "scientific_authority_boundaries": "PASS",
+    "atlas_exact_reference_and_revisit": "PASS",
+    "canonical_p2_p4_world_non_mutation": "PASS",
+    "resource_accounting": "PASS",
+    "cancellation": "PASS",
+    "stale_result_rejection": "PASS",
+    "zero_runtime_network_resources": "PASS",
+    "no_exhaustive_universe_claim": "PASS",
+    "sparse_address_provider_real_max_results_boundary": "PASS"
+  },
+  "integration_patch_requests": [
+    "docs/product/search/INTEGRATION_PATCH_REQUEST_TEST_REGISTRATION.json"
+  ],
   "evidence_debt": [
-    "Focused PROD-W2-SEARCH test is not centrally registered because package.json and workflows are control-owned protected surfaces.",
-    "Exact-head hosted regression and focused verification remain to be captured after implementation."
+    "package.json/workflow/central-runner registration is control-owned and intentionally not modified by this lane; the integration patch request must be applied by CTRL-WAVE-EPOCH/CTRL-CONVERGENCE.",
+    "Hosted exact-final-head CI is externally observed after terminal metadata publication and recorded on PR #317 because embedding the final SHA in its own commit would be self-referential."
   ],
-  "branch": "work/post-m0/prod-w2-search-ofu-post-m0-product-next-2026-09-20-296565bb",
-  "pr": "PENDING_DRAFT_PR",
-  "completion_sha": null,
-  "completion_tree": null
+  "last_action": "Published exact locally verified executable blobs, repaired two falsification findings forward, documented the provider-specific V1 MAX_RESULTS boundary, and prepared terminal convergence evidence.",
+  "next_action": "CTRL-WAVE-EPOCH/CTRL-CONVERGENCE applies the test-registration integration patch, executes the focused SEARCH test plus cumulative exact-head CI, then integrates Draft PR #317 if all evidence remains green.",
+  "completion_sha": "EXTERNALLY_BOUND_BY_DRAFT_PR_317_FINAL_HEAD",
+  "completion_tree": "EXTERNALLY_BOUND_BY_DRAFT_PR_317_FINAL_HEAD_TREE",
+  "disposition": "READY_FOR_CONTROL_CONVERGENCE"
 }
