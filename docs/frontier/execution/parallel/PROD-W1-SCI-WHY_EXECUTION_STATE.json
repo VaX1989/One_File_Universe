@@ -1,0 +1,49 @@
+{
+  "prompt_id": "PROD-W1-SCI-WHY",
+  "master_schema_version": 4,
+  "epoch": "OFU-POST-M0-PRODUCT-NEXT-2026-09-20-296565BB",
+  "status": "IMPLEMENTATION_AND_FALSIFICATION_AUTHORED_PENDING_HOSTED_EXACT_HEAD_EXECUTION",
+  "hypothesis": "A deterministic typed WHY projection can reuse the existing Scientific Fingerprint to expose explicit ancestry, authority, assumptions, limitations and upstream-supported uncertainty while failing closed on unknown/unsupported state and never promoting presentation/prose to scientific authority.",
+  "failure_fingerprint": null,
+  "failure_count": 0,
+  "alternate_strategy": "If explicit scientific ancestry cannot be represented without inventing source authority, retain only fingerprint/provenance/authority/limitation inspection and mark the missing causal relationship UNKNOWN or UNSUPPORTED; if a frozen shared contract is insufficient, request a control-owned versioned successor instead of mutating it here.",
+  "last_action": "Created the additive scientific-why provider and focused falsification corpus on the exact product epoch base; hardened exact subject/model applicability binding, causal-cycle rejection, deterministic canonical graph hashing, uncertainty normalization, UNKNOWN/UNSUPPORTED propagation, mixed-authority downgrade and bounded presentation-only inspection.",
+  "next_action": "Open the Draft lane PR against the product-control branch, execute exact-lane-head focused evidence through a verification-only PR without merging protected package changes, repair any stable failure fingerprint forward, then seal terminal handoff with exact evidence.",
+  "dependencies": {
+    "PRODUCT_CONTROL_EPOCH": {
+      "status": "PASS",
+      "pr": 312,
+      "base_sha": "de06cc7f8e4b74e57aad583a8764ac756b06b9da",
+      "base_tree": "92ea93742177879dcf7f3fd94560439d0149b43d"
+    },
+    "PROD_W1_SCI_FP": {
+      "status": "PASS_MERGED_ANCESTOR",
+      "merge_commit": "454c55a49f73254d0370bbdfb01d778998235326"
+    },
+    "MASTER_V4": {
+      "status": "PASS",
+      "sha": "c2cab6d6e914b918432432fdc69825e0a1000509"
+    },
+    "SOURCE_PRODUCT_SCIENTIST": {
+      "status": "PASS_RESOLVED",
+      "sha": "3d28ec0720f611278b7717da02713c9eda96e642"
+    },
+    "SOURCE_V3_SCI_WHY": {
+      "status": "PASS_RESOLVED",
+      "sha": "6494c3a43596c2d16c43237c052d404d5b1a7e74"
+    },
+    "SOURCE_PRODUCT_DAG": {
+      "status": "PASS_RESOLVED",
+      "sha": "86e19cae0e8c393661d6696617c5a5e49eb78983"
+    }
+  },
+  "evidence_debt": [
+    "Focused test is authored but has not yet executed in hosted exact-head CI.",
+    "Permanent central npm test registration is control-owned and requested by INTEGRATION_PATCH_REQUEST.",
+    "No richer scientific causal genealogy can be asserted until an upstream scientific provider supplies explicit source-backed causal relations and/or uncertainty."
+  ],
+  "branch": "work/post-m0/prod-w1-sci-why-ofu-post-m0-product-next-2026-09-20-296565bb",
+  "pr": "PENDING_DRAFT_PR",
+  "completion_sha": "PENDING_EXACT_HEAD_EVIDENCE",
+  "completion_tree": "PENDING_EXACT_HEAD_EVIDENCE"
+}
