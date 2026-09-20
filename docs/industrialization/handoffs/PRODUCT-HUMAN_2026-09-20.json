@@ -1,0 +1,97 @@
+{
+  "schema": "ofu.terminal-handoff.v1",
+  "prompt_id": "PRODUCT-HUMAN",
+  "master_schema_version": 4,
+  "mission_date": "2026-09-20",
+  "epoch": "OFU-POST-M0-PRODUCT-COMPLETION-2026-09-20",
+  "base_sha": "41b0f55c895adb20f5f38171194d15f670ceea00",
+  "base_tree": "4234a184b0d3797d5e41350a98eb1dcd0d503c7a",
+  "dependency_shas": {
+    "G-PROD-CONTRACTS": "PASS",
+    "PRODUCT-HUMAN-OWNERSHIP-GRANT": "41b0f55c895adb20f5f38171194d15f670ceea00"
+  },
+  "final_sha": "fed4d5ece04503f48d5977731eacb6d8cefc82b5",
+  "final_tree": "EXTERNALLY_BOUND_BY_PR_346_TERMINAL_HEAD_TREE",
+  "changed_paths": [
+    "tests/product/product-human.mjs",
+    "docs/frontier/execution/parallel/PRODUCT-HUMAN_EXECUTION_STATE.json",
+    "docs/industrialization/handoffs/PRODUCT-HUMAN_2026-09-20.json",
+    "docs/product/human/INTEGRATION_PATCH_REQUEST_ROOT_REGISTRATION.json"
+  ],
+  "ownership_result": {
+    "status": "PASS",
+    "certification_only": true,
+    "production_code_modified": false,
+    "renderer_transition_modified": false,
+    "camera_modified": false,
+    "picking_modified": false,
+    "canonical_state_modified": false,
+    "scientific_authority_modified": false
+  },
+  "tests": [
+    {
+      "lane_pr": 346,
+      "lane_head": "fed4d5ece04503f48d5977731eacb6d8cefc82b5",
+      "applicable_workflows": "9/9_PASS"
+    },
+    {
+      "verification_pr": 347,
+      "verification_head": "f602f4964eb9bae01192359f57b5f494621f6a7c",
+      "workflow_matrix": "10/10_PASS",
+      "spatial_run": 35530054529
+    }
+  ],
+  "deterministic_witnesses": {
+    "focused_test_blob": "35aff529c989cda3d7751216757f65cc41570699",
+    "verification_to_lane_blob_identity": "VERIFIED_EQUAL",
+    "existing_oracles": [
+      "tests/spatial-continuum/r6-w0-human-sense-of-place.mjs",
+      "tests/spatial-continuum/r6-w0-human-browser.mjs",
+      "tests/spatial-continuum/open-generalization.mjs"
+    ],
+    "multi_world_count_minimum": 3,
+    "deterministic_rematerialization": true,
+    "bounded_cache_eviction": true,
+    "non_palette_diversity": true
+  },
+  "security_classification": {
+    "result": "PASS_WITHIN_PRESENTATION_CERTIFICATION_SCOPE",
+    "mandatory_network": false,
+    "bounded_resources": true,
+    "stale_or_hidden_authority_escalation": false
+  },
+  "authority_science_classification": {
+    "result": "PASS",
+    "generated_context": "PRESENTATION_ONLY",
+    "canonical_truth_escalation": false,
+    "scientific_claims_added": false
+  },
+  "performance_resource_evidence": {
+    "stable_world_scale": true,
+    "bounded_streaming": true,
+    "real_eviction_disposal": true,
+    "deterministic_revisit": true,
+    "scene_count": 1,
+    "camera_count": 1,
+    "renderer_owned_picking": true
+  },
+  "limitations": [
+    "Physical-device/GPU evidence remains NOT_VERIFIED.",
+    "The lane certifies the existing shipping HUMAN substrate; it intentionally does not manufacture production changes.",
+    "Browser execution is CI/headless evidence, not physical mobile/device certification."
+  ],
+  "falsification_attempts": [
+    "near/mid/far physical composition and stable world scale",
+    "landmark/contextual density and horizon grammar",
+    "HUMAN browser activation and reversible fog/depth presentation",
+    "multiple genuine worlds with non-palette differences",
+    "bounded cache eviction/disposal and deterministic rematerialization",
+    "single scene/camera, renderer-owned picking and zero mandatory network",
+    "Foundation-vs-Spatial environment split after initial Playwright-unavailable oracle fingerprint"
+  ],
+  "rollback_abandon_condition": "Abandon certification or request a narrow repair grant if future evidence shows world-scale mutation, authority leakage, unbounded residency, non-deterministic revisit, second camera/picking authority, or mandatory network dependency.",
+  "integration_patch_requests": [
+    "docs/product/human/INTEGRATION_PATCH_REQUEST_ROOT_REGISTRATION.json"
+  ],
+  "disposition": "READY_FOR_CONTROL_CONVERGENCE"
+}
