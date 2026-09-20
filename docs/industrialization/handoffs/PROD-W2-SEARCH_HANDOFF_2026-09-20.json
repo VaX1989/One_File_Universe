@@ -1,0 +1,83 @@
+{
+  "schema": "ofu.post-m0.terminal-handoff.v1",
+  "prompt_id": "PROD-W2-SEARCH",
+  "epoch": "OFU-POST-M0-PRODUCT-NEXT-2026-09-20-296565BB",
+  "status": "READY_FOR_CONTROL_CONVERGENCE",
+  "branch": "work/post-m0/prod-w2-search-ofu-post-m0-product-next-2026-09-20-296565bb",
+  "pr": 317,
+  "pr_base": "control/post-m0-product-next-2026-09-20",
+  "base_sha": "de06cc7f8e4b74e57aad583a8764ac756b06b9da",
+  "base_tree": "92ea93742177879dcf7f3fd94560439d0149b43d",
+  "completion_sha": "EXTERNALLY_BOUND_BY_DRAFT_PR_317_FINAL_HEAD",
+  "completion_tree": "EXTERNALLY_BOUND_BY_DRAFT_PR_317_FINAL_HEAD_TREE",
+  "mission_result": "PASS_WITH_CONTROL_OWNED_TEST_REGISTRATION_DEBT",
+  "delivered": [
+    "Bounded deterministic multi-provider property search with finite candidate/result/byte/provider-call budgets.",
+    "Scientific-Fingerprint-aware similarity with versioned metric, authority-aware comparison, explicit UNKNOWN and UNSUPPORTED states, and canonical-ID tie-breaking.",
+    "Versioned governed interestingness with reproducible rationale and no user-history/ranking-feedback contamination.",
+    "Personal Atlas provider carrying exact revisit plans and semantic references rather than mutable world copies.",
+    "V1 sparse nearby-system provider over existing bounded deterministic address-space discovery, clamped to provider MAX_RESULTS and exposing continuation state.",
+    "AbortSignal cancellation and stale-generation rejection with zero stale descriptors returned.",
+    "Focused adversarial tests and zero-network static guard."
+  ],
+  "exact_executable_blob_witnesses": {
+    "bounded_search": "8f499c71924ffe6739ffc48a10875622c217e73a",
+    "atlas_search_provider": "cf03c999cf8728bc3430e95d2d7894aa1e3ccd10",
+    "sparse_address_provider": "71520058ceb8604875ca7fff79a4cfbb5ba12c39",
+    "focused_test": "4e70da1bb08cca14a67a9aa406ba821375e28c30"
+  },
+  "falsification_findings": [
+    {
+      "fingerprint": "SEARCH_SPARSE_PROVIDER_LIMIT_GT_V1_MAX_RESULTS",
+      "status": "CLOSED",
+      "repair_commit": "e87cd38c2041cceab90d78456e4154892bea1330",
+      "regression_test_commit": "09553c1ffb580cd88736e3ebac602a10beb98399"
+    },
+    {
+      "fingerprint": "SEARCH_ATLAS_PUBLISHED_SYNTAX_DRIFT_FROM_TESTED_BLOB",
+      "status": "CLOSED",
+      "repair_commit": "2af7faee2b360fdfd1ee2574fb248489fb236b5e"
+    }
+  ],
+  "focused_tests": {
+    "syntax_checks": "PASS_4_OF_4",
+    "command": "node tests/product/prod-w2-search.mjs",
+    "result": "PASS",
+    "witness": {
+      "schema": "ofu-prod-w2-search-test-v1",
+      "results": 3,
+      "candidateBudget": 4,
+      "resultBudget": 2,
+      "atlasExactState": "00000000000000000000000000000000000000000000000000000000000000de",
+      "networkResources": 0,
+      "canonicalMutation": false
+    }
+  },
+  "protected_surface_result": {
+    "shared_renderer_composition_modified": false,
+    "camera_modified": false,
+    "picking_modified": false,
+    "canonical_p2_p4_modified": false,
+    "package_modified": false,
+    "workflow_modified": false,
+    "main_modified": false,
+    "force_push": false
+  },
+  "integration_patch_request": {
+    "path": "docs/product/search/INTEGRATION_PATCH_REQUEST_TEST_REGISTRATION.json",
+    "status": "REQUESTED_NOT_APPLIED_BY_LANE_WRITER",
+    "owner": "CTRL-WAVE-EPOCH/CTRL-CONVERGENCE"
+  },
+  "blocked_work": [],
+  "evidence_debt": [
+    "Control-owned registration of tests/product/prod-w2-search.mjs in the central runner/package surface.",
+    "Fresh cumulative CI plus the focused SEARCH command after control applies that registration.",
+    "Final Draft PR head hosted CI is recorded externally in the PR conversation to avoid self-referential completion metadata."
+  ],
+  "next_owner": "CTRL-WAVE-EPOCH/CTRL-CONVERGENCE",
+  "next_action": "Verify PR #317 final head, record hosted CI, apply the test-registration integration patch under control ownership, run focused SEARCH plus cumulative exact-head evidence, and integrate only if all remain green.",
+  "merge_performed": false,
+  "tags_created": false,
+  "releases_created": false,
+  "r7_created": false
+}
