@@ -2,14 +2,14 @@
   "prompt_id": "PROD-W1-PRODUCT-DEPTH",
   "master_schema_version": 4,
   "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
-  "status": "REPAIRING_FALSIFIED_PRODUCT_VISUAL_GAPS",
-  "terminal_state": "NOT_TERMINAL",
+  "status": "READY_FOR_CONTROL_CONVERGENCE",
+  "terminal_state": "READY_FOR_CONTROL_CONVERGENCE",
   "hypothesis": "Founder-visible depth can improve materially by making already-governed HUMAN place, atmosphere and causal presentation signals perceptible, while preserving stable world-space scale, scientific authority, single-scene/camera ownership, bounded resources and direct-file/offline behavior.",
-  "failure_fingerprint": "PROD_DEPTH_VISUAL_EVIDENCE_GAPS",
+  "failure_fingerprint": "PROD_DEPTH_MOBILE_ORIENTATION_DECK_OVERLAP_NONPORTRAIT",
   "failure_count": 4,
   "alternate_strategy": "If governed depth cues cause scale ambiguity, resource growth, visual regressions or browser instability, revert the specific presentation mapping and retain only evidence-oracle/mobile fixes; do not widen scientific authority or add unbounded geometry.",
-  "last_action": "Exact-head d6dd1157db271f334fc4d354a2602ce9521aaaaf passed repository CI 10/10 and all 12 convergence suites, and direct artifact inspection confirmed portrait and HUMAN-depth repair. The same artifact inspection exposed a residual 1.5–19 px orientation/deck overlap in phone-landscape/tablet. Repaired responsive orientation clearance and promoted geometric non-overlap assertions to every tested mobile/tablet viewport.",
-  "next_action": "Require fresh exact-head 10/10 CI after the non-portrait mobile clearance repair, then directly inspect portrait, landscape and tablet artifacts before terminal packet creation.",
+  "last_action": "Exact-head 6128c4e0f872b0e6fab87927aa335706e420a375 passed all 10 repository workflows. Spatial Continuum run 35496821928 passed development, clean-room, Chromium, Firefox, WebKit and chromium-convergence. Direct inspection of the convergence artifact confirmed no orientation/deck, topbar or command overlap at 390x844 portrait, 844x390 landscape or 1024x768 tablet; HUMAN multi-world depth is founder-visible and distinct; UNIVERSE→ORBIT→HUMAN→ATOMIC evidence remains coherent.",
+  "next_action": "CTRL-CONVERGENCE: require fresh 10/10 CI on the terminal documentation head, then mark PR #311 ready and merge it into integration/post-m0-dual-track-wave0-2026-09-17 with expected-head protection. After merge, require cumulative 10/10 CI on the new control head before opening another shared-renderer product writer.",
   "dependencies": {
     "M0_HISTORICAL": {
       "status": "PASS",
@@ -59,13 +59,15 @@
     "src/experiments/spatial-continuum/experience.css",
     "src/experiments/spatial-continuum/phase2-experience.css",
     "tests/spatial-continuum/r6-w0-human-sense-of-place.mjs",
+    "tests/spatial-continuum/r6-w0-human-renderer-integration.mjs",
     "tests/spatial-continuum/r6-w0-phase2-product-path.mjs",
     "tests/spatial-continuum/open-visual-evidence.mjs",
     "tests/spatial-continuum/open-accessibility-mobile.mjs",
     "tests/spatial-continuum/r6-w0-human-browser.mjs",
     "tests/spatial-continuum/open-generalization.mjs",
     "docs/product/product-depth/README.md",
-    "docs/frontier/execution/parallel/PROD-W1-PRODUCT-DEPTH_EXECUTION_STATE.json"
+    "docs/frontier/execution/parallel/PROD-W1-PRODUCT-DEPTH_EXECUTION_STATE.json",
+    "docs/industrialization/handoffs/PROD-W1-PRODUCT-DEPTH_2026-09-20.json"
   ],
   "intended_evidence": [
     "r6-w0-human-sense-of-place deterministic multidimensional profile",
@@ -98,10 +100,10 @@
     "bounded": true
   },
   "evidence_debt": [
-    "The d6dd1157db271f334fc4d354a2602ce9521aaaaf subject is green 10/10, but direct artifact inspection found a non-portrait mobile/tablet orientation/deck overlap and therefore it is not terminal product evidence.",
-    "The responsive-clearance repair requires fresh exact-head CI plus direct portrait/landscape/tablet artifact inspection before terminalization.",
+    "The terminal documentation commit itself still requires fresh exact-head cumulative CI before PR #311 may be merged.",
     "Physical GPU/device evidence remains release-grade debt and is not promoted by this lane.",
-    "G0A remains NOT_PASS_INDEPENDENT_REAUDIT_REQUIRED and is a separate industrialization boundary."
+    "G0A remains NOT_PASS_INDEPENDENT_REAUDIT_REQUIRED and is a separate industrialization boundary.",
+    "SEC-01, AUTH-01, AUTH-02, AS-001, AS-002, AS-003, DET-01, DET-02, checkpoint/archive durability/authentication, durable WAL/fsync/atomic-root/crash recovery and manual licensing/distribution remain downstream debts."
   ],
   "tests_run": [
     {
@@ -146,14 +148,103 @@
       "artifact_id": 10600921363,
       "direct_artifact_inspection": "PASS_HUMAN_DEPTH_AND_PORTRAIT; FALSIFIED_NONPORTRAIT_ORIENTATION_CLEARANCE",
       "failure_fingerprint": "PROD_DEPTH_MOBILE_ORIENTATION_DECK_OVERLAP_NONPORTRAIT"
+    },
+    {
+      "subject_sha": "6128c4e0f872b0e6fab87927aa335706e420a375",
+      "subject_tree": "3160be86dba82059d22b6074b44c688f7ca74d6f",
+      "workflow": "Repository cumulative generated workflows",
+      "result": "PASS_10_OF_10",
+      "spatial_run": 35496821928,
+      "spatial_result": "PASS",
+      "browser_matrix": {
+        "chromium": "PASS",
+        "firefox": "PASS",
+        "webkit": "PASS",
+        "clean_room": "PASS"
+      },
+      "convergence": {
+        "result": "PASS",
+        "job_id": 106041243882,
+        "allMandatorySuitesExecuted": true,
+        "mandatorySuiteCount": 12,
+        "failures": 0
+      },
+      "product_depth_evidence": {
+        "multi_world_count": 3,
+        "non_palette_dimension_differences": [
+          8,
+          8,
+          7
+        ],
+        "qobs_descriptor_coverage": 1,
+        "qobs_template_collapse_rate": 0,
+        "qobs_nearest_neighbor_distinctness": 0.4910064566367088,
+        "qobs_collapse_threshold": 0.0027027027027027094,
+        "replay_deterministic": true
+      },
+      "human_resource_evidence": {
+        "innerRadiusM": 72,
+        "outerRadiusM": 1600,
+        "vertexCount": 256,
+        "compositionPolicy": "PHYSICAL_NEAR_MID_FAR_METRE_RINGS",
+        "authority": "PRESENTATION_ONLY",
+        "sceneCount": 1,
+        "cameraCount": 1
+      },
+      "mobile_visual_evidence": {
+        "portrait": {
+          "viewport": "390x844",
+          "orientationDeckOverlap": false,
+          "topbarOverlap": false,
+          "controlOverlaps": 0,
+          "scrollOverflow": false
+        },
+        "landscape": {
+          "viewport": "844x390",
+          "orientationDeckOverlap": false,
+          "topbarOverlap": false,
+          "controlOverlaps": 0,
+          "scrollOverflow": false
+        },
+        "tablet": {
+          "viewport": "1024x768",
+          "orientationDeckOverlap": false,
+          "topbarOverlap": false,
+          "controlOverlaps": 0,
+          "scrollOverflow": false
+        }
+      },
+      "resource_evidence": {
+        "meshes": 131,
+        "materials": 26,
+        "textures": 1,
+        "vertices": 78029,
+        "terrainPool": 97,
+        "sceneCount": 1,
+        "cameraCount": 1
+      },
+      "artifact_id": 10601106450,
+      "direct_visual_inspection": "PASS"
     }
   ],
-  "completion_sha": "PENDING_REPAIRED_EXACT_HEAD_EVIDENCE",
-  "completion_tree": "PENDING_REPAIRED_EXACT_HEAD_EVIDENCE",
+  "completion_sha": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD",
+  "completion_tree": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD_TREE",
   "failure_fingerprints": [
     "PROD_DEPTH_HUMAN_FAR_FIELD_VISIBILITY_GAP",
     "PROD_DEPTH_PORTRAIT_LAYOUT_OVERLAP",
     "PROD_DEPTH_STALE_HUMAN_RING_LITERAL_ASSERTION",
     "PROD_DEPTH_MOBILE_ORIENTATION_DECK_OVERLAP_NONPORTRAIT"
-  ]
+  ],
+  "failure_resolution": {
+    "status": "RESOLVED_FORWARD",
+    "exact_evidence_subject_sha": "6128c4e0f872b0e6fab87927aa335706e420a375",
+    "exact_evidence_subject_tree": "3160be86dba82059d22b6074b44c688f7ca74d6f",
+    "cumulative_workflows": "PASS_10_OF_10",
+    "spatial_run": 35496821928,
+    "convergence_job": 106041243882,
+    "convergence": "PASS_ALL_12_MANDATORY_SUITES",
+    "direct_artifact_inspection": "PASS",
+    "artifact_id": 10601106450
+  },
+  "current_hypothesis": "SUPPORTED_BY_EXACT_HEAD_EXECUTABLE_AND_DIRECT_VISUAL_EVIDENCE"
 }
