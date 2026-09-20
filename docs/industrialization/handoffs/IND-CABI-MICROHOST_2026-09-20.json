@@ -1,0 +1,124 @@
+{
+  "schema": "ofu.terminal-handoff.v1",
+  "prompt_id": "IND-CABI-MICROHOST",
+  "master_schema_version": 4,
+  "mission_date": "2026-09-20",
+  "epoch": "OFU-POST-M0-WAVE0-INDUSTRIALIZATION-2026-09-20",
+  "base_sha": "9311307326adc4bc5a72fe74030b8eb038524fb9",
+  "base_tree": "EXTERNALLY_BOUND_BY_POST_NATIVE_CONTROL_HEAD",
+  "dependency_shas": {
+    "PR287_V4_MASTER": "c2cab6d6e914b918432432fdc69825e0a1000509",
+    "IND-NATIVE-P2": "COMPLETE_GATE_MET",
+    "IND-NATIVE-P2_CONTROL_HEAD": "9311307326adc4bc5a72fe74030b8eb038524fb9",
+    "G0B_EXTERNAL_CONSUMER_SEAM_PROOF": "PASS"
+  },
+  "final_sha": "a76b9d10a511121d7c377c02b554fa8808d86ee6",
+  "final_tree": "EXTERNALLY_BOUND_BY_PR_343_PRE_HANDOFF_TERMINAL_HEAD_TREE",
+  "changed_paths": [
+    "native/cabi/ofu_p2_cabi.h",
+    "native/cabi/ofu_p2_cabi.cpp",
+    "native/cabi/microhost.c",
+    "tests/industrialization/cabi-microhost/cabi-parity.mjs",
+    "docs/industrialization/cabi/IND_CABI_MICROHOST_BOUNDARY.md",
+    "docs/frontier/execution/parallel/IND-CABI-MICROHOST_EXECUTION_STATE.json",
+    "docs/frontier/execution/parallel/IND-CABI-MICROHOST_INTEGRATION_PATCH_REQUEST.json",
+    "docs/industrialization/handoffs/IND-CABI-MICROHOST_2026-09-20.json"
+  ],
+  "ownership_result": {
+    "status": "PASS",
+    "scope": "CABI_MICROHOST",
+    "caller_owned_output": true,
+    "heap_ownership_crosses_abi": false,
+    "opaque_handles_required": false,
+    "runtime_modified": false,
+    "p4_modified": false,
+    "product_modified": false,
+    "broad_runtime_or_provider_abi_frozen": false,
+    "shared_package_surface_modified_by_lane": false
+  },
+  "tests": [
+    {
+      "verification_pr": 344,
+      "verification_head": "0eded91d5d104e2f32a5e1f18e2bc88161102a54",
+      "foundation_run": 35527644242,
+      "result": "PASS"
+    },
+    {
+      "verification_pr": 344,
+      "workflow_matrix": "10/10_PASS",
+      "spatial_run": 35527644262,
+      "result": "PASS"
+    },
+    {
+      "lane_head": "a76b9d10a511121d7c377c02b554fa8808d86ee6",
+      "lane_workflows": "9/9_PASS_APPLICABLE_WITHOUT_CONTROL_OWNED_ROOT_REGISTRATION"
+    }
+  ],
+  "deterministic_witnesses": {
+    "corpus_revision": 2,
+    "corpus_digest": "d92b43afb8a7deeaed4b0c3ee13b73bad344b196132c35433b66360c0b0772fc",
+    "command_count": 139,
+    "success_count": 94,
+    "rejection_count": 45,
+    "compiler_families": ["gcc", "clang"],
+    "direct_native_vs_cabi_transcript_equal": true,
+    "cross_compiler_transcript_equal": true,
+    "implementation_blobs": {
+      "header": "6ca1abdfd3294c8cdec216ca5b53b24efb5e82bf",
+      "wrapper": "1942ad1e58b324de9b18c2e3a4a123fdfe266baf",
+      "microhost": "213f5d23d445cc356f8415449aa7c591c40711a4",
+      "focused_test": "905f78113e6c40301d24b73b2433e24d3c275ded"
+    },
+    "verification_to_lane_blob_identity": "VERIFIED_EQUAL"
+  },
+  "security_classification": {
+    "result": "PASS_WITHIN_FROZEN_P2_CABI_FEASIBILITY_SCOPE",
+    "explicit_request_output_lengths": true,
+    "unsupported_abi_fails_closed": true,
+    "buffer_too_small_returns_required_size": true,
+    "partial_output_on_small_buffer": false,
+    "structured_rejection_classes": true,
+    "cpp_exception_crosses_c_boundary": false,
+    "hidden_js_or_python_runtime_fallback": false
+  },
+  "authority_science_classification": {
+    "result": "PASS",
+    "authority": "FROZEN_P2_CORE_CABI_FEASIBILITY_ONLY",
+    "canonical_semantics_owned_by_cabi": false,
+    "scientific_authority_escalation": false,
+    "runtime_or_provider_authority_claimed": false
+  },
+  "performance_resource_evidence": {
+    "max_request_bytes": 4194304,
+    "max_response_bytes": 4194304,
+    "caller_buffer_capacity_explicit": true,
+    "no_cross_abi_heap_ownership": true,
+    "bounded_by_native_p2_limits": true
+  },
+  "limitations": [
+    "This is a deliberately minimal feasibility capsule around frozen Native P2/Core, not the Runtime ABI.",
+    "It does not prove a final provider, engine, persistence or SDK ABI.",
+    "GCC/Clang evidence does not by itself establish all-OS/all-toolchain portability.",
+    "GATE-G1-AUDIT must be executed independently from the authoring context.",
+    "Permanent root npm-test registration remains control-owned until convergence."
+  ],
+  "falsification_attempts": [
+    "direct Native P2 transcript versus C ABI transcript over the full frozen corpus",
+    "GCC versus Clang transcript identity",
+    "malformed input rejection mapping",
+    "unsupported ABI version",
+    "caller buffer too small with zero partial write",
+    "null/invalid pointer and capacity misuse self-tests",
+    "C++ exception containment",
+    "absence of Runtime/P4/product mutation"
+  ],
+  "rollback_abandon_condition": "Abandon or narrow this capsule if parity requires canonical semantic reinterpretation, cross-boundary heap ownership, exceptions across C, hidden Runtime fallback, unbounded buffers, or premature broad ABI freeze.",
+  "integration_patch_requests": [
+    "docs/frontier/execution/parallel/IND-CABI-MICROHOST_INTEGRATION_PATCH_REQUEST.json"
+  ],
+  "source_prompt_refs": [
+    "PR287_V4_MASTER:IND-CABI-MICROHOST",
+    "PR289_MINI_PROMPT_LIBRARY:IND-CABI-MICROHOST"
+  ],
+  "disposition": "READY_FOR_CONTROL_CONVERGENCE"
+}

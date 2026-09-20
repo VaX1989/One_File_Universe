@@ -1,0 +1,64 @@
+{
+  "schema": "ofu.execution-state.v1",
+  "prompt_id": "IND-CABI-MICROHOST",
+  "mode": "WRITE",
+  "mission_date": "2026-09-20",
+  "status": "READY_FOR_CONTROL_CONVERGENCE",
+  "hypothesis": "A deliberately tiny versioned C-shaped boundary can expose the already-proven frozen Native P2/Core slice with deterministic bytes, structured rejection classes and safe caller-owned buffers without creating Runtime semantics or freezing a broad provider ABI.",
+  "failure_fingerprint": null,
+  "failure_count": 0,
+  "alternate_strategy": "If C ABI parity requires semantic duplication or reinterpretation, abandon the boundary rather than changing P2. If ownership or exception containment fails, reduce the ABI surface further before any downstream platform claim.",
+  "last_action": "Verification-only PR #344 completed 10/10 workflows PASS on exact head 0eded91d5d104e2f32a5e1f18e2bc88161102a54; verified implementation/test blobs remain byte-identical to the current lane. Full immutable v4 terminal handoff added at docs/industrialization/handoffs/IND-CABI-MICROHOST_2026-09-20.json.",
+  "next_action": "Close verification PR #344 without merge, mark #343 ready, merge into unified control, append the C ABI focused regression to the control-owned root package test union, and require fresh exact-head cumulative CI including Spatial.",
+  "dependencies": {
+    "IND-NATIVE-P2": {
+      "status": "COMPLETE_GATE_MET",
+      "control_head": "9311307326adc4bc5a72fe74030b8eb038524fb9",
+      "exact_head_foundation_run": 35526925325,
+      "exact_head_spatial_run": 35526925306,
+      "exact_head_ci": "10/10_PASS"
+    },
+    "PR287_V4_MASTER": {
+      "status": "PASS",
+      "sha": "c2cab6d6e914b918432432fdc69825e0a1000509"
+    }
+  },
+  "evidence": {
+    "lane_pr": 343,
+    "implementation_head_before_metadata": "2ac73967b567d86a69ffa96eac275ccadc2a001d",
+    "verification_pr": 344,
+    "verification_head": "0eded91d5d104e2f32a5e1f18e2bc88161102a54",
+    "foundation_run": 35527644242,
+    "result": "PASS",
+    "corpus_digest": "d92b43afb8a7deeaed4b0c3ee13b73bad344b196132c35433b66360c0b0772fc",
+    "corpus_revision": 2,
+    "command_count": 139,
+    "success_count": 94,
+    "rejection_count": 45,
+    "compiler_families": [
+      "gcc",
+      "clang"
+    ],
+    "direct_native_vs_cabi_transcript_equal": true,
+    "cross_compiler_transcript_equal": true,
+    "caller_owned_output_buffer": true,
+    "heap_ownership_crosses_abi": false,
+    "opaque_handles": false,
+    "no_partial_write_on_small_buffer": true,
+    "explicit_length_and_version": true,
+    "structured_rejection_classes": true,
+    "exception_containment_self_test": true,
+    "runtime_ported": false,
+    "broad_abi_frozen": false
+  },
+  "evidence_debt": [
+    "Permanent root npm-test registration remains control-owned.",
+    "This capsule does not prove the final Runtime/provider ABI.",
+    "This execution context is prohibited from self-certifying GATE-G1-AUDIT after authoring Native/C ABI work."
+  ],
+  "branch": "work/post-m0/ind-cabi-microhost-2026-09-20",
+  "pr": 343,
+  "completion_sha": "436bbc5e0c4caf6a303c21e2c0840592901732d2",
+  "completion_tree": "EXTERNALLY_BOUND_BY_GIT_TREE_OF_COMPLETION_SHA",
+  "disposition": "READY_FOR_CONTROL_CONVERGENCE"
+}

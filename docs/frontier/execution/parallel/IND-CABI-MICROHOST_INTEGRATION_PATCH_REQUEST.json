@@ -1,0 +1,24 @@
+{
+  "schema": "ofu.integration-patch-request.v1",
+  "requesting_prompt_id": "IND-CABI-MICROHOST",
+  "target_surface": "CONTROL_OWNED_ROOT_REGRESSION_UNION",
+  "target_path": "package.json",
+  "expected_authority": "CTRL-CONVERGENCE",
+  "intended_change": "Append node tests/industrialization/cabi-microhost/cabi-parity.mjs to the existing root test script without removing or reordering accepted regressions where semantic order is significant.",
+  "rationale": "The lane cannot seize package.json ownership; exact verification PR #344 already proved the requested registration together with the existing Native P2 regression.",
+  "invariants": [
+    "preserve all existing product regressions",
+    "preserve IND-JS-HEADLESS, IND-SEC-B, IND-EXT-CONSUMER and IND-NATIVE-P2 regressions",
+    "do not modify Runtime/P4/product semantics",
+    "do not broaden the ABI beyond the frozen feasibility capsule"
+  ],
+  "tests": [
+    {
+      "verification_pr": 344,
+      "foundation_run": 35527644242,
+      "verification_head": "0eded91d5d104e2f32a5e1f18e2bc88161102a54",
+      "result": "PASS"
+    }
+  ],
+  "status": "REQUESTED"
+}

@@ -19,6 +19,7 @@ const suites=[
   {name:'accessibility-mobile-context',command:npm,args:['run','test:continuum:accessibility-mobile']},
   {name:'visual-sequence',command:npm,args:['run','test:continuum:visual']},
   {name:'product-audio-browser',command:node,args:['tests/product/product-audio-browser.mjs']},
+  {name:'product-visual-continuity',command:node,args:['tests/spatial-continuum/product-visual-continuity.mjs']},
   {name:'performance-resource',command:npm,args:['run','test:continuum:performance']}
 ];
 
