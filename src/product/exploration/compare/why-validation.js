@@ -1,4 +1,4 @@
-import {SCIENTIFIC_WHY_GRAPH_CONTRACT,hashScientificWhyGraph,serializeScientificWhyGraph} from '../../w1/scientific-why.js';
+import {SCIENTIFIC_WHY_EDGE_TYPE,SCIENTIFIC_WHY_GRAPH_CONTRACT,hashScientificWhyGraph,serializeScientificWhyGraph} from '../../w1/scientific-why.js';
 import {COMPARE_AUTHORITY_VALUES,compareFail,deepFreeze,plain,stableEqual} from './compare-contracts.js';
 import {stableGenerativeString} from '../../../experiments/spatial-continuum/generative-contract.js';
 
