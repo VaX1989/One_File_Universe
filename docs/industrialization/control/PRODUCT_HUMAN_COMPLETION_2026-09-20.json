@@ -1,0 +1,23 @@
+{
+  "schema": "ofu.post-m0.product-human-completion.v1",
+  "prompt_id": "PRODUCT-HUMAN",
+  "mission_date": "2026-09-20",
+  "control_pr": 290,
+  "exact_integrated_control_sha": "4e253b9d92516a2fc956d107c4c6e59bc02d7081",
+  "exact_head_ci": {
+    "result": "PASS_10_OF_10",
+    "spatial_run": 35534864543,
+    "foundation_run": 35534864527,
+    "p1_run": 35534864531,
+    "p2_run": 35534864534,
+    "p3_run": 35534864563,
+    "p4_run": 35534864528,
+    "p5_controlled_run": 35534864533,
+    "p5_environment_v2_run": 35534864512,
+    "p6_run": 35534864553,
+    "p1_p4_baseline_run": 35534864536
+  },
+  "regression_registration": "node tests/product/product-human.mjs",
+  "physical_device_evidence": "NOT_VERIFIED",
+  "final_status": "COMPLETE"
+}
