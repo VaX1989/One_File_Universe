@@ -1,0 +1,161 @@
+{
+  "schema": "ofu.terminal-handoff.v1",
+  "prompt_id": "PRODUCT-VISUAL-CONTINUITY",
+  "master_schema_version": 4,
+  "mission_date": "2026-09-20",
+  "epoch": "OFU-POST-M0-PRODUCT-COMPLETION-2026-09-20",
+  "base_sha": "373d3808fbb32bc3266e5117beefbd956554e0b6",
+  "base_tree": "EXTERNALLY_BOUND_BY_PRODUCT_VISUAL_OWNERSHIP_CONTROL_MERGE_TREE",
+  "dependency_shas": {
+    "PR287_V4_MASTER": "c2cab6d6e914b918432432fdc69825e0a1000509",
+    "G-PROD-CONTRACTS": "PASS_ON_CONTROL_HISTORY",
+    "PRODUCT_VISUAL_OWNERSHIP_PR": 333,
+    "PRODUCT_VISUAL_OWNERSHIP_HEAD": "da77cff8941f6ee6057c2fb06165420fa958ad00",
+    "PRODUCT_VISUAL_OWNERSHIP_MERGE": "373d3808fbb32bc3266e5117beefbd956554e0b6"
+  },
+  "source_prompt_refs": [
+    "PR286@3d28ec0720f611278b7717da02713c9eda96e642:PRODUCT-VISUAL-CONTINUITY"
+  ],
+  "final_sha": "EXTERNALLY_BOUND_BY_PR_334_TERMINAL_HEAD",
+  "final_tree": "EXTERNALLY_BOUND_BY_PR_334_TERMINAL_HEAD_TREE",
+  "branch": "work/post-m0/product-visual-continuity-2026-09-20",
+  "pr": 334,
+  "changed_paths": [
+    "tests/spatial-continuum/product-visual-continuity.mjs",
+    "docs/frontier/execution/parallel/PRODUCT-VISUAL-CONTINUITY_EXECUTION_STATE.json",
+    "docs/industrialization/handoffs/PRODUCT-VISUAL-CONTINUITY_2026-09-20.json",
+    "docs/product/visual-continuity/INTEGRATION_PATCH_REQUEST_SPATIAL_REGISTRATION.json"
+  ],
+  "ownership_result": {
+    "status": "PASS",
+    "grant_pr": 333,
+    "scope": "TEMPORAL_PRESENTATION_CONTINUITY_FALSIFICATION_ONLY",
+    "production_semantics_modified": false,
+    "second_camera_created": false,
+    "second_picking_authority_created": false,
+    "canonical_p2_p4_modified": false,
+    "scientific_authority_modified": false,
+    "package_workflow_or_central_runner_modified": false
+  },
+  "tests": [
+    {
+      "verification_pr": 341,
+      "verification_head": "7e6d21d6af706334424f4fd77b1f039bffe0193a",
+      "spatial_run": 35526963054,
+      "result": "10/10_PASS"
+    },
+    {
+      "suite": "product-visual-continuity",
+      "result": "PASS",
+      "duration_ms": 98982
+    },
+    {
+      "suite": "performance-resource",
+      "result": "PASS",
+      "duration_ms": 135599
+    },
+    {
+      "check": "lane test blob equals verified overlay test blob",
+      "result": "PASS",
+      "blob": "0f566a6644a284c4ed845f8e01ea5a0973d4b970"
+    }
+  ],
+  "deterministic_witnesses": {
+    "path": [
+      "UNIVERSE",
+      "GALAXY",
+      "REGION",
+      "NEIGHBORHOOD",
+      "SYSTEM",
+      "ORBIT",
+      "APPROACH",
+      "GLOBAL_SURFACE",
+      "REGIONAL_SURFACE",
+      "LOCAL_SURFACE",
+      "HUMAN",
+      "MATERIAL",
+      "MICROSTRUCTURE",
+      "MOLECULAR",
+      "ATOMIC"
+    ],
+    "reverse_verified": true,
+    "interruption_verified": true,
+    "world_identity": "23faa22e1955a3afc1361a11d9e5d1deb46c02d67d21fbadc6955a4c8c966e55",
+    "coarse_surface_identity": "cd1d3f40b442f95685515dd69d0615e62beaab6c49812879d541e2d65ed32c15",
+    "refined_surface_identity": "20047b0d7794a7199aeae2aa5eebab8bc865dc22b0dc8630fe93e2a10dcf801c",
+    "source_sample_identity": "2f74f290afd19ec48928461f294b266090165adb80eda8bdf9c8db607b66d6ea",
+    "interruption_before": {
+      "stage": "UNIVERSE",
+      "coordinate": 0
+    },
+    "interruption_during": {
+      "stage": "REGION",
+      "targetStage": "ATOMIC",
+      "coordinate": 2.4916235107018525
+    },
+    "interruption_recovered": {
+      "stage": "SYSTEM",
+      "coordinate": 4
+    }
+  },
+  "security_classification": {
+    "result": "PASS_WITHIN_PRESENTATION_CONTINUITY_SCOPE",
+    "mandatory_network": false,
+    "direct_file": true,
+    "hidden_canonical_mutation": false,
+    "camera_authority_leak": false,
+    "picking_authority_leak": false
+  },
+  "authority_science_classification": {
+    "result": "PASS",
+    "effective_authority": "PRESENTATION_ONLY",
+    "canonical_identity_preserved": true,
+    "visual_handoff_promoted_to_science": false,
+    "canonical_scale_or_time_authority_created": false
+  },
+  "performance_resource_evidence": {
+    "performance_resource_suite": "PASS",
+    "one_scene": true,
+    "one_camera": true,
+    "renderer_owned_picking": true,
+    "transition_completion": "SEMANTIC_SETTLEMENT_WITHOUT_ARBITRARY_FIXED_WAIT",
+    "bounded_resources": true
+  },
+  "limitations": [
+    "Physical GPU evidence is NOT_VERIFIED; the exact terminal oracle ran in governed headless browser CI.",
+    "Physical mobile-device evidence remains external even though the product mobile/portrait accessibility suite is part of the passing Spatial convergence matrix.",
+    "The lane certifies temporal continuity and identity/authority invariants; it does not claim photorealistic equivalence on every physical GPU.",
+    "Permanent Spatial runner registration is control-owned."
+  ],
+  "falsification_attempts": [
+    "full forward UNIVERSE-to-ATOMIC temporal traversal",
+    "full reverse lower/macro traversal",
+    "mid-flight ATOMIC-to-SYSTEM interruption/reversal",
+    "world/surface/source-sample identity continuity",
+    "single scene/camera and renderer-owned picking",
+    "offline direct-file execution",
+    "per-frame monotonic convergence toward target",
+    "performance/resource convergence",
+    "HUMAN coarse-to-selected-sample refined surface identity distinction"
+  ],
+  "repair_history": [
+    {
+      "verification_pr": 335,
+      "fingerprint": "PRODUCT_VISUAL_CONTINUITY_HUMAN_SAMPLE_REFINEMENT_SURFACE_ID_ASSERTION",
+      "classification": "ORACLE_SEMANTIC_MODEL_DEFECT",
+      "repair": "Separate coarse HUMAN arrival surface identity from intentional selected-sample refined identity while preserving world/source-sample ancestry."
+    },
+    {
+      "verification_pr": 338,
+      "spatial_run": 35525646945,
+      "fingerprint": "PRODUCT_VISUAL_CONTINUITY_TERMINAL_EVIDENCE_REMOVED_SURFACE_ID_VARIABLE",
+      "classification": "ORACLE_REPORTING_DEFECT",
+      "repair": "Report explicit coarse/refined surface identities; no production change."
+    }
+  ],
+  "rollback_abandon_condition": "Reject or repair forward if control integration loses exact identity ancestry, creates another camera/picking authority, introduces blackout/seam behavior, fails interruption/reversal, adds mandatory network access, or cannot reproduce the terminal temporal oracle.",
+  "integration_patch_requests": [
+    "docs/product/visual-continuity/INTEGRATION_PATCH_REQUEST_SPATIAL_REGISTRATION.json"
+  ],
+  "disposition": "READY_FOR_CONTROL_CONVERGENCE"
+}
