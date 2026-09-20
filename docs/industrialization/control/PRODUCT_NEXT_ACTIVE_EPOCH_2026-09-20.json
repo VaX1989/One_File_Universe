@@ -4,7 +4,7 @@
   "prompt_id": "CTRL-WAVE-EPOCH",
   "target_wave": "POST-M0-PRODUCT-NEXT-2026-09-20",
   "epoch_id": "OFU-POST-M0-PRODUCT-NEXT-2026-09-20-296565BB",
-  "status": "ACTIVE_PRODUCT_CONTROL_EPOCH_WRITERS_READY_G0A_UNCHANGED",
+  "status": "ACTIVE_PRODUCT_CONTROL_EPOCH_FOLLOW_ON_WRITERS_GRANTED_MACRO_EXCLUSIVE_RENDERER",
   "created_date": "2026-09-20",
   "canonical_master": {
     "schema_version": 4,
@@ -93,9 +93,14 @@
     "branch": "control/post-m0-product-next-2026-09-20",
     "pr_base": "integration/post-m0-dual-track-wave0-2026-09-17",
     "head_binding": "EXTERNALLY_BOUND_BY_DRAFT_PRODUCT_CONTROL_PR",
-    "writer_base_binding": "EXACT_DRAFT_PRODUCT_CONTROL_PR_HEAD_AFTER_ACTIVATION",
+    "writer_base_binding": "EXACT_PR312_HEAD_AFTER_ALL_FOLLOW_ON_CONTROL_RECORD_MUTATIONS_EXTERNALLY_BOUND_BY_PR_COMMENT",
     "implementation_writer_slots": 0,
-    "child_lane_code_by_control_owner": false
+    "child_lane_code_by_control_owner": false,
+    "follow_on_grant_record": "docs/industrialization/control/PRODUCT_NEXT_FOLLOW_ON_OWNERSHIP_GRANT_2026-09-20.json",
+    "follow_on_grant_parent": {
+      "sha": "92ae51b193d3e9a545c9760df3e6f0922728b3d0",
+      "tree": "2b8f210772609a22cf3c24affe4a636ae025b62a"
+    }
   },
   "entry_proofs": {
     "G-PROD-CONTRACTS": {
@@ -118,36 +123,40 @@
   },
   "independent_wave0_boundary": {
     "gate": "G0A_MINIMUM_NORMATIVE_SLICE",
-    "status": "NOT_PASS_INDEPENDENT_REAUDIT_REQUIRED",
-    "audit_subject_sha": "e8965171944b9d5c604b19b745dacb79156816f4",
-    "audit_subject_tree": "b769a54ce428083cdb629fc2fc9b3e1bacc970b6",
-    "concurrent_prompt": "GATE-G0A-AUDIT",
-    "rule": "This product epoch neither closes, weakens, supersedes nor rebinds G0A. Industrialization successors remain blocked by their existing gates."
+    "status": "PASS_SEPARATE_INDUSTRIALIZATION_TRACK",
+    "audited_subject_sha": "296565bb2a6842159a994a45094ddc1d27d4fd1d",
+    "live_wave0_control_pr": 290,
+    "live_wave0_head_sha": "951946411b5aa5fb8685f066360099cabbdbb26e",
+    "relation_to_frozen_product_base": "WAVE0_AHEAD_20_BEHIND_0_NO_MERGE_OR_REBASE_IN_THIS_TASK",
+    "rule": "This product task records live Wave0 state only. Product success does not imply or modify G0A/G0B/G1."
   },
   "runnable_queue": [
     {
       "prompt_id": "PRODUCT-MACRO",
       "mode": "WRITE_PRODUCT",
       "ownership": "PRODUCT_MACRO_RENDERER_COMPOSITION",
-      "dependency_status": "PASS"
+      "dependency_status": "PASS",
+      "state": "CONTINUE_EXISTING_PR_313_ONLY",
+      "pr": 313,
+      "head_sha": "79d4fee113ff6e556cbf19c179b6945cbefd7274",
+      "failure_fingerprint": "PRODUCT_MACRO_REVERSAL_HARNESS_COMMITTED_STATE_TIMING_RACE",
+      "exclusive_shared_renderer_owner": true
     },
     {
-      "prompt_id": "PROD-W1-SCI-WHY",
+      "prompt_id": "PROD-W1-INSTRUMENTS",
       "mode": "WRITE_PRODUCT",
-      "ownership": "SCIENTIST_CAUSAL_ANCESTRY_UNCERTAINTY_PROJECTION",
-      "dependency_status": "PASS"
+      "ownership": "SCIENTIFIC_INSTRUMENT_MEASUREMENT_PROJECTION",
+      "dependency_status": "PASS_PROD_W1_SCI_WHY_CONVERGED",
+      "state": "AUTHORIZED_NEW_ADDITIVE_WRITER",
+      "child_base": "EXACT_PR312_HEAD_AFTER_ALL_FOLLOW_ON_CONTROL_RECORD_MUTATIONS_EXTERNALLY_BOUND_BY_PR_COMMENT"
     },
     {
-      "prompt_id": "PROD-W2-SEARCH",
+      "prompt_id": "PROD-W2-COMPARE",
       "mode": "WRITE_PRODUCT",
-      "ownership": "BOUNDED_SEARCH_SIMILARITY_INTERESTINGNESS",
-      "dependency_status": "PASS"
-    },
-    {
-      "prompt_id": "PROD-W2-TIME",
-      "mode": "WRITE_PRODUCT",
-      "ownership": "PRODUCT_TIME_ATLAS_PROJECTION",
-      "dependency_status": "PASS"
+      "ownership": "SYNCHRONIZED_EVIDENCE_TYPED_CAUSAL_DIVERGENCE",
+      "dependency_status": "PASS_ATLAS_CORE_AND_PROD_W1_SCI_WHY",
+      "state": "AUTHORIZED_NEW_ADDITIVE_WRITER",
+      "child_base": "EXACT_PR312_HEAD_AFTER_ALL_FOLLOW_ON_CONTROL_RECORD_MUTATIONS_EXTERNALLY_BOUND_BY_PR_COMMENT"
     }
   ],
   "deferred_queue": [
@@ -180,20 +189,19 @@
   "convergence_policy": {
     "parallel_execution_set": [
       "PRODUCT-MACRO",
-      "PROD-W1-SCI-WHY",
-      "PROD-W2-SEARCH",
-      "PROD-W2-TIME"
+      "PROD-W1-INSTRUMENTS",
+      "PROD-W2-COMPARE"
     ],
     "child_pr_base": "control/post-m0-product-next-2026-09-20",
     "child_pr_mode": "DRAFT_ONLY",
-    "child_base": "EXACT_DRAFT_PRODUCT_CONTROL_PR_HEAD_AFTER_ACTIVATION",
+    "child_base": "EXACT_PR312_HEAD_AFTER_ALL_FOLLOW_ON_CONTROL_RECORD_MUTATIONS_EXTERNALLY_BOUND_BY_PR_COMMENT",
     "merge_preference": [
       "PROD-W1-SCI-WHY",
       "PROD-W2-TIME",
       "PROD-W2-SEARCH",
       "PRODUCT-MACRO"
     ],
-    "rule": "The four writers may execute in parallel because only PRODUCT-MACRO owns shared renderer/composition surfaces. Additive lanes must not touch protected shared paths. Control convergence integrates evidence-complete work and requires fresh exact-head CI after integration.",
+    "rule": "PRODUCT-MACRO retains exclusive shared renderer/product-composition ownership. INSTRUMENTS and COMPARE are additive-only writers on disjoint product surfaces. package.json, workflows and central test registration remain control-owned. Any shared change requires INTEGRATION_PATCH_REQUEST.",
     "deferred_activation_is_automatic": false
   },
   "forbidden_actions": [
@@ -212,5 +220,25 @@
     "activate industrialization successors blocked by G0A/G0B/G1",
     "create second scene/camera/picking authority",
     "promote presentation/model output to canonical science"
+  ],
+  "converged_queue": [
+    {
+      "prompt_id": "PROD-W1-SCI-WHY",
+      "pr": 314,
+      "merge_commit": "72ea01f2d24897c9532519207dc512b9374b6d1f",
+      "status": "ACCEPTED_CONVERGED"
+    },
+    {
+      "prompt_id": "PROD-W2-SEARCH",
+      "pr": 317,
+      "merge_commit": "fecae5a2e3ec4334b449a56cfd4141c998622d36",
+      "status": "ACCEPTED_CONVERGED"
+    },
+    {
+      "prompt_id": "PROD-W2-TIME",
+      "pr": 319,
+      "merge_commit": "07f63e111d573ca025bf28cad44d1b9032f55e68",
+      "status": "ACCEPTED_CONVERGED"
+    }
   ]
 }
