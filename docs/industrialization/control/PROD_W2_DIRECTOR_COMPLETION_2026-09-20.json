@@ -1,0 +1,74 @@
+{
+  "schema": "ofu.post-m0.prod-w2-director-completion.v1",
+  "prompt_id": "PROD-W2-DIRECTOR",
+  "mission_date": "2026-09-20",
+  "control_pr": 290,
+  "final_semantic_subject_sha": "7c413efb051994c42c52c3642aeacddad8716485",
+  "final_semantic_subject_tree": "NOT_EXPOSED_BY_AVAILABLE_GITHUB_CONNECTOR",
+  "exact_head_ci": {
+    "result": "PASS_10_OF_10",
+    "workflow_runs": {
+      "P5 Controlled Promotion": 35537883843,
+      "P1-P4 Canonical Baseline": 35537883810,
+      "P5 Environment v2 Canonical Promotion": 35537883852,
+      "P6 v1 Conformance": 35537883767,
+      "Foundation Integrity": 35537883782,
+      "P2 Conformance": 35537883822,
+      "P4 Conformance": 35537883826,
+      "P1 Conformance": 35537883882,
+      "P3 Conformance": 35537883917,
+      "Spatial Continuum Experiment": 35537883857
+    }
+  },
+  "spatial": {
+    "run": 35537883857,
+    "result": "PASS",
+    "mandatory_suites": 15,
+    "all_executed": true,
+    "failures": [],
+    "suites": [
+      "multi-world",
+      "phase2-boot",
+      "phase2-macro",
+      "phase2-surface",
+      "phase2-human",
+      "phase2-causal",
+      "phase2-epistemic",
+      "phase2-orientation",
+      "open-product",
+      "accessibility-mobile-context",
+      "visual-sequence",
+      "product-audio-browser",
+      "product-visual-continuity",
+      "product-director-browser",
+      "performance-resource"
+    ],
+    "director_browser": {
+      "status": "PASS",
+      "descriptor_id": "journey-00840c2d5a3240c8",
+      "world_identity": "23faa22e1955a3afc1361a11d9e5d1deb46c02d67d21fbadc6955a4c8c966e55",
+      "start_stage": "ORBIT",
+      "final_stage": "APPROACH",
+      "restored_stage": "ORBIT",
+      "scene_count": 1,
+      "camera_count": 1,
+      "renderer_owned_picking": true,
+      "runtime_network_resources": 0,
+      "direct_file": true,
+      "network_requests": 0
+    },
+    "performance_resource": {
+      "status": "PASS",
+      "duration_ms": 76811
+    }
+  },
+  "foundation": {
+    "run": 35537883782,
+    "focused_director": "PASS",
+    "descriptor_id": "journey-7ceabbb1421666fe"
+  },
+  "package_regression_blob": "267e26d9ec38cd5214ef664a0da898a849c0ecd0",
+  "spatial_runner_blob": "e93450bad7f9140a0cabfc298b1b8b20a8576bff",
+  "authority": "PRESENTATION_ONLY_NO_SECOND_CAMERA_RENDERER_PICKING_OR_TIMELINE_AUTHORITY",
+  "final_status": "COMPLETE"
+}
