@@ -173,17 +173,17 @@ uint64_t isqrt(uint64_t n){uint64_t lo=0,hi=uint64_t(1)<<32;while(lo+1<hi){uint6
 std::vector<std::string> split(const std::string&s){std::vector<std::string> v;size_t p=0;while(p<s.size()){while(p<s.size()&&s[p]==' ')p++;if(p>=s.size())break;size_t q=s.find(' ',p);if(q==std::string::npos)q=s.size();v.push_back(s.substr(p,q-p));p=q;}return v;}
 }
 int main(){using namespace ofu;std::ios::sync_with_stdio(false);std::string line;while(std::getline(std::cin,line)){if(line.empty())continue;try{size_t sp=line.find(' ');std::string cmd=sp==std::string::npos?line:line.substr(0,sp),rest=sp==std::string::npos?"":line.substr(sp+1);auto args=split(rest);
-    if(cmd=="ENC"){WireParser p{rest};Value v=p.parse();if(p.p!=rest.size())fail("SCHEMA_VIOLATION","wire trailing");std::cout<<"OK "<<hex(encode(v))<<"\n";}
+    if(cmd=="ENC"){WireParser p{rest};Value v=p.parse();if(p.p!=rest.size())fail("SCHEMA_VIOLATION","wire trailing");std::string out=hex(encode(v));std::cout<<"OK "<<out<<"\n";}
     else if(cmd=="DEC"){(void)decode(unhex(rest));std::cout<<"OK\n";}
-    else if(cmd=="ADDR"){WireParser p{rest};Value v=p.parse();if(p.p!=rest.size())fail("SCHEMA_VIOLATION","wire trailing");std::cout<<"OK "<<hex(address(v))<<"\n";}
+    else if(cmd=="ADDR"){WireParser p{rest};Value v=p.parse();if(p.p!=rest.size())fail("SCHEMA_VIOLATION","wire trailing");std::string out=hex(address(v));std::cout<<"OK "<<out<<"\n";}
     else if(cmd=="PARSEADDR"){validate_address(unhex(rest));std::cout<<"OK\n";}
-    else if(cmd=="MH"){WireParser p{rest};Value v=p.parse();std::cout<<"OK "<<hex(manifest_hash(v))<<"\n";}
-    else if(cmd=="UNIVERSE"){if(args.size()!=2)fail("SCHEMA_VIOLATION","args");auto u=universe(unhex(args[0]),unhex(args[1]));std::cout<<"OK "<<hex(u.first)<<" "<<hex(u.second)<<"\n";}
-    else if(cmd=="ENTITY"){if(args.size()!=3)fail("SCHEMA_VIOLATION","args");WireParser p{args[2]};Value v=p.parse();Bytes nsb=unhex(args[1]);std::cout<<"OK "<<hex(entity(unhex(args[0]),std::string(nsb.begin(),nsb.end()),v))<<"\n";}
-    else if(cmd=="DERIVE"){if(args.size()!=6)fail("SCHEMA_VIOLATION","args");Bytes d=unhex(args[2]),pr=unhex(args[4]);std::cout<<"OK "<<hex(derive(unhex(args[0]),unhex(args[1]),std::string(d.begin(),d.end()),unhex(args[3]),std::string(pr.begin(),pr.end()),parse_u64(args[5])))<<"\n";}
-    else if(cmd=="ADD"){if(args.size()!=2)fail("SCHEMA_VIOLATION","args");std::cout<<"OK "<<add_i64(parse_i64(args[0]),parse_i64(args[1]))<<"\n";}
-    else if(cmd=="MUL"){if(args.size()!=3)fail("SCHEMA_VIOLATION","args");std::cout<<"OK "<<mul_fixed(parse_i64(args[0]),parse_i64(args[1]),parse_u64(args[2]))<<"\n";}
-    else if(cmd=="ISQRT"){if(args.size()!=1)fail("SCHEMA_VIOLATION","args");std::cout<<"OK "<<isqrt(parse_u64(args[0]))<<"\n";}
+    else if(cmd=="MH"){WireParser p{rest};Value v=p.parse();std::string out=hex(manifest_hash(v));std::cout<<"OK "<<out<<"\n";}
+    else if(cmd=="UNIVERSE"){if(args.size()!=2)fail("SCHEMA_VIOLATION","args");auto u=universe(unhex(args[0]),unhex(args[1]));std::string a=hex(u.first),b=hex(u.second);std::cout<<"OK "<<a<<" "<<b<<"\n";}
+    else if(cmd=="ENTITY"){if(args.size()!=3)fail("SCHEMA_VIOLATION","args");WireParser p{args[2]};Value v=p.parse();Bytes nsb=unhex(args[1]);std::string out=hex(entity(unhex(args[0]),std::string(nsb.begin(),nsb.end()),v));std::cout<<"OK "<<out<<"\n";}
+    else if(cmd=="DERIVE"){if(args.size()!=6)fail("SCHEMA_VIOLATION","args");Bytes d=unhex(args[2]),pr=unhex(args[4]);std::string out=hex(derive(unhex(args[0]),unhex(args[1]),std::string(d.begin(),d.end()),unhex(args[3]),std::string(pr.begin(),pr.end()),parse_u64(args[5])));std::cout<<"OK "<<out<<"\n";}
+    else if(cmd=="ADD"){if(args.size()!=2)fail("SCHEMA_VIOLATION","args");auto out=add_i64(parse_i64(args[0]),parse_i64(args[1]));std::cout<<"OK "<<out<<"\n";}
+    else if(cmd=="MUL"){if(args.size()!=3)fail("SCHEMA_VIOLATION","args");auto out=mul_fixed(parse_i64(args[0]),parse_i64(args[1]),parse_u64(args[2]));std::cout<<"OK "<<out<<"\n";}
+    else if(cmd=="ISQRT"){if(args.size()!=1)fail("SCHEMA_VIOLATION","args");auto out=isqrt(parse_u64(args[0]));std::cout<<"OK "<<out<<"\n";}
     else fail("SCHEMA_VIOLATION","unknown command");
   }catch(const Error&e){std::cout<<"ERR "<<e.code<<"\n";}catch(const std::exception&e){std::cout<<"ERR INTERNAL\n";}}
 }
