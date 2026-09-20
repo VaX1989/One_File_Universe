@@ -1,0 +1,82 @@
+{
+  "prompt_id": "PROD-W2-TIME",
+  "master_schema_version": 4,
+  "epoch": "OFU-POST-M0-PRODUCT-NEXT-2026-09-20-296565BB",
+  "status": "IMPLEMENTATION_EXACT_HEAD_EVIDENCE_PENDING",
+  "hypothesis": "Existing P4/Atlas semantics can support useful forward, reverse, step and epoch product exploration through compact version-bound references and governed domain resolvers without creating a second time/history/camera authority or storing mutable world copies.",
+  "failure_fingerprint": "NONE_OBSERVED_IN_LANE_LOCAL_PROTOTYPE",
+  "failure_count": 0,
+  "alternate_strategy": "If exact repository evidence falsifies the integrated contract, keep the lane isolated and narrow it to read-only exact-reference navigation rather than weakening P4, Atlas, model-version or unsupported-history checks.",
+  "last_action": "Implemented and locally falsified the lane-local governed temporal exploration contract, including explicit Atlas model binding, exact W1 reference validation, bounded materialization, stale/cancel handling and unsupported-history rejection.",
+  "next_action": "Publish the isolated Draft PR against product control, execute exact-head focused and repository CI, repair any stable failure fingerprint forward, then write the terminal handoff only after exact-head evidence is green.",
+  "dependencies": {
+    "PRODUCT_WAVE_CONTROL": {
+      "status": "GRANTED",
+      "pr": 312,
+      "branch": "control/post-m0-product-next-2026-09-20",
+      "activation_sha": "de06cc7f8e4b74e57aad583a8764ac756b06b9da",
+      "activation_tree": "92ea93742177879dcf7f3fd94560439d0149b43d"
+    },
+    "PROD_W1_ATLAS_CORE": {
+      "status": "PASS_INTEGRATED",
+      "merge_sha": "36b5cc5d038f23bb7498e3a341f8d368f9fdd039",
+      "atlas_path": "src/product/w1/atlas-core.js"
+    },
+    "P4_TEMPORAL_AUTHORITY": {
+      "status": "READ_ONLY_DEPENDENCY",
+      "path": "src/temporal/p4-temporal.js",
+      "protocol": "ofu-p4-temporal-v1"
+    },
+    "MASTER_V4": {
+      "status": "PASS",
+      "pr": 287,
+      "sha": "c2cab6d6e914b918432432fdc69825e0a1000509"
+    }
+  },
+  "evidence_debt": [
+    "Exact repository-head focused test has not yet executed after publication.",
+    "Fresh exact-head aggregate CI is required before terminal convergence.",
+    "Domain-specific historical reconstruction remains available only where a separately governed domain adapter declares support."
+  ],
+  "branch": "work/post-m0/prod-w2-time-2026-09-20",
+  "pr": null,
+  "base_sha": "de06cc7f8e4b74e57aad583a8764ac756b06b9da",
+  "base_tree": "92ea93742177879dcf7f3fd94560439d0149b43d",
+  "ownership": {
+    "semantic_surface": "PRODUCT_TIME_ATLAS_PROJECTION",
+    "mode": "WRITE_PRODUCT",
+    "shared_renderer_modified": false,
+    "camera_or_picking_modified": false,
+    "p4_semantics_modified": false,
+    "atlas_core_modified": false,
+    "canonical_science_modified": false,
+    "package_workflow_modified": false
+  },
+  "changed_paths": [
+    "src/product/exploration/time/governed-time-explorer.js",
+    "tests/product/prod-w2-time.mjs",
+    "docs/product/time/README.md",
+    "docs/frontier/execution/parallel/PROD-W2-TIME_EXECUTION_STATE.json"
+  ],
+  "tests_run": [
+    {
+      "command": "node tests/product/prod-w2-time.mjs",
+      "environment": "lane-local prototype with contract-compatible W1 stub before publication",
+      "status": "PASS",
+      "witness": {
+        "schema": "ofu-prod-w2-time-test-v1",
+        "timeAuthority": "CANONICAL_P4",
+        "cacheBound": 2,
+        "staleCancellation": "PASS",
+        "modelMismatch": "REJECTED",
+        "unsupportedHistory": "REJECTED",
+        "networkCalls": 0,
+        "cameraMutation": false,
+        "timelineAuthorityCreated": false
+      }
+    }
+  ],
+  "completion_sha": null,
+  "completion_tree": null,
+  "current_hypothesis": "SUPPORTED_LOCALLY_PENDING_EXACT_REPOSITORY_FALSIFICATION"
+}
