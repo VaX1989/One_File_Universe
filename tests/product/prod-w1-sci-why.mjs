@@ -90,6 +90,15 @@ assert.equal(first.sourceFingerprintProvider.id,'ofu.product.w1.scientific-finge
 assert.equal(first.scientificModelVersion,modelVersion);
 assert.equal(first.subject.canonicalId,canonicalId);
 assert.equal(first.subject.universeId,universeId);
+assert.deepEqual(first.applicability,{
+  scope:'EXACT_SUBJECT_MODEL_CONTEXT',
+  subjectCanonicalId:canonicalId,
+  universeId,
+  scientificStateContract:'ofu-r6-world-scientific-state-1',
+  scientificModelVersion:modelVersion,
+  generatorVersion:worldState.versions.generator,
+  fingerprintContextHash:worldState.scientificHashes.context
+});
 assert.equal(first.assumptionsState,'EXPLICIT_UPSTREAM_BOUND_INPUT');
 assert.equal(first.uncertaintyState,'EXPLICIT_UPSTREAM_BOUND_INPUT');
 
@@ -154,6 +163,7 @@ assert.throws(()=>projectScientificWhy({subject:wrongSubject,worldState}),/canon
 const wrongUniverse=createCanonicalEntityRef({universeId:'other-universe',entityKind:'planet',canonicalId,canonicalKey});
 assert.throws(()=>projectScientificWhy({subject:wrongUniverse,worldState}),/subject universe/);
 
+assert.throws(()=>projectScientificWhy({subject,worldState:{...worldState,versions:{...worldState.versions,scientificModel:'wrong-model'}}}),/scientific model version mismatch/);
 const mismatchedCandidate={...candidates[0],scientificModelVersion:'wrong-model'};
 assert.throws(()=>projectScientificWhy({subject,worldState,ancestryCandidates:[mismatchedCandidate]}),/scientific model version mismatch/);
 const mismatchedIdentity={...candidates[0],subjectCanonicalId:'f'.repeat(64)};
@@ -161,6 +171,11 @@ assert.throws(()=>projectScientificWhy({subject,worldState,ancestryCandidates:[m
 
 const correlationClaim={...candidates[1],relation:SCIENTIFIC_WHY_EDGE_TYPE.CORRELATES,explicitCausalClaim:true};
 assert.throws(()=>projectScientificWhy({subject,worldState,ancestryCandidates:[correlationClaim]}),/non-CAUSES relation cannot assert a causal claim/);
+const bigintUncertainty=uncertainty('u-bigint',climate,SCIENTIFIC_WHY_UNCERTAINTY_KIND.QUALITATIVE,{ordinal:1n,label:'bounded'});
+const bigintGraph=projectScientificWhy({subject,worldState,uncertainties:[bigintUncertainty]});
+assert.equal(bigintGraph.uncertainties[0].parameters.ordinal,'1','uncertainty parameters must canonicalize integer magnitude without JSON coercion failures');
+assert.ok(Object.isFrozen(bigintGraph.uncertainties[0].parameters));
+
 const unclaimedCause={...candidates[0],explicitCausalClaim:false};
 assert.throws(()=>projectScientificWhy({subject,worldState,ancestryCandidates:[unclaimedCause]}),/CAUSES requires explicitCausalClaim=true/);
 
