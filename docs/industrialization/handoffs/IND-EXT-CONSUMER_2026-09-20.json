@@ -1,0 +1,93 @@
+{
+  "prompt_id": "IND-EXT-CONSUMER",
+  "master_schema_version": 4,
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "base_sha": "951946411b5aa5fb8685f066360099cabbdbb26e",
+  "base_tree": "8981d8a3481185f1b47a89b66f0b6f007bc49466",
+  "dependency_shas": {
+    "master_v4": "c2cab6d6e914b918432432fdc69825e0a1000509",
+    "G0A_audit_subject": "296565bb2a6842159a994a45094ddc1d27d4fd1d",
+    "IND_JS_HEADLESS_lane_head": "c81162cb6a9b8762931f6348d113a8bffb82c770",
+    "IND_JS_HEADLESS_merge": "29cf5b4376665d41ff7dcf0fb4b6d07b220bd135",
+    "IND_SEC_B_lane_head": "aa1839500fae162cfb68669925fbd795ccb698f4",
+    "IND_SEC_B_merge": "a5544120ef402c90d27d8efb25d7adad194499e0"
+  },
+  "final_sha": "EXTERNALLY_BOUND_BY_DRAFT_PR_HEAD",
+  "final_tree": "EXTERNALLY_BOUND_BY_DRAFT_PR_HEAD_TREE",
+  "changed_paths": [
+    "tests/industrialization/external-consumer/fixture/package.json",
+    "tests/industrialization/external-consumer/fixture/consumer.mjs",
+    "tests/industrialization/external-consumer/clean-room.mjs",
+    "docs/frontier/execution/parallel/IND-EXT-CONSUMER_EXECUTION_STATE.json",
+    "docs/frontier/execution/parallel/IND-EXT-CONSUMER_INTEGRATION_PATCH_REQUEST.json",
+    "docs/industrialization/handoffs/IND-EXT-CONSUMER_2026-09-20.json"
+  ],
+  "ownership_result": {
+    "semantic_surface": "LANE_LOCAL:IND-EXT-CONSUMER",
+    "result": "WITHIN_OWNERSHIP",
+    "protected_shared_surfaces_modified": false,
+    "canonical_p2_p4_modified": false,
+    "public_headless_seam_modified": false,
+    "renderer_camera_product_modified": false,
+    "native_runtime_started": false
+  },
+  "tests": [
+    {
+      "name": "consumer and clean-room harness syntax",
+      "result": "PASS",
+      "scope": "exact authored bytes"
+    },
+    {
+      "name": "exact control-head public dependency closure inspection",
+      "subject_sha": "951946411b5aa5fb8685f066360099cabbdbb26e",
+      "result": "PASS",
+      "closure_size": 7
+    },
+    {
+      "name": "native npm-pack clean-room external consumer",
+      "result": "AUTHORED_PENDING_CONTROL_REGISTRATION_AND_CI",
+      "command": "node tests/industrialization/external-consumer/clean-room.mjs"
+    }
+  ],
+  "deterministic_witnesses": [
+    {
+      "source": "Golden Universe Corpus plus integrated public-seam contract",
+      "semanticManifestHash": "15115d3be206083d795b9492af46693253979709a5fb9cd2f9b3e2321fcd4778",
+      "universeIdentity": "29d93cd168d16a6763ad6687005e6af6eddbb5b7fef5cf8a919b49f0b0fd4f41",
+      "addressHex": "4f46554101010105617374726f",
+      "propertyDigest": "186531376069e9734644130f5ff081633aac5fcb011eaf8292a2ea6140ed9c32",
+      "transitionContractDigest": "a0b5856f6b1c12fbc3899f30858b99fb91de683168b41de60fb44d5f92a1c538"
+    }
+  ],
+  "security_classification": "FAIL_CLOSED_CONSUMER_HARNESS; rejects source-internal imports by assertion, poisons browser/network globals, exercises malformed input and hard address bounds; no new security authority.",
+  "authority_science_classification": "NO_NEW_CANONICAL_OR_SCIENTIFIC_AUTHORITY; consumer validates usefulness of the already integrated public P2/P4 seam only.",
+  "performance_resource_evidence": "Harness constrains each clean consumer process to a 64 MiB V8 old-space limit and 10 s timeout and performs a fixed 64-iteration property witness probe. Native integrated execution remains pending control-owned test registration.",
+  "limitations": [
+    "This writer cannot modify root package/workflow registration; an integration patch request is provided.",
+    "The current tool container cannot resolve github.com, so the exact private repository cannot be cloned for an out-of-band native run.",
+    "Static/syntax evidence must not be misrepresented as the native clean-room runtime PASS.",
+    "G0B is not passed by this lane; independent GATE-G0B-AUDIT is mandatory.",
+    "No native/C ABI/Runtime work is authorized."
+  ],
+  "falsification_attempts": [
+    "source-internal import negative probe",
+    "unsupported public API version",
+    "wrong master-seed length",
+    "malformed canonical address",
+    "unknown property-witness field",
+    "over-bound address segment",
+    "forbidden public API growth probe",
+    "DOM/browser/network global poison",
+    "installed dependency closure escape detection",
+    "dependency closure external bare-import detection",
+    "clean install root must differ from source repository",
+    "two independent clean-room witness equality",
+    "closed-session access",
+    "bounded 64-iteration resource probe"
+  ],
+  "rollback_abandon_condition": "If the control-run clean-room proof requires any source-internal import, renderer/UI/browser state, product shortcut or materially broader public API, do not repair by widening authority. Treat that as falsification evidence and permit PLATFORM_EXTRACTION_PREMATURE.",
+  "integration_patch_requests": [
+    "docs/frontier/execution/parallel/IND-EXT-CONSUMER_INTEGRATION_PATCH_REQUEST.json"
+  ],
+  "disposition": "READY_FOR_CONTROL_CONVERGENCE"
+}
