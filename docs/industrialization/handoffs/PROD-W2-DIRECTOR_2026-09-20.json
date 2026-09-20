@@ -1,0 +1,105 @@
+{
+  "schema": "ofu.immutable-terminal-handoff.v1",
+  "prompt_id": "PROD-W2-DIRECTOR",
+  "master_schema_version": 4,
+  "mission_date": "2026-09-20",
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "branch": "work/post-m0/prod-w2-director-2026-09-20",
+  "pr": 348,
+  "base_sha": "f91eb3241064a8c6b1a9618a4a779ffe28aeb735",
+  "base_tree": "SHA_BOUND_GIT_TREE_NOT_SEPARATELY_EXPOSED_BY_CONNECTED_COMMIT_READER",
+  "dependency_shas": {
+    "PROD-W1-ATLAS-CORE": "INTEGRATED_IN_CONTROL",
+    "PROD-W1-PRODUCT-DEPTH": "INTEGRATED_IN_CONTROL",
+    "PRODUCT-VISUAL-CONTINUITY": "8f345061749b8017cec589bd2293f1f228d1209c",
+    "PRODUCT-HUMAN": "4e253b9d92516a2fc956d107c4c6e59bc02d7081"
+  },
+  "exact_executable_subject_sha": "b8e3e72ae02d547965d7905c9780c32c83a2b4a7",
+  "final_sha": "EXTERNALLY_BOUND_BY_PR_348_HEAD_AFTER_THIS_HANDOFF",
+  "final_tree": "EXTERNALLY_BOUND_BY_GIT_COMMIT_OBJECT",
+  "changed_paths": [
+    "src/product/exploration/director/governed-director.js",
+    "tests/product/prod-w2-director.mjs",
+    "tests/product/prod-w2-director-browser.mjs",
+    "docs/product/director/README.md",
+    "docs/product/director/INTEGRATION_PATCH_REQUEST_ROOT_REGISTRATION.json",
+    "docs/frontier/execution/parallel/PROD-W2-DIRECTOR_EXECUTION_STATE.json",
+    "docs/industrialization/handoffs/PROD-W2-DIRECTOR_2026-09-20.json"
+  ],
+  "verified_blobs": {
+    "implementation": "1b4ed5b68824233e45bb2fd2f852a272e96c5ef0",
+    "focused_test": "363d6c0139b92392bc7ae958538c5628cb19811c",
+    "browser_test": "0c65024b51ffb4693a1caac2bf8165ce6e2c691a"
+  },
+  "ownership_result": "PASS_PRESENTATION_ONLY_ORCHESTRATION_NO_SECOND_CAMERA_RENDERER_PICKING_OR_TIMELINE_AUTHORITY",
+  "tests": [
+    {
+      "subject_sha": "b8e3e72ae02d547965d7905c9780c32c83a2b4a7",
+      "result": "PASS_9_OF_9_APPLICABLE_LANE_WORKFLOWS"
+    },
+    {
+      "verification_pr": 349,
+      "verification_head": "5f7366d02f920ad03c9272930e2a6ba31f25c82c",
+      "workflow_matrix": "10/10_PASS",
+      "foundation_run": 35536730707,
+      "spatial_run": 35536730694
+    },
+    {
+      "oracle": "ofu-prod-w2-director-test-v1",
+      "result": "PASS",
+      "descriptor_id": "journey-7ceabbb1421666fe"
+    },
+    {
+      "oracle": "ofu-prod-w2-director-browser-v1",
+      "result": "PASS",
+      "descriptor_id": "journey-00840c2d5a3240c8",
+      "world_identity": "23faa22e1955a3afc1361a11d9e5d1deb46c02d67d21fbadc6955a4c8c966e55"
+    }
+  ],
+  "deterministic_witnesses": [
+    "Atlas route descriptor content hash stable across Atlas export/import restore",
+    "three-stop journey replay preserves exact subject identity",
+    "cancellation restores origin bookmark",
+    "successful explicit restore returns ORBIT origin",
+    "reduced-motion path reaches identical semantic destinations",
+    "capture metadata is bounded and OBSERVATIONAL_METADATA_ONLY",
+    "direct-file browser journey uses one scene, one camera, renderer-owned picking and zero runtime network resources"
+  ],
+  "security_classification": "NO_NEW_NETWORK_PARSER_PRIVILEGED_OR_EXTERNAL_EXECUTION_SURFACE; descriptor validation is bounded and tamper-detecting.",
+  "authority_science_classification": "PRESENTATION_ONLY. Atlas plans remain REFERENCE_ONLY; Director creates no canonical/scientific/timeline/camera/renderer/picking authority.",
+  "performance_resource_evidence": {
+    "descriptor_max_stops": 32,
+    "descriptor_max_bytes": 131072,
+    "capture_max_records": 32,
+    "capture_max_bytes_each": 16384,
+    "idle_polling": false,
+    "new_scene": false,
+    "new_camera": false,
+    "new_worker": false,
+    "spatial_performance_resource_suite": "PASS",
+    "spatial_performance_resource_duration_ms": 137520
+  },
+  "limitations": [
+    "Physical-device/GPU evidence remains NOT_VERIFIED.",
+    "Base/final Git tree SHA is not separately exposed by the connected commit reader; exact commit SHA remains the authoritative object binding.",
+    "Director is a presentation orchestration layer, not a canonical timeline or scientific authority."
+  ],
+  "falsification_attempts": [
+    "descriptor hash/content tampering rejected",
+    "second-camera observation rejected and origin restored",
+    "unknown route rejected",
+    "incomplete navigation adapter rejected",
+    "cancellation forced after first stop and origin restoration required",
+    "source scan rejects network/render/camera/idle-loop construction",
+    "real direct-file Continuum journey verifies bookmark/travel/settle authority and exact subject restoration"
+  ],
+  "rollback_abandon_condition": "If post-merge control registration or cumulative Spatial proof fails, reopen PROD-W2-DIRECTOR under the same ownership and repair forward; never create a parallel camera/timeline authority or remove accepted regressions.",
+  "integration_patch_requests": [
+    "docs/product/director/INTEGRATION_PATCH_REQUEST_ROOT_REGISTRATION.json"
+  ],
+  "source_prompt_refs": [
+    "PR287_V3_MASTER:PROD-W2-DIRECTOR",
+    "PR275_PRODUCT_DAG:R6-W2-DIRECTOR"
+  ],
+  "disposition": "READY_FOR_CONTROL_CONVERGENCE"
+}
