@@ -18,7 +18,7 @@ function fingerprintSummary(value){
   });
 }
 
-export function createAtlasSearchProvider({atlas,fingerprintResolver=null,id='ofu.product.w2.search.atlas'={}}){
+export function createAtlasSearchProvider({atlas,fingerprintResolver=null,id='ofu.product.w2.search.atlas'}={}){
   if(!atlas||typeof atlas.listEntries!=='function'||typeof atlas.revisitPlan!=='function')fail('atlas must expose listEntries and revisitPlan');
   if(fingerprintResolver!==null&&typeof fingerprintResolver!=='function')fail('fingerprintResolver must be a function or null');
   return Object.freeze({
