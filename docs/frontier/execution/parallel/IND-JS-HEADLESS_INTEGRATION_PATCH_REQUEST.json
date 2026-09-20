@@ -1,0 +1,23 @@
+{
+  "schema": "ofu.integration-patch-request.v1",
+  "requesting_prompt_id": "IND-JS-HEADLESS",
+  "target_surface": "CONTROL_OWNED_TEST_REGISTRATION",
+  "target_path": "package.json and/or .github/workflows/foundation.yml",
+  "expected_authority": "CTRL-WAVE0/CTRL-CONVERGENCE",
+  "intended_change": "Register node tests/industrialization/headless/public-seam.mjs in the smallest existing control-owned exact-head CI path without changing production semantics.",
+  "rationale": "The lane owns the headless seam and its additive test but package/workflow registration is protected from lane writers. Registration provides native Node execution of the authored public-seam test before convergence.",
+  "invariants": [
+    "Do not alter P2/P4 semantics.",
+    "Do not broaden the public seam.",
+    "Do not weaken any existing test.",
+    "Keep generic provider query, checkpoint/archive, native and Runtime surfaces gated.",
+    "Preserve single-file/offline reference product and renderer/camera authority."
+  ],
+  "tests": [
+    "node tests/industrialization/headless/public-seam.mjs",
+    "existing Foundation Integrity",
+    "P2 Conformance",
+    "P4 Conformance",
+    "P1-P4 Canonical Baseline"
+  ]
+}
