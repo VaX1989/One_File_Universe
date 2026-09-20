@@ -2,14 +2,14 @@
   "prompt_id": "PRODUCT-MACRO",
   "master_schema_version": 4,
   "epoch": "OFU-POST-M0-PRODUCT-NEXT-2026-09-20-296565BB",
-  "status": "IN_PROGRESS",
-  "terminal_state": null,
+  "status": "READY_FOR_CONTROL_CONVERGENCE",
+  "terminal_state": "READY_FOR_CONTROL_CONVERGENCE",
   "hypothesis": "Perceived macro scale collapses because semantic stages reuse a largely uniform sphere/facet-plus-particle grammar. A bounded PRESENTATION_ONLY stage-aware composition can materially differentiate UNIVERSE, GALAXY, REGION, NEIGHBORHOOD and SYSTEM while preserving canonical identity, one scene/camera, renderer-owned picking, atomic progressive residency, cancellation and direct-file/offline behavior.",
   "failure_fingerprint": "PRODUCT_MACRO_REVERSAL_HARNESS_COMMITTED_STATE_TIMING_RACE",
   "failure_count": 2,
   "alternate_strategy": "If stage-aware geometry harms continuity, resource bounds or selection, retain existing entry meshes and restrict improvement to pooled depth-field composition plus deterministic presentation descriptors; never widen scientific authority or introduce a second scene/camera.",
-  "last_action": "Exact-head 8ad4dbe3dd7cfe790abb77d81d42ab54c6c591b0 passed 9/10 repository workflows; Spatial Continuum development, clean-room, Chromium, Firefox and WebKit passed. Chromium convergence executed all 12 mandatory suites: 11 PASS and only phase2-macro FAIL. Multi-world macro QOBS, visual-sequence, mobile/accessibility and performance/resource all passed. The isolated failure is a test-harness timing race: the REGION pending witness performs settle() and then an extra renderer.update(), permitting more than the intended single progressive slice before asserting the last-complete GALAXY presentation.",
-  "next_action": "Repair the phase2-macro pending/reversal witness so chooseDestination + settle + snapshot execute in one browser turn with exactly one renderer slice; assert pending REGION work retains the committed GALAXY signature/profile, then rerun exact-head CI and inspect the convergence artifact before terminal handoff.",
+  "last_action": "Exact executable subject 94c0b06524e69bd1c5d220a6df11a9ad1379c5dc (tree 1b37ba337a09cc0c37b15a09d0797bfea13f8bb2) passed 10/10 repository workflows. Spatial Continuum run 35511464178 passed development, clean-room, Chromium, Firefox, WebKit and chromium-convergence. Convergence job 106080020724 executed all 12 mandatory suites with 12 PASS, including phase2-macro. Artifact 10605626805 (sha256:a20160dc3951bb91b82e270889aa01809c546ed7cff3c6268c38d320a2a20334) was downloaded and inspected: pending REGION retained the complete committed GALAXY profile/signature, cancellation advanced, staleCompletions=0, one scene/camera and renderer-owned picking held, runtime network resources remained zero, and macro residency remained bounded.",
+  "next_action": "CTRL-CONVERGENCE must integrate PR #313 onto the then-live product-control head (current observed control SHA 92ae51b193d3e9a545c9760df3e6f0922728b3d0) without rebasing or rewriting the published child lane, adjudicate any shared-surface conflict, and run cumulative control CI. The child lane must not self-merge.",
   "dependencies": {
     "MASTER_V4": {
       "status": "PASS",
@@ -34,10 +34,9 @@
     }
   },
   "evidence_debt": [
-    "Repair and re-run the isolated phase2-macro reversal harness on an exact head.",
-    "Re-inspect committed UNIVERSE/GALAXY/REGION/NEIGHBORHOOD/SYSTEM visual captures after the repaired exact-head convergence run.",
-    "Physical GPU/device evidence remains separate release-grade debt; current CI is headless/software-rendered.",
-    "G0A remains a separate industrialization gate and is not reclassified by this product lane."
+    "Physical GPU/device evidence remains separate release-grade debt; exact executable CI is headless/software-rendered.",
+    "G0A remains a separate industrialization gate and is not reclassified by PRODUCT-MACRO.",
+    "Control integration onto the current #312 head remains reserved to CTRL-CONVERGENCE."
   ],
   "branch": "work/post-m0/product-macro-2026-09-20",
   "pr": 313,
@@ -54,6 +53,26 @@
       "PRODUCT-AUDIO"
     ]
   },
-  "completion_sha": null,
-  "completion_tree": null
+  "completion_sha": "94c0b06524e69bd1c5d220a6df11a9ad1379c5dc",
+  "completion_tree": "1b37ba337a09cc0c37b15a09d0797bfea13f8bb2",
+  "failure_resolution": {
+    "classification": "SEMANTIC_RENDERER_ATOMICITY_DEFECT_WITH_HARNESS_TIMING_SUSCEPTIBILITY",
+    "status": "RESOLVED",
+    "semantic_fix_commit": "7298d080a819385b1471c0d5549d9381a4306c95",
+    "controlled_witness_commit": "94c0b06524e69bd1c5d220a6df11a9ad1379c5dc",
+    "proof": "Committed GALAXY profile/signature remains unchanged during an exactly-one-slice pending REGION transition; rapid reversal cancels superseded work and staleCompletions remains zero."
+  },
+  "exact_executable_evidence_subject": {
+    "sha": "94c0b06524e69bd1c5d220a6df11a9ad1379c5dc",
+    "tree": "1b37ba337a09cc0c37b15a09d0797bfea13f8bb2",
+    "cumulative_ci": "PASS_10_OF_10",
+    "spatial_run": 35511464178,
+    "convergence_job": 106080020724,
+    "convergence": "PASS_ALL_12_MANDATORY_SUITES",
+    "artifact_id": 10605626805,
+    "artifact_digest": "sha256:a20160dc3951bb91b82e270889aa01809c546ed7cff3c6268c38d320a2a20334",
+    "artifact_inspected": true
+  },
+  "terminal_handoff": "docs/industrialization/handoffs/PRODUCT-MACRO_2026-09-20.json",
+  "terminal_documentation_head": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD"
 }
