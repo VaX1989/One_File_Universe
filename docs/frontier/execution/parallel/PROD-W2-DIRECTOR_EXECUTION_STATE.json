@@ -1,0 +1,46 @@
+{
+  "prompt_id": "PROD-W2-DIRECTOR",
+  "master_schema_version": 4,
+  "mode": "WRITE_PRODUCT",
+  "mission_date": "2026-09-20",
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "branch": "work/post-m0/prod-w2-director-2026-09-20",
+  "base_sha": "f91eb3241064a8c6b1a9618a4a779ffe28aeb735",
+  "dependencies": {
+    "PROD-W1-ATLAS-CORE": "COMPLETE",
+    "PROD-W1-PRODUCT-DEPTH": "COMPLETE",
+    "PRODUCT-VISUAL-CONTINUITY": "COMPLETE",
+    "PRODUCT-HUMAN": "COMPLETE"
+  },
+  "hypothesis": "A thin bounded presentation orchestrator can compile Atlas routes into deterministic journey descriptors and delegate all actual travel/restoration to the existing navigation authority without creating a second camera or timeline authority.",
+  "failure_fingerprint": null,
+  "failure_count": 0,
+  "alternate_strategy": "If direct browser orchestration exposes missing bookmark/settle capability, retain descriptor compiler and narrow the runtime adapter to the minimum existing reversible navigation surface; do not create replacement camera or history authority.",
+  "last_action": "Verification-only PR #349 proved the exact Director implementation/test blobs with 10/10 workflows PASS including Spatial Continuum.",
+  "next_action": "CTRL-CONVERGENCE may merge PR #348 and register focused/browser regressions additively.",
+  "evidence_debt": [
+    "verification overlay CI",
+    "post-merge control exact-head CI",
+    "physical device/GPU remains external"
+  ],
+  "ownership": "DIRECTOR_PRESENTATION_ORCHESTRATION",
+  "source_prompt_refs": [
+    "PR287_V3_MASTER:PROD-W2-DIRECTOR",
+    "PR275_PRODUCT_DAG:R6-W2-DIRECTOR"
+  ],
+  "completion_sha": "EXTERNALLY_BOUND_BY_PR_348_HEAD_AFTER_TERMINAL_HANDOFF",
+  "completion_tree": "EXTERNALLY_BOUND_BY_GIT_COMMIT_OBJECT",
+  "terminal_state": "READY_FOR_CONTROL_CONVERGENCE",
+  "verification": {
+    "lane_subject_sha": "b8e3e72ae02d547965d7905c9780c32c83a2b4a7",
+    "lane_ci": "9/9_PASS",
+    "verification_pr": 349,
+    "verification_head": "5f7366d02f920ad03c9272930e2a6ba31f25c82c",
+    "workflow_matrix": "10/10_PASS",
+    "foundation_run": 35536730707,
+    "spatial_run": 35536730694,
+    "focused_descriptor_id": "journey-7ceabbb1421666fe",
+    "browser_descriptor_id": "journey-00840c2d5a3240c8",
+    "browser_world_identity": "23faa22e1955a3afc1361a11d9e5d1deb46c02d67d21fbadc6955a4c8c966e55"
+  }
+}
