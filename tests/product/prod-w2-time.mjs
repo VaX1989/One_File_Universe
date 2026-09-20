@@ -72,6 +72,8 @@ const saved=explorer.saveAtlasSnapshot({reference:reverseFirst.reference,label:'
 assert.equal(saved.entry.observation.kind,'SNAPSHOT');
 assert.equal(saved.entry.observation.temporalRef.stateDigest,makeP4(50).stateDigest);
 assert.equal(saved.entry.observation.subject.canonicalId,subject.canonicalId);
+assert.equal(saved.temporalReference.productContext.atlasEntryId,saved.entry.id,'saved temporal reference must bind the new Atlas snapshot, not the source entry');
+assert.equal(explorer.parseReference(saved.serializedTemporalReference).productContext.atlasEntryId,saved.entry.id);
 assert.equal(atlas.getEntry(saved.entry.id).observation.temporalRef.stateDigest,makeP4(50).stateDigest,'saved temporal snapshot must round-trip through the real Atlas core');
 assert.ok(!/world|scene|camera/i.test(JSON.stringify(saved.entry.observation)),'Atlas snapshot must remain compact references, not a world/scene/camera copy');
 assert.equal(explorer.parseReference(saved.serializedTemporalReference).p4StateRef.stateDigest,makeP4(50).stateDigest);
