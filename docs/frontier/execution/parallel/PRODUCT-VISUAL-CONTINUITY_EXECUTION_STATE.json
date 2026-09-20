@@ -1,0 +1,43 @@
+{
+  "schema": "ofu.execution-state.v1",
+  "prompt_id": "PRODUCT-VISUAL-CONTINUITY",
+  "mode": "WRITE_PRODUCT",
+  "mission_date": "2026-09-20",
+  "status": "VERIFYING_FIXED_ORACLE",
+  "hypothesis": "The existing single-scene/single-camera Spatial Continuum can prove perceptually continuous cross-scale handoffs through a temporal falsifier without creating a second camera, picking, canonical or scientific authority.",
+  "failure_fingerprint": "PRODUCT_VISUAL_CONTINUITY_TERMINAL_EVIDENCE_REMOVED_SURFACE_ID_VARIABLE",
+  "failure_count": 2,
+  "failure_history": [
+    {
+      "verification_pr": 335,
+      "fingerprint": "PRODUCT_VISUAL_CONTINUITY_HUMAN_SAMPLE_REFINEMENT_SURFACE_ID_ASSERTION",
+      "classification": "ORACLE_SEMANTIC_MODEL_DEFECT",
+      "repair": "Distinguish coarse HUMAN arrival surface identity from intentional selected-sample refined surface identity; preserve exact world ancestry and sample identity."
+    },
+    {
+      "verification_pr": 338,
+      "spatial_run": 35525646945,
+      "fingerprint": "PRODUCT_VISUAL_CONTINUITY_TERMINAL_EVIDENCE_REMOVED_SURFACE_ID_VARIABLE",
+      "classification": "ORACLE_REPORTING_DEFECT",
+      "repair": "Replace removed terminal report variable with explicit coarse/refined surface identity object. No production change."
+    }
+  ],
+  "alternate_strategy": "If the fixed temporal oracle exposes an actual product defect rather than a falsifier defect, minimize the first failing representation handoff and repair only the existing transition presentation authority; do not create another camera/picking/scale authority.",
+  "last_action": "Fixed the terminal evidence report after verification PR #338 demonstrated that the full product path reached report generation but referenced a removed variable. Verification-only PR #341 registers the fixed oracle on the exact lane subject.",
+  "next_action": "Require PR #341 Spatial convergence to PASS with the product-visual-continuity suite explicitly green. Then emit immutable terminal handoff and control-owned runner registration request.",
+  "dependencies": {
+    "G-PROD-CONTRACTS": {"status": "PASS"},
+    "PRODUCT_VISUAL_CONTINUITY_OWNERSHIP": {"status": "PASS", "control_pr": 333},
+    "SINGLE_CAMERA_PICKING_AUTHORITY": {"status": "PRESERVED"}
+  },
+  "evidence_debt": [
+    "Verification PR #341 is still running and must not be replaced by the lane-only green status.",
+    "Physical GPU/device evidence remains external and must remain NOT_VERIFIED.",
+    "Permanent Spatial runner registration is control-owned."
+  ],
+  "branch": "work/post-m0/product-visual-continuity-2026-09-20",
+  "pr": 334,
+  "completion_sha": null,
+  "completion_tree": null,
+  "disposition": "VERIFICATION_PENDING"
+}
