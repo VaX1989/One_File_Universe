@@ -1,0 +1,40 @@
+{
+  "schema": "ofu.immutable-terminal-handoff.v1",
+  "prompt_id": "PRODUCT-AUDIO",
+  "mission_date": "2026-09-20",
+  "terminal_state": "READY_FOR_CONTROL_CONVERGENCE",
+  "lane_pr": 339,
+  "branch": "work/post-m0/product-audio-2026-09-20",
+  "semantic_scope": "BOUNDED_OFFLINE_PRESENTATION_ONLY_SYSTEMIC_AUDIO_CERTIFICATION",
+  "verification": {
+    "verification_pr": 340,
+    "head": "3d35dae666cf8c258003e747176e353e77b746e4",
+    "foundation_run": 35525866258,
+    "spatial_run": 35525866294,
+    "result": "PASS"
+  },
+  "proof": {
+    "focused_contract": "PASS",
+    "exact_artifact_direct_file": "PASS",
+    "zero_mandatory_network": true,
+    "optional_user_activation": true,
+    "desktop_user_activation": true,
+    "mobile_user_activation": true,
+    "mute": true,
+    "reduced_motion": true,
+    "unsupported_audio_graceful": true,
+    "unknown_atmosphere_silent": true,
+    "literal_vacuum_sound": false,
+    "micro_cross_domain_audio_suppressed": true,
+    "serialized_controls": true,
+    "idle_polling": false,
+    "max_concurrent_poll_timers": 1,
+    "authority": "PRESENTATION_ONLY"
+  },
+  "limitations": [
+    "No physical-device claim is made.",
+    "No real assistive-technology claim is made.",
+    "This lane certifies and falsifies the existing shipping audio implementation; it does not create a new canonical or navigation authority."
+  ],
+  "next": "CTRL-CONVERGENCE"
+}
