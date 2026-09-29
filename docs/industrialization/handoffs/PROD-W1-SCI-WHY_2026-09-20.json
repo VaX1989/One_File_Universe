@@ -1,0 +1,117 @@
+{
+  "prompt_id": "PROD-W1-SCI-WHY",
+  "master_schema_version": 4,
+  "epoch": "OFU-POST-M0-PRODUCT-NEXT-2026-09-20-296565BB",
+  "base_sha": "de06cc7f8e4b74e57aad583a8764ac756b06b9da",
+  "base_tree": "92ea93742177879dcf7f3fd94560439d0149b43d",
+  "dependency_shas": {
+    "PR287_V4_MASTER": "c2cab6d6e914b918432432fdc69825e0a1000509",
+    "PR286_PRODUCT_SCIENTIST_SOURCE": "3d28ec0720f611278b7717da02713c9eda96e642",
+    "PR287_V3_SCI_WHY_SOURCE": "6494c3a43596c2d16c43237c052d404d5b1a7e74",
+    "PR275_PRODUCT_DAG_SOURCE": "86e19cae0e8c393661d6696617c5a5e49eb78983",
+    "PROD_W1_SCI_FP_MERGE": "454c55a49f73254d0370bbdfb01d778998235326"
+  },
+  "final_sha": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD",
+  "final_tree": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD_TREE",
+  "exact_tested_subject": "650c2f6afe96e819e7a2646d2726f43505570c30",
+  "changed_paths": [
+    "src/product/w1/scientific-why.js",
+    "tests/product/prod-w1-sci-why.mjs",
+    "docs/product/scientific-why/README.md",
+    "docs/product/scientific-why/INTEGRATION_PATCH_REQUEST_TEST_REGISTRATION.json",
+    "docs/frontier/execution/parallel/PROD-W1-SCI-WHY_EXECUTION_STATE.json",
+    "docs/industrialization/handoffs/PROD-W1-SCI-WHY_2026-09-20.json"
+  ],
+  "ownership_result": "PASS_ADDITIVE_SCIENTIST_CAUSAL_ANCESTRY_UNCERTAINTY_PROJECTION_NO_SHARED_RENDERER_CAMERA_P2_P4_FROZEN_CONTRACT_OR_CANONICAL_SCIENCE_MUTATION",
+  "tests": [
+    {
+      "command": "npm test (verification-only package registration includes node tests/product/prod-w1-sci-why.mjs)",
+      "result": "PASS",
+      "verification_pr": 315,
+      "verification_pr_disposition": "CLOSED_UNMERGED",
+      "verification_head": "b1d514736828ac0b45744c3f6bb72e9791e784c8",
+      "exact_lane_subject": "650c2f6afe96e819e7a2646d2726f43505570c30",
+      "foundation_run": 35503594107,
+      "node": "24.20.0"
+    },
+    {
+      "check": "lane-owned diff path review",
+      "result": "PASS_FIVE_PRE_HANDOFF_PATHS_ALL_WITHIN_GRANTED_OWNERSHIP"
+    },
+    {
+      "check": "product control branch remained at authorized activation head during implementation",
+      "result": "PASS",
+      "control_pr": 312,
+      "sha": "de06cc7f8e4b74e57aad583a8764ac756b06b9da"
+    }
+  ],
+  "deterministic_witnesses": [
+    {
+      "kind": "SCIENTIFIC_WHY_GRAPH_HASH",
+      "sha256": "0427304270010e1aa2f18de86d2cab9b10963de090ad94463772771dfc46a436"
+    },
+    {
+      "kind": "GRAPH_SHAPE",
+      "nodes": 44,
+      "edges": 30,
+      "unknownEdges": 10,
+      "unsupportedEdges": 1,
+      "assumptions": 1,
+      "uncertainties": 2
+    },
+    {
+      "kind": "CANONICAL_GRAPH_BYTES",
+      "bytes": 49358
+    },
+    {
+      "kind": "BOUNDED_INSPECTION",
+      "edges": 2,
+      "truncated": true
+    },
+    {
+      "kind": "ORDER_EQUIVALENCE",
+      "result": "PASS_IDENTICAL_GRAPH_HASH_AND_CANONICAL_SERIALIZATION"
+    },
+    {
+      "kind": "SCIENTIFIC_FINGERPRINT_REUSE",
+      "provider": "ofu.product.w1.scientific-fingerprint",
+      "no_duplicate_provider": true
+    }
+  ],
+  "security_classification": "READ_ONLY_BOUNDED_PRODUCT_PROJECTION; no network/parser/persistence/execution authority added; inputs are bounded and exact-key/typed where lane-owned.",
+  "authority_science_classification": "ANALYSIS_ONLY graph over existing governed Scientific Fingerprint/state. Per-edge source/target/projection/effective authority is explicit; mixed paths downgrade. UNKNOWN and UNSUPPORTED fail closed. Presentation consequences and explanatory text never become scientific state authority.",
+  "performance_resource_evidence": "Projection bounds default to maxNodes=256, maxEdges=512, maxCandidates=128, maxAssumptions=64, maxUncertainties=64, maxParameterBytes=4096; inspection defaults are separately bounded. Hosted witness used 44 nodes / 30 edges and a 49,358-byte canonical graph.",
+  "limitations": [
+    "Upstream R6 currently exposes model-conditioned presentation influences, explicit non-influences and unknowns, not a complete source-backed scientific causal genealogy; this lane does not invent missing causal science.",
+    "Uncertainty is first-class only when explicitly supplied by an upstream/caller record bound to the exact subject/model; absence is NOT_DECLARED_UPSTREAM.",
+    "UNSUPPORTED is a lane-local fail-closed classification and does not amend the frozen W1 authority contract.",
+    "Permanent package.json registration is outside lane ownership and must be applied by control convergence.",
+    "The terminal handoff uses externally bound Draft PR final SHA/tree to avoid self-referential evidence mutation."
+  ],
+  "falsification_attempts": [
+    "Repeated projection produced identical graph identity.",
+    "Reversed semantically equivalent candidate/assumption/uncertainty ordering produced identical canonical graph and hash.",
+    "Wrong canonical subject and universe were rejected by the reused Scientific Fingerprint provider.",
+    "World scientific-model mismatch and candidate scientific-model mismatch were rejected.",
+    "Mixed MODEL_DERIVED -> PRESENTATION_ONLY causal test edge downgraded effective authority to PRESENTATION_ONLY.",
+    "Explicit UNKNOWN propagated as UNKNOWN; explicit UNSUPPORTED propagated as UNSUPPORTED.",
+    "Model-conditioned upstream presentation influence remained causalClaim=false and was not promoted to scientific CAUSES.",
+    "CORRELATES with explicitCausalClaim=true was rejected; CAUSES without explicitCausalClaim=true was rejected.",
+    "Explicit causal cycle was rejected.",
+    "Node/candidate resource bounds failed closed.",
+    "Tampered graph hash failed inspection integrity verification.",
+    "Bounded focus inspection reported truncation rather than pretending completeness.",
+    "Generated explanation strings remained PRESENTATION_ONLY with stateAuthority=false.",
+    "BigInt uncertainty parameters canonicalized deterministically without permissive JSON authority."
+  ],
+  "rollback_abandon_condition": "If control review finds authority promotion, non-deterministic graph identity, protected shared-surface mutation, or a scientific causal relation not backed by explicit upstream/caller provenance, reject PR #314 and repair forward within SCI-WHY ownership; do not weaken W1 contracts or rewrite published evidence.",
+  "integration_patch_requests": [
+    {
+      "path": "docs/product/scientific-why/INTEGRATION_PATCH_REQUEST_TEST_REGISTRATION.json",
+      "target_surface": "CENTRAL_PRODUCT_TEST_REGISTRATION",
+      "target_path": "package.json",
+      "expected_authority": "CTRL-WAVE-EPOCH/CTRL-CONVERGENCE"
+    }
+  ],
+  "disposition": "READY_FOR_CONTROL_CONVERGENCE"
+}

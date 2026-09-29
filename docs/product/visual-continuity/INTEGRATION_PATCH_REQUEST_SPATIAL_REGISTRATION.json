@@ -1,0 +1,22 @@
+{
+  "schema": "ofu.integration-patch-request.v1",
+  "requesting_prompt_id": "PRODUCT-VISUAL-CONTINUITY",
+  "target_surface": "CONTROL_OWNED_SPATIAL_CONVERGENCE_RUNNER",
+  "target_path": "tests/spatial-continuum/r6-w0-phase2-convergence-runner.mjs",
+  "expected_authority": "CTRL-CONVERGENCE",
+  "intended_change": "Append product-visual-continuity suite without removing any accepted Spatial convergence suite.",
+  "suite": "{name:'product-visual-continuity',command:node,args:['tests/spatial-continuum/product-visual-continuity.mjs']}",
+  "verification": {
+    "verification_pr": 341,
+    "head": "7e6d21d6af706334424f4fd77b1f039bffe0193a",
+    "spatial_run": 35526963054,
+    "result": "PASS"
+  },
+  "invariants": [
+    "preserve all existing Spatial suites",
+    "preserve single camera/picking authority",
+    "preserve PRODUCT-AUDIO browser registration when present",
+    "do not mutate production semantics"
+  ],
+  "status": "REQUESTED"
+}

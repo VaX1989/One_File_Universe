@@ -1,0 +1,22 @@
+{
+  "schema": "ofu.integration-patch-request.v1",
+  "requesting_prompt_id": "PROD-W2-SEARCH",
+  "epoch": "OFU-POST-M0-PRODUCT-NEXT-2026-09-20-296565BB",
+  "target_surface": "CENTRAL_TEST_REGISTRATION",
+  "target_path": "package.json",
+  "expected_authority": "CTRL-WAVE-EPOCH/CTRL-CONVERGENCE",
+  "intended_change": "Register tests/product/prod-w2-search.mjs as a focused product test and include it in the control-owned cumulative test command without changing SEARCH semantics.",
+  "rationale": "The lane owns its additive focused test but package.json and central test runner/workflow surfaces are protected. Hosted exact-head execution of the focused test requires control-owned registration.",
+  "invariants": [
+    "No production/runtime dependency is added.",
+    "No renderer, camera, picking, P2, P4 or scientific authority changes.",
+    "Direct-file/offline operation remains unchanged.",
+    "The test command executes node tests/product/prod-w2-search.mjs exactly."
+  ],
+  "tests": [
+    "node tests/product/prod-w2-search.mjs",
+    "npm test",
+    "existing exact-head conformance workflows"
+  ],
+  "status": "REQUESTED_NOT_APPLIED_BY_LANE_WRITER"
+}

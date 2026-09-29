@@ -2,17 +2,43 @@
 
 # ONE FILE UNIVERSE
 
-### A persistent, explorable universe — delivered as one deterministic HTML file.
+### One reality. Every scale. One file.
+
+**A deterministic, offline-first multiscale universe engine and product research platform.**
 
 **Cosmos · Worlds · Life · Civilization · Matter · Causality**
 
-**One file. One universe. Verifiable by construction.**
+**Explore · Inspect · Lab**
 
-**Historical release baseline: v1.0.0**
-
-[**What OFU is**](#what-one-file-universe-is) · [**Explore the universe**](#one-continuous-multiscale-reality) · [**Why it is different**](#why-it-is-different) · [**Architecture**](#architecture-at-a-glance) · [**V1 convergence**](#the-v1-massive-parallel-convergence) · [**Run it**](#build-and-open-the-universe) · [**Evidence & boundaries**](#where-the-project-stands-now)
+[**What OFU is**](#what-one-file-universe-is) · [**Visual system**](#product-identity-and-visual-direction) · [**Explore the universe**](#one-continuous-multiscale-reality) · [**Architecture**](#architecture-at-a-glance) · [**Current programme**](#where-the-project-stands-now) · [**Build it**](#build-and-open-the-universe) · [**Evidence boundaries**](#current-claim-boundaries)
 
 </div>
+
+---
+
+## Product identity and visual direction
+
+The presentation layer is built around a single idea: **the same reality should remain legible as the observer moves across radically different scales.** The visual system therefore treats scale, continuity, selection and provenance as parts of the product language rather than decoration.
+
+> **Presentation note:** these boards are visual-identity and product-direction studies. They communicate the intended interaction and brand grammar; they are **not** evidence that every depicted surface or fidelity level is already shipping.
+
+<p align="center">
+  <img src="docs/presentation/visual-system/ofu-visual-system-01.png" alt="One File Universe visual system study 01" width="49%">
+  <img src="docs/presentation/visual-system/ofu-visual-system-02.png" alt="One File Universe visual system study 02" width="49%">
+</p>
+
+<p align="center">
+  <img src="docs/presentation/visual-system/ofu-visual-system-03.png" alt="One File Universe visual system study 03" width="49%">
+  <img src="docs/presentation/visual-system/ofu-visual-system-04.png" alt="One File Universe visual system study 04" width="49%">
+</p>
+
+The product vocabulary is intentionally compact:
+
+- **Explore** — enter and navigate the reality directly.
+- **Inspect** — reveal context, provenance, model authority and causal explanation.
+- **Lab** — compare, measure, reproduce and test the same reality without creating a second source of truth.
+
+The complete visual assets live in [`docs/presentation/visual-system/`](docs/presentation/visual-system/).
 
 ---
 
@@ -144,9 +170,9 @@ That separation is what makes an offline single-file universe technically plausi
 
 ---
 
-## The v1 massive-parallel convergence
+## Historical v1 massive-parallel convergence
 
-The current v1 convergence is the result of a large parallel development program built from one exact common base and harvested into a single product line.
+The v1.0.0 historical convergence was the result of a large parallel development program built from one exact common base and harvested into a single product line.
 
 **V1X-01 through V1X-14 are shipping convergence work.** Their implementations, provider/catalog surfaces, tests and conformance material are represented in the v1 product line rather than remaining isolated development branches.
 
@@ -246,44 +272,40 @@ The release certification path builds the artifact twice and requires byte-for-b
 
 ## Where the project stands now
 
-> **The founder has approved OFU v1.0.0 as an immutable historical baseline. Promotion to `main`, tagging, publication and creation of a GitHub Release have not been performed.**
+One File Universe has a deliberately separated history: **v1.0.0 remains the immutable historical baseline**, while the current source line has advanced into the post-v1 / 2.0.0 development programme. Later work does not retroactively rewrite the v1 evidence boundary.
 
-The v1.0.0 identity preserves the certified functionality rooted at commit `6d1c8bcc18557eb654e3259bf419890b761acfa9` and tree `ac6d9444453704fb27ea437a879d8b6e7370762c`. It is a stable historical starting point for later work, not a claim that One File Universe has reached its final intended quality or depth.
+The current integrated programme checkpoint records **96/96 canonical prompts reconciled**. At the last executable semantic checkpoint, the root workflow matrix was **10/10 PASS** and the Spatial Continuum convergence suite was **15/15 PASS**. The remaining items are explicitly gated rather than cosmetically marked complete.
 
 | Surface | Current state |
 |---|---|
-| Product identity | **v1.0.0 historical baseline** |
-| Functional base | `6d1c8bcc18557eb654e3259bf419890b761acfa9` / `ac6d9444453704fb27ea437a879d8b6e7370762c` |
-| V1X shipping lanes | **V1X-01–V1X-14 integrated** |
-| Product composition | **Living multiscale runtime with shipped provider bindings** |
-| Distribution target | **Single self-contained HTML** |
-| Strict portability | **Offline direct-file baseline** |
-| Semantic scale authority | **Single mutable authority** |
-| Persistence / replay | **Deterministic and governed** |
-| Resource model | **Bounded scheduling/materialization with recovery paths** |
-| Scientific/model disclosure | **Authority and limitation classes preserved** |
-| Exact source reproduction | **Required and exercised by definitive certification** |
-| Browser release matrix | **Chromium / Firefox / WebKit + Windows Chromium + macOS WebKit** |
-| Physical Android | `NOT_VERIFIED_PHYSICAL_DEVICE` |
-| Physical iOS | `NOT_VERIFIED_PHYSICAL_DEVICE` |
-| `main` promotion | **Not performed** |
-| `v1.0.0` tag / release | **Not created** |
-| Founder historical-freeze decision | **Approved** |
+| Source package | **2.0.0 development line** |
+| Historical baseline | **v1.0.0**, preserved as a historical identity |
+| Distribution target | **One self-contained HTML artifact** |
+| Product modes | **Explore · Inspect · Lab** |
+| Canonical programme accounting | **96 / 96 prompts reconciled** |
+| COMPLETE | **44** |
+| BLOCKED_BY_DECLARED_DEPENDENCY | **40** |
+| INDEPENDENT_AUDIT_REQUIRED | **1** |
+| MANUAL_GATE_REQUIRED | **10** |
+| EXTERNAL_EVIDENCE_REQUIRED | **1** |
+| Last executable semantic subject | `7c413efb051994c42c52c3642aeacddad8716485` |
+| Exact-head workflow evidence at that subject | **10 / 10 PASS** |
+| Spatial convergence evidence at that subject | **15 / 15 mandatory suites PASS** |
+| Physical Android / iOS / real-device GPU evidence | **NOT_VERIFIED** |
+| Project license | **Not selected** |
 
-The definitive workflow is [`.github/workflows/v1-certification.yml`](.github/workflows/v1-certification.yml). It verifies the exact checked-out source, frozen foundation, V1 scientific/persistence/PX conformance, V1X authority and bounded-resource closure, deterministic double-build reproduction, direct-file product journeys and the release browser matrix.
+The authoritative programme handoff is [`docs/industrialization/control/OFU_FINAL_PROGRAMME_COMPLETION_HANDOFF_2026-09-20.md`](docs/industrialization/control/OFU_FINAL_PROGRAMME_COMPLETION_HANDOFF_2026-09-20.md). It distinguishes completed work from manual gates, external evidence, independent audit requirements and dependency-blocked work instead of collapsing them into a single “done” label.
 
-A green workflow is evidence for the requirements it actually executes; it is not treated as proof of unmeasured scientific validity, physical-device usability or unlimited simulation fidelity.
+The historical v1.0.0 identity remains rooted at commit `6d1c8bcc18557eb654e3259bf419890b761acfa9` and tree `ac6d9444453704fb27ea437a879d8b6e7370762c`. That baseline is preserved as a historical starting point, not as a claim that the project has reached its final intended quality or scientific depth.
 
-### Known v1.0.0 historical-baseline limitations
+### Known evidence boundaries
 
-- Visual quality and UX remain early and uneven in places.
-- Camera behavior and exploration fluidity remain limited despite the certified functional navigation path.
-- Planetary richness and variety remain limited.
-- Local, human and microscopic scale depth remain limited.
-- Physical Android and physical iOS operation have not been verified.
-- Scientific and model limitations remain explicitly disclosed by the artifact's authority and provenance metadata.
-
-These accepted limitations define the historical baseline; they do not weaken the v1.0.0 identity and must not be read as the target quality bar for a later release.
+- Visual quality and UX are still evolving and should not be inferred from concept boards alone.
+- Planetary, local, human and microscopic depth remain bounded by implemented providers and model authority.
+- Physical Android, physical iOS and real-device GPU operation remain unverified.
+- Independent G1 audit and several later programme gates remain intentionally external or manual.
+- Scientific/model limitations remain explicit in authority and provenance metadata.
+- A passing workflow is evidence for the requirements it executes, not proof of unmeasured scientific validity or unlimited simulation fidelity.
 
 ---
 
@@ -374,7 +396,6 @@ One File Universe does **not** currently claim:
 - physical Android or iOS validation;
 - production-scale security certification or an external scientific audit;
 - that the v1.0.0 historical baseline is the final intended quality or depth of One File Universe;
-- that promotion to `main`, a tag, a GitHub Release or publication has already occurred.
 
 The project **does** claim an engineering architecture designed to make those distinctions inspectable rather than implicit.
 

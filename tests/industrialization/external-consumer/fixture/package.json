@@ -1,0 +1,12 @@
+{
+  "name": "ofu-ind-ext-consumer-fixture",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "one-file-universe": "file:./one-file-universe.tgz"
+  },
+  "scripts": {
+    "proof": "node consumer.mjs"
+  }
+}

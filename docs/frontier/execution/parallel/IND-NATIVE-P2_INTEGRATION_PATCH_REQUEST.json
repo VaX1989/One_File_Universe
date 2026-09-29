@@ -1,0 +1,24 @@
+{
+  "schema": "ofu.integration-patch-request.v1",
+  "prompt_id": "IND-NATIVE-P2",
+  "owner": "CTRL-CONVERGENCE",
+  "target": "package.json",
+  "reason": "package.json is a control-owned shared surface and the native lane must not overwrite accumulated regression registration.",
+  "requested_semantic_change": {
+    "script": "test",
+    "operation": "APPEND_WITHOUT_REMOVAL",
+    "command": "node tests/industrialization/native-p2/native-parity.mjs"
+  },
+  "preserve": [
+    "all existing product focused regressions",
+    "IND-JS-HEADLESS public seam",
+    "IND-SEC-B hostile-input corpus",
+    "IND-EXT-CONSUMER clean-room proof"
+  ],
+  "verification": {
+    "focused_overlay_pr": 332,
+    "foundation_run": 35524220956,
+    "result": "PASS"
+  },
+  "status": "REQUESTED"
+}

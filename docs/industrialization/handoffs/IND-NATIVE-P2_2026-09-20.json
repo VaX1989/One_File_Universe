@@ -1,0 +1,50 @@
+{
+  "schema": "ofu.immutable-terminal-handoff.v1",
+  "prompt_id": "IND-NATIVE-P2",
+  "mission_date": "2026-09-20",
+  "terminal_state": "READY_FOR_CONTROL_CONVERGENCE",
+  "lane_pr": 331,
+  "branch": "work/post-m0/ind-native-p2-g0b-pass-2026-09-20",
+  "semantic_scope": "SMALLEST_FROZEN_P2_CORE_NATIVE_PARITY_SLICE",
+  "entry_gate": {
+    "G0B_EXTERNAL_CONSUMER_SEAM_PROOF": "PASS"
+  },
+  "verified_subject": {
+    "implementation_blob": "2954f8259ebd8ebace429f887637232a5ea6b198",
+    "focused_test_blob": "6070b9a6e504a933d625d2960489ab543efa3ecb",
+    "verification_pr": 332,
+    "verification_head": "b0aa0808dba6646d21b90c0011ba4d810d0d8d2e",
+    "foundation_run": 35524220956,
+    "foundation_job": 106113455217,
+    "blob_identity_with_lane": "VERIFIED_EQUAL"
+  },
+  "proof": {
+    "result": "PASS",
+    "corpus_revision": 2,
+    "corpus_digest": "d92b43afb8a7deeaed4b0c3ee13b73bad344b196132c35433b66360c0b0772fc",
+    "canonical_bytes_and_digests": "PASS",
+    "malformed_and_rejection_classes": "PASS",
+    "numeric_bounds_and_overflow": "PASS",
+    "unicode_frozen_witnesses": "PASS",
+    "addresses_identity_derivation": "PASS",
+    "gcc_clang_transcript_identity": "PASS",
+    "positive_checks": 42,
+    "rejection_checks": 45,
+    "numeric_checks": 14,
+    "js_internal_fallback": false,
+    "python_runtime_fallback": false
+  },
+  "implementation_policy": {
+    "language": "C++17",
+    "dependencies": "STANDARD_LIBRARY_ONLY",
+    "runtime_ported": false,
+    "broad_abi_frozen": false,
+    "authoritative_js_semantics_changed": false
+  },
+  "limitations": [
+    "This is a feasibility/parity slice, not Runtime.",
+    "This does not establish a stable C ABI; IND-CABI-MICROHOST remains the next dependent lane.",
+    "This session must not later self-certify G1 after authoring native/C ABI work."
+  ],
+  "next": "CTRL-CONVERGENCE then IND-CABI-MICROHOST"
+}

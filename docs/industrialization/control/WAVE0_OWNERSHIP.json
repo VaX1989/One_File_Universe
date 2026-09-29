@@ -1,0 +1,316 @@
+{
+  "schema": "ofu.post-m0.wave0.ownership.v1",
+  "authority": "PLANNING_METADATA_ONLY",
+  "prompt_id": "CTRL-WAVE0",
+  "epoch_id": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "ownership_version": "ofu.post-m0.wave0.ownership.v1",
+  "frozen_base": {
+    "branch": "experiment/spatial-continuum-r6-causal-universe-2026-09-14",
+    "sha": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+    "tree": "3704247247940fa8c5f08291cd80ec9e24e7d49d"
+  },
+  "control": {
+    "owner": "CTRL-WAVE0",
+    "branch": "integration/post-m0-dual-track-wave0-2026-09-17",
+    "pr_base": "experiment/spatial-continuum-r6-causal-universe-2026-09-14",
+    "semantic_surface": "CONTROL_PLANE",
+    "implementation_writer_slots": 0,
+    "owned_paths": [
+      "docs/industrialization/control/**",
+      "docs/frontier/execution/POST_M0_DUAL_TRACK_WAVE0_CONTROL_STATE.json",
+      "docs/frontier/execution/parallel/CTRL-WAVE0_EXECUTION_STATE.json"
+    ]
+  },
+  "global_rules": {
+    "one_writer_per_semantic_surface": true,
+    "semantic_ownership_stronger_than_file_ownership": true,
+    "writer_base": "EXACT_CONTROL_PR_HEAD_AT_ACTIVATION",
+    "writer_pr_base": "integration/post-m0-dual-track-wave0-2026-09-17",
+    "writer_pr_mode": "DRAFT_ONLY",
+    "lane_branch_pattern": "work/post-m0/<lowercase-prompt-id>-<epoch-id>",
+    "no_force_push": true,
+    "no_rebase_after_published_evidence": true,
+    "out_of_scope_shared_change": "INTEGRATION_PATCH_REQUEST",
+    "child_implementation_by_control_owner": false
+  },
+  "protected_from_lane_writers": [
+    "docs/industrialization/control/**",
+    "docs/frontier/execution/POST_M0_DUAL_TRACK_WAVE0_CONTROL_STATE.json",
+    "docs/frontier/execution/parallel/CTRL-WAVE0_EXECUTION_STATE.json",
+    "package.json",
+    ".github/workflows/**",
+    "release/tag metadata",
+    "main",
+    "current product renderer/camera/kernel/scientific authority surfaces unless a later control grant explicitly transfers ownership"
+  ],
+  "initial_writers": [
+    {
+      "prompt_id": "PROD-W1-CONTRACTS",
+      "mode": "WRITE_PRODUCT",
+      "status": "READY_WRITER",
+      "dependency": [
+        "M0_HISTORICAL"
+      ],
+      "semantic_surface": "PRODUCT_CONTRACTS",
+      "write_authority": [
+        "new versioned W1 contract/schema files",
+        "additive contract tests",
+        "Scientific Fingerprint/provenance envelope definition",
+        "saved observation/place/snapshot/address envelope definition",
+        "docs/frontier/execution/parallel/PROD-W1-CONTRACTS_EXECUTION_STATE.json"
+      ],
+      "forbidden_without_control_transfer": [
+        "product renderer composition",
+        "canonical P2/P4 semantics",
+        "canonical scientific status"
+      ]
+    },
+    {
+      "prompt_id": "QOBS-CROSS-PROGRAM",
+      "mode": "WRITE_PRODUCT",
+      "status": "READY_WRITER",
+      "dependency": [
+        "M0_HISTORICAL"
+      ],
+      "semantic_surface": "QUALITY_OBSERVATORY",
+      "write_authority": [
+        "Quality Observatory shared surface",
+        "additive metric schemas",
+        "deterministic witness/report tooling",
+        "docs/frontier/execution/parallel/QOBS-CROSS-PROGRAM_EXECUTION_STATE.json"
+      ],
+      "forbidden_without_control_transfer": [
+        "canonical science",
+        "release policy",
+        "product renderer",
+        "native semantic authority"
+      ]
+    },
+    {
+      "prompt_id": "IND-GOV-A",
+      "mode": "WRITE",
+      "status": "READY_WRITER",
+      "dependency": [
+        "M0_HISTORICAL"
+      ],
+      "semantic_surface": "INDUSTRIALIZATION_SPEC",
+      "write_authority": [
+        "protocol inventory",
+        "normative/informative classification",
+        "industrialization ADRs",
+        "docs/frontier/execution/parallel/IND-GOV-A_EXECUTION_STATE.json"
+      ],
+      "forbidden_without_control_transfer": [
+        "production P2/P4 semantics",
+        "product renderer",
+        "runtime implementation",
+        "release metadata"
+      ]
+    },
+    {
+      "prompt_id": "IND-CONF-A",
+      "mode": "WRITE",
+      "status": "READY_WRITER",
+      "dependency": [
+        "M0_HISTORICAL"
+      ],
+      "semantic_surface": "CONFORMANCE_CORPUS",
+      "write_authority": [
+        "additive language-independent conformance corpus",
+        "additive independent oracle coverage",
+        "corpus manifest/digest",
+        "docs/frontier/execution/parallel/IND-CONF-A_EXECUTION_STATE.json"
+      ],
+      "forbidden_without_control_transfer": [
+        "production semantics",
+        "product UI",
+        "renderer"
+      ]
+    },
+    {
+      "prompt_id": "IND-LIC-A",
+      "mode": "WRITE",
+      "status": "READY_WRITER",
+      "dependency": [
+        "M0_HISTORICAL"
+      ],
+      "semantic_surface": "LICENSING_DECISION_DOSSIER",
+      "write_authority": [
+        "licensing/IP planning docs",
+        "third-party inventory",
+        "decision matrix",
+        "docs/frontier/execution/parallel/IND-LIC-A_EXECUTION_STATE.json"
+      ],
+      "forbidden_without_control_transfer": [
+        "selecting a legal license on founder's behalf",
+        "modifying existing copyright notices",
+        "representing project as open source before explicit license authority"
+      ]
+    },
+    {
+      "prompt_id": "IND-BRIDGE-A",
+      "mode": "WRITE",
+      "status": "READY_WRITER",
+      "dependency": [
+        "M0_HISTORICAL"
+      ],
+      "semantic_surface": "HEADLESS_BRIDGE_DESIGN",
+      "write_authority": [
+        "bridge architecture docs",
+        "dependency/coupling maps",
+        "additive seam characterization tests",
+        "docs/frontier/execution/parallel/IND-BRIDGE-A_EXECUTION_STATE.json"
+      ],
+      "forbidden_without_control_transfer": [
+        "production renderer",
+        "current runtime authority",
+        "canonical kernel",
+        "public API implementation before G0A"
+      ]
+    }
+  ],
+  "initial_readonly_audits": [
+    {
+      "prompt_id": "ARCH-PERSIST",
+      "mode": "READ_ONLY_AUDIT",
+      "write_scope": []
+    },
+    {
+      "prompt_id": "ARCH-PROVIDER",
+      "mode": "READ_ONLY_AUDIT",
+      "write_scope": []
+    },
+    {
+      "prompt_id": "ARCH-RUNTIME",
+      "mode": "READ_ONLY_AUDIT",
+      "write_scope": []
+    },
+    {
+      "prompt_id": "ARCH-UE",
+      "mode": "READ_ONLY_AUDIT",
+      "write_scope": []
+    },
+    {
+      "prompt_id": "ARCH-WASM",
+      "mode": "READ_ONLY_AUDIT",
+      "write_scope": []
+    },
+    {
+      "prompt_id": "AUDIT-ABI",
+      "mode": "READ_ONLY_AUDIT",
+      "write_scope": []
+    },
+    {
+      "prompt_id": "AUDIT-AUTHORITY",
+      "mode": "READ_ONLY_AUDIT",
+      "write_scope": []
+    },
+    {
+      "prompt_id": "AUDIT-DETERMINISM",
+      "mode": "READ_ONLY_AUDIT",
+      "write_scope": []
+    },
+    {
+      "prompt_id": "AUDIT-PERFORMANCE",
+      "mode": "READ_ONLY_AUDIT",
+      "write_scope": []
+    },
+    {
+      "prompt_id": "AUDIT-PERSISTENCE",
+      "mode": "READ_ONLY_AUDIT",
+      "write_scope": []
+    },
+    {
+      "prompt_id": "AUDIT-PORTABILITY",
+      "mode": "READ_ONLY_AUDIT",
+      "write_scope": []
+    },
+    {
+      "prompt_id": "AUDIT-PRODUCT",
+      "mode": "READ_ONLY_AUDIT",
+      "write_scope": []
+    },
+    {
+      "prompt_id": "AUDIT-SCIENCE",
+      "mode": "READ_ONLY_AUDIT",
+      "write_scope": []
+    },
+    {
+      "prompt_id": "AUDIT-SECURITY",
+      "mode": "READ_ONLY_AUDIT",
+      "write_scope": []
+    },
+    {
+      "prompt_id": "IND-SEC-A",
+      "mode": "READ_ONLY_AUDIT",
+      "write_scope": []
+    }
+  ],
+  "gate_sensitive_aliases": {
+    "CTRL-IW0-EPOCH": {
+      "target": "CTRL-WAVE0"
+    },
+    "IND-GOV": {
+      "target": "IND-GOV-A"
+    },
+    "IND-CONF": {
+      "target": "IND-CONF-A"
+    },
+    "IND-LIC": {
+      "target": "IND-LIC-A"
+    },
+    "IND-BRIDGE": {
+      "target": "IND-BRIDGE-A"
+    },
+    "IND-NATIVE": {
+      "target": "IND-NATIVE-P2",
+      "status": "BLOCKED",
+      "requires": [
+        "G0B_EXTERNAL_CONSUMER_SEAM_PROOF"
+      ]
+    },
+    "IND-SEC": {
+      "before_G0A": "IND-SEC-A",
+      "after_G0A": "IND-SEC-B"
+    }
+  },
+  "explicit_blocked_guards": [
+    {
+      "prompt_id": "IND-NATIVE-P2",
+      "requires": [
+        "G0B_EXTERNAL_CONSUMER_SEAM_PROOF"
+      ]
+    },
+    {
+      "prompt_id": "IND-RUNTIME",
+      "requires": [
+        "G1_PASS_CONTINUE"
+      ]
+    },
+    {
+      "prompt_ids": [
+        "IND-UE",
+        "IND-UNITY",
+        "IND-GODOT"
+      ],
+      "requires": [
+        "G3_PROVIDER_AND_DURABILITY_PROOF",
+        "G-TARGET-CABI-STABLE"
+      ]
+    }
+  ],
+  "integration_patch_request": {
+    "required_for_out_of_scope_shared_change": true,
+    "required_fields": [
+      "requesting_prompt_id",
+      "target_surface",
+      "target_path",
+      "expected_authority",
+      "intended_change",
+      "rationale",
+      "invariants",
+      "tests"
+    ],
+    "applier": "CTRL-WAVE0/CTRL-CONVERGENCE"
+  }
+}

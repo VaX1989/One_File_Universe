@@ -1,0 +1,87 @@
+{
+  "prompt_id": "PROD-W1-CONTRACTS",
+  "master_schema_version": 4,
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "base_sha": "37e6744f1d8f711278ae8b14ddaf84b9176b5a6b",
+  "base_tree": "fb5be853362a9266f0f6d64f23338d2827f358e0",
+  "dependency_shas": {
+    "M0_HISTORICAL": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+    "CTRL_WAVE0_REPAIR_PHASE": "37e6744f1d8f711278ae8b14ddaf84b9176b5a6b",
+    "ORIGINAL_PROD_W1_CONTRACTS_LANE": "65d3c03fbb4745d71c189aba1d7260b030badc20",
+    "PR287_V4_MASTER": "c2cab6d6e914b918432432fdc69825e0a1000509"
+  },
+  "final_sha": "EXTERNALLY_BOUND_BY_DRAFT_REPAIR_PR_HEAD",
+  "final_tree": "EXTERNALLY_BOUND_BY_DRAFT_REPAIR_PR_HEAD_TREE",
+  "changed_paths": [
+    "docs/frontier/execution/parallel/PROD-W1-CONTRACTS_EXECUTION_STATE.json",
+    "docs/industrialization/handoffs/PROD-W1-CONTRACTS_REPAIR_2026-09-19.json"
+  ],
+  "ownership_result": "PASS_PRODUCT_CONTRACTS_REPAIR_METADATA_ONLY_NO_SEMANTIC_SOURCE_CHANGE",
+  "tests": [
+    {
+      "check": "historical focused contract conformance from original lane PR #293",
+      "command": "node tests/product/prod-w1-contracts.mjs",
+      "result": "HISTORICAL_EXECUTED_THREE_CONSECUTIVE_PASS",
+      "source_pr": 293,
+      "source_lane_sha": "65d3c03fbb4745d71c189aba1d7260b030badc20",
+      "caveat": "This repair does not claim a fresh local execution."
+    },
+    {
+      "check": "historical focused deterministic witness",
+      "result": "PASS_RECORDED_BY_ORIGINAL_LANE",
+      "saved_observation_bytes": 1697,
+      "saved_observation_sha256": "6846656dfe2bab0e53623bf315d51d71a2005d7c55cf40e2cb86127ffdbd7e5e"
+    },
+    {
+      "check": "live Wave-0 control cumulative GitHub Actions before repair",
+      "subject_sha": "37e6744f1d8f711278ae8b14ddaf84b9176b5a6b",
+      "result": "PASS_ALL_OBSERVED",
+      "workflows": [
+        "Foundation Integrity",
+        "P1 Conformance",
+        "P1-P4 Canonical Baseline",
+        "P2 Conformance",
+        "P3 Conformance",
+        "P4 Conformance",
+        "P5 Controlled Promotion",
+        "P5 Environment v2 Canonical Promotion",
+        "P6 v1 Conformance",
+        "Spatial Continuum Experiment"
+      ],
+      "caveat": "These aggregate workflows are regression evidence and are not represented as a fresh run of the focused product-contract test."
+    }
+  ],
+  "deterministic_witnesses": [
+    {
+      "kind": "HISTORICAL_LANE_BINDING",
+      "sha": "65d3c03fbb4745d71c189aba1d7260b030badc20",
+      "tree": "48fb9fa07508b66ad4d8964a4c7f2188c06d9d70"
+    },
+    {
+      "kind": "REPAIR_CONTROL_BASE",
+      "sha": "37e6744f1d8f711278ae8b14ddaf84b9176b5a6b",
+      "tree": "fb5be853362a9266f0f6d64f23338d2827f358e0"
+    },
+    {
+      "kind": "SAVED_OBSERVATION_SHA256",
+      "bytes": 1697,
+      "sha256": "6846656dfe2bab0e53623bf315d51d71a2005d7c55cf40e2cb86127ffdbd7e5e"
+    }
+  ],
+  "security_classification": "NO_SECURITY_SEMANTIC_CHANGE_METADATA_ONLY_REPAIR",
+  "authority_science_classification": "NO_CANONICAL_OR_SCIENTIFIC_AUTHORITY_CHANGE; preserves the already-integrated authority-labeled additive product contracts.",
+  "performance_resource_evidence": "NOT_APPLICABLE_METADATA_ONLY_REPAIR",
+  "limitations": [
+    "The execution container cannot obtain a fresh repository checkout, so this repair does not claim a fresh local focused-test run.",
+    "The original lane focused-test evidence is retained as historical evidence because the repair changes no contract implementation or focused test source.",
+    "Exact repair-head GitHub Actions remain control-convergence evidence rather than self-certified gate promotion."
+  ],
+  "falsification_attempts": [
+    "Rechecked live control/base authority and v4 contract requirements before mutation.",
+    "Searched for newer legitimate same-lane repair work; the only similarly named control verification branch was stale and two commits behind the live control head.",
+    "Kept the repair to execution/terminal metadata only; no semantic redesign was introduced to manufacture gate closure."
+  ],
+  "rollback_abandon_condition": "If exact-head evidence or control review identifies a substantive defect in the integrated W1 contract family, reject this metadata-only gate repair and return semantic repair to PRODUCT_CONTRACTS ownership rather than weakening G-PROD-CONTRACTS.",
+  "integration_patch_requests": [],
+  "disposition": "READY_FOR_CONTROL_CONVERGENCE"
+}

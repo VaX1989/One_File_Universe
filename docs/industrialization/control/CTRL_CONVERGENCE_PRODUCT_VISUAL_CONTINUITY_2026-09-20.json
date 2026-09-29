@@ -1,0 +1,28 @@
+{
+  "schema": "ofu.post-m0.ctrl-convergence.product-visual-continuity.v1",
+  "prompt_id": "CTRL-CONVERGENCE",
+  "mission_date": "2026-09-20",
+  "control_pr": 290,
+  "pre_registration_control_head": "5b28ad16ba604ff727d34052190dd641af8696dc",
+  "source_lane": {
+    "prompt_id": "PRODUCT-VISUAL-CONTINUITY",
+    "pr": 334,
+    "merge_commit": "5b28ad16ba604ff727d34052190dd641af8696dc",
+    "terminal_head": "d218b4edc8aab30d3407a2ec7f4246dfd01c13a7",
+    "lane_ci": "10/10_PASS",
+    "spatial_run": 35529805130
+  },
+  "verification": {
+    "prior_verification_pr": 341,
+    "verified_test_blob": "0f566a6644a284c4ed845f8e01ea5a0973d4b970",
+    "full_forward_reverse_interruption_reversal": "PASS",
+    "physical_gpu_evidence": "NOT_VERIFIED"
+  },
+  "control_integration": {
+    "spatial_runner": "APPEND_PRODUCT_VISUAL_CONTINUITY_SUITE_WITHOUT_REMOVAL",
+    "audio_suite_preserved": true,
+    "production_semantics_changed_by_control": false
+  },
+  "required_post_condition": "FRESH_CUMULATIVE_CI_AND_SPATIAL_CONTINUUM_PASS_ON_THIS_CONTROL_INTEGRATION",
+  "disposition": "READY_FOR_CONTROL_EXACT_HEAD_VERIFICATION"
+}

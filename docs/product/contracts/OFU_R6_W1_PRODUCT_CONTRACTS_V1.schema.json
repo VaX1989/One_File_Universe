@@ -1,0 +1,539 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ofu-r6-w1-product-contracts-v1",
+  "title": "OFU R6/W1 Product Contract Family v1",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/canonicalEntityRef"
+    },
+    {
+      "$ref": "#/$defs/p4StateRef"
+    },
+    {
+      "$ref": "#/$defs/scientificFingerprint"
+    },
+    {
+      "$ref": "#/$defs/scientificFingerprintRef"
+    },
+    {
+      "$ref": "#/$defs/returnRef"
+    },
+    {
+      "$ref": "#/$defs/savedObservation"
+    }
+  ],
+  "$defs": {
+    "hex32": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "decimalInteger": {
+      "type": "string",
+      "pattern": "^-?(0|[1-9][0-9]*)$",
+      "not": {
+        "const": "-0"
+      }
+    },
+    "u64Text": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)$"
+    },
+    "authority": {
+      "enum": [
+        "CANONICAL",
+        "MODEL_DERIVED",
+        "ANALYSIS_ONLY",
+        "PRESENTATION_ONLY",
+        "UNKNOWN"
+      ]
+    },
+    "canonicalKey": {
+      "type": "object",
+      "minProperties": 1,
+      "maxProperties": 64,
+      "additionalProperties": {
+        "$ref": "#/$defs/decimalInteger"
+      }
+    },
+    "canonicalEntityRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "contract",
+        "universeId",
+        "entityKind",
+        "canonicalId",
+        "canonicalKey"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "contract": {
+          "const": "ofu-r6-w1-canonical-entity-ref-1"
+        },
+        "universeId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "entityKind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "canonicalId": {
+          "$ref": "#/$defs/hex32"
+        },
+        "canonicalKey": {
+          "$ref": "#/$defs/canonicalKey"
+        }
+      }
+    },
+    "p4Frontier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "seconds",
+        "micros"
+      ],
+      "properties": {
+        "eventId": {
+          "$ref": "#/$defs/hex32"
+        },
+        "seconds": {
+          "$ref": "#/$defs/u64Text"
+        },
+        "micros": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]{0,5})$"
+        }
+      }
+    },
+    "p4StateRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "contract",
+        "protocol",
+        "universeIdentity",
+        "lineageId",
+        "stateDigest",
+        "checkpointId",
+        "frontier"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "contract": {
+          "const": "ofu-r6-w1-p4-state-ref-1"
+        },
+        "protocol": {
+          "const": "ofu-p4-temporal-v1"
+        },
+        "universeIdentity": {
+          "$ref": "#/$defs/hex32"
+        },
+        "lineageId": {
+          "$ref": "#/$defs/hex32"
+        },
+        "stateDigest": {
+          "$ref": "#/$defs/hex32"
+        },
+        "checkpointId": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/hex32"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "frontier": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/p4Frontier"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "scientificHashes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "planet",
+        "context",
+        "surface",
+        "sample"
+      ],
+      "properties": {
+        "planet": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/hex32"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "context": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/hex32"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "surface": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/hex32"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sample": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/hex32"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "authorityByDomain": {
+      "type": "object",
+      "minProperties": 1,
+      "maxProperties": 64,
+      "additionalProperties": {
+        "$ref": "#/$defs/authority"
+      }
+    },
+    "scientificFingerprint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "contract",
+        "status",
+        "subject",
+        "scientificStateContract",
+        "scientificModelVersion",
+        "generatorVersion",
+        "scientificHashes",
+        "authorityByDomain",
+        "limitations"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "contract": {
+          "const": "ofu-r6-w1-scientific-fingerprint-1"
+        },
+        "status": {
+          "enum": [
+            "PRESENT",
+            "UNKNOWN"
+          ]
+        },
+        "subject": {
+          "$ref": "#/$defs/canonicalEntityRef"
+        },
+        "scientificStateContract": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scientificModelVersion": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "generatorVersion": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "scientificHashes": {
+          "$ref": "#/$defs/scientificHashes"
+        },
+        "authorityByDomain": {
+          "$ref": "#/$defs/authorityByDomain"
+        },
+        "limitations": {
+          "type": "array",
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "UNKNOWN"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "scientificModelVersion": {
+                "type": "null"
+              },
+              "scientificHashes": {
+                "properties": {
+                  "planet": {
+                    "type": "null"
+                  },
+                  "context": {
+                    "type": "null"
+                  },
+                  "surface": {
+                    "type": "null"
+                  },
+                  "sample": {
+                    "type": "null"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "PRESENT"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "scientificModelVersion": {
+                "type": "string",
+                "minLength": 1
+              },
+              "scientificHashes": {
+                "properties": {
+                  "context": {
+                    "$ref": "#/$defs/hex32"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "scientificFingerprintRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "contract",
+        "subjectCanonicalId",
+        "contextHash",
+        "scientificStateContract",
+        "scientificModelVersion"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "contract": {
+          "const": "ofu-r6-w1-scientific-fingerprint-ref-1"
+        },
+        "subjectCanonicalId": {
+          "$ref": "#/$defs/hex32"
+        },
+        "contextHash": {
+          "$ref": "#/$defs/hex32"
+        },
+        "scientificStateContract": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scientificModelVersion": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "returnRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "contract",
+        "authority",
+        "selectionContract",
+        "scaleContract",
+        "semanticScale",
+        "distanceIntentRadii"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "contract": {
+          "const": "ofu-r6-w1-return-ref-1"
+        },
+        "authority": {
+          "const": "PRESENTATION_ONLY"
+        },
+        "selectionContract": {
+          "const": "ofu-wave-iv-selection-1"
+        },
+        "scaleContract": {
+          "const": "ofu-wave-iv-scale-runtime-3"
+        },
+        "semanticScale": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "distanceIntentRadii": {
+          "oneOf": [
+            {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "savedObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "contract",
+        "kind",
+        "subject",
+        "temporalRef",
+        "scientificFingerprintRef",
+        "returnRef",
+        "label"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "contract": {
+          "const": "ofu-r6-w1-saved-observation-1"
+        },
+        "kind": {
+          "enum": [
+            "PLACE",
+            "OBSERVATION",
+            "SNAPSHOT"
+          ]
+        },
+        "subject": {
+          "$ref": "#/$defs/canonicalEntityRef"
+        },
+        "temporalRef": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/p4StateRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "scientificFingerprintRef": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/scientificFingerprintRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "returnRef": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/returnRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "label": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "SNAPSHOT"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "temporalRef": {
+                "$ref": "#/$defs/p4StateRef"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "$comment": "Runtime validation is normative for semantic constraints including P4 u64 bounds, UNKNOWN hash prohibition, SNAPSHOT temporal-reference requirement, fingerprint subject binding, NFC normalization and canonical serialization."
+}

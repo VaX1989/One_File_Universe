@@ -1,0 +1,108 @@
+{
+  "schema": "ofu.post-m0.wave0.g0a-pass-adjudication.v1",
+  "authority": "CTRL_WAVE0_CONTROL_ADJUDICATION_NO_TECHNICAL_OR_SCIENTIFIC_AUTHORITY_PROMOTION",
+  "prompt_id": "CTRL-WAVE0",
+  "source_audit_prompt_id": "GATE-G0A-AUDIT",
+  "date": "2026-09-20",
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "audit_source": {
+    "classification": "EXTERNAL_INDEPENDENT_READ_ONLY_AUDIT_REPORT_SUPPLIED_TO_CONTROLLER",
+    "repository_mutation_by_auditor": false,
+    "terminal_state": "COMPLETE_GATE_MET",
+    "failure_fingerprint": "NONE"
+  },
+  "controller_reauthentication": {
+    "control_pr": 290,
+    "control_pr_state": "OPEN_DRAFT",
+    "control_branch": "integration/post-m0-dual-track-wave0-2026-09-17",
+    "live_head_sha": "296565bb2a6842159a994a45094ddc1d27d4fd1d",
+    "live_head_tree": "6b266ec7b4c2f003e029658fcfe2a735291ecd47",
+    "frozen_r6_sha": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+    "frozen_r6_tree": "3704247247940fa8c5f08291cd80ec9e24e7d49d",
+    "planning_master_v4": "c2cab6d6e914b918432432fdc69825e0a1000509",
+    "dedicated_ind_js_headless_branch_present_before_authorization": false,
+    "dedicated_ind_sec_b_branch_present_before_authorization": false
+  },
+  "independent_audit_result": {
+    "gate": "G0A_MINIMUM_NORMATIVE_SLICE",
+    "result": "PASS",
+    "audit_subject_sha": "296565bb2a6842159a994a45094ddc1d27d4fd1d",
+    "audit_subject_tree": "6b266ec7b4c2f003e029658fcfe2a735291ecd47",
+    "repair_semantic_subject": "e8965171944b9d5c604b19b745dacb79156816f4",
+    "corpus_revision": 2,
+    "corpus_digest": "d92b43afb8a7deeaed4b0c3ee13b73bad344b196132c35433b66360c0b0772fc",
+    "prior_failure": "G0A-LIVE-FRONTIER-INDEPENDENT-EVIDENCE-GAP",
+    "prior_failure_status": "CLOSED_VERIFIED",
+    "current_exact_head_ci": "PASS_10_OF_10"
+  },
+  "accepted_scope": {
+    "p2": [
+      "P2.CBV1.DOMAIN_AND_BYTES",
+      "P2.UNICODE.15_1_V1",
+      "P2.ADDRESS.V1",
+      "P2.SEMANTIC_MANIFEST.V1",
+      "P2.IDENTITY.UNIVERSE_AND_ENTITY_V1",
+      "P2.DERIVATION.HMAC_SHA256_V1",
+      "P2.NUMERIC.V1"
+    ],
+    "p4": [
+      "P4.TIME_EVENT_ORDER_V1",
+      "P4.LINEAGE_AND_LIVE_FRONTIER_V1",
+      "P4.TRANSITION_BINDING_EXACT_V1"
+    ],
+    "explicitly_not_promoted": [
+      "P4.CHECKPOINT_COMPACTION_INVARIANTS_V2",
+      "P4.ARCHIVE_INTEGRITY_INVARIANTS_V2",
+      "generic provider/query envelope",
+      "renderer/camera/selection/browser product state",
+      "scientific/product presentation as canonical authority"
+    ]
+  },
+  "evidence_classification": {
+    "conformance_corpus_v2": "INDEPENDENT_CROSS_LANGUAGE_EVIDENCE_FOR_G0A_MINIMUM",
+    "checkpoint_archive": "CURRENT_AUTHORITY_REGRESSION_ONLY_POST_G0A_DEBT",
+    "headless_consumer_probe": "G0A_CHARACTERIZATION_NOT_G0B_EXTERNAL_CONSUMER_PROOF",
+    "exact_head_ci": "REGRESSION_EVIDENCE_NOT_SOLE_GATE_PROOF"
+  },
+  "authorization": {
+    "IND-JS-HEADLESS": {
+      "status": "AUTHORIZED_TO_START_AFTER_THIS_CONTROL_REGISTRATION",
+      "dependency": "G0A_MINIMUM_NORMATIVE_SLICE",
+      "semantic_surface": "HEADLESS_PUBLIC_SEAM"
+    },
+    "IND-SEC-B": {
+      "status": "AUTHORIZED_TO_START_AFTER_THIS_CONTROL_REGISTRATION",
+      "dependency": "G0A_MINIMUM_NORMATIVE_SLICE",
+      "semantic_surface": "POST_G0A_HOSTILE_INPUT_SECURITY"
+    }
+  },
+  "still_blocked": {
+    "IND-EXT-CONSUMER": "BLOCKED_PENDING_IND_JS_HEADLESS",
+    "GATE-G0B-AUDIT": "BLOCKED_PENDING_IND_JS_HEADLESS_AND_IND_EXT_CONSUMER",
+    "G0B_EXTERNAL_CONSUMER_SEAM_PROOF": "NOT_PASS",
+    "IND-NATIVE-P2": "BLOCKED_PENDING_G0B_PASS",
+    "IND-CABI-MICROHOST": "BLOCKED_PENDING_IND_NATIVE_P2",
+    "GATE-G1-AUDIT": "BLOCKED_PENDING_NATIVE_AND_CABI",
+    "G1_MINIMUM_PLATFORM_PROOF": "NOT_PASS",
+    "G1_PASS_CONTINUE": "NOT_REACHED",
+    "IND-RUNTIME": "BLOCKED_PENDING_EXPLICIT_G1_PASS_CONTINUE"
+  },
+  "residual_debt": [
+    "checkpoint/archive provenance, freshness and authentication",
+    "durable WAL/fsync/atomic-root/crash recovery",
+    "full persistence trust",
+    "external consumer proof/G0B",
+    "native P2 and C ABI proof",
+    "runtime/provider/durability gates",
+    "licensing/distribution manual decision",
+    "broader AUTH/SCI/DET findings",
+    "physical GPU/device release evidence"
+  ],
+  "product_epoch_interaction": {
+    "product_control_pr": 312,
+    "product_control_base": "296565bb2a6842159a994a45094ddc1d27d4fd1d",
+    "classification": "COMPATIBLE_CONTROL_ONLY_PARENT_ADVANCE",
+    "rule": "The G0A PASS registration changes Wave0 control metadata only. It does not invalidate the frozen product epoch base or transfer product ownership."
+  },
+  "disposition": "COMPLETE_GATE_MET_G0A_PASS_SUCCESSOR_WRITERS_AUTHORIZED"
+}

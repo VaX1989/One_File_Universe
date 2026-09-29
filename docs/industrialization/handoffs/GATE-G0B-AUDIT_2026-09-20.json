@@ -1,0 +1,101 @@
+{
+  "prompt_id": "GATE-G0B-AUDIT",
+  "master_schema_version": 4,
+  "mode": "READ_ONLY_AUDIT",
+  "mission_date": "2026-09-20",
+  "independence": {
+    "auditor_authored_IND_EXT_CONSUMER": false,
+    "auditor_authored_IND_JS_HEADLESS": false,
+    "auditor_authored_IND_CONF_A": false,
+    "production_code_mutated_during_audit": false,
+    "classification": "INDEPENDENT_SUCCESSOR_SESSION_READ_ONLY_AUDIT"
+  },
+  "audit_subject": {
+    "sha": "83e98f5332e4e828fae87d4a4672c9c81cac17a4",
+    "tree": "fe52618d62ff02d763158689ce6f37f9ac324b68",
+    "control_record": "docs/industrialization/control/CTRL_CONVERGENCE_POST_EXT_CONSUMER_2026-09-20.json",
+    "preserved_in_unified_head": "926b8b861300c2202243874e8de843936fb4d104"
+  },
+  "dependencies": {
+    "G0A_MINIMUM_NORMATIVE_SLICE": "PASS_PRESERVED",
+    "IND_JS_HEADLESS": "COMPLETE_GATE_MET_INTEGRATED",
+    "IND_EXT_CONSUMER": "COMPLETE_GATE_MET_INTEGRATED",
+    "IND_CONF_A": "COMPLETE_PRESERVED"
+  },
+  "audit_findings": {
+    "dependency_closure": "PASS_7_FILES_PACKAGE_LOCAL",
+    "true_consumer_independence": "PASS_NPM_PACK_EXTRACTED_OUTSIDE_SOURCE_REPOSITORY",
+    "source_internal_bypass_in_proof_consumer": "ABSENT_AND_NEGATIVE_PROBE_ACTIVE",
+    "public_seam_usefulness": "PASS_IDENTITY_ADDRESS_DERIVE_ENTITY_LINEAGE_EVENT_ORDER_TRANSITION_DIGEST",
+    "api_coupling": "PASS_NARROW_VERSIONED_HEADLESS_SEAM_NO_RENDERER_CAMERA_SELECTION_RUNTIME_API",
+    "product_specific_leakage": "NONE_FOUND",
+    "determinism": "PASS_TWO_CLEAN_ROOM_RUNS_DEEPLY_IDENTICAL",
+    "canonical_byte_digest_parity": "PASS_KNOWN_GOLDEN_WITNESSES",
+    "rejection_semantics": "PASS_VERSION_SEED_ADDRESS_FIELD_BOUND_AND_CLOSED_SESSION_NEGATIVES",
+    "hostile_input_support": "PASS_IND_SEC_B_40_EXPLICIT_4096_CBV_4096_ADDRESS_512_FRONTIER",
+    "resource_bounds": "PASS_64_MIB_OLD_SPACE_10_S_TIMEOUT_64_ITERATION_PROBE",
+    "package_public_entry": "PASS_ONE_FILE_UNIVERSE_SDK_REFERENCE_HEADLESS",
+    "offline_headless": "PASS_NO_BARE_EXTERNAL_IMPORTS_NO_BROWSER_PRODUCT_NETWORK_GLOBALS",
+    "portability": "NO_CURRENT_JS_BLOCKER; NATIVE_PORTABILITY_REMAINS_G1_DEBT",
+    "authority_separation": "PASS_NO_NEW_CANONICAL_SCIENTIFIC_PRODUCT_AUTHORITY"
+  },
+  "executable_evidence": {
+    "foundation_run": 35516209089,
+    "foundation_job": 106092501304,
+    "checkout_sha": "83e98f5332e4e828fae87d4a4672c9c81cac17a4",
+    "npm_test": "PASS",
+    "external_consumer": "PASS",
+    "package_artifact": "one-file-universe-2.0.0.tgz",
+    "package_size_bytes": 20887627,
+    "unpacked_size_bytes": 27363535,
+    "clean_room_runs": 2,
+    "dependency_closure": [
+      "sdk/reference-headless/index.js",
+      "src/headless/index.js",
+      "src/kernel/p2-address-parser.js",
+      "src/kernel/p2-canonical.js",
+      "src/kernel/p2-unicode.js",
+      "src/kernel/sha256.js",
+      "src/temporal/p4-temporal.js"
+    ],
+    "resource_envelope": {
+      "node_old_space_mib": 64,
+      "timeout_ms": 10000,
+      "consumer_iterations": 64
+    },
+    "witness": {
+      "semanticManifestHash": "15115d3be206083d795b9492af46693253979709a5fb9cd2f9b3e2321fcd4778",
+      "universeIdentity": "29d93cd168d16a6763ad6687005e6af6eddbb5b7fef5cf8a919b49f0b0fd4f41",
+      "addressHex": "4f46554101010105617374726f",
+      "propertyDigest": "186531376069e9734644130f5ff081633aac5fcb011eaf8292a2ea6140ed9c32",
+      "transitionContractDigest": "a0b5856f6b1c12fbc3899f30858b99fb91de683168b41de60fb44d5f92a1c538"
+    }
+  },
+  "falsification_attempts": [
+    "unsupported API version",
+    "wrong master-seed length",
+    "malformed canonical address",
+    "unknown property-witness field",
+    "over-bound address segment",
+    "forbidden public API growth",
+    "source-internal import negative probe",
+    "DOM/browser/network global poison",
+    "installed dependency closure escape detection",
+    "bare external import detection",
+    "clean install root differs from source repository",
+    "two clean-room witness equality",
+    "closed-session access",
+    "bounded hostile-input corpus"
+  ],
+  "limitations": [
+    "G0B does not certify native code, C ABI, Runtime, persistence, provider durability, licensing or physical devices.",
+    "Package internals remain present in the tarball; the audited claim is that the external proof consumer does not require or use an internal bypass.",
+    "Physical-device and native portability evidence remain downstream."
+  ],
+  "gate": {
+    "id": "G0B_EXTERNAL_CONSUMER_SEAM_PROOF",
+    "result": "PASS",
+    "next_unlocked_lane": "IND-NATIVE-P2"
+  },
+  "disposition": "COMPLETE_GATE_MET"
+}

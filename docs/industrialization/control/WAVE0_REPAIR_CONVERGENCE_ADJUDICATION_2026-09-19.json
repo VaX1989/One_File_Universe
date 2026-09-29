@@ -1,0 +1,167 @@
+{
+  "schema": "ofu.post-m0.wave0.repair-convergence-adjudication.v1",
+  "authority": "CTRL_CONVERGENCE",
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "date": "2026-09-19",
+  "semantic_subject": {
+    "sha": "e1dd6d13aa08245084a1785ac8c17ea3dad8eb45",
+    "tree": "d3e0705c0cbb44372ae4fbc0c04aa8737a681f54",
+    "control_pr": 290
+  },
+  "frozen_r6": {
+    "sha": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+    "tree": "3704247247940fa8c5f08291cd80ec9e24e7d49d"
+  },
+  "repairs": {
+    "PROD-W1-CONTRACTS": {
+      "pr": 298,
+      "repair_head": "5f8e6c95ff39c82ca079cdf1f7aeb227a867ddff",
+      "repair_tree": "9a54593903a661e68180f212802c5dc64be065f1",
+      "merge_commit": "d0b3112c0d403f4c50424eccda581870ce9b7050",
+      "result": "PASS"
+    },
+    "IND-GOV-A": {
+      "pr": 299,
+      "repair_head": "a4675d7e265ee82bfaa7cc265dd2df87412064bd",
+      "repair_tree": "3ec4568573741bcdb34fdfaba0107103d47cb7b6",
+      "merge_commit": "7947efea069f8f37d84b77745afc65330aac01db",
+      "result": "PASS"
+    },
+    "IND-CONF-A": {
+      "pr": 300,
+      "repair_head": "58d9771dbb3c37a1bf261fdbf9d549c5a51877f4",
+      "repair_tree": "1d276f77056a66e954eefc02280af17008ee2832",
+      "merge_commit": "ea6911d94e62cc4d9a5f33e7d69a26b7254b1558",
+      "result": "PASS"
+    },
+    "IND-BRIDGE-A": {
+      "pr": 301,
+      "repair_head": "23754c88581e658703fa1ac39515464204d3a814",
+      "repair_tree": "90e6a6b4f4abea14cb724be92603fb3c41ec3ef1",
+      "merge_commit": "e1dd6d13aa08245084a1785ac8c17ea3dad8eb45",
+      "result": "PASS"
+    }
+  },
+  "verification_only": {
+    "IND-CONF-A": {
+      "pr": 297,
+      "merged": false,
+      "head": "95b81237f8cfeaba5a1df300a4fc8c82f042470b",
+      "foundation_run": 35433206372,
+      "result": "PASS",
+      "corpus_digest": "2b13e4c47c254e418543410806ec5aaed7650b60e2e653c75b602b9c0735b65b"
+    },
+    "PROD_AND_BRIDGE": {
+      "pr": 302,
+      "merged": false,
+      "head": "6405346253a858606dee9353c92abbfed59280b3",
+      "foundation_run": 35435461161,
+      "node": "v24.20.0",
+      "results": [
+        "PROD-W1-CONTRACTS focused conformance PASS",
+        "IND-BRIDGE-A coupling characterization PASS",
+        "IND-BRIDGE-A narrowed external consumer probe PASS"
+      ]
+    }
+  },
+  "cumulative_exact_head": {
+    "subject_sha": "e1dd6d13aa08245084a1785ac8c17ea3dad8eb45",
+    "subject_tree": "d3e0705c0cbb44372ae4fbc0c04aa8737a681f54",
+    "result": "PASS",
+    "workflows": [
+      {
+        "name": "Foundation Integrity",
+        "id": 35435626780
+      },
+      {
+        "name": "P1 Conformance",
+        "id": 35435626785
+      },
+      {
+        "name": "P1-P4 Canonical Baseline",
+        "id": 35435626831
+      },
+      {
+        "name": "P2 Conformance",
+        "id": 35435626844
+      },
+      {
+        "name": "P3 Conformance",
+        "id": 35435626774
+      },
+      {
+        "name": "P4 Conformance",
+        "id": 35435626775
+      },
+      {
+        "name": "P5 Controlled Promotion",
+        "id": 35435626795
+      },
+      {
+        "name": "P5 Environment v2 Canonical Promotion",
+        "id": 35435626810
+      },
+      {
+        "name": "P6 v1 Conformance",
+        "id": 35435626779
+      },
+      {
+        "name": "Spatial Continuum Experiment",
+        "id": 35435626791
+      }
+    ]
+  },
+  "product_gate": {
+    "id": "G-PROD-CONTRACTS",
+    "result": "PASS",
+    "basis": [
+      "PROD-W1-CONTRACTS repair packet satisfies v4 execution-state and terminal-handoff contracts.",
+      "Repair changes only control/evidence metadata and preserves integrated product contract semantics.",
+      "Focused product-contract test executed PASS on control verification #302.",
+      "All ten cumulative workflows PASS on the exact integrated semantic subject."
+    ],
+    "unlocks": [
+      "PROD-W1-PRODUCT-DEPTH",
+      "PROD-W1-SCI-FP",
+      "PROD-W1-ATLAS-CORE",
+      "PRODUCT-MACRO",
+      "PRODUCT-HUMAN",
+      "PRODUCT-VISUAL-CONTINUITY",
+      "PRODUCT-AUDIO"
+    ]
+  },
+  "g0a_gate": {
+    "id": "G0A_MINIMUM_NORMATIVE_SLICE",
+    "result": "NOT_PASS_INDEPENDENT_GATE_AUDIT_REQUIRED",
+    "repaired_inputs": [
+      "IND-GOV-A",
+      "IND-CONF-A",
+      "IND-BRIDGE-A"
+    ],
+    "next_required_prompt": "GATE-G0A-AUDIT",
+    "independence_rule": "The same repair-writing/control session must not self-certify G0A. Execute as an independent READ_ONLY_AUDIT against the live final control head.",
+    "mandatory_focus": [
+      "Verify checkpoint/compaction and archive integrity/trust are absent from the G0A READY_TO_SPECIFY/public minimum.",
+      "Verify checkpoint/archive conformance is CURRENT_AUTHORITY_REGRESSION_ONLY rather than independent cross-language proof.",
+      "Verify G0A headless candidate exposes no archiveBytes input or public exportArchive().",
+      "Verify the remaining ten minimum candidates are source-backed and implementation-independent."
+    ]
+  },
+  "blocked_after_this_record": {
+    "IND-JS-HEADLESS": "BLOCKED_PENDING_G0A_PASS",
+    "IND-SEC-B": "BLOCKED_PENDING_G0A_PASS",
+    "IND-NATIVE-P2": "BLOCKED_PENDING_G0B_PASS",
+    "IND-CABI-MICROHOST": "BLOCKED_PENDING_IND_NATIVE_P2_AND_SEQUENCE",
+    "IND-RUNTIME": "BLOCKED_PENDING_EXPLICIT_G1_PASS_CONTINUE"
+  },
+  "unresolved_risks": [
+    "SEC-01 underlying checkpoint/archive provenance/freshness/authentication risk is isolated from G0A but not solved.",
+    "AUTH-01/AUTH-02 authority/evidence-label spoofing debt remains and constrains scientific/public authority promotion.",
+    "AS-001..AS-003 scientific provenance/version/conservation debt must constrain PROD-W1-SCI-FP and later scientific lanes.",
+    "DET-01/DET-02 cross-runtime determinism/Unicode portability debt remains.",
+    "Durable WAL/fsync/atomic-root/crash recovery remains future G3 work.",
+    "G-LICENSING-DISTRIBUTION-DECISION remains a manual outcome not reached."
+  ],
+  "disposition": "WAVE0_REPAIRS_CONVERGED_PRODUCT_GATE_PASS_G0A_READY_FOR_INDEPENDENT_ADJUDICATION",
+  "next_control_action": "Execute PROMPT_ID=GATE-G0A-AUDIT as an independent READ_ONLY_AUDIT against the final live control head. Do not start IND-JS-HEADLESS or IND-SEC-B unless that audit produces G0A PASS."
+}

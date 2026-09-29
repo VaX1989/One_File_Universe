@@ -1,0 +1,148 @@
+{
+  "prompt_id": "IND-EXT-CONSUMER",
+  "planning_epoch": "OFU-POST-M0-ASYMMETRIC-DUAL-TRACK-2026-09-17-V4",
+  "status": "READY_FOR_CONTROL_CONVERGENCE",
+  "master_schema_version": 4,
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "base_sha": "951946411b5aa5fb8685f066360099cabbdbb26e",
+  "base_tree": "8981d8a3481185f1b47a89b66f0b6f007bc49466",
+  "branch": "work/post-m0/ind-ext-consumer-ofu-post-m0-dual-track-wave0-2026-09-18-61f43071",
+  "pr": 323,
+  "hypothesis": "A deliberately tiny consumer can obtain deterministic identity/address/property and narrow P4 provenance/order solely through the public headless SDK entrypoint when the candidate package is installed from a real npm pack artifact into a clean process context.",
+  "dependencies_resolved": {
+    "G0A_MINIMUM_NORMATIVE_SLICE": {
+      "status": "PASS",
+      "audit_subject_sha": "296565bb2a6842159a994a45094ddc1d27d4fd1d"
+    },
+    "IND_JS_HEADLESS": {
+      "status": "COMPLETE_GATE_MET_INTEGRATED",
+      "pr": 318,
+      "lane_head": "c81162cb6a9b8762931f6348d113a8bffb82c770",
+      "merge_commit": "29cf5b4376665d41ff7dcf0fb4b6d07b220bd135"
+    },
+    "IND_SEC_B": {
+      "status": "COMPLETE_GATE_MET_INTEGRATED",
+      "pr": 320,
+      "lane_head": "aa1839500fae162cfb68669925fbd795ccb698f4",
+      "merge_commit": "a5544120ef402c90d27d8efb25d7adad194499e0"
+    },
+    "SOURCE_MASTER_V4": {
+      "status": "PASS",
+      "sha": "c2cab6d6e914b918432432fdc69825e0a1000509"
+    }
+  },
+  "dependencies": {
+    "IND-JS-HEADLESS": "COMPLETE_GATE_MET_INTEGRATED",
+    "G0A_MINIMUM_NORMATIVE_SLICE": "PASS",
+    "SOURCE_MASTER_V4": "c2cab6d6e914b918432432fdc69825e0a1000509"
+  },
+  "write_scope": [
+    "tests/industrialization/external-consumer/**",
+    "docs/frontier/execution/parallel/IND-EXT-CONSUMER_EXECUTION_STATE.json",
+    "docs/frontier/execution/parallel/IND-EXT-CONSUMER_INTEGRATION_PATCH_REQUEST.json",
+    "docs/industrialization/handoffs/IND-EXT-CONSUMER_2026-09-20.json"
+  ],
+  "public_import_contract": {
+    "only_allowed_consumer_specifier": "one-file-universe/sdk/reference-headless/index.js",
+    "source_internal_import_negative_probe": "ACTIVE_ASSERTION",
+    "forbidden_product_browser_network_globals": [
+      "document",
+      "window",
+      "navigator",
+      "canvas",
+      "camera",
+      "renderer",
+      "BABYLON",
+      "fetch",
+      "WebSocket",
+      "XMLHttpRequest",
+      "EventSource"
+    ]
+  },
+  "dependency_closure_evidence": {
+    "exact_control_head_inspection": "PASS",
+    "closure": [
+      "sdk/reference-headless/index.js",
+      "src/headless/index.js",
+      "src/kernel/sha256.js",
+      "src/kernel/p2-unicode.js",
+      "src/kernel/p2-canonical.js",
+      "src/kernel/p2-address-parser.js",
+      "src/temporal/p4-temporal.js"
+    ],
+    "forbidden_global_scan": "PASS",
+    "network_dependency_scan": "PASS",
+    "bare_external_imports_in_public_closure": "NONE"
+  },
+  "clean_room_design": {
+    "packaging": "npm pack --json",
+    "installation_boundary": "tarball extracted to fresh temporary node_modules/one-file-universe outside source repository",
+    "independent_invocations": 2,
+    "node_heap_limit_mib": 64,
+    "process_timeout_ms": 10000,
+    "bounded_property_iterations": 64,
+    "reproducibility_requirement": "two clean-room JSON witnesses must be deeply identical"
+  },
+  "deterministic_expected_witness": {
+    "semanticManifestHash": "15115d3be206083d795b9492af46693253979709a5fb9cd2f9b3e2321fcd4778",
+    "universeIdentity": "29d93cd168d16a6763ad6687005e6af6eddbb5b7fef5cf8a919b49f0b0fd4f41",
+    "addressHex": "4f46554101010105617374726f",
+    "propertyDigest": "186531376069e9734644130f5ff081633aac5fcb011eaf8292a2ea6140ed9c32",
+    "transitionContractDigest": "a0b5856f6b1c12fbc3899f30858b99fb91de683168b41de60fb44d5f92a1c538"
+  },
+  "tests_run": [
+    {
+      "kind": "LOCAL_SYNTAX",
+      "commands": [
+        "node --check tests/industrialization/external-consumer/fixture/consumer.mjs",
+        "node --check tests/industrialization/external-consumer/clean-room.mjs"
+      ],
+      "status": "PASS_ON_EXACT_AUTHORED_BYTES"
+    },
+    {
+      "kind": "EXACT_CONTROL_HEAD_PUBLIC_CLOSURE_INSPECTION",
+      "subject_sha": "951946411b5aa5fb8685f066360099cabbdbb26e",
+      "status": "PASS",
+      "checks": [
+        "public SDK entry delegates only to src/headless",
+        "headless closure restricted to kernel/P4 temporal implementation",
+        "no DOM/Babylon/renderer/camera/network globals in inspected closure",
+        "root package already contains integrated IND-JS-HEADLESS and IND-SEC-B registrations"
+      ]
+    },
+    {
+      "kind": "NATIVE_NODE_CLEAN_ROOM_PROOF",
+      "command": "node tests/industrialization/external-consumer/clean-room.mjs",
+      "status": "AUTHORED_PENDING_CONTROL_OWNED_REGISTRATION_AND_CI_EXECUTION",
+      "integration_patch_request": "docs/frontier/execution/parallel/IND-EXT-CONSUMER_INTEGRATION_PATCH_REQUEST.json"
+    },
+    {
+      "kind": "DIRECT_PRIVATE_REPOSITORY_CLONE",
+      "command": "git ls-remote https://github.com/VaX1989/One_File_Universe.git HEAD",
+      "status": "EXTERNAL_EVIDENCE_LIMITATION",
+      "failure": "Could not resolve host: github.com",
+      "classification": "execution-environment network limitation; not a repository or seam failure"
+    }
+  ],
+  "evidence_refs": [
+    "tests/industrialization/external-consumer/fixture/package.json",
+    "tests/industrialization/external-consumer/fixture/consumer.mjs",
+    "tests/industrialization/external-consumer/clean-room.mjs",
+    "PR #323",
+    "PR #318",
+    "PR #320",
+    "docs/industrialization/control/CTRL_CONVERGENCE_POST_G0A_2026-09-20.json"
+  ],
+  "evidence_debt": [
+    "The native npm-pack clean-room harness must still be registered and executed by the control owner on the exact integrated candidate head.",
+    "PR #323 cumulative CI is necessary but, until the root test registration is integrated, does not by itself execute the new clean-room proof.",
+    "G0B_EXTERNAL_CONSUMER_SEAM_PROOF remains NOT_PASS until independent GATE-G0B-AUDIT."
+  ],
+  "failure_fingerprint": null,
+  "failure_count": 0,
+  "alternate_strategy": "If native CI shows that a clean consumer cannot operate from the packed public seam without internal imports or hidden host state, do not widen the API. Record the failure and terminate as ABANDONED_FALSIFIED or PLATFORM_EXTRACTION_PREMATURE.",
+  "last_action": "Authored the disposable public-seam-only consumer and real package clean-room harness on Draft PR #323; verified exact control-head dependency closure and local syntax; direct clone execution is unavailable because the tool container cannot resolve github.com.",
+  "next_action": "CTRL-CONVERGENCE should apply the integration patch request, run the clean-room proof on the exact integrated head, require cumulative CI PASS, converge PR #323 if evidence is green, then launch the independent GATE-G0B-AUDIT.",
+  "completion_sha": "EXTERNALLY_BOUND_BY_DRAFT_PR_HEAD",
+  "completion_tree": "EXTERNALLY_BOUND_BY_DRAFT_PR_HEAD_TREE"
+}

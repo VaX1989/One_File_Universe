@@ -1,0 +1,129 @@
+{
+  "schema": "ofu.ctrl-convergence-record.v1",
+  "prompt_id": "CTRL-CONVERGENCE",
+  "mode": "WRITE_CONTROL",
+  "mission_date": "2026-09-20",
+  "track": "POST_G0A_INDUSTRIALIZATION",
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "canonical_master": {
+    "pr": 287,
+    "sha": "c2cab6d6e914b918432432fdc69825e0a1000509",
+    "schema_version": 4
+  },
+  "control": {
+    "pr": 290,
+    "post_g0a_registration_sha": "f183cd53bc008684531830a54aa0ed2cf8c018cc",
+    "g0a_audit_subject": "296565bb2a6842159a994a45094ddc1d27d4fd1d"
+  },
+  "gate_precondition": {
+    "G0A_MINIMUM_NORMATIVE_SLICE": "PASS_INDEPENDENT_2026-09-20"
+  },
+  "accepted_lanes": [
+    {
+      "prompt_id": "IND-JS-HEADLESS",
+      "pr": 318,
+      "lane_head": "c81162cb6a9b8762931f6348d113a8bffb82c770",
+      "merge_commit": "29cf5b4376665d41ff7dcf0fb4b6d07b220bd135",
+      "ownership": "HEADLESS_PUBLIC_SEAM",
+      "result": "ACCEPTED"
+    },
+    {
+      "prompt_id": "IND-SEC-B",
+      "pr": 320,
+      "lane_head": "aa1839500fae162cfb68669925fbd795ccb698f4",
+      "merge_commit": "a5544120ef402c90d27d8efb25d7adad194499e0",
+      "ownership": "POST_G0A_HOSTILE_INPUT_SECURITY",
+      "result": "ACCEPTED"
+    }
+  ],
+  "control_owned_patches": [
+    {
+      "path": "package.json",
+      "purpose": "register headless public-seam test",
+      "command": "node tests/industrialization/headless/public-seam.mjs",
+      "commit": "5fdcc80f28ab5b79c42005760cd9be88a28f966e"
+    },
+    {
+      "path": "package.json",
+      "purpose": "register post-G0A hostile-input security test",
+      "command": "node tests/industrialization/security/post-g0a-hostile-inputs.mjs",
+      "commit": "cdceab01654d5b62569692d58043c55a029c9f78"
+    }
+  ],
+  "tested_semantic_subject": {
+    "sha": "cdceab01654d5b62569692d58043c55a029c9f78",
+    "tree": "a0caf67d23ae4b506567f3b8783ea5c0db7f3d18",
+    "ci": "10_OF_10_SUCCESS",
+    "workflow_runs": [
+      35506032202,
+      35506032214,
+      35506032198,
+      35506032251,
+      35506032217,
+      35506032210,
+      35506032215,
+      35506032191,
+      35506032266,
+      35506032229
+    ]
+  },
+  "gate_outcomes": {
+    "G0A_MINIMUM_NORMATIVE_SLICE": "PASS_PRESERVED",
+    "IND-JS-HEADLESS": "COMPLETE_GATE_MET_INTEGRATED",
+    "IND-SEC-B": "COMPLETE_GATE_MET_INTEGRATED",
+    "IND-EXT-CONSUMER": "UNLOCKED_READY_TO_RUN",
+    "G0B_EXTERNAL_CONSUMER_SEAM_PROOF": "NOT_PASS_REQUIRES_IND_EXT_CONSUMER_AND_GATE_G0B_AUDIT",
+    "IND-NATIVE-P2": "BLOCKED_BEHIND_G0B",
+    "IND-CABI-MICROHOST": "BLOCKED_BEHIND_IND_NATIVE_P2",
+    "G1_MINIMUM_PLATFORM_PROOF": "NOT_REACHED",
+    "G1_PASS_CONTINUE": "NOT_REACHED",
+    "IND-RUNTIME": "BLOCKED_BEHIND_EXPLICIT_G1_PASS"
+  },
+  "next_runnable_queue": [
+    {
+      "prompt_id": "IND-EXT-CONSUMER",
+      "state": "READY",
+      "dependency": "IND-JS-HEADLESS"
+    },
+    {
+      "prompt_id": "GATE-G0B-AUDIT",
+      "state": "BLOCKED_UNTIL_IND_EXT_CONSUMER_TERMINAL",
+      "dependencies": [
+        "IND-JS-HEADLESS",
+        "IND-EXT-CONSUMER",
+        "IND-CONF-A"
+      ]
+    },
+    {
+      "prompt_id": "IND-NATIVE-P2",
+      "state": "BLOCKED_BEHIND_G0B"
+    }
+  ],
+  "residual_risks": [
+    "IND-JS-HEADLESS is not by itself external-consumer proof; G0B remains unpassed.",
+    "Checkpoint/archive authenticity, freshness and persistence durability remain outside this post-G0A slice.",
+    "Generic provider/query cancellation, stale-result rejection and hard host resource isolation remain unfrozen.",
+    "P2.unhex and P4.schedule helper bounds remain recorded non-G0A security debt.",
+    "No native, C ABI or Runtime authority is unlocked before their formal gates."
+  ],
+  "invariants": {
+    "canonical_p2_p4_unchanged": true,
+    "public_headless_seam_narrow": true,
+    "checkpoint_archive_not_promoted": true,
+    "provider_runtime_not_promoted": true,
+    "product_success_not_used_for_industrialization_gate": true
+  },
+  "forbidden_actions_preserved": {
+    "main_mutated": false,
+    "pr274_merged": false,
+    "pr275_merged": false,
+    "pr287_merged": false,
+    "pr290_merged": false,
+    "r7_created": false,
+    "tags_created": false,
+    "releases_created": false,
+    "force_push": false
+  },
+  "final_control_head": "EXTERNALLY_BOUND_AFTER_THIS_RECORD_COMMIT",
+  "disposition": "POST_G0A_SUBWAVE_CONVERGENCE_COMPLETE_G0B_NOT_PASS"
+}

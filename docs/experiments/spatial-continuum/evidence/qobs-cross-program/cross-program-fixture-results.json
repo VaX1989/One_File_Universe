@@ -1,0 +1,58 @@
+{
+  "prompt_id": "QOBS-CROSS-PROGRAM",
+  "suite": "qobs-cross-program",
+  "status": "PASS",
+  "execution": "ISOLATED_NODE_FIXTURE",
+  "node_version": "v22.16.0",
+  "deterministic_witness": {
+    "cross_program_hash": "2923d437786f9d98f7308d4b7072ab7956b4b96e84e5d561e1b547cd6295315c",
+    "reversed_observation_order_same_hash": true
+  },
+  "exercised": {
+    "issue_count": 6,
+    "expected_issue_categories": [
+      "all_scale_continuity_failure",
+      "causal_consequence_coverage_failure",
+      "atlas_exact_return_failure",
+      "cross_language_parity_failure",
+      "query_latency_budget_failure",
+      "metric_evidence_classification_missing"
+    ],
+    "staged_evidence": [
+      "platform.providerConformance",
+      "product.browserDeviceEvidence"
+    ],
+    "declared_capability_missing_evidence": [
+      "platform.persistenceRecovery"
+    ],
+    "evidence_classification_counts": {
+      "MEASURED": 14,
+      "HEURISTIC": 2,
+      "UNCLASSIFIED": 1
+    }
+  },
+  "authority_assertions": {
+    "observationAndFalsificationOnly": true,
+    "scientificTruthAuthority": false,
+    "semanticAuthority": false,
+    "releaseAuthority": false,
+    "productMutationAuthority": false,
+    "nativeRuntimeAuthority": false
+  },
+  "schema_parse": {
+    "observation_schema": "PASS",
+    "report_schema": "PASS",
+    "cross_program_schema": "PASS",
+    "execution_state": "PASS"
+  },
+  "integration_regression_reasoning": {
+    "legacy_observations_without_crossProgram": "analyzer returns zero cross-program issues",
+    "existing_W0_status_semantics_preserved": true,
+    "existing_exact_witness_contract_preserved": true
+  },
+  "limitations": [
+    "The execution environment could not clone GitHub over the network, so the new module was exercised in an isolated Node fixture materialized from the connector-fetched repository source.",
+    "No post-G0A/G0B middleware API is assumed present; platform metrics remain capability-gated.",
+    "No physical GPU/device claim is promoted by this evidence."
+  ]
+}

@@ -1,0 +1,403 @@
+{
+  "schema": "ofu.post-m0.wave0.readonly-audit-register.v1",
+  "authority": "CONTROL_CONVERGENCE_EVIDENCE_REGISTER_ONLY_NO_TECHNICAL_AUTHORITY_PROMOTION",
+  "prompt_id": "CTRL-CONVERGENCE",
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "frozen_base_sha": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+  "frozen_base_tree": "3704247247940fa8c5f08291cd80ec9e24e7d49d",
+  "observed_initial_control_head": "fa88f7cec101a52d07916a0fdd3927c482a6f188",
+  "convergence_subject_head": "ef13db638acbb9c5ccb24a6ceb56f0b9ea4802e4",
+  "convergence_subject_tree": "803cbc8823f6adce4594dea5be20bc578640858b",
+  "source_note": "Entries preserve terminal outcomes returned by the fifteen independent READ_ONLY_AUDIT/architecture chats. They are audit inputs, not canonical/scientific truth. Blocking claims used for a gate must be revalidated against the integrated subject head.",
+  "entries": [
+    {
+      "prompt_id": "IND-SEC-A",
+      "terminal_state": "COMPLETE_RESEARCH_PACKET",
+      "write_scope": [],
+      "findings": [
+        {
+          "id": "ISA-01",
+          "severity": "HIGH",
+          "summary": "Valid archive/checkpoint integrity is not authenticated history/provenance; causes are references rather than verified causality."
+        },
+        {
+          "id": "ISA-02",
+          "severity": "HIGH",
+          "summary": "Provider budgets are cooperative accounting rather than a hard resource sandbox."
+        },
+        {
+          "id": "ISA-03",
+          "severity": "HIGH",
+          "summary": "Provider cancellation and stale-result rejection semantics are not yet defined."
+        },
+        {
+          "id": "ISA-04",
+          "severity": "MEDIUM_HIGH",
+          "summary": "P2 unhex lacks a pre-decode input-size ceiling."
+        },
+        {
+          "id": "ISA-05",
+          "severity": "MEDIUM",
+          "summary": "P4 schedule and aggregate replay work need stronger admission/resource bounds before hostile-input exposure."
+        }
+      ],
+      "evidence": [
+        "24,000 P2 fuzz iterations",
+        "P2/P4/parser/provider static and behavioral review"
+      ],
+      "gate_impact": [
+        "Advisory to G0A; blocking if archive/checkpoint trust is placed in the minimum public slice",
+        "Hardening input for G0B/G1 provider exposure"
+      ]
+    },
+    {
+      "prompt_id": "ARCH-RUNTIME",
+      "terminal_state": "COMPLETE_RESEARCH_PACKET",
+      "write_scope": [],
+      "findings": [
+        {
+          "severity": "ARCHITECTURE",
+          "summary": "Future runtime must separate canonical truth from execution; pin temporal context at admission; use immutable provider catalog, atomic resource admission, stale-result generations, non-authoritative caches and full quiescence on close."
+        }
+      ],
+      "gate_impact": [
+        "IND-RUNTIME remains blocked until G1_PASS_CONTINUE"
+      ]
+    },
+    {
+      "prompt_id": "ARCH-PERSIST",
+      "terminal_state": "COMPLETE_RESEARCH_PACKET",
+      "write_scope": [],
+      "findings": [
+        {
+          "severity": "HIGH_FUTURE",
+          "summary": "P4 logical replay/checkpoint/archive integrity is strong, but WAL/fsync/atomic root publication/crash recovery/durable backend SPI/migration/exclusive-writer durability do not exist."
+        }
+      ],
+      "evidence": [
+        "P4 conformance PASS"
+      ],
+      "gate_impact": [
+        "Persistence implementation remains behind G2; durable proof required before G3"
+      ]
+    },
+    {
+      "prompt_id": "ARCH-PROVIDER",
+      "terminal_state": "COMPLETE_RESEARCH_PACKET",
+      "write_scope": [],
+      "findings": [
+        {
+          "severity": "ARCHITECTURE",
+          "summary": "Current descriptor/registry semantics are useful but JS binding is not a public ABI; future provider boundary should use opaque handles/bounded messages and keep TRANSITION proposal-only under host/P4 authority."
+        }
+      ],
+      "evidence": [
+        "71/71 inspected provider/registry/cross-scale checks successful"
+      ],
+      "gate_impact": [
+        "Research input only; no provider ABI implementation authorization"
+      ]
+    },
+    {
+      "prompt_id": "ARCH-UE",
+      "terminal_state": "COMPLETE_RESEARCH_PACKET",
+      "write_scope": [],
+      "findings": [
+        {
+          "severity": "ARCHITECTURE",
+          "summary": "Unreal must project stable C-ABI canonical IDs onto UObject/Actor state, never derive canonical identity from engine objects; explicit thread/buffer/lifecycle/stale-work rules are required."
+        }
+      ],
+      "gate_impact": [
+        "Adapter remains blocked by G3_PROVIDER_AND_DURABILITY_PROOF plus G-TARGET-CABI-STABLE"
+      ]
+    },
+    {
+      "prompt_id": "ARCH-WASM",
+      "terminal_state": "COMPLETE_RESEARCH_PACKET",
+      "write_scope": [],
+      "findings": [
+        {
+          "severity": "ARCHITECTURE",
+          "summary": "Strict single-thread embedded WASM is viable in principle; external wasm fetch is incompatible with strict single-file/direct-file baseline; threaded/shared-memory WASM is Enhanced-only."
+        }
+      ],
+      "gate_impact": [
+        "No implementation authorization; future WASM remains behind platform/runtime gates"
+      ]
+    },
+    {
+      "prompt_id": "AUDIT-DETERMINISM",
+      "terminal_state": "COMPLETE_RESEARCH_PACKET",
+      "write_scope": [],
+      "findings": [
+        {
+          "id": "DET-01",
+          "severity": "MEDIUM",
+          "summary": "R6 scientificStateHash indirectly depends on floating/libm model-derived values; cross-runtime byte-identical evidence is missing."
+        },
+        {
+          "id": "DET-02",
+          "severity": "LOW",
+          "summary": "Unicode NFC boundary retains a portability/determinism evidence gap."
+        },
+        {
+          "id": "DET-03",
+          "severity": "LOW_LATENT",
+          "summary": "localeCompare LRU tie-break is latent host/locale dependence under a currently dead invariant."
+        }
+      ],
+      "gate_impact": [
+        "No P2/P4 canonical blocker",
+        "Scientific/public fingerprint promotion must not treat current R6 scientific hash as canonical without closing evidence gap"
+      ]
+    },
+    {
+      "prompt_id": "AUDIT-AUTHORITY",
+      "terminal_state": "COMPLETE_RESEARCH_PACKET",
+      "write_scope": [],
+      "findings": [
+        {
+          "id": "AUTH-01",
+          "severity": "BLOCKING",
+          "summary": "Substring authority matching can accept hostile labels such as NOT_CANONICAL/NOT_SOURCE_BACKED."
+        },
+        {
+          "id": "AUTH-02",
+          "severity": "BLOCKING",
+          "summary": "Spoofed authority/evidence labels can reach authoritative/exact presentation structure."
+        },
+        {
+          "id": "AUTH-03",
+          "severity": "IMPORTANT",
+          "summary": "Nested cross-scale representation authority is insufficiently typed/validated."
+        },
+        {
+          "id": "AUTH-04",
+          "severity": "IMPORTANT",
+          "summary": "R6 authority projection loses distinctions including DERIVED, MODEL_DERIVED_SIMULATION, MEASURED_RUNTIME_EVIDENCE and UNSUPPORTED."
+        }
+      ],
+      "integration_patch_requests": [
+        "AUTH-001 strict closed authority/evidence validation plus adversarial matrix",
+        "AUTH-002 typed nested cross-scale representation authority"
+      ],
+      "gate_impact": [
+        "Blocks scientific/public authority promotion until repaired or isolated behind strict projection"
+      ]
+    },
+    {
+      "prompt_id": "AUDIT-SCIENCE",
+      "terminal_state": "COMPLETE_RESEARCH_PACKET",
+      "write_scope": [],
+      "findings": [
+        {
+          "id": "AS-001",
+          "severity": "HIGH",
+          "summary": "Scientific model-version lineage is stale: declared causal-1 while runtime producer is causal-2."
+        },
+        {
+          "id": "AS-002",
+          "severity": "MEDIUM_HIGH",
+          "summary": "Provenance, assumptions/applicability, limitations and uncertainty semantics are dropped at environmentState projection."
+        },
+        {
+          "id": "AS-003",
+          "severity": "MEDIUM_HIGH",
+          "summary": "Conservation is not fail-closed; conserved:false evidence can still be hashed/presented."
+        },
+        {
+          "id": "AS-004",
+          "severity": "MEDIUM",
+          "summary": "Dedicated causal test is outside the Wave-0 CI gate."
+        }
+      ],
+      "integration_patch_requests": [
+        "versioned provenance envelope",
+        "conservation rejection/UNKNOWN degradation",
+        "causal certification coverage"
+      ],
+      "gate_impact": [
+        "Blocks new scientific authority promotion; input to PROD-W1-SCI-FP"
+      ]
+    },
+    {
+      "prompt_id": "AUDIT-SECURITY",
+      "terminal_state": "COMPLETE_RESEARCH_PACKET",
+      "write_scope": [],
+      "findings": [
+        {
+          "id": "SEC-01",
+          "severity": "HIGH",
+          "summary": "P4 checkpoint/archive verification establishes integrity/self-consistency but does not fully establish authenticated or semantically trusted imported state; coherently rehashed malformed state can evade the intended trust claim."
+        },
+        {
+          "id": "SEC-02",
+          "severity": "MEDIUM",
+          "summary": "Provider resource accounting/cancellation is cooperative and not a hostile-code sandbox."
+        },
+        {
+          "id": "SEC-03",
+          "severity": "LOW_MEDIUM",
+          "summary": "Budget separation and pre-hash resource admission need stronger evidence before ABI/network-facing exposure."
+        }
+      ],
+      "integration_patch_requests": [
+        "IPR-SEC-01 checkpoint/archive trust/semantic-validation boundary",
+        "IPR-SEC-02 cancellation/stale-result hardening",
+        "IPR-SEC-03 resource admission hardening"
+      ],
+      "gate_impact": [
+        "SEC-01 blocks G0A if checkpoint/archive are included in the minimum normative/public seam",
+        "SEC-02/03 are G0B/G1 hardening inputs"
+      ]
+    },
+    {
+      "prompt_id": "AUDIT-PERFORMANCE",
+      "terminal_state": "COMPLETE_RESEARCH_PACKET",
+      "write_scope": [],
+      "findings": [
+        {
+          "severity": "MEASURED",
+          "summary": "Observed stage transition p50 about 1.351s, p95 about 1.855s, worst about 1.859s; render/update tails remain bounded in the audited campaign."
+        },
+        {
+          "severity": "MEDIUM_EVIDENCE_GAP",
+          "summary": "Campaign-wide max can underreport stage worst; p99 CPU, cancellation, serialization/persistence/host timing and physical GPU remain incomplete."
+        },
+        {
+          "severity": "WATCH",
+          "summary": "50-loop soak remained bounded but heap increased about 3.77 MB (8.30%)."
+        }
+      ],
+      "gate_impact": [
+        "No current Wave-0 gate blocker; resource/cancellation evidence debt propagates to later runtime/release gates"
+      ]
+    },
+    {
+      "prompt_id": "AUDIT-PORTABILITY",
+      "terminal_state": "COMPLETE_RESEARCH_PACKET",
+      "write_scope": [],
+      "findings": [
+        {
+          "severity": "PASS_CURRENT",
+          "summary": "No current portability blocker found across tested Linux/Windows/macOS and x64/ARM64 matrices."
+        },
+        {
+          "id": "PORT-WASM-01",
+          "severity": "FUTURE",
+          "summary": "Current WASM experiment is not Core proof."
+        },
+        {
+          "id": "PORT-NATIVE-01",
+          "severity": "FUTURE_GATED",
+          "summary": "Native portability evidence remains future G1 debt."
+        }
+      ],
+      "gate_impact": [
+        "No G0A/G0B block from current JS/P2/P4 portability",
+        "Native/WASM gates still require future evidence"
+      ]
+    },
+    {
+      "prompt_id": "AUDIT-ABI",
+      "terminal_state": "COMPLETE_RESEARCH_PACKET",
+      "write_scope": [],
+      "findings": [
+        {
+          "severity": "UNREACHED",
+          "summary": "No C ABI exists in the audited R6; allocator/layout/thread/error/version compatibility claims are therefore unsupported rather than failed."
+        }
+      ],
+      "gate_impact": [
+        "Future C ABI evidence required before G-TARGET-CABI-STABLE; no current ABI to certify"
+      ]
+    },
+    {
+      "prompt_id": "AUDIT-PERSISTENCE",
+      "terminal_state": "COMPLETE_RESEARCH_PACKET",
+      "write_scope": [],
+      "findings": [
+        {
+          "id": "AP-01",
+          "severity": "G3_BLOCKER",
+          "summary": "No durable WAL/fsync/atomic committed-root/recovery backend exists."
+        },
+        {
+          "id": "AP-02",
+          "severity": "HIGH",
+          "summary": "A stale-but-valid archive/committed image can represent rollback that integrity alone cannot detect."
+        },
+        {
+          "id": "AP-03",
+          "severity": "HIGH",
+          "summary": "Checkpoint self-consistency does not establish historical provenance."
+        },
+        {
+          "id": "AP-04",
+          "severity": "HIGH_FUTURE",
+          "summary": "Power-loss/torn-write/fsync/interrupted-compaction fault campaign is not implemented."
+        }
+      ],
+      "evidence": [
+        "2,000 histories",
+        "16,041 property events",
+        "73 compactions",
+        "cross-runtime P4 verification"
+      ],
+      "gate_impact": [
+        "G3 durability proof not satisfied"
+      ]
+    },
+    {
+      "prompt_id": "AUDIT-PRODUCT",
+      "terminal_state": "COMPLETE_RESEARCH_PACKET",
+      "write_scope": [],
+      "findings": [
+        {
+          "severity": "PASS_CURRENT",
+          "summary": "No Wave-0 product regression found; single-file/offline, canonical identity/history, picking, continuity, accessibility and bounded-resource journeys passed on audited evidence."
+        },
+        {
+          "severity": "LOW_EVIDENCE_BUG",
+          "summary": "open-visual-evidence target selection is timing-sensitive (GALAXY versus SYSTEM) because target can be read before progressive macro commit."
+        },
+        {
+          "severity": "BASELINE_DEBT",
+          "summary": "Portrait/mobile information density and truncation remain pre-existing baseline debt; physical GPU evidence remains external."
+        }
+      ],
+      "gate_impact": [
+        "No blocker to repair batch; future founder-visible/product/release evidence must retain these debts"
+      ]
+    }
+  ],
+  "cross_cutting": {
+    "current_g0a_blocker": [
+      "SEC-01 if checkpoint/archive remain in minimum normative/public slice",
+      "IND-GOV-A/IND-BRIDGE-A/IND-CONF-A v4 packet-shape repair"
+    ],
+    "product_gate_blocker": [
+      "PROD-W1-CONTRACTS lacks required v4 execution-state and immutable terminal-handoff artifacts"
+    ],
+    "product_science_guards": [
+      "AUTH-01",
+      "AUTH-02",
+      "AS-001",
+      "AS-002",
+      "AS-003",
+      "DET-01",
+      "DET-02"
+    ],
+    "future_g0b_g1_guards": [
+      "provider cancellation/stale-result semantics",
+      "hard resource admission/sandbox boundary",
+      "native/C ABI evidence"
+    ],
+    "future_g3_guards": [
+      "durable WAL/fsync/atomic root/recovery",
+      "rollback freshness/provenance",
+      "crash campaign"
+    ]
+  }
+}

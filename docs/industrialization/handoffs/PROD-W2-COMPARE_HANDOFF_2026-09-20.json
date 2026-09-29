@@ -1,0 +1,168 @@
+{
+  "schema": "ofu.terminal-handoff.v1",
+  "prompt_id": "PROD-W2-COMPARE",
+  "master_schema_version": 4,
+  "mission_date": "2026-09-20",
+  "epoch": "OFU-POST-M0-PRODUCT-NEXT-2026-09-20-296565BB",
+  "base_sha": "ca64546915091f24111be7cf7b488c191eef82a5",
+  "base_tree": "5136517b678bc324f0d90b34cbd0379b785448e4",
+  "dependency_shas": {
+    "PROD-W1-ATLAS-CORE": "1fc22ad1850583eb8de9a4dcdb6feb1e212e98fa",
+    "PROD-W1-SCI-WHY": "0cfe30bc8e2292732e2bdf3918a62b3857445ba6",
+    "CONTROL_INTEGRATED_SUBJECT": "ca64546915091f24111be7cf7b488c191eef82a5"
+  },
+  "source_prompt_refs": [
+    "PR287@6494c3a43596c2d16c43237c052d404d5b1a7e74:PROD-W2-COMPARE",
+    "PR275@86e19cae0e8c393661d6696617c5a5e49eb78983:R6-W2-COMPARE"
+  ],
+  "final_sha": "EXTERNALLY_BOUND_BY_PR_327_TERMINAL_COMMENT",
+  "final_tree": "EXTERNALLY_BOUND_BY_PR_327_TERMINAL_COMMENT",
+  "branch": "work/post-m0/prod-w2-compare-ofu-post-m0-product-next-2026-09-20-296565bb",
+  "pr": 327,
+  "changed_paths": [
+    "src/product/exploration/compare/compare-contracts.js",
+    "src/product/exploration/compare/atlas-alignment.js",
+    "src/product/exploration/compare/why-validation.js",
+    "src/product/exploration/compare/why-divergence.js",
+    "src/product/exploration/compare/governed-compare.js",
+    "tests/product/prod-w2-compare-graph-fixture.mjs",
+    "tests/product/prod-w2-compare-fixture.mjs",
+    "tests/product/prod-w2-compare.mjs",
+    "docs/product/compare/PROD_W2_COMPARE_BOUNDARY.md",
+    "docs/product/compare/INTEGRATION_PATCH_REQUEST_TEST_REGISTRATION.json",
+    "docs/frontier/execution/parallel/PROD-W2-COMPARE_EXECUTION_STATE.json",
+    "docs/industrialization/handoffs/PROD-W2-COMPARE_HANDOFF_2026-09-20.json"
+  ],
+  "ownership_result": {
+    "status": "PASS",
+    "grant": "PR312_COMMENT_5750229376",
+    "scope": "ADDITIVE_SYNCHRONIZED_EVIDENCE_TYPED_CAUSAL_DIVERGENCE_ONLY",
+    "protected_surfaces_modified": [],
+    "shared_renderer_composition_modified": false,
+    "camera_picking_modified": false,
+    "canonical_p2_p4_modified": false,
+    "canonical_scientific_authority_modified": false,
+    "package_or_workflow_modified": false
+  },
+  "implementation": {
+    "engine_contract": "ofu-prod-w2-governed-compare-1",
+    "descriptor_contract": "ofu-prod-w2-compare-descriptor-1",
+    "result_contract": "ofu-prod-w2-compare-result-1",
+    "terminal_states": ["MATCHED", "DIVERGENT", "UNKNOWN", "INCOMPARABLE"],
+    "reference_model": "EXACT_ATLAS_REFERENCES_ONLY",
+    "time_alignment": "EXACT_P4_REFERENCE_OR_EXACT_FRONTIER_ONLY",
+    "scale_alignment": "PRESENTATION_ONLY_EXPLICIT_MATCH",
+    "causal_source": "EXISTING_TYPED_SCI_WHY_ONLY"
+  },
+  "tests": [
+    {
+      "command": "node tests/product/prod-w2-compare.mjs",
+      "result": "PASS_AFTER_REPAIR_FORWARD",
+      "scope": "focused deterministic and negative/adversarial compare corpus",
+      "limitations": "Executed in isolated API-compatible harness; control-owned exact repository registration remains pending."
+    },
+    {
+      "workflow": "Foundation Integrity",
+      "run_id": 35516642273,
+      "subject_sha": "7fa5b90bd910f25ecd868526b75c24e364edc190",
+      "result": "SUCCESS"
+    },
+    {
+      "scope": "other hosted repository conformance workflows on implementation subject",
+      "result": "IN_PROGRESS_AT_HANDOFF_PAYLOAD_CREATION",
+      "binding": "PR_327_TERMINAL_COMMENT_WILL_RECORD_EXACT_FINAL_HEAD_STATUS"
+    }
+  ],
+  "deterministic_witnesses": {
+    "descriptor_id": "compare-desc-e9c35963f2228d8379f0399e",
+    "result_id": "compare-7001b7fd90621f3303847a1e",
+    "result_hash": "7001b7fd90621f3303847a1ed6613e7b0a12e9a6cb663f76ab81d440781c8d9a",
+    "comparison_state": "DIVERGENT",
+    "canonical_result_bytes": 12134,
+    "typed_divergence": {
+      "causal": 1,
+      "authority": 1,
+      "provenance": 1,
+      "uncertainty": 1,
+      "presentation_only": 2
+    },
+    "explicit_incomparable_reasons": [
+      "P4_LINEAGE_MISMATCH",
+      "SCIENTIFIC_MODEL_VERSION_MISMATCH",
+      "SCI_WHY_MODEL_VERSION_MISMATCH"
+    ]
+  },
+  "security_classification": {
+    "result": "PASS_WITHIN_LANE_SCOPE",
+    "properties": [
+      "strict bounded inputs and outputs",
+      "unknown Atlas references rejected",
+      "tampered descriptor identity rejected",
+      "tampered SCI-WHY graph hash/canonical bytes rejected",
+      "subject/fingerprint/model provenance mismatches rejected",
+      "unsupported resource-limit fields rejected",
+      "runtime network not required"
+    ]
+  },
+  "authority_science_classification": {
+    "result": "PASS",
+    "effective_authority": "ANALYSIS_ONLY",
+    "presentation_difference_is_science": false,
+    "generated_causal_explanation": false,
+    "scientific_claims_added": false,
+    "unknown_preserved": true,
+    "unsupported_preserved": true,
+    "model_or_contract_mismatch_coerced": false
+  },
+  "performance_resource_evidence": {
+    "default_max_why_nodes_per_side": 512,
+    "default_max_why_edges_per_side": 1024,
+    "default_max_difference_items_per_class": 256,
+    "default_max_canonical_result_bytes": 524288,
+    "hard_max_why_nodes_per_side": 4096,
+    "hard_max_why_edges_per_side": 8192,
+    "hard_max_difference_items_per_class": 4096,
+    "hard_max_canonical_result_bytes": 8388608,
+    "focused_fixture_canonical_result_bytes": 12134,
+    "difference_detail_truncation_reported_explicitly": true
+  },
+  "falsification_attempts": [
+    "deterministic descriptor and result replay",
+    "same-frontier P4 state divergence",
+    "P4 lineage mismatch",
+    "Scientific Fingerprint model mismatch",
+    "SCI-WHY model mismatch",
+    "missing SCI-WHY evidence preserved as UNKNOWN",
+    "causal versus presentation relation separation",
+    "authority and provenance divergence",
+    "uncertainty divergence",
+    "tampered descriptor hash",
+    "unknown Atlas entry reference",
+    "tampered SCI-WHY graph hash",
+    "WHY node resource exhaustion",
+    "unsupported resource limit",
+    "WHY subject-binding mismatch",
+    "Atlas non-mutation",
+    "no camera/renderer ownership"
+  ],
+  "repair_history": [
+    {
+      "failed_subject": "fe8479ea114f7379bb112ab36c43c1accb42de7f",
+      "fingerprint": "COMPARE_WHY_CLASSIFIER_IMPORT_OMISSION",
+      "repair_subject": "7fa5b90bd910f25ecd868526b75c24e364edc190",
+      "strategy": "FORWARD_FIX_NO_REBASE",
+      "focused_retest": "PASS"
+    }
+  ],
+  "limitations": [
+    "Comparison explains only divergence represented by the supplied saved references and SCI-WHY/provenance structures; it does not infer missing causal explanations.",
+    "Presentation scale can be aligned as a presentation hint but is never promoted to scientific authority.",
+    "Permanent central test registration is not lane-owned and is intentionally absent from this branch.",
+    "Final integration-subject focused execution remains a control-owned convergence action after registration."
+  ],
+  "rollback_abandon_condition": "Reject or abandon this lane if integration requires mutation of shared renderer/camera/P2/P4/scientific-authority surfaces, if exact Atlas reference semantics cannot be preserved, if deterministic identity fails on the integration subject, or if control cannot reproduce the focused corpus after central registration.",
+  "integration_patch_requests": [
+    "docs/product/compare/INTEGRATION_PATCH_REQUEST_TEST_REGISTRATION.json"
+  ],
+  "disposition": "READY_FOR_CONTROL_CONVERGENCE"
+}

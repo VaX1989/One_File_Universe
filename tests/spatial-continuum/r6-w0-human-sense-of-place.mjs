@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { createHumanPlaceGrammar, classifyHumanDepth } from '../../src/experiments/spatial-continuum/human-place-grammar.js';
 import { createLocalEnvironmentGenerator } from '../../src/experiments/spatial-continuum/local-environment.js';
+import { deriveProductDepthProfile } from '../../src/experiments/spatial-continuum/product-depth-profile.js';
 
 const terrain=(east,north)=>Math.sin(east/17)*2+Math.cos(north/23)*3+Math.sin((east+north)/7)*.35;
 const families=['ANGULAR_ICE_FRACTURE_FIELD','UPLIFTED_LITHIC_FIELD','ROUNDED_SEDIMENT_FIELD','ANGULAR_EJECTA_FIELD','MIXED_LITHIC_FIELD'];
@@ -12,4 +13,41 @@ const farGenerator=make('MIXED_LITHIC_FIELD','r6-c-far-window'),far=farGenerator
 
 const stableGenerator=make('UPLIFTED_LITHIC_FIELD','r6-c-stable-world-scale'),stableA=stableGenerator.windowFor(0,0),stableB=stableGenerator.windowFor(64,0),stableMap=new Map(stableA.instances.map(item=>[item.id,item])),stableShared=stableB.instances.filter(item=>stableMap.has(item.id));assert.ok(stableShared.length>0);for(const item of stableShared){const prior=stableMap.get(item.id);assert.deepEqual(item.baseScale,prior.baseScale);assert.deepEqual(item.scale,prior.scale)}
 const place=createHumanPlaceGrammar({seed:'camera-calibration',terrainSampler:terrain,regime:{localGrammar:'MIXED_LITHIC_FIELD'},cellSizeM:32});assert.ok(place.camera.eyeHeightM>=1.55&&place.camera.eyeHeightM<=1.8);assert.equal(classifyHumanDepth({eastM:4,northM:3,cellSizeM:32}),'NEAR');assert.equal(classifyHumanDepth({eastM:70,northM:0,cellSizeM:32}),'MID');assert.equal(classifyHumanDepth({eastM:160,northM:0,cellSizeM:32}),'FAR');
-console.log(JSON.stringify({status:'PASS',suite:'spatial-continuum-r6-w0-human-sense-of-place',review,farTraversal:{centerCell:far.centerCell,depthCounts:far.depthCounts,instanceCount:far.instanceCount,windowRelativeProjection:true,stableWorldScale:true},camera:place.camera,aerialPerspective:place.aerialPerspective,budgets:place.budgets,authority:place.authority},null,2));
+
+const depthWorld=(name,{gravity,atmosphere,temperature,water,ice,tectonic,erosion,impact,metal,silicate,volatile,family,localGrammar,palette,localDensity=1,ageMyr=4500})=>Object.freeze({
+  bodyId:name,
+  generative:Object.freeze({
+    scientificState:Object.freeze({
+      contract:'ofu-r6-world-scientific-state-1',
+      planet:Object.freeze({bulkPriorClass:'TERRESTRIAL',surfaceGravityMicroMs2:gravity,insolationPpm:1000000}),
+      stellar:Object.freeze({ageMyr}),
+      environment:Object.freeze({
+        formation:Object.freeze({ageMyr}),
+        composition:Object.freeze({metalPpm:metal,silicatePpm:silicate,volatilePpm:volatile}),
+        atmosphere:Object.freeze({inventoryUnits:atmosphere}),
+        climate:Object.freeze({stellarFluxPpm:1000000,surfaceTemperatureMilliK:temperature}),
+        hydrosphere:Object.freeze({waterAreaPpm:water,iceFractionPpm:ice,canonicalOceanClaim:false}),
+        surfaceProcesses:Object.freeze({tectonicActivityPpm:tectonic,erosionPotentialPpm:erosion,impactRetentionPpm:impact})
+      })
+    }),
+    presentation:Object.freeze({
+      contract:'ofu-r6-world-representation-profile-1',localDensity,
+      regime:Object.freeze({family,localGrammar,structuralWeights:Object.freeze({ridge:tectonic/1e6,basin:erosion/1e6,crater:impact/1e6,fracture:ice/1e6,smooth:Math.min(1,(erosion+water*.35)/1e6)})}),
+      terrainPalette:Object.freeze({low:Object.freeze(palette[0]),mid:Object.freeze(palette[1]),high:Object.freeze(palette[2])}),
+      terrain:Object.freeze({macroAmplitudeM:800,localGrammar})
+    })
+  }),
+  terrainTarget:Object.freeze({profile:Object.freeze({macroAmplitudeM:800})})
+});
+const airlessDepthWorld=depthWorld('airless-depth',{gravity:3700000,atmosphere:0,temperature:315000,water:0,ice:0,tectonic:90000,erosion:50000,impact:930000,metal:330000,silicate:620000,volatile:50000,family:'CRATERED_HIGHLAND_PRESENTATION',localGrammar:'ANGULAR_EJECTA_FIELD',palette:[[.13,.12,.12],[.36,.31,.27],[.68,.62,.55]],localDensity:.72,ageMyr:5200});
+const wetDepthWorld=depthWorld('wet-depth',{gravity:9810000,atmosphere:850000,temperature:284000,water:610000,ice:20000,tectonic:220000,erosion:820000,impact:180000,metal:180000,silicate:520000,volatile:300000,family:'ERODED_BASIN_PRESENTATION',localGrammar:'ROUNDED_SEDIMENT_FIELD',palette:[[.12,.24,.2],[.3,.46,.27],[.65,.58,.42]],localDensity:1.24,ageMyr:4500});
+const depthProfileFor=world=>{const regime=world.generative.presentation.regime,placeGrammar=createHumanPlaceGrammar({seed:world.bodyId,terrainSampler:terrain,regime:{...regime,localDensity:world.generative.presentation.localDensity,atmosphereStrength:world.bodyId.startsWith('wet')?.82:.04,cloudStrength:world.bodyId.startsWith('wet')?.28:.01},cellSizeM:32});return deriveProductDepthProfile({world,place:placeGrammar})};
+const airlessDepth=depthProfileFor(airlessDepthWorld),wetDepth=depthProfileFor(wetDepthWorld),airlessRepeat=depthProfileFor(airlessDepthWorld);
+assert.deepEqual(airlessRepeat,airlessDepth,'product-depth profile must be deterministic for identical governed inputs');
+for(const profile of [airlessDepth,wetDepth]){assert.equal(profile.authority,'PRESENTATION_ONLY');assert.equal(profile.scientificClaimsAdded,false);assert.equal(profile.unsupported.actualWeatherInvented,false);assert.equal(profile.unsupported.calibratedAtmosphereSpectrumInvented,false);assert.equal(profile.unsupported.landformPlacementInvented,false);assert.equal(profile.unsupported.physicalObjectScaleMutated,false);assert.ok(profile.visual.fogDensityPerM>=.00008&&profile.visual.fogDensityPerM<=.00052)}
+assert.ok(wetDepth.visual.fogDensityPerM>airlessDepth.visual.fogDensityPerM,'thicker governed atmosphere should produce stronger bounded aerial perspective');
+assert.notEqual(wetDepth.causalFingerprint,airlessDepth.causalFingerprint);
+const descriptorDistance=(left,right)=>{let changed=0;for(const key of Object.keys(left)){if(key==='palette')continue;const a=left[key],b=right[key];if(Array.isArray(a)&&Array.isArray(b)){const distance=a.reduce((sum,value,index)=>sum+Math.abs(Number(value)-Number(b[index]||0)),0)/Math.max(1,a.length);if(distance>.025)changed++}else if(String(a)!==String(b))changed++}return changed};
+const depthChangedDimensions=descriptorDistance(airlessDepth.qobs,wetDepth.qobs);assert.ok(depthChangedDimensions>=6,'materially different worlds must separate across multiple non-palette QOBS dimensions, got '+depthChangedDimensions);
+
+console.log(JSON.stringify({status:'PASS',suite:'spatial-continuum-r6-w0-human-sense-of-place',review,farTraversal:{centerCell:far.centerCell,depthCounts:far.depthCounts,instanceCount:far.instanceCount,windowRelativeProjection:true,stableWorldScale:true},camera:place.camera,aerialPerspective:place.aerialPerspective,budgets:place.budgets,productDepth:{airless:{fingerprint:airlessDepth.causalFingerprint,fogDensityPerM:airlessDepth.visual.fogDensityPerM},wet:{fingerprint:wetDepth.causalFingerprint,fogDensityPerM:wetDepth.visual.fogDensityPerM},changedNonPaletteDimensions:depthChangedDimensions},authority:place.authority},null,2));

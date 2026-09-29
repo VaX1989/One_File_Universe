@@ -1,0 +1,108 @@
+{
+  "schema": "ofu.product-lane-handoff.v1",
+  "prompt_id": "PRODUCT-MACRO",
+  "mode": "WRITE_PRODUCT",
+  "master_schema_version": 4,
+  "mission_date": "2026-09-20",
+  "epoch": "OFU-POST-M0-PRODUCT-NEXT-2026-09-20-296565BB",
+  "repository": "VaX1989/One_File_Universe",
+  "branch": "work/post-m0/product-macro-2026-09-20",
+  "pr": 313,
+  "control_pr": 312,
+  "canonical_master": {
+    "pr": 287,
+    "sha": "c2cab6d6e914b918432432fdc69825e0a1000509"
+  },
+  "activation_base": {
+    "sha": "de06cc7f8e4b74e57aad583a8764ac756b06b9da",
+    "tree": "92ea93742177879dcf7f3fd94560439d0149b43d"
+  },
+  "current_control_subject": {
+    "sha": "92ae51b193d3e9a545c9760df3e6f0922728b3d0",
+    "relation": "DIVERGED_DO_NOT_REBASE_CHILD_LANE"
+  },
+  "exact_executable_evidence_subject": {
+    "sha": "94c0b06524e69bd1c5d220a6df11a9ad1379c5dc",
+    "tree": "1b37ba337a09cc0c37b15a09d0797bfea13f8bb2",
+    "cumulative_ci": "PASS_10_OF_10",
+    "spatial_run": 35511464178,
+    "convergence_job": 106080020724,
+    "convergence": "PASS_ALL_12_MANDATORY_SUITES",
+    "convergence_artifact": {
+      "id": 10605626805,
+      "name": "spatial-continuum-convergence-94c0b06524e69bd1c5d220a6df11a9ad1379c5dc",
+      "digest": "sha256:a20160dc3951bb91b82e270889aa01809c546ed7cff3c6268c38d320a2a20334",
+      "inspected": true
+    }
+  },
+  "failure_history": [
+    {
+      "fingerprint": "PRODUCT_MACRO_REVERSAL_HARNESS_COMMITTED_STATE_TIMING_RACE",
+      "terminal_classification": "SEMANTIC_RENDERER_ATOMICITY_DEFECT_WITH_HARNESS_TIMING_SUSCEPTIBILITY",
+      "root_cause": "Committed active entries were looked up by canonical id and re-profiled using the pending destination stage even though residency identity is stage-qualified. A same-id entry could therefore expose REGION presentation before REGION committed while the committed signature still represented GALAXY. The witness also allowed uncontrolled RAF progress.",
+      "repair": [
+        "Require active-entry residencyKey to equal stage:id before applying target-stage profile updates.",
+        "Run destination request, semantic settle and pending snapshot in one controlled requestAnimationFrame turn.",
+        "Require exactly one additional bounded materializer slice before the pending snapshot.",
+        "Require pending REGION to retain the complete committed GALAXY signature and active profile set."
+      ],
+      "result": "RESOLVED"
+    }
+  ],
+  "proof": {
+    "phase2_macro": "PASS",
+    "committed_state_atomicity": "PASS_GALAXY_PROFILE_AND_SIGNATURE_RETAINED_WHILE_REGION_PENDING",
+    "controlled_pending_slice": "PASS_EXACTLY_ONE_SLICE",
+    "rapid_reversal_cancellation": "PASS",
+    "stale_completions": 0,
+    "presentation_authority": "PRESENTATION_ONLY",
+    "one_scene": true,
+    "one_camera": true,
+    "renderer_owned_picking": true,
+    "runtime_network_resources": 0,
+    "max_resident": 32,
+    "max_build_per_slice": 2,
+    "peak_resident": 24,
+    "peak_transition_resident": 46,
+    "bounded": true,
+    "physical_gpu_evidence": "NOT_VERIFIED_SEPARATE_RELEASE_GRADE_DEBT"
+  },
+  "changed_paths": [
+    "src/experiments/spatial-continuum/macro-renderer-residency.js",
+    "tests/spatial-continuum/r6-w0-macro-renderer-browser.mjs",
+    "tests/spatial-continuum/r6-w0-macro-renderer-integration.mjs",
+    "tests/spatial-continuum/open-generalization.mjs",
+    "tests/spatial-continuum/open-visual-evidence.mjs",
+    "docs/frontier/execution/parallel/PRODUCT-MACRO_EXECUTION_STATE.json",
+    "docs/industrialization/handoffs/PRODUCT-MACRO_2026-09-20.json"
+  ],
+  "ownership_result": "PASS_SOLE_SHARED_MACRO_RENDERER_PRODUCT_COMPOSITION_OWNER_NO_CANONICAL_P2_P4_SCIENCE_CAMERA_OR_PICKING_AUTHORITY_CHANGE",
+  "invariants": {
+    "canonical_p2_p4_unchanged": true,
+    "scientific_authority_not_promoted": true,
+    "presentation_only_geometry": true,
+    "one_scene_camera_preserved": true,
+    "renderer_owned_picking_preserved": true,
+    "stable_world_space_scale_preserved": true,
+    "offline_direct_file_preserved": true,
+    "bounded_resources_residency_preserved": true,
+    "cancellation_and_stale_rejection_preserved": true
+  },
+  "explicit_non_actions": {
+    "control_branch_merged_into_lane": false,
+    "force_rebase_or_history_rewrite": false,
+    "child_self_merged": false,
+    "package_json_touched": false,
+    "workflows_touched": false,
+    "main_mutated": false
+  },
+  "residual_debt": [
+    "Physical GPU/device evidence remains separate release-grade evidence and is not implied by headless/software-rendered CI.",
+    "G0A remains a separate industrialization gate and is not reclassified by PRODUCT-MACRO.",
+    "Integration onto the current product-control head is reserved to CTRL-CONVERGENCE."
+  ],
+  "integration_instruction": "CTRL-CONVERGENCE must integrate this completed lane onto the then-live product control head without rewriting published lane history, then run cumulative control CI and adjudicate any shared-surface conflict.",
+  "final_sha": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD",
+  "final_tree": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD_TREE",
+  "disposition": "READY_FOR_CONTROL_CONVERGENCE"
+}

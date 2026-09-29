@@ -1,0 +1,38 @@
+{
+  "schema": "ofu.post-m0.ctrl-convergence.product-human.v1",
+  "prompt_id": "PRODUCT-HUMAN",
+  "mission_date": "2026-09-20",
+  "control_pr": 290,
+  "source_lane": {
+    "pr": 346,
+    "terminal_head": "c984f44984807eabe01f95f1d1f3f7e9fb376d40",
+    "forward_reconciliation": "f02c1a0f847d080da4c71433210736765b4cb3c0",
+    "merge_commit": "a34e3ebbcd2b2218b26163d561f0c77b7c048587"
+  },
+  "verification": {
+    "verification_pr": 347,
+    "verification_head": "f602f4964eb9bae01192359f57b5f494621f6a7c",
+    "workflow_matrix": "10/10_PASS",
+    "spatial_run": 35530054529,
+    "focused_test_blob": "35aff529c989cda3d7751216757f65cc41570699"
+  },
+  "control_integration": {
+    "package_registration_commit": "ee7fefc072fa2d7e12bc940ead234865cafa2694",
+    "regression": "node tests/product/product-human.mjs",
+    "existing_regression_union_preserved": true,
+    "spatial_existing_suites_reused": [
+      "phase2-human",
+      "multi-world"
+    ],
+    "production_semantics_changed_by_control": false
+  },
+  "authority": {
+    "one_scene": true,
+    "one_camera": true,
+    "renderer_owned_picking": true,
+    "canonical_scientific_authority_changed": false
+  },
+  "physical_device_evidence": "NOT_VERIFIED",
+  "required_post_condition": "FRESH_CUMULATIVE_CI_AND_SPATIAL_CONTINUUM_PASS_ON_FINAL_CONTROL_HEAD",
+  "disposition": "READY_FOR_CONTROL_EXACT_HEAD_VERIFICATION"
+}

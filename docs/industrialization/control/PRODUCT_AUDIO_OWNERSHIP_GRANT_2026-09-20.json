@@ -1,0 +1,66 @@
+{
+  "schema": "ofu.product.ownership-grant.v1",
+  "prompt_id": "CTRL-WAVE-EPOCH",
+  "mission_date": "2026-09-20",
+  "control": {
+    "pr": 290,
+    "branch": "integration/post-m0-dual-track-wave0-2026-09-17",
+    "base_sha": "8933c3ffc29fb72d5eebbe69320e2d33bc1e9ae4"
+  },
+  "epoch": "OFU-POST-M0-PRODUCT-COMPLETION-2026-09-20",
+  "reauthentication": {
+    "PRODUCT-VISUAL-CONTINUITY": {
+      "status": "ACTIVE",
+      "pr": 334,
+      "owned_surface": "transition_presentation_continuity"
+    },
+    "PRODUCT-AUDIO_existing_surface": [
+      "src/audio/v2x14/living-audio-context.js",
+      "src/audio/v2x14/audio-controller.js",
+      "systemic audio runtime/control surfaces already shipped in the current product"
+    ],
+    "overlap_with_visual_transition_owner": false,
+    "overlap_with_native_experiment": false
+  },
+  "grant": {
+    "prompt_id": "PRODUCT-AUDIO",
+    "status": "AUTHORIZED_PARALLEL_DISJOINT",
+    "semantic_ownership": [
+      "product_audio",
+      "optional_systemic_audio_and_sonification_presentation"
+    ],
+    "exclusive_surfaces": [
+      "src/audio/v2x14/**",
+      "PRODUCT-AUDIO lane-local tests and evidence"
+    ],
+    "must_not_modify": [
+      "camera authority",
+      "cross-scale transition ownership",
+      "renderer picking authority",
+      "canonical P2/P4 semantics",
+      "scientific authority",
+      "world identity",
+      "PRODUCT-VISUAL-CONTINUITY owned tests/surfaces",
+      "package.json",
+      "workflows",
+      "central test runners"
+    ],
+    "acceptance": [
+      "offline and no CDN/network audio",
+      "optional and non-blocking",
+      "PRESENTATION_ONLY authority",
+      "state-derived context remains deterministic",
+      "mute, volume and reduced-sensory accessibility controls",
+      "no audio as canonical or scientific authority",
+      "no hidden replay-breaking state",
+      "visibility suspension and disposal correctness",
+      "bounded contexts, live nodes and polling/timers",
+      "UNKNOWN/unsupported context fails silent rather than inventing environmental facts"
+    ]
+  },
+  "still_deferred": {
+    "PRODUCT-HUMAN": "DEFERRED_UNTIL_VISUAL_CONTINUITY_TERMINAL_OR_NEW_DISJOINTNESS_PROOF",
+    "PROD-W2-DIRECTOR": "STACKED_ONLY_BLOCKED_WHILE_TRANSITION_OWNER_ACTIVE"
+  },
+  "disposition": "PRODUCT_AUDIO_AUTHORIZED_IN_PARALLEL_WITH_VISUAL_CONTINUITY"
+}

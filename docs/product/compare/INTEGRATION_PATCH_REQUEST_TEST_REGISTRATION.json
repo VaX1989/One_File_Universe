@@ -1,0 +1,22 @@
+{
+  "schema": "ofu.integration-patch-request.v1",
+  "requesting_prompt_id": "PROD-W2-COMPARE",
+  "epoch": "OFU-POST-M0-PRODUCT-NEXT-2026-09-20-296565BB",
+  "target_surface": "CENTRAL_TEST_REGISTRATION",
+  "target_path": "package.json",
+  "expected_authority": "CTRL-WAVE-EPOCH/CTRL-CONVERGENCE",
+  "intended_change": "Register node tests/product/prod-w2-compare.mjs in the control-owned cumulative product test command without changing COMPARE semantics or dependencies.",
+  "rationale": "The lane owns its additive focused test, while package.json, workflows and central test registration are protected by the active product epoch. Exact hosted cumulative execution therefore requires a control-owned integration patch.",
+  "invariants": [
+    "No production/runtime dependency is added.",
+    "No shared renderer, composition, camera, path, picking, P2 or P4 surface is changed.",
+    "No scientific authority or canonical truth is promoted.",
+    "The registered command executes node tests/product/prod-w2-compare.mjs exactly."
+  ],
+  "tests": [
+    "node tests/product/prod-w2-compare.mjs",
+    "npm test",
+    "existing exact-head conformance workflows"
+  ],
+  "status": "REQUESTED_NOT_APPLIED_BY_LANE_WRITER"
+}

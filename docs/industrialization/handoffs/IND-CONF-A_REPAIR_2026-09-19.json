@@ -1,0 +1,82 @@
+{
+  "prompt_id": "IND-CONF-A",
+  "master_schema_version": 4,
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "base_sha": "37e6744f1d8f711278ae8b14ddaf84b9176b5a6b",
+  "base_tree": "fb5be853362a9266f0f6d64f23338d2827f358e0",
+  "dependency_shas": {
+    "M0_HISTORICAL": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+    "CTRL_WAVE0_REPAIR_PHASE": "37e6744f1d8f711278ae8b14ddaf84b9176b5a6b",
+    "ORIGINAL_IND_CONF_A_LANE": "3a18c2a7bb4f273ac182ee44787de4e5850982a7",
+    "CONTROL_VERIFICATION_297": "95b81237f8cfeaba5a1df300a4fc8c82f042470b",
+    "PR287_V4_MASTER": "c2cab6d6e914b918432432fdc69825e0a1000509"
+  },
+  "final_sha": "EXTERNALLY_BOUND_BY_DRAFT_REPAIR_PR_HEAD",
+  "final_tree": "EXTERNALLY_BOUND_BY_DRAFT_REPAIR_PR_HEAD_TREE",
+  "changed_paths": [
+    "docs/industrialization/iw0/ind-conf/G0A_CONFORMANCE_SCOPE_CLASSIFICATION.json",
+    "docs/industrialization/iw0/ind-conf/IND-CONF-A_CORPUS_SPEC.md",
+    "docs/frontier/execution/parallel/IND-CONF-A_EXECUTION_STATE.json",
+    "docs/industrialization/handoffs/IND-CONF-A_REPAIR_2026-09-19.json"
+  ],
+  "ownership_result": "PASS_CONFORMANCE_CORPUS_METADATA_ONLY_FROZEN_VECTOR_BYTES_UNCHANGED",
+  "tests": [
+    {
+      "check": "control verification #297 direct corpus execution",
+      "result": "PASS",
+      "verification_head": "95b81237f8cfeaba5a1df300a4fc8c82f042470b",
+      "foundation_run": 35433206372,
+      "corpus_digest": "2b13e4c47c254e418543410806ec5aaed7650b60e2e653c75b602b9c0735b65b",
+      "js": "48 positive / 47 rejection",
+      "python": "48 positive / 38 rejection"
+    },
+    {
+      "check": "frozen corpus vector bytes",
+      "result": "UNCHANGED_BY_REPAIR",
+      "files": [
+        "conformance/iw0/p2-vectors.json",
+        "conformance/iw0/p4-vectors.json",
+        "conformance/iw0/CORPUS.sha256",
+        "conformance/iw0/manifest.json"
+      ]
+    },
+    {
+      "check": "machine-readable evidence-scope classification",
+      "result": "PASS_BY_WRITE_TIME_JSON_PARSE"
+    }
+  ],
+  "deterministic_witnesses": [
+    {
+      "kind": "FROZEN_CORPUS_DIGEST",
+      "sha256": "2b13e4c47c254e418543410806ec5aaed7650b60e2e653c75b602b9c0735b65b"
+    },
+    {
+      "kind": "CONTROL_VERIFICATION",
+      "head": "95b81237f8cfeaba5a1df300a4fc8c82f042470b",
+      "run_id": 35433206372,
+      "result": "PASS"
+    },
+    {
+      "kind": "SCOPE_SPLIT",
+      "independent_g0a": true,
+      "checkpoint_archive_independent": false,
+      "checkpoint_archive_classification": "CURRENT_AUTHORITY_REGRESSION_ONLY"
+    }
+  ],
+  "security_classification": "NO_SECURITY_AUTHORITY_PROMOTION; checkpoint/archive PASS behavior is explicitly not treated as authenticated or independent trust proof.",
+  "authority_science_classification": "CONFORMANCE_EVIDENCE_ONLY; no canonical/scientific authority or production semantics changed.",
+  "performance_resource_evidence": "NOT_APPLICABLE_METADATA_SCOPE_REPAIR",
+  "limitations": [
+    "The Python oracle is not an independent P4 checkpoint/archive reducer.",
+    "Checkpoint/archive behavior remains CURRENT_AUTHORITY_REGRESSION_ONLY and outside independent G0A proof.",
+    "Independent GATE-G0A-AUDIT must adjudicate the repaired integrated slice."
+  ],
+  "falsification_attempts": [
+    "Preserved the frozen corpus rather than altering vectors to fit the new governance boundary.",
+    "Explicitly tested the claim boundary by labeling checkpoint/archive independent_cross_language_proof=false.",
+    "Reused only the already completed #297 direct execution evidence because corpus/source semantics are unchanged."
+  ],
+  "rollback_abandon_condition": "If independent G0A audit finds any scope currently labeled independent to rely on current-authority semantics beyond the Python oracle, narrow that scope and issue a forward repair rather than promoting self-consistency to independent evidence.",
+  "integration_patch_requests": [],
+  "disposition": "READY_FOR_CONTROL_CONVERGENCE"
+}

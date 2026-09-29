@@ -1,0 +1,30 @@
+{
+  "schema": "ofu.integration-patch-request.v1",
+  "prompt_id": "PRODUCT-AUDIO",
+  "owner": "CTRL-CONVERGENCE",
+  "status": "REQUESTED",
+  "targets": [
+    {
+      "path": "package.json",
+      "operation": "APPEND_WITHOUT_REMOVAL",
+      "registration": "node tests/product/product-audio.mjs"
+    },
+    {
+      "path": "tests/spatial-continuum/r6-w0-phase2-convergence-runner.mjs",
+      "operation": "APPEND_WITHOUT_REMOVAL",
+      "suite": "{name:'product-audio-browser',command:node,args:['tests/product/product-audio-browser.mjs']}"
+    }
+  ],
+  "preserve": [
+    "all accepted product regressions",
+    "all accepted industrialization regressions including IND-NATIVE-P2",
+    "all existing Spatial convergence suites",
+    "single scene/camera/picking authority"
+  ],
+  "verification": {
+    "verification_pr": 340,
+    "foundation_run": 35525866258,
+    "spatial_run": 35525866294,
+    "result": "PASS"
+  }
+}

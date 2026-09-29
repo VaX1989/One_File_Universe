@@ -1,0 +1,150 @@
+{
+  "prompt_id": "PROD-W1-PRODUCT-DEPTH",
+  "master_schema_version": 4,
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "branch": "work/post-m0/prod-w1-product-depth-2026-09-20",
+  "pr": 311,
+  "base_sha": "d26b65bffa3841126fcb37b1a2e442684c10edf5",
+  "base_tree": "5902bc58350f458dc5c2c9c9462073082d1385fd",
+  "dependency_shas": {
+    "M0_HISTORICAL": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+    "PRODUCT_FOUNDATION_CONTROL": "d26b65bffa3841126fcb37b1a2e442684c10edf5",
+    "PROD_W1_SCI_FP_MERGE": "454c55a49f73254d0370bbdfb01d778998235326",
+    "PROD_W1_ATLAS_CORE_MERGE": "36b5cc5d038f23bb7498e3a341f8d368f9fdd039",
+    "PR287_V4_MASTER": "c2cab6d6e914b918432432fdc69825e0a1000509"
+  },
+  "exact_executable_evidence_subject": {
+    "sha": "6128c4e0f872b0e6fab87927aa335706e420a375",
+    "tree": "3160be86dba82059d22b6074b44c688f7ca74d6f",
+    "cumulative_ci": "PASS_10_OF_10",
+    "spatial_run": 35496821928,
+    "convergence_job": 106041243882,
+    "convergence": "PASS_ALL_12_MANDATORY_SUITES",
+    "artifact_id": 10601106450
+  },
+  "final_sha": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD",
+  "final_tree": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD_TREE",
+  "changed_paths": [
+    "src/experiments/spatial-continuum/product-depth-profile.js",
+    "src/experiments/spatial-continuum/human-renderer-convergence.js",
+    "src/experiments/spatial-continuum/experience.css",
+    "src/experiments/spatial-continuum/phase2-experience.css",
+    "tests/spatial-continuum/r6-w0-human-sense-of-place.mjs",
+    "tests/spatial-continuum/r6-w0-human-renderer-integration.mjs",
+    "tests/spatial-continuum/r6-w0-phase2-product-path.mjs",
+    "tests/spatial-continuum/open-visual-evidence.mjs",
+    "tests/spatial-continuum/open-accessibility-mobile.mjs",
+    "tests/spatial-continuum/r6-w0-human-browser.mjs",
+    "tests/spatial-continuum/open-generalization.mjs",
+    "docs/product/product-depth/README.md",
+    "docs/frontier/execution/parallel/PROD-W1-PRODUCT-DEPTH_EXECUTION_STATE.json",
+    "docs/industrialization/handoffs/PROD-W1-PRODUCT-DEPTH_2026-09-20.json"
+  ],
+  "ownership_result": "PASS_SINGLE_SHARED_RENDERER_PRODUCT_COMPOSITION_WRITER_NO_CANONICAL_SCIENCE_P2_P4_CAMERA_OR_PICKING_AUTHORITY_CHANGE",
+  "tests": [
+    {
+      "subject_sha": "f068f5e5b3948321a942dcf9650e7794ae85f68b",
+      "result": "PASS_CI_BUT_VISUAL_TERMINAL_READINESS_FALSIFIED",
+      "spatial_run": 35493771534,
+      "fingerprints": [
+        "PROD_DEPTH_HUMAN_FAR_FIELD_VISIBILITY_GAP",
+        "PROD_DEPTH_PORTRAIT_LAYOUT_OVERLAP"
+      ]
+    },
+    {
+      "subject_sha": "f77e128817b11a46adfc5516ff723fed725318ec",
+      "result": "FAIL_THEN_REPAIRED",
+      "spatial_run": 35495963664,
+      "fingerprint": "PROD_DEPTH_STALE_HUMAN_RING_LITERAL_ASSERTION",
+      "classification": "TEST_HARNESS_STALE_EXPECTATION"
+    },
+    {
+      "subject_sha": "d6dd1157db271f334fc4d354a2602ce9521aaaaf",
+      "result": "PASS_10_OF_10_BUT_DIRECT_VISUAL_FALSIFICATION",
+      "spatial_run": 35496032546,
+      "fingerprint": "PROD_DEPTH_MOBILE_ORIENTATION_DECK_OVERLAP_NONPORTRAIT"
+    },
+    {
+      "subject_sha": "6128c4e0f872b0e6fab87927aa335706e420a375",
+      "result": "PASS_10_OF_10_AND_DIRECT_VISUAL_PASS",
+      "spatial_run": 35496821928,
+      "browser_matrix": {
+        "chromium": "PASS",
+        "firefox": "PASS",
+        "webkit": "PASS",
+        "clean_room": "PASS"
+      },
+      "convergence": {
+        "mandatory_suites": 12,
+        "all_executed": true,
+        "failures": 0
+      }
+    }
+  ],
+  "deterministic_witnesses": [
+    {
+      "kind": "LIVE_MULTI_WORLD_QOBS_DIVERSITY",
+      "world_count": 3,
+      "changed_non_palette_dimensions": [
+        8,
+        8,
+        7
+      ],
+      "descriptor_coverage": 1,
+      "template_collapse_rate": 0,
+      "nearest_neighbor_distinctness": 0.4910064566367088,
+      "repetitive_collapse_threshold": 0.0027027027027027094,
+      "replay_deterministic": true,
+      "calibration_fingerprint": "fc137488ee12acefbb112f5c5047428494218b03acf1aeb66663704c2cdb69d9"
+    },
+    {
+      "kind": "HUMAN_PHYSICAL_DEPTH_COMPOSITION",
+      "inner_radius_m": 72,
+      "outer_radius_m": 1600,
+      "vertex_count": 256,
+      "composition_policy": "PHYSICAL_NEAR_MID_FAR_METRE_RINGS",
+      "stable_world_scale": true,
+      "authority": "PRESENTATION_ONLY"
+    },
+    {
+      "kind": "MOBILE_GEOMETRIC_NON_OVERLAP",
+      "portrait": "390x844 PASS",
+      "landscape": "844x390 PASS",
+      "tablet": "1024x768 PASS",
+      "orientation_deck_overlap": false,
+      "topbar_overlap": false,
+      "command_overlap_count": 0
+    },
+    {
+      "kind": "RESOURCE_BOUND",
+      "scene_count": 1,
+      "camera_count": 1,
+      "meshes": 131,
+      "materials": 26,
+      "textures": 1,
+      "vertices": 78029,
+      "terrain_pool": 97
+    }
+  ],
+  "authority_science_classification": "PRESENTATION_ONLY depth profile over governed scientific/model/presentation inputs. No weather, calibrated spectrum, ocean geometry, exact mineralogy, exact landform placement, exposure age or other new scientific fact is asserted.",
+  "security_classification": "NO_NEW_NETWORK_PERSISTENCE_PARSER_OR_PUBLIC_PROVIDER_SURFACE; direct-file/offline product architecture preserved.",
+  "performance_resource_evidence": "No new scene, camera, mesh family, texture, worker or cache introduced by the product-depth profile. HUMAN far field remains one bounded 256-vertex presentation mesh; exact-head performance/resource suite PASS.",
+  "visual_product_evidence": "Direct inspection of exact-head artifact 10601106450 confirmed repaired founder-visible HUMAN depth, multi-world perceptual differentiation, responsive non-overlap, and coherent UNIVERSE→ORBIT→HUMAN→ATOMIC presentation.",
+  "falsification_attempts": [
+    "Rejected initial CI-green subject after direct screenshots showed insufficient HUMAN visibility and portrait crowding.",
+    "Recorded and repaired stale literal-ring harness failure instead of weakening the semantic test.",
+    "Rejected second CI-green subject after direct artifact inspection found landscape/tablet orientation-deck overlap.",
+    "Promoted responsive geometric non-overlap assertions to portrait, landscape and tablet.",
+    "Ran canonical QOBS scorer on real materialized worlds rather than accepting palette-only or synthetic diversity.",
+    "Evicted/rematerialized the first world and required exact product-depth descriptor replay.",
+    "Kept one scene, one camera and renderer-owned picking through browser/convergence journeys."
+  ],
+  "limitations": [
+    "Physical GPU/device evidence is not established by this headless CI lane.",
+    "G0A independent re-audit remains separate and NOT_PASS_INDEPENDENT_REAUDIT_REQUIRED.",
+    "Industrialization security/authority/determinism/persistence debts listed by the control programme remain open and are not reclassified by product-depth success."
+  ],
+  "rollback_abandon_condition": "If terminal-documentation exact-head CI or post-merge control cumulative CI fails materially, keep/open repair under the canonical product-depth/control owner and do not weaken authority, continuity, mobile, QOBS or resource assertions.",
+  "integration_patch_requests": [],
+  "disposition": "READY_FOR_CONTROL_CONVERGENCE_AFTER_TERMINAL_HEAD_CI"
+}

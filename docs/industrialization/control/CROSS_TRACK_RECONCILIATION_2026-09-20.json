@@ -1,0 +1,114 @@
+{
+  "schema": "ofu.cross-track.ctrl-reconciliation.v1",
+  "prompt_id": "CTRL-CONVERGENCE",
+  "mode": "WRITE_CONTROL",
+  "mission_date": "2026-09-20",
+  "transaction": "CROSS_TRACK_CONTROL_RECONCILIATION",
+  "sources": {
+    "common_ancestor": {
+      "sha": "296565bb2a6842159a994a45094ddc1d27d4fd1d"
+    },
+    "wave0": {
+      "pr": 290,
+      "head_sha": "4ea214472997cb3cce0a9bef08d83ee08de449ae",
+      "tree": "9e5be5e0c2b97e692877a1f0162ba572d964c182",
+      "checkpoint": "POST_EXT_CONSUMER_SUBWAVE_CONVERGENCE_COMPLETE_G0B_AUDIT_READY_NOT_PASS"
+    },
+    "product_next": {
+      "pr": 312,
+      "head_sha": "ba3e7791fab8a0a0d2e7414b6c3dad217563efd6",
+      "tree": "68fa835965edc5717cc69713181acd598086dc51",
+      "checkpoint": "CONTROLLED_CONVERGENCE_CHECKPOINT_COMPLETE"
+    }
+  },
+  "method": {
+    "strategy": "CONTROL_OWNED_SELECTIVE_TREE_REPLAY_ON_WAVE0_BASE",
+    "blind_merge_used": false,
+    "product_delta_paths_replayed": 55,
+    "shared_conflict_paths": [
+      "package.json"
+    ],
+    "package_resolution": "SEMANTIC_UNION_OF_UNIQUE_TEST_COMMANDS",
+    "source_blobs_reused_from_product_next": true
+  },
+  "preserved_work": {
+    "common_ancestor": [
+      "SCI-FP",
+      "PROD-W1-ATLAS-CORE",
+      "PROD-W1-PRODUCT-DEPTH"
+    ],
+    "product_next": [
+      "PROD-W1-SCI-WHY",
+      "PROD-W2-SEARCH",
+      "PROD-W2-TIME",
+      "PROD-W1-INSTRUMENTS",
+      "PROD-W2-COMPARE",
+      "PRODUCT-MACRO"
+    ],
+    "industrialization": [
+      "G0A PASS adjudication",
+      "IND-JS-HEADLESS",
+      "IND-SEC-B hostile-input corpus",
+      "IND-EXT-CONSUMER clean-room seam proof fixture"
+    ]
+  },
+  "focused_regressions": [
+    "node tests/product/prod-w1-sci-fp.mjs",
+    "node tests/product/prod-w1-atlas-core.mjs",
+    "node tests/product/prod-w1-sci-why.mjs",
+    "node tests/product/prod-w2-search.mjs",
+    "node tests/product/prod-w2-time.mjs",
+    "node tests/product/prod-w1-instruments.mjs",
+    "node tests/product/prod-w2-compare.mjs",
+    "node tests/industrialization/headless/public-seam.mjs",
+    "node tests/industrialization/security/post-g0a-hostile-inputs.mjs",
+    "node tests/industrialization/external-consumer/clean-room.mjs"
+  ],
+  "gate_state": {
+    "G0A_MINIMUM_NORMATIVE_SLICE": "PASS_PRESERVED",
+    "G0B_EXTERNAL_CONSUMER_SEAM_PROOF": "NOT_PASS_INDEPENDENT_AUDIT_STILL_REQUIRED",
+    "GATE_G0B_AUDIT": "READY_ON_PRESERVED_WAVE0_SUBJECT",
+    "IND_NATIVE_P2": "BLOCKED_BEHIND_G0B",
+    "G1_PASS_CONTINUE": "NOT_REACHED",
+    "IND_RUNTIME": "BLOCKED_BEHIND_EXPLICIT_G1_PASS"
+  },
+  "authority_boundaries": [
+    "industrialization PASS is not inferred from product success",
+    "scientific/product authority is not inferred from headless/platform success",
+    "canonical P2/P4 authority remains unchanged",
+    "presentation/model-derived product outputs remain non-canonical unless already authoritative upstream"
+  ],
+  "invariants": [
+    "one scene",
+    "one camera authority",
+    "renderer-owned picking",
+    "offline/direct-file behavior",
+    "bounded macro residency/resources/cancellation",
+    "host-neutral headless seam remains narrow and selection-free"
+  ],
+  "residual_debt": [
+    "Independent GATE-G0B-AUDIT is still required before G0B PASS.",
+    "IND-NATIVE-P2 and downstream C ABI/G1/Runtime remain blocked by formal gates.",
+    "Checkpoint/archive authenticity, freshness, persistence durability and crash-recovery proof remain open.",
+    "Licensing/distribution decisions remain separate.",
+    "Physical GPU/device release evidence remains outside this reconciliation.",
+    "Successor product lanes HUMAN, VISUAL-CONTINUITY, DIRECTOR and AUDIO remain not auto-launched."
+  ],
+  "verification": {
+    "exact_reconciled_sha": "EXTERNALLY_BOUND_AFTER_TRANSACTION_COMMIT",
+    "exact_reconciled_tree": "EXTERNALLY_BOUND_AFTER_TRANSACTION_TREE_CREATION",
+    "fresh_full_cumulative_ci": "REQUIRED_ON_EXACT_RECONCILED_SHA",
+    "spatial_continuum": "REQUIRED",
+    "headless_security_external_consumer": "REGISTERED_IN_ROOT_TEST",
+    "product_focused_tests": "REGISTERED_IN_ROOT_TEST"
+  },
+  "forbidden_actions_preserved": {
+    "main_mutated": false,
+    "blind_pr312_to_pr290_merge": false,
+    "r7_created": false,
+    "tags_created": false,
+    "releases_created": false,
+    "force_push": false
+  },
+  "disposition": "RECONCILIATION_CANDIDATE_REQUIRES_FRESH_EXACT_HEAD_CI"
+}

@@ -1,0 +1,112 @@
+{
+  "prompt_id": "CTRL-WAVE-EPOCH",
+  "master_schema_version": 4,
+  "epoch": "OFU-POST-M0-PRODUCT-NEXT-2026-09-20-296565BB",
+  "base_sha": "296565bb2a6842159a994a45094ddc1d27d4fd1d",
+  "base_tree": "6b266ec7b4c2f003e029658fcfe2a735291ecd47",
+  "dependency_shas": {
+    "PR287_V4_MASTER": "c2cab6d6e914b918432432fdc69825e0a1000509",
+    "PR286_CTRL_WAVE_EPOCH_SOURCE": "3d28ec0720f611278b7717da02713c9eda96e642",
+    "WAVE0_G0A_AUDIT_SUBJECT": "e8965171944b9d5c604b19b745dacb79156816f4",
+    "PROD_W1_SCI_FP_MERGE": "454c55a49f73254d0370bbdfb01d778998235326",
+    "PROD_W1_ATLAS_CORE_MERGE": "36b5cc5d038f23bb7498e3a341f8d368f9fdd039",
+    "PROD_W1_PRODUCT_DEPTH_MERGE": "296565bb2a6842159a994a45094ddc1d27d4fd1d"
+  },
+  "final_sha": "EXTERNALLY_BOUND_BY_DRAFT_PRODUCT_CONTROL_PR_HEAD",
+  "final_tree": "EXTERNALLY_BOUND_BY_DRAFT_PRODUCT_CONTROL_PR_HEAD_TREE",
+  "changed_paths": [
+    "docs/industrialization/control/PRODUCT_NEXT_ACTIVE_EPOCH_2026-09-20.json",
+    "docs/industrialization/control/PRODUCT_NEXT_OWNERSHIP_2026-09-20.json",
+    "docs/industrialization/control/PRODUCT_NEXT_COORDINATION_2026-09-20.md",
+    "docs/frontier/execution/parallel/CTRL-WAVE-EPOCH_EXECUTION_STATE.json",
+    "docs/industrialization/handoffs/CTRL-WAVE-EPOCH_POST-M0-PRODUCT-NEXT_2026-09-20.json"
+  ],
+  "ownership_result": "PASS_FOUR_DISJOINT_ACTIVE_WRITERS_ONE_EXCLUSIVE_SHARED_RENDERER_OWNER_FOUR_EXPLICITLY_DEFERRED",
+  "tests": [
+    {
+      "check": "live PR #290/head reauthentication immediately before write",
+      "result": "PASS",
+      "sha": "296565bb2a6842159a994a45094ddc1d27d4fd1d",
+      "tree": "6b266ec7b4c2f003e029658fcfe2a735291ecd47"
+    },
+    {
+      "check": "exact frozen parent cumulative CI",
+      "result": "PASS_10_OF_10"
+    },
+    {
+      "check": "CTRL-WAVE-EPOCH canonical source resolution",
+      "result": "PASS_PR286_CANONICAL_KEEP_PLUS_V4_CONTRACTS"
+    },
+    {
+      "check": "eight inherited contract resolution",
+      "result": "PASS"
+    },
+    {
+      "check": "WAVE0 product-successor/G0A separation",
+      "result": "PASS_EXPLICIT_PRODUCT_SUCCESSORS_UNLOCKED_G0A_SEPARATE"
+    },
+    {
+      "check": "SCI-FP ancestry",
+      "result": "PASS_AHEAD_27_BEHIND_0"
+    },
+    {
+      "check": "Atlas ancestry",
+      "result": "PASS_AHEAD_18_BEHIND_0"
+    },
+    {
+      "check": "same target product control branch/PR collision search",
+      "result": "PASS_NONE_FOUND"
+    },
+    {
+      "check": "active writer semantic collision review",
+      "result": "PASS_PRODUCT_MACRO_ONLY_SHARED_RENDERER_OWNER"
+    },
+    {
+      "check": "deferred shared/camera writers",
+      "result": "PASS_EXPLICITLY_DEFERRED"
+    },
+    {
+      "check": "read-only audit production ownership",
+      "result": "PASS_NONE_GRANTED"
+    }
+  ],
+  "deterministic_witnesses": [
+    {
+      "kind": "FROZEN_PRODUCT_BASE",
+      "sha": "296565bb2a6842159a994a45094ddc1d27d4fd1d",
+      "tree": "6b266ec7b4c2f003e029658fcfe2a735291ecd47"
+    },
+    {
+      "kind": "SCI_FP_MERGE_ANCESTOR",
+      "sha": "454c55a49f73254d0370bbdfb01d778998235326"
+    },
+    {
+      "kind": "ATLAS_MERGE_ANCESTOR",
+      "sha": "36b5cc5d038f23bb7498e3a341f8d368f9fdd039"
+    },
+    {
+      "kind": "G0A_SEPARATE_AUDIT_SUBJECT",
+      "sha": "e8965171944b9d5c604b19b745dacb79156816f4",
+      "tree": "b769a54ce428083cdb629fc2fc9b3e1bacc970b6"
+    }
+  ],
+  "security_classification": "CONTROL_METADATA_ONLY_NO_NEW_NETWORK_PARSER_PERSISTENCE_OR_EXECUTION_SURFACE",
+  "authority_science_classification": "PLANNING_METADATA_ONLY; canonical P2/P4, scientific authority and history are unchanged; model/presentation outputs remain non-canonical.",
+  "performance_resource_evidence": "Control activation adds documentation/control metadata only. Frozen parent exact-head CI is 10/10 SUCCESS; child resource evidence remains lane-owned and future.",
+  "limitations": [
+    "This activation does not implement or certify any child lane.",
+    "G0A remains NOT_PASS_INDEPENDENT_REAUDIT_REQUIRED for industrialization.",
+    "The exact activation head/tree are bound externally by the Draft control PR to avoid a self-referential commit hash.",
+    "Deferred lanes remain blocked until later control adjudication."
+  ],
+  "falsification_attempts": [
+    "Searched for existing exact product-next control branches/PRs before creation.",
+    "Reauthenticated PR #290 and branch head immediately before write.",
+    "Checked canonical source bodies for all active/deferred product lanes and preserved stronger dependency/authority constraints.",
+    "Tested whether G0A blocks all product progress; live Wave0 authority explicitly says product successors are unlocked while industrialization remains stopped.",
+    "Separated renderer/composition ownership from additive SCI-WHY/SEARCH/TIME and deferred HUMAN/VISUAL/DIRECTOR/AUDIO rather than assuming file-level disjointness."
+  ],
+  "rollback_abandon_condition": "If the parent control branch advances incompatibly before child activation or a claimed disjoint lane requires protected shared surfaces, freeze this epoch as superseded/conflicted and create a successor control epoch after BASE_AUTHORITY_CONFLICT analysis; never rewrite published evidence.",
+  "integration_patch_requests": [],
+  "disposition": "READY_FOR_CONTROL_CONVERGENCE"
+}

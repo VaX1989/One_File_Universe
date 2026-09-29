@@ -1,0 +1,78 @@
+{
+  "schema": "ofu.ctrl-convergence-record.v1",
+  "prompt_id": "CTRL-CONVERGENCE",
+  "mode": "WRITE_CONTROL",
+  "mission_date": "2026-09-20",
+  "track": "POST_G0A_EXTERNAL_CONSUMER",
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "control": {
+    "pr": 290,
+    "branch": "integration/post-m0-dual-track-wave0-2026-09-17"
+  },
+  "accepted_lane": {
+    "prompt_id": "IND-EXT-CONSUMER",
+    "pr": 323,
+    "lane_head": "c6ec8da09a7e6b57716a06d941e95139902885a3",
+    "merge_commit": "48705a4f5fa43a4d7f215e28e5ed5e557f29d6c3",
+    "ownership": "EXTERNAL_CONSUMER_SEAM_PROOF_FIXTURE",
+    "result": "INTEGRATED"
+  },
+  "control_owned_test_registration": {
+    "path": "package.json",
+    "command": "node tests/industrialization/external-consumer/clean-room.mjs",
+    "exact_semantic_subject": "83e98f5332e4e828fae87d4a4672c9c81cac17a4",
+    "exact_tree": "fe52618d62ff02d763158689ce6f37f9ac324b68"
+  },
+  "verification": {
+    "status": "COMPLETE_10_OF_10_SUCCESS",
+    "exact_sha": "83e98f5332e4e828fae87d4a4672c9c81cac17a4",
+    "exact_tree": "fe52618d62ff02d763158689ce6f37f9ac324b68",
+    "workflows": {
+      "foundation": 35516209089,
+      "p1_p4_baseline": 35516209066,
+      "p1": 35516209050,
+      "p2": 35516209087,
+      "p3": 35516209114,
+      "p4": 35516209144,
+      "p5_controlled": 35516209115,
+      "p5_environment_v2": 35516209251,
+      "p6_v1": 35516209111,
+      "spatial_continuum": 35516209156
+    }
+  },
+  "gate_outcomes": {
+    "G0A_MINIMUM_NORMATIVE_SLICE": "PASS_PRESERVED",
+    "IND_JS_HEADLESS": "INTEGRATED",
+    "IND_SEC_B": "INTEGRATED",
+    "IND_EXT_CONSUMER": "COMPLETE_GATE_MET_INTEGRATED",
+    "G0B_EXTERNAL_CONSUMER_SEAM_PROOF": "NOT_PASS_REQUIRES_INDEPENDENT_GATE_G0B_AUDIT",
+    "GATE_G0B_AUDIT": "READY_ON_EXACT_SUBJECT_83E98F",
+    "IND_NATIVE_P2": "BLOCKED_BEHIND_G0B",
+    "IND_CABI_MICROHOST": "BLOCKED_BEHIND_IND_NATIVE_P2",
+    "G1_MINIMUM_PLATFORM_PROOF": "NOT_REACHED",
+    "G1_PASS_CONTINUE": "NOT_REACHED",
+    "IND_RUNTIME": "BLOCKED_BEHIND_EXPLICIT_G1_PASS"
+  },
+  "invariants": {
+    "canonical_p2_p4_unchanged": true,
+    "product_authority_not_inferred": true,
+    "scientific_authority_not_inferred": true,
+    "native_cabi_runtime_not_started": true
+  },
+  "residual_debt": [
+    "Independent GATE-G0B-AUDIT has not yet adjudicated G0B.",
+    "Checkpoint/archive authenticity, freshness and persistence durability remain outside the accepted minimum.",
+    "Generic provider/query lifecycle hardening and later native/C ABI/Runtime gates remain open.",
+    "Licensing/distribution and physical-device evidence remain separate decisions."
+  ],
+  "forbidden_actions_preserved": {
+    "main_mutated": false,
+    "pr290_merged": false,
+    "r7_created": false,
+    "tags_created": false,
+    "releases_created": false,
+    "force_push": false
+  },
+  "final_control_head": "EXTERNALLY_BOUND_AFTER_THIS_RECORD_COMMIT",
+  "disposition": "POST_EXT_CONSUMER_SUBWAVE_CONVERGENCE_COMPLETE_G0B_AUDIT_READY_NOT_PASS"
+}

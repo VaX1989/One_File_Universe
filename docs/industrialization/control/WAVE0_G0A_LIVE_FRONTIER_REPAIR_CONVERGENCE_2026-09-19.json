@@ -1,0 +1,147 @@
+{
+  "schema": "ofu.post-m0.wave0.g0a-live-frontier-repair-convergence.v1",
+  "authority": "CTRL_CONVERGENCE",
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "date": "2026-09-19",
+  "prior_independent_audit": {
+    "result": "FAIL_REPAIR_REQUIRED",
+    "gate": "G0A_MINIMUM_NORMATIVE_SLICE",
+    "failure_fingerprint": "G0A-LIVE-FRONTIER-INDEPENDENT-EVIDENCE-GAP",
+    "canonical_repair_owner": "IND-CONF-A",
+    "source_classification": "EXTERNAL_INDEPENDENT_READ_ONLY_AUDIT_REPORT_SUPPLIED_TO_CONTROLLER",
+    "repository_mutation_by_audit": false
+  },
+  "repair": {
+    "prompt_id": "IND-CONF-A",
+    "pr": 303,
+    "branch": "work/post-m0/ind-conf-a-g0a-live-frontier-repair-2026-09-19",
+    "repair_head": "7a15ed574edbfe665af09fc09cd17eb257cd1378",
+    "repair_tree": "b769a54ce428083cdb629fc2fc9b3e1bacc970b6",
+    "merge_commit": "e8965171944b9d5c604b19b745dacb79156816f4",
+    "merge_tree": "b769a54ce428083cdb629fc2fc9b3e1bacc970b6",
+    "scope": "CONFORMANCE_CORPUS_ONLY",
+    "production_p2_p4_semantics_changed": false,
+    "corpus": {
+      "revision": 2,
+      "p4_schema": "ofu-ind-conf-p4-corpus-v2",
+      "digest": "d92b43afb8a7deeaed4b0c3ee13b73bad344b196132c35433b66360c0b0772fc",
+      "supersedes": "2b13e4c47c254e418543410806ec5aaed7650b60e2e653c75b602b9c0735b65b",
+      "live_frontier_scenarios": 6
+    }
+  },
+  "verification_only": {
+    "failed_probe": {
+      "pr": 304,
+      "merged": false,
+      "result": "FAIL_SYNTAX_ONLY_SUPERSEDED",
+      "note": "JS and Python frontier runners passed; combined-test newline syntax defect was corrected forward on the repair branch."
+    },
+    "successful_probe": {
+      "pr": 305,
+      "merged": false,
+      "verification_head": "f95cac5db7a3b0a6e4ea304e6d9cb3c28bd0c9f6",
+      "exact_repair_subject": "612c789ba44f20ea35f4a18db990004eafe19238",
+      "foundation_run": 35439953703,
+      "result": "PASS",
+      "js": {
+        "positive": 54,
+        "rejection": 48,
+        "live_frontier_scenarios": 6,
+        "live_frontier_rejections": 2
+      },
+      "python": {
+        "positive": 54,
+        "rejection": 40,
+        "live_frontier_scenarios": 6,
+        "live_frontier_rejections": 2,
+        "frontier_model": "INDEPENDENT_MINIMAL_ORDER_KEY_STATE_MACHINE"
+      },
+      "combined_test": "ofu-ind-conf-a-combined-test-v2 PASS"
+    }
+  },
+  "integrated_exact_head": {
+    "sha": "e8965171944b9d5c604b19b745dacb79156816f4",
+    "tree": "b769a54ce428083cdb629fc2fc9b3e1bacc970b6",
+    "result": "PASS_10_OF_10",
+    "workflows": [
+      {
+        "name": "Foundation Integrity",
+        "id": 35440205998
+      },
+      {
+        "name": "P1 Conformance",
+        "id": 35440206015
+      },
+      {
+        "name": "P1-P4 Canonical Baseline",
+        "id": 35440206016
+      },
+      {
+        "name": "P2 Conformance",
+        "id": 35440206006
+      },
+      {
+        "name": "P3 Conformance",
+        "id": 35440206021
+      },
+      {
+        "name": "P4 Conformance",
+        "id": 35440205951
+      },
+      {
+        "name": "P5 Controlled Promotion",
+        "id": 35440205943
+      },
+      {
+        "name": "P5 Environment v2 Canonical Promotion",
+        "id": 35440206003
+      },
+      {
+        "name": "P6 v1 Conformance",
+        "id": 35440206022
+      },
+      {
+        "name": "Spatial Continuum Experiment",
+        "id": 35440205973
+      }
+    ]
+  },
+  "repaired_failure_adjudication": {
+    "fingerprint": "G0A-LIVE-FRONTIER-INDEPENDENT-EVIDENCE-GAP",
+    "owner": "IND-CONF-A",
+    "status": "REPAIR_CONVERGED_AND_EXECUTABLY_VERIFIED",
+    "basis": [
+      "P4 corpus v2 contains self-contained language-neutral live-frontier admission scenarios.",
+      "Independent Python oracle applies a minimal order-key/frontier state machine without importing production P4 JavaScript.",
+      "Current JS authority and independent Python oracle agree on all six scenarios and two rejection cases.",
+      "Combined cross-runner corpus test passes on verification-only PR #305.",
+      "Checkpoint/archive remain CURRENT_AUTHORITY_REGRESSION_ONLY and were not promoted.",
+      "Ten cumulative workflows pass on the exact integrated control head."
+    ]
+  },
+  "gate": {
+    "id": "G0A_MINIMUM_NORMATIVE_SLICE",
+    "result": "NOT_PASS_INDEPENDENT_REAUDIT_REQUIRED",
+    "reason": "The prior independent audit required a forward IND-CONF-A repair followed by a new independent GATE-G0A-AUDIT. The repair/control session cannot self-certify the gate.",
+    "next_required_prompt": "GATE-G0A-AUDIT",
+    "audit_subject_sha": "e8965171944b9d5c604b19b745dacb79156816f4",
+    "audit_subject_tree": "b769a54ce428083cdb629fc2fc9b3e1bacc970b6"
+  },
+  "blocked": {
+    "IND-JS-HEADLESS": "BLOCKED_PENDING_G0A_PASS",
+    "IND-SEC-B": "BLOCKED_PENDING_G0A_PASS",
+    "IND-NATIVE-P2": "BLOCKED_PENDING_G0B_PASS",
+    "IND-CABI-MICROHOST": "BLOCKED_PENDING_IND_NATIVE_P2_AND_SEQUENCE",
+    "IND-RUNTIME": "BLOCKED_PENDING_EXPLICIT_G1_PASS_CONTINUE"
+  },
+  "unresolved_risks": [
+    "SEC-01 checkpoint/archive provenance/freshness/authentication remains isolated outside G0A, not solved.",
+    "AUTH-01/AUTH-02 remain authority/public-science promotion debt.",
+    "AS-001..AS-003 remain scientific provenance/version/conservation debt.",
+    "DET-01/DET-02 remain cross-runtime determinism/Unicode portability debt.",
+    "Durable WAL/fsync/atomic-root/crash recovery remains later persistence/G3 work.",
+    "G-LICENSING-DISTRIBUTION-DECISION remains manual and not reached."
+  ],
+  "disposition": "G0A_LIVE_FRONTIER_REPAIR_CONVERGED_REAUDIT_READY",
+  "next_control_action": "Execute PROMPT_ID=GATE-G0A-AUDIT in a genuinely independent READ_ONLY_AUDIT session against e8965171944b9d5c604b19b745dacb79156816f4 / b769a54ce428083cdb629fc2fc9b3e1bacc970b6. Do not start IND-JS-HEADLESS or IND-SEC-B before explicit PASS."
+}

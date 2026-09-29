@@ -1,0 +1,160 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://one-file-universe.invalid/schemas/r6-quality-observatory-cross-program-v1.json",
+  "title": "OFU R6 Quality Observatory Cross-Program Evidence",
+  "type": "object",
+  "required": [
+    "contract",
+    "authorityBoundary",
+    "metricEvidenceClassification",
+    "capabilityPolicy",
+    "declaredCapabilities",
+    "stagedEvidence",
+    "missingEvidence",
+    "metrics",
+    "issueCount",
+    "issues",
+    "crossProgramHash"
+  ],
+  "properties": {
+    "contract": {
+      "const": "ofu.r6.quality-observatory.cross-program.v1"
+    },
+    "authorityBoundary": {
+      "type": "object",
+      "required": [
+        "observationAndFalsificationOnly",
+        "scientificTruthAuthority",
+        "semanticAuthority",
+        "releaseAuthority",
+        "productMutationAuthority",
+        "nativeRuntimeAuthority"
+      ],
+      "properties": {
+        "observationAndFalsificationOnly": {
+          "const": true
+        },
+        "scientificTruthAuthority": {
+          "const": false
+        },
+        "semanticAuthority": {
+          "const": false
+        },
+        "releaseAuthority": {
+          "const": false
+        },
+        "productMutationAuthority": {
+          "const": false
+        },
+        "nativeRuntimeAuthority": {
+          "const": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "metricEvidenceClassification": {
+      "type": "object",
+      "required": [
+        "required",
+        "allowed",
+        "counts"
+      ],
+      "properties": {
+        "required": {
+          "const": true
+        },
+        "allowed": {
+          "const": [
+            "MEASURED",
+            "HEURISTIC",
+            "PRESENTATION_ONLY"
+          ]
+        },
+        "counts": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "capabilityPolicy": {
+      "type": "object",
+      "required": [
+        "explicitPresenceRequired",
+        "absentCapabilityImpliesFailure",
+        "undeclaredEvidencePolicy",
+        "missingDeclaredEvidencePolicy"
+      ],
+      "properties": {
+        "explicitPresenceRequired": {
+          "const": true
+        },
+        "absentCapabilityImpliesFailure": {
+          "const": false
+        },
+        "undeclaredEvidencePolicy": {
+          "const": "IGNORE_AND_REPORT_STAGED"
+        },
+        "missingDeclaredEvidencePolicy": {
+          "const": "REPORT_ONLY_UNLESS_CALLER_ADDS_AN_EXPLICIT_CHECK"
+        }
+      },
+      "additionalProperties": false
+    },
+    "declaredCapabilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "stagedEvidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "metricId",
+          "witness",
+          "status"
+        ]
+      }
+    },
+    "missingEvidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "metricId",
+          "witness",
+          "status"
+        ]
+      }
+    },
+    "metrics": {
+      "type": "object"
+    },
+    "issueCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "category",
+          "witness",
+          "detail"
+        ]
+      }
+    },
+    "crossProgramHash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "additionalProperties": false
+}

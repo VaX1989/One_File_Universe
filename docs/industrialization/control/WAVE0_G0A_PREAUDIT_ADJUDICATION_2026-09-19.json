@@ -1,0 +1,53 @@
+{
+  "schema": "ofu.post-m0.wave0.g0a-preaudit-adjudication.v1",
+  "authority": "CONTROL_PREAUDIT_NOT_FORMAL_GATE_CERTIFICATION",
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "frozen_base_sha": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+  "frozen_base_tree": "3704247247940fa8c5f08291cd80ec9e24e7d49d",
+  "observed_initial_control_head": "fa88f7cec101a52d07916a0fdd3927c482a6f188",
+  "convergence_subject_head": "ef13db638acbb9c5ccb24a6ceb56f0b9ea4802e4",
+  "convergence_subject_tree": "803cbc8823f6adce4594dea5be20bc578640858b",
+  "status": "G0A_NOT_PASS_REPAIR_REQUIRED",
+  "formal_gate_prompt": "GATE-G0A-AUDIT",
+  "formal_gate_status": "DEFER_UNTIL_DECLARED_REPAIRS_CONVERGE",
+  "independent_blocking_input": "AUDIT-SECURITY/SEC-01",
+  "revalidation_on_integrated_subject": {
+    "result": "BLOCKING_CONCERN_STILL_APPLICABLE",
+    "inspected": [
+      "docs/industrialization/iw0/ind-gov/NORMATIVE_PROTOCOL_INDEX.json",
+      "docs/industrialization/iw0/ind-conf/IND-CONF-A_CORPUS_SPEC.md",
+      "docs/industrialization/iw0/ind-bridge/HEADLESS_API_CANDIDATE.md",
+      "src/temporal/p4-temporal.js"
+    ],
+    "observations": [
+      "IND-GOV-A currently marks checkpoint/compaction and archive-integrity invariants READY_TO_SPECIFY.",
+      "IND-CONF-A explicitly treats checkpoint/archive behavior as current-authority evidence rather than independent temporal-reducer proof.",
+      "IND-BRIDGE-A G0A candidate currently exposes archiveBytes/open-archive and exportArchive in the minimum facade.",
+      "P4 verification provides strong integrity/self-consistency/transition/lineage checks but does not establish authenticated origin/freshness; the independent security audit also identified semantic-trust limits for imported checkpoint state."
+    ]
+  },
+  "safe_minimum_candidate_after_repair": [
+    "P2 CBV/domain/bytes",
+    "P2 frozen Unicode profile",
+    "P2 Canonical Address",
+    "P2 Semantic Manifest",
+    "P2 Universe/Entity Identity",
+    "P2 addressed derivation",
+    "P2 numeric exact subset",
+    "P4 canonical time/event total order",
+    "P4 lineage/live-frontier semantics",
+    "P4 exact transition binding"
+  ],
+  "explicitly_not_g0a_minimum_until_repaired_and_audited": [
+    "P4 checkpoint/compaction public normative trust claim",
+    "P4 archive public normative trust/authentication claim",
+    "public archive import/export in the headless external-consumer seam"
+  ],
+  "unlocks_withheld": [
+    "IND-JS-HEADLESS",
+    "IND-SEC-B",
+    "IND-NATIVE-P2",
+    "IND-RUNTIME"
+  ],
+  "repair_directive": "docs/industrialization/control/WAVE0_REPAIR_DIRECTIVE_2026-09-19.json"
+}
