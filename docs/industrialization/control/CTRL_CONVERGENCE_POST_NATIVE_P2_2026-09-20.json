@@ -1,0 +1,44 @@
+{
+  "schema": "ofu.post-m0.ctrl-convergence.post-native-p2.v1",
+  "prompt_id": "CTRL-CONVERGENCE",
+  "mission_date": "2026-09-20",
+  "control_pr": 290,
+  "pre_convergence_control_head": "8933c3ffc29fb72d5eebbe69320e2d33bc1e9ae4",
+  "source_lane": {
+    "prompt_id": "IND-NATIVE-P2",
+    "pr": 331,
+    "terminal_head": "8b876db103f3aafef7b1b1ff0d7567addcf0bbcd",
+    "merge_commit": "8933c3ffc29fb72d5eebbe69320e2d33bc1e9ae4",
+    "terminal_state": "READY_FOR_CONTROL_CONVERGENCE"
+  },
+  "verification": {
+    "verification_pr": 332,
+    "closed_without_merge": true,
+    "head": "b0aa0808dba6646d21b90c0011ba4d810d0d8d2e",
+    "foundation_run": 35524220956,
+    "result": "PASS",
+    "positive_checks": 42,
+    "rejection_checks": 45,
+    "numeric_checks": 14,
+    "compilers": ["g++", "clang++"],
+    "cross_compiler_transcript_equal": true,
+    "implementation_blob_equal_to_lane": true,
+    "focused_test_blob_equal_to_lane": true
+  },
+  "control_integration": {
+    "package_json": "APPEND_NATIVE_P2_TEST_WITHOUT_REMOVING_ACCEPTED_REGRESSIONS",
+    "production_semantics_changed_by_control": false,
+    "authoritative_js_p2_changed": false,
+    "p4_changed": false,
+    "runtime_ported": false
+  },
+  "gate_state_before_fresh_ci": {
+    "G0B_EXTERNAL_CONSUMER_SEAM_PROOF": "PASS",
+    "IND-NATIVE-P2": "COMPLETE_PENDING_EXACT_HEAD_CI",
+    "IND-CABI-MICROHOST": "BLOCKED_UNTIL_THIS_CONVERGENCE_IS_GREEN",
+    "G1_MINIMUM_PLATFORM_PROOF": "NOT_REACHED",
+    "G1_PASS_CONTINUE": "NOT_REACHED"
+  },
+  "required_post_condition": "FRESH_CUMULATIVE_CI_AND_SPATIAL_CONTINUUM_PASS_ON_THIS_CONTROL_INTEGRATION",
+  "disposition": "READY_FOR_CONTROL_EXACT_HEAD_VERIFICATION"
+}

@@ -1,0 +1,158 @@
+{
+  "schema": "ofu.ctrl-convergence-record.v1",
+  "prompt_id": "CTRL-CONVERGENCE",
+  "mode": "WRITE_CONTROL",
+  "mission_date": "2026-09-20",
+  "track": "PRODUCT_NEXT",
+  "epoch": "OFU-POST-M0-PRODUCT-NEXT-2026-09-20-296565BB",
+  "canonical_master": {
+    "pr": 287,
+    "sha": "c2cab6d6e914b918432432fdc69825e0a1000509",
+    "schema_version": 4
+  },
+  "activation": {
+    "control_pr": 312,
+    "activation_sha": "de06cc7f8e4b74e57aad583a8764ac756b06b9da",
+    "activation_tree": "92ea93742177879dcf7f3fd94560439d0149b43d",
+    "frozen_parent_sha": "296565bb2a6842159a994a45094ddc1d27d4fd1d"
+  },
+  "accepted_lanes": [
+    {
+      "prompt_id": "PROD-W1-SCI-WHY",
+      "pr": 314,
+      "lane_head": "0cfe30bc8e2292732e2bdf3918a62b3857445ba6",
+      "merge_commit": "72ea01f2d24897c9532519207dc512b9374b6d1f",
+      "ownership": "ADDITIVE_SCIENTIFIC_WHY",
+      "result": "ACCEPTED"
+    },
+    {
+      "prompt_id": "PROD-W2-SEARCH",
+      "pr": 317,
+      "lane_head": "8a9d7311833309d757d7f6ea9961ad2801abb7a0",
+      "merge_commit": "fecae5a2e3ec4334b449a56cfd4141c998622d36",
+      "ownership": "PRODUCT_SEARCH_DISCOVERY",
+      "result": "ACCEPTED"
+    },
+    {
+      "prompt_id": "PROD-W2-TIME",
+      "pr": 319,
+      "lane_head": "e3d95135a62a0facd02f2f3bf66e9e89623d7fbf",
+      "merge_commit": "07f63e111d573ca025bf28cad44d1b9032f55e68",
+      "ownership": "PRODUCT_TIME_ATLAS_PROJECTION",
+      "result": "ACCEPTED"
+    }
+  ],
+  "deferred_lanes": [
+    {
+      "prompt_id": "PRODUCT-MACRO",
+      "pr": 313,
+      "current_head": "79d4fee113ff6e556cbf19c179b6945cbefd7274",
+      "status": "IN_PROGRESS",
+      "reason": "TERMINAL_HANDOFF_NOT_REACHED",
+      "failure_fingerprint": "PRODUCT_MACRO_REVERSAL_HARNESS_COMMITTED_STATE_TIMING_RACE"
+    },
+    {
+      "prompt_id": "PRODUCT-HUMAN",
+      "status": "DEFERRED_BY_ACTIVE_EPOCH",
+      "reason": "SHARED_RENDERER_OWNERSHIP_RESERVED_TO_PRODUCT_MACRO"
+    },
+    {
+      "prompt_id": "PRODUCT-VISUAL-CONTINUITY",
+      "status": "DEFERRED_BY_ACTIVE_EPOCH",
+      "reason": "SHARED_RENDERER_OWNERSHIP_RESERVED_TO_PRODUCT_MACRO"
+    },
+    {
+      "prompt_id": "PROD-W2-DIRECTOR",
+      "status": "DEFERRED_BY_ACTIVE_EPOCH",
+      "reason": "DO_NOT_RACE_SHARED_CAMERA_RENDERER_SURFACES"
+    },
+    {
+      "prompt_id": "PRODUCT-AUDIO",
+      "status": "DEFERRED_BY_ACTIVE_EPOCH",
+      "reason": "DEFERRED_UNTIL_PRODUCT_MACRO_CONVERGENCE"
+    }
+  ],
+  "control_owned_patches": [
+    {
+      "path": "package.json",
+      "purpose": "register converged focused tests",
+      "commands": [
+        "node tests/product/prod-w1-sci-why.mjs",
+        "node tests/product/prod-w2-search.mjs",
+        "node tests/product/prod-w2-time.mjs"
+      ],
+      "commit": "2d8cf36634211d63b0f67584167f3bc794466e48"
+    }
+  ],
+  "tested_semantic_subject": {
+    "sha": "2d8cf36634211d63b0f67584167f3bc794466e48",
+    "tree": "c8a9ee3a76683d7f70571e79d8a569d2891dc708",
+    "ci": "10_OF_10_SUCCESS",
+    "workflow_runs": [
+      35505660724,
+      35505660719,
+      35505660720,
+      35505660713,
+      35505660715,
+      35505660714,
+      35505660710,
+      35505660696,
+      35505660708,
+      35505660699
+    ]
+  },
+  "gate_outcomes": {
+    "G-PROD-CONTRACTS": "PASS_PRESERVED",
+    "G0A_MINIMUM_NORMATIVE_SLICE": "SEPARATE_TRACK_PASS_NOT_INFERRED_FROM_PRODUCT",
+    "G-DOMAIN-RESEARCH-AUTHORITY": "NOT_ADJUDICATED_MANUAL",
+    "product_success_does_not_imply_industrialization_gate_success": true
+  },
+  "next_runnable_queue": [
+    {
+      "prompt_id": "PRODUCT-MACRO",
+      "action": "CONTINUE_EXISTING_PR_313_ONLY"
+    },
+    {
+      "prompt_id": "PROD-W1-INSTRUMENTS",
+      "state": "DEPENDENCY_READY_AWAITING_CONTROL_OWNERSHIP_GRANT",
+      "requires": [
+        "PROD-W1-SCI-WHY"
+      ]
+    },
+    {
+      "prompt_id": "PROD-W2-COMPARE",
+      "state": "DEPENDENCY_READY_AWAITING_CONTROL_OWNERSHIP_GRANT",
+      "requires": [
+        "PROD-W1-ATLAS-CORE",
+        "PROD-W1-SCI-WHY"
+      ]
+    }
+  ],
+  "residual_risks": [
+    "PRODUCT-MACRO remains non-terminal and retains sole shared macro renderer/product-composition ownership.",
+    "Product and Wave0 control branches both own convergence-time package.json test registration; cross-track union must be applied by control at a later safe convergence point, not by a child lane.",
+    "Physical GPU/device evidence remains separate release-grade evidence and is not implied by headless/software-rendered CI.",
+    "No manual scientific/domain authority gate is promoted by these product integrations."
+  ],
+  "invariants": {
+    "canonical_p2_p4_unchanged": true,
+    "scientific_authority_not_promoted": true,
+    "one_scene_camera_preserved": true,
+    "renderer_owned_picking_preserved": true,
+    "offline_direct_file_preserved": true,
+    "resource_bounds_preserved": true
+  },
+  "forbidden_actions_preserved": {
+    "main_mutated": false,
+    "pr274_merged": false,
+    "pr275_merged": false,
+    "pr287_merged": false,
+    "pr290_merged": false,
+    "r7_created": false,
+    "tags_created": false,
+    "releases_created": false,
+    "force_push": false
+  },
+  "final_control_head": "EXTERNALLY_BOUND_AFTER_THIS_RECORD_COMMIT",
+  "disposition": "CONTROLLED_CONVERGENCE_CHECKPOINT_COMPLETE_WITH_DECLARED_DEFERRED_LANES"
+}

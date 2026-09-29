@@ -1,0 +1,81 @@
+{
+  "prompt_id": "IND-BRIDGE-A",
+  "master_schema_version": 4,
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "base_sha": "37e6744f1d8f711278ae8b14ddaf84b9176b5a6b",
+  "base_tree": "fb5be853362a9266f0f6d64f23338d2827f358e0",
+  "dependency_shas": {
+    "M0_HISTORICAL": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+    "CTRL_WAVE0_REPAIR_PHASE": "37e6744f1d8f711278ae8b14ddaf84b9176b5a6b",
+    "ORIGINAL_IND_BRIDGE_A_LANE": "c1415616bf9b0a1d1cc41869477348c2bf8e57c3",
+    "PR287_V4_MASTER": "c2cab6d6e914b918432432fdc69825e0a1000509"
+  },
+  "final_sha": "EXTERNALLY_BOUND_BY_DRAFT_REPAIR_PR_HEAD",
+  "final_tree": "EXTERNALLY_BOUND_BY_DRAFT_REPAIR_PR_HEAD_TREE",
+  "changed_paths": [
+    "docs/industrialization/iw0/ind-bridge/HEADLESS_API_CANDIDATE.md",
+    "docs/industrialization/iw0/ind-bridge/HEADLESS_BRIDGE_DISCOVERY.md",
+    "docs/industrialization/iw0/ind-bridge/COUPLING_MAP.json",
+    "tests/industrialization/bridge/headless-seam-characterization.mjs",
+    "tests/industrialization/bridge/external-consumer-probe.mjs",
+    "docs/frontier/execution/parallel/IND-BRIDGE-A_EXECUTION_STATE.json",
+    "docs/industrialization/handoffs/IND-BRIDGE-A_REPAIR_2026-09-19.json"
+  ],
+  "ownership_result": "PASS_HEADLESS_BRIDGE_DESIGN_ONLY_NO_PRODUCTION_SOURCE_OR_PUBLIC_API_IMPLEMENTATION",
+  "tests": [
+    {
+      "check": "headless seam characterization",
+      "command": "node tests/industrialization/bridge/headless-seam-characterization.mjs",
+      "result": "PENDING_CONTROL_VERIFICATION_NO_PASS_FABRICATED"
+    },
+    {
+      "check": "narrowed external consumer characterization",
+      "command": "node tests/industrialization/bridge/external-consumer-probe.mjs",
+      "result": "PENDING_CONTROL_VERIFICATION_NO_PASS_FABRICATED"
+    },
+    {
+      "check": "G0A facade archive exclusion",
+      "result": "PASS_STATIC_REPAIR_ASSERTION",
+      "witness": {
+        "archiveBytes": false,
+        "public_exportArchive": false,
+        "archive_checkpoint": "POST_G0A_PRIVATE_CANDIDATE"
+      }
+    }
+  ],
+  "deterministic_witnesses": [
+    {
+      "kind": "REPAIR_CONTROL_BASE",
+      "sha": "37e6744f1d8f711278ae8b14ddaf84b9176b5a6b",
+      "tree": "fb5be853362a9266f0f6d64f23338d2827f358e0"
+    },
+    {
+      "kind": "HISTORICAL_LANE_HEAD",
+      "sha": "c1415616bf9b0a1d1cc41869477348c2bf8e57c3"
+    },
+    {
+      "kind": "G0A_SEAM_BOUNDARY",
+      "archiveBytes": false,
+      "publicExportArchive": false,
+      "genericProviderQuery": false
+    }
+  ],
+  "security_classification": "SEC_01_ALIGNED; archive/checkpoint trust is excluded from the G0A public seam and retained only as post-G0A private candidate.",
+  "authority_science_classification": "HEADLESS_BRIDGE_DESIGN_ONLY; no canonical/scientific/product authority promotion.",
+  "performance_resource_evidence": "NOT_APPLICABLE_DESIGN_AND_CHARACTERIZATION_REPAIR",
+  "limitations": [
+    "The two repaired probes are not marked PASS until control-owned executable verification completes.",
+    "No public headless facade exists yet; direct-source characterization is not G0B proof.",
+    "Generic provider/query remains selection/product coupled and intentionally unfrozen.",
+    "Archive/checkpoint functionality remains POST_G0A_PRIVATE_CANDIDATE pending later trust/persistence evidence."
+  ],
+  "falsification_attempts": [
+    "Removed archive input/export entirely from the G0A candidate rather than relabeling them inside the minimum.",
+    "Rewrote the consumer witness to discard/reopen from seed+manifest without archive persistence.",
+    "Added characterization assertions that the pre-POST_G0A candidate section cannot expose archiveBytes or exportArchive().",
+    "Kept DOM/Babylon/camera/selection/runtime/product globals outside the candidate seam."
+  ],
+  "rollback_abandon_condition": "If direct probe verification fails or the narrowed seam still requires product globals, archive trust, semantic reinterpretation or shipping-product migration, return repair to IND-BRIDGE-A or classify PLATFORM_EXTRACTION_PREMATURE rather than broadening G0A.",
+  "integration_patch_requests": [],
+  "disposition": "READY_FOR_CONTROL_CONVERGENCE_PENDING_DIRECT_PROBE_VERIFICATION"
+}

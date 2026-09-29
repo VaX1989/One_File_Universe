@@ -1,0 +1,19 @@
+{
+  "requesting_prompt_id": "PROD-W1-SCI-WHY",
+  "target_surface": "CENTRAL_PRODUCT_TEST_REGISTRATION",
+  "target_path": "package.json",
+  "expected_authority": "CTRL-WAVE-EPOCH/CTRL-CONVERGENCE",
+  "intended_change": "Append node tests/product/prod-w1-sci-why.mjs to the centrally governed npm test product-test sequence after SCI-FP/Atlas product tests.",
+  "rationale": "The lane owns the focused test but package.json is a protected shared path. Permanent exact-head aggregate coverage requires control-owned registration rather than a lane edit.",
+  "invariants": [
+    "No package dependency/version changes.",
+    "No canonical P2/P4/scientific semantics change.",
+    "No renderer/camera/picking ownership change.",
+    "Focused test remains deterministic, offline and bounded.",
+    "Registration occurs only during control convergence from an evidence-complete SCI-WHY lane."
+  ],
+  "tests": [
+    "node tests/product/prod-w1-sci-why.mjs",
+    "npm test on the control integration head after registration"
+  ]
+}

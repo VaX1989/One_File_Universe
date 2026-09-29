@@ -1,0 +1,128 @@
+{
+  "prompt_id": "PROD-W1-INSTRUMENTS",
+  "master_schema_version": 4,
+  "epoch": "OFU-POST-M0-PRODUCT-NEXT-2026-09-20-296565BB",
+  "base_sha": "ca64546915091f24111be7cf7b488c191eef82a5",
+  "base_tree": "5136517b678bc324f0d90b34cbd0379b785448e4",
+  "dependency_shas": {
+    "PR287_V4_MASTER": "c2cab6d6e914b918432432fdc69825e0a1000509",
+    "PROD_W1_SCI_WHY_PR": 314,
+    "PROD_W1_SCI_WHY_LANE_HEAD": "0cfe30bc8e2292732e2bdf3918a62b3857445ba6",
+    "PROD_W1_SCI_WHY_MERGE": "72ea01f2d24897c9532519207dc512b9374b6d1f"
+  },
+  "final_sha": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD",
+  "final_tree": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD_TREE",
+  "implementation_sha": "3794c7722607c3a0d5716c6f2d4c186fb906ee6f",
+  "implementation_tree": "36cd1601862108eabfab83646913a8ac368aaf97",
+  "exact_tested_subject": "3794c7722607c3a0d5716c6f2d4c186fb906ee6f",
+  "lane_pr": 325,
+  "verification_pr": 326,
+  "verification_pr_disposition": "CLOSED_UNMERGED",
+  "verification_head": "e88acba3b3e0d4c0b5358513d8f2913d5631a187",
+  "changed_paths": [
+    "src/product/w1/instruments/catalog.js",
+    "src/product/w1/instruments/normalize.js",
+    "src/product/w1/instruments/scientific-instruments.js",
+    "tests/product/prod-w1-instruments-fixture.mjs",
+    "tests/product/prod-w1-instruments.mjs",
+    "docs/product/scientific-instruments/README.md",
+    "docs/product/scientific-instruments/INTEGRATION_PATCH_REQUEST_TEST_REGISTRATION.json",
+    "docs/frontier/execution/parallel/PROD-W1-INSTRUMENTS_EXECUTION_STATE.json",
+    "docs/industrialization/handoffs/PROD-W1-INSTRUMENTS_2026-09-20.json"
+  ],
+  "ownership_result": "PASS_ADDITIVE_PRODUCT_ANALYSIS_INSTRUMENT_PROJECTION_NO_SHARED_RENDERER_COMPOSITION_CAMERA_PICKING_P2_P4_WORKFLOW_PACKAGE_OR_CANONICAL_SCIENCE_MUTATION",
+  "tests": [
+    {
+      "command": "npm test (verification-only package registration includes node tests/product/prod-w1-instruments.mjs)",
+      "result": "PASS",
+      "verification_pr": 326,
+      "verification_pr_disposition": "CLOSED_UNMERGED",
+      "verification_head": "e88acba3b3e0d4c0b5358513d8f2913d5631a187",
+      "exact_lane_subject": "3794c7722607c3a0d5716c6f2d4c186fb906ee6f",
+      "foundation_run": 35516370436,
+      "foundation_job": 106092895730,
+      "node": "24.20.0"
+    },
+    {
+      "check": "focused deterministic/unit/authority/provenance/uncertainty/UNKNOWN/UNSUPPORTED/resource/replay falsification suite",
+      "result": "PASS",
+      "witness_schema": "ofu-prod-w1-instruments-test-v1"
+    },
+    {
+      "check": "lane-owned diff path review",
+      "result": "PASS_EIGHT_PRE_HANDOFF_PATHS_ALL_WITHIN_GRANTED_OWNERSHIP"
+    },
+    {
+      "check": "product control branch remained at authorized activation head through terminalization",
+      "result": "PASS",
+      "control_pr": 312,
+      "sha": "ca64546915091f24111be7cf7b488c191eef82a5"
+    },
+    {
+      "check": "lane Foundation Integrity before terminal handoff",
+      "result": "PASS",
+      "run": 35516292173
+    }
+  ],
+  "deterministic_witnesses": [
+    {
+      "kind": "SCIENTIFIC_INSTRUMENT_PROJECTION_HASH",
+      "sha256": "2d62e417e4713d0d71c11b0d221a3308b01e6e8e329fd323837726ebe6d24a87"
+    },
+    {
+      "kind": "SCIENTIFIC_WHY_GRAPH_HASH",
+      "sha256": "2862766e114f41bf0eb518d15f8cc164d483009017153f6771a3ea3e378e4c89"
+    },
+    {
+      "kind": "READING_COUNTS",
+      "requests": 7,
+      "value": 6,
+      "unknown": 0,
+      "unsupported": 1
+    },
+    {
+      "kind": "CANONICAL_PROJECTION_BYTES",
+      "bytes": 18657
+    },
+    {
+      "kind": "UNIT_FIXTURES",
+      "planetRadiusKm": "6371",
+      "surfaceGravityMs2": "9.81",
+      "surfaceTemperatureK": "288"
+    },
+    {
+      "kind": "ORDER_EQUIVALENCE",
+      "result": "PASS_IDENTICAL_PROJECTION_HASH_AND_CANONICAL_SERIALIZATION"
+    }
+  ],
+  "authority_science_classification": "ANALYSIS_ONLY projection over governed Scientific Fingerprint/state plus typed Scientific WHY. Per-reading source/projection/effective authority is explicit and never raised. MODEL_DERIVED remains model-derived upstream; presentation state is not a measurement source; UNKNOWN and UNSUPPORTED emit no guessed quantity.",
+  "performance_resource_evidence": "Default limits maxRequests=32, maxTextBytes=2048 and maxCanonicalBytes=262144. Hosted witness evaluated 7 requests and produced an 18,657-byte canonical projection; SCI-WHY uncertainty capacity is bounded by the same request limit.",
+  "limitations": [
+    "This lane projects only quantities already present in governed scientific state; it does not derive new scientific quantities or claim empirical observation.",
+    "Uncertainty is first-class only when explicitly supplied as an upstream-bound record; absence is NOT_DECLARED_UPSTREAM.",
+    "Unsupported instruments/units and unavailable governed quantities fail closed rather than guessing.",
+    "Permanent package.json registration is outside lane ownership and must be applied by control convergence using the included integration patch request.",
+    "The terminal handoff uses externally bound Draft PR final SHA/tree to avoid self-referential evidence mutation."
+  ],
+  "falsification_attempts": [
+    "Reversed request ordering produced identical projection identity and canonical serialization.",
+    "Exact unit fixtures validated m to km, micro-m/s^2 to m/s^2, mK to K, microdegree to degree, and count identity without floating-point precision manufacture.",
+    "Source authority never exceeded upstream domain authority; effective authority was capped at ANALYSIS_ONLY.",
+    "Fingerprint scientific hashes and SCI-WHY graph hash remained bound into reading provenance.",
+    "Explicit uncertainty with mismatched unit, reversed interval, or excessive authority was rejected.",
+    "UNKNOWN environment/surface/sample inputs emitted quantity=null; unsupported instrument and unit requests emitted UNSUPPORTED.",
+    "Uncertainty on UNKNOWN or UNSUPPORTED requests was rejected rather than silently dropped.",
+    "Duplicate request IDs, malformed exact-key requests and request-count exhaustion failed closed.",
+    "Presentation-only modifications did not change the scientific instrument projection hash."
+  ],
+  "integration_patch_requests": [
+    {
+      "path": "docs/product/scientific-instruments/INTEGRATION_PATCH_REQUEST_TEST_REGISTRATION.json",
+      "target_surface": "CENTRAL_PRODUCT_TEST_REGISTRATION",
+      "target_path": "package.json",
+      "expected_authority": "CTRL-WAVE-EPOCH/CTRL-CONVERGENCE"
+    }
+  ],
+  "rollback_abandon_condition": "If control review finds authority promotion, non-deterministic identity, source-path/unit mismatch, presentation-derived science, unbounded resource behavior, or protected shared-surface mutation, reject PR #325 and repair forward within INSTRUMENTS ownership; do not weaken W1 contracts or scientific authority.",
+  "disposition": "READY_FOR_CONTROL_CONVERGENCE"
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "ofu.integration-patch-request.v1",
+  "requesting_prompt_id": "PROD-W2-DIRECTOR",
+  "target_surface": "CONTROL_OWNED_REGRESSION_UNION",
+  "target_path": [
+    "package.json",
+    "tests/spatial-continuum/r6-w0-phase2-convergence-runner.mjs"
+  ],
+  "expected_authority": "CTRL-CONVERGENCE",
+  "intended_change": [
+    "append node tests/product/prod-w2-director.mjs to root npm test",
+    "append tests/product/prod-w2-director-browser.mjs as product-director-browser Spatial convergence suite"
+  ],
+  "rationale": "Director owns no shared regression-registration surface; exact integrated proof must permanently retain both deterministic and real-browser falsification.",
+  "invariants": [
+    "preserve every existing root test",
+    "preserve all existing Spatial suites",
+    "no workflow deletion or weakening",
+    "no production authority change"
+  ],
+  "tests": [
+    "node tests/product/prod-w2-director.mjs",
+    "node tests/product/prod-w2-director-browser.mjs",
+    "full 10/10 exact-head workflow matrix including Spatial"
+  ]
+}

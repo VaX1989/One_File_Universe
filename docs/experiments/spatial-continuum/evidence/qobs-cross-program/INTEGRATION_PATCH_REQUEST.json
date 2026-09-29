@@ -1,0 +1,25 @@
+{
+  "requesting_prompt_id": "QOBS-CROSS-PROGRAM",
+  "target_surface": "CENTRAL_TEST_REGISTRATION",
+  "target_path": [
+    "tests/spatial-continuum/run.mjs",
+    "package.json",
+    ".github/workflows/spatial-continuum-experiment.yml"
+  ],
+  "expected_authority": "CTRL-WAVE0/CTRL-CONVERGENCE",
+  "intended_change": "Optionally register tests/spatial-continuum/qobs-cross-program.mjs in the convergence-owned central test invocation after the lane is accepted. Do not alter test semantics or promote Observatory output to release/scientific authority.",
+  "rationale": "The new focused test belongs to QOBS, but central runners/package/workflows are explicitly protected from child lane writers. Registration therefore requires convergence ownership rather than an out-of-scope lane edit.",
+  "invariants": [
+    "QOBS remains observation/falsification evidence only",
+    "no scientific truth or release authority is inferred from report status",
+    "platform metrics remain gated by explicit capability presence",
+    "existing W0 Observatory test remains runnable",
+    "no network dependency is introduced",
+    "no main mutation, release/tag, or R7 activation"
+  ],
+  "tests": [
+    "node tests/spatial-continuum/qobs-cross-program.mjs",
+    "node tests/spatial-continuum/r6-w0-quality-observatory.mjs",
+    "existing convergence-owned Spatial Continuum runner after registration"
+  ]
+}

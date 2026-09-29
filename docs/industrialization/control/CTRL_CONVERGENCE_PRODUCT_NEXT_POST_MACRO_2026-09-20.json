@@ -1,0 +1,135 @@
+{
+  "schema": "ofu.product-next.ctrl-convergence.v1",
+  "prompt_id": "CTRL-CONVERGENCE",
+  "track": "PRODUCT_NEXT",
+  "mission_date": "2026-09-20",
+  "authority": {
+    "control_pr": 312,
+    "control_branch": "control/post-m0-product-next-2026-09-20",
+    "pre_record_integrated_head": "8beefda5d5e29911c8645e66b55b85047ee5fd44",
+    "note": "Final exact control head is externally bound after verification to avoid self-referential metadata.",
+    "verification_subject_sha": "668f82ffbeabb7a8e502af205da7d4d83dcd458d",
+    "verification_pr": 328
+  },
+  "integrated_lanes": [
+    {
+      "prompt_id": "PROD-W1-SCI-WHY",
+      "pr": 314,
+      "status": "PRESERVED_ALREADY_INTEGRATED"
+    },
+    {
+      "prompt_id": "PROD-W2-SEARCH",
+      "pr": 317,
+      "status": "PRESERVED_ALREADY_INTEGRATED"
+    },
+    {
+      "prompt_id": "PROD-W2-TIME",
+      "pr": 319,
+      "status": "PRESERVED_ALREADY_INTEGRATED"
+    },
+    {
+      "prompt_id": "PROD-W1-INSTRUMENTS",
+      "pr": 325,
+      "lane_head": "7c5ca58ba38349008b53de86e56d504fb73df14f",
+      "merge_commit": "250e654370d43c5b809d8cff1f173e86ae032514",
+      "status": "INTEGRATED"
+    },
+    {
+      "prompt_id": "PROD-W2-COMPARE",
+      "pr": 327,
+      "lane_head": "76689cc4a3fee6e90f8559b22a7d3ace8d7ab628",
+      "merge_commit": "28397c41518e4bd71560af7b90ddcc8938a0b5b6",
+      "status": "INTEGRATED"
+    },
+    {
+      "prompt_id": "PRODUCT-MACRO",
+      "pr": 313,
+      "lane_head": "d4b6d873fdd5a03935311d6aa99970d75f07d50e",
+      "exact_executable_subject": "94c0b06524e69bd1c5d220a6df11a9ad1379c5dc",
+      "merge_commit": "513d4410d325b03ba5b460254cca570685a4a03f",
+      "failure_fingerprint": "PRODUCT_MACRO_REVERSAL_HARNESS_COMMITTED_STATE_TIMING_RACE",
+      "failure_status": "CLOSED_VERIFIED",
+      "status": "INTEGRATED"
+    }
+  ],
+  "control_owned_test_registration": {
+    "path": "package.json",
+    "commit": "8beefda5d5e29911c8645e66b55b85047ee5fd44",
+    "added": [
+      "node tests/product/prod-w1-instruments.mjs",
+      "node tests/product/prod-w2-compare.mjs"
+    ],
+    "dependency_changes": false,
+    "workflow_changes": false
+  },
+  "preserved_invariants": [
+    "canonical P2/P4 semantics unchanged",
+    "canonical scientific authority unchanged",
+    "one scene",
+    "one camera authority",
+    "renderer-owned picking",
+    "offline/direct-file behavior preserved",
+    "bounded residency/resources/cancellation preserved",
+    "presentation/model-derived output cannot become canonical authority"
+  ],
+  "next_owner_adjudication": {
+    "policy": "RE-ADJUDICATED_NOT_AUTO_LAUNCHED",
+    "decisions": [
+      {
+        "prompt_id": "PRODUCT-VISUAL-CONTINUITY",
+        "disposition": "ELIGIBLE_FOR_NEXT_CONTROL_GRANT",
+        "semantic_ownership": "product_visual_handoffs",
+        "rationale": "Macro failure fingerprint is closed and macro shared renderer ownership has terminalized; continuity remains a distinct high-priority presentation residual. It must receive an explicit successor ownership grant before writing."
+      },
+      {
+        "prompt_id": "PRODUCT-HUMAN",
+        "disposition": "ELIGIBLE_FOR_NEXT_CONTROL_GRANT",
+        "semantic_ownership": "product_human_place",
+        "rationale": "G-PROD-CONTRACTS is satisfied and macro no longer owns active shared composition. HUMAN work remains presentation-only and should be granted explicitly with overlap checked against visual-continuity integration surfaces."
+      },
+      {
+        "prompt_id": "PROD-W2-DIRECTOR",
+        "disposition": "DEPENDENCY_READY_BUT_STACKED_ONLY",
+        "semantic_ownership": "director/camera-path additive modules under coordinated camera authority",
+        "rationale": "PRODUCT-DEPTH and Atlas dependencies are satisfied, but the lane is STACKED_ONLY and carries second-camera-authority risk. Do not run concurrently with another writer touching camera/transition integration surfaces without a control split."
+      },
+      {
+        "prompt_id": "PRODUCT-AUDIO",
+        "disposition": "ELIGIBLE_FOR_DISJOINT_NEXT_CONTROL_GRANT",
+        "semantic_ownership": "product_audio",
+        "rationale": "Audio is a distinct bounded offline product surface and can be considered for a separate disjoint grant once stable context API bindings are explicitly confirmed."
+      }
+    ],
+    "recommended_control_sequence": [
+      "Grant at most one transition/camera-sensitive writer among PRODUCT-VISUAL-CONTINUITY and PROD-W2-DIRECTOR at a time.",
+      "PRODUCT-HUMAN may run only if control proves its integration touchpoints are disjoint from the active transition/camera-sensitive owner.",
+      "PRODUCT-AUDIO may be granted separately if its context-API write scope remains disjoint."
+    ]
+  },
+  "explicit_non_actions": [
+    "do not merge PR #312 into PR #290",
+    "no main mutation",
+    "no tag or release",
+    "no R7",
+    "no force-push or child-history rewrite",
+    "no automatic launch of next product lanes"
+  ],
+  "verification": {
+    "status": "COMPLETE_10_OF_10_SUCCESS",
+    "exact_verification_sha": "668f82ffbeabb7a8e502af205da7d4d83dcd458d",
+    "workflows": {
+      "foundation": 35517392879,
+      "p1": 35517392826,
+      "p2": 35517392874,
+      "p3": 35517392882,
+      "p4": 35517392972,
+      "p5_controlled": 35517392962,
+      "p5_environment_v2": 35517392895,
+      "p6_v1": 35517392947,
+      "p1_p4_baseline": 35517393049,
+      "spatial_continuum": 35517392916
+    },
+    "spatial_summary": "Development, clean-room certification, Chromium/Firefox/WebKit browser matrices, and chromium convergence all completed successfully on the exact verification subject."
+  },
+  "disposition": "CONTROLLED_CONVERGENCE_CHECKPOINT_COMPLETE"
+}

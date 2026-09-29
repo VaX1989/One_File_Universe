@@ -1,0 +1,18 @@
+{
+  "schema": "ofu.post-m0.control-completion.v1",
+  "prompt_id": "IND-CABI-MICROHOST",
+  "mission_date": "2026-09-20",
+  "control_pr": 290,
+  "integrated_control_sha": "0111e06d6c12ec03bdcdd64eeba8898c82239376",
+  "exact_head_ci": {
+    "workflow_matrix": "10/10_PASS",
+    "spatial_run": 35532374091,
+    "p2_run": 35532374088,
+    "foundation_run": 35532374094
+  },
+  "regression_registration": "node tests/industrialization/cabi-microhost/cabi-parity.mjs",
+  "corpus_digest": "d92b43afb8a7deeaed4b0c3ee13b73bad344b196132c35433b66360c0b0772fc",
+  "runtime_ported": false,
+  "broad_abi_frozen": false,
+  "final_status": "COMPLETE"
+}

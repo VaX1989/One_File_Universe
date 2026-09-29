@@ -1,0 +1,25 @@
+{
+  "schema": "ofu.integration-patch-request.v1",
+  "requesting_prompt_id": "PRODUCT-HUMAN",
+  "target_surface": "CONTROL_OWNED_ROOT_REGRESSION_UNION",
+  "target_path": "package.json",
+  "expected_authority": "CTRL-CONVERGENCE",
+  "intended_change": "Append node tests/product/product-human.mjs to the existing root test script without removing accepted regressions.",
+  "rationale": "PR #347 proved the exact lane test blob under the cumulative root union; Spatial already contains phase2-human and multi-world browser coverage.",
+  "invariants": [
+    "preserve all existing product and industrialization regressions",
+    "do not create a second camera or picking authority",
+    "do not modify production HUMAN renderer semantics",
+    "preserve direct-file/offline and bounded-resource behavior"
+  ],
+  "tests": [
+    {
+      "verification_pr": 347,
+      "verification_head": "f602f4964eb9bae01192359f57b5f494621f6a7c",
+      "foundation_run": 35530054540,
+      "spatial_run": 35530054529,
+      "result": "10/10_PASS"
+    }
+  ],
+  "status": "REQUESTED"
+}

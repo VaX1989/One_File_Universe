@@ -1,0 +1,314 @@
+{
+  "schema": "ofu.r6.w0.parallel-lane-ownership.v1",
+  "freeze_id": "OFU-R6-W0-2026-09-15-27657AB9",
+  "repository": "VaX1989/One_File_Universe",
+  "mission_date": "2026-09-15",
+  "wave": "R6/W0/M0 Continuous Reality Closure",
+  "authority": {
+    "r6_pr": 274,
+    "roadmap_pr": 275,
+    "parallel_base_branch": "experiment/spatial-continuum-r6-causal-universe-2026-09-14",
+    "parallel_base_sha": "27657ab9e8215b2c5fc34e4a6aec8ad947f1cf3a",
+    "parallel_base_tree": "97c83b4341f23113267910f80952979280106f71",
+    "authority_layers": [
+      "certified_history",
+      "canonical_science",
+      "model_derived_simulation",
+      "presentation",
+      "planning_metadata"
+    ],
+    "roadmap_is_planning_metadata_only": true,
+    "canonical_science_promotion_authorized": false,
+    "release_authorized": false
+  },
+  "control": {
+    "branch": "integration/spatial-continuum-r6-w0-continuous-reality-2026-09-15",
+    "parent_sha": "27657ab9e8215b2c5fc34e4a6aec8ad947f1cf3a",
+    "parent_tree": "97c83b4341f23113267910f80952979280106f71",
+    "head_binding": "EXTERNALLY_BOUND_BY_CONTROL_DRAFT_PR_AND_OFU_R6_W0_ACTIVATION",
+    "self_reference_note": "The immutable commit cannot contain its own final SHA/tree as literals without changing them. The Draft control PR and activation block bind the exact final control SHA/tree.",
+    "coordination_record": "docs/experiments/spatial-continuum/R6_W0_PARALLEL_COORDINATION.md",
+    "ownership_record": "docs/experiments/spatial-continuum/R6_W0_LANE_OWNERSHIP.json"
+  },
+  "policies": {
+    "specialist_base": "EXACT_CONTROL_SHA_UNLESS_EXPLICITLY_STACKED",
+    "specialist_pr_base": "CONTROL_BRANCH",
+    "specialist_pr_mode": "DRAFT_ONLY",
+    "merge_specialist_prs": false,
+    "merge_control_pr": false,
+    "merge_r6_pr": false,
+    "merge_main": false,
+    "tag": false,
+    "release": false,
+    "force_push_after_evidence": false,
+    "rebase_after_evidence": false,
+    "cross_lane_writes": false,
+    "shared_integration_write_mode": "INTEGRATION_PATCH_REQUESTS",
+    "prefer_additive_modules": true,
+    "single_camera_focus_selection_authority": true,
+    "renderer_owned_picking": true,
+    "offline_direct_file_required": true,
+    "determinism_required": true,
+    "scientific_authority_boundaries_required": true,
+    "bounded_working_sets_required": true,
+    "stale_work_cancellation_required": true
+  },
+  "shared_surfaces": {
+    "owner": "CONTROL_CONVERGENCE",
+    "specialist_access": "READ_ONLY_UNLESS_LATER_EXPLICITLY_GRANTED",
+    "paths": [
+      "src/experiments/spatial-continuum/renderer.js",
+      "src/experiments/spatial-continuum/experience.js",
+      "src/experiments/spatial-continuum/camera.js",
+      "src/experiments/spatial-continuum/kernel.js",
+      "src/experiments/spatial-continuum/terrain-field.js",
+      "src/experiments/spatial-continuum/scientific-state.js",
+      "src/experiments/spatial-continuum/generative-contract.js",
+      "src/experiments/spatial-continuum/world-adapter.js",
+      "tests/spatial-continuum/run.mjs",
+      ".github/workflows/spatial-continuum-experiment.yml",
+      "package.json"
+    ]
+  },
+  "lanes": {
+    "R6_A": {
+      "name": "progressive_macro_materialization",
+      "status": "ACTIVE",
+      "branch_base": "EXACT_CONTROL_SHA",
+      "owned_existing_paths": [
+        "src/experiments/spatial-continuum/open-universe.js"
+      ],
+      "owned_new_paths": [
+        "src/experiments/spatial-continuum/macro-materialization.js",
+        "tests/spatial-continuum/r6-w0-progressive-macro-materialization.mjs"
+      ],
+      "shared_read_only_paths": [
+        "src/experiments/spatial-continuum/renderer.js",
+        "src/experiments/spatial-continuum/kernel.js",
+        "tests/spatial-continuum/run.mjs",
+        ".github/workflows/spatial-continuum-experiment.yml",
+        "package.json"
+      ]
+    },
+    "R6_B": {
+      "name": "representation_handoff_globe_regional_local",
+      "status": "ACTIVE",
+      "branch_base": "EXACT_CONTROL_SHA",
+      "owned_existing_paths": [],
+      "owned_new_paths": [
+        "src/experiments/spatial-continuum/representation-handoff.js",
+        "tests/spatial-continuum/r6-w0-representation-handoff.mjs"
+      ],
+      "shared_read_only_paths": [
+        "src/experiments/spatial-continuum/renderer.js",
+        "src/experiments/spatial-continuum/planetary-topology.js",
+        "src/experiments/spatial-continuum/terrain-field.js",
+        "src/experiments/spatial-continuum/camera.js"
+      ]
+    },
+    "R6_C": {
+      "name": "human_sense_of_place",
+      "status": "ACTIVE",
+      "branch_base": "EXACT_CONTROL_SHA",
+      "owned_existing_paths": [
+        "src/experiments/spatial-continuum/local-environment.js"
+      ],
+      "owned_new_paths": [
+        "src/experiments/spatial-continuum/human-place-grammar.js",
+        "tests/spatial-continuum/r6-w0-human-sense-of-place.mjs"
+      ],
+      "shared_read_only_paths": [
+        "src/experiments/spatial-continuum/renderer.js",
+        "src/experiments/spatial-continuum/experience.js",
+        "src/experiments/spatial-continuum/camera.js"
+      ]
+    },
+    "R6_D": {
+      "name": "planetary_lod_stitching_morphing_culling",
+      "status": "STACK_AFTER_R6_B",
+      "branch_base": "EVIDENCE_APPROVED_R6_B_HEAD",
+      "owned_existing_paths": [
+        "src/experiments/spatial-continuum/planetary-topology.js"
+      ],
+      "owned_new_paths": [
+        "src/experiments/spatial-continuum/planetary-lod-transition.js",
+        "tests/spatial-continuum/r6-w0-planetary-lod-continuity.mjs"
+      ],
+      "shared_read_only_paths": [
+        "src/experiments/spatial-continuum/renderer.js",
+        "src/experiments/spatial-continuum/terrain-field.js",
+        "src/experiments/spatial-continuum/camera.js"
+      ],
+      "stack_reason": "R6-B and R6-D materially share the current terrain transition/handoff corridor; independent peer writes would race semantically and at integration."
+    },
+    "R6_E": {
+      "name": "causal_planet_visual_consequences",
+      "status": "ACTIVE",
+      "branch_base": "EXACT_CONTROL_SHA",
+      "owned_existing_paths": [
+        "src/experiments/spatial-continuum/causal-regimes.js"
+      ],
+      "owned_new_paths": [
+        "src/experiments/spatial-continuum/visual-consequences.js",
+        "tests/spatial-continuum/r6-w0-causal-visual-consequences.mjs"
+      ],
+      "shared_read_only_paths": [
+        "src/experiments/spatial-continuum/renderer.js",
+        "src/experiments/spatial-continuum/scientific-state.js"
+      ]
+    },
+    "R6_F": {
+      "name": "molecular_atomic_epistemic_presentation",
+      "status": "ACTIVE",
+      "branch_base": "EXACT_CONTROL_SHA",
+      "owned_existing_paths": [
+        "src/experiments/spatial-continuum/micro-grammar.js"
+      ],
+      "owned_new_paths": [
+        "src/experiments/spatial-continuum/epistemic-scale-presentation.js",
+        "tests/spatial-continuum/r6-w0-epistemic-scale-presentation.mjs"
+      ],
+      "shared_read_only_paths": [
+        "src/experiments/spatial-continuum/renderer.js",
+        "src/experiments/spatial-continuum/scientific-state.js"
+      ]
+    },
+    "R6_G": {
+      "name": "quality_observatory_perceptual_diversity_falsification",
+      "status": "ACTIVE",
+      "branch_base": "EXACT_CONTROL_SHA",
+      "owned_existing_paths": [],
+      "owned_new_paths": [
+        "tools/spatial-continuum/quality-observatory/**",
+        "tests/spatial-continuum/r6-w0-quality-observatory.mjs",
+        "docs/experiments/spatial-continuum/evidence/r6-w0-quality-observatory/**"
+      ],
+      "shared_read_only_paths": [
+        "src/experiments/spatial-continuum/**",
+        "tests/spatial-continuum/run.mjs",
+        ".github/workflows/spatial-continuum-experiment.yml",
+        "package.json"
+      ],
+      "production_source_write": false
+    },
+    "R6_I": {
+      "name": "orientation_scale_awareness_ux",
+      "status": "ACTIVE",
+      "restriction": "ADDITIVE_ONLY_SHELL_HOOKS_VIA_INTEGRATION_PATCH_REQUESTS",
+      "branch_base": "EXACT_CONTROL_SHA",
+      "owned_existing_paths": [],
+      "owned_new_paths": [
+        "src/experiments/spatial-continuum/orientation-scale-ux.js",
+        "tests/spatial-continuum/r6-w0-orientation-scale-ux.mjs"
+      ],
+      "shared_read_only_paths": [
+        "src/experiments/spatial-continuum/experience.js",
+        "src/experiments/spatial-continuum/camera.js",
+        "src/experiments/spatial-continuum/renderer.js"
+      ]
+    },
+    "R6_J": {
+      "name": "systemic_audio_research_additive_prototype",
+      "status": "RESEARCH_ONLY",
+      "writer_authorized": false,
+      "owned_existing_paths": [],
+      "owned_new_paths_if_explicitly_promoted": [
+        "src/experiments/spatial-continuum/systemic-audio.js",
+        "tests/spatial-continuum/r6-w0-systemic-audio-prototype.mjs"
+      ],
+      "research_evidence_paths": [
+        "docs/experiments/spatial-continuum/evidence/r6-w0-systemic-audio/**"
+      ],
+      "shared_read_only_paths": [
+        "src/experiments/spatial-continuum/kernel.js",
+        "src/experiments/spatial-continuum/experience.js",
+        "src/experiments/spatial-continuum/renderer.js"
+      ],
+      "reason": "No dedicated R6 audio extension point was identified; W0 permits research/evidence but no competing activation or registry edits."
+    }
+  },
+  "integration_patch_requests": {
+    "required_for_unavoidable_shared_edits": true,
+    "required_fields": [
+      "lane",
+      "target_path",
+      "exact_change_or_patch",
+      "integration_point",
+      "reason",
+      "tests_and_evidence"
+    ],
+    "applier": "CONTROL_CONVERGENCE"
+  },
+  "evidence_expectations": {
+    "all_writer_lanes": [
+      "freeze_id",
+      "exact_base_branch_sha_tree",
+      "exact_head_branch_sha_tree",
+      "changed_path_inventory_vs_ownership",
+      "test_commands_and_results",
+      "deterministic_rerun_evidence_when_applicable",
+      "offline_direct_file_evidence_when_affected",
+      "visual_evidence_for_visible_changes",
+      "performance_resource_observations_when_affected",
+      "science_model_presentation_classification",
+      "provenance_and_fail_closed_behavior_when_applicable",
+      "known_limitations_and_falsification_attempts",
+      "integration_patch_requests_if_any"
+    ],
+    "R6_D_additional": [
+      "old_coverage_retention_during_handoff",
+      "stitch_morph_cull_continuity",
+      "stale_transition_cancellation",
+      "camera_independent_semantic_identity"
+    ],
+    "R6_G_additional": [
+      "perceptual_diversity_measurement",
+      "falsification_results"
+    ]
+  },
+  "audits": {
+    "AUDIT_SCIENCE": {
+      "mode": "READ_ONLY",
+      "scope": "scientific_epistemic_honesty_provenance_authority_fail_closed"
+    },
+    "AUDIT_VISUAL": {
+      "mode": "READ_ONLY",
+      "scope": "visual_product_quality_continuity_legibility_diversity_scale_coherence"
+    },
+    "AUDIT_ARCH": {
+      "mode": "READ_ONLY",
+      "scope": "performance_resources_determinism_order_independence_stale_work_architecture"
+    },
+    "AUDIT_DEVICE": {
+      "mode": "READ_ONLY",
+      "scope": "device_accessibility_direct_file_interaction_long_soak"
+    }
+  },
+  "collisions": [
+    {
+      "paths": ["src/experiments/spatial-continuum/renderer.js"],
+      "lanes": ["R6_A", "R6_B", "R6_C", "R6_D", "R6_E", "R6_F", "R6_I"],
+      "resolution": "CONTROL_CONVERGENCE_OWNER_PLUS_INTEGRATION_PATCH_REQUESTS"
+    },
+    {
+      "paths": [
+        "src/experiments/spatial-continuum/renderer.js",
+        "src/experiments/spatial-continuum/planetary-topology.js",
+        "src/experiments/spatial-continuum/terrain-field.js"
+      ],
+      "lanes": ["R6_B", "R6_D"],
+      "resolution": "R6_D_STACK_AFTER_R6_B"
+    },
+    {
+      "paths": [
+        "src/experiments/spatial-continuum/experience.js",
+        "src/experiments/spatial-continuum/camera.js",
+        "src/experiments/spatial-continuum/renderer.js"
+      ],
+      "lanes": ["R6_I"],
+      "resolution": "R6_I_ADDITIVE_ONLY_SHARED_SHELL_READ_ONLY"
+    }
+  ],
+  "immediate_parallel_writer_count": 7,
+  "roadmap_max_writer_count": 8
+}

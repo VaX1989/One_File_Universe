@@ -11,7 +11,7 @@ const $=id=>document.getElementById(id);
 function el(tag,text=null,attrs={}){const x=document.createElement(tag);if(text!==null)x.textContent=text;for(const [k,v] of Object.entries(attrs)){if(k==='class')x.className=v;else x.setAttribute(k,String(v));}return x;}
 function button(text,action,{primary=false,disabled=false,id=null}={}){const b=el('button',text,{type:'button',class:'living-button'+(primary?' primary':''),'data-living-action':id||text});b.disabled=disabled;b.addEventListener('click',()=>act(action));return b;}
 function act(fn){try{uiError=null;const result=fn();if(result?.then)result.catch(fail);return result;}catch(error){fail(error);return null;}}
-function fail(error){const message=String(error?.message||error);if(message==='OFU V2X-01 CANCELLED: superseded')return;uiError=message;renderError=uiError;renderPanel(runtime?.snapshot());console.error('Wave A product:',error);}
+function fail(error){const message=String(error?.message||error);if((!initialized&&!initializing)||message==='OFU V2X-01 CANCELLED: superseded')return;uiError=message;renderError=uiError;renderPanel(runtime?.snapshot());console.error('Wave A product:',error);}
 function stopLegacy(){for(const id of ['wave-iv-macro','planet-webgl','surface-webgl']){try{O.pxProduct.sceneImplementation(id).setActive(false);}catch(error){/* A legacy scene may be unavailable in a restricted graphics backend. */}}}
 function pointAction(point,{settlement=null}={}){
  const s=runtime.snapshot();
@@ -190,7 +190,7 @@ function init(){
   runtimeUnsubscribe=tx.runtimeUnsubscribe=runtime.onChange(change);inputCleanup=tx.inputCleanup=bindInputs();runtime.bindNavigationAuthority();
   const bootState=runtime.snapshot();if(bootState.stage!=='UNIVERSE'||bootState.semanticScale!=='galaxy'||!bootState.navigationCoherent)throw new Error('Living navigation boot state is incoherent');
   change(bootState);
-  O.v1LivingProduct=Object.freeze({VERSION,runtime,renderer,survey,snapshot(){const navigation=runtime.snapshot();return {version:VERSION,initialized,stage:navigation.stage,semanticScale:navigation.semanticScale,activeSceneProvider:navigation.activeSceneProvider,navigationCoherent:navigation.navigationCoherent,render:renderer.state(),uiError,input:{...inputState},search:{goal:search.goal,cursor:search.cursor,pages:search.pages,worlds:search.worlds,running:search.running,results:search.rows.length},foregroundOwner:'WAVE_A_LIVING_VIEWPORT',canonicalMutation:false};},ready:()=>pending,clearError(){uiError=null;renderError=null;renderPanel(runtime.snapshot());}});
+  O.v1LivingProduct=Object.freeze({VERSION,runtime,renderer,survey,snapshot(){const navigation=runtime.snapshot();return {version:VERSION,initialized,stage:navigation.stage,semanticScale:navigation.semanticScale,activeSceneProvider:navigation.activeSceneProvider,navigationCoherent:navigation.navigationCoherent,render:renderer.state(),uiError,input:{...inputState},search:{goal:search.goal,cursor:search.cursor,pages:search.pages,worlds:search.worlds,running:search.running,results:search.rows.length},foregroundOwner:'WAVE_A_LIVING_VIEWPORT',canonicalMutation:false};},ready:()=>pending,dispose:disposeProduct,clearError(){uiError=null;renderError=null;renderPanel(runtime.snapshot());}});
   initialized=true;
   lastBootstrapError=null;bootErrorNode?.remove();bootErrorNode=null;
   initializing=false;
@@ -202,6 +202,7 @@ function init(){
   throw error;
  }
 }
+function disposeProduct(){if(!initialized&&!initializing)return false;if(bootTimer!==null){clearTimeout(bootTimer);bootTimer=null;}search.generation++;search.running=false;initialized=false;initializing=false;try{inputCleanup?.()}catch{}inputCleanup=null;try{runtimeUnsubscribe?.()}catch{}runtimeUnsubscribe=null;try{renderer?.dispose?.()}catch{}try{runtime?.dispose?.()}catch{}pending=null;return true;}
 function scheduleBoot(){if(bootTimer!==null)return;const delay=bootDelay;bootDelay=Math.min(1000,bootDelay*2);bootTimer=setTimeout(()=>{bootTimer=null;boot();},delay)}
 function terminalBootstrap(error){lastBootstrapError=String(error?.message||error);console.error('Wave A startup failed',error);const target=document.querySelector('[data-workspace-panel="explore"]');if(target&&!bootErrorNode){bootErrorNode=el('p','Living-universe startup failed after bounded retries: '+lastBootstrapError,{class:'living-error',role:'alert'});target.prepend(bootErrorNode)}}
 function boot(){try{if(init())return;if(++preflightPolls<MAX_PREFLIGHT_POLLS)scheduleBoot();else terminalBootstrap(new Error('Living-universe dependencies did not become ready within bounded preflight'))}catch(error){lastBootstrapError=String(error?.message||error);bootstrapFailures.push(Object.freeze({attempt:bootAttempts,error:lastBootstrapError}));while(bootstrapFailures.length>MAX_BOOT_ATTEMPTS)bootstrapFailures.shift();if(bootAttempts<MAX_BOOT_ATTEMPTS){console.warn('Wave A startup retry',bootAttempts,lastBootstrapError);scheduleBoot();}else terminalBootstrap(error)}}

@@ -1,0 +1,90 @@
+{
+  "prompt_id": "IND-JS-HEADLESS",
+  "master_schema_version": 4,
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "base_sha": "f183cd53bc008684531830a54aa0ed2cf8c018cc",
+  "base_tree": "6cd2c0f81310329458d2a68a4bf32952521a4f84",
+  "dependency_shas": {
+    "G0A_control_registration": "f183cd53bc008684531830a54aa0ed2cf8c018cc",
+    "G0A_audit_subject": "296565bb2a6842159a994a45094ddc1d27d4fd1d",
+    "G0A_repair_semantic_subject": "e8965171944b9d5c604b19b745dacb79156816f4",
+    "master_v4": "c2cab6d6e914b918432432fdc69825e0a1000509"
+  },
+  "final_sha": "EXTERNALLY_BOUND_BY_DRAFT_PR_HEAD",
+  "final_tree": "EXTERNALLY_BOUND_BY_DRAFT_PR_HEAD_TREE",
+  "changed_paths": [
+    "src/headless/index.js",
+    "sdk/reference-headless/index.js",
+    "tests/industrialization/headless/public-seam.mjs",
+    "docs/frontier/execution/parallel/IND-JS-HEADLESS_EXECUTION_STATE.json",
+    "docs/frontier/execution/parallel/IND-JS-HEADLESS_INTEGRATION_PATCH_REQUEST.json",
+    "docs/industrialization/handoffs/IND-JS-HEADLESS_2026-09-20.json"
+  ],
+  "ownership_result": {
+    "semantic_surface": "HEADLESS_PUBLIC_SEAM",
+    "result": "WITHIN_OWNERSHIP",
+    "protected_shared_surfaces_modified": false,
+    "canonical_p2_p4_modified": false,
+    "renderer_camera_product_modified": false
+  },
+  "tests": [
+    {
+      "name": "exact-head executable public-seam falsification",
+      "subject_sha": "40ffb2f25412caa35ca001753dbd766d2821d874",
+      "result": "PASS",
+      "checks": 28
+    },
+    {
+      "name": "exact-head forbidden dependency/API leakage inspection",
+      "subject_sha": "40ffb2f25412caa35ca001753dbd766d2821d874",
+      "result": "PASS"
+    },
+    {
+      "name": "native Node public-seam test",
+      "result": "AUTHORED_PENDING_CONTROL_REGISTRATION",
+      "command": "node tests/industrialization/headless/public-seam.mjs"
+    },
+    {
+      "name": "pull-request cumulative CI",
+      "subject_sha": "758d9405ec8d03a27682487eb4bb4bb0dc301bc9",
+      "result": "PASS_9_OF_9"
+    }
+  ],
+  "deterministic_witnesses": [
+    {
+      "semanticManifestHash": "15115d3be206083d795b9492af46693253979709a5fb9cd2f9b3e2321fcd4778",
+      "universeIdentity": "29d93cd168d16a6763ad6687005e6af6eddbb5b7fef5cf8a919b49f0b0fd4f41",
+      "addressHex": "4f46554101010105617374726f",
+      "propertyDigest": "186531376069e9734644130f5ff081633aac5fcb011eaf8292a2ea6140ed9c32",
+      "transitionContractDigest": "a0b5856f6b1c12fbc3899f30858b99fb91de683168b41de60fb44d5f92a1c538"
+    }
+  ],
+  "security_classification": "FAIL_CLOSED_VERSIONED_BOUNDED_WRAPPER; hostile-input expansion remains owned by parallel IND-SEC-B.",
+  "authority_science_classification": "NO_NEW_CANONICAL_OR_SCIENTIFIC_AUTHORITY; all semantic outputs delegate to current authoritative P2/P4 operations.",
+  "performance_resource_evidence": "Synchronous seam adds no scheduler/cache/materialization state. Resource bounds are inherited from authoritative P2/P4 for the exposed operations; test includes address segment hard-bound rejection and explicit session disposal.",
+  "limitations": [
+    "Generic provider/query is intentionally not public.",
+    "Checkpoint/archive persistence is intentionally not public.",
+    "Native/C ABI/Runtime are not implemented.",
+    "Native Node test requires control-owned harness registration before convergence.",
+    "This lane alone is not G0B external-consumer proof.",
+    "Final terminal-metadata-only commits occur after the 9/9 CI evidence subject; control convergence must revalidate the exact merged candidate head as usual."
+  ],
+  "falsification_attempts": [
+    "unsupported API version",
+    "wrong seed length",
+    "unknown open field",
+    "over-bound address bytes segment",
+    "malformed address bytes",
+    "cross-universe P4 event",
+    "forbidden DOM/Babylon/renderer/runtime/persistence dependency scan",
+    "premature query/archive/checkpoint method scan",
+    "closed-session use",
+    "dispose/reopen exact witness comparison"
+  ],
+  "rollback_abandon_condition": "If a native external host cannot consume this seam without source-internal/product coupling, or parity requires semantic reinterpretation, abandon/narrow the seam and allow PLATFORM_EXTRACTION_PREMATURE rather than broadening authority.",
+  "integration_patch_requests": [
+    "docs/frontier/execution/parallel/IND-JS-HEADLESS_INTEGRATION_PATCH_REQUEST.json"
+  ],
+  "disposition": "COMPLETE_GATE_MET"
+}

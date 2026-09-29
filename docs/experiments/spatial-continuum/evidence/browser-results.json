@@ -1,0 +1,122 @@
+{
+  "status": "PASS",
+  "suite": "spatial-continuum-browser",
+  "browserVersion": "151.0.7922.34",
+  "directFile": true,
+  "offline": true,
+  "runtimeNetworkRequests": 0,
+  "worldIdentity": "9e2041b4c8550e86edc574c42cba1bb31224a2ac7a9e8ffaea232310ce24d98e",
+  "identityEvidence": {
+    "body": "9e2041b4c8550e86edc574c42cba1bb31224a2ac7a9e8ffaea232310ce24d98e",
+    "modelWorld": "9e2041b4c8550e86edc574c42cba1bb31224a2ac7a9e8ffaea232310ce24d98e",
+    "materialWorld": "9e2041b4c8550e86edc574c42cba1bb31224a2ac7a9e8ffaea232310ce24d98e",
+    "navigationEntityId": "2b618096266bf06162398a404355940664f5e8459d2be0787dab271c80c553e7"
+  },
+  "sourceSampleIdentity": "4a7f86b77a6ef7aa8eba823a7a80662f4ac5614076d8c76e30bb64c639f20d35",
+  "planetDiameter": {
+    "orbit": 824.4694950039591,
+    "approachEarly": 1177.8842463740457,
+    "approachMid": 1521.2686321395015,
+    "approachLate": 1521.2686321395015,
+    "approachSettled": 1521.2686321395015
+  },
+  "performance": {
+    "samples": 145,
+    "median": 50,
+    "p95": 83.30000000000291,
+    "p99": 83.40000000000873,
+    "longFrames34": 123,
+    "longFrames50": 57,
+    "inputResponseMedian": 15.100000023841858
+  },
+  "resources": {
+    "meshCount": 54,
+    "materialCount": 24,
+    "textureCount": 1,
+    "totalVertices": 58264,
+    "terrainPatchPool": 16,
+    "thinInstanceCounts": {
+      "stars": 690,
+      "localRocks": 34,
+      "material": 12,
+      "micro": 52,
+      "atomic": 108
+    }
+  },
+  "contextLoss": {
+    "result": "EXERCISED",
+    "losses": 1,
+    "restores": 1,
+    "functionallyRecovered": true
+  },
+  "mobile": {
+    "landscape": {
+      "canvas": {
+        "width": 844,
+        "height": 390
+      },
+      "controls": {
+        "top": 271.796875,
+        "height": 112.609375
+      },
+      "context": {
+        "width": 0,
+        "height": 0
+      },
+      "inner": {
+        "width": 844,
+        "height": 390
+      },
+      "scroll": {
+        "width": 844,
+        "height": 390
+      },
+      "pinchContinuous": true
+    },
+    "portrait": {
+      "canvas": {
+        "x": 0,
+        "y": 59,
+        "width": 390,
+        "height": 785,
+        "top": 59,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "controls": {
+        "x": 8,
+        "y": 729.359375,
+        "width": 374,
+        "height": 109.046875,
+        "top": 729.359375,
+        "right": 382,
+        "bottom": 838.40625,
+        "left": 8
+      },
+      "inner": {
+        "width": 390,
+        "height": 844
+      },
+      "scroll": {
+        "width": 390,
+        "height": 844
+      }
+    },
+    "tablet": {
+      "activeMeshes": 5
+    },
+    "orientationChange": true,
+    "highDpr": true
+  },
+  "accessibility": {
+    "skipLink": true,
+    "canvasFocus": true,
+    "keyboardLandmarkTravel": true,
+    "keyboardBodySelection": true,
+    "zoom200": true,
+    "forcedColors": true
+  },
+  "reducedMotionElapsedMs": 456,
+  "evidenceDirectory": "reports/local/spatial-continuum"
+}

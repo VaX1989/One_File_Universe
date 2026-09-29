@@ -1,0 +1,102 @@
+{
+  "schema": "ofu.post-m0.wave0.terminal-handoff.v1",
+  "prompt_id": "IND-CONF-A",
+  "epoch_id": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "terminal_state": "EXTERNAL_EVIDENCE_LIMITATION",
+  "semantic_surface": "CONFORMANCE_CORPUS",
+  "branch": "work/post-m0/ind-conf-a-ofu-post-m0-dual-track-wave0-2026-09-18-61f43071",
+  "pr": 296,
+  "lane_start": {
+    "sha": "fa88f7cec101a52d07916a0fdd3927c482a6f188",
+    "tree": "784e12501a7e0ba9e281787513bddbb6eed1c6bf"
+  },
+  "completion_anchor": {
+    "sha": "de0060fc2a0b6743b4ad6c6e2337bd80c6a8a612",
+    "tree": "52a60ada00c51554c27b4c78b8cfb71b64c3685c"
+  },
+  "frozen_base": {
+    "sha": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+    "tree": "3704247247940fa8c5f08291cd80ec9e24e7d49d"
+  },
+  "corpus": {
+    "digest": "2b13e4c47c254e418543410806ec5aaed7650b60e2e653c75b602b9c0735b65b",
+    "digest_algorithm": "sha256(concat(utf8(path),0x00,file_bytes,0x00) in lexical path order)",
+    "p2_vectors": "conformance/iw0/p2-vectors.json",
+    "p4_vectors": "conformance/iw0/p4-vectors.json",
+    "manifest": "conformance/iw0/manifest.json",
+    "digest_file": "conformance/iw0/CORPUS.sha256"
+  },
+  "completed_scope": [
+    "Frozen implementation-independent P2 canonical byte/digest vectors.",
+    "Frozen P2 malformed/non-canonical inputs and stable language-independent rejection classes with exception wording explicitly non-normative.",
+    "Canonical Address v1, manifest hash, Universe/Entity identity and addressed derivation/domain-separation vectors.",
+    "Narrow explicit P4 lineage/Event/order/transition-digest vectors.",
+    "Narrow P4 replay/checkpoint/archive/live-admission behavioral invariants, explicitly current-authority rather than falsely independent temporal-reducer proof.",
+    "Reproducible corpus manifest/digest.",
+    "JS current-authority differential runner, independent Python P2/narrow-P4 oracle, and combined direct test."
+  ],
+  "non_authority": [
+    "No production semantics changed.",
+    "No product UI or renderer changed.",
+    "No full P4 state/persistence schema frozen.",
+    "No implementation exception wording frozen.",
+    "No runtime/provider/native ABI semantics asserted.",
+    "No scientific truth authority asserted."
+  ],
+  "exact_head_evidence": [
+    {
+      "workflow": "Foundation Integrity",
+      "run_id": 35388104976,
+      "conclusion": "success"
+    },
+    {
+      "workflow": "P2 Conformance",
+      "run_id": 35388105022,
+      "conclusion": "success",
+      "notable": "independent Python normalization, explicit frozen Foundation/P1/P2 scope, browser/platform matrix and aggregate all passed"
+    },
+    {
+      "workflow": "P4 Conformance",
+      "run_id": 35388105055,
+      "conclusion": "success",
+      "notable": "P4 replay, semantic closure, archive lineage, checkpoint authority, P2-P4 integration, P3-P4 integration and browser matrix passed"
+    },
+    {
+      "workflow": "P1-P4 Canonical Baseline",
+      "run_id": 35388105025,
+      "conclusion": "success",
+      "notable": "exact-head job and canonical baseline seal passed"
+    }
+  ],
+  "direct_execution_debt": {
+    "reason": "The available GitHub connector cannot invoke arbitrary lane-owned commands or dispatch a custom workflow; adding package/workflow hooks would violate lane ownership.",
+    "commands": [
+      "node tools/industrialization/ind-conf/run-js-authority.mjs",
+      "python3 tools/industrialization/ind-conf/run-python-oracle.py",
+      "node tests/industrialization/ind-conf/conformance-corpus-tests.mjs"
+    ],
+    "expected_on_success": {
+      "corpus_digest": "2b13e4c47c254e418543410806ec5aaed7650b60e2e653c75b602b9c0735b65b",
+      "js_minimum_checks": {
+        "positive": 40,
+        "rejection": 35
+      },
+      "python_minimum_checks": {
+        "positive": 40,
+        "rejection": 30
+      }
+    }
+  },
+  "control_recommendation": "Do not merge or advance G0A solely from this packet. In a capable exact checkout, execute the three direct commands above. If all PASS against completion_anchor, the control plane may supersede EXTERNAL_EVIDENCE_LIMITATION with READY_FOR_CONTROL_CONVERGENCE; otherwise reopen PR #296 with the exact failure fingerprint.",
+  "integration_patch_requests": [],
+  "forbidden_actions_observed": {
+    "main_mutated": false,
+    "pr274_merged": false,
+    "pr275_merged": false,
+    "pr287_merged": false,
+    "tags_created": false,
+    "releases_created": false,
+    "r7_started": false,
+    "force_push": false
+  }
+}

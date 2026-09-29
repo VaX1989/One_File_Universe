@@ -9,8 +9,39 @@
     "build": "node tools/build-p1.mjs",
     "test:p2": "node tests/p2/run-p2-tests.mjs && node tests/p2/address-parser-tests.mjs && node tests/p2/evidence-aggregator-tests.mjs",
     "test:p4": "node tests/p4/run-p4-tests.mjs && node tests/p4/semantic-closure-tests.mjs && node tests/p4/archive-lineage-tests.mjs && node tests/p4/checkpoint-authority-tests.mjs",
-    "test": "node tools/validate-foundation.mjs && node tests/governance/adr-hygiene.mjs && node tools/validate-frontier-docs.mjs && node tests/governance/frontier-ratification.mjs && node tests/governance/workflow-reproducibility.mjs && node tests/governance/workflow-credential-boundary.mjs && node tests/governance/privileged-workflow-dependencies.mjs && node tests/governance/release-transaction-boundary.mjs && node tests/governance/v1-release-record-integrity.mjs && node tests/governance/phase-router.mjs && node tests/governance/git-phase-router.mjs && node tests/governance/phase-gate.mjs && node tests/governance/historical-phase-workflows.mjs && node tests/run-node-tests.mjs && node tests/p1/portable-save-size.mjs && node tests/p1/evidence-aggregator-resource-tests.mjs && node tests/p2/run-p2-tests.mjs && node tests/p2/address-parser-tests.mjs && node tests/p2/evidence-aggregator-tests.mjs && node tests/p4/run-p4-tests.mjs && node tests/p4/semantic-closure-tests.mjs && node tests/p4/archive-lineage-tests.mjs && node tests/p4/checkpoint-authority-tests.mjs && node tools/build-p1.mjs && node tests/build/reproducible-build.mjs",
-    "test:frontier-docs": "node tools/validate-frontier-docs.mjs && node tests/governance/frontier-ratification.mjs"
+    "test": "node tools/validate-foundation.mjs && node tests/governance/adr-hygiene.mjs && node tools/validate-frontier-docs.mjs && node tests/governance/frontier-ratification.mjs && node tests/governance/workflow-reproducibility.mjs && node tests/governance/workflow-credential-boundary.mjs && node tests/governance/privileged-workflow-dependencies.mjs && node tests/governance/release-transaction-boundary.mjs && node tests/governance/v1-release-record-integrity.mjs && node tests/governance/phase-router.mjs && node tests/governance/git-phase-router.mjs && node tests/governance/phase-gate.mjs && node tests/governance/historical-phase-workflows.mjs && node tests/run-node-tests.mjs && node tests/p1/portable-save-size.mjs && node tests/p1/evidence-aggregator-resource-tests.mjs && node tests/p2/run-p2-tests.mjs && node tests/p2/address-parser-tests.mjs && node tests/p2/evidence-aggregator-tests.mjs && node tests/p4/run-p4-tests.mjs && node tests/p4/semantic-closure-tests.mjs && node tests/p4/archive-lineage-tests.mjs && node tests/p4/checkpoint-authority-tests.mjs && node tools/build-p1.mjs && node tests/build/reproducible-build.mjs && node tests/product/prod-w1-sci-fp.mjs && node tests/product/prod-w1-atlas-core.mjs && node tests/product/prod-w1-sci-why.mjs && node tests/product/prod-w2-search.mjs && node tests/product/prod-w2-time.mjs && node tests/product/prod-w1-instruments.mjs && node tests/product/prod-w2-compare.mjs && node tests/industrialization/headless/public-seam.mjs && node tests/industrialization/security/post-g0a-hostile-inputs.mjs && node tests/industrialization/external-consumer/clean-room.mjs && node tests/industrialization/native-p2/native-parity.mjs && node tests/product/product-audio.mjs && node tests/industrialization/cabi-microhost/cabi-parity.mjs && node tests/product/product-human.mjs && node tests/product/prod-w2-director.mjs",
+    "test:frontier-docs": "node tools/validate-frontier-docs.mjs && node tests/governance/frontier-ratification.mjs",
+    "build:continuum": "node tools/build-spatial-continuum.mjs",
+    "test:continuum": "node tests/spatial-continuum/run.mjs",
+    "test:continuum:browser": "node tests/spatial-continuum/browser.mjs",
+    "test:continuum:open": "node tests/spatial-continuum/open-universe.mjs",
+    "test:continuum:r5-generative": "node tests/spatial-continuum/r5-generative-universe.mjs",
+    "test:continuum:r5-interaction": "node tests/spatial-continuum/r5-interaction-bounds.mjs",
+    "test:continuum:r5-diversity": "node tests/spatial-continuum/r5-population-diversity.mjs",
+    "test:continuum:r6-discovery": "node tests/spatial-continuum/r6-discovery-scheduler.mjs",
+    "test:continuum:r6-browser-discovery": "node tests/spatial-continuum/r6-async-discovery.mjs",
+    "test:continuum:r6-macro": "node tests/spatial-continuum/r6-macro-streaming.mjs",
+    "test:continuum:r6-causal": "node tests/spatial-continuum/r6-causal-regimes.mjs",
+    "test:continuum:r6-causal-browser": "node tests/spatial-continuum/r6-causal-browser.mjs",
+    "test:continuum:r6-local": "node tests/spatial-continuum/r6-local-environment.mjs",
+    "test:continuum:r6-material": "node tests/spatial-continuum/r6-contextual-material.mjs",
+    "test:continuum:r6-material-browser": "node tests/spatial-continuum/r6-contextual-material-browser.mjs",
+    "test:continuum:r6-lod": "node tests/spatial-continuum/r6-planetary-lod.mjs",
+    "test:continuum:r6-w0": "node tests/spatial-continuum/r6-w0-convergence.mjs",
+    "test:continuum:generalization": "node tests/spatial-continuum/generalization.mjs",
+    "test:continuum:open-generalization": "node tests/spatial-continuum/open-generalization.mjs",
+    "test:continuum:accessibility-mobile": "node tests/spatial-continuum/open-accessibility-mobile.mjs",
+    "test:continuum:visual": "node tests/spatial-continuum/open-visual-evidence.mjs",
+    "test:continuum:matrix": "node tests/spatial-continuum/matrix.mjs",
+    "test:continuum:performance": "node tests/spatial-continuum/performance.mjs",
+    "evidence:continuum": "node tools/assemble-spatial-continuum-evidence.mjs"
+  },
+  "dependencies": {
+    "@babylonjs/core": "9.26.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.9",
+    "playwright": "1.62.1"
   },
   "engines": {
     "node": "24.20.x"

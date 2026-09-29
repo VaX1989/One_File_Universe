@@ -1,0 +1,23 @@
+{
+  "schema": "ofu.integration-patch-request.v1",
+  "requesting_prompt_id": "IND-SEC-B",
+  "target_surface": "CONTROL_OWNED_SECURITY_TEST_REGISTRATION",
+  "target_path": "package.json and/or .github/workflows/foundation.yml",
+  "expected_authority": "CTRL-WAVE0/CTRL-CONVERGENCE",
+  "intended_change": "Register node tests/industrialization/security/post-g0a-hostile-inputs.mjs in the smallest existing exact-head CI path without changing production semantics or broadening the G0A slice.",
+  "rationale": "IND-SEC-B owns the additive hostile-input runner and corpus, but package/workflow registration is protected control-plane metadata. Native Node execution should be mandatory before convergence.",
+  "invariants": [
+    "Do not modify authoritative P2/P4 semantics.",
+    "Do not promote checkpoint/archive trust or provider/query/runtime surfaces.",
+    "Do not weaken or delete existing rejection tests.",
+    "Do not broaden any public API.",
+    "Preserve existing canonical identity/history, offline product, renderer/camera authority and resource contracts."
+  ],
+  "tests": [
+    "node tests/industrialization/security/post-g0a-hostile-inputs.mjs",
+    "existing Foundation Integrity",
+    "P2 Conformance",
+    "P4 Conformance",
+    "P1-P4 Canonical Baseline"
+  ]
+}

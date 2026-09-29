@@ -1,0 +1,77 @@
+{
+  "prompt_id": "IND-GOV-A",
+  "master_schema_version": 4,
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "base_sha": "37e6744f1d8f711278ae8b14ddaf84b9176b5a6b",
+  "base_tree": "fb5be853362a9266f0f6d64f23338d2827f358e0",
+  "dependency_shas": {
+    "M0_HISTORICAL": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+    "CTRL_WAVE0_REPAIR_PHASE": "37e6744f1d8f711278ae8b14ddaf84b9176b5a6b",
+    "ORIGINAL_IND_GOV_A_LANE": "580544b616c6ed532ab420746ccb5bc9548b8f65",
+    "PR287_V4_MASTER": "c2cab6d6e914b918432432fdc69825e0a1000509"
+  },
+  "final_sha": "EXTERNALLY_BOUND_BY_DRAFT_REPAIR_PR_HEAD",
+  "final_tree": "EXTERNALLY_BOUND_BY_DRAFT_REPAIR_PR_HEAD_TREE",
+  "changed_paths": [
+    "docs/industrialization/iw0/ind-gov/NORMATIVE_PROTOCOL_INDEX.json",
+    "docs/industrialization/iw0/ind-gov/README.md",
+    "docs/frontier/execution/parallel/IND-GOV-A_EXECUTION_STATE.json",
+    "docs/industrialization/handoffs/IND-GOV-A_REPAIR_2026-09-19.json"
+  ],
+  "ownership_result": "PASS_INDUSTRIALIZATION_SPEC_ONLY_NO_P2_P4_PRODUCTION_SEMANTIC_CHANGE",
+  "tests": [
+    {
+      "check": "machine-readable normative index JSON parse",
+      "result": "PASS_BY_WRITE_TIME_PARSE_AND_GITHUB_REFETCH",
+      "scope": "metadata syntax only"
+    },
+    {
+      "check": "semantic scope correction",
+      "result": "PASS",
+      "witness": {
+        "checkpoint_classification": "DRAFT_ONLY",
+        "checkpoint_g0a_minimum": false,
+        "archive_classification": "DRAFT_ONLY",
+        "archive_g0a_minimum": false,
+        "ready_to_specify_count": 10
+      }
+    },
+    {
+      "check": "production P2/P4 mutation",
+      "result": "PASS_NONE",
+      "caveat": "Exact-head GitHub Actions remain convergence evidence."
+    }
+  ],
+  "deterministic_witnesses": [
+    {
+      "kind": "REPAIR_CONTROL_BASE",
+      "sha": "37e6744f1d8f711278ae8b14ddaf84b9176b5a6b",
+      "tree": "fb5be853362a9266f0f6d64f23338d2827f358e0"
+    },
+    {
+      "kind": "HISTORICAL_LANE_HEAD",
+      "sha": "580544b616c6ed532ab420746ccb5bc9548b8f65"
+    },
+    {
+      "kind": "G0A_MINIMUM_CARDINALITY",
+      "ready_to_specify": 10,
+      "checkpoint_archive_in_minimum": false
+    }
+  ],
+  "security_classification": "SEC_01_SCOPE_REPAIR_APPLIED; checkpoint/archive integrity is not represented as authenticated provenance/freshness or full semantic trust.",
+  "authority_science_classification": "INDUSTRIALIZATION_SPEC_CANDIDATE_ONLY; no canonical/scientific authority promotion and no authentication invented.",
+  "performance_resource_evidence": "NOT_APPLICABLE_SPECIFICATION_METADATA_REPAIR",
+  "limitations": [
+    "This repair narrows G0A scope; it does not solve checkpoint/archive authentication, freshness, rollback or durable persistence.",
+    "G0A remains NOT_PASS until IND-CONF-A and IND-BRIDGE-A repairs converge and independent GATE-G0A-AUDIT passes.",
+    "Exact-head CI is convergence evidence; this metadata repair does not claim a local executable suite."
+  ],
+  "falsification_attempts": [
+    "Re-read SEC-01 and the integrated pre-audit finding against the live control head before changing classification.",
+    "Demoted rather than strengthened checkpoint/archive claims, testing the narrower hypothesis that G0A does not require them.",
+    "Kept all P2/P4 production source untouched and avoided inventing authentication semantics."
+  ],
+  "rollback_abandon_condition": "If independent G0A audit finds any of the remaining ten READY_TO_SPECIFY candidates insufficiently source-backed or implementation-independent, demote the affected candidate and return repair to IND-GOV-A rather than passing G0A.",
+  "integration_patch_requests": [],
+  "disposition": "READY_FOR_CONTROL_CONVERGENCE"
+}

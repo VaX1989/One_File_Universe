@@ -1,0 +1,50 @@
+{
+  "schema": "ofu.post-m0.product-director-ownership-grant.v1",
+  "prompt_id": "CTRL-WAVE-EPOCH",
+  "granted_prompt_id": "PROD-W2-DIRECTOR",
+  "mission_date": "2026-09-20",
+  "control_pr": 290,
+  "pre_grant_control_sha": "ecf46e658d082fa286fc04435b7e85501fffa80b",
+  "canonical_dependencies": {
+    "PROD-W1-ATLAS-CORE": "COMPLETE",
+    "PROD-W1-PRODUCT-DEPTH": "COMPLETE",
+    "PRODUCT-VISUAL-CONTINUITY": "COMPLETE",
+    "PRODUCT-HUMAN": "COMPLETE"
+  },
+  "ownership": {
+    "semantic_surface": "DIRECTOR_PRESENTATION_ORCHESTRATION",
+    "allowed_paths": [
+      "src/product/exploration/director/**",
+      "tests/product/prod-w2-director.mjs",
+      "docs/product/director/**",
+      "docs/frontier/execution/parallel/PROD-W2-DIRECTOR_EXECUTION_STATE.json",
+      "docs/industrialization/handoffs/PROD-W2-DIRECTOR_2026-09-20.json",
+      "docs/product/director/INTEGRATION_PATCH_REQUEST_ROOT_REGISTRATION.json"
+    ],
+    "shared_surfaces_forbidden": [
+      "package.json",
+      "tests/spatial-continuum/r6-w0-phase2-convergence-runner.mjs",
+      ".github/workflows/**"
+    ],
+    "camera_authority": "DELEGATE_EXISTING_ONLY",
+    "renderer_authority": "NONE",
+    "picking_authority": "NONE",
+    "timeline_authority": "NONE"
+  },
+  "concurrency": {
+    "transition_camera_sensitive_writer": "PROD-W2-DIRECTOR",
+    "conflicting_live_writer_found": false,
+    "product_control_pr_312_recreated": false
+  },
+  "invariants": [
+    "one scene",
+    "one camera",
+    "renderer-owned picking",
+    "canonical P2/P4 unchanged",
+    "scientific authority unchanged",
+    "offline/direct-file preserved",
+    "bounded resources",
+    "no mandatory network"
+  ],
+  "disposition": "OWNERSHIP_GRANTED"
+}

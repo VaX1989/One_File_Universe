@@ -1,0 +1,128 @@
+{
+  "prompt_id": "IND-LIC-A",
+  "master_schema_version": 4,
+  "epoch": "OFU-POST-M0-DUAL-TRACK-WAVE0-2026-09-18-61F43071",
+  "base_sha": "fa88f7cec101a52d07916a0fdd3927c482a6f188",
+  "base_tree": "784e12501a7e0ba9e281787513bddbb6eed1c6bf",
+  "dependency_shas": {
+    "M0_HISTORICAL": "61f43071ad389d14b0df0d5fbd2c54ba5d829a0e",
+    "CONTROL_EPOCH": "fa88f7cec101a52d07916a0fdd3927c482a6f188",
+    "PR287_V4_MASTER": "c2cab6d6e914b918432432fdc69825e0a1000509",
+    "PR287_V3_SOURCE": "6494c3a43596c2d16c43237c052d404d5b1a7e74",
+    "PR286_HARVESTED_SOURCE": "3d28ec0720f611278b7717da02713c9eda96e642"
+  },
+  "final_sha": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD",
+  "final_tree": "EXTERNALLY_BOUND_BY_DRAFT_LANE_PR_HEAD_TREE",
+  "changed_paths": [
+    "docs/frontier/execution/parallel/IND-LIC-A_EXECUTION_STATE.json",
+    "docs/industrialization/iw0/ind-lic/LICENSING_IP_DECISION_DOSSIER.md",
+    "docs/industrialization/iw0/ind-lic/THIRD_PARTY_INVENTORY.json",
+    "docs/industrialization/iw0/ind-lic/DECISION_MATRIX.json",
+    "docs/industrialization/iw0/ind-lic/INTEGRATION_PATCH_REQUEST_EXTERNAL_CONFORMANCE.json",
+    "docs/industrialization/iw0/ind-lic/IND-LIC-A_TERMINAL_HANDOFF.json"
+  ],
+  "ownership_result": "PASS_ONLY_LICENSING_DECISION_DOSSIER_AND_LANE_STATE_MODIFIED",
+  "tests": [
+    {
+      "check": "authenticated repository identity and write permission",
+      "result": "PASS"
+    },
+    {
+      "check": "same-lane branch/PR collision search before branch creation",
+      "result": "PASS_NONE_FOUND"
+    },
+    {
+      "check": "exact control epoch binding",
+      "result": "PASS",
+      "sha": "fa88f7cec101a52d07916a0fdd3927c482a6f188",
+      "tree": "784e12501a7e0ba9e281787513bddbb6eed1c6bf"
+    },
+    {
+      "check": "README project-license readback",
+      "result": "PASS_NO_PROJECT_LICENSE"
+    },
+    {
+      "check": "package publication state",
+      "result": "PASS_PRIVATE_TRUE_NO_LICENSE_FIELD"
+    },
+    {
+      "check": "repository root license/notice file scan",
+      "result": "PASS_NO_ROOT_PROJECT_LICENSE_OR_NOTICE"
+    },
+    {
+      "check": "lockfile third-party license census",
+      "result": "PASS_31_NON_ROOT_28_MIT_3_APACHE_2_0_0_UNDECLARED"
+    },
+    {
+      "check": "Babylon redistribution notice/build behavior",
+      "result": "PASS_LICENSE_TEXT_EMBEDDED_AND_MANIFESTED"
+    },
+    {
+      "check": "contribution policy scan",
+      "result": "PASS_NO_CLA_DCO_ASSIGNMENT_OR_EXPLICIT_INBOUND_EQUALS_OUTBOUND_FOUND"
+    },
+    {
+      "check": "forbidden legal-authority action audit",
+      "result": "PASS_NO_LICENSE_SELECTED_NO_COPYRIGHT_NOTICE_MODIFIED_NO_OPEN_SOURCE_CLAIM"
+    },
+    {
+      "check": "shared-surface ownership audit",
+      "result": "PASS_SHARED_MASTER_NOT_EDITED_INTEGRATION_PATCH_REQUEST_EMITTED"
+    }
+  ],
+  "deterministic_witnesses": [
+    {
+      "kind": "CONTROL_BASE",
+      "sha": "fa88f7cec101a52d07916a0fdd3927c482a6f188",
+      "tree": "784e12501a7e0ba9e281787513bddbb6eed1c6bf"
+    },
+    {
+      "kind": "README_BLOB",
+      "sha": "c7816d3b8757f3a1cd2267f6cee37c6fe2d557d7"
+    },
+    {
+      "kind": "PACKAGE_JSON_BLOB",
+      "sha": "23296f678781ccde597b465bd311fac26c7091f2"
+    },
+    {
+      "kind": "PACKAGE_LOCK_BLOB",
+      "sha": "1815d33c37d82d174a67547223a05b9b9ee1554e"
+    },
+    {
+      "kind": "THIRD_PARTY_NOTICE_BLOB",
+      "sha": "f2beb1d7ba9524b2a0a0dcc48fbacfb8c26467a1"
+    },
+    {
+      "kind": "SPATIAL_CONTINUUM_BUILD_BLOB",
+      "sha": "8a766343171c429e4ff9ac78cd9d8efd90b099d7"
+    },
+    {
+      "kind": "CONTRIBUTING_BLOB",
+      "sha": "8623dd83ff8e93dd2346e9495b2680ddb404659e"
+    }
+  ],
+  "security_classification": "NO_SECURITY_AUTHORITY_CHANGE; licensing decisions may later affect distribution/security obligations but no security semantics were modified.",
+  "authority_science_classification": "PLANNING_METADATA_ONLY; no scientific/canonical authority was promoted or changed.",
+  "performance_resource_evidence": "NOT_APPLICABLE_TO_LICENSING_DECISION_LANE",
+  "limitations": [
+    "This dossier is repository-grounded planning and not legal advice.",
+    "Founder/legal choices remain intentionally unresolved because the lane is forbidden from choosing a license on the founder's behalf.",
+    "Exact upstream license and NOTICE texts must be re-verified for the exact artifacts distributed in any future release.",
+    "Git history/provenance metadata was not treated as a legal chain-of-title determination.",
+    "No trademark registry search, patent freedom-to-operate analysis, jurisdiction-specific legal opinion, or external counsel review was performed."
+  ],
+  "falsification_attempts": [
+    "Searched for root LICENSE/LICENCE/COPYING/NOTICE and license-related repository paths.",
+    "Checked whether package metadata accidentally implied publishable/open-source state.",
+    "Inspected lockfile license fields for undeclared or non-MIT/Apache package entries.",
+    "Checked generated-artifact path for third-party license embedding rather than assuming the notice document matched build behavior.",
+    "Checked contribution governance for CLA/DCO/assignment/inbound-license mechanisms.",
+    "Tested the hypothesis that no-license must halt all industrialization; repository/control gates support continued internal feasibility, so that stronger blocker hypothesis was rejected.",
+    "Checked v4 downstream gates for a licensing bypass and found external conformance not explicitly tied to the licensing/publication-rights decision."
+  ],
+  "rollback_abandon_condition": "If legal counsel or founder policy chooses a distribution model that conflicts with this staged separation, revise the decision dossier and downstream gate patch before public distribution; do not rewrite the technical control epoch or claim prior public rights.",
+  "integration_patch_requests": [
+    "docs/industrialization/iw0/ind-lic/INTEGRATION_PATCH_REQUEST_EXTERNAL_CONFORMANCE.json"
+  ],
+  "disposition": "READY_FOR_CONTROL_CONVERGENCE"
+}

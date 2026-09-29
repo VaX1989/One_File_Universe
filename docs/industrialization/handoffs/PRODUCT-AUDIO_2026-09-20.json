@@ -1,0 +1,125 @@
+{
+  "schema": "ofu.terminal-handoff.v1",
+  "prompt_id": "PRODUCT-AUDIO",
+  "master_schema_version": 4,
+  "mission_date": "2026-09-20",
+  "epoch": "OFU-POST-M0-PRODUCT-COMPLETION-2026-09-20",
+  "base_sha": "741ea0e11e3e1f1a3cdd18a724c85d86c7df2928",
+  "base_tree": "EXTERNALLY_BOUND_BY_CONTROL_PR290_BASE_SHA_741ea0e11e3e1f1a3cdd18a724c85d86c7df2928",
+  "dependency_shas": {
+    "PR287_V4_MASTER": "c2cab6d6e914b918432432fdc69825e0a1000509",
+    "G-PROD-CONTRACTS": "PASS_ON_CONTROL_HISTORY",
+    "PRODUCT_AUDIO_OWNERSHIP_PR": 337,
+    "PRODUCT_AUDIO_OWNERSHIP_HEAD": "1b4e53c11283e68f48dcccdbffe4e5413aaa067a",
+    "PRODUCT_AUDIO_OWNERSHIP_MERGE": "741ea0e11e3e1f1a3cdd18a724c85d86c7df2928"
+  },
+  "source_prompt_refs": [
+    "PR286@3d28ec0720f611278b7717da02713c9eda96e642:PRODUCT-AUDIO"
+  ],
+  "final_sha": "EXTERNALLY_BOUND_BY_PR_339_TERMINAL_HEAD",
+  "final_tree": "EXTERNALLY_BOUND_BY_PR_339_TERMINAL_HEAD_TREE",
+  "branch": "work/post-m0/product-audio-2026-09-20",
+  "pr": 339,
+  "changed_paths": [
+    "tests/product/product-audio.mjs",
+    "tests/product/product-audio-browser.mjs",
+    "docs/frontier/execution/parallel/PRODUCT-AUDIO_EXECUTION_STATE.json",
+    "docs/industrialization/handoffs/PRODUCT-AUDIO_2026-09-20.json",
+    "docs/product/audio/INTEGRATION_PATCH_REQUEST_TEST_REGISTRATION.json"
+  ],
+  "ownership_result": {
+    "status": "PASS",
+    "grant_pr": 337,
+    "scope": "CERTIFY_EXISTING_BOUNDED_OFFLINE_PRESENTATION_ONLY_SYSTEMIC_AUDIO",
+    "production_files_modified": false,
+    "protected_visual_transition_surface_modified": false,
+    "camera_or_picking_modified": false,
+    "canonical_p2_p4_modified": false,
+    "scientific_authority_modified": false,
+    "package_workflow_or_central_runner_modified": false
+  },
+  "tests": [
+    {
+      "command": "node tests/product/product-audio.mjs",
+      "result": "PASS",
+      "verification_pr": 340,
+      "verification_head": "3d35dae666cf8c258003e747176e353e77b746e4",
+      "foundation_run": 35525866258
+    },
+    {
+      "command": "node tests/product/product-audio-browser.mjs via Spatial convergence runner",
+      "result": "PASS",
+      "verification_pr": 340,
+      "verification_head": "3d35dae666cf8c258003e747176e353e77b746e4",
+      "spatial_run": 35525866294
+    },
+    {
+      "check": "verified test blobs equal current lane test blobs before terminal metadata",
+      "result": "PASS",
+      "focused_blob": "f39a6ff828d537d00006545ef5066656226ac4e8",
+      "browser_blob": "f6c41ee3a9a50409c9dc99256fc4f8cc49100638"
+    }
+  ],
+  "deterministic_witnesses": {
+    "authority": "PRESENTATION_ONLY",
+    "direct_file": true,
+    "zero_mandatory_network": true,
+    "optional_user_activation": true,
+    "desktop_user_activation": true,
+    "mobile_user_activation": true,
+    "mute": true,
+    "reduced_motion": true,
+    "unknown_atmosphere_fails_silent": true,
+    "literal_vacuum_sound": false,
+    "micro_cross_domain_audio_suppressed": true,
+    "serialized_controls": true,
+    "idle_polling": false,
+    "max_concurrent_poll_timers": 1,
+    "unsupported_audio_graceful": true
+  },
+  "security_classification": {
+    "result": "PASS_WITHIN_PRODUCT_AUDIO_SCOPE",
+    "mandatory_network": false,
+    "hidden_canonical_mutation": false,
+    "cross_domain_audio_authority_leak": false,
+    "unsupported_context_behavior": "FAIL_SILENT",
+    "resource_lifecycle_bounded": true
+  },
+  "authority_science_classification": {
+    "result": "PASS",
+    "effective_authority": "PRESENTATION_ONLY",
+    "physically_motivated_audio_distinguished_from_sonification": true,
+    "audio_changes_canonical_state": false,
+    "audio_is_scientific_measurement": false,
+    "unsupported_environmental_facts_invented": false
+  },
+  "performance_resource_evidence": {
+    "idle_polling": false,
+    "max_concurrent_poll_timers": 1,
+    "bounded_audio_context_and_node_contract": true,
+    "visibility_suspend_resume_dispose_covered": true,
+    "direct_file_offline_execution": true
+  },
+  "limitations": [
+    "Physical-device audio behavior remains NOT_VERIFIED because no physical-device evidence source is available in this execution context.",
+    "Real assistive-technology behavior remains external evidence.",
+    "This lane certifies the existing shipping V2X-14 audio implementation; it does not create a new audio/camera/navigation/canonical authority.",
+    "Permanent root package and Spatial convergence runner registration are control-owned and intentionally absent from the lane."
+  ],
+  "falsification_attempts": [
+    "UNKNOWN atmospheric context must fail silent",
+    "vacuum must not produce literal physically motivated sound",
+    "micro-regime cross-domain environmental audio is suppressed",
+    "desktop and mobile activation remain user-initiated",
+    "mute and reduced-motion/reduced-sensory paths remain non-blocking",
+    "unsupported WebAudio degrades gracefully",
+    "visibility suspension and disposal do not leak active resources",
+    "polling/timer concurrency remains bounded",
+    "direct-file exact artifact runs with zero mandatory network"
+  ],
+  "rollback_abandon_condition": "Reject or repair forward if control integration introduces mandatory network audio, canonical/scientific authority promotion, hidden replay state, unbounded audio resources/timers, camera/transition/picking ownership, or if the exact integrated artifact cannot reproduce both focused and browser oracles.",
+  "integration_patch_requests": [
+    "docs/product/audio/INTEGRATION_PATCH_REQUEST_TEST_REGISTRATION.json"
+  ],
+  "disposition": "READY_FOR_CONTROL_CONVERGENCE"
+}

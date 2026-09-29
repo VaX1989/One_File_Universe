@@ -1,0 +1,37 @@
+{
+  "schema": "ofu.post-m0.ctrl-convergence.ind-cabi-microhost.v1",
+  "prompt_id": "CTRL-CONVERGENCE",
+  "mission_date": "2026-09-20",
+  "control_pr": 290,
+  "pre_registration_control_head": "921e1e63d685632079ecb97421a4858684b904ba",
+  "source_lane": {
+    "prompt_id": "IND-CABI-MICROHOST",
+    "pr": 343,
+    "merge_commit": "921e1e63d685632079ecb97421a4858684b904ba",
+    "reconciled_lane_head": "3cfbcbe6ab9b3949e3ccd25fb8abf52016dcf77a",
+    "terminal_pre_reconciliation_head": "fe4b0d8ca502aea1378e463425aeb9ad63d2e885"
+  },
+  "verification": {
+    "verification_pr": 344,
+    "closed_without_merge": true,
+    "verification_head": "0eded91d5d104e2f32a5e1f18e2bc88161102a54",
+    "foundation_run": 35527644242,
+    "spatial_run": 35527644262,
+    "workflow_matrix": "10/10_PASS",
+    "command_count": 139,
+    "success_count": 94,
+    "rejection_count": 45,
+    "gcc_clang_transcript_equal": true,
+    "direct_native_cabi_transcript_equal": true,
+    "verified_blob_identity_preserved": true
+  },
+  "control_integration": {
+    "package_json": "APPEND_CABI_MICROHOST_FOCUSED_TEST_WITHOUT_REMOVAL",
+    "existing_regression_union_preserved": true,
+    "runtime_ported": false,
+    "broad_abi_frozen": false,
+    "product_authority_changed": false
+  },
+  "required_post_condition": "FRESH_CUMULATIVE_CI_AND_SPATIAL_CONTINUUM_PASS_ON_THIS_CONTROL_INTEGRATION",
+  "disposition": "READY_FOR_CONTROL_EXACT_HEAD_VERIFICATION"
+}
